@@ -1,5 +1,5 @@
 /**
- * Electrix Tweaker controller script 0.3.1 for Mixxx 1.12
+ * Electrix Tweaker controller script 0.3.2 for Mixxx 1.12
  * Copyright (C) 2015 Be <be.0@gmx.com>
  *
  * This program is free software; you can redistribute it and/or
