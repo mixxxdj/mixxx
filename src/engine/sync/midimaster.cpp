@@ -117,11 +117,8 @@ void MidiMasterClock::onCallbackStart(int sampleRate, int bufferSize) {
     Q_UNUSED(sampleRate)
     Q_UNUSED(bufferSize)
     double bpm = getBpm();
-    if (bpm != m_dOldBpm) {
-        m_pEngineSync->notifyInstantaneousBpmChanged(this, bpm);
-        m_pEngineSync->notifyBpmChanged(this, bpm);
-        m_dOldBpm = bpm;
-    }
+    m_pEngineSync->notifyInstantaneousBpmChanged(this, bpm);
+    m_pEngineSync->notifyBpmChanged(this, bpm);
 }
 
 void MidiMasterClock::onCallbackEnd(int sampleRate, int bufferSize) {
