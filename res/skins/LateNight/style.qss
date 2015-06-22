@@ -183,10 +183,10 @@
 }
 
 #MasterVuMeter4ch {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  padding-right: 2px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  /*padding-right: 2px;
   padding-top: 10px;
-  padding-left: 5px;
+  padding-left: 5px;*/
 }
 
 #MixerContainer {
