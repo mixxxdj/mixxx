@@ -596,7 +596,7 @@ SINT SoundSourceMp3::readSampleFrames(
                 if (isUnrecoverableError(m_madStream)) {
                     qWarning() << "Unrecoverable MP3 frame decoding error:"
                             << mad_stream_errorstr(&m_madStream);
-                    // Abort
+                    // Abort decoding
                     break;
                 }
                 if (isRecoverableError(m_madStream)) {
@@ -613,14 +613,12 @@ SINT SoundSourceMp3::readSampleFrames(
                                 << mad_stream_errorstr(&m_madStream);
                         }
                     }
-                    // Acknowledge error...
-                    m_madStream.error = MAD_ERROR_NONE;
-                    // ...and continue
+                    // Continue decoding
                 }
             }
             if (pMadThisFrame == m_madStream.this_frame) {
                 qDebug() << "Retry decoding MP3 frame @" << m_curFrameIndex;
-                // Retry
+                // Retry decoding
                 continue;
             }
 
