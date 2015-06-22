@@ -178,6 +178,17 @@
   padding-left: 5px;
 }
 
+#MasterVuMeter2ch {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#MasterVuMeter4ch {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  /*padding-right: 2px;
+  padding-top: 10px;
+  padding-left: 5px;*/
+}
+
 #MixerContainer {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   background-color: #1e1e1e;
@@ -657,6 +668,7 @@
 #Crossfader {
   qproperty-layoutAlignment: 'AlignCenter';
   /*background-color:#1e1e1e;*/
+  padding-top: 10px;
 }
 
 #PreviewDeck {
