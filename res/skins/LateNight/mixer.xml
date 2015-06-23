@@ -93,7 +93,6 @@
         							   <Template src="skin:mixer_channel.xml">
         									<SetVariable name="channum">1</SetVariable>
         							   </Template>
-									   <!-- in 2ch mode master vu meter goes between ch1 and ch2 -->
 									   <WidgetGroup>
 											<ObjectName>MasterVuMeter2ch</ObjectName>
 											<Layout>horizontal</Layout>
@@ -183,7 +182,6 @@
                                        </WidgetGroup>
         							</Children>
         						</WidgetGroup>
-								<!-- crossfader in here w/o special background looks more like a real mixer -->
 								<WidgetGroup>
 									<ObjectName>Crossfader</ObjectName>
 									<Layout>horizontal</Layout>
@@ -274,11 +272,8 @@
                                 </WidgetGroup>
                             </Children>
                         </WidgetGroup>
-						<!-- master vu org position -->
                       </Children>
                     </WidgetGroup>
-					<!-- in 4ch mode master vu meter goes below master controls 
-						in one line with the channel meters -->
 					<WidgetGroup>
 						<ObjectName>MasterVuMeter4ch</ObjectName>
 						<Layout>horizontal</Layout>
