@@ -111,6 +111,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pShowLibrary(NULL),
           m_pShowMixer(NULL),
           m_pShowEqs(NULL),
+          m_pShowXFader(NULL),
           m_pShow4Decks(NULL),
           m_pMaximizeLibrary(NULL),
 
@@ -579,6 +580,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShowLibrary;
     delete m_pShowMixer;
     delete m_pShowEqs;
+    delete m_pShowXFader;
     delete m_pShow4Decks;
     delete m_pMaximizeLibrary;
     delete m_pNumAuxiliaries;
@@ -876,6 +878,10 @@ void MixxxMainWindow::slotViewShowEqs(bool enable) {
     toggleVisibility(ConfigKey("[Master]", "show_eqs"), enable);
 }
 
+void MixxxMainWindow::slotViewShowXFader(bool enable) {
+    toggleVisibility(ConfigKey("[Master]", "show_xfader"), enable);
+}
+
 void MixxxMainWindow::slotViewShow4Decks(bool enable) {
     toggleVisibility(ConfigKey("[Master]", "show_4decks"), enable);
 }
@@ -937,6 +943,11 @@ void MixxxMainWindow::slotToggleCheckedEqs() {
     updateCheckedMenuAction(m_pViewShowEqs, key);
 }
 
+void MixxxMainWindow::slotToggleCheckedXFader() {
+    ConfigKey key("[Master]", "show_xfader");
+    updateCheckedMenuAction(m_pViewShowXFader, key);
+}
+
 void MixxxMainWindow::slotToggleChecked4Decks() {
     ConfigKey key("[Master]", "show_4decks");
     updateCheckedMenuAction(m_pViewShow4Decks, key);
@@ -977,6 +988,8 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[Master]", "show_mixer"));
     setVisibilityOptionState(m_pViewShowEqs,
                              ConfigKey("[Master]", "show_eqs"));
+    setVisibilityOptionState(m_pViewShowXFader,
+                             ConfigKey("[Master]", "show_xfader"));
     setVisibilityOptionState(m_pViewShow4Decks,
                              ConfigKey("[Master]", "show_4decks"));
     setVisibilityOptionState(m_pViewMaximizeLibrary,
@@ -1011,6 +1024,9 @@ void MixxxMainWindow::onNewSkinLoaded() {
     linkSkinWidget(&m_pShowEqs,
                    ConfigKey("[Master]", "show_eqs"),
                    SLOT(slotToggleCheckedEqs()));
+    linkSkinWidget(&m_pShowXFader,
+                   ConfigKey("[Master]", "show_xfader"),
+                   SLOT(slotToggleCheckedXFader()));
     linkSkinWidget(&m_pShow4Decks,
                    ConfigKey("[Master]", "show_4decks"),
                    SLOT(slotToggleChecked4Decks()));
@@ -1547,6 +1563,20 @@ void MixxxMainWindow::initActions()
     connect(m_pViewShowEqs, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowEqs(bool)));
 
+    QString showXFaderTitle = tr("Show Crossfader");
+    QString showXFaderText = tr("Show the crossfader on the mixer section.") +
+            " " + mayNotBeSupported;
+    m_pViewShowXFader = new QAction(showXFaderTitle, this);
+    m_pViewShowXFader->setCheckable(true);
+    m_pViewShowXFader->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowXFader"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Crossfader"))));
+    m_pViewShowXFader->setStatusTip(showXFaderText);
+    m_pViewShowXFader->setWhatsThis(buildWhatsThis(showXFaderTitle, showXFaderText));
+    connect(m_pViewShowXFader, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowXFader(bool)));
+
     QString show4DecksTitle = tr("Show 4 Decks");
     QString show4DecksText = tr("Show 4 Decks on the Mixxx interface.") +
             " " + mayNotBeSupported;
@@ -1750,6 +1780,7 @@ void MixxxMainWindow::initMenuBar() {
 #endif
     m_pViewMenu->addAction(m_pViewShowMixer);
     m_pViewMenu->addAction(m_pViewShowEqs);
+    m_pViewMenu->addAction(m_pViewShowXFader);
     m_pViewMenu->addAction(m_pViewShowPreviewDeck);
     m_pViewMenu->addAction(m_pViewShowCoverArt);
     m_pViewMenu->addSeparator();
@@ -2200,6 +2231,7 @@ void MixxxMainWindow::rebootMixxxView() {
     delete m_pShowLibrary;
     delete m_pShowMixer;
     delete m_pShowEqs;
+    delete m_pShowXFader;
     delete m_pShow4Decks;
     delete m_pMaximizeLibrary;
 
@@ -2211,6 +2243,7 @@ void MixxxMainWindow::rebootMixxxView() {
     m_pShowLibrary = NULL;
     m_pShowMixer = NULL;
     m_pShowEqs = NULL;
+    m_pShowXFader = NULL;
     m_pShow4Decks = NULL;
     m_pMaximizeLibrary = NULL;
 
