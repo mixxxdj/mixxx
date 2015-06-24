@@ -17,6 +17,7 @@
 #include "library/columncache.h"
 #include "trackinfoobject.h"
 #include "util.h"
+#include "util/memory.h"
 
 class SearchQueryParser;
 class QueryNode;
@@ -49,10 +50,14 @@ class BaseTrackCache : public QObject {
     virtual QVariant data(int trackId, int column) const;
     virtual int columnCount() const;
     virtual int fieldIndex(const QString& column) const;
+    QString columnNameForFieldIndex(int index) const;
+    QString columnSortForFieldIndex(int index) const;
     int fieldIndex(ColumnCache::Column column) const;
     virtual void filterAndSort(const QSet<int>& trackIds,
                                QString query, QString extraFilter,
-                               int sortColumn, Qt::SortOrder sortOrder,
+                               QString orderByClause,
+                               const int sortColumn,
+                               Qt::SortOrder sortOrder,
                                QHash<int, int>* trackToIndex);
     virtual bool isCached(int trackId) const;
     virtual void ensureCached(int trackId);
@@ -79,9 +84,8 @@ class BaseTrackCache : public QObject {
     void getTrackValueForColumn(TrackPointer pTrack, int column,
                                 QVariant& trackValue) const;
 
-    QueryNode* parseQuery(QString query, QString extraFilter,
+    std::unique_ptr<QueryNode> parseQuery(QString query, QString extraFilter,
                           QStringList idStrings) const;
-    QString orderByClause(int sortColumn, Qt::SortOrder sortOrder) const;
     int findSortInsertionPoint(TrackPointer pTrack,
                                const int sortColumn,
                                const Qt::SortOrder sortOrder,

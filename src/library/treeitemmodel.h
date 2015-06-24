@@ -11,6 +11,9 @@ class TreeItem;
 class TreeItemModel : public QAbstractItemModel {
     Q_OBJECT
   public:
+    static const int kDataPathRole = Qt::UserRole;
+    static const int kBoldRole = Qt::UserRole + 1;
+
     TreeItemModel(QObject *parent = 0);
     virtual ~TreeItemModel();
 
@@ -31,6 +34,8 @@ class TreeItemModel : public QAbstractItemModel {
     // Return the underlying TreeItem.
     // If the index is invalid, the root item is returned.
     TreeItem* getItem(const QModelIndex &index) const;
+
+    void triggerRepaint();
 
   private:
     TreeItem *m_pRootItem;

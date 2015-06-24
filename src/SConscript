@@ -94,14 +94,12 @@ def build_tests():
         env.Append(LIBS = 'gmock')
 
         if build.platform_is_windows:
-                # We want a terminal for tests.
-                if build.machine_is_64bit:
-                    env['LINKFLAGS'].remove('/subsystem:windows,5.02')
-                    env['LINKFLAGS'].append('/subsystem:console,5.02')
-                else:
-                    env['LINKFLAGS'].remove('/subsystem:windows,5.01')
-                    env['LINKFLAGS'].append('/subsystem:console,5.01')
-
+                # TODO(rryan): Build Mixxx core as a shared object and link it
+                # into mixxx and mixxx-test. We could build both in different
+                # environments right now but then automoc and protoc get run in
+                # both environments which makes SCons unhappy.
+                # Currently both executables are built with /subsystem:windows 
+                # and the console is attached manually
                 test_bin = env.Program(
                         'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
                         LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
@@ -127,15 +125,17 @@ if 'test' in BUILD_TARGETS:
         print "Running tests."
         run_tests()
 
-def osx_construct_version(build, mixxx_version, branch_name, vcs_revision):
-        # In release mode, we only use the version and revision number.
-        if build.build_is_release:
-                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
-        elif branch_name.startswith('release-'):
-                return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number and
-        # don't include the Mixxx version.
-        return "%s-%s%s" % (branch_name, vcs_name, vcs_revision)
+def construct_version(build, mixxx_version, branch_name, vcs_revision):
+        if branch_name.startswith('release-'):
+                branch_name = branch_name.replace('release-', '')
+
+        # Include build type in the filename.
+        build_type = 'release' if build.build_is_release else 'debug'
+
+        # New, simpler logic: mixxx version, branch name, git revision,
+        # release/build. Example: mixxx-1.12.0-master-gitXXXX-release
+        return "%s-%s-%s%s-%s" % (mixxx_version, branch_name, vcs_name,
+                                  vcs_revision, build_type)
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                              ubuntu_version):
@@ -154,16 +154,6 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
         # e.g. 1.12.0-alpha~master-gitXXXX~ppa1~trusty1
         return "%s~%s-%s%s-%s" % (mixxx_version, branch_name, vcs_name,
                                   vcs_revision, ubuntu_version)
-
-def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
-        # In release mode, we only use the version and revision number
-        if build.build_is_release:
-                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
-        elif branch_name.startswith('release-'):
-                return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number and
-        # don't include the Mixxx version.
-        return "%s-%s%s" % (branch_name, vcs_name, vcs_revision)
 
 #Set up the install target
 #=========================
@@ -253,6 +243,19 @@ else:
         suffix = 'd4.dll' if build.build_is_debug else '4.dll'
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
         dll_files.extend(qt_modules)
+
+# Qt imageformats plugin
+imgfmtdll_files = []
+qt_imagesformats = depends.Qt.enabled_imageformats(build)
+
+if qt5:
+        suffix = 'd.dll' if build.build_is_debug else '.dll'
+        qt_imagesformats = ['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats]
+        imgfmtdll_files.extend(qt_imagesformats)
+else:
+        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
+        qt_imagesformats = ['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats]
+        imgfmtdll_files.extend(qt_imagesformats)
 
 sqldll_files = []
 if int(flags.get('qt_sqlite_plugin', 0)):
@@ -449,7 +452,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         env.Alias('sign', codesign)
 
         package_name = 'mixxx'
-        package_version = osx_construct_version(build, mixxx_version, branch_name, vcs_revision)
+        package_version = construct_version(build, mixxx_version, branch_name,
+                                            vcs_revision)
         dmg_name = '%s-%s-%s' % (package_name, package_version, ARCH)
         dmg = env.Dmg(dmg_name, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
         env.Alias('package', dmg)
@@ -484,6 +488,11 @@ if build.platform_is_windows:
         env.Alias('mixxx', vamp_plugins)
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
+
+        # imageformats DLL
+        if imgfmtdll_files:
+                imageformats_dll = env.Install(os.path.join(base_dist_dir, "imageformats"), imgfmtdll_files)
+                env.Alias('mixxx', imageformats_dll)
 
         # QSQLite DLL
         if sqldll_files:
@@ -535,8 +544,8 @@ def BuildRelease(target, source, env):
     print "Installer file ",
     package_name = 'mixxx'
 
-    package_version = windows_construct_version(
-        build, mixxx_version, branch_name, vcs_revision)
+    package_version = construct_version(build, mixxx_version, branch_name,
+                                        vcs_revision)
     arch = "x64" if build.machine_is_64bit else "x86"
     exe_name = '%s-%s-%s.exe' % (package_name, package_version, arch)
     print exe_name
@@ -773,17 +782,35 @@ def BuildUbuntuPackage(target, source, env):
                         result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
                         result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
                         result_file = os.path.join(result_path, result_filename)
+
                         # Since we might build for multiple distros we need to
                         # insert the distro name into the filename.
-                        dest_filename = "%s_%s_%s_%s.deb" % (package_name, package_version, ubuntu_distro, arch)
+                        # HACK(rryan): filenames for Ubuntu packaging in general
+                        # are a big mess but we only distribute files in this
+                        # code path (package_target != 'source') via
+                        # downloads.mixxx.org so we may as well make the
+                        # filenames match the Windows/OSX builds.
+                        version = construct_version(build, mixxx_version,
+                                                    branch_name, vcs_revision)
+                        dest_filename = '-'.join((package_name, version,
+                                                  ubuntu_distro, arch))
+                        dest_deb_filename = "%s.deb" % dest_filename
+                        # Also rename the source tarball.
+                        dest_tar_filename = "%s.tar.gz" % dest_filename
+
                         # ubuntu/ is one folder up
-                        dest_file = os.path.join('..', dest_filename)
+                        dest_deb_file = os.path.join('..', dest_deb_filename)
+                        dest_tar_file = os.path.join('..', dest_tar_filename)
+
+                        source_tar_file = os.path.join('..', mixxx_tarball)
+                        if os.path.exists(source_tar_file):
+                                shutil.move(source_tar_file, dest_tar_file)
 
                         if result == 0 and os.path.exists(result_file):
                                 print "Done! Package and tarballs are in %s" % result_path
-                                print "* Found package at '%s'. Copying to ubuntu/" % result_filename
+                                print "* Found package at '%s'. Copying to ubuntu/" % result_file
                                 print
-                                shutil.copyfile(result_file, dest_file)
+                                shutil.copyfile(result_file, dest_deb_file)
                         else:
                                 print "* Build failed."
                                 print

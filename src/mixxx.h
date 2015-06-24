@@ -46,11 +46,12 @@ class ControlPushButton;
 class DlgDeveloperTools;
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
 class ControlObjectSlave;
-class ControlObjectThread;
+class ControlObject;
 class QTranslator;
 
 // This Class is the base class for Mixxx. It sets up the main
@@ -103,7 +104,9 @@ class MixxxMainWindow : public QMainWindow {
     void slotHelpFeedback();
     // Open the manual.
     void slotHelpManual();
-    // Visits translation interface on launchpad.net
+    // Open the keyboard mapping table in the manual.
+    void slotHelpShortcuts();
+    // Visits translation interface on www.transifex.com
     void slotHelpTranslation();
     // Scan or rescan the music library directory
     void slotScanLibrary();
@@ -118,6 +121,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowPreviewDeck(bool);
     void slotViewShowEffects(bool);
     void slotViewShowCoverArt(bool);
+    void slotViewMaximizeLibrary(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
     // Reload the skin.
@@ -141,7 +145,14 @@ class MixxxMainWindow : public QMainWindow {
     // can alert the user if a mic is not configured.
     void slotTalkoverChanged(int);
 
-    void toggleCheckedSamplers();
+    void slotUpdateWindowTitle(TrackPointer pTrack);
+
+    void slotToggleCheckedVinylControl();
+    void slotToggleCheckedSamplers();
+    void slotToggleCheckedMicrophone();
+    void slotToggleCheckedPreviewDeck();
+    void slotToggleCheckedEffects();
+    void slotToggleCheckedCoverArt();
 
   signals:
     void newSkinLoaded();
@@ -168,9 +179,9 @@ class MixxxMainWindow : public QMainWindow {
                           const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
-
     void linkSkinWidget(ControlObjectSlave** pCOS,
                         ConfigKey key, const char* slot);
+    void updateCheckedMenuAction(QAction* menuAction, ConfigKey key);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
@@ -246,12 +257,14 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewShowPreviewDeck;
     QAction* m_pViewShowEffects;
     QAction* m_pViewShowCoverArt;
+    QAction* m_pViewMaximizeLibrary;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;
     QAction* m_pHelpSupport;
     QAction* m_pHelpFeedback;
-    QAction* m_pHelpTranslation;
     QAction* m_pHelpManual;
+    QAction* m_pHelpShortcuts;
+    QAction* m_pHelpTranslation;
 
     QAction* m_pDeveloperReloadSkin;
     QAction* m_pDeveloperTools;
@@ -260,7 +273,13 @@ class MixxxMainWindow : public QMainWindow {
     DlgDeveloperTools* m_pDeveloperToolsDlg;
     QAction* m_pDeveloperDebugger;
 
+    ControlObjectSlave* m_pShowVinylControl;
     ControlObjectSlave* m_pShowSamplers;
+    ControlObjectSlave* m_pShowMicrophone;
+    ControlObjectSlave* m_pShowPreviewDeck;
+    ControlObjectSlave* m_pShowEffects;
+    ControlObjectSlave* m_pShowCoverArt;
+    ControlObject* m_pNumAuxiliaries;
 
     int m_iNoPlaylists;
 
@@ -286,7 +305,7 @@ class MixxxMainWindow : public QMainWindow {
     QList<ControlObjectSlave*> m_pVinylControlEnabled;
     QList<ControlObjectSlave*> m_pPassthroughEnabled;
     QList<ControlObjectSlave*> m_pAuxiliaryPassthrough;
-    ControlObjectThread* m_pNumDecks;
+    ControlObjectSlave* m_pNumDecks;
     int m_iNumConfiguredDecks;
     QList<ControlObjectSlave*> m_micTalkoverControls;
     QSignalMapper* m_VCControlMapper;

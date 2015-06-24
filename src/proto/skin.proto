@@ -13,6 +13,7 @@ message SkinManifest {
   message Attribute {
     optional string config_key = 1;
     optional string value = 2;
+    optional bool persist = 3;
   }
   repeated Attribute attribute = 7;
 }

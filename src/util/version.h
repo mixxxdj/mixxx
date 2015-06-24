@@ -8,6 +8,9 @@ class Version {
     // Returns the current Mixxx version (e.g. 1.12.0-alpha)
     static QString version();
 
+    // Returns the application title (e.g. "Mixxx x64" on Windows)
+    static QString applicationTitle();
+
     // Returns the development branch (e.g. features_key) or the null
     // string if the branch is unknown.
     static QString developmentBranch();

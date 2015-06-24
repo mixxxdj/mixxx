@@ -81,12 +81,12 @@ void RecursiveScanDirectoryTask::run() {
         // we return immediately.
         if (!filesToImport.isEmpty()) {
             m_pScanner->queueTask(new ImportFilesTask(m_pScanner, m_scannerGlobal,
-                                                      filesToImport, possibleCovers,
-                                                      m_pToken));
+                                                    dirPath, newHash, prevHashExists,
+                                                    filesToImport, possibleCovers,
+                                                    m_pToken));
+        } else {
+            emit(directoryHashed(dirPath, !prevHashExists, newHash));
         }
-
-        // Insert or update the hash in the database.
-        emit(directoryHashed(dirPath, !prevHashExists, newHash));
     } else {
         emit(directoryUnchanged(dirPath));
     }

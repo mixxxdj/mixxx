@@ -17,13 +17,13 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,i</SizePolicy>
                 <MinimumSize>0,250</MinimumSize>
-                <MaximumSize>1920,429</MaximumSize>
+                <MaximumSize>1920,419</MaximumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_med.xml"/>
                     <SingletonContainer>
                         <ObjectName>LibrarySingleton</ObjectName>
                         <Connection>
-                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
                             <BindProperty>visible</BindProperty>
                         </Connection>
                     </SingletonContainer>
@@ -32,7 +32,7 @@
                         <SizePolicy>me,me</SizePolicy>
                         <Children/>
                         <Connection>
-                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
                             <BindProperty>visible</BindProperty>
                             <Transform>
                               <Not/>
@@ -46,13 +46,13 @@
                 <ObjectName>UILowerHalf</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,i</SizePolicy>
-                <MinimumSize>0,431</MinimumSize>
+                <MinimumSize>0,420</MinimumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_full.xml"/>
                     <SingletonContainer>
                         <ObjectName>LibrarySingleton</ObjectName>
                         <Connection>
-                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
                             <BindProperty>visible</BindProperty>
                         </Connection>
                     </SingletonContainer>
@@ -61,7 +61,7 @@
                         <SizePolicy>me,me</SizePolicy>
                         <Children/>
                         <Connection>
-                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
                             <BindProperty>visible</BindProperty>
                             <Transform>
                               <Not/>

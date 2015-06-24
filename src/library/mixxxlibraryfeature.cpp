@@ -87,7 +87,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-        pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
+            pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
     connect(&m_trackDao, SIGNAL(trackDirty(int)),
             pBaseTrackCache, SLOT(slotTrackDirty(int)));
     connect(&m_trackDao, SIGNAL(trackClean(int)),
@@ -109,9 +109,9 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
 
     TreeItem* pRootItem = new TreeItem();
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
-                                       this, pRootItem);
+                                               this, pRootItem);
     TreeItem* phiddenChildItem = new TreeItem(kHiddenTitle, kHiddenTitle,
-                                       this, pRootItem);
+                                              this, pRootItem);
     pRootItem->appendChild(pmissingChildItem);
     pRootItem->appendChild(phiddenChildItem);
 
@@ -186,7 +186,6 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 }
 
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
-    QFileInfo file(url.toLocalFile());
-    return SoundSourceProxy::isFilenameSupported(file.fileName()) ||
-            Parser::isPlaylistFilenameSupported(file.fileName());
+    return SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }

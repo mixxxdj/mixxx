@@ -1,8 +1,6 @@
 // readaheadmanager.cpp
 // Created 8/2/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QMutexLocker>
-
 #include "engine/readaheadmanager.h"
 #include "sampleutil.h"
 #include "util/math.h"
@@ -133,8 +131,8 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
     m_pRateControl = pRateControl;
 }
 
+// Not thread-save, call from engine thread only
 void ReadAheadManager::notifySeek(int iSeekPosition) {
-    QMutexLocker locker(&m_mutex);
     m_iCurrentPosition = iSeekPosition;
     m_readAheadLog.clear();
 
@@ -171,9 +169,9 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
     pHintList->append(current_position);
 }
 
+// Not thread-save, call from engine thread only
 void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
                                        double virtualPlaypositionEndNonInclusive) {
-    QMutexLocker locker(&m_mutex);
     ReadLogEntry newEntry(virtualPlaypositionStart,
                           virtualPlaypositionEndNonInclusive);
     if (m_readAheadLog.size() > 0) {
@@ -185,13 +183,13 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
     m_readAheadLog.append(newEntry);
 }
 
+// Not thread-save, call from engine thread only
 int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
                                                              double numConsumedSamples) {
     if (numConsumedSamples == 0) {
         return currentVirtualPlayposition;
     }
 
-    QMutexLocker locker(&m_mutex);
     if (m_readAheadLog.size() == 0) {
         // No log entries to read from.
         qDebug() << this << "No read ahead log entries to read from. Case not currently handled.";

@@ -197,9 +197,13 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
                 } else {
                     return tree_item->dataPath();
                 }
-            } else if (role == Qt::UserRole) {
+            } else if (role == TreeItemModel::kDataPathRole) {
                 // We use Qt::UserRole to ask for the datapath.
                 return tree_item->dataPath();
+            } else if (role == Qt::FontRole) {
+                QFont font;
+                font.setBold(tree_item->isBold());
+                return font;
             } else if (role == Qt::DecorationRole) {
                 return tree_item->getIcon();
             }
@@ -333,9 +337,10 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
 }
 
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-    Q_UNUSED(topLeft);
-    Q_UNUSED(bottomRight);
     //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
+    QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
+    QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
+    emit(dataChanged(topLeftTranslated, bottomRightTranslated));
 }
 
 void SidebarModel::slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end) {

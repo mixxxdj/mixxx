@@ -1,23 +1,15 @@
 <Template>
     <WidgetGroup>
         <ObjectName>Mixer</ObjectName>
-        <SizePolicy>e,max</SizePolicy>
+        <SizePolicy>e,me</SizePolicy>
         <MinimumSize>450,</MinimumSize>
         <MaximumSize>1000,</MaximumSize>
         <Layout>horizontal</Layout>
         <Children>
             <WidgetGroup>
-                <ObjectName>MicContainer</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>max,min</SizePolicy>
-                <Children>
-                    <Template src="skin:microphone.xml"/>
-                </Children>
-            </WidgetGroup>
-            <WidgetGroup>
                 <ObjectName>PrimaryMixer</ObjectName>
                 <Layout>vertical</Layout>
-                <SizePolicy>me,max</SizePolicy>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
                    <WidgetGroup>
                      <ObjectName>MixerChannelControls</ObjectName>
@@ -83,7 +75,7 @@
         						<WidgetGroup>
         						    <SizePolicy>max,min</SizePolicy>
         							<Layout>horizontal</Layout>
-                                    <MaximumSize>400,400</MaximumSize>
+                                                                <MaximumSize>400,400</MaximumSize>
         							<Children>
         							   <WidgetGroup>
         							        <SizePolicy>max,min</SizePolicy>

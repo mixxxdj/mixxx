@@ -4,7 +4,6 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me, min</SizePolicy>
         <MinimumSize>-1, 220</MinimumSize>
-        <MaximumSize>680, 260</MaximumSize>
         <Children>
             <WidgetGroup>
                 <ObjectName>RateContainer<Variable name="channum" /></ObjectName>
@@ -82,10 +81,10 @@
                                       </Connection>
                                   </PushButton>
                                </Children>
-                               <Connection>
+                               <!-- <Connection>
                                    <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
                                    <BindProperty>visible</BindProperty>
-                               </Connection>
+                               </Connection> -->
                            </WidgetGroup>
                            <Key>
                               <ObjectName>TextColor<Variable name="channum" /></ObjectName>
@@ -257,20 +256,20 @@
                         <ObjectName>SyncControls</ObjectName>
                         <Layout>vertical</Layout>
                         <SizePolicy>min,min</SizePolicy>
-                        <MinimumSize>48,</MinimumSize>
+                        <MinimumSize>52,</MinimumSize>
                         <Children>
                             <PushButton>
+                                <Size>52,17</Size>
+                                <ObjectName>SyncToggleButton</ObjectName>
                                 <TooltipId>sync_enabled</TooltipId>
                                 <NumberStates>2</NumberStates>
                                 <State>
                                     <Number>0</Number>
-                                    <Pressed>btn_sync1_overdown.png</Pressed>
-                                    <Unpressed>btn_sync1.png</Unpressed>
+                                    <Text>SYNC</Text>
                                 </State>
                                 <State>
                                     <Number>1</Number>
-                                    <Pressed>btn_sync1_overdown.png</Pressed>
-                                    <Unpressed>btn_sync1_overdown.png</Unpressed>
+                                    <Text>SYNC</Text>
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],sync_enabled</ConfigKey>
@@ -332,7 +331,7 @@
 		            </WidgetGroup>
 					<Template src="skin:deck_row_1.xml" />
 					<Template src="skin:deck_row_2_3_4.xml" />
-		            <Template src="skin:deck_row_5.xml" />
+					<Template src="skin:deck_row_5.xml" />
 					<Template src="skin:deck_buttons.xml" />
 				</Children>
 			</WidgetGroup> <!-- /Deck Channel1 -->
