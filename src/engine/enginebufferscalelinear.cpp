@@ -1,19 +1,3 @@
-/***************************************************************************
-                          enginebufferscalelinear.cpp  -  description
-                            -------------------
-    begin                : Mon Apr 14 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
 
 #include <QtDebug>
 
@@ -359,7 +343,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // Smooth any changes in the playback rate over one buf_size
         // samples. This prevents the change from being discontinuous and helps
         // improve sound quality.
-        double rate_add = fabs((i * rate_diff / buf_size) + rate_old);
+        const double rate_add = fabs((i * rate_diff / buf_size) + rate_old);
 
         // increment the index for the next loop
         m_dNextFrame = m_dCurrentFrame + rate_add;
