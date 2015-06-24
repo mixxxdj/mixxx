@@ -1042,13 +1042,18 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         bCurBufferPaused = true;
 
         // Here the old track was playing and loading the new track is in
-        // progress so we have not the chance to collect real samples for
-        // fade out.
-        // We apply a rectangular Gain change here which may click.
-        // It is in the responds of the user to not play this to
-        // the audience.
-        //if (m_speed_old) {
-        //}
+        // progress. We can't predict when it happens, so we are not able
+        // to collect old samples. New samples are also not in place and
+        // we can't predict when they will be in place.
+        // If one does this, a click from breaking the last track is somehow
+        // natural and he should know that such sound should not be played to
+        // the master (audience).
+        // Workaround: Simply pause the track before.
+
+        // TODO(XXX):
+        // A click free solution requires more refactoring how loading a track
+        // is handled. For now we apply a rectangular Gain change here which
+        // may click.
 
         SampleUtil::clear(pOutput, iBufferSize);
 
