@@ -8,7 +8,7 @@
         <BackPath>background_tile.png</BackPath>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
-        <MinimumSize>75, 64</MinimumSize>
+        <MinimumSize>75, 50</MinimumSize>
         <Children>
           <Label>
             <ObjectName>MicSubTitle</ObjectName>
@@ -18,19 +18,22 @@
             widgetgroup. -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>min,max</SizePolicy>
+            <MaximumSize>-1, 26</MaximumSize>
             <Children>
-              <Template src="skin:knob_textless.xml">
+              <Template src="skin:knob_sized_textless.xml">
+                 <SetVariable name="width">28</SetVariable>
+                 <SetVariable name="height">24</SetVariable>
                  <SetVariable name="group">[Auxiliary<Variable name="auxnum"/>]</SetVariable>
                  <SetVariable name="control">pregain</SetVariable>
               </Template>
               <WidgetGroup>
-                <ObjectName>GuiToggleContainer</ObjectName>
+                <ObjectName>GuiToggleContainerPadLeft</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <PushButton>
-                    <Size>40f,26f</Size>
+                    <Size>40f,24f</Size>
                     <ObjectName>GuiToggleButton</ObjectName>
                     <NumberStates>2</NumberStates>
                     <State>
@@ -49,7 +52,7 @@
                 </Children>
               </WidgetGroup>
               <WidgetGroup>
-                <ObjectName>GuiToggleContainer</ObjectName>
+                <ObjectName>GuiToggleContainerPadLeft</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
