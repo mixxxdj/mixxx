@@ -164,10 +164,6 @@
 }
 
 #MixerChannelControls {
-  border: 1px solid #585858;
-  border-left: 0px;
-  border-right: 0px;
-  border-top: 0px;
   padding-bottom: 2px;
 }
 
@@ -640,7 +636,6 @@
 #CrossFadeContainer {
  qproperty-layoutAlignment: 'AlignCenter';
  background-color: #1e1e1e;
- padding-top: 5px;
 }
 
 #GuiToggleContainer {
@@ -666,6 +661,11 @@
 
 #Crossfader {
   qproperty-layoutAlignment: 'AlignCenter';
+  border: 1px solid #585858;
+  border-left: 0px;
+  border-right: 0px;
+  border-bottom: 0px;
+  padding-top: 5px;
   /*background-color:#1e1e1e;*/
 }
 
