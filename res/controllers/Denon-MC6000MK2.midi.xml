@@ -468,16 +468,22 @@
 				<key>volume</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit1]</group>
+				<group>[Channel1]</group>
 				<midino>0x58</midino>
 				<status>0x90</status>
-				<key>group_[Channel1]_enable</key>
+				<key>DenonMC6000MK2.leftSide.onEfxDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit2]</group>
+				<group>[Channel1]</group>
 				<midino>0x5C</midino>
 				<status>0x90</status>
-				<key>group_[Channel1]_enable</key>
+				<key>DenonMC6000MK2.rightSide.onEfxDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -891,16 +897,22 @@
 				<key>volume</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit1]</group>
+				<group>[Channel2]</group>
 				<midino>0x59</midino>
 				<status>0x90</status>
-				<key>group_[Channel2]_enable</key>
+				<key>DenonMC6000MK2.leftSide.onEfxDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit2]</group>
+				<group>[Channel2]</group>
 				<midino>0x5D</midino>
 				<status>0x90</status>
-				<key>group_[Channel2]_enable</key>
+				<key>DenonMC6000MK2.rightSide.onEfxDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
@@ -1314,16 +1326,22 @@
 				<key>volume</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit1]</group>
+				<group>[Channel3]</group>
 				<midino>0x5A</midino>
 				<status>0x90</status>
-				<key>group_[Channel3]_enable</key>
+				<key>DenonMC6000MK2.leftSide.onEfxDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit2]</group>
+				<group>[Channel3]</group>
 				<midino>0x5E</midino>
 				<status>0x90</status>
-				<key>group_[Channel3]_enable</key>
+				<key>DenonMC6000MK2.rightSide.onEfxDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
 				<group>[Channel3]</group>
@@ -1737,16 +1755,22 @@
 				<key>volume</key>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit1]</group>
+				<group>[Channel4]</group>
 				<midino>0x5B</midino>
 				<status>0x90</status>
-				<key>group_[Channel4]_enable</key>
+				<key>DenonMC6000MK2.leftSide.onEfxDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
-				<group>[EffectRack1_EffectUnit2]</group>
+				<group>[Channel4]</group>
 				<midino>0x5F</midino>
 				<status>0x90</status>
-				<key>group_[Channel4]_enable</key>
+				<key>DenonMC6000MK2.rightSide.onEfxDeckButton</key>
+				<options>
+					<script-binding/>
+				</options>
 			</control>
 			<control>
 				<group>[Channel4]</group>
