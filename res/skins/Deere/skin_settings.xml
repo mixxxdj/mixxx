@@ -278,7 +278,7 @@
       <!-- Sampler Settings -->
       <Label>
         <ObjectName>h2</ObjectName>
-        <Text>Sample Decks</Text>
+        <Text>Samplers</Text>
       </Label>
 
       <WidgetGroup>
@@ -336,6 +336,8 @@
           </PushButton>
         </Children>
       </WidgetGroup>
+
+      <Template src="skin:spacer_v.xml"/>
 
     </Children>
     <Connection>
