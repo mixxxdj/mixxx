@@ -1608,15 +1608,16 @@ void MixxxMainWindow::initMenuBar() {
 
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
-    m_pViewMenu->addAction(m_pViewShowSamplers);
+    m_pViewMenu->addAction(m_pViewMaximizeLibrary);
     m_pViewMenu->addAction(m_pViewShowMicrophone);
+    m_pViewMenu->addAction(m_pViewShowEffects);
+    m_pViewMenu->addAction(m_pViewShowSamplers);
+    m_pViewMenu->addSeparator();
 #ifdef __VINYLCONTROL__
     m_pViewMenu->addAction(m_pViewVinylControl);
 #endif
     m_pViewMenu->addAction(m_pViewShowPreviewDeck);
-    m_pViewMenu->addAction(m_pViewShowEffects);
     m_pViewMenu->addAction(m_pViewShowCoverArt);
-    m_pViewMenu->addAction(m_pViewMaximizeLibrary);
     m_pViewMenu->addSeparator();
     m_pViewMenu->addAction(m_pViewFullScreen);
 
