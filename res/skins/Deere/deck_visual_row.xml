@@ -12,7 +12,7 @@
     <SizePolicy>me,max</SizePolicy>
     <!-- Because the spinny hides itself and throws off the size
          calculation we set our minimum size to the spinny size. -->
-    <MinimumSize>-1,118</MinimumSize>
+    <MinimumSize>-1,100</MinimumSize>
     <Children>
       <Visual>
         <TooltipId>waveform_display</TooltipId>
@@ -158,7 +158,7 @@
         <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,max</SizePolicy>
-        <MinimumSize>-1,118</MinimumSize>
+        <MinimumSize>-1,100</MinimumSize>
         <NextControl>[Deere],show_coverart</NextControl>
         <PrevControl></PrevControl>
         <Children>
