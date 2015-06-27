@@ -50,6 +50,27 @@
           </PushButton>
 
           <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>   Show Crossfader</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#10003; Show Crossfader</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Deere],hide_crossfader</ConfigKey>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
             <TooltipId>show_microphone</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
