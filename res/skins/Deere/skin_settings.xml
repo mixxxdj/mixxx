@@ -160,44 +160,65 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <PushButton>
-          <Size>80me,20f</Size>
-          <NumberStates>3</NumberStates>
-          <State>
-            <Number>0</Number>
-            <Text>   Show Cover Art</Text>
-            <Alignment>left</Alignment>
-          </State>
-          <State>
-            <Number>1</Number>
-            <Text>&#10003; Show Cover Art &#9679; &#9675;</Text>
-            <Alignment>left</Alignment>
-          </State>
-          <State>
-            <Number>2</Number>
-            <Text>&#10003; Show Cover Art &#9675; &#9679;</Text>
-            <Alignment>left</Alignment>
-          </State>
-          <Connection>
-            <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
-          </Connection>
+            <Size>80me,20f</Size>
+            <NumberStates>3</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>   Show Cover Art</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#10003; Show Cover Art &#9679; &#9675;</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>2</Number>
+              <Text>&#10003; Show Cover Art &#9675; &#9679;</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+            </Connection>
           </PushButton>
 
           <PushButton>
-          <Size>80me,20f</Size>
-          <NumberStates>2</NumberStates>
-          <State>
-            <Number>0</Number>
-            <Text>   Show Star Rating</Text>
-            <Alignment>left</Alignment>
-          </State>
-          <State>
-            <Number>1</Number>
-            <Text>&#10003; Show Star Rating</Text>
-            <Alignment>left</Alignment>
-          </State>
-          <Connection>
-            <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
-          </Connection>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>   Show Star Rating</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#10003; Show Star Rating</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>   Show More Hotcues</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#10003; Show More Hotcues</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
@@ -216,21 +237,6 @@
           </PushButton>
 
           <PushButton>
-          <Size>80me,20f</Size>
-          <NumberStates>2</NumberStates>
-          <State>
-            <Number>0</Number>
-            <Text>   Show More Hotcues</Text>
-            <Alignment>left</Alignment>
-          </State>
-          <State>
-            <Number>1</Number>
-            <Text>&#10003; Show More Hotcues</Text>
-            <Alignment>left</Alignment>
-          </State>
-          <Connection>
-            <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
-          </Connection>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
@@ -249,22 +255,22 @@
           </PushButton>
 
           <PushButton>
-          <TooltipId>toggle_waveforms_stacked</TooltipId>
-          <Size>80me,20f</Size>
-          <NumberStates>2</NumberStates>
-          <State>
-            <Number>0</Number>
-            <Text>   Show Stacked Waveforms</Text>
-            <Alignment>left</Alignment>
-          </State>
-          <State>
-            <Number>1</Number>
-            <Text>&#10003; Show Stacked Waveforms</Text>
-            <Alignment>left</Alignment>
-          </State>
-          <Connection>
-            <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
-          </Connection>
+            <TooltipId>toggle_waveforms_stacked</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>   Show Stacked Waveforms</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#10003; Show Stacked Waveforms</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+            </Connection>
           </PushButton>
         </Children>
       </WidgetGroup>
