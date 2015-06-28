@@ -1060,13 +1060,6 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
     // Drag and drop within this widget (track reordering)
     if (event->source() == this) {
-        // For an invalid destination (eg. dropping a track beyond
-        // the end of the playlist), place the track(s) at the end
-        // of the playlist.
-        if (destIndex.row() == -1) {
-            int destRow = model()->rowCount() - 1;
-            destIndex = model()->index(destRow, 0);
-        }
         // Note the above code hides an ambiguous case when a
         // playlist is empty. For that reason, we can't factor that
         // code out to be common for both internal reordering
@@ -1117,7 +1110,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
                 return;
             }
 
-            if (destIndex.row() < minRow) {
+            if (destIndex.row() < minRow && destIndex.row() >= 0) {
                 // If we're moving the tracks _up_, then reverse the order of the row selection
                 // to make the algorithm below work without added complexity.
                 qSort(selectedRows.begin(), selectedRows.end(), qGreater<int>());
@@ -1129,6 +1122,12 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
                 firstRowToSelect = firstRowToSelect - selectedRowCount;
             }
 
+	    if (destIndex.row() < 0) {
+                // If we're moving tracks at invalid position a.k.a. at the very bottom
+		// we have to set first row to reselect correctly
+                firstRowToSelect = model()->rowCount() - selectedRowCount;
+            }
+            
             // For each row that needs to be moved...
             while (!selectedRows.isEmpty()) {
                 int movedRow = selectedRows.takeFirst(); //Remember it's row index
@@ -1139,8 +1138,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
                 // into the void we left, or down because of the new spot
                 // we're taking.
                 for (int i = 0; i < selectedRows.count(); i++) {
-                    if ((selectedRows[i] > movedRow) &&
-                        (destIndex.row() > selectedRows[i])) {
+                    if ((selectedRows[i] > movedRow) && (
+                        (destIndex.row() > selectedRows[i]) || destIndex.row() < 0 )) {
                         selectedRows[i] = selectedRows[i] - 1;
                     } else if ((selectedRows[i] < movedRow) &&
                                 (destIndex.row() < selectedRows[i])) {
