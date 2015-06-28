@@ -1122,9 +1122,9 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
                 firstRowToSelect = firstRowToSelect - selectedRowCount;
             }
 
-	    if (destIndex.row() < 0) {
+           if (destIndex.row() < 0) {
                 // If we're moving tracks at invalid position a.k.a. at the very bottom
-		// we have to set first row to reselect correctly
+                // we have to set first row to reselect correctly
                 firstRowToSelect = model()->rowCount() - selectedRowCount;
             }
             
