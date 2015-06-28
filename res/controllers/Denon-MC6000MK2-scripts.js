@@ -1203,6 +1203,7 @@ DenonMC6000MK2.EfxUnit = function (side, group, paramGroup) {
 	this.wetLoop = false;
 	this.wetLoopSlip = false;
 	this.echoLoopParams = false;
+	this.echoLoopDelayBeats = 1.0; // 1 beat echo
 	this.params = [];
 	this.params[1] = new DenonMC6000MK2.EfxParam("", "");
 	this.params[2] = new DenonMC6000MK2.EfxParam("", "");
@@ -1329,8 +1330,7 @@ DenonMC6000MK2.EfxUnit.prototype.syncEchoDelayWithBpm = function (bpm, beats) {
 
 DenonMC6000MK2.EfxUnit.prototype.onDeckBpmValue = function (deck, bpm) {
 	if (this.echoLoop && (deck === this.getAssignedDeck())) {
-		// 1 beat echo
-		this.syncEchoDelayWithBpm(bpm, 1.0);
+		this.syncEchoDelayWithBpm(bpm, this.echoLoopDelayBeats);
 	}
 };
 
