@@ -185,6 +185,14 @@
 			</control>
 			<control>
 				<midino>0x13</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust3Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x13</midino>
 				<status>0x90</status>
 				<key>DenonMC6000MK2.leftSide.efxUnit.recvAdjust3Button</key>
 				<options>
@@ -226,6 +234,14 @@
 			<!-- right efx unit -->
 			<control>
 				<midino>0x55</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust1Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x55</midino>
 				<status>0x90</status>
 				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust1Button</key>
 				<options>
@@ -242,6 +258,14 @@
 			</control>
 			<control>
 				<midino>0x52</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust2Button</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x52</midino>
 				<status>0x90</status>
 				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust2Button</key>
 				<options>
@@ -252,6 +276,14 @@
 				<midino>0x5A</midino>
 				<status>0xB0</status>
 				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust2Knob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x53</midino>
+				<status>0x80</status>
+				<key>DenonMC6000MK2.rightSide.efxUnit.recvAdjust3Button</key>
 				<options>
 					<script-binding/>
 				</options>
