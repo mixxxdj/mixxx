@@ -637,7 +637,6 @@
   color: #09B2AE;
 }
 
-
 #CrossFadeContainer {
  qproperty-layoutAlignment: 'AlignCenter';
  background-color: #1e1e1e;
@@ -645,8 +644,19 @@
 }
 
 #GuiToggleContainer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 2px;
+  border: 0px solid #585858;
+  border-left:0px;
+  border-right:0px;
+  border-bottom:0px;
+  background-color: transparent;
+}
+
+#GuiToggleContainerPadLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 0px;
+  padding-left: 4px;
   border: 0px solid #585858;
   border-left:0px;
   border-right:0px;
@@ -862,8 +872,8 @@
 }
 
 #MicInterior {
-  padding-left:10px;
-  padding-right:10px;
+  padding-left:5px;
+  padding-right:5px;
 }
 
 #MicButtonContainer {

@@ -69,7 +69,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
         : m_qMutex(QMutex::Recursive),
           m_analyserProgress(-1) {
     QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-    QString location = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  filename;
+    QString location = QDir(XmlParse::selectNodeQString(nodeHeader, "Filepath")).filePath(filename);
     m_fileInfo = QFileInfo(location);
     m_pSecurityToken = Sandbox::openSecurityToken(m_fileInfo, true);
 
