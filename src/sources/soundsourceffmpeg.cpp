@@ -489,16 +489,13 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
             // Okay somehow offset is bigger than our Cache object have bytes
             if (l_lOffset >= l_SObj->length) {
-                if ((l_lPos + 1) < m_SCache.size())
-                {
-                   l_SObj = m_SCache[++ l_lPos];
-                   continue;
-                }
-                else
-                {
-                   qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Buffer run out. Shouldn't happen!";
-                   memset(l_pBuffer, 0x00, l_lLeft);
-                   return false;
+                if ((l_lPos + 1) < m_SCache.size()) {
+                    l_SObj = m_SCache[++ l_lPos];
+                    continue;
+                } else {
+                    qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Buffer run out. Shouldn't happen!";
+                    memset(l_pBuffer, 0x00, l_lLeft);
+                    return false;
                 }
             }
 
