@@ -33,7 +33,8 @@ QList<QString> SoundSourceFFmpeg::supportedFileExtensions() {
         } else if (!strcmp(l_SInputFmt->name, "opus") ||
                    !strcmp(l_SInputFmt->name, "libopus")) {
             list.append("opus");
-        } else if (!strcmp(l_SInputFmt->name, "wma") or !strcmp(l_SInputFmt->name, "xwma")) {
+        } else if (!strcmp(l_SInputFmt->name, "wma") or
+                   !strcmp(l_SInputFmt->name, "xwma")) {
             list.append("wma");
         }
     }
@@ -139,7 +140,8 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     setChannelCount(m_pCodecCtx->channels);
     setFrameRate(m_pCodecCtx->sample_rate);
-    setFrameCount((qint64)round((double)((double)m_pFormatCtx->duration * (double)m_pCodecCtx->sample_rate) / (double)AV_TIME_BASE));
+    setFrameCount((qint64)round((double)((double)m_pFormatCtx->duration *
+                                         (double)m_pCodecCtx->sample_rate) / (double)AV_TIME_BASE));
 
     qDebug() << "SoundSourceFFmpeg::tryOpen: Samplerate: " << getFrameRate() <<
              ", Channels: " <<
@@ -460,7 +462,8 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
         while (l_lLeft > 0) {
             // If Cache is running low read more
-            if ((l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) && l_bEndOfFile == false) {
+            if ((l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) &&
+                    l_bEndOfFile == false) {
                 offset = l_SObj->startFrame;
                 // Read 50 frames from current pos. If we hit file end before that
                 // exit
@@ -484,7 +487,8 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
             // If Cache object ain't correct then calculate offset
             if (l_SObj->startFrame <= offset) {
                 // We have to convert again it to bytes
-                l_lOffset = (offset - l_SObj->startFrame) * AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET;
+                l_lOffset = (offset - l_SObj->startFrame) *
+                            AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET;
             }
 
             // Okay somehow offset is bigger than our Cache object have bytes
@@ -493,7 +497,8 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                     l_SObj = m_SCache[++ l_lPos];
                     continue;
                 } else {
-                    qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Buffer run out. Shouldn't happen!";
+                    qDebug() <<
+                             "SoundSourceFFmpeg::getBytesFromCache: Buffer run out. Shouldn't happen!";
                     memset(l_pBuffer, 0x00, l_lLeft);
                     return false;
                 }
