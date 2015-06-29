@@ -1131,7 +1131,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         // For each row that needs to be moved...
         while (!selectedRows.isEmpty()) {
-            int movedRow = selectedRows.takeFirst(); //Remember it's row index
+            int movedRow = selectedRows.takeFirst(); // Remember it's row index
             // Move it
             trackModel->moveTrack(model()->index(movedRow, 0), destIndex);
 
