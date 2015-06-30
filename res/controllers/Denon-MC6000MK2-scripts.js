@@ -1389,17 +1389,30 @@ DenonMC6000MK2.EfxUnit.prototype.onParamButton = function (index, isButtonPresse
 };
 
 DenonMC6000MK2.EfxUnit.prototype.updateWetLoopSlip = function () {
-	var wetLoopSlip = this.isEnabled() && this.wetLoop &&
-		(this.dryWetMixParam.getParam() === 1.0);
-	if (this.wetLoopSlip !== wetLoopSlip) {
-		for (var deckGroup in DenonMC6000MK2.decksByGroup) {
-			var deck = DenonMC6000MK2.getDeckByGroup(deckGroup);
-			if (this.isDeckAssigned(deck)) {
-				deck.setValue("slip_enabled", wetLoopSlip);
-				deck.setValue("play", !wetLoopSlip);
+	if (this.isEnabled()) {
+		var wetLoopSlip = this.wetLoop &&
+			(this.dryWetMixParam.getParam() === 1.0);
+		if (this.wetLoopSlip !== wetLoopSlip) {
+			for (var deckGroup in DenonMC6000MK2.decksByGroup) {
+				var deck = DenonMC6000MK2.getDeckByGroup(deckGroup);
+				if (this.isDeckAssigned(deck)) {
+					deck.setValue("slip_enabled", wetLoopSlip);
+					deck.setValue("play", !wetLoopSlip);
+				}
 			}
+			this.wetLoopSlip = wetLoopSlip;
 		}
-		this.wetLoopSlip = wetLoopSlip;
+	} else {
+		if (this.wetLoopSlip) {
+			for (var deckGroup in DenonMC6000MK2.decksByGroup) {
+				var deck = DenonMC6000MK2.getDeckByGroup(deckGroup);
+				if (this.isDeckAssigned(deck)) {
+					deck.setValue("slip_enabled", false);
+				}
+			}
+			this.wetLoopSlip = wetLoopSlip;
+		}
+		this.wetLoopSlip = false;
 	}
 };
 
