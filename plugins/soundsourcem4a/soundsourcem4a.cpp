@@ -69,7 +69,7 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile) {
             continue;
         }
         const char* mediaDataName = MP4GetTrackMediaDataName(hFile, trackId);
-        if (0 != strcasecmp(mediaDataName, "mp4a")) {
+        if ((nullptr == mediaDataName) || (0 != strcasecmp(mediaDataName, "mp4a"))) {
             continue;
         }
         const u_int8_t audioType = MP4GetTrackEsdsObjectTypeId(hFile, trackId);
