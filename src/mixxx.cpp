@@ -111,6 +111,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pShowLibrary(NULL),
           m_pShowMixer(NULL),
           m_pShowEqs(NULL),
+          m_pShow4Decks(NULL),
 
           m_pPrefDlg(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
@@ -577,6 +578,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShowLibrary;
     delete m_pShowMixer;
     delete m_pShowEqs;
+    delete m_pShow4Decks;
     delete m_pNumAuxiliaries;
     delete m_pNumDecks;
 
@@ -872,6 +874,10 @@ void MixxxMainWindow::slotViewShowEqs(bool enable) {
     toggleVisibility(ConfigKey("[Master]", "show_eqs"), enable);
 }
 
+void MixxxMainWindow::slotViewShow4Decks(bool enable) {
+    toggleVisibility(ConfigKey("[Master]", "show_4decks"), enable);
+}
+
 void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     ControlObject* pVisibilityControl = ControlObject::getControl(key);
     pAction->setEnabled(pVisibilityControl != NULL);
@@ -929,6 +935,11 @@ void MixxxMainWindow::slotToggleCheckedEqs() {
     updateCheckedMenuAction(m_pViewShowEqs, key);
 }
 
+void MixxxMainWindow::slotToggleChecked4Decks() {
+    ConfigKey key("[Master]", "show_4decks");
+    updateCheckedMenuAction(m_pViewShow4Decks, key);
+}
+
 void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS,
                                      ConfigKey key, const char* slot) {
     if (!*pCOS) {
@@ -959,6 +970,8 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[Master]", "show_mixer"));
     setVisibilityOptionState(m_pViewShowEqs,
                              ConfigKey("[Master]", "show_eqs"));
+    setVisibilityOptionState(m_pViewShow4Decks,
+                             ConfigKey("[Master]", "show_4decks"));
     setVisibilityOptionState(m_pViewMaximizeLibrary,
                              ConfigKey("[Master]", "maximize_library"));
 
@@ -991,6 +1004,9 @@ void MixxxMainWindow::onNewSkinLoaded() {
     linkSkinWidget(&m_pShowEqs,
                    ConfigKey("[Master]", "show_eqs"),
                    SLOT(slotToggleCheckedEqs()));
+    linkSkinWidget(&m_pShow4Decks,
+                   ConfigKey("[Master]", "show_4decks"),
+                   SLOT(slotToggleChecked4Decks()));
 }
 
 int MixxxMainWindow::noSoundDlg(void)
@@ -1521,6 +1537,20 @@ void MixxxMainWindow::initActions()
     connect(m_pViewShowEqs, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowEqs(bool)));
 
+    QString show4DecksTitle = tr("Show 4 Decks");
+    QString show4DecksText = tr("Show 4 Decks on the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pViewShow4Decks = new QAction(show4DecksTitle, this);
+    m_pViewShow4Decks->setCheckable(true);
+    m_pViewShow4Decks->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_Show4Decks"),
+                                                  tr("Ctrl+1", "Menubar|View|Show 4 Decks"))));
+    m_pViewShow4Decks->setStatusTip(show4DecksText);
+    m_pViewShow4Decks->setWhatsThis(buildWhatsThis(show4DecksTitle, show4DecksText));
+    connect(m_pViewShow4Decks, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShow4Decks(bool)));
+
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
     m_pOptionsRecord = new QAction(recordTitle, this);
@@ -1704,6 +1734,7 @@ void MixxxMainWindow::initMenuBar() {
     m_pViewMenu->addAction(m_pViewShowEffects);
     m_pViewMenu->addAction(m_pViewShowSamplers);
     m_pViewMenu->addSeparator();
+    m_pViewMenu->addAction(m_pViewShow4Decks);
 #ifdef __VINYLCONTROL__
     m_pViewMenu->addAction(m_pViewVinylControl);
 #endif
@@ -2159,6 +2190,7 @@ void MixxxMainWindow::rebootMixxxView() {
     delete m_pShowLibrary;
     delete m_pShowMixer;
     delete m_pShowEqs;
+    delete m_pShow4Decks;
     m_pShowSamplers = NULL;
     m_pShowMicrophone = NULL;
     m_pShowPreviewDeck = NULL;
@@ -2167,6 +2199,7 @@ void MixxxMainWindow::rebootMixxxView() {
     m_pShowLibrary = NULL;
     m_pShowMixer = NULL;
     m_pShowEqs = NULL;
+    m_pShow4Decks = NULL;
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
