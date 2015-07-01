@@ -108,6 +108,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pShowPreviewDeck(NULL),
           m_pShowEffects(NULL),
           m_pShowCoverArt(NULL),
+          m_pShowLibrary(NULL),
 
           m_pPrefDlg(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
@@ -571,6 +572,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShowPreviewDeck;
     delete m_pShowEffects;
     delete m_pShowCoverArt;
+    delete m_pShowLibrary;
     delete m_pNumAuxiliaries;
     delete m_pNumDecks;
 
@@ -854,6 +856,10 @@ void MixxxMainWindow::slotViewMaximizeLibrary(bool enable) {
     toggleVisibility(ConfigKey("[Master]", "maximize_library"), enable);
 }
 
+void MixxxMainWindow::slotViewShowLibrary(bool enable) {
+    toggleVisibility(ConfigKey("[Library]", "show_library"), enable);
+}
+
 void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     ControlObject* pVisibilityControl = ControlObject::getControl(key);
     pAction->setEnabled(pVisibilityControl != NULL);
@@ -896,6 +902,11 @@ void MixxxMainWindow::slotToggleCheckedCoverArt() {
     updateCheckedMenuAction(m_pViewShowCoverArt, key);
 }
 
+void MixxxMainWindow::slotToggleCheckedLibrary() {
+    ConfigKey key("[Library]", "show_library");
+    updateCheckedMenuAction(m_pViewShowLibrary, key);
+}
+
 void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS,
                                      ConfigKey key, const char* slot) {
     if (!*pCOS) {
@@ -920,6 +931,8 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[EffectRack1]", "show"));
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
+    setVisibilityOptionState(m_pViewShowLibrary,
+                             ConfigKey("[Library]", "show_library"));
     setVisibilityOptionState(m_pViewMaximizeLibrary,
                              ConfigKey("[Master]", "maximize_library"));
 
@@ -943,6 +956,9 @@ void MixxxMainWindow::onNewSkinLoaded() {
     linkSkinWidget(&m_pShowCoverArt,
                    ConfigKey("[Library]", "show_coverart"),
                    SLOT(slotToggleCheckedCoverArt()));
+    linkSkinWidget(&m_pShowLibrary,
+                   ConfigKey("[Library]", "show_library"),
+                   SLOT(slotToggleCheckedLibrary()));
 }
 
 int MixxxMainWindow::noSoundDlg(void)
@@ -1431,6 +1447,20 @@ void MixxxMainWindow::initActions()
     connect(m_pViewMaximizeLibrary, SIGNAL(toggled(bool)),
             this, SLOT(slotViewMaximizeLibrary(bool)));
 
+    QString showLibraryTitle = tr("Show Library");
+    QString showLibraryText = tr("Show the library of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pViewShowLibrary = new QAction(showLibraryTitle, this);
+    m_pViewShowLibrary->setCheckable(true);
+    m_pViewShowLibrary->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowLibrary"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Library"))));
+    m_pViewShowLibrary->setStatusTip(showLibraryText);
+    m_pViewShowLibrary->setWhatsThis(buildWhatsThis(showLibraryTitle, showLibraryText));
+    connect(m_pViewShowLibrary, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowLibrary(bool)));
+
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
     m_pOptionsRecord = new QAction(recordTitle, this);
@@ -1609,6 +1639,7 @@ void MixxxMainWindow::initMenuBar() {
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
     m_pViewMenu->addAction(m_pViewMaximizeLibrary);
+    m_pViewMenu->addAction(m_pViewShowLibrary);
     m_pViewMenu->addAction(m_pViewShowMicrophone);
     m_pViewMenu->addAction(m_pViewShowEffects);
     m_pViewMenu->addAction(m_pViewShowSamplers);
@@ -2063,11 +2094,13 @@ void MixxxMainWindow::rebootMixxxView() {
     delete m_pShowPreviewDeck;
     delete m_pShowEffects;
     delete m_pShowCoverArt;
+    delete m_pShowLibrary;
     m_pShowSamplers = NULL;
     m_pShowMicrophone = NULL;
     m_pShowPreviewDeck = NULL;
     m_pShowEffects = NULL;
     m_pShowCoverArt = NULL;
+    m_pShowLibrary = NULL;
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();

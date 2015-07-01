@@ -121,6 +121,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowPreviewDeck(bool);
     void slotViewShowEffects(bool);
     void slotViewShowCoverArt(bool);
+    void slotViewShowLibrary(bool);
     void slotViewMaximizeLibrary(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
@@ -153,6 +154,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotToggleCheckedPreviewDeck();
     void slotToggleCheckedEffects();
     void slotToggleCheckedCoverArt();
+    void slotToggleCheckedLibrary();
 
   signals:
     void newSkinLoaded();
@@ -257,6 +259,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewShowPreviewDeck;
     QAction* m_pViewShowEffects;
     QAction* m_pViewShowCoverArt;
+    QAction* m_pViewShowLibrary;
     QAction* m_pViewMaximizeLibrary;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;
@@ -279,6 +282,7 @@ class MixxxMainWindow : public QMainWindow {
     ControlObjectSlave* m_pShowPreviewDeck;
     ControlObjectSlave* m_pShowEffects;
     ControlObjectSlave* m_pShowCoverArt;
+    ControlObjectSlave* m_pShowLibrary;
     ControlObject* m_pNumAuxiliaries;
 
     int m_iNoPlaylists;
