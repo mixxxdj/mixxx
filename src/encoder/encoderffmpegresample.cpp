@@ -186,10 +186,11 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffe
 
 // Left here for reason!
 // Sometime in time we will need this!
-#else
-        qint64 l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
-                                 inframe->nb_samples,
-                                 m_pCodecCtx->sample_fmt, 1);
+//#else
+//        qint64 l_lInReadBytes = av_samples_get_buffer_size(NULL, 
+//                                m_pCodecCtx->channels,
+//                               inframe->nb_samples,
+//                               m_pCodecCtx->sample_fmt, 1);
 #endif // __FFMPEGOLDAPI__
 
 #ifndef __FFMPEGOLDAPI__
@@ -225,7 +226,7 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffe
                            m_pOutSampleFmt, 1);
 
 
-        outbuffer = (short *)malloc(l_iOutBytes * 2);
+        *outbuffer = (quint8 *)malloc(l_iOutBytes * 2);
 #endif // __FFMPEGOLDAPI__
 
         int l_iLen = 0;
