@@ -268,8 +268,8 @@ ElectrixTweaker.init = function () {
 		engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
 		engine.softTakeover(group, 'volume', true)
 	}
-	ElectrixTweaker.initDeck('[Channel1]',true)
-	ElectrixTweaker.initDeck('[Channel2]',true)
+	ElectrixTweaker.initDeck('[Channel1]')
+	ElectrixTweaker.initDeck('[Channel2]')
 	for (i=1; i<=8; i++) {
 		engine.connectControl('[Sampler'+i+']', 'track_samples', 'ElectrixTweaker.oneShotLED')
 		engine.trigger('[Sampler'+i+']', 'track_samples')
@@ -336,14 +336,32 @@ ElectrixTweaker.connectDeckControls = function (group, remove) {
 		'filterLowKill': 'ElectrixTweaker.eqEncoderKillButton'
 	}
 	if (remove) {
-		for (control in eqsToFunctions) {
-			engine.connectControl(group, control, eqsToFunctions[control], remove)
-		}
-		engine.connectControl(group, 'loop_enabled', 'ElectrixTweaker.loopButtonToggle', true)
+		ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], true)
+	}
+}
+ElectrixTweaker.connectEncoderMode = function (group, mode, remove) {
+	remove = (typeof remove !== 'undefined') ? remove : false // default value for remove is false
+	switch (mode) {
+		case 'eq':
+			for (var encoder in ElectrixTweaker.encoders[group]) {
+				engine.connectControl(group, 'filter' + encoder, 'ElectrixTweaker.eqEncoder', remove)
+				engine.connectControl(group, 'filter' + encoder + 'Kill', 'ElectrixTweaker.eqEncoderKillButton', remove)
+				if (! remove) {
+					engine.trigger(group, 'filter' + encoder)
+					engine.trigger(group, 'filter' + encoder + 'Kill')
+				}
+			}
+			break
+		case 'loop':
+			engine.connectControl(group, 'loop_enabled', 'ElectrixTweaker.loopButtonToggle', remove)
+			if (! remove) {
+				engine.trigger(group, 'loop_enabled')
+			}
+			break
 	}
 }
 
-ElectrixTweaker.initDeck = function (group, startup) {
+ElectrixTweaker.initDeck = function (group) {
 	var disconnectDeck = parseInt(ElectrixTweaker.channelRegEx.exec(group)[1])
 	if (disconnectDeck <= 2) {
 		disconnectDeck += 2
@@ -374,30 +392,27 @@ ElectrixTweaker.initDeck = function (group, startup) {
 	ElectrixTweaker.connectDeckControls(group)
 	
 	ElectrixTweaker.mode[group] = ElectrixTweaker.mode[disconnectDeck]
-	ElectrixTweaker.initMode(group, ElectrixTweaker.mode[group], startup)
+	ElectrixTweaker.initMode(group, ElectrixTweaker.mode[group])
 }
-ElectrixTweaker.initMode = function (group, mode, startup) {
+ElectrixTweaker.initMode = function (group, mode, shift) {
+	shift = (typeof shift !== 'undefined') ? shift : false // default value for remove is false
+	if (! shift) {
+		ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], true)
+	}
 	ElectrixTweaker.mode[group] = mode
 	switch (mode) {
 		case 'eq':
 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['mode'], ElectrixTweaker.colorCodes['white'])
-			engine.connectControl(group, 'loop_enabled', 'ElectrixTweaker.loopButtonToggle', true)
 			for (var encoder in ElectrixTweaker.encoders[group]) {
 				// set encoder to absolute EQ mode with speed 5
 				midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['cc'], 118)
 				// enable local control of LED ring
 				midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['ring'], 70)
-				engine.connectControl(group, 'filter' + encoder, 'ElectrixTweaker.eqEncoder')
-				engine.connectControl(group, 'filter' + encoder + 'Kill', 'ElectrixTweaker.eqEncoderKillButton')
-				engine.trigger(group, 'filter' + encoder)
-				engine.trigger(group, 'filter' + encoder + 'Kill')
 			}
 			break
 		case 'loop':
 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['mode'], ElectrixTweaker.colorCodes['magenta'])
 			for (var encoder in ElectrixTweaker.encoders[group]) {
-				engine.connectControl(group, 'filter' + encoder, 'ElectrixTweaker.eqEncoder', true)
-				engine.connectControl(group, 'filter' + encoder + 'Kill', 'ElectrixTweaker.eqEncoderKillButton', true)
 				// set encoder to relative mode
 				midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['cc'], 64)
 				// set LED ring to EQ mode with local control disabled
@@ -430,11 +445,9 @@ ElectrixTweaker.initMode = function (group, mode, startup) {
 					6 + Math.log(ElectrixTweaker.loopSize[group]) / Math.log(2)
 				]
 			)
-			
-			engine.connectControl(group, 'loop_enabled', 'ElectrixTweaker.loopButtonToggle')
-			engine.trigger(group, 'loop_enabled')
 			break
 	}
+	ElectrixTweaker.connectEncoderMode(group, mode)
 }
 ElectrixTweaker.shutdown = function() {
 	for (var group in ElectrixTweaker.encoders) {
@@ -464,7 +477,7 @@ ElectrixTweaker.shiftButton = function (channel, control, value, status, group) 
 		ElectrixTweaker.topShift = ! ElectrixTweaker.topShift
 	}
 	if (value) {
-		
+		ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], true)
 		for (channel in ElectrixTweaker.deck) {
 			// set mid encoder to relative mode
 			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Mid']['cc'], 73)
@@ -480,8 +493,8 @@ ElectrixTweaker.shiftButton = function (channel, control, value, status, group) 
 			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['ring'], 67)
 		}
 	} else {
-		ElectrixTweaker.initMode(ElectrixTweaker.deck['[Channel1]'], ElectrixTweaker.mode['[Channel1]'])
-		ElectrixTweaker.initMode(ElectrixTweaker.deck['[Channel2]'], ElectrixTweaker.mode['[Channel2]'])
+		ElectrixTweaker.initMode(ElectrixTweaker.deck['[Channel1]'], ElectrixTweaker.mode['[Channel1]'], true)
+		ElectrixTweaker.initMode(ElectrixTweaker.deck['[Channel2]'], ElectrixTweaker.mode['[Channel2]'], true)
 	}
 }
 
