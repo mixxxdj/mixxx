@@ -109,6 +109,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pShowEffects(NULL),
           m_pShowCoverArt(NULL),
           m_pShowLibrary(NULL),
+          m_pShowEqs(NULL),
 
           m_pPrefDlg(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
@@ -573,6 +574,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShowEffects;
     delete m_pShowCoverArt;
     delete m_pShowLibrary;
+    delete m_pShowEqs;
     delete m_pNumAuxiliaries;
     delete m_pNumDecks;
 
@@ -860,6 +862,10 @@ void MixxxMainWindow::slotViewShowLibrary(bool enable) {
     toggleVisibility(ConfigKey("[Library]", "show_library"), enable);
 }
 
+void MixxxMainWindow::slotViewShowEqs(bool enable) {
+    toggleVisibility(ConfigKey("[Master]", "show_eqs"), enable);
+}
+
 void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     ControlObject* pVisibilityControl = ControlObject::getControl(key);
     pAction->setEnabled(pVisibilityControl != NULL);
@@ -907,6 +913,11 @@ void MixxxMainWindow::slotToggleCheckedLibrary() {
     updateCheckedMenuAction(m_pViewShowLibrary, key);
 }
 
+void MixxxMainWindow::slotToggleCheckedEqs() {
+    ConfigKey key("[Master]", "show_eqs");
+    updateCheckedMenuAction(m_pViewShowEqs, key);
+}
+
 void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS,
                                      ConfigKey key, const char* slot) {
     if (!*pCOS) {
@@ -933,6 +944,8 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[Library]", "show_coverart"));
     setVisibilityOptionState(m_pViewShowLibrary,
                              ConfigKey("[Library]", "show_library"));
+    setVisibilityOptionState(m_pViewShowEqs,
+                             ConfigKey("[Master]", "show_eqs"));
     setVisibilityOptionState(m_pViewMaximizeLibrary,
                              ConfigKey("[Master]", "maximize_library"));
 
@@ -959,6 +972,9 @@ void MixxxMainWindow::onNewSkinLoaded() {
     linkSkinWidget(&m_pShowLibrary,
                    ConfigKey("[Library]", "show_library"),
                    SLOT(slotToggleCheckedLibrary()));
+    linkSkinWidget(&m_pShowEqs,
+                   ConfigKey("[Master]", "show_eqs"),
+                   SLOT(slotToggleCheckedEqs()));
 }
 
 int MixxxMainWindow::noSoundDlg(void)
@@ -1461,6 +1477,20 @@ void MixxxMainWindow::initActions()
     connect(m_pViewShowLibrary, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowLibrary(bool)));
 
+    QString showEqsTitle = tr("Show Eqs");
+    QString showEqsText = tr("Show the equalizers on the mixer section.") +
+            " " + mayNotBeSupported;
+    m_pViewShowEqs = new QAction(showEqsTitle, this);
+    m_pViewShowEqs->setCheckable(true);
+    m_pViewShowEqs->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowEqs"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Eqs"))));
+    m_pViewShowEqs->setStatusTip(showEqsText);
+    m_pViewShowEqs->setWhatsThis(buildWhatsThis(showEqsTitle, showEqsText));
+    connect(m_pViewShowEqs, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowEqs(bool)));
+
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
     m_pOptionsRecord = new QAction(recordTitle, this);
@@ -1647,6 +1677,7 @@ void MixxxMainWindow::initMenuBar() {
 #ifdef __VINYLCONTROL__
     m_pViewMenu->addAction(m_pViewVinylControl);
 #endif
+    m_pViewMenu->addAction(m_pViewShowEqs);
     m_pViewMenu->addAction(m_pViewShowPreviewDeck);
     m_pViewMenu->addAction(m_pViewShowCoverArt);
     m_pViewMenu->addSeparator();
@@ -2095,12 +2126,14 @@ void MixxxMainWindow::rebootMixxxView() {
     delete m_pShowEffects;
     delete m_pShowCoverArt;
     delete m_pShowLibrary;
+    delete m_pShowEqs;
     m_pShowSamplers = NULL;
     m_pShowMicrophone = NULL;
     m_pShowPreviewDeck = NULL;
     m_pShowEffects = NULL;
     m_pShowCoverArt = NULL;
     m_pShowLibrary = NULL;
+    m_pShowEqs = NULL;
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
