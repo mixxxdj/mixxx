@@ -109,6 +109,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pShowEffects(NULL),
           m_pShowCoverArt(NULL),
           m_pShowLibrary(NULL),
+          m_pShowMixer(NULL),
           m_pShowEqs(NULL),
 
           m_pPrefDlg(NULL),
@@ -574,6 +575,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShowEffects;
     delete m_pShowCoverArt;
     delete m_pShowLibrary;
+    delete m_pShowMixer;
     delete m_pShowEqs;
     delete m_pNumAuxiliaries;
     delete m_pNumDecks;
@@ -862,6 +864,10 @@ void MixxxMainWindow::slotViewShowLibrary(bool enable) {
     toggleVisibility(ConfigKey("[Library]", "show_library"), enable);
 }
 
+void MixxxMainWindow::slotViewShowMixer(bool enable) {
+    toggleVisibility(ConfigKey("[Master]", "show_mixer"), enable);
+}
+
 void MixxxMainWindow::slotViewShowEqs(bool enable) {
     toggleVisibility(ConfigKey("[Master]", "show_eqs"), enable);
 }
@@ -913,6 +919,11 @@ void MixxxMainWindow::slotToggleCheckedLibrary() {
     updateCheckedMenuAction(m_pViewShowLibrary, key);
 }
 
+void MixxxMainWindow::slotToggleCheckedMixer() {
+    ConfigKey key("[Master]", "show_mixer");
+    updateCheckedMenuAction(m_pViewShowMixer, key);
+}
+
 void MixxxMainWindow::slotToggleCheckedEqs() {
     ConfigKey key("[Master]", "show_eqs");
     updateCheckedMenuAction(m_pViewShowEqs, key);
@@ -944,6 +955,8 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[Library]", "show_coverart"));
     setVisibilityOptionState(m_pViewShowLibrary,
                              ConfigKey("[Library]", "show_library"));
+    setVisibilityOptionState(m_pViewShowMixer,
+                             ConfigKey("[Master]", "show_mixer"));
     setVisibilityOptionState(m_pViewShowEqs,
                              ConfigKey("[Master]", "show_eqs"));
     setVisibilityOptionState(m_pViewMaximizeLibrary,
@@ -972,6 +985,9 @@ void MixxxMainWindow::onNewSkinLoaded() {
     linkSkinWidget(&m_pShowLibrary,
                    ConfigKey("[Library]", "show_library"),
                    SLOT(slotToggleCheckedLibrary()));
+    linkSkinWidget(&m_pShowMixer,
+                   ConfigKey("[Master]", "show_mixer"),
+                   SLOT(slotToggleCheckedMixer()));
     linkSkinWidget(&m_pShowEqs,
                    ConfigKey("[Master]", "show_eqs"),
                    SLOT(slotToggleCheckedEqs()));
@@ -1477,6 +1493,20 @@ void MixxxMainWindow::initActions()
     connect(m_pViewShowLibrary, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowLibrary(bool)));
 
+    QString showMixerTitle = tr("Show Mixer");
+    QString showMixerText = tr("Show the mixer section.") +
+            " " + mayNotBeSupported;
+    m_pViewShowMixer = new QAction(showMixerTitle, this);
+    m_pViewShowMixer->setCheckable(true);
+    m_pViewShowMixer->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowMixer"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Mixer"))));
+    m_pViewShowMixer->setStatusTip(showMixerText);
+    m_pViewShowMixer->setWhatsThis(buildWhatsThis(showMixerTitle, showMixerText));
+    connect(m_pViewShowMixer, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowMixer(bool)));
+
     QString showEqsTitle = tr("Show Eqs");
     QString showEqsText = tr("Show the equalizers on the mixer section.") +
             " " + mayNotBeSupported;
@@ -1677,6 +1707,7 @@ void MixxxMainWindow::initMenuBar() {
 #ifdef __VINYLCONTROL__
     m_pViewMenu->addAction(m_pViewVinylControl);
 #endif
+    m_pViewMenu->addAction(m_pViewShowMixer);
     m_pViewMenu->addAction(m_pViewShowEqs);
     m_pViewMenu->addAction(m_pViewShowPreviewDeck);
     m_pViewMenu->addAction(m_pViewShowCoverArt);
@@ -2126,6 +2157,7 @@ void MixxxMainWindow::rebootMixxxView() {
     delete m_pShowEffects;
     delete m_pShowCoverArt;
     delete m_pShowLibrary;
+    delete m_pShowMixer;
     delete m_pShowEqs;
     m_pShowSamplers = NULL;
     m_pShowMicrophone = NULL;
@@ -2133,6 +2165,7 @@ void MixxxMainWindow::rebootMixxxView() {
     m_pShowEffects = NULL;
     m_pShowCoverArt = NULL;
     m_pShowLibrary = NULL;
+    m_pShowMixer = NULL;
     m_pShowEqs = NULL;
 
     if (m_pWidgetParent) {
