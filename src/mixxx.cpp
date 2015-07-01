@@ -112,6 +112,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pShowMixer(NULL),
           m_pShowEqs(NULL),
           m_pShow4Decks(NULL),
+          m_pMaximizeLibrary(NULL),
 
           m_pPrefDlg(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
@@ -579,6 +580,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShowMixer;
     delete m_pShowEqs;
     delete m_pShow4Decks;
+    delete m_pMaximizeLibrary;
     delete m_pNumAuxiliaries;
     delete m_pNumDecks;
 
@@ -940,6 +942,11 @@ void MixxxMainWindow::slotToggleChecked4Decks() {
     updateCheckedMenuAction(m_pViewShow4Decks, key);
 }
 
+void MixxxMainWindow::slotToggleCheckedMaximizeLibrary() {
+    ConfigKey key("[Master]", "maximize_library");
+    updateCheckedMenuAction(m_pViewMaximizeLibrary, key);
+}
+
 void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS,
                                      ConfigKey key, const char* slot) {
     if (!*pCOS) {
@@ -1007,6 +1014,9 @@ void MixxxMainWindow::onNewSkinLoaded() {
     linkSkinWidget(&m_pShow4Decks,
                    ConfigKey("[Master]", "show_4decks"),
                    SLOT(slotToggleChecked4Decks()));
+    linkSkinWidget(&m_pMaximizeLibrary,
+                   ConfigKey("[Master]", "maximize_library"),
+                   SLOT(slotToggleCheckedMaximizeLibrary()));
 }
 
 int MixxxMainWindow::noSoundDlg(void)
@@ -2191,6 +2201,8 @@ void MixxxMainWindow::rebootMixxxView() {
     delete m_pShowMixer;
     delete m_pShowEqs;
     delete m_pShow4Decks;
+    delete m_pMaximizeLibrary;
+
     m_pShowSamplers = NULL;
     m_pShowMicrophone = NULL;
     m_pShowPreviewDeck = NULL;
@@ -2200,6 +2212,7 @@ void MixxxMainWindow::rebootMixxxView() {
     m_pShowMixer = NULL;
     m_pShowEqs = NULL;
     m_pShow4Decks = NULL;
+    m_pMaximizeLibrary = NULL;
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();

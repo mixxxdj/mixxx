@@ -161,6 +161,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotToggleCheckedMixer();
     void slotToggleCheckedEqs();
     void slotToggleChecked4Decks();
+    void slotToggleCheckedMaximizeLibrary();
 
   signals:
     void newSkinLoaded();
@@ -295,6 +296,7 @@ class MixxxMainWindow : public QMainWindow {
     ControlObjectSlave* m_pShowMixer;
     ControlObjectSlave* m_pShowEqs;
     ControlObjectSlave* m_pShow4Decks;
+    ControlObjectSlave* m_pMaximizeLibrary;
     ControlObject* m_pNumAuxiliaries;
 
     int m_iNoPlaylists;
