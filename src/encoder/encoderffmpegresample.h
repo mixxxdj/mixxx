@@ -42,6 +42,8 @@ extern "C" {
 
 #include <libavutil/avutil.h>
 #include <libavutil/opt.h>
+#else
+#include <libavutil/channel_layout.h>
 #endif
 
 // Compability
