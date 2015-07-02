@@ -835,13 +835,13 @@ class FFMPEG(Feature):
 
     def add_options(self, build, vars):
         vars.Add('ffmpeg', 'Set to 1 to enable FFmpeg/Avconv support \
-                           (supported FFmpeg 0.11-2.0 and Avconv 0.8.x-9.x)', 0)
+                           (supported FFmpeg 0.11-2.x and Avconv 0.8.x-11.x)', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
-        # Supported version are FFmpeg 0.11-2.0 and Avconv 0.8.x-9.x
+        # Supported version are FFmpeg 0.11-2.x and Avconv 0.8.x-11.x
         # FFmpeg is multimedia library that can be found http://ffmpeg.org/
         # Avconv is fork of FFmpeg that is used mainly in Debian and Ubuntu
         # that can be found http://libav.org
@@ -873,30 +873,31 @@ class FFMPEG(Feature):
 
             # What are libavresample and libswresample??
             # Avconv forked from FFmpeg in version 0.10 and there wasn't any
-            # separated library for resampling audio. There we resample API
+            # separated library for resampling audio. There we OLD resample API
             # (actually two and they are both a big mess). API is now marked as
-            # depricated but both are  still available in current version
-            # FFmpeg up to version 1.2 or Avconv up to version 9
+            # depricated but both are still available in current version
+            # FFmpeg up to version 1.2 or Avconv up to version 9.
+            # OLD API is up to nothing in Avconv 9 because it can't handle conversion
+            # from planar to non-planar so it will be informed to user.
             # In some point developers FFmpeg decided to make libswresample
             # (Software Resample). Avconv people also noticed API problem and
             # created libavresample. After that libavresample were imported in
             # FFmpeg and it's API/ABI compatible with Avconv.
             # If you have FFmpeg version 0.10 or Avconv version 0.8.x your
-            # resampling is done through inner API
+            # resampling is done through inner OLD API
             # FFmpeg 0.11 Have libswresample but ain't libavresample
             # FFmpeg 1.0 and above have libswresample and libavresample
-            # Avconv after 0.8.x and between 9 have some libavresample
-            # Avconv 9 have libavresample have libavresample
+            # Avconv after 0.8.x and between 9 have some OLD libavresample
+            # Avconv 9 and above have NEW libavresample
             # Most Linux systems have separated packages for libswresample/
             # libavresample so you can have them installed or not in you
             # system most use libavresample.
-            # Ubuntu/Debian only have Avconv 0.8.x available (There is PPA for
-            # libav 9)
-            # Fedora uses newest FFmpeg 1.x/2.x (With compability libs)
-            # openSUSE uses newest FFmpeg 1.x/2.x (With compability libs)
-            # Mac OS X does have FFmpeg available (with libswresample) from
-            # macports or homebrew
-            # Microsoft Windows can download FFmpeg or Avconv resample libraries
+            #
+            # * Ubuntu/Debian only have Avconv available
+            # * Fedora uses newest FFmpeg 1.x/2.x (With compability libs)
+            # * openSUSE uses newest FFmpeg 1.x/2.x (With compability libs)
+            # * Mac OS X does have FFmpeg available (MacPorts or Homebrew)
+            # * Microsoft Windows can download FFmpeg or Avconv resample libraries
 
             if conf.CheckForPKG('libavresample', '0.0.3'):
                 build.env.ParseConfig('pkg-config libavresample \
