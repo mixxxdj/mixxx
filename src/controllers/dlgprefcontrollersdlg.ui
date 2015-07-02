@@ -88,7 +88,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in one of these preset folders:</string>
+         <string>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Preset Folder&quot;:</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -97,47 +97,14 @@
       </item>
       <item row="1" column="0">
        <widget class="QPushButton" name="btnOpenUserPresets">
-        <property name="text">
-         <string>Open User Preset Folder</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="txtOpenUserPresetFolderDescription">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the preset file(s) in the &amp;quot;User Preset Folder&amp;quot; to make the preset available only for the current user. (Recommended)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QPushButton" name="btnOpenSystemPresets">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
         <property name="text">
-         <string>Open System Preset Folder</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="txtOpenSystemPresetFolderDescription">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the preset file(s) in the &amp;quot;System Preset Folder&amp;quot; to make the preset available for all users. (Not recommended: this folder is subject to change when uninstalling/reinstalling the application, files could get overwritten or deleted)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
+         <string>Open User Preset Folder</string>
         </property>
        </widget>
       </item>
