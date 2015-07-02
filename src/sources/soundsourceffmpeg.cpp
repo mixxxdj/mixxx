@@ -161,7 +161,6 @@ void SoundSourceFFmpeg::close() {
         qDebug() << "~SoundSourceFFmpeg(): Clear FFMPEG stuff";
         avcodec_close(m_pCodecCtx);
         avformat_close_input(&m_pFormatCtx);
-        avformat_free_context(m_pFormatCtx);
         m_pFormatCtx = NULL;
     }
 
