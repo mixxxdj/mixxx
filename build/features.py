@@ -911,6 +911,9 @@ class FFMPEG(Feature):
                 build.env.Append(CPPDEFINES='__LIBSWRESAMPLE__')
                 self.status = "Enabled -- with libswresample"
             else:
+                if conf.CheckForPKG('libavcodec', '54.35.0'):
+                    raise Exception('You have to install libavresample or libswresample'
+                                    ' to make Mixxx work')
                 build.env.Append(CPPDEFINES='__FFMPEGFILE__')
                 build.env.Append(CPPDEFINES='__FFMPEGOLDAPI__')
                 self.status = "Enabled --  with old resample API"
