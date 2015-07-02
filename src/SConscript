@@ -201,13 +201,13 @@ docs_files += Glob('#./README')
 docs_files += Glob('#./Mixxx-Manual.pdf')
 
 #.desktop file for KDE/GNOME menu
-dotdesktop_files = Glob('#src/mixxx.desktop')
+dotdesktop_files = Glob('#res/linux/mixxx.desktop')
 
 #.appdata.xml file for KDE/GNOME AppStream iniative
-dotappstream_files = Glob('#src/mixxx.appdata.xml')
+dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
 
 #udev rule file for HID controllers
-hidudev_files = Glob('#src/mixxx-usb-hid.rules')
+hidudev_files = Glob('#res/linux/mixxx-usb-hid.rules')
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
