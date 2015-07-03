@@ -479,8 +479,16 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                         break;
                     }
                 }
-                l_SObj = m_SCache[l_lPos];
-                continue;
+
+                if(l_lPos < m_SCache.size() && l_lPos >= 0) {
+                    l_SObj = m_SCache[l_lPos];
+                    continue;
+                } else if(l_lPos < 0) {
+                    l_lPos = 0;
+                } else {
+                    l_SObj = m_SCache.last();
+                    l_lPos = l_lPos < m_SCache.size() - 1;
+                }
             }
 
             // If Cache object ain't correct then calculate offset
