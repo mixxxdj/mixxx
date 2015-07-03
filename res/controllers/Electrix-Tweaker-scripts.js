@@ -79,10 +79,14 @@ The next button to the left toggles keylock. With shift pressed, it syncs the ke
 The next button to the left (the bottom right button in the deck's grid) toggles sync. With shift pressed, it resets the speed (if sync is enabled, this will snap the tempo of all other tracks with sync enabled too).
 **/
 
-// Adjust this variable to your liking. The higher it is, the less hard you have to strike the sample pads to play samples loudly.
+// ====================================================== USER OPTIONS ========================================================
+
+// Set this to false if you do not want the volume of samples to be proportional to how hard you press the big buttons
+ElectrixTweaker.samplerVelocityAsVolume = true
+// Adjust this variable to your liking. The higher it is, the less hard you have to strike the sample pads to play samples loudly (when ElectrixTweaker.samplerVelocityAsVolume is true).
 ElectrixTweaker.samplerSensitivity = 4
 
-// ====================================================== INITIALIZATION ======================================================
+// ==================================================== GLOBAL VARIABLES =======================================================
 
 function ElectrixTweaker() {}
 
@@ -566,12 +570,16 @@ ElectrixTweaker.oneShot = function (channel, control, value, status, group) {
 				engine.setValue(group, 'eject', 1)
 				engine.beginTimer(250, 'engine.setValue("'+group+'", "eject", 0)', true)
 			} else {
-				engine.setValue(group, 'volume', script.absoluteNonLin(value * ElectrixTweaker.samplerSensitivity, 0, .25, 1))
+				if (ElectrixTweaker.samplerVelocityAsVolume) {
+					engine.setValue(group, 'volume', script.absoluteNonLin(value * ElectrixTweaker.samplerSensitivity, 0, .25, 1))
+				}
 				engine.setValue(group, 'playposition', 0)
 				engine.setValue(group, 'play', 1)
 			}
 		} else {
-			engine.setValue(group, 'volume', script.absoluteNonLin(value, 0, .25, 1))
+			if (ElectrixTweaker.samplerVelocityAsVolume) {
+				engine.setValue(group, 'volume', script.absoluteNonLin(value, 0, .25, 1))
+			}
 			engine.setValue(group, 'LoadSelectedTrackAndPlay', 1)
 		}
 	} else {
