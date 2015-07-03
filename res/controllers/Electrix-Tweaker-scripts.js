@@ -319,7 +319,6 @@ ElectrixTweaker.shutdown = function() {
 	for (i = 0; i <= 70; i++) {
 		midi.sendShortMsg(0x90, i, ElectrixTweaker.colorCodes['off'])
 	}
-	// 	midi.sendShortMsg(0x90, 39, 0)
 }
 
 // ==================================================== MODE SWITCHING FUNCTIONS ================================================
@@ -846,7 +845,11 @@ ElectrixTweaker.pflButtonLED = function (value, group, control) {
 ElectrixTweaker.playButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (ElectrixTweaker.shift) {
-		engine.setValue(group, 'cue_default', value)
+		if (ElectrixTweaker.topShift && value) {
+			engine.setValue(group, 'cue_gotoandstop', 1)
+		} else {
+			engine.setValue(group, 'cue_default', value)
+		}
 	} else if (value) {
 // 		if (ElectrixTweaker.anyHotcuesPressed(group)) {
 // 			ElectrixTweaker.playPressedWhileCueJuggling[group] = true
@@ -992,7 +995,7 @@ ElectrixTweaker.forward = function (channel, control, value, status, group) {
 		}
 	} else {
 		if (ElectrixTweaker.shift) {
-			engine.setValue(group, 'rate_temp_up', ! engine.getValue(group, 'rate_temp_up'))
+			engine.setValue(group, 'rate_temp_up', value / 127)
 		} else {
 			engine.setValue(group, 'fwd', value)
 		}
@@ -1010,7 +1013,7 @@ ElectrixTweaker.back = function (channel, control, value, status, group) {
 		}
 	} else {
 		if (ElectrixTweaker.shift) {
-			engine.setValue(group, 'rate_temp_down', ! engine.getValue(group, 'rate_temp_down'))
+			engine.setValue(group, 'rate_temp_down', value / 127)
 		} else {
 			engine.setValue(group, 'back', value)
 		}
@@ -1083,7 +1086,6 @@ ElectrixTweaker.keyLED = function (value, group, control) {
 		)
 	}
 }
-
 
 ElectrixTweaker.quantize = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
