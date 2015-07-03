@@ -626,12 +626,6 @@ ElectrixTweaker.fader = function (channel, control, value, status, group) {
 		}
 	}
 }
-ElectrixTweaker.faderMiddleNote = function (channel, control, value, status, group) {
-	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift && ! value) {
-		engine.setValue(group, 'rate', 0)
-	}
-}
 
 ElectrixTweaker.modeButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
