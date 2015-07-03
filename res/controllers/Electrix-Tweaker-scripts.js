@@ -1,3 +1,13 @@
+// ====================================================== USER OPTIONS =========================================================
+
+// Set this to false if you do not want the volume of samples to be proportional to how hard you press the big buttons. When this is false, the sampler buttons will play the samplers at whatever volume the sample deck is set to.
+ElectrixTweaker.samplerVelocityAsVolume = true
+// The higher this is, the less hard you have to strike the sample pads to play samples loudly (when ElectrixTweaker.samplerVelocityAsVolume is true).
+ElectrixTweaker.samplerSensitivity = 4
+
+// Adjust sensitivity of EQs (range 1-7, only use integers)
+ElectrixTweaker.eqSensitivity = 6
+
 /**
  * Electrix Tweaker controller script 0.3.2 for Mixxx 1.12
  * Copyright (C) 2015 Be <be.0@gmx.com>
@@ -78,16 +88,6 @@ The button to the left of the bottom green/white navigation button toggles quant
 The next button to the left toggles keylock. With shift pressed, it syncs the key to that of the other deck. When the key of a deck has been changed from its original value, the button will turn white. Pressing the button when it is white will reset the key to its original value.
 The next button to the left (the bottom right button in the deck's grid) toggles sync. With shift pressed, it resets the speed (if sync is enabled, this will snap the tempo of all other tracks with sync enabled too).
 **/
-
-// ====================================================== USER OPTIONS =========================================================
-
-// Set this to false if you do not want the volume of samples to be proportional to how hard you press the big buttons
-ElectrixTweaker.samplerVelocityAsVolume = true
-// The higher this is, the less hard you have to strike the sample pads to play samples loudly (when ElectrixTweaker.samplerVelocityAsVolume is true).
-ElectrixTweaker.samplerSensitivity = 4
-
-// Adjust sensitivity of EQs (range 1-7, only use integers)
-ElectrixTweaker.eqSensitivity = 6
 
 // ==================================================== GLOBAL VARIABLES =======================================================
 
