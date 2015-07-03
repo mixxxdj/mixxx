@@ -170,7 +170,7 @@ ElectrixTweaker.encoders['[Channel3]'] = ElectrixTweaker.encoders['[Channel1]']
 ElectrixTweaker.encoders['[Channel4]'] = ElectrixTweaker.encoders['[Channel2]']
 // each consecutive value in this array sets the encoder ring LEDs to the show the next LED
 ElectrixTweaker.encoderRingSteps = [0, 10, 25, 35, 50, 60, 64, 75, 85, 95, 105, 115, 127]
-ElectrixTweaker.encoderRingStepsWalk = [0, 1, 20, 30, 40, 50, 60, 64, 75, 85, 95, 105, 120, 127]
+ElectrixTweaker.encoderRingStepsFill = [0, 1, 20, 30, 40, 50, 60, 64, 75, 85, 95, 105, 120, 127]
 ElectrixTweaker.buttons = {
 	'[Channel1]': {
 		'arrowSide': 42,
@@ -495,7 +495,7 @@ ElectrixTweaker.shiftButton = function (channel, control, value, status, group) 
 			midi.sendShortMsg(
 				0xB0,
 		     ElectrixTweaker.encoders[channel]['Mid']['ring'],
-		     ElectrixTweaker.encoderRingStepsWalk[ElectrixTweaker.hotcuePage[channel]+1]
+		     ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[channel]+1]
 			)
 			// set low encoder to relative mode
 			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['cc'], 64)
@@ -683,7 +683,7 @@ ElectrixTweaker.midEncoder = function (channel, control, value, status, group) {
 		midi.sendShortMsg(
 			0xB0,
 			ElectrixTweaker.encoders[group]['Mid']['ring'],
-			ElectrixTweaker.encoderRingStepsWalk[ElectrixTweaker.hotcuePage[group]+1]
+			ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[group]+1]
 		)
 	} else {
 		switch (ElectrixTweaker.mode[group]) {
