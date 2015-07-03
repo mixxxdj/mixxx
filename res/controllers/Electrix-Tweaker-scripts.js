@@ -91,17 +91,6 @@ The 8x4 grid of small buttons is divided in half with each side controlling a de
 
 function ElectrixTweaker() {}
 
-script.absoluteNonLinInverse = function (value, low, mid, high, min, max) {
-	if (!min) min = 0;
-	if (!max) max = 127;
-	var center = (max-min)/2;
-	if (value==mid)
-		return center;
-	if (value<mid)
-		return (center/(mid-low)) * (value-low);
-	return center + (center/(high-mid)) * (value-mid);
-}
-
 ElectrixTweaker.colorCodes = {
 	'off': 0,
 	'green': 1,
