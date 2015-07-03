@@ -79,12 +79,15 @@ The next button to the left toggles keylock. With shift pressed, it syncs the ke
 The next button to the left (the bottom right button in the deck's grid) toggles sync. With shift pressed, it resets the speed (if sync is enabled, this will snap the tempo of all other tracks with sync enabled too).
 **/
 
-// ====================================================== USER OPTIONS ========================================================
+// ====================================================== USER OPTIONS =========================================================
 
 // Set this to false if you do not want the volume of samples to be proportional to how hard you press the big buttons
 ElectrixTweaker.samplerVelocityAsVolume = true
-// Adjust this variable to your liking. The higher it is, the less hard you have to strike the sample pads to play samples loudly (when ElectrixTweaker.samplerVelocityAsVolume is true).
+// The higher this is, the less hard you have to strike the sample pads to play samples loudly (when ElectrixTweaker.samplerVelocityAsVolume is true).
 ElectrixTweaker.samplerSensitivity = 4
+
+// Adjust sensitivity of EQs (range 1-7, only use integers)
+ElectrixTweaker.eqSensitivity = 6
 
 // ==================================================== GLOBAL VARIABLES =======================================================
 
@@ -403,7 +406,7 @@ ElectrixTweaker.initMode = function (group, mode, shift) {
 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['mode'], ElectrixTweaker.colorCodes['white'])
 			for (var encoder in ElectrixTweaker.encoders[group]) {
 				// set encoder to absolute EQ mode with speed 5
-				midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['cc'], 118)
+				midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['cc'], 70 + 8*ElectrixTweaker.eqSensitivity)
 				// enable local control of LED ring
 				midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['ring'], 70)
 			}
