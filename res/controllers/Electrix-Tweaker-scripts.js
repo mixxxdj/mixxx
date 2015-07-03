@@ -360,7 +360,8 @@ ElectrixTweaker.connectDeckControls = function (group, remove) {
 	
 	var controlsToFunctions = {
 		'pfl': 'ElectrixTweaker.pflButtonLED',
-		'track_samples': 'ElectrixTweaker.arrowSideLED',
+// 		'track_samples': 'ElectrixTweaker.arrowSideLED', // the line below would overwrite this attribute
+		'track_samples': 'ElectrixTweaker.playButtonLED',
 		'play': 'ElectrixTweaker.playButtonLED',
 		'playposition': 'ElectrixTweaker.playButtonLED',
 		'loop_enabled': 'ElectrixTweaker.loopButtonToggleLED',
@@ -371,6 +372,7 @@ ElectrixTweaker.connectDeckControls = function (group, remove) {
 	}
 	for (var control in controlsToFunctions) {
 		engine.connectControl(group, control, controlsToFunctions[control], remove)
+		engine.connectControl(group, 'track_samples', 'ElectrixTweaker.arrowSideLED', remove)
 		if (! remove) {
 			engine.trigger(group, control)
 		}
