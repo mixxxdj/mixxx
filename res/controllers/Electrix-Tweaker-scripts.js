@@ -225,7 +225,6 @@ ElectrixTweaker.deck = {'[Channel1]': '[Channel1]', '[Channel2]': '[Channel2]'}
 ElectrixTweaker.mode = {'[Channel1]': 'eq', '[Channel2]': 'eq', '[Channel3]': 'eq', '[Channel4]': 'eq'}
 ElectrixTweaker.loopMoveSize = {'[Channel1]': 1, '[Channel2]': 1, '[Channel3]': 1, '[Channel4]': 1}
 ElectrixTweaker.loopSize = {'[Channel1]': 4, '[Channel2]': 4, '[Channel3]': 4, '[Channel4]': 4}
-ElectrixTweaker.moveMode = {'[Channel1]': 'loop_move_', '[Channel2]': 'loop_move_', '[Channel3]': 'loop_move_', '[Channel4]': 'loop_move_'}
 ElectrixTweaker.slipMode = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.deckShift = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.hotcuePage = {'[Channel1]': 0, '[Channel2]': 0, '[Channel3]': 0, '[Channel4]': 0}
@@ -435,11 +434,6 @@ ElectrixTweaker.initMode = function (group, mode, shift) {
 				0xB0,
 				ElectrixTweaker.encoders[group]['Mid']['ring'],
 				64
-			)
-			midi.sendShortMsg(
-				0x90,
-				ElectrixTweaker.encoders[group]['Mid']['button'],
-				(ElectrixTweaker.moveMode[group] == 'beatjump_') ? 127 : 0
 			)
 			
 			midi.sendShortMsg(
@@ -720,11 +714,11 @@ ElectrixTweaker.midEncoder = function (channel, control, value, status, group) {
 			case 'loop':
 				engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[group])
 				if (value == 127) {
-					engine.setValue(group, ElectrixTweaker.moveMode[group] + ElectrixTweaker.loopMoveSize[group] + '_backward', 1)
+					engine.setValue(group, 'loop_move_' + ElectrixTweaker.loopMoveSize[group] + '_backward', 1)
 					midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Mid']['ring'], 0)
 					
 				} else {
-					engine.setValue(group, ElectrixTweaker.moveMode[group] + ElectrixTweaker.loopMoveSize[group] + '_forward', 1)
+					engine.setValue(group, 'loop_move_' + ElectrixTweaker.loopMoveSize[group] + '_forward', 1)
 					midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Mid']['ring'], 127)
 				}
 				ElectrixTweaker.midEncoderLEDTimer[group] = engine.beginTimer(1000, 'midi.sendShortMsg(0xB0, ElectrixTweaker.encoders["'+group+'"]["Mid"]["ring"], 64)', true)
@@ -744,17 +738,7 @@ ElectrixTweaker.midEncoderPress = function (channel, control, value, status, gro
 				}
 				break
 			case 'loop':
-				if (ElectrixTweaker.moveMode[group] == 'loop_move_') {
-					ElectrixTweaker.moveMode[group] = 'beatjump_'
-				} else if (ElectrixTweaker.moveMode[group] == 'beatjump_') {
-					ElectrixTweaker.moveMode[group] = 'loop_move_'
-				}
-				midi.sendShortMsg(
-					0x90,
-					ElectrixTweaker.encoders[group]['Mid']['button'],
-					(ElectrixTweaker.moveMode[group] == 'beatjump_') ? 127 : 0
-				)
-				break
+				// What to do with this?
 		}
 	}
 }
