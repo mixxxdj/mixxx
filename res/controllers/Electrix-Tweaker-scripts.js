@@ -355,8 +355,7 @@ ElectrixTweaker.connectDeckControls = function (group, remove) {
 		'playposition': 'ElectrixTweaker.playButtonLED',
 		'loop_enabled': 'ElectrixTweaker.loopButtonToggleLED',
 		'sync_enabled': 'ElectrixTweaker.syncLED',
-		'key': 'ElectrixTweaker.keyLED',
-		'keylock': 'ElectrixTweaker.keyLED',
+		'keylock': 'ElectrixTweaker.keylockLED',
 		'quantize': 'ElectrixTweaker.quantizeLED'
 	}
 	for (var control in controlsToFunctions) {
@@ -1049,29 +1048,23 @@ ElectrixTweaker.syncLED = function (value, group, control) {
 ElectrixTweaker.key = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (engine.getValue(group, 'file_key') != engine.getValue(group, 'key')) {
-			engine.setValue(group, 'reset_key', 1)
-		} else if (ElectrixTweaker.shift) {
-			engine.setValue(group, 'sync_key', 1)
+		if (ElectrixTweaker.shift) {
+			if (engine.getValue(group, 'file_key') != engine.getValue(group, 'key')) {
+				engine.setValue(group, 'reset_key', 1)
+			} else {
+				engine.setValue(group, 'sync_key', 1)
+			}
 		} else {
 			engine.setValue(group, 'keylock', ! engine.getValue(group, 'keylock'))
 		}
 	}
 }
-ElectrixTweaker.keyLED = function (value, group, control) {
-	if (engine.getValue(group, 'file_key') != engine.getValue(group, 'key')) {
-		midi.sendShortMsg(
-			0x90,
-			ElectrixTweaker.buttons[group]['key'],
-			ElectrixTweaker.colorCodes['white']
-		)
-	} else {
-		midi.sendShortMsg(
-			0x90,
-			ElectrixTweaker.buttons[group]['key'],
-			(engine.getValue(group, 'keylock')) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
-		)
-	}
+ElectrixTweaker.keylockLED = function (value, group, control) {
+	midi.sendShortMsg(
+		0x90,
+		ElectrixTweaker.buttons[group]['key'],
+		(engine.getValue(group, 'keylock')) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+	)
 }
 
 ElectrixTweaker.quantize = function (channel, control, value, status, group) {
