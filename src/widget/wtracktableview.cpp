@@ -624,6 +624,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 }
             }
         }, __PRETTY_FUNCTION__);
+        m_pPlaylistMenu->addSeparator();
+        QAction *newPlaylistAction = new QAction( tr("Create New Playlist"), m_pPlaylistMenu);
+        m_pPlaylistMenu->addAction(newPlaylistAction);
+        m_playlistMapper.setMapping(newPlaylistAction, -1);// -1 to signify new playlist
+        connect(newPlaylistAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+
         m_pMenu->addMenu(m_pPlaylistMenu);
     }
 
@@ -650,6 +656,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
             }
         }, __PRETTY_FUNCTION__);
+        m_pCrateMenu->addSeparator();
+        QAction *newCrateAction = new QAction( tr("Create New Crate"), m_pCrateMenu);
+        m_pCrateMenu->addAction(newCrateAction);
+        m_crateMapper.setMapping(newCrateAction, -1);// -1 to signify new playlist
+        connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+
         m_pMenu->addMenu(m_pCrateMenu);
     }
     m_pMenu->addSeparator();
@@ -1236,6 +1248,57 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
             trackIds.append(iTrackId);
         }
     }
+   if (iPlaylistId==-1){//i.e. a new playlist is suppose to be created
+       QString name;
+       bool validNameGiven = false;
+
+       do {
+           bool ok = false;
+           name = QInputDialog::getText(NULL,
+                                        tr("New Playlist"),
+                                        tr("Playlist name:"),
+                                        QLineEdit::Normal,
+                                        tr("New Playlist"),
+                                        &ok).trimmed();
+           if (!ok) {
+               return;
+           }
+
+
+           bool cretionFailed;
+           m_pTrackCollection->callSync(
+                   [this, &name, &cretionFailed] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+               PlaylistDAO& playlistDao = pTrackCollectionPrivate->getPlaylistDAO();
+               cretionFailed = (playlistDao.getPlaylistIdFromName(name) != -1);
+           }, __PRETTY_FUNCTION__);
+
+           if (cretionFailed) {
+               QMessageBox::warning(NULL,
+                                    tr("Playlist Creation Failed"),
+                                    tr("A playlist by that name already exists."));
+           } else if (name.isEmpty()) {
+               QMessageBox::warning(NULL,
+                                    tr("Playlist Creation Failed"),
+                                    tr("A playlist cannot have a blank name."));
+           } else {
+               validNameGiven = true;
+           }
+       } while (!validNameGiven);
+
+       m_pTrackCollection->callSync(
+               [this, &name, &iPlaylistId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+           PlaylistDAO& playlistDao = pTrackCollectionPrivate->getPlaylistDAO();
+           iPlaylistId = playlistDao.createPlaylist(name);//-1 is changed to the new playlist ID return from the DAO
+       }, __PRETTY_FUNCTION__);
+
+       if (iPlaylistId == -1) {
+           QMessageBox::warning(NULL,
+                                tr("Playlist Creation Failed"),
+                                tr("An unknown error occurred while creating playlist: ")
+                                 +name);
+           return;
+       }
+   }
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
@@ -1263,6 +1326,57 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
         int iTrackId = pTrack->getId();
         if (iTrackId != -1) {
             trackIds.append(iTrackId);
+        }
+    }
+    if (iCrateId == -1){//i.e. a new crate is suppose to be created
+        QString name;
+        bool validNameGiven = false;
+        do {
+            bool ok = false;
+            name = QInputDialog::getText(NULL,
+                                         tr("New Crate"),
+                                         tr("Crate name:"),
+                                         QLineEdit::Normal, tr("New Crate"),
+                                         &ok).trimmed();
+            if (!ok) {
+                return;
+            }
+
+            int existingId;
+            m_pTrackCollection->callSync(
+                    [this, &name, &existingId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+                CrateDAO& crateDao = pTrackCollectionPrivate->getCrateDAO();
+                existingId = crateDao.getCrateIdByName(name);
+            }, __PRETTY_FUNCTION__);
+
+            if (existingId != -1) {
+                QMessageBox::warning(NULL,
+                                     tr("Creating Crate Failed"),
+                                     tr("A crate by that name already exists."));
+            }
+            else if (name.isEmpty()) {
+                QMessageBox::warning(NULL,
+                                     tr("Creating Crate Failed"),
+                                     tr("A crate cannot have a blank name."));
+            }
+            else {
+                validNameGiven = true;
+            }
+        } while (!validNameGiven);
+
+        m_pTrackCollection->callSync(
+                [this, &name, &iCrateId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            CrateDAO& crateDao = pTrackCollectionPrivate->getCrateDAO();
+            iCrateId = crateDao.createCrate(name); // -1 is changed to the new crate ID returned by the DAO
+        }, __PRETTY_FUNCTION__);
+
+        if (iCrateId == -1) {
+            qDebug() << "Error creating crate with name " << name;
+            QMessageBox::warning(NULL,
+                                 tr("Creating Crate Failed"),
+                                 tr("An unknown error occurred while creating crate: ")
+                                 + name);
+            return;
         }
     }
 
