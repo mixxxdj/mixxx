@@ -63,7 +63,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     contentsTreeWidget->setHeaderHidden(true);
 #endif
 
-    setWindowTitle(tr("Preferences"));
     createIcons();
 
     while (pagesWidget->count() > 0) {

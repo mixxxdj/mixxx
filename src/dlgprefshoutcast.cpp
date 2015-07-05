@@ -83,8 +83,11 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     stream_website->setText(tmp_string);
 
     // Stream description
-    stream_desc->setText(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY,"stream_desc")));
+    tmp_string = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY,"stream_desc"));
+    if (tmp_string.isEmpty())
+        tmp_string = tr("This stream is online for testing purposes!");
+    stream_desc->setText(tmp_string);
 
     // Stream genre
     tmp_string = m_pConfig->getValueString(

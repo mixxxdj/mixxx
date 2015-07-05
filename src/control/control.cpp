@@ -142,7 +142,7 @@ void ControlDoublePrivate::setInner(double value, QObject* pSender) {
 }
 
 void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
-    // This marks the old mpBehaviour for deletion. It is deleted once it is not
+    // This marks the old mpBehavior for deletion. It is deleted once it is not
     // used in any other function
     m_pBehavior = QSharedPointer<ControlNumericBehavior>(pBehavior);
 }

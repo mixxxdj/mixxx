@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>791</width>
-    <height>549</height>
+    <width>590</width>
+    <height>704</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,21 +17,15 @@
    <property name="spacing">
     <number>10</number>
    </property>
-   <item row="2" column="5">
-    <widget class="QSpinBox" name="memoryLimitSpin">
-     <property name="minimum">
-      <number>16</number>
-     </property>
-     <property name="maximum">
-      <number>512</number>
-     </property>
-     <property name="value">
-      <number>256</number>
+   <item row="8" column="0">
+    <widget class="QCheckBox" name="showAdvanced">
+     <property name="text">
+      <string>Show Advanced Settings</string>
      </property>
     </widget>
    </item>
-   <item row="12" column="3">
-    <spacer name="verticalSpacer">
+   <item row="12" column="1">
+    <spacer name="verticalSpacer_2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -43,43 +37,16 @@
      </property>
     </spacer>
    </item>
-   <item row="9" column="0">
-    <widget class="QCheckBox" name="showAdvanced">
-     <property name="text">
-      <string>Show advanced settings</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="6">
-    <widget class="QLabel" name="label_11">
-     <property name="text">
-      <string>Decoding options for libmodplug. Module files are decoded at once and kept in RAM to allow for seeking and smooth operation in Mixxx. About 10MB of RAM are required for 1 minute of audio.</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="0" colspan="6">
-    <widget class="QLabel" name="label_12">
-     <property name="text">
-      <string>All settings take effect on next track load. Currently loaded tracks are not affected. For an explanation of these settings, see the &lt;a href=&quot;http://wiki.openmpt.org/Manual:_Setup/Player&quot;&gt;OpenMPT manual&lt;/a&gt;.</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-     <property name="openExternalLinks">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0" colspan="6">
+   <item row="9" column="0" colspan="6">
     <widget class="QGroupBox" name="advancedSettings">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="title">
+      <string/>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -405,81 +372,197 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="2">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Resampling mode (interpolation)</string>
+   <item row="10" column="0" colspan="6">
+    <widget class="QGroupBox" name="Hints">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
+     <property name="title">
+      <string>Hints</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Module files are decoded at once and kept in RAM to allow for seeking and smooth operation in Mixxx. About 10MB of RAM are required for 1 minute of audio.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>All settings take effect on next track load. Currently loaded tracks are not affected. For an explanation of these settings, see the &lt;a href=&quot;http://wiki.openmpt.org/Manual:_Setup/Player&quot;&gt;OpenMPT manual&lt;/a&gt;.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QCheckBox" name="oversampling">
-     <property name="text">
-      <string>Enable oversampling</string>
+   <item row="1" column="0" colspan="6">
+    <widget class="QGroupBox" name="decodingOptions">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="3" colspan="3">
-    <widget class="QComboBox" name="resampleMode">
-     <property name="currentIndex">
-      <number>1</number>
-     </property>
-     <item>
-      <property name="text">
-       <string>Nearest (very fast, extremely bad quality)</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Linear (fast, good quality)</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Cubic Spline (high quality)</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>8-tap FIR (extremely high quality)</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QLabel" name="label_10">
-     <property name="text">
-      <string>Memory limit for single track (MB)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2" colspan="3">
-    <widget class="QSlider" name="memoryLimit">
      <property name="toolTip">
-      <string extracomment="1 minute of decoded audio requires about 10MB of RAM."/>
+      <string>Decoding options for libmodplug, a software library for loading and rendering module files (MOD music, tracker music).</string>
      </property>
-     <property name="minimum">
-      <number>16</number>
+     <property name="title">
+      <string>Decoding Options</string>
      </property>
-     <property name="maximum">
-      <number>512</number>
-     </property>
-     <property name="value">
-      <number>256</number>
-     </property>
-     <property name="sliderPosition">
-      <number>256</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="1">
+         <widget class="QSlider" name="memoryLimit">
+          <property name="toolTip">
+           <string extracomment="1 minute of decoded audio requires about 10MB of RAM."/>
+          </property>
+          <property name="minimum">
+           <number>16</number>
+          </property>
+          <property name="maximum">
+           <number>512</number>
+          </property>
+          <property name="value">
+           <number>256</number>
+          </property>
+          <property name="sliderPosition">
+           <number>256</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" colspan="2">
+         <widget class="QComboBox" name="resampleMode">
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
+          <item>
+           <property name="text">
+            <string>Nearest (very fast, extremely bad quality)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Linear (fast, good quality)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cubic Spline (high quality)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>8-tap FIR (extremely high quality)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Resampling mode (interpolation)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QSpinBox" name="memoryLimitSpin">
+          <property name="minimum">
+           <number>16</number>
+          </property>
+          <property name="maximum">
+           <number>512</number>
+          </property>
+          <property name="value">
+           <number>256</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>Memory limit for single track (MB)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="oversampling">
+          <property name="text">
+           <string>Enable oversampling</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>memoryLimit</tabstop>
+  <tabstop>memoryLimitSpin</tabstop>
+  <tabstop>oversampling</tabstop>
+  <tabstop>resampleMode</tabstop>
+  <tabstop>showAdvanced</tabstop>
+  <tabstop>stereoSeparation</tabstop>
+  <tabstop>maxMixChannels</tabstop>
+  <tabstop>noiseReduction</tabstop>
+  <tabstop>megabass</tabstop>
+  <tabstop>bassDepth</tabstop>
+  <tabstop>bassCutoff</tabstop>
+  <tabstop>reverb</tabstop>
+  <tabstop>reverbDepth</tabstop>
+  <tabstop>reverbDelay</tabstop>
+  <tabstop>surround</tabstop>
+  <tabstop>surroundDepth</tabstop>
+  <tabstop>surroundDelay</tabstop>
+  <tabstop>maxMixChannels_2</tabstop>
+  <tabstop>surroundDelay_2</tabstop>
+  <tabstop>bassCutoff_2</tabstop>
+  <tabstop>stereoSeparation_2</tabstop>
+  <tabstop>bassDepth_2</tabstop>
+  <tabstop>reverbDepth_2</tabstop>
+  <tabstop>surroundDepth_2</tabstop>
+  <tabstop>megabass_2</tabstop>
+  <tabstop>reverbDelay_2</tabstop>
+  <tabstop>surround_2</tabstop>
+  <tabstop>reverb_2</tabstop>
+  <tabstop>noiseReduction_2</tabstop>
+  <tabstop>maxMixChannels_3</tabstop>
+  <tabstop>surroundDelay_3</tabstop>
+  <tabstop>bassCutoff_3</tabstop>
+  <tabstop>stereoSeparation_3</tabstop>
+  <tabstop>bassDepth_3</tabstop>
+  <tabstop>reverbDepth_3</tabstop>
+  <tabstop>surroundDepth_3</tabstop>
+  <tabstop>megabass_3</tabstop>
+  <tabstop>reverbDelay_3</tabstop>
+  <tabstop>surround_3</tabstop>
+  <tabstop>reverb_3</tabstop>
+  <tabstop>noiseReduction_3</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

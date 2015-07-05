@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>MusicBrainz</string>
   </property>
   <widget class="QWidget" name="verticalLayoutWidget_3">
    <property name="geometry">

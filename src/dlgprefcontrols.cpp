@@ -352,7 +352,7 @@ void DlgPrefControls::slotUpdateSchemes()
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
-        ComboBoxSchemeconf->addItem(tr("This skin does not support schemes", 0));
+        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", 0));
         ComboBoxSchemeconf->setCurrentIndex(0);
     } else {
         ComboBoxSchemeconf->setEnabled(true);
