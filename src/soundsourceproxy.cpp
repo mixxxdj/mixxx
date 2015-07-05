@@ -212,7 +212,7 @@ void SoundSourceProxy::loadPlugins() {
         }
     }
 
-    // Turn the list into a "*.mp3 *.wav *.etc" style string
+    // Turn the file extension list into a [ "*.mp3", "*.wav", ... ] style string list
     s_supportedFileNamePatterns.clear();
     for (const auto& supportedFileExtension: supportedFileExtensions) {
         s_supportedFileNamePatterns += QString("*.%1").arg(supportedFileExtension);
