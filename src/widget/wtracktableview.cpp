@@ -3,6 +3,7 @@
 #include <QtGui>
 #include <QtXml>
 #include <QModelIndex>
+#include <QInputDialog>
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
