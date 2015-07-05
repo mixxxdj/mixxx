@@ -6,18 +6,18 @@
 
 #include <QDialog>
 #include "configobject.h"
+#include "preferences/dlgpreferencepage.h"
 
 namespace Ui {
 class DlgPrefModplug;
 }
 
-class DlgPrefModplug : public QDialog
-{
+class DlgPrefModplug : public DlgPreferencePage {
     Q_OBJECT
 
   public:
-    explicit DlgPrefModplug(QWidget *parent, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefModplug();
+    explicit DlgPrefModplug(QWidget* parent, ConfigObject<ConfigValue>* _config);
+    virtual ~DlgPrefModplug();
 
   public slots:
     /** Apply changes to widget */
@@ -29,8 +29,8 @@ class DlgPrefModplug : public QDialog
    void applySettings();
 
   private:
-    Ui::DlgPrefModplug *m_pUi;
-    ConfigObject<ConfigValue> *m_pConfig;
+    Ui::DlgPrefModplug* m_pUi;
+    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif // DLGPREFMODPLUG_H

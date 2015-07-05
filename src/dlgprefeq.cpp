@@ -24,8 +24,6 @@
 #include <qpushbutton.h>
 #include <qgraphicsscene.h>
 
-#include <assert.h>
-
 #include "dlgprefeq.h"
 #include "engine/enginefilteriir.h"
 #include "controlobject.h"
@@ -35,16 +33,16 @@
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
 
-DlgPrefEQ::DlgPrefEQ(QWidget *pParent, ConfigObject<ConfigValue> *pConfig)
-        : QWidget(pParent),
+DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
+        : DlgPreferencePage(pParent),
 #ifndef __LOFI__
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
-          m_COTLoFi(CONFIG_KEY, "LoFiEQs")
+          m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
 #endif
-{
-    m_pConfig = pConfig;
-
+          m_pConfig(pConfig),
+          m_lowEqFreq(0.0),
+          m_highEqFreq(0.0) {
     setupUi(this);
 
     // Connection
@@ -64,9 +62,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget *pParent, ConfigObject<ConfigValue> *pConfig)
     CheckBoxLoFi->setEnabled(false);
 #endif
     connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(reset()));
-
-    m_lowEqFreq = 0;
-    m_highEqFreq = 0;
 
     loadSettings();
 }

@@ -15,12 +15,13 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "configobject.h"
+#include "preferences/dlgpreferencepage.h"
 
 // Forward declarations
 class Controller;
 class ControllerManager;
 
-class DlgPrefController : public QWidget {
+class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT
   public:
     DlgPrefController(QWidget *parent, Controller* controller,

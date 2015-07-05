@@ -10,33 +10,28 @@
 #define CONFIG_KEY "[Modplug]"
 
 DlgPrefModplug::DlgPrefModplug(QWidget *parent,
-                               ConfigObject<ConfigValue> *_config) :
-    QDialog(parent),
-    m_pUi(new Ui::DlgPrefModplug),
-    m_pConfig(_config)
-{
+                               ConfigObject<ConfigValue> *_config)
+        : DlgPreferencePage(parent),
+          m_pUi(new Ui::DlgPrefModplug),
+          m_pConfig(_config) {
     m_pUi->setupUi(this);
     m_pUi->advancedSettings->setVisible(m_pUi->showAdvanced->isChecked());
 }
 
-DlgPrefModplug::~DlgPrefModplug()
-{
+DlgPrefModplug::~DlgPrefModplug() {
     delete m_pUi;
 }
 
-void DlgPrefModplug::slotApply()
-{
+void DlgPrefModplug::slotApply() {
     applySettings();
     saveSettings();
 }
 
-void DlgPrefModplug::slotUpdate()
-{
+void DlgPrefModplug::slotUpdate() {
     loadSettings();
 }
 
-void DlgPrefModplug::loadSettings()
-{
+void DlgPrefModplug::loadSettings() {
     m_pUi->memoryLimit->setValue(m_pConfig->getValueString(
         ConfigKey(CONFIG_KEY,"PerTrackMemoryLimitMB"),"256").toInt());
     m_pUi->oversampling->setChecked(m_pConfig->getValueString(
@@ -69,8 +64,7 @@ void DlgPrefModplug::loadSettings()
         ConfigKey(CONFIG_KEY,"SurroundDelay"),"50").toInt());
 }
 
-void DlgPrefModplug::saveSettings()
-{
+void DlgPrefModplug::saveSettings() {
     m_pConfig->set(ConfigKey(CONFIG_KEY,"PerTrackMemoryLimitMB"),
                    ConfigValue(m_pUi->memoryLimit->value()));
     m_pConfig->set(ConfigKey(CONFIG_KEY,"OversamplingEnabled"),
@@ -103,8 +97,7 @@ void DlgPrefModplug::saveSettings()
                    ConfigValue(m_pUi->surroundDelay->value()));
 }
 
-void DlgPrefModplug::applySettings()
-{
+void DlgPrefModplug::applySettings() {
     // read ui parameters and configure soundsource
     unsigned int bufferSizeLimit = m_pUi->memoryLimit->value() << 20;
     ModPlug::ModPlug_Settings settings;

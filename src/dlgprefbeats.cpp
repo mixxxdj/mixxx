@@ -28,7 +28,7 @@ using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
-        : QWidget(parent),
+        : DlgPreferencePage(parent),
           m_pconfig(_config) {
     setupUi(this);
 
@@ -56,7 +56,6 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
 
     connect(bReanalyse,SIGNAL(stateChanged(int)),
             this, SLOT(slotReanalyzeChanged(int)));
-
 }
 
 DlgPrefBeats::~DlgPrefBeats() {
@@ -270,4 +269,3 @@ void DlgPrefBeats::populate() {
         }
     }
 }
-
