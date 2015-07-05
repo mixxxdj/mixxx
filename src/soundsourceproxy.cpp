@@ -197,7 +197,7 @@ void SoundSourceProxy::loadPlugins() {
             s_soundSourceProviders.getRegisteredFileExtensions());
     for (const auto &supportedFileExtension: supportedFileExtensions) {
         qDebug() << "SoundSource providers for file extension" << supportedFileExtension;
-        const auto registrationsForFileExtension(
+        const QList<SoundSourceProviderRegistration> registrationsForFileExtension(
                 s_soundSourceProviders.getRegistrationsForFileExtension(
                         supportedFileExtension));
         for (const auto& registration: registrationsForFileExtension) {
@@ -230,7 +230,7 @@ QStringList SoundSourceProxy::getSupportedFileExtensionsByPlugins() {
     QStringList supportedFileExtensionsByPlugins;
     const QStringList supportedFileExtensions(getSupportedFileExtensions());
     for (const auto &supportedFileExtension: supportedFileExtensions) {
-        const auto registrationsForFileExtension(
+        const QList<SoundSourceProviderRegistration> registrationsForFileExtension(
                 s_soundSourceProviders.getRegistrationsForFileExtension(
                         supportedFileExtension));
         for (const auto& registration: registrationsForFileExtension) {
@@ -273,7 +273,7 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
         return Mixxx::QList<SoundSourceProviderRegistration>();
     }
 
-    auto registrationsForFileExtension(
+    QList<SoundSourceProviderRegistration> registrationsForFileExtension(
             s_soundSourceProviders.getRegistrationsForFileExtension(
                     fileExtension));
     if (registrationsForFileExtension.isEmpty()) {

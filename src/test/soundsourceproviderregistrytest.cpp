@@ -78,7 +78,7 @@ class SoundSourceProviderRegistryTest : public testing::Test {
     static QStringList getAllRegisteredProviderNamesForFileExtension(
             const SoundSourceProviderRegistry& cut, QString fileExt) {
         QStringList providerNames;
-        const auto registrations(
+        const QList<SoundSourceProviderRegistration> registrations(
                 cut.getRegistrationsForFileExtension(fileExt));
         for (auto const& registration: registrations) {
             providerNames.append(registration.getProvider()->getName());
