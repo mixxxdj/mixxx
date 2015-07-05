@@ -143,7 +143,7 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index) {
             return;
         }
         pTrackCollectionPrivate->getPlaylistDAO().removeTrackFromPlaylist(m_iPlaylistId, position);
-        select(pTrackCollectionPrivate); //Repopulate the data model.
+        select(pTrackCollectionPrivate); // Repopulate the data model.
     }, __PRETTY_FUNCTION__);
 }
 

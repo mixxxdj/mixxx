@@ -98,10 +98,10 @@ void TrackCollection::callAsync(func lambda, QString where) {
 // callAsync can be called from any thread
 //    @param: lambda function, string (for debug purposes).
 void TrackCollection::callSync(func lambda, QString where) {
-    qDebug() << "callSync BEGIN from"<<where;
+    qDebug() << "callSync BEGIN from" << where;
     if (m_inCallSyncCount > 0) { // callSync inside callSync is workable, but we must avoid it
         DBG() << "nested CallSync";
-        Q_ASSERT(0==1); // just stop here in debug
+        Q_ASSERT(false); // just stop here in debug
     }
     qDebug() << "callSync from" << where;
     ++m_inCallSyncCount;
@@ -114,30 +114,36 @@ void TrackCollection::callSync(func lambda, QString where) {
     }
     QMutex mutex;
     mutex.lock();
-    func lambdaWithMutex =  [&mutex, &lambda] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        lambda(pTrackCollectionPrivate);
-        mutex.unlock();
-    };
+    func lambdaWithMutex =
+            [&mutex, &lambda] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+                lambda(pTrackCollectionPrivate);
+                mutex.unlock();
+            };
     addLambdaToQueue(lambdaWithMutex);
 
-    while (!mutex.tryLock(1)) {
+    auto waitCycles = 0;
+    while (!mutex.tryLock(1)) { // timeout 1 ms
         MainExecuter::getInstance().call();
-        if (inMainThread) {
-            // Check if we are NOT in nested callSync
-            if (m_inCallSyncCount == 1) {
-                qApp->processEvents(QEventLoop::AllEvents);
-            }
-        }
-        // DBG() << "Start animation";
-        // animationIsShowed = true;
+        //if (inMainThread) {
+        //    // Check if we are NOT in nested callSync
+        //    if (m_inCallSyncCount == 1) {
+        //        // This calls the pending slots, which can result in stacking up
+        //        // recursive callSync() calls
+        //        qApp->processEvents(QEventLoop::AllEvents);
+        //    }
+        //}
+        //DBG() << "Start animation";
+        //animationIsShowed = true;
+        waitCycles++;
     }
+    // If we are here, the lamda is done.
     mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
     if (inMainThread) {
         setUiEnabled(true);
     }
 
     --m_inCallSyncCount;
-    qDebug() << "callSync END from"<<where;
+    qDebug() << "callSync END from" << where << waitCycles << "waitCycles";
 }
 
 void TrackCollection::addLambdaToQueue(func lambda) {
