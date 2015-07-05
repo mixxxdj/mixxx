@@ -2,7 +2,7 @@
 
 namespace Mixxx {
 
-/*static*/ const SoundSourceProviderRegistrationList SoundSourceProviderRegistry::EMPTY_REGISTRATION_LIST;
+/*static*/ const QList<SoundSourceProviderRegistration> SoundSourceProviderRegistry::EMPTY_REGISTRATION_LIST;
 
 void SoundSourceProviderRegistry::registerProvider(
         const SoundSourceProviderPointer& pProvider) {
@@ -47,9 +47,9 @@ void SoundSourceProviderRegistry::addRegistration(const SoundSourceProviderRegis
         return; // abort registration
     }
     for (const auto& supportedFileExtension: supportedFileExtensions) {
-        SoundSourceProviderRegistrationList& registrationsForFileExtension =
+        QList<SoundSourceProviderRegistration>& registrationsForFileExtension =
                 m_registrations[supportedFileExtension];
-        SoundSourceProviderRegistrationList::iterator i(registrationsForFileExtension.begin());
+        QList<SoundSourceProviderRegistration>::iterator i(registrationsForFileExtension.begin());
         // Linear search through the list & insert
         while (registrationsForFileExtension.end() != i) {
             // Priority comparison with <=: New registrations will be inserted
@@ -70,7 +70,7 @@ void SoundSourceProviderRegistry::addRegistration(const SoundSourceProviderRegis
     }
 }
 
-const SoundSourceProviderRegistrationList&
+const QList<SoundSourceProviderRegistration>&
 SoundSourceProviderRegistry::getRegistrationsForFileExtension(
         const QString& fileExtension) const {
     FileExtension2RegistrationList::const_iterator i(

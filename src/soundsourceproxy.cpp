@@ -264,13 +264,13 @@ bool SoundSourceProxy::isFileExtensionSupported(const QString& fileExtension) {
 }
 
 // static
-Mixxx::SoundSourceProviderRegistrationList
+Mixxx::QList<SoundSourceProviderRegistration>
 SoundSourceProxy::findSoundSourceProviderRegistrations(
         const QUrl& url) {
     QString fileExtension(Mixxx::SoundSource::getFileExtensionFromUrl(url));
     if (fileExtension.isEmpty()) {
         qWarning() << "Unknown file type:" << url.toString();
-        return Mixxx::SoundSourceProviderRegistrationList();
+        return Mixxx::QList<SoundSourceProviderRegistration>();
     }
 
     auto registrationsForFileExtension(

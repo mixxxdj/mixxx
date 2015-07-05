@@ -35,8 +35,6 @@ private:
     SoundSourceProviderPriority m_providerPriority;
 };
 
-typedef QList<SoundSourceProviderRegistration> SoundSourceProviderRegistrationList;
-
 // Registry for SoundSourceProviders
 class SoundSourceProviderRegistry {
 public:
@@ -55,12 +53,12 @@ public:
         return m_registrations.keys();
     }
 
-    const SoundSourceProviderRegistrationList& getRegistrationsForFileExtension(const QString& fileExtension) const;
+    const QList<SoundSourceProviderRegistration>& getRegistrationsForFileExtension(const QString& fileExtension) const;
 
 private:
-    static const SoundSourceProviderRegistrationList EMPTY_REGISTRATION_LIST;
+    static const QList<SoundSourceProviderRegistration> EMPTY_REGISTRATION_LIST;
 
-    typedef QMap<QString, SoundSourceProviderRegistrationList> FileExtension2RegistrationList;
+    typedef QMap<QString, QList<SoundSourceProviderRegistration>> FileExtension2RegistrationList;
 
     void addRegistration(const SoundSourceProviderRegistration& registration);
 
