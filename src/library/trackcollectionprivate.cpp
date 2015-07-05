@@ -74,7 +74,7 @@ bool TrackCollectionPrivate::checkForTables() {
 
     bool checkResult = true;
     MainExecuter::callSync([this, &checkResult](void) {
-        int requiredSchemaVersion = 20; // TODO(xxx) avoid constant 20
+        int requiredSchemaVersion = 21; // TODO(xxx) avoid constant 20
         QString schemaFilename = m_pConfig->getResourcePath();
         schemaFilename.append("schema.xml");
         QString okToExit = tr("Click OK to exit.");
