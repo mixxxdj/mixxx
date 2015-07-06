@@ -6,9 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>743</width>
-    <height>369</height>
+    <width>686</width>
+    <height>446</height>
    </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Sound Hardware Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -106,36 +109,23 @@
        </item>
       </layout>
      </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Minimum</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>12</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="latencyTipsGroupBox">
-     <property name="title">
-      <string>Latency Tips</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QLabel" name="latencyTipsLabel">
-        <property name="text">
-         <string>&lt;ul&gt;
-&lt;li&gt;Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
-&lt;li&gt;Downsize your audio buffer to improve Mixxx's responsiveness&lt;/li&gt;
-&lt;/ul&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="limitsHint">
-        <property name="text">
-         <string>&lt;ul&gt;&lt;li&gt;Enable Real-Time scheduling (currently disabled) see the &lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&gt;Mixxx Wiki&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</string>
-        </property>
-        <property name="openExternalLinks">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
    </item>
    <item>
     <widget class="QTabWidget" name="ioTabs">
@@ -185,6 +175,48 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="Hints">
+     <property name="title">
+      <string>Hints</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <item row="5" column="0">
+       <widget class="QLabel" name="limitsHint">
+        <property name="text">
+         <string>Enable Real-Time scheduling (currently disabled), see the &lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&gt;Mixxx Wiki&lt;/a&gt;.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="underflowCounterHint">
+        <property name="text">
+         <string>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="audioBufferHint">
+        <property name="text">
+         <string>Downsize your audio buffer to improve Mixxx's responsiveness.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="buttonsHLayout">
      <item>
       <widget class="QPushButton" name="queryButton">
@@ -221,6 +253,22 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Expanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

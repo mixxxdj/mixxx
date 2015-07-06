@@ -26,8 +26,8 @@
 
 
 DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config)
-            : QWidget(parent),
-              m_pconfig(config) {
+        : DlgPreferencePage(parent),
+          m_pconfig(config) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);

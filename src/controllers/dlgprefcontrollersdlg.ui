@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>DlgPrefNoControllersDlg</class>
- <widget class="QWidget" name="DlgPrefNoControllersDlg" >
+ <class>DlgPrefControllersDlg</class>
+ <widget class="QWidget" name="DlgPrefControllersDlg" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -17,7 +17,7 @@
        <enum>Qt::AlignTop</enum>
      </property>
   <item>
-    <widget class="QLabel" name="TextLabel3_2" >
+    <widget class="QLabel" name="noControllersAvailable" >
      <property name="enabled" >
       <bool>true</bool>
      </property>

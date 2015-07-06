@@ -12,8 +12,9 @@
 #include "ui_dlgprefbeatsdlg.h"
 #include "vamp/vamppluginloader.h"
 #include "configobject.h"
+#include "preferences/dlgpreferencepage.h"
 
-class DlgPrefBeats : public QWidget, public Ui::DlgBeatsDlg {
+class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     Q_OBJECT
   public:
     DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config);

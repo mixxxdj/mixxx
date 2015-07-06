@@ -49,16 +49,14 @@ const bool SoundSource::s_bDebugMetadata = false;
    return type is int: 0 for OK, -1 for an error.
  */
 SoundSource::SoundSource(QString qFilename)
+	: m_qFilename(qFilename)
 {
-    m_qFilename = qFilename;
     m_iSampleRate = 0;
     m_fBPM = 0.0f;
     m_fReplayGain = 0.0f;
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iChannels = 0;
-    m_sKey = "";
-    m_sComposer = "";
 }
 
 SoundSource::~SoundSource()
@@ -95,6 +93,10 @@ QString SoundSource::getAlbum()
 {
     return m_sAlbum;
 }
+QString SoundSource::getAlbumArtist()
+{
+    return m_sAlbumArtist;
+}
 QString SoundSource::getType()
 {
     return m_sType;
@@ -114,6 +116,10 @@ QString SoundSource::getGenre()
 QString SoundSource::getComposer()
 {
     return m_sComposer;
+}
+QString SoundSource::getGrouping()
+{
+    return m_sGrouping;
 }
 QString SoundSource::getTrackNumber()
 {
@@ -152,6 +158,10 @@ void SoundSource::setTitle(QString title)
 {
     m_sTitle = title;
 }
+void SoundSource::setAlbumArtist(QString albumArtist)
+{
+    m_sAlbumArtist = albumArtist;
+}
 void SoundSource::setAlbum(QString album)
 {
     m_sAlbum = album;
@@ -175,6 +185,10 @@ void SoundSource::setGenre(QString genre)
 void SoundSource::setComposer(QString composer)
 {
     m_sComposer = composer;
+}
+void SoundSource::setGrouping(QString grouping)
+{
+    m_sGrouping = grouping;
 }
 void SoundSource::setTrackNumber(QString trackNumber)
 {
@@ -335,10 +349,21 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
             }
         }
     }
+
+    TagLib::ID3v2::FrameList albumArtistFrame = id3v2->frameListMap()["TPE2"];
+    if (!albumArtistFrame.isEmpty()) {
+        QString sAlbumArtist = TStringToQString(albumArtistFrame.front()->toString());
+        setAlbumArtist(sAlbumArtist);
+    }
     TagLib::ID3v2::FrameList composerFrame = id3v2->frameListMap()["TCOM"];
     if (!composerFrame.isEmpty()) {
         QString sComposer = TStringToQString(composerFrame.front()->toString());
         setComposer(sComposer);
+    }
+    TagLib::ID3v2::FrameList groupingFrame = id3v2->frameListMap()["TIT1"];
+    if (!groupingFrame.isEmpty()) {
+        QString sGrouping = TStringToQString(groupingFrame.front()->toString());
+        setGrouping(sGrouping);
     }
 
     return true;
@@ -367,6 +392,19 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
         QString sReplayGain = TStringToQString(ape->itemListMap()["REPLAYGAIN_TRACK_GAIN"].toString());
         parseReplayGainString(sReplayGain);
     }
+
+    if (ape->itemListMap().contains("Album Artist")) {
+        m_sAlbumArtist = TStringToQString(ape->itemListMap()["Album Artist"].toString());
+    }
+
+    if (ape->itemListMap().contains("Composer")) {
+        m_sComposer = TStringToQString(ape->itemListMap()["Composer"].toString());
+    }
+
+    if (ape->itemListMap().contains("Grouping")) {
+        m_sGrouping = TStringToQString(ape->itemListMap()["Grouping"].toString());
+    }
+
     return true;
 }
 
@@ -417,12 +455,33 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
         QString key = TStringToQString(keyStr.toString());
         setKey(key);
     }
-
-    if (getKey() == "" && xiph->fieldListMap().contains("INITIALKEY")) {
+    if (getKey().isEmpty() && xiph->fieldListMap().contains("INITIALKEY")) {
         TagLib::StringList keyStr = xiph->fieldListMap()["INITIALKEY"];
         QString key = TStringToQString(keyStr.toString());
         setKey(key);
     }
+
+    if (xiph->fieldListMap().contains("ALBUMARTIST")) {
+        TagLib::StringList albumArtistString = xiph->fieldListMap()["ALBUMARTIST"];
+        m_sAlbumArtist = TStringToQString(albumArtistString.toString());
+    } else {
+    	// try alternative field name
+        if (xiph->fieldListMap().contains("ALBUM_ARTIST")) {
+            TagLib::StringList albumArtistString = xiph->fieldListMap()["ALBUM_ARTIST"];
+            m_sAlbumArtist = TStringToQString(albumArtistString.toString());
+        }
+    }
+
+    if (xiph->fieldListMap().contains("COMPOSER")) {
+        TagLib::StringList composerString = xiph->fieldListMap()["COMPOSER"];
+        m_sComposer = TStringToQString(composerString.toString());
+    }
+
+    if (xiph->fieldListMap().contains("GROUPING")) {
+        TagLib::StringList groupingString = xiph->fieldListMap()["GROUPING"];
+        m_sGrouping = TStringToQString(groupingString.toString());
+    }
+
     return true;
 }
 
@@ -447,12 +506,28 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
         processBpmString("MP4", sBpm);
     }
 
+    // Get Album Artist
+    if (mp4->itemListMap().contains("aART")) {
+        // this is technically a list of values -> concatenate into single string
+        QString albumArtist = TStringToQString(
+            mp4->itemListMap()["aART"].toStringList().toString());
+        setAlbumArtist(albumArtist);
+    }
+
     // Get Composer
     if (mp4->itemListMap().contains("\251wrt")) {
         // rryan 1/2012 I believe this is technically a list of composers. We
         // don't support multiple composers in Mixxx, so just use them joined.
         QString composer = TStringToQString(
             mp4->itemListMap()["\251wrt"].toStringList().toString());
+        setComposer(composer);
+    }
+
+    // Get Grouping
+    if (mp4->itemListMap().contains("\251grp")) {
+        QString grouping = TStringToQString(
+            mp4->itemListMap()["\251grp"].toStringList().toString());
+        setGrouping(grouping);
     }
 
     // Get KEY (conforms to Rapid Evolution)

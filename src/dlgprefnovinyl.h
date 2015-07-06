@@ -18,10 +18,12 @@
 #ifndef DLGPREFNOVINYL_H
 #define DLGPREFNOVINYL_H
 
+#include <QWidget>
+
 #include "ui_dlgprefnovinyldlg.h"
 #include "configobject.h"
+#include "preferences/dlgpreferencepage.h"
 
-class QWidget;
 class SoundManager;
 
 /**
@@ -29,11 +31,11 @@ class SoundManager;
   *@author Albert Santoni
   */
 
-class DlgPrefNoVinyl : public QWidget, Ui::DlgPrefNoVinylDlg  {
+class DlgPrefNoVinyl : public DlgPreferencePage, Ui::DlgPrefNoVinylDlg  {
     Q_OBJECT
-public:
-    DlgPrefNoVinyl(QWidget *parent, SoundManager* soundman, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefNoVinyl();
+  public:
+    DlgPrefNoVinyl(QWidget *parent, SoundManager* soundman, ConfigObject<ConfigValue>* _config);
+    virtual ~DlgPrefNoVinyl();
 };
 
 #endif

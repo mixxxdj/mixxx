@@ -554,9 +554,9 @@ void ControllerEngine::scriptErrorDialog(QString detailedError) {
     props->setType(DLG_WARNING);
     props->setTitle(tr("Controller script error"));
     props->setText(tr("A control you just used is not working properly."));
-    props->setInfoText(tr("<html>(The script code needs to be fixed.)"
-        "<br>For now, you can:<ul><li>Ignore this error for this session but you may experience erratic behavior</li>"
-        "<li>Try to recover by resetting your controller</li></ul></html>"));
+    props->setInfoText("<html>"+tr("The script code needs to be fixed.")+
+        "<p>"+tr("For now, you can: Ignore this error for this session but you may experience erratic behavior.")+
+        "<br>"+tr("Try to recover by resetting your controller.")+"</p>"+"</html>");
     props->setDetails(detailedError);
     props->setKey(detailedError);   // To prevent multiple windows for the same error
 
@@ -1385,7 +1385,7 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
         cot->slotSet(activate ? 1 : 0);
     }
 
-    // used in scratchProcess for the different timer behaviour we need
+    // used in scratchProcess for the different timer behavior we need
     m_brakeActive[deck] = activate;
 
     if (activate) {
