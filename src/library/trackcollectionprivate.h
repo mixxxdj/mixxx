@@ -16,6 +16,7 @@
 #include <QApplication>
 #include <QThread>
 #include <QAtomicInt>
+#include <functional>
 
 #include "configobject.h"
 #include "library/basetrackcache.h"
