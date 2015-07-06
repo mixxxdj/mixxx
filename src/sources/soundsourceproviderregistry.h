@@ -63,6 +63,18 @@ public:
             const SoundSourceProviderPointer& pProvider,
             SoundSourceProviderPriority providerPriority);
 
+    // Deregisters a provider for all supported file extensions.
+    void deregisterProvider(
+            const SoundSourceProviderPointer& pProvider);
+    // Deregisters a provider for a single file extension.
+    void deregisterProviderForFileExtension(
+            const QString& fileExtension,
+            const SoundSourceProviderPointer& pProvider);
+
+    // Deregisters all providers from a plugin library.
+    void deregisterPluginLibrary(
+            const SoundSourcePluginLibraryPointer& pPluginLibrary);
+
     QStringList getRegisteredFileExtensions() const {
         return m_registrations.keys();
     }

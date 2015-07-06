@@ -98,6 +98,56 @@ void SoundSourceProviderRegistry::addRegistrationForFileExtension(
     }
 }
 
+void SoundSourceProviderRegistry::deregisterProvider(
+        const SoundSourceProviderPointer& pProvider) {
+    const QStringList supportedFileExtensions(
+            pProvider->getSupportedFileExtensions());
+    for (const auto& fileExt: supportedFileExtensions) {
+        deregisterProviderForFileExtension(fileExt, pProvider);
+    }
+}
+
+void SoundSourceProviderRegistry::deregisterProviderForFileExtension(
+        const QString& fileExtension,
+        const SoundSourceProviderPointer& pProvider) {
+    auto mapIter(m_registrations.find(fileExtension));
+    if (m_registrations.end() != mapIter) {
+        QList<SoundSourceProviderRegistration>& registrationsForFileExtension = mapIter.value();
+        auto listIter = registrationsForFileExtension.begin();
+        while (registrationsForFileExtension.end() != listIter) {
+            if (listIter->getProvider() == pProvider) {
+                listIter = registrationsForFileExtension.erase(listIter);
+            } else {
+                ++listIter;
+            }
+        }
+        if (registrationsForFileExtension.isEmpty()) {
+            m_registrations.erase(mapIter);
+        }
+    }
+}
+
+void SoundSourceProviderRegistry::deregisterPluginLibrary(
+        const SoundSourcePluginLibraryPointer& pPluginLibrary) {
+    auto mapIter(m_registrations.begin());
+    while (m_registrations.end() != mapIter) {
+        QList<SoundSourceProviderRegistration>& registrationsForFileExtension = mapIter.value();
+        auto listIter = registrationsForFileExtension.begin();
+        while (registrationsForFileExtension.end() != listIter) {
+            if (listIter->getPluginLibrary() == pPluginLibrary) {
+                listIter = registrationsForFileExtension.erase(listIter);
+            } else {
+                ++listIter;
+            }
+        }
+        if (registrationsForFileExtension.isEmpty()) {
+            mapIter = m_registrations.erase(mapIter);
+        } else {
+            ++mapIter;
+        }
+    }
+}
+
 const QList<SoundSourceProviderRegistration>&
 SoundSourceProviderRegistry::getRegistrationsForFileExtension(
         const QString& fileExtension) const {
