@@ -64,12 +64,10 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this, SLOT(slotAnalyzePlaylist()));
 
     pTrackCollection->callSync([this] (TrackCollectionPrivate* pTrackCollectionPrivate){
-        //TODO(MK): Reconnect this!
-        /*
-            connect(&pTrackCollectionPrivate->getPlaylistDAO(), SIGNAL(added(int)),
+        connect(&pTrackCollectionPrivate->getPlaylistDAO(), SIGNAL(added(int)),
                 this, SLOT(slotPlaylistTableChanged(int)),
                 Qt::QueuedConnection);
-*/
+
         connect(&pTrackCollectionPrivate->getPlaylistDAO(), SIGNAL(deleted(int)),
                 this, SLOT(slotPlaylistTableChanged(int)),
                 Qt::QueuedConnection);
