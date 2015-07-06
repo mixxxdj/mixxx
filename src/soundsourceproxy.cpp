@@ -323,7 +323,6 @@ void SoundSourceProxy::nextSoundSourceProvider() {
         closeAudioSource();
         m_pSoundSource.clear();
     }
-    initSoundSource();
 }
 
 void SoundSourceProxy::initSoundSource() {
@@ -399,6 +398,7 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSo
                 << getSoundSourceProvider()->getName();
         // Continue with the next SoundSource provider
         nextSoundSourceProvider();
+        initSoundSource();
     }
     // m_pSoundSource might be invalid when reaching this point
     qWarning() << "Failed to open AudioSource for file"
