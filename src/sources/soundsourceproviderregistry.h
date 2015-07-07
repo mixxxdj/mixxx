@@ -92,7 +92,11 @@ private:
 
     void addRegistrationForFileExtension(
             const QString& fileExtension,
-            const SoundSourceProviderRegistration& registration);
+            SoundSourceProviderRegistration registration);
+
+    static void insertRegistration(
+            QList<SoundSourceProviderRegistration>* pRegistrations,
+            SoundSourceProviderRegistration registration);
 
     FileExtension2RegistrationList m_registrations;
 };

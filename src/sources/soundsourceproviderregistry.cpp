@@ -58,7 +58,7 @@ void SoundSourceProviderRegistry::registerProviderForFileExtension(
         SoundSourceProviderPriority providerPriority) {
     SoundSourceProviderRegistration registration(
         SoundSourcePluginLibraryPointer(), pProvider, providerPriority);
-    addRegistrationForFileExtension(fileExtension, registration);
+    addRegistrationForFileExtension(fileExtension, std::move(registration));
 }
 
 void SoundSourceProviderRegistry::registerPluginProviderForFileExtension(
@@ -68,33 +68,41 @@ void SoundSourceProviderRegistry::registerPluginProviderForFileExtension(
         SoundSourceProviderPriority providerPriority) {
     SoundSourceProviderRegistration registration(
             pPluginLibrary, pProvider, providerPriority);
-    addRegistrationForFileExtension(fileExtension, registration);
+    addRegistrationForFileExtension(fileExtension, std::move(registration));
 }
 
 void SoundSourceProviderRegistry::addRegistrationForFileExtension(
         const QString& fileExtension,
-        const SoundSourceProviderRegistration& registration) {
+        SoundSourceProviderRegistration registration) {
     DEBUG_ASSERT(registration.getProvider());
     QList<SoundSourceProviderRegistration>& registrationsForFileExtension =
             m_registrations[fileExtension];
-    QList<SoundSourceProviderRegistration>::iterator i(
+    QList<SoundSourceProviderRegistration>::iterator listIter(
             registrationsForFileExtension.begin());
+    insertRegistration(&registrationsForFileExtension, registration);
+}
+
+void SoundSourceProviderRegistry::insertRegistration(
+        QList<SoundSourceProviderRegistration> *pRegistrations,
+        SoundSourceProviderRegistration registration) {
+    QList<SoundSourceProviderRegistration>::iterator listIter(
+            pRegistrations->begin());
     // Perform a linear search through the list & insert
-    while (registrationsForFileExtension.end() != i) {
+    while (pRegistrations->end() != listIter) {
         // Priority comparison with <=: New registrations will be inserted
         // before existing registrations with equal priority, but after
         // existing registrations with higher priority.
-        if (i->getProviderPriority() <= registration.getProviderPriority()) {
-            i = registrationsForFileExtension.insert(i, registration);
-            DEBUG_ASSERT(registrationsForFileExtension.end() != i);
-            break; // exit loop
+        if (listIter->getProviderPriority() <= registration.getProviderPriority()) {
+            listIter = pRegistrations->insert(listIter, std::move(registration));
+            DEBUG_ASSERT(pRegistrations->end() != listIter);
+            return; // done
         } else {
-            ++i; // continue loop
+            ++listIter; // continue loop
         }
     }
-    if (registrationsForFileExtension.end() == i) {
+    if (pRegistrations->end() == listIter) {
         // List was empty or registration has the lowest priority
-        registrationsForFileExtension.append(registration);
+        pRegistrations->append(std::move(registration));
     }
 }
 
