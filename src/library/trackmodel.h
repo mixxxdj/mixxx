@@ -107,21 +107,16 @@ class TrackModel {
 
     virtual QString getModelSetting(QString name,
                                     TrackCollectionPrivate* pTrackCollectionPrivate) {
-        QString result;
         SettingsDAO settings(pTrackCollectionPrivate->getDatabase());
         QString key = m_settingsNamespace + "." + name;
-        result = settings.getValue(key);
-        return result;
+        return settings.getValue(key);
     }
 
-    virtual bool setModelSetting(QString name, QVariant value) {
-				bool result;
-				m_pTrackCollection->callSync([this, &result, name, value] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+    virtual bool setModelSetting(QString name, QVariant value,
+				 TrackCollectionPrivate* pTrackCollectionPrivate) {
         SettingsDAO settings(pTrackCollectionPrivate->getDatabase());
         QString key = m_settingsNamespace + "." + name;
-        result = settings.setValue(key, value);
-				},__PRETTY_FUNCTION__);
-				return result;
+        return settings.setValue(key, value);
     }
 
     virtual int defaultSortColumn() const {

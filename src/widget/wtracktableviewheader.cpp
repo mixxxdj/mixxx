@@ -126,7 +126,7 @@ void WTrackTableViewHeader::saveHeaderState() {
     m_pTrackCollection->callSync(
             [this, &headerState, track_model] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         Q_UNUSED(pTrackCollectionPrivate);
-        track_model->setModelSetting("header_state", headerState);
+        track_model->setModelSetting("header_state", headerState, pTrackCollectionPrivate);
     }, __PRETTY_FUNCTION__);
     //qDebug() << "Saving old header state:" << result << headerState;
 }
