@@ -834,7 +834,7 @@ ElectrixTweaker.pflButtonLED = function (value, group, control) {
 	midi.sendShortMsg(
 		0x90,
 		ElectrixTweaker.buttons[group][control],
-		(engine.getValue(group, 'pfl')) ? ElectrixTweaker.colorCodes['green'] : ElectrixTweaker.colorCodes['off']
+		(value) ? ElectrixTweaker.colorCodes['green'] : ElectrixTweaker.colorCodes['off']
 	)
 }
 
@@ -1051,7 +1051,7 @@ ElectrixTweaker.syncLED = function (value, group, control) {
 	midi.sendShortMsg(
 		0x90,
 		ElectrixTweaker.buttons[group]['sync'],
-		(engine.getValue(group, 'sync_enabled')) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+		(value) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
 	)
 }
 
@@ -1073,7 +1073,7 @@ ElectrixTweaker.keylockLED = function (value, group, control) {
 	midi.sendShortMsg(
 		0x90,
 		ElectrixTweaker.buttons[group]['key'],
-		(engine.getValue(group, 'keylock')) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+		(value) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
 	)
 }
 
@@ -1084,17 +1084,6 @@ ElectrixTweaker.quantize = function (channel, control, value, status, group) {
 			engine.setValue(group, 'beats_translate_curpos', 1)
 		} else {
 			engine.setValue(group, 'quantize', ! engine.getValue(group, 'quantize'))
-			
-			midi.sendShortMsg(
-				0x90,
-				ElectrixTweaker.buttons[group]['back'],
-				(engine.getValue(group, 'quantize')) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
-			)
-			midi.sendShortMsg(
-				0x90,
-				ElectrixTweaker.buttons[group]['forward'],
-				(engine.getValue(group, 'quantize')) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
-			)
 		}
 	}
 }
@@ -1102,6 +1091,16 @@ ElectrixTweaker.quantizeLED = function (value, group, control) {
 	midi.sendShortMsg(
 		0x90,
 		ElectrixTweaker.buttons[group]['quantize'],
-		(engine.getValue(group, 'quantize')) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+		(value) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+	)
+	midi.sendShortMsg(
+		0x90,
+		ElectrixTweaker.buttons[group]['back'],
+		(value) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
+	)
+	midi.sendShortMsg(
+		0x90,
+		ElectrixTweaker.buttons[group]['forward'],
+		(value) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
 	)
 }
