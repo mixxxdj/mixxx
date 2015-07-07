@@ -59,45 +59,45 @@
                                   </NumberBpm>
                               </Children>
                           </WidgetGroup> -->
-        		          <WidgetGroup>
-        	                <ObjectName>MixerLeftMargin</ObjectName>
-        	                <Layout>horizontal</Layout>
-        	                <SizePolicy>me,min</SizePolicy>
-        	                <MinimumSize>1,</MinimumSize>
-        	                <Children>
-        	                </Children>
-        	              </WidgetGroup>
-        				  <WidgetGroup>
-        					<ObjectName>MixerContainer</ObjectName>
-        					<Layout>vertical</Layout>
-        					<SizePolicy>e,max</SizePolicy>
-        					<Children>
-        						<WidgetGroup>
-        						    <SizePolicy>max,min</SizePolicy>
-        							<Layout>horizontal</Layout>
-                                                                <MaximumSize>400,400</MaximumSize>
-        							<Children>
-        							   <WidgetGroup>
-        							        <SizePolicy>max,min</SizePolicy>
-        						            <Layout>horizontal</Layout>
-        						            <Children>
-        										<Template src="skin:mixer_channel_vertical.xml">
-        											<SetVariable name="channum">3</SetVariable>
-              									</Template>
-        						            </Children>
-        						            <Connection>
-        						                <ConfigKey>[Master],show_4decks</ConfigKey>
-        						                <BindProperty>visible</BindProperty>
-        						            </Connection>
-        						       </WidgetGroup>
-        							   <Template src="skin:mixer_channel.xml">
-        									<SetVariable name="channum">1</SetVariable>
-        							   </Template>
-        							   <Template src="skin:mixer_channel_reversed.xml">
-        									<SetVariable name="channum">2</SetVariable>
-        							   </Template>
-        	                           <WidgetGroup>
-      	                                  <SizePolicy>max,min</SizePolicy>
+                          <WidgetGroup>
+                            <ObjectName>MixerLeftMargin</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>me,min</SizePolicy>
+                            <MinimumSize>1,</MinimumSize>
+                            <Children>
+                            </Children>
+                          </WidgetGroup>
+                            <WidgetGroup>
+                            <ObjectName>MixerContainer</ObjectName>
+                            <Layout>vertical</Layout>
+                            <SizePolicy>e,max</SizePolicy>
+                            <Children>
+                                <WidgetGroup>
+                                    <SizePolicy>max,min</SizePolicy>
+                                    <Layout>horizontal</Layout>
+                                    <MaximumSize>400,400</MaximumSize>
+                                    <Children>
+                                        <WidgetGroup>
+                                            <SizePolicy>max,min</SizePolicy>
+                                            <Layout>horizontal</Layout>
+                                            <Children>
+                                                <Template src="skin:mixer_channel_vertical.xml">
+                                                    <SetVariable name="channum">3</SetVariable>
+                                                </Template>
+                                            </Children>
+                                            <Connection>
+                                                <ConfigKey>[Master],show_4decks</ConfigKey>
+                                                <BindProperty>visible</BindProperty>
+                                            </Connection>
+                                       </WidgetGroup>
+                                       <Template src="skin:mixer_channel.xml">
+                                            <SetVariable name="channum">1</SetVariable>
+                                       </Template>
+                                       <Template src="skin:mixer_channel_reversed.xml">
+                                            <SetVariable name="channum">2</SetVariable>
+                                       </Template>
+                                       <WidgetGroup>
+                                          <SizePolicy>max,min</SizePolicy>
                                           <Layout>horizontal</Layout>
                                           <Children>
                                               <Template src="skin:mixer_channel_vertical.xml">
@@ -109,11 +109,11 @@
                                               <BindProperty>visible</BindProperty>
                                           </Connection>
                                        </WidgetGroup>
-        							</Children>
-        						</WidgetGroup>
-        					</Children>
-        				  </WidgetGroup>
-        				  <WidgetGroup>
+                                    </Children>
+                                </WidgetGroup>
+                            </Children>
+                         </WidgetGroup>
+                            <WidgetGroup>
                             <ObjectName>MixerRightMargin</ObjectName>
                             <Layout>horizontal</Layout>
                             <SizePolicy>me,min</SizePolicy>
@@ -147,13 +147,13 @@
                                 </Children>
                             </WidgetGroup>
                         </Children>
-                            <Connection>
-						<ConfigKey>[Master],show_xfader</ConfigKey>
-							<BindProperty>visible</BindProperty>
-						</Connection>
+                        <Connection>
+                            <ConfigKey>[Master],show_xfader</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                        </Connection>
                     </WidgetGroup>
-				</Children>
-			</WidgetGroup>
+                </Children>
+            </WidgetGroup>
             <WidgetGroup>
               <Layout>vertical</Layout>
               <SizePolicy>min,me</SizePolicy>
@@ -162,9 +162,9 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
-            			<WidgetGroup>
-            			    <ObjectName>MasterControls</ObjectName>
-            			    <SizePolicy>min,me</SizePolicy>
+                        <WidgetGroup>
+                            <ObjectName>MasterControls</ObjectName>
+                            <SizePolicy>min,me</SizePolicy>
                             <Layout>vertical</Layout>
                             <Children>
                                 <WidgetGroup>
@@ -294,6 +294,6 @@
                     </WidgetGroup>
                 </Children>
             </WidgetGroup>
-		</Children>
-	</WidgetGroup>
+        </Children>
+    </WidgetGroup>
 </Template>
