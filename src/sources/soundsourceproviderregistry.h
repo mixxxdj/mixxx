@@ -84,7 +84,7 @@ public:
             const SoundSourcePluginLibraryPointer& pPluginLibrary);
 
     QStringList getRegisteredFileExtensions() const {
-        return m_registrations.keys();
+        return m_registry.keys();
     }
 
     // Returns all registrations for the given file extension.
@@ -96,8 +96,6 @@ public:
 private:
     static const QList<SoundSourceProviderRegistration> EMPTY_REGISTRATION_LIST;
 
-    typedef QMap<QString, QList<SoundSourceProviderRegistration>> FileExtension2RegistrationList;
-
     void addRegistrationForFileExtension(
             const QString& fileExtension,
             SoundSourceProviderRegistration registration);
@@ -106,7 +104,9 @@ private:
             QList<SoundSourceProviderRegistration>* pRegistrations,
             SoundSourceProviderRegistration registration);
 
-    FileExtension2RegistrationList m_registrations;
+    typedef QMap<QString, QList<SoundSourceProviderRegistration>> FileExtension2RegistrationList;
+
+    FileExtension2RegistrationList m_registry;
 };
 
 } // namespace Mixxx

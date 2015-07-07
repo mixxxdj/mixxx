@@ -76,7 +76,7 @@ void SoundSourceProviderRegistry::addRegistrationForFileExtension(
         SoundSourceProviderRegistration registration) {
     DEBUG_ASSERT(registration.getProvider());
     QList<SoundSourceProviderRegistration>& registrationsForFileExtension =
-            m_registrations[fileExtension];
+            m_registry[fileExtension];
     QList<SoundSourceProviderRegistration>::iterator listIter(
             registrationsForFileExtension.begin());
     insertRegistration(&registrationsForFileExtension, registration);
@@ -87,7 +87,7 @@ void SoundSourceProviderRegistry::reregisterProviderForFileExtension(
         const SoundSourceProviderPointer& pProvider,
         SoundSourceProviderPriority providerPriority) {
     QList<SoundSourceProviderRegistration>& registrationsForFileExtension =
-            m_registrations[fileExtension];
+            m_registry[fileExtension];
     QList<SoundSourceProviderRegistration>::iterator listIter(
             registrationsForFileExtension.begin());
     // Perform a linear search through the list
@@ -140,8 +140,8 @@ void SoundSourceProviderRegistry::deregisterProvider(
 void SoundSourceProviderRegistry::deregisterProviderForFileExtension(
         const QString& fileExtension,
         const SoundSourceProviderPointer& pProvider) {
-    auto mapIter(m_registrations.find(fileExtension));
-    if (m_registrations.end() != mapIter) {
+    auto mapIter(m_registry.find(fileExtension));
+    if (m_registry.end() != mapIter) {
         QList<SoundSourceProviderRegistration>& registrationsForFileExtension = mapIter.value();
         auto listIter = registrationsForFileExtension.begin();
         while (registrationsForFileExtension.end() != listIter) {
@@ -152,15 +152,15 @@ void SoundSourceProviderRegistry::deregisterProviderForFileExtension(
             }
         }
         if (registrationsForFileExtension.isEmpty()) {
-            m_registrations.erase(mapIter);
+            m_registry.erase(mapIter);
         }
     }
 }
 
 void SoundSourceProviderRegistry::deregisterPluginLibrary(
         const SoundSourcePluginLibraryPointer& pPluginLibrary) {
-    auto mapIter(m_registrations.begin());
-    while (m_registrations.end() != mapIter) {
+    auto mapIter(m_registry.begin());
+    while (m_registry.end() != mapIter) {
         QList<SoundSourceProviderRegistration>& registrationsForFileExtension = mapIter.value();
         auto listIter = registrationsForFileExtension.begin();
         while (registrationsForFileExtension.end() != listIter) {
@@ -171,7 +171,7 @@ void SoundSourceProviderRegistry::deregisterPluginLibrary(
             }
         }
         if (registrationsForFileExtension.isEmpty()) {
-            mapIter = m_registrations.erase(mapIter);
+            mapIter = m_registry.erase(mapIter);
         } else {
             ++mapIter;
         }
@@ -182,8 +182,8 @@ const QList<SoundSourceProviderRegistration>&
 SoundSourceProviderRegistry::getRegistrationsForFileExtension(
         const QString& fileExtension) const {
     FileExtension2RegistrationList::const_iterator i(
-            m_registrations.find(fileExtension));
-    if (m_registrations.end() != i) {
+            m_registry.find(fileExtension));
+    if (m_registry.end() != i) {
         return i.value();
     } else {
         return EMPTY_REGISTRATION_LIST;
