@@ -82,6 +82,28 @@ void SoundSourceProviderRegistry::addRegistrationForFileExtension(
     insertRegistration(&registrationsForFileExtension, registration);
 }
 
+void SoundSourceProviderRegistry::reregisterProviderForFileExtension(
+        const QString& fileExtension,
+        const SoundSourceProviderPointer& pProvider,
+        SoundSourceProviderPriority providerPriority) {
+    QList<SoundSourceProviderRegistration>& registrationsForFileExtension =
+            m_registrations[fileExtension];
+    QList<SoundSourceProviderRegistration>::iterator listIter(
+            registrationsForFileExtension.begin());
+    // Perform a linear search through the list
+    while (registrationsForFileExtension.end() != listIter) {
+        if (listIter->getProvider() == pProvider) {
+            if (listIter->getProviderPriority() != providerPriority) {
+                SoundSourceProviderRegistration registration(*listIter);
+                registrationsForFileExtension.erase(listIter);
+                insertRegistration(&registrationsForFileExtension, std::move(registration));
+            }
+            // else nothing to do
+            return; // done
+        }
+    }
+}
+
 void SoundSourceProviderRegistry::insertRegistration(
         QList<SoundSourceProviderRegistration> *pRegistrations,
         SoundSourceProviderRegistration registration) {
