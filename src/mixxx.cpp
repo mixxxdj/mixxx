@@ -113,6 +113,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pShowEqs(NULL),
           m_pShowXFader(NULL),
           m_pShow4Decks(NULL),
+          m_pShowSpinnies(NULL),
           m_pMaximizeLibrary(NULL),
 
           m_pPrefDlg(NULL),
@@ -582,6 +583,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShowEqs;
     delete m_pShowXFader;
     delete m_pShow4Decks;
+    delete m_pShowSpinnies;
     delete m_pMaximizeLibrary;
     delete m_pNumAuxiliaries;
     delete m_pNumDecks;
@@ -886,6 +888,10 @@ void MixxxMainWindow::slotViewShow4Decks(bool enable) {
     toggleVisibility(ConfigKey("[Master]", "show_4decks"), enable);
 }
 
+void MixxxMainWindow::slotViewShowSpinnies(bool enable) {
+    toggleVisibility(ConfigKey("[Spinny]", "show_spinnies"), enable);
+}
+
 void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     ControlObject* pVisibilityControl = ControlObject::getControl(key);
     pAction->setEnabled(pVisibilityControl != NULL);
@@ -953,6 +959,11 @@ void MixxxMainWindow::slotToggleChecked4Decks() {
     updateCheckedMenuAction(m_pViewShow4Decks, key);
 }
 
+void MixxxMainWindow::slotToggleCheckedSpinnies() {
+    ConfigKey key("[Spinny]", "show_spinnies");
+    updateCheckedMenuAction(m_pViewShowSpinnies, key);
+}
+
 void MixxxMainWindow::slotToggleCheckedMaximizeLibrary() {
     ConfigKey key("[Master]", "maximize_library");
     updateCheckedMenuAction(m_pViewMaximizeLibrary, key);
@@ -992,6 +1003,8 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[Master]", "show_xfader"));
     setVisibilityOptionState(m_pViewShow4Decks,
                              ConfigKey("[Master]", "show_4decks"));
+    setVisibilityOptionState(m_pViewShowSpinnies,
+                             ConfigKey("[Spinny]", "show_spinnies"));
     setVisibilityOptionState(m_pViewMaximizeLibrary,
                              ConfigKey("[Master]", "maximize_library"));
 
@@ -1030,6 +1043,9 @@ void MixxxMainWindow::onNewSkinLoaded() {
     linkSkinWidget(&m_pShow4Decks,
                    ConfigKey("[Master]", "show_4decks"),
                    SLOT(slotToggleChecked4Decks()));
+    linkSkinWidget(&m_pShowSpinnies,
+                   ConfigKey("[Spinny]", "show_spinnies"),
+                   SLOT(slotToggleCheckedSpinnies()));
     linkSkinWidget(&m_pMaximizeLibrary,
                    ConfigKey("[Master]", "maximize_library"),
                    SLOT(slotToggleCheckedMaximizeLibrary()));
@@ -1591,6 +1607,20 @@ void MixxxMainWindow::initActions()
     connect(m_pViewShow4Decks, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShow4Decks(bool)));
 
+    QString showSpinniesTitle = tr("Show Spinning Vinyl");
+    QString showSpinniesText = tr("Show the spinnining vinyl widget on the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pViewShowSpinnies = new QAction(showSpinniesTitle, this);
+    m_pViewShowSpinnies->setCheckable(true);
+    m_pViewShowSpinnies->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowSpinnies"),
+                                                  tr("Ctrl+5", "Menubar|View|Show Spinning Vinyl"))));
+    m_pViewShowSpinnies->setStatusTip(showSpinniesText);
+    m_pViewShowSpinnies->setWhatsThis(buildWhatsThis(showSpinniesTitle, showSpinniesText));
+    connect(m_pViewShowSpinnies, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowSpinnies(bool)));
+
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
     m_pOptionsRecord = new QAction(recordTitle, this);
@@ -1778,6 +1808,7 @@ void MixxxMainWindow::initMenuBar() {
 #ifdef __VINYLCONTROL__
     m_pViewMenu->addAction(m_pViewVinylControl);
 #endif
+    m_pViewMenu->addAction(m_pViewShowSpinnies);
     m_pViewMenu->addAction(m_pViewShowMixer);
     m_pViewMenu->addAction(m_pViewShowEqs);
     m_pViewMenu->addAction(m_pViewShowXFader);
@@ -2233,6 +2264,7 @@ void MixxxMainWindow::rebootMixxxView() {
     delete m_pShowEqs;
     delete m_pShowXFader;
     delete m_pShow4Decks;
+    delete m_pShowSpinnies;
     delete m_pMaximizeLibrary;
 
     m_pShowSamplers = NULL;
@@ -2245,6 +2277,7 @@ void MixxxMainWindow::rebootMixxxView() {
     m_pShowEqs = NULL;
     m_pShowXFader = NULL;
     m_pShow4Decks = NULL;
+    m_pShowSpinnies = NULL;
     m_pMaximizeLibrary = NULL;
 
     if (m_pWidgetParent) {

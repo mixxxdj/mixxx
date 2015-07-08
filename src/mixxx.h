@@ -126,6 +126,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowEqs(bool);
     void slotViewShowXFader(bool);
     void slotViewShow4Decks(bool);
+    void slotViewShowSpinnies(bool);
     void slotViewMaximizeLibrary(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
@@ -163,6 +164,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotToggleCheckedEqs();
     void slotToggleCheckedXFader();
     void slotToggleChecked4Decks();
+    void slotToggleCheckedSpinnies();
     void slotToggleCheckedMaximizeLibrary();
 
   signals:
@@ -273,6 +275,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewShowEqs;
     QAction* m_pViewShowXFader;
     QAction* m_pViewShow4Decks;
+    QAction* m_pViewShowSpinnies;
     QAction* m_pViewMaximizeLibrary;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;
@@ -300,6 +303,7 @@ class MixxxMainWindow : public QMainWindow {
     ControlObjectSlave* m_pShowEqs;
     ControlObjectSlave* m_pShowXFader;
     ControlObjectSlave* m_pShow4Decks;
+    ControlObjectSlave* m_pShowSpinnies;
     ControlObjectSlave* m_pMaximizeLibrary;
     ControlObject* m_pNumAuxiliaries;
 
