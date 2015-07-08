@@ -1445,7 +1445,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowSamplers->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowSamplers"),
-                                                  tr("Ctrl+4", "Menubar|View|Show Samplers"))));
+                                                  tr("Ctrl+6", "Menubar|View|Show Samplers"))));
     m_pViewShowSamplers->setStatusTip(showSamplersText);
     m_pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
     connect(m_pViewShowSamplers, SIGNAL(toggled(bool)),
@@ -1460,7 +1460,7 @@ void MixxxMainWindow::initActions()
     m_pViewVinylControl->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowVinylControl"),
-            tr("Ctrl+6", "Menubar|View|Show Vinyl Control Section"))));
+            tr("Ctrl+7", "Menubar|View|Show Vinyl Control Section"))));
     m_pViewVinylControl->setStatusTip(showVinylControlText);
     m_pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
     connect(m_pViewVinylControl, SIGNAL(toggled(bool)),
@@ -1475,7 +1475,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowMicrophone->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowMicrophone"),
-            tr("Ctrl+2", "Menubar|View|Show Microphone Section"))));
+            tr("Ctrl+4", "Menubar|View|Show Microphone Section"))));
     m_pViewShowMicrophone->setStatusTip(showMicrophoneText);
     m_pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
     connect(m_pViewShowMicrophone, SIGNAL(toggled(bool)),
@@ -1489,7 +1489,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowPreviewDeck->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowPreviewDeck"),
-                                                  tr("Ctrl+0", "Menubar|View|Show Preview Deck"))));
+                                                  tr("Ctrl+2", "Menubar|View|Show Preview Deck"))));
     m_pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     m_pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
@@ -1503,7 +1503,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowEffects->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowEffects"),
-                                                  tr("Ctrl+3", "Menubar|View|Show Effect Rack"))));
+                                                  tr("Ctrl+5", "Menubar|View|Show Effect Rack"))));
     m_pViewShowEffects->setStatusTip(showEffectsText);
     m_pViewShowEffects->setWhatsThis(buildWhatsThis(showEffectsTitle, showEffectsText));
     connect(m_pViewShowEffects, SIGNAL(toggled(bool)),
@@ -1517,7 +1517,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowCoverArt->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowCoverArt"),
-                                                  tr("Ctrl+'", "Menubar|View|Show Cover Art"))));
+                                                  tr("Ctrl+¡", "Menubar|View|Show Cover Art"))));
     m_pViewShowCoverArt->setStatusTip(showCoverArtText);
     m_pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
     connect(m_pViewShowCoverArt, SIGNAL(toggled(bool)),
@@ -1545,7 +1545,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowLibrary->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowLibrary"),
-                                                  tr("Ctrl+1", "Menubar|View|Show Library"))));
+                                                  tr("Ctrl+3", "Menubar|View|Show Library"))));
     m_pViewShowLibrary->setStatusTip(showLibraryText);
     m_pViewShowLibrary->setWhatsThis(buildWhatsThis(showLibraryTitle, showLibraryText));
     connect(m_pViewShowLibrary, SIGNAL(toggled(bool)),
@@ -1559,7 +1559,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowMixer->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowMixer"),
-                                                  tr("Ctrl+7", "Menubar|View|Show Mixer"))));
+                                                  tr("Ctrl+9", "Menubar|View|Show Mixer"))));
     m_pViewShowMixer->setStatusTip(showMixerText);
     m_pViewShowMixer->setWhatsThis(buildWhatsThis(showMixerTitle, showMixerText));
     connect(m_pViewShowMixer, SIGNAL(toggled(bool)),
@@ -1573,7 +1573,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowEqs->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowEqs"),
-                                                  tr("Ctrl+8", "Menubar|View|Show Eqs"))));
+                                                  tr("Ctrl+0", "Menubar|View|Show Eqs"))));
     m_pViewShowEqs->setStatusTip(showEqsText);
     m_pViewShowEqs->setWhatsThis(buildWhatsThis(showEqsTitle, showEqsText));
     connect(m_pViewShowEqs, SIGNAL(toggled(bool)),
@@ -1587,7 +1587,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowXFader->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowXFader"),
-                                                  tr("Ctrl+9", "Menubar|View|Show Crossfader"))));
+                                                  tr("Ctrl+'", "Menubar|View|Show Crossfader"))));
     m_pViewShowXFader->setStatusTip(showXFaderText);
     m_pViewShowXFader->setWhatsThis(buildWhatsThis(showXFaderTitle, showXFaderText));
     connect(m_pViewShowXFader, SIGNAL(toggled(bool)),
@@ -1601,7 +1601,7 @@ void MixxxMainWindow::initActions()
     m_pViewShow4Decks->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_Show4Decks"),
-                                                  tr("Ctrl+5", "Menubar|View|Show 4 Decks"))));
+                                                  tr("Ctrl+1", "Menubar|View|Show 4 Decks"))));
     m_pViewShow4Decks->setStatusTip(show4DecksText);
     m_pViewShow4Decks->setWhatsThis(buildWhatsThis(show4DecksTitle, show4DecksText));
     connect(m_pViewShow4Decks, SIGNAL(toggled(bool)),
@@ -1615,7 +1615,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowSpinnies->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowSpinnies"),
-                                                  tr("Ctrl+5", "Menubar|View|Show Spinning Vinyl"))));
+                                                  tr("Ctrl+8", "Menubar|View|Show Spinning Vinyl"))));
     m_pViewShowSpinnies->setStatusTip(showSpinniesText);
     m_pViewShowSpinnies->setWhatsThis(buildWhatsThis(showSpinniesTitle, showSpinniesText));
     connect(m_pViewShowSpinnies, SIGNAL(toggled(bool)),
