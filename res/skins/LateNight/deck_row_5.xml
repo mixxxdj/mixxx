@@ -55,23 +55,24 @@
             <Layout>horizontal</Layout>
             <Children>
               <PushButton>
-	              <TooltipId>show_spinny</TooltipId>
-	              <Style></Style>
-	              <NumberStates>2</NumberStates>
-	              <State>
-		              <Number>0</Number>
-		              <Pressed>btn_spinny1.png</Pressed>
-		              <Unpressed>btn_spinny1.png</Unpressed>
-	              </State>
-	              <State>
-		              <Number>1</Number>
-		              <Pressed>btn_spinny1_over.png</Pressed>
-		              <Unpressed>btn_spinny1_over.png</Unpressed>
-	              </State>
-	              <Connection>
-		              <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
-		              <ButtonState>LeftButton</ButtonState>
-	              </Connection>
+                  <TooltipId>quantize</TooltipId>
+                  <Style></Style>
+                  <NumberStates>2</NumberStates>
+                  <State>
+                      <Number>0</Number>
+                      <Pressed>btn_quantize2.png</Pressed>
+                      <Unpressed>btn_quantize2.png</Unpressed>
+                  </State>
+                  <State>
+                      <Number>1</Number>
+                      <Pressed>btn_quantize2_over.png</Pressed>
+                      <Unpressed>btn_quantize2_over.png</Unpressed>
+                  </State>
+                  <Pos>26,23</Pos>
+                  <Connection>
+                      <ConfigKey>[Channel<Variable name="channum"/>],quantize</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                  </Connection>
               </PushButton>
               <PushButton>
 	              <TooltipId>repeat</TooltipId>
@@ -129,26 +130,29 @@
 				          <ButtonState>RightButton</ButtonState>
 			          </Connection>
 		          </PushButton>
-		          <PushButton>
-			          <TooltipId>quantize</TooltipId>
-			          <Style></Style>
-			          <NumberStates>2</NumberStates>
-			          <State>
-				          <Number>0</Number>
-				          <Pressed>btn_quantize2.png</Pressed>
-				          <Unpressed>btn_quantize2.png</Unpressed>
-			          </State>
-			          <State>
-				          <Number>1</Number>
-				          <Pressed>btn_quantize2_over.png</Pressed>
-				          <Unpressed>btn_quantize2_over.png</Unpressed>
-			          </State>
-			          <Pos>26,23</Pos>
-			          <Connection>
-				          <ConfigKey>[Channel<Variable name="channum"/>],quantize</ConfigKey>
-				          <ButtonState>LeftButton</ButtonState>
-			          </Connection>
-		          </PushButton>
+                  <PushButton>
+                    <TooltipId>orientation</TooltipId>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                        <Number>0</Number>
+                        <Pressed>btn_orientation_sampler_left_over.png</Pressed>
+                        <Unpressed>btn_orientation_sampler_left_over.png</Unpressed>
+                    </State>
+                    <State>
+                        <Number>1</Number>
+                        <Pressed>btn_orientation_sampler_master.png</Pressed>
+                        <Unpressed>btn_orientation_sampler_master.png</Unpressed>
+                    </State>
+                    <State>
+                        <Number>2</Number>
+                        <Pressed>btn_orientation_sampler_right_over.png</Pressed>
+                        <Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
+                    </State>
+                    <Connection>
+                        <ConfigKey>[Channel<Variable name="channum"/>],orientation</ConfigKey>
+                        <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
 		          <PushButton>
 			          <TooltipId>keylock</TooltipId>
 			          <Style></Style>
