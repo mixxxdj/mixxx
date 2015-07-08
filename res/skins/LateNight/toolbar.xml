@@ -32,6 +32,43 @@
                     </PushButton>
                 </Children>
             </WidgetGroup>
+            <WidgetGroup> <!-- Spacer -->
+                  <Layout>horizontal</Layout>
+                  <Size>5f,min</Size>
+                  <Children/>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Divider -->
+                  <Layout>vertical</Layout>
+                  <Size>min,min</Size>
+                  <Children>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Style>
+                              QGroupBox {background: #585858;}
+                          </Style>
+                          <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Style>
+                              QGroupBox {background: #585858;}
+                          </Style>
+                          <Children/>
+                      </WidgetGroup>
+                  </Children>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Spacer -->
+                  <Layout>horizontal</Layout>
+                  <Size>5f,min</Size>
+                  <Children/>
+            </WidgetGroup>
             <WidgetGroup>
                 <ObjectName>GuiToggleContainer</ObjectName>
                 <Layout>vertical</Layout>
@@ -86,6 +123,43 @@
                         </Connection>
                     </PushButton>
                 </Children>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Spacer -->
+                  <Layout>horizontal</Layout>
+                  <Size>5f,min</Size>
+                  <Children/>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Divider -->
+                  <Layout>vertical</Layout>
+                  <Size>min,min</Size>
+                  <Children>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Style>
+                              QGroupBox {background: #585858;}
+                          </Style>
+                          <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Style>
+                              QGroupBox {background: #585858;}
+                          </Style>
+                          <Children/>
+                      </WidgetGroup>
+                  </Children>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Spacer -->
+                  <Layout>horizontal</Layout>
+                  <Size>5f,min</Size>
+                  <Children/>
             </WidgetGroup>
             <WidgetGroup>
                 <ObjectName>GuiToggleContainer</ObjectName>
