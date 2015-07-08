@@ -150,17 +150,13 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
 }
 
 // Must be called from TrackCollection
-bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url,
+                                       TrackCollectionPrivate* pTrackCollectionPrivate) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString crateName = index.data().toString();
 
-    int crateId;
-    bool locked;
-    m_pTrackCollection->callSync(
-            [this, &crateName, &crateId, &locked] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        crateId = pTrackCollectionPrivate->getCrateDAO().getCrateIdByName(crateName);
-        locked = pTrackCollectionPrivate->getCrateDAO().isCrateLocked(crateId);
-    }, __PRETTY_FUNCTION__);
+    int crateId = pTrackCollectionPrivate->getCrateDAO().getCrateIdByName(crateName);
+    bool locked = pTrackCollectionPrivate->getCrateDAO().isCrateLocked(crateId);
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
     return !locked && formatSupported;

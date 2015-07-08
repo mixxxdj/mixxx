@@ -15,6 +15,7 @@
 
 #include "trackinfoobject.h"
 #include "treeitemmodel.h"
+#include "trackcollectionprivate.h"
 
 class TrackModel;
 class WLibrary;
@@ -49,9 +50,11 @@ class LibraryFeature : public QObject {
         Q_UNUSED(url);
         return false;
     }
-    virtual bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    virtual bool dragMoveAcceptChild(const QModelIndex& index, QUrl url,
+                                     TrackCollectionPrivate* pTrackCollectionPrivate) {
         Q_UNUSED(index);
         Q_UNUSED(url);
+        Q_UNUSED(pTrackCollectionPrivate);
         return false;
     }
 

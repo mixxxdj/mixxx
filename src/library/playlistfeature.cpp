@@ -152,18 +152,14 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     return result;
 }
 
-// Must be called from TrackCollection
-// We now use lambdas in here so that is guaranteed
-bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url,
+        TrackCollectionPrivate* pTrackCollectionPrivate) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
 
     QString playlistName = index.data().toString();
-    int playlistId;
-    bool locked;
-    m_pTrackCollection->callSync( [this,&playlistId,&locked,&playlistName] (TrackCollectionPrivate* pTrackCollectionPrivate){
-        playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(playlistName);
-        locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(playlistId);
-    }, __PRETTY_FUNCTION__);
+    int playlistId =
+        pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(playlistName);
+    bool locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(playlistId);
 
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName()) ||
