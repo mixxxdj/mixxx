@@ -13,6 +13,11 @@
 #include "effects/native/reverbeffect.h"
 #endif
 #include "effects/native/echoeffect.h"
+<<<<<<< HEAD
+#include "effects/native/autopaneffect.h"
+=======
+#include "effects/native/phasereffect.h"
+>>>>>>> [Bug #1299029] phaser effect
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -30,9 +35,11 @@ NativeBackend::NativeBackend(QObject* pParent)
     // Fancy effects    
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();
+    registerEffect<AutoPanEffect>();
 #ifndef __MACAPPSTORE__
     registerEffect<ReverbEffect>();
 #endif
+    registerEffect<PhaserEffect>();
 }
 
 NativeBackend::~NativeBackend() {

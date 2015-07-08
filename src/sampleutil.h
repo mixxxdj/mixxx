@@ -135,7 +135,15 @@ class SampleUtil {
     // if pDest == pSrc!
     static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
             CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
+<<<<<<< HEAD
+<<<<<<< HEAD
             int iNumSamples);
+=======
+            unsigned int iNumSamples, bool left=true, bool right=true);
+>>>>>>> Experiments with the delay
+=======
+            int iNumSamples);
+>>>>>>> removing unused change
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
@@ -160,10 +168,13 @@ class SampleUtil {
 
     // Convert and normalize a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX]
     // to a buffer of CSAMPLEs in the range [-1.0, 1.0].
-    // NOTE(uklotzde): This conversion is deprecated and will be removed
-    // with the introduction of the new SoundSourceAPI.
     static void convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
             int iNumSamples);
+
+    // Convert and normalize a buffer of CSAMPLEs in the range [-1.0, 1.0]
+    // to a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX].
+    static void convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
+            unsigned int iNumSamples);
 
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
     // absolute values of l in pfAbsL, and the sum of the absolute values of r
@@ -210,12 +221,16 @@ class SampleUtil {
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer
     // (numFrames * 2) samples will be written into pBuffer
+<<<<<<< HEAD
     static void doubleMonoToDualMono(SAMPLE* pBuffer, int numFrames);
 
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer
     // (numFrames * 2) samples will be written into pBuffer
     static void doubleMonoToDualMono(CSAMPLE* pBuffer, int numFrames);
+=======
+    static void doubleMonoToDualMono(CSAMPLE* pBuffer, unsigned int numFrames);
+>>>>>>> Delete obsolete functions from SampleUtil
 
     // Copies and doubles the mono samples in pSrc to dual mono samples
     // into pDest.

@@ -10,7 +10,7 @@
 
 #include "library/dao/trackdao.h"
 
-#include "audiotagger.h"
+#include "metadata/audiotagger.h"
 #include "library/queryutil.h"
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"
@@ -273,8 +273,8 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
             updateTrack(pTrack);
 
             // Write audio meta data, if enabled in the preferences
-            // TODO(DSC) Only wite tag if file Metatdate is dirty
-            writeAudioMetaData(pTrack);
+            // TODO(DSC) Only wite tag if file Metatdata is dirty
+            writeMetadataToFile(pTrack);
 
             //qDebug() << this << "Dirty tracks remaining after clean save:" << m_dirtyTracks.size();
         } else {
@@ -666,7 +666,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     }
 
     // Check that track is a supported extension.
-    if (!isTrackFormatSupported(pTrack)) {
+    if (!SoundSourceProxy::isFileSupported(pTrack->getFileInfo())) {
         // TODO(XXX) provide some kind of error code on a per-track basis.
         return;
     }
@@ -1789,33 +1789,17 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
     }
 }
 
-void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack) {
+void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
     if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+
+        Mixxx::TrackMetadata trackMetadata;
+        pTrack->getMetadata(&trackMetadata);
+
         AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
-
-        tagger.setArtist(pTrack->getArtist());
-        tagger.setTitle(pTrack->getTitle());
-        tagger.setGenre(pTrack->getGenre());
-        tagger.setComposer(pTrack->getComposer());
-        tagger.setGrouping(pTrack->getGrouping());
-        tagger.setAlbum(pTrack->getAlbum());
-        tagger.setAlbumArtist(pTrack->getAlbumArtist());
-        tagger.setComment(pTrack->getComment());
-        tagger.setTracknumber(pTrack->getTrackNumber());
-        tagger.setBpm(pTrack->getBpmStr());
-        tagger.setKey(pTrack->getKeyText());
-        tagger.setComposer(pTrack->getComposer());
-        tagger.setGrouping(pTrack->getGrouping());
-
-        tagger.save();
+        if (OK != tagger.save(trackMetadata)) {
+            qWarning() << "Failed to write track metadata:" << pTrack->getLocation();
+        }
     }
-}
-
-bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
-    if (pTrack) {
-        return SoundSourceProxy::isFilenameSupported(pTrack->getFilename());
-    }
-    return false;
 }
 
 void TrackDAO::verifyRemainingTracks() {
@@ -1854,17 +1838,10 @@ void TrackDAO::verifyRemainingTracks() {
     }
 }
 
-namespace
-{
+namespace {
     QImage parseCoverArt(const QFileInfo& fileInfo) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
-        SoundSourceProxy proxy(fileInfo.filePath(), pToken);
-        Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
-        if (pSoundSource) {
-            return pSoundSource->parseCoverArt();
-        } else {
-            return QImage();
-        }
+        return CoverArtUtils::extractEmbeddedCover(fileInfo.filePath(), pToken);
     }
 }
 

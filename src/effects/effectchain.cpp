@@ -4,8 +4,12 @@
 #include "engine/effects/message.h"
 #include "engine/effects/engineeffectrack.h"
 #include "engine/effects/engineeffectchain.h"
+<<<<<<< HEAD
 #include "sampleutil.h"
 #include "util/xml.h"
+=======
+#include "xmlparse.h"
+>>>>>>> Delete obsolete include directives
 
 EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
                          EffectChainPointer pPrototype)

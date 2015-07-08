@@ -1,85 +1,44 @@
-//soundsourcewv.h
-// wavpack sound proxy for mixxx.
-// fenugrec 12/2009
+#ifndef MIXXX_SOUNDSOURCEWV_H
+#define MIXXX_SOUNDSOURCEWV_H
 
-
-#ifndef SOUNDSOURCEWV_H
-#define SOUNDSOURCEWV_H
-
-#include <QString>
-#include "soundsource.h"
-#include "defs_version.h"
-#include "util/defs.h"
+#include "sources/soundsourceplugin.h"
 
 #include "wavpack/wavpack.h"
 
-#ifdef Q_OS_WIN
-#define MY_EXPORT __declspec(dllexport)
-#else
-#define MY_EXPORT
-#endif
-
-#define WV_BUF_LENGTH 65536
-
 namespace Mixxx {
 
-class SoundSourceWV : public SoundSource {
- public:
-  explicit SoundSourceWV(QString qFilename);
-  ~SoundSourceWV();
-  Result open();
-  long seek(long);
-  unsigned read(unsigned long size, const SAMPLE*);
-  inline long unsigned length();
-  Result parseHeader();
-  QImage parseCoverArt();
-  static QList<QString> supportedFileExtensions();
- private:
-  WavpackContext * filewvc; //works as a file handle to access the wv file.
-  int Bps;
-  unsigned long filelength;
-  int32_t tempbuffer[WV_BUF_LENGTH];	//hax ! legacy from cmus. this is 64k*4bytes.
-  void format_samples(int, char *, int32_t *, uint32_t);
+class SoundSourceWV: public SoundSourcePlugin {
+public:
+    explicit SoundSourceWV(const QUrl& url);
+    ~SoundSourceWV();
+
+    void close() override;
+
+    SINT seekSampleFrame(SINT frameIndex) override;
+
+    SINT readSampleFrames(SINT numberOfFrames,
+            CSAMPLE* sampleBuffer) override;
+
+private:
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+
+    WavpackContext* m_wpc;
+
+    CSAMPLE m_sampleScaleFactor;
 };
 
+class SoundSourceProviderWV: public SoundSourceProvider {
+public:
+    QString getName() const override;
 
-extern "C" MY_EXPORT const char* getMixxxVersion()
-{
-    return VERSION;
-}
+    QStringList getSupportedFileExtensions() const override;
 
-extern "C" MY_EXPORT int getSoundSourceAPIVersion()
-{
-    return MIXXX_SOUNDSOURCE_API_VERSION;
-}
-
-extern "C" MY_EXPORT SoundSource* getSoundSource(QString filename)
-{
-    return new SoundSourceWV(filename);
-}
-
-extern "C" MY_EXPORT char** supportedFileExtensions()
-{
-    QList<QString> exts = SoundSourceWV::supportedFileExtensions();
-    //Convert to C string array.
-    char** c_exts = (char**)malloc((exts.count() + 1) * sizeof(char*));
-    for (int i = 0; i < exts.count(); i++)
-    {
-        QByteArray qba = exts[i].toUtf8();
-        c_exts[i] = strdup(qba.constData());
-        qDebug() << c_exts[i];
-    }
-    c_exts[exts.count()] = NULL; //NULL terminate the list
-
-    return c_exts;
-}
-
-extern "C" MY_EXPORT void freeFileExtensions(char **exts)
-{
-    for (int i(0); exts[i]; ++i) free(exts[i]);
-    free(exts);
-}
+    SoundSourcePointer newSoundSource(const QUrl& url) override;
+};
 
 }  // namespace Mixxx
 
-#endif
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider();
+
+#endif // MIXXX_SOUNDSOURCEWV_H

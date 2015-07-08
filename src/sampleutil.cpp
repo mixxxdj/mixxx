@@ -249,8 +249,16 @@ void SampleUtil::copyWithGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT
 
 // static
 void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT pSrc,
+<<<<<<< HEAD
         CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
+<<<<<<< HEAD
         int iNumSamples) {
+=======
+        unsigned int iNumSamples, bool left/*=true*/, bool right/*=true*/) {
+>>>>>>> Experiments with the delay
+=======
+        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain, int iNumSamples) {
+>>>>>>> removing unused change
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;
@@ -262,6 +270,7 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(iNumSamples / 2);
+<<<<<<< HEAD
     if (gain_delta) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED.
@@ -274,6 +283,15 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
         // note: LOOP VECTORIZED.
         for (int i = 0; i < iNumSamples; ++i) {
             pDest[i] = pSrc[i] * old_gain;
+=======
+    CSAMPLE_GAIN gain = old_gain;
+    for (unsigned int i = 0; i < iNumSamples; i += 2, gain += gain_delta) {
+        if( left ){
+            pDest[i] = pSrc[i] * gain;
+        }
+        if( right ){
+            pDest[i + 1] = pSrc[i + 1] * gain;
+>>>>>>> Experiments with the delay
         }
     }
 
@@ -283,6 +301,7 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
 }
 
 // static
+<<<<<<< HEAD
 void SampleUtil::convertS16ToFloat32(CSAMPLE* _RESTRICT pDest, const SAMPLE* _RESTRICT pSrc,
         int iNumSamples) {
     // -32768 is a valid low sample, whereas 32767 is the highest valid sample.
@@ -291,7 +310,27 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* _RESTRICT pDest, const SAMPLE* _RE
     const CSAMPLE kConversionFactor = 0x8000;
     // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
+=======
+void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
+        unsigned int iNumSamples) {
+    // SAMPLE_MIN = -32768 is a valid low sample, whereas SAMPLE_MAX = 32767
+    // is the highest valid sample. Note that this means that although some
+    // sample values convert to -1.0, none will convert to +1.0.
+    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
+    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
+>>>>>>> Move sample conversion code to SampleUtil
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
+    }
+}
+
+//static
+void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
+        unsigned int iNumSamples) {
+    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
+    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = SAMPLE(pSrc[i] * kConversionFactor);
     }
 }
 
@@ -377,6 +416,7 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
 }
 
 // static
+<<<<<<< HEAD
 void SampleUtil::doubleMonoToDualMono(SAMPLE* pBuffer, int numFrames) {
     // backward loop
     int i = numFrames;
@@ -397,6 +437,14 @@ void SampleUtil::copyMonoToDualMono(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RE
         CSAMPLE s = pSrc[i];
         pDest[i * 2] = s;
         pDest[i * 2 + 1] = s;
+=======
+void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, unsigned int numFrames) {
+    // backward loop
+    unsigned int i = numFrames;
+    while (0 < i--) {
+        pBuffer[i * 2] = pBuffer[i];
+        pBuffer[i * 2 + 1] = pBuffer[i];
+>>>>>>> Delete obsolete functions from SampleUtil
     }
 }
 

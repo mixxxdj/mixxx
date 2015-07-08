@@ -1,7 +1,6 @@
 #include <QtDebug>
 
 #include "engine/enginesidechaincompressor.h"
-#include "sampleutil.h"
 
 EngineSideChainCompressor::EngineSideChainCompressor(const char* group)
         : m_compressRatio(0.0),
