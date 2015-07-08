@@ -287,8 +287,8 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
                 LibraryFeature* feature = tree_item->getFeature();
                 m_pTrackCollection->callSync(
                             [this, &feature, &index, &url, &result] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-                    Q_UNUSED(pTrackCollectionPrivate);
-                    result = feature->dragMoveAcceptChild(index, url);
+                    result =
+                        feature->dragMoveAcceptChild(index, url, pTrackCollectionPrivate);
                 });
             }
         }

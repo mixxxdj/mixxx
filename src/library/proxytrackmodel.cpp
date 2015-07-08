@@ -136,9 +136,10 @@ bool ProxyTrackModel::setModelSetting(QString name, QVariant value) {
     if (!m_pTrackModel)
         return false;
     bool result = false;
-//    m_pTrackCollection->callSync(
-//                [this, &result] (void) {
-        result = m_pTrackModel->setModelSetting(name, value);
-//    }, __PRETTY_FUNCTION__);
+    m_pTrackCollection->callSync(
+                [this, &result, &name, &value]
+                (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        result = m_pTrackModel->setModelSetting(name, value, pTrackCollectionPrivate);
+    }, __PRETTY_FUNCTION__);
     return result;
 }

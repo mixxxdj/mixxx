@@ -28,7 +28,8 @@ class CrateFeature : public LibraryFeature {
     // Must be called from TrackCollection thread
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                          QObject* pSource);
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
+    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url,
+                             TrackCollectionPrivate* pTrackCollectionPrivate);
 
     void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
