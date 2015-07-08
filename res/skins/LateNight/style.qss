@@ -151,6 +151,7 @@
 
 #LatencyMeter {
   margin: 1px;
+  padding-right: 4px;
 }
 
 #PrimaryMixer {
