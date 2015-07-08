@@ -39,6 +39,34 @@
                 <Children>
                     <PushButton>
                         <Size>50f,20f</Size>
+                        <TooltipId>toggle_4decks</TooltipId>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>4 DECKS</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>4 DECKS</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Master],show_4decks</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Master],show_4decks</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>50f,20f</Size>
                         <TooltipId>show_library</TooltipId>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
