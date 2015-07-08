@@ -115,7 +115,7 @@
                             <SingletonContainer>
                                 <ObjectName>LibrarySingleton</ObjectName>
                             </SingletonContainer>
-                            <Template src="skin:toolbar_big_library.xml"/>
+                            <Template src="skin:toolbar.xml"/>
                         </Children>
                     </WidgetGroup>
                 </Children>
