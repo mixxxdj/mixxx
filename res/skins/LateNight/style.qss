@@ -797,9 +797,8 @@
 #ToolbarTop {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #585858;
-  border-top: 0px;
   padding: 0px;
-  background-color: #1e1e1e;
+  background-color: #0f0f0f;
 }
 
 #WaveformMixerContainer {
