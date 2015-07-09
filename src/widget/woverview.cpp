@@ -18,6 +18,7 @@
 #include <QtDebug>
 #include <QPixmap>
 #include <QUrl>
+#include <QMimeData>
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"

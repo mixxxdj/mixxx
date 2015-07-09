@@ -2,6 +2,7 @@
 #include <QInputDialog>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QDrag>
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"

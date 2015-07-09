@@ -5,6 +5,7 @@
 #include <QDragEnterEvent>
 #include <QUrl>
 #include <QPainter>
+#include <QMimeData>
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
