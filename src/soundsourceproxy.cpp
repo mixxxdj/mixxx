@@ -35,8 +35,6 @@
 #include "soundsourcemodplug.h"
 #endif
 #include "soundsourceflac.h"
-
-#include "mixxx.h"
 #include "util/cmdlineargs.h"
 
 #include <QLibrary>

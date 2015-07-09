@@ -1,25 +1,19 @@
-
-#include <qdebug.h>
+#include <QtDebug>
 
 #include "visualplayposition.h"
 #include "controlobjectslave.h"
 #include "controlobject.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "mathstuff.h"
 #include "waveform/vsyncthread.h"
 
-
 //static
 QMap<QString, QWeakPointer<VisualPlayPosition> > VisualPlayPosition::m_listVisualPlayPosition;
-const PaStreamCallbackTimeInfo* VisualPlayPosition::m_timeInfo;
+PaStreamCallbackTimeInfo VisualPlayPosition::m_timeInfo = { 0.0, 0.0, 0.0 };
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 
 VisualPlayPosition::VisualPlayPosition(const QString& key)
-    : //m_playPosOld(0),
-      m_deltatime(0),
-      m_outputBufferDacTime(0),
-      m_valid(false),
-      m_key(key) {
+        : m_valid(false),
+          m_key(key) {
     m_audioBufferSize = new ControlObjectSlave("[Master]", "audio_buffer_size");
 }
 
@@ -28,14 +22,12 @@ VisualPlayPosition::~VisualPlayPosition() {
     delete m_audioBufferSize;
 }
 
-// This function must be called only form the engine thread (PA callback)
 void VisualPlayPosition::set(double playPos, double rate,
-                double positionStep, double pSlipPosition) {
+                             double positionStep, double pSlipPosition) {
     VisualPlayPositionData data;
-
     data.m_referenceTime = m_timeInfoTime;
     // Time from reference time to Buffer at DAC in µs
-    data.m_callbackEntrytoDac = (m_timeInfo->outputBufferDacTime - m_timeInfo->currentTime) * 1000000;
+    data.m_callbackEntrytoDac = (m_timeInfo.outputBufferDacTime - m_timeInfo.currentTime) * 1000000;
     data.m_enginePlayPos = playPos;
     data.m_rate = rate;
     data.m_positionStep = positionStep;
@@ -92,8 +84,6 @@ double VisualPlayPosition::getEnginePlayPos() {
     }
 }
 
-// Warning: This function is not thread save.
-// It must not be called from other threads then the GUI thread
 //static
 QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(QString group) {
     QSharedPointer<VisualPlayPosition> vpp = m_listVisualPlayPosition.value(group);
@@ -104,15 +94,11 @@ QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(QSt
     return vpp;
 }
 
-// This is called just after enter the PA-Callback
 //static
 void VisualPlayPosition::setTimeInfo(const PaStreamCallbackTimeInfo* timeInfo) {
-    // the timeInfo is valid only just NOW, so measure the time from NOW for later correction
+    // the timeInfo is valid only just NOW, so measure the time from NOW for
+    // later correction
     m_timeInfoTime.start();
-    m_timeInfo = timeInfo;
+    m_timeInfo = *timeInfo;
     //qDebug() << "TimeInfo" << (timeInfo->currentTime - floor(timeInfo->currentTime)) << (timeInfo->outputBufferDacTime - floor(timeInfo->outputBufferDacTime));
-    //m_timeInfo.currentTime = timeInfo->currentTime;
-    //m_timeInfo.inputBufferAdcTime = timeInfo->inputBufferAdcTime;
-    //m_timeInfo.outputBufferDacTime = timeInfo->outputBufferDacTime;
 }
-
