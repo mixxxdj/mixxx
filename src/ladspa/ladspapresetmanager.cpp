@@ -7,9 +7,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-#include <QtXml>
-
 #include "ladspapresetmanager.h"
 #include "ladspaloader.h"
 #include "widget/wwidget.h"

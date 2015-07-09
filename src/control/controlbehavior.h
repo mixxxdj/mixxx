@@ -51,7 +51,7 @@ class ControlLogpotmeterBehavior : public ControlPotmeterBehavior {
     ControlLogpotmeterBehavior(double dMaxValue);
     virtual ~ControlLogpotmeterBehavior();
 
-    virtual double defaultValue(double dDefault);
+    virtual double defaultValue(double dDefault) const;
     virtual double valueToWidgetParameter(double dValue);
     virtual double widgetParameterToValue(double dParam);
 

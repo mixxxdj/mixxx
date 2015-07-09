@@ -10,7 +10,9 @@
 #ifndef LADSPAINSTANCE_H
 #define LADSPAINSTANCE_H
 
-#include <QtCore>
+#include <QList>
+#include <QLinkedList>
+#include <QVector>
 
 #include <ladspa.h>
 

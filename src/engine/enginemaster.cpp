@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QDebug>
+#include <QtDebug>
 #include <QList>
 #include <QPair>
 

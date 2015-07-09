@@ -10,10 +10,9 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include "parser.h"
-#include "parserpls.h"
-#include <QDebug>
-#include <QTextStream>
+#include "library/parserpls.h"
+
+#include <QtDebug>
 #include <QMessageBox>
 #include <QDir>
 #include <QFile>

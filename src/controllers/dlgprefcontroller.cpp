@@ -5,8 +5,7 @@
 * @brief Configuration dialog for a DJ controller
 */
 
-#include <QtGui>
-#include <QDebug>
+#include <QtDebug>
 #include <QFileInfo>
 
 #include "controllers/dlgprefcontroller.h"

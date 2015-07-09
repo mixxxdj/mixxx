@@ -3,6 +3,8 @@
 #ifndef WNUMBERPOS_H
 #define WNUMBERPOS_H
 
+#include <QMouseEvent>
+
 #include "wnumber.h"
 
 class ControlObjectThreadWidget;

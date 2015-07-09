@@ -6,7 +6,7 @@
 #include <QBrush>
 #include <QPen>
 
-#include <vector>
+#include <QVector>
 
 class ControlObject;
 
@@ -24,7 +24,7 @@ protected:
 private:
     QBrush m_brush;
     QPen m_borderPen;
-    std::vector<QPointF> m_polygon;
+    QVector<QPointF> m_polygon;
 };
 
 #endif // QTWAVEFORMRENDERERSIMPLESIGNAL_H

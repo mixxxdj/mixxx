@@ -17,8 +17,9 @@
 #define SOUNDMANAGERUTIL_U
 
 #include <QString>
-#include <QtXml>
 #include <QMutex>
+#include <QDomElement>
+#include <QList>
 
 #include "defs.h" // for CSAMPLE (???)
 

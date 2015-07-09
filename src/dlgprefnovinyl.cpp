@@ -16,9 +16,7 @@
 ***************************************************************************/
 
 
-#include <QtCore>
 #include <QtDebug>
-#include <QtGui>
 #include "dlgprefnovinyl.h"
 
 DlgPrefNoVinyl::DlgPrefNoVinyl(QWidget * parent, SoundManager * soundman,

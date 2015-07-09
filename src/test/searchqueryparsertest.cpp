@@ -157,7 +157,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
                   << "title";
     EXPECT_STREQ(
         qPrintable(QString("WHERE (bpm >= 127.12 AND bpm <= 129) AND "
-                           "(artist LIKE '%com truise%') AND "
+                           "((artist LIKE '%com truise%') OR (album_artist LIKE '%com truise%')) AND "
                            "((artist LIKE '%Colorvision%') OR (title LIKE '%Colorvision%'))")),
         qPrintable(m_parser.parseQuery("bpm:127.12-129 artist:\"com truise\" Colorvision",
                                        searchColumns, "")));

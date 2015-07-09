@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <QStringList>
+#include <QUrl>
 
 #include "library/rhythmbox/rhythmboxfeature.h"
 

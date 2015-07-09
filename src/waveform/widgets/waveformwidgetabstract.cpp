@@ -4,15 +4,10 @@
 #include <QtDebug>
 #include <QWidget>
 
-// Default constructor is only use by the factory to evaluate dynamically
-// WaveformWidget
-WaveformWidgetAbstract::WaveformWidgetAbstract() :
-    WaveformWidgetRenderer() {
-    m_widget = NULL;
-}
 
-WaveformWidgetAbstract::WaveformWidgetAbstract( const char* group) :
-    WaveformWidgetRenderer(group) {
+WaveformWidgetAbstract::WaveformWidgetAbstract( const char* group) 
+    : WaveformWidgetRenderer(group),
+      m_initSuccess(false) {
     m_widget = NULL;
 }
 
@@ -31,17 +26,15 @@ void WaveformWidgetAbstract::release() {
     }
 }
 
-void WaveformWidgetAbstract::preRender() {
-    WaveformWidgetRenderer::onPreRender();
+void WaveformWidgetAbstract::preRender(VSyncThread* vsyncThread) {
+    WaveformWidgetRenderer::onPreRender(vsyncThread);
 }
 
-void WaveformWidgetAbstract::render() {
+int WaveformWidgetAbstract::render() {
     if (m_widget) {
-        if (!m_widget->isVisible()) {
-            m_widget->show();
-        }
-        m_widget->repaint();
+        m_widget->repaint(); // Repaints the widget directly by calling paintEvent()
     }
+    return 0; // Time for Painter setup, unknown in this case
 }
 
 void WaveformWidgetAbstract::resize( int width, int height) {

@@ -10,6 +10,7 @@
 #include "vinylcontrol/vinylsignalquality.h"
 
 class ControlObjectThread;
+class VisualPlayPosition;
 class VinylControlManager;
 
 class WSpinny : public QGLWidget, public VinylSignalQualityListener {
@@ -52,7 +53,7 @@ class WSpinny : public QGLWidget, public VinylSignalQualityListener {
     QImage* m_pGhostImage;
     ControlObjectThread* m_pPlay;
     ControlObjectThread* m_pPlayPos;
-    ControlObjectThread* m_pVisualPlayPos;
+    QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
     ControlObjectThread* m_pTrackSamples;
     ControlObjectThread* m_pTrackSampleRate;
     ControlObjectThread* m_pScratch;
@@ -86,7 +87,7 @@ class WSpinny : public QGLWidget, public VinylSignalQualityListener {
     int m_iFullRotations;
     double m_dPrevTheta;
     double m_dTheta;
-    /** Speed of the vinyl rotation. */
+    // Speed of the vinyl rotation.
     double m_dRotationsPerSecond;
     bool m_bClampFailedWarning;
 };

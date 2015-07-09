@@ -4,7 +4,12 @@
 #ifndef PLAYLISTFEATURE_H
 #define PLAYLISTFEATURE_H
 
-#include <QSqlTableModel>
+#include <QVariant>
+#include <QIcon>
+#include <QModelIndex>
+#include <QUrl>
+#include <QObject>
+#include <QPoint>
 
 #include "library/baseplaylistfeature.h"
 #include "configobject.h"

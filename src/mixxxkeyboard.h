@@ -18,11 +18,10 @@
 #ifndef MIXXXKEYBOARD_H
 #define MIXXXKEYBOARD_H
 
-#include <qobject.h>
-#include <qevent.h>
-#include <qkeysequence.h>
-//Added by qt3to4:
+#include <QObject>
+#include <QEvent>
 #include <QKeyEvent>
+
 #include "configobject.h"
 
 /**

@@ -7,7 +7,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
 #include "ladspaplugin.h"
 #include "ladspainstancestereo.h"
 #include "ladspainstancemono.h"

@@ -7,7 +7,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
 #include "ladspainstance.h"
 #include "controlpushbutton.h"
 

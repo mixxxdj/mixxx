@@ -23,7 +23,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     void removeTracks(const QModelIndexList& indices);
     // Adding multiple tracks at one to a playlist. Returns the number of
     // successful additions.
-    int addTracks(const QModelIndex& index, QList<QString> locations);
+    int addTracks(const QModelIndex& index, const QList<QString>& locations);
     bool appendTrack(const int trackId);
     void moveTrack(const QModelIndex& sourceIndex,
                    const QModelIndex& destIndex);

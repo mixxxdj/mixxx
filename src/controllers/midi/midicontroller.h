@@ -58,7 +58,7 @@ class MidiController : public Controller {
     Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
     // Alias for send()
     Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length) {
-        Controller::send(data, length);
+        send(data, length);
     }
 
   protected slots:
@@ -76,7 +76,7 @@ class MidiController : public Controller {
     void applyPreset(QList<QString> scriptPaths);
 
   private:
-    virtual void send(unsigned int word) = 0;
+    virtual void sendWord(unsigned int word) = 0;
     double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
     void createOutputHandlers();
     void updateAllOutputs();

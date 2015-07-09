@@ -15,8 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-
 #include "enginebufferscalest.h"
 
 // Fixes redefinition warnings from SoundTouch.
@@ -244,4 +242,3 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
 
     return m_buffer;
 }
-

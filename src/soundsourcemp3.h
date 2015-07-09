@@ -18,23 +18,21 @@
 #ifndef SOUNDSOURCEMP3_H
 #define SOUNDSOURCEMP3_H
 
-#include <qobject.h>
-#include "defs.h"
-#include <stdio.h>
-#include <stdlib.h>
-
+#include <errno.h>
+#include <id3tag.h>
 #ifdef WIN64
   #define FPM_64BIT // So mad.h doesn't try to use inline assembly which MSVC-x64 doesn't support
 #endif
-#include "mad.h"
-
-#include "errno.h"
-#include "soundsource.h"
+#include <mad.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
-#include <qfile.h>
-//#include <sys/stat.h>
-//#include <unistd.h>
-#include <id3tag.h>
+
+#include <QObject>
+#include <QFile>
+
+#include "defs.h"
+#include "soundsource.h"
 
 #define READLENGTH 5000
 

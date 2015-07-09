@@ -13,7 +13,7 @@
 #include <QDomNode>
 #include <QDir>
 #include <QFile>
-#include <QDebug>
+#include <QtDebug>
 #include "trackinfoobject.h" //needed for importing 1.7.x library
 #include "xmlparse.h" //needed for importing 1.7.x library
 #include "legacylibraryimporter.h"

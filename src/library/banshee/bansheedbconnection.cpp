@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QSqlError>
+
 #include "library/queryutil.h"
 
 #include "bansheedbconnection.h"
@@ -228,4 +229,3 @@ QString BansheeDbConnection::getDatabaseFile() {
 
     return QString();
 }
-

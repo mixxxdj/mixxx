@@ -11,13 +11,13 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include <QTextStream>
-#include <QDebug>
-#include <QDir>
-#include <QMessageBox>
-#include <QUrl>
 
 #include "library/parsercsv.h"
+
+#include <QTextStream>
+#include <QtDebug>
+#include <QDir>
+#include <QMessageBox>
 
 ParserCsv::ParserCsv() : Parser() {
 }

@@ -16,13 +16,13 @@
 ***************************************************************************/
 
 #include <QtDebug>
-#include <QtCore>
-#include <QtGui>
 #include <QTranslator>
 #include <QMenu>
 #include <QMenuBar>
 #include <QFileDialog>
 #include <QDesktopWidget>
+#include <QDesktopServices>
+#include <QUrl>
 
 #include "mixxx.h"
 
@@ -431,6 +431,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pControllerManager = new ControllerManager(m_pConfig);
 
     WaveformWidgetFactory::create();
+    WaveformWidgetFactory::instance()->startVSync(this);
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
@@ -584,7 +585,7 @@ MixxxApp::~MixxxApp() {
 
     // Stop redrawing waveforms to avoid crashes when doing processEvents
     // from one of destructors going next (which use callSync)
-    WaveformWidgetFactory::instance()->stop();
+    //WaveformWidgetFactory::instance()->stop();
 
     qDebug() << "save config " << qTime.elapsed();
     m_pConfig->Save();
@@ -1506,7 +1507,6 @@ void MixxxApp::rebootMixxxView() {
 
     m_pView->hide();
 
-    WaveformWidgetFactory::instance()->stop();
     WaveformWidgetFactory::instance()->destroyWidgets();
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1549,14 +1549,12 @@ void MixxxApp::rebootMixxxView() {
         //qDebug() << "view size" << m_pView->size() << size();
     }
 
-    if( wasFullScreen) {
+    if (wasFullScreen) {
         slotViewFullScreen(true);
     } else {
         move(initPosition.x() + (initSize.width() - m_pView->width()) / 2,
              initPosition.y() + (initSize.height() - m_pView->height()) / 2);
     }
-
-    WaveformWidgetFactory::instance()->start();
 
 #ifdef __APPLE__
     // Original the following line fixes issue on OSX where menu bar went away

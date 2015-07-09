@@ -214,7 +214,7 @@ bool PortMidiController::poll() {
     return numEvents > 0;
 }
 
-void PortMidiController::send(unsigned int word) {
+void PortMidiController::sendWord(unsigned int word) {
     if (m_pOutputStream) {
         PmError err = Pm_WriteShort(m_pOutputStream, 0, word);
         if (err != pmNoError) {

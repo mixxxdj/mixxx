@@ -18,12 +18,14 @@
 #ifndef WVUMETER_H
 #define WVUMETER_H
 
-#include "wwidget.h"
-#include <qpixmap.h>
-#include <qstring.h>
-//Added by qt3to4:
+#include "widget/wwidget.h"
+
+#include <QPixmap>
+#include <QString>
 #include <QPaintEvent>
 #include <QTime>
+#include <QWidget>
+#include <QDomNode>
 
 /**
   *@author Tue & Ken Haste Andersen

@@ -3,7 +3,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-#include <QtXml/QDomNode>
+#include <QDomNode>
 
 WaveformSignalColors::WaveformSignalColors()
 {
@@ -33,7 +33,7 @@ bool WaveformSignalColors::setup(const QDomNode &node)
     m_axesColor.setNamedColor(WWidget::selectNodeQString(node, "AxesColor"));
     if (!m_axesColor.isValid()) {
         m_axesColor = QColor(245,245,245);
-    }    
+    }
     m_axesColor = WSkinColor::getCorrectColor(m_axesColor);
 
     m_playPosColor.setNamedColor(WWidget::selectNodeQString(node, "PlayPosColor"));

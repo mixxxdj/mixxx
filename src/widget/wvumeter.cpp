@@ -15,21 +15,20 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wvumeter.h"
-#include "wpixmapstore.h"
-//Added by qt3to4:
+#include "widget/wvumeter.h"
+
 #include <QPaintEvent>
-#include <QtGui>
-#include <QtCore>
+#include <QPainter>
 #include <QtDebug>
 #include <QPixmap>
+
+#include "widget/wpixmapstore.h"
+#include "util/timer.h"
 
 #define DEFAULT_FALLTIME 20
 #define DEFAULT_FALLSTEP 1
 #define DEFAULT_HOLDTIME 400
 #define DEFAULT_HOLDSIZE 5
-
-#include "util/timer.h"
 
 WVuMeter::WVuMeter(QWidget * parent) :
         WWidget(parent),
@@ -193,6 +192,3 @@ void WVuMeter::paintEvent(QPaintEvent *)
         }
     }
 }
-
-
-

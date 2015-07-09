@@ -5,7 +5,16 @@
 #ifndef AUTODJFEATURE_H
 #define AUTODJFEATURE_H
 
+#include <QObject>
 #include <QStringListModel>
+#include <QVariant>
+#include <QIcon>
+#include <QUrl>
+#include <QList>
+#include <QModelIndex>
+#include <QPoint>
+#include <QAction>
+#include <QSignalMapper>
 
 #include "library/libraryfeature.h"
 #include "configobject.h"

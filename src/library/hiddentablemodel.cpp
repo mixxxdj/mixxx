@@ -59,6 +59,7 @@ void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
     m_pTrackCollection->callAsync(
                 [this, trackIds] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         pTrackCollectionPrivate->getTrackDAO().purgeTracks(trackIds);
+
         // TODO(rryan) : do not select, instead route event to BTC and notify from
         // there.
         select(pTrackCollectionPrivate); //Repopulate the data model.
@@ -78,6 +79,7 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
     m_pTrackCollection->callAsync(
                 [this, trackIds] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         pTrackCollectionPrivate->getTrackDAO().unhideTracks(trackIds);
+
         // TODO(rryan) : do not select, instead route event to BTC and notify from 
         // there.
         select(pTrackCollectionPrivate); //Repopulate the data model.

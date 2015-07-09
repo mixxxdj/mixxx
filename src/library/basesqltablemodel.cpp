@@ -4,6 +4,7 @@
 #include <QtDebug>
 #include <QTime>
 #include <QVector>
+#include <QUrl>
 
 #include "library/basesqltablemodel.h"
 

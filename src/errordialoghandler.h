@@ -22,6 +22,8 @@
 #include <QMessageBox>
 #include <QSignalMapper>
 #include <QMutex>
+#include <QString>
+#include <QList>
 
 #include "util.h"
 

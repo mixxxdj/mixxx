@@ -6,12 +6,13 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #include <QCoreApplication>
 #include <QNetworkReply>
 #include <QtNetwork>
 #include <QSet>
 #include <QXmlStreamReader>
+#include <QUrl>
 
 #include "musicbrainzclient.h"
 
@@ -74,7 +75,7 @@ void MusicBrainzClient::requestFinished() {
 
     QXmlStreamReader reader(reply);
     while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement 
+        if (reader.readNext() == QXmlStreamReader::StartElement
             && reader.name() == "recording") {
 
             ResultList tracks = parseTrack(reader);

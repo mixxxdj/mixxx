@@ -6,6 +6,12 @@
 
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
+#include <QObject>
+#include <QVariant>
+#include <QIcon>
+#include <QModelIndex>
+#include <QPoint>
+#include <QString>
 
 #include "configobject.h"
 #include "library/browse/browsetablemodel.h"

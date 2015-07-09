@@ -18,11 +18,11 @@
 #ifndef WDISPLAY_H
 #define WDISPLAY_H
 
-#include "wwidget.h"
-#include <qpixmap.h>
-#include <qstring.h>
-//Added by qt3to4:
+#include <QPixmap>
 #include <QPaintEvent>
+#include <QString>
+
+#include "widget/wwidget.h"
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -30,13 +30,13 @@
 
 class WDisplay : public WWidget  {
    Q_OBJECT
-public: 
+public:
     WDisplay(QWidget *parent=0);
     ~WDisplay();
     void setup(QDomNode node);
     void setPositions(int iNoPos);
     void setPixmap(int iPos, const QString &filename);
-    
+
 private:
     /** Set position number to zero and deallocate pixmaps */
     void resetPositions();

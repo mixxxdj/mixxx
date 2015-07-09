@@ -4,8 +4,7 @@
 #include "waveformrenderersignalbase.h"
 
 #include <QBrush>
-
-#include <vector>
+#include <QVector>
 
 class ControlObject;
 
@@ -29,7 +28,7 @@ class QtWaveformRendererFilteredSignal : public WaveformRendererSignalBase {
     QBrush m_midKilledBrush;
     QBrush m_highKilledBrush;
 
-    std::vector<QPointF> m_polygon[3];
+    QVector<QPointF> m_polygon[3];
 };
 
 #endif // QTWAVEFROMRENDERERFILTEREDSIGNAL_H

@@ -18,12 +18,15 @@
 #ifndef WSLIDERCOMPOSED_H
 #define WSLIDERCOMPOSED_H
 
-#include "wabstractcontrol.h"
-#include <qstring.h>
-#include <qpixmap.h>
-//Added by qt3to4:
+#include <QString>
+#include <QWidget>
+#include <QDomNode>
+#include <QWheelEvent>
 #include <QPaintEvent>
 #include <QMouseEvent>
+
+#include "widget/wabstractcontrol.h"
+
 /**
   * A widget for a slider composed of a background pixmap and a handle.
   *

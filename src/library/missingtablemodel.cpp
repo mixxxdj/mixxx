@@ -1,6 +1,5 @@
-#include <QtCore>
-#include <QtGui>
 #include <QtSql>
+
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"

@@ -3,7 +3,6 @@
 // Author: asantoni, rryan
 
 #include <QtDebug>
-#include <QObject>
 
 #include "controlobject.h"
 #include "configobject.h"

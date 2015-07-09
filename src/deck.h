@@ -1,6 +1,8 @@
 #ifndef DECK_H
 #define DECK_H
 
+#include <QObject>
+
 #include "basetrackplayer.h"
 
 class Deck : public BaseTrackPlayer {

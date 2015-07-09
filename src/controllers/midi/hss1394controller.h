@@ -49,7 +49,7 @@ class Hss1394Controller : public MidiController {
     virtual int close();
 
   private:
-    void send(unsigned int word);
+    void sendWord(unsigned int word);
 
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.

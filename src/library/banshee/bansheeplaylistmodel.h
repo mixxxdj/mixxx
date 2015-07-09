@@ -1,9 +1,7 @@
 #ifndef BANSHEEPLAYLISTMODEL_H
 #define BANSHEEPLAYLISTMODEL_H
 
-#include <QtCore>
 #include <QHash>
-#include <QtGui>
 #include <QtSql>
 
 #include "library/trackmodel.h"

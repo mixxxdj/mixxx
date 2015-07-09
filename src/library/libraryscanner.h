@@ -21,8 +21,12 @@
 #define LIBRARYSCANNER_H
 
 #include <QThread>
-#include <QtCore>
 #include <QList>
+#include <QString>
+#include <QList>
+#include <QWidget>
+#include <QSqlDatabase>
+#include <QStringList>
 
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"

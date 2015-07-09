@@ -10,8 +10,6 @@
 #ifndef LADSPAINSTANCESTEREO_H
 #define LADSPAINSTANCESTEREO_H
 
-#include <QtCore>
-
 #include <ladspa.h>
 
 #include "defs.h"

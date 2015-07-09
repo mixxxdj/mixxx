@@ -1,4 +1,4 @@
-#include <QDebug>
+#include <QtDebug>
 #include <QColor>
 #include <QDomNode>
 #include <QPaintEvent>
@@ -58,10 +58,7 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         int startSample = markRange.start();
         int endSample = markRange.end();
 
-        m_waveformRenderer->regulateVisualSample(startSample);
         double startPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(startSample);
-
-        m_waveformRenderer->regulateVisualSample(endSample);
         double endPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(endSample);
 
         //range not in the current display

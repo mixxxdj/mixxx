@@ -5,6 +5,10 @@
 #include <QList>
 #include <QPair>
 #include <QAction>
+#include <QVariant>
+#include <QUrl>
+#include <QIcon>
+#include <QPoint>
 
 #include "library/libraryfeature.h"
 #include "library/cratetablemodel.h"

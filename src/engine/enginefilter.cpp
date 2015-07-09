@@ -16,7 +16,7 @@
 ***************************************************************************/
 
 #include "engine/enginefilter.h"
-#include <QDebug>
+#include <QtDebug>
 
 
 EngineFilter::EngineFilter(char * conf, int predefinedType)

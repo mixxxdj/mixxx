@@ -10,12 +10,14 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include "parser.h"
-
 #ifndef PARSERM3U_H
 #define PARSERM3U_H
 
-class QTextStream;
+#include <QTextStream>
+#include <QList>
+#include <QString>
+
+#include "library/parser.h"
 
 class ParserM3u : public Parser
 {

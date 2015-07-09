@@ -18,7 +18,9 @@
 #ifndef WWIDGET_H
 #define WWIDGET_H
 
-#include <QtGui>
+#include <QWidget>
+#include <QString>
+#include <QDomNode>
 
 #include "configobject.h"
 
