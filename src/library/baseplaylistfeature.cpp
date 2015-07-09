@@ -113,8 +113,10 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     int playlistId = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-            [this, &playlistName, &playlistId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(playlistName);
+            [this, &playlistName, &playlistId] (
+                    TrackCollectionPrivate* pTrackCollectionPrivate) {
+        playlistId = pTrackCollectionPrivate->getPlaylistDAO()
+                .getPlaylistIdFromName(playlistName);
     }, __PRETTY_FUNCTION__);
     if (m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
@@ -474,11 +476,14 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
         const QString clicked = m_lastRightClickedIndex.data().toString();
         // tro's lambda idea. This code calls asynchronously!
         m_pTrackCollection->callAsync(
-                    [this, clicked, bTop] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-            int playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(clicked);
+                    [this, clicked, bTop] (
+                            TrackCollectionPrivate* pTrackCollectionPrivate) {
+            int playlistId = pTrackCollectionPrivate->getPlaylistDAO()
+                    .getPlaylistIdFromName(clicked);
             if (playlistId >= 0) {
                 // Insert this playlist
-                pTrackCollectionPrivate->getPlaylistDAO().addToAutoDJQueue(playlistId, bTop);
+                pTrackCollectionPrivate->getPlaylistDAO()
+                        .addPlaylistToAutoDJQueue(playlistId, bTop);
             }
         }, __PRETTY_FUNCTION__);
     }

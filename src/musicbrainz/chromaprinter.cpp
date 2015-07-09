@@ -29,7 +29,7 @@ QString chromaprinter::calcFingerPrint(SoundSourceProxy& soundSource){
     }
 
     // this is worth 2min of audio, multiply by 2 because we have 2 channels
-    // AcoustID only stores a fingerprint for the first two minutes of a song 
+    // AcoustID only stores a fingerprint for the first two minutes of a song
     // on their server so we need only a fingerprint of the first two minutes
     // --kain88 July 2012
     m_NumSamples = 120*2*m_SampleRate;
@@ -41,7 +41,7 @@ QString chromaprinter::calcFingerPrint(SoundSourceProxy& soundSource){
     SAMPLE *pData = new SAMPLE[m_NumSamples];
     QTime timerReadingFile;
     timerReadingFile.start();
-    int read = soundSource.read(m_NumSamples, pData);
+    unsigned int read = soundSource.read(m_NumSamples, pData);
 
     if (read!=m_NumSamples) {
         qDebug() << "oh that's embarrasing I couldn't read the track";
@@ -82,7 +82,7 @@ QString chromaprinter::calcFingerPrint(SoundSourceProxy& soundSource){
     }
     chromaprint_free(ctx);
     delete pData;
-    
+
     qDebug("generating fingerprint took: %d ms" , timerGeneratingFingerPrint.elapsed());
 
     return fingerprint;

@@ -160,8 +160,9 @@ void TrackCollection::setupControlObject() {
 
 void TrackCollection::setUiEnabled(const bool enabled) {
 // lock/unlock GUI elements by setting [playlist] "isBusy
-    if (m_pCOTPlaylistIsBusy)
-        m_pCOTPlaylistIsBusy->set(enabled ? 0.0 : 1.0);
+//TODO() causes an endless loop. can be re-enabled after The track cash is moved
+//    if (m_pCOTPlaylistIsBusy)
+//        m_pCOTPlaylistIsBusy->set(enabled ? 0.0 : 1.0);
 }
 
 void TrackCollection::stopThread() {
