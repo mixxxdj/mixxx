@@ -8,6 +8,9 @@ ElectrixTweaker.samplerSensitivity = 4
 // Adjust sensitivity of EQs (range 1-7, only use integers)
 ElectrixTweaker.eqSensitivity = 6
 
+// Set these to true to enable vinyl mode for that deck on startup. This will also enable vinyl control on startup.
+ElectrixTweaker.vinylMode = {'[Channel1]': true, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
+
 /**
  * Electrix Tweaker controller script 0.4.1 for Mixxx 1.12
  * Copyright (C) 2015 Be <be.0@gmx.com>
@@ -225,6 +228,7 @@ ElectrixTweaker.buttons['[Channel4]'] = ElectrixTweaker.buttons['[Channel2]']
 
 ElectrixTweaker.shift = false
 ElectrixTweaker.topShift = false
+ElectrixTweaker.bottomShift = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.deck = {'[Channel1]': '[Channel1]', '[Channel2]': '[Channel2]'}
 ElectrixTweaker.mode = {'[Channel1]': 'eq', '[Channel2]': 'eq', '[Channel3]': 'eq', '[Channel4]': 'eq'}
 ElectrixTweaker.loopMoveSize = {'[Channel1]': 1, '[Channel2]': 1, '[Channel3]': 1, '[Channel4]': 1}
@@ -271,9 +275,12 @@ ElectrixTweaker.init = function () {
 	}
 	engine.softTakeover('[Master]', 'headMix', true)
 	engine.softTakeover('[Master]', 'headVolume', true)
-	for (var group in ElectrixTweaker.encoders) {
+	for (var group in ElectrixTweaker.encoders) { // loop over each [Channel]
 		engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
 		engine.softTakeover(group, 'volume', true)
+		// uncomment the line below when Bug #1472868 is fixed
+// 		ElectrixTweaker.vinylMode[group] = engine.getValue(group, 'vinylcontrol_enabled')
+		engine.setValue(group, 'vinylcontrol_enabled', ElectrixTweaker.vinylMode[group])
 	}
 	ElectrixTweaker.initDeck('[Channel1]')
 	ElectrixTweaker.initDeck('[Channel2]')
@@ -331,22 +338,7 @@ ElectrixTweaker.initDeck = function (group) {
 	ElectrixTweaker.connectDeckControls(disconnectDeck, true)
 	
 	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['shift'], ElectrixTweaker.colorCodes['yellow'])
-	midi.sendShortMsg(
-		0x90,
-		ElectrixTweaker.buttons[group]['back'],
-		(engine.getValue(group, 'quantize')) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
-	)
-	midi.sendShortMsg(
-		0x90,
-		ElectrixTweaker.buttons[group]['forward'],
-		(engine.getValue(group, 'quantize')) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
-	)
 	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['deckToggle'], ElectrixTweaker.deckColor[group]['switches'])
-	midi.sendShortMsg(
-		0x90,
-		ElectrixTweaker.buttons[group]['slip'],
-		(ElectrixTweaker.slipMode[group]) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
-	)
 	
 	ElectrixTweaker.connectDeckControls(group)
 	
@@ -387,6 +379,10 @@ ElectrixTweaker.connectDeckControls = function (group, remove) {
 	}
 	if (remove) {
 		ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], true)
+		ElectrixTweaker.connectVinylLEDs(group, true)
+	} else {
+		// second argument refers to whether to remove vinyl control connections, so it should be the opposite of whether vinyl mode is enabled
+		ElectrixTweaker.connectVinylLEDs(group, ! ElectrixTweaker.vinylMode[group])
 	}
 }
 
@@ -478,10 +474,46 @@ ElectrixTweaker.connectHotcuePage = function (group, remove) {
 	}
 }
 
+ElectrixTweaker.connectVinylLEDs = function (group, remove) {
+	var controlsToFunctions = {
+		'passthrough': 'ElectrixTweaker.vinylStatusLED',
+		'vinylcontrol_status': 'ElectrixTweaker.vinylStatusLED',
+		'vinylcontrol_mode': 'ElectrixTweaker.vinylModeLED',
+		'vinylcontrol_cueing': 'ElectrixTweaker.vinylModeLED'
+	}
+	for (var control in controlsToFunctions) {
+		engine.connectControl(group, control, controlsToFunctions[control], remove)
+	}
+	if (remove) {
+		midi.sendShortMsg(
+			0x90,
+			ElectrixTweaker.buttons[group]['back'],
+			(engine.getValue(group, 'quantize')) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
+		)
+		midi.sendShortMsg(
+			0x90,
+			ElectrixTweaker.buttons[group]['forward'],
+			(engine.getValue(group, 'quantize')) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
+		)
+		midi.sendShortMsg(
+			0x90,
+			ElectrixTweaker.buttons[group]['slip'],
+			(ElectrixTweaker.slipMode[group]) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+		)
+	} else {
+		for (var control in controlsToFunctions) {
+			engine.trigger(group, control)
+		}
+	}
+}
+
 ElectrixTweaker.shiftButton = function (channel, control, value, status, group) {
+	group = ElectrixTweaker.deck[group]
 	ElectrixTweaker.shift = ! ElectrixTweaker.shift
 	if (control == 0x28) {
 		ElectrixTweaker.topShift = ! ElectrixTweaker.topShift
+	} else if (control == ElectrixTweaker.buttons[group]['shift']) {
+		ElectrixTweaker.bottomShift[group] = ! ElectrixTweaker.bottomShift[group]
 	}
 	if (value) {
 		ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], true)
@@ -501,6 +533,10 @@ ElectrixTweaker.shiftButton = function (channel, control, value, status, group) 
 			// There seems to be a bug in the Tweaker firmware when local control is enabled one LED ring but not another. If local control is enabled here, the other rings behave confusingly.
 			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['ring'], 98)
 			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[channel]['Low']['ring'], 64)
+		}
+		if (ElectrixTweaker.topShift && ElectrixTweaker.bottomShift[group]) {
+			ElectrixTweaker.connectVinylLEDs(group, ElectrixTweaker.vinylMode[group])
+			ElectrixTweaker.vinylMode[group] = ! ElectrixTweaker.vinylMode[group]
 		}
 	} else {
 		for (channel in ElectrixTweaker.encoders) {
@@ -979,43 +1015,6 @@ ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
 	}
 }
 
-ElectrixTweaker.forward = function (channel, control, value, status, group) {
-	group = ElectrixTweaker.deck[group]
-	if (engine.getValue(group, 'quantize')) {
-		if (value) {
-			if (ElectrixTweaker.shift) {
-				engine.setValue(group, 'beatjump_1_forward', 1)
-			} else {
-				engine.setValue(group, 'beatjump_4_forward', 1)
-			}
-		}
-	} else {
-		if (ElectrixTweaker.shift) {
-			engine.setValue(group, 'rate_temp_up', value / 127)
-		} else {
-			engine.setValue(group, 'fwd', value)
-		}
-	}
-}
-ElectrixTweaker.back = function (channel, control, value, status, group) {
-	group = ElectrixTweaker.deck[group]
-	if (engine.getValue(group, 'quantize')) {
-		if (value) {
-			if (ElectrixTweaker.shift) {
-				engine.setValue(group, 'beatjump_1_backward', 1)
-			} else {
-				engine.setValue(group, 'beatjump_4_backward', 1)
-			}
-		}
-	} else {
-		if (ElectrixTweaker.shift) {
-			engine.setValue(group, 'rate_temp_down', value / 127)
-		} else {
-			engine.setValue(group, 'back', value)
-		}
-	}
-}
-
 ElectrixTweaker.deckToggle = function (channel, control, value, status, group) {
 	if (value) {
 		if (ElectrixTweaker.shift) {
@@ -1093,14 +1092,119 @@ ElectrixTweaker.quantizeLED = function (value, group, control) {
 		ElectrixTweaker.buttons[group]['quantize'],
 		(value) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
 	)
-	midi.sendShortMsg(
-		0x90,
-		ElectrixTweaker.buttons[group]['back'],
-		(value) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
-	)
-	midi.sendShortMsg(
-		0x90,
-		ElectrixTweaker.buttons[group]['forward'],
-		(value) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
-	)
+	if (! ElectrixTweaker.vinylMode[group]) {
+		midi.sendShortMsg(
+			0x90,
+			ElectrixTweaker.buttons[group]['back'],
+			(value) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
+		)
+		midi.sendShortMsg(
+			0x90,
+			ElectrixTweaker.buttons[group]['forward'],
+			(value) ? ElectrixTweaker.colorCodes['white'] : ElectrixTweaker.colorCodes['green']
+		)
+	}
+}
+
+ElectrixTweaker.vinylModeLED = function (value, group, control) {
+	var color
+	switch (engine.getValue(group, 'vinylcontrol_mode')) {
+		// absolute mode
+		case 0: color = 'off'; break
+		// relative mode
+		case 1:
+			switch (engine.getValue(group, 'vinylcontrol_cueing')) {
+				case 0: color = 'white'; break
+				case 1: color = 'yellow'; break
+				case 2: color = 'green'; break
+			}
+			break
+		// constant mode
+		case 2: color = 'red'; break
+	}
+	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['forward'], ElectrixTweaker.colorCodes[color])
+}
+ElectrixTweaker.vinylStatusLED = function (value, group, control) {
+	if (engine.getValue(group, 'passthrough')) {
+		midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['back'], ElectrixTweaker.colorCodes['white'])
+	} else {
+		var color
+		switch (engine.getValue(group, 'vinylcontrol_status')) {
+			case 0: color = 'off'; break
+			case 1: color = 'green'; break
+			case 2: color = 'yellow'; break
+			case 3: color = 'red'; break
+		}
+		midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['back'], ElectrixTweaker.colorCodes[color])
+	}
+}
+
+ElectrixTweaker.forward = function (channel, control, value, status, group) {
+	group = ElectrixTweaker.deck[group]
+	if (ElectrixTweaker.vinylMode[group]) {
+		if (value) {
+			switch (engine.getValue(group, 'vinylcontrol_mode')) {
+				// absolute mode
+				case 0: engine.setValue(group, 'vinylcontrol_mode', 1); break
+				// relative mode
+				case 1:
+					if (engine.getValue(group, 'play') && ! ElectrixTweaker.shift) {
+						switch (engine.getValue(group, 'vinylcontrol_cueing')) {
+							case 0: engine.setValue(group, 'vinylcontrol_cueing', 1); break
+							case 1: engine.setValue(group, 'vinylcontrol_cueing', 2); break
+							case 2: engine.setValue(group, 'vinylcontrol_cueing', 0); break
+						}
+					} else {
+						engine.setValue(group, 'vinylcontrol_mode', 2)
+					}
+					break
+				// constant mode
+				case 2: engine.setValue(group, 'vinylcontrol_mode', 0); break
+			}
+		}
+	} else {
+		if (engine.getValue(group, 'quantize')) {
+			if (value) {
+				if (ElectrixTweaker.shift) {
+					engine.setValue(group, 'beatjump_1_forward', 1)
+				} else {
+					engine.setValue(group, 'beatjump_4_forward', 1)
+				}
+			}
+		} else {
+			if (ElectrixTweaker.shift) {
+				engine.setValue(group, 'rate_temp_up', value / 127)
+			} else {
+				engine.setValue(group, 'fwd', value)
+			}
+		}
+	}
+}
+ElectrixTweaker.back = function (channel, control, value, status, group) {
+	group = ElectrixTweaker.deck[group]
+	if (ElectrixTweaker.vinylMode[group]) {
+		if (value) {
+			if (ElectrixTweaker.shift || engine.getValue(group, 'passthrough')) {
+				engine.setValue(group, 'passthrough', ! engine.getValue(group, 'passthrough'))
+			} else {
+				engine.setValue(group, 'vinylcontrol_enabled', ! engine.getValue(group, 'vinylcontrol_enabled'))
+			}
+		}
+	} else {
+		if (engine.getValue(group, 'quantize')) {
+			if (value) {
+				if (ElectrixTweaker.shift) {
+					engine.setValue(group, 'beatjump_1_backward', 1)
+				} else {
+					engine.setValue(group, 'beatjump_4_backward', 1)
+				}
+			}
+		} else {
+			if (ElectrixTweaker.shift) {
+				engine.setValue(group, 'rate_temp_down', value / 127)
+			} else {
+				engine.setValue(group, 'back', value)
+			}
+		}
+	}
 }
