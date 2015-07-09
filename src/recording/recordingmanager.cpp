@@ -2,7 +2,7 @@
 
 #include <QMutex>
 #include <QDir>
-#include <QDebug>
+#include <QtDebug>
 
 #include "recording/recordingmanager.h"
 #include "recording/defs_recording.h"
@@ -45,7 +45,7 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
 RecordingManager::~RecordingManager()
 {
     qDebug() << "Delete RecordingManager";
-    
+
     delete m_recReady;
     delete m_recReadyCO;
     delete m_pToggleRecording;
@@ -193,4 +193,3 @@ long RecordingManager::getFileSplitSize()
      else
          return SIZE_650MB;
 }
-

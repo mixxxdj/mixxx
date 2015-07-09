@@ -18,9 +18,9 @@
 #ifndef WNUMBER_H
 #define WNUMBER_H
 
-#include "wwidget.h"
-#include <qlabel.h>
-#include <qevent.h>
+#include <QLabel>
+
+#include "widget/wwidget.h"
 
 /**
   *@author Tue & Ken Haste Andersen

@@ -18,6 +18,9 @@
 #ifndef SOUNDDEVICE_H
 #define SOUNDDEVICE_H
 
+#include <QString>
+#include <QList>
+
 #include "soundmanager.h"
 
 //Forward declarations

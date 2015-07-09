@@ -15,17 +15,19 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wpushbutton.h"
-#include "wpixmapstore.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "control/controlbehavior.h"
-//Added by qt3to4:
+#include "widget/wpushbutton.h"
+
+#include <QPainter>
 #include <QPixmap>
 #include <QtDebug>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QApplication>
+
+#include "widget/wpixmapstore.h"
+#include "controlobject.h"
+#include "controlpushbutton.h"
+#include "control/controlbehavior.h"
 
 const int PB_SHORTKLICKTIME = 200;
 

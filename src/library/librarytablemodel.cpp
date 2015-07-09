@@ -23,16 +23,16 @@ void LibraryTableModel::init() {
 // Must be called from Main thread
 void LibraryTableModel::setTableModel(int id) {
     Q_UNUSED(id);
-    QStringList columns = QStringList()
-            << "library."+LIBRARYTABLE_ID << "'' as preview";
+    QStringList columns = QStringList();
+    columns << "library." + LIBRARYTABLE_ID << "'' as preview";
 
-    QString tableName = "library_view";
+    const QString tableName = "library_view";
 
     // TODO(xxx) move this to separate function on accessing DB (create table)
     m_pTrackCollection->callSync(
             [this, &columns, &tableName] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         QSqlQuery query(pTrackCollectionPrivate->getDatabase());
-        QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS "+tableName+" AS "
+        QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
                 "SELECT " + columns.join(", ") +
                 " FROM library INNER JOIN track_locations "
                 "ON library.location = track_locations.id "
@@ -57,7 +57,8 @@ void LibraryTableModel::setTableModel(int id) {
 }
 
 // Must be called from Main thread
-int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+int LibraryTableModel::addTracks(const QModelIndex& index,
+                                 const QList<QString>& locations) {
     Q_UNUSED(index);
     QList<QFileInfo> fileInfoList;
     foreach (QString fileLocation, locations) {
@@ -76,18 +77,18 @@ int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locati
 
 bool LibraryTableModel::isColumnInternal(int column) {
     if ((column == fieldIndex(LIBRARYTABLE_ID)) ||
-        (column == fieldIndex(LIBRARYTABLE_URL)) ||
-        (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
-        (column == fieldIndex(LIBRARYTABLE_REPLAYGAIN)) ||
-        (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
-        (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
-        (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
-        (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
-        (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
-        (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) ||
-        (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
-        (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) ||
-        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
+            (column == fieldIndex(LIBRARYTABLE_URL)) ||
+            (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
+            (column == fieldIndex(LIBRARYTABLE_REPLAYGAIN)) ||
+            (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
+            (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
+            (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
+            (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
+            (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
+            (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) ||
+            (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
+            (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) ||
+            (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
 
@@ -95,8 +96,9 @@ bool LibraryTableModel::isColumnInternal(int column) {
 }
 
 bool LibraryTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))
+    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
+    }
     return false;
 }
 

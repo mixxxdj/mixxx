@@ -18,11 +18,11 @@
 #ifndef CONFIGOBJECT_H
 #define CONFIGOBJECT_H
 
-#include <qstring.h>
-#include <qfile.h>
-#include <qkeysequence.h>
-#include <qdom.h>
-#include <qmap.h>
+#include <QString>
+#include <QFile>
+#include <QKeySequence>
+#include <QDomNode>
+#include <QMap>
 #include <QHash>
 
 #include "util/debug.h"
@@ -134,5 +134,3 @@ template <class ValueType> class ConfigObject {
 };
 
 #endif
-
-

@@ -1,5 +1,5 @@
 #include <QPainter>
-#include <QDebug>
+#include <QtDebug>
 
 #include "waveformmarkrange.h"
 

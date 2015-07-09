@@ -76,7 +76,8 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 }
 
 // Must be called from Main thread
-int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+int PlaylistTableModel::addTracks(const QModelIndex& index,
+                                  const QList<QString>& locations) {
     if (locations.size() == 0) {
         return 0;
     }

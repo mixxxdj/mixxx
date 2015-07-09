@@ -2,9 +2,7 @@
 #ifndef BASESQLTABLEMODEL_H
 #define BASESQLTABLEMODEL_H
 
-#include <QtCore>
 #include <QHash>
-#include <QtGui>
 #include <QtSql>
 
 #include "library/basetrackcache.h"

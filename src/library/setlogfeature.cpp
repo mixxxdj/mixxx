@@ -1,8 +1,5 @@
 #include <QtDebug>
 #include <QMenu>
-#include <QInputDialog>
-#include <QFileDialog>
-#include <QDesktopServices>
 #include <QDateTime>
 
 #include "library/setlogfeature.h"

@@ -10,11 +10,12 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include <QTextStream>
-#include <QDebug>
+
+#include "library/parserm3u.h"
+
+#include <QtDebug>
 #include <QDir>
 #include <QMessageBox>
-#include "parserm3u.h"
 #include <QUrl>
 #include <QTextCodec>
 

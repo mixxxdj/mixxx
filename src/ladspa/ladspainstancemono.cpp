@@ -7,7 +7,8 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
+#include <QtDebug>
+
 #include "ladspainstancemono.h"
 
 LADSPAInstanceMono::LADSPAInstanceMono(const LADSPA_Descriptor * descriptor, int slot) : LADSPAInstance(descriptor, slot)

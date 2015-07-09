@@ -19,10 +19,11 @@
 #include <taglib/rifffile.h>
 #include <taglib/wavfile.h>
 
+#include <QString>
+#include <QtDebug>
+
 #include "trackinfoobject.h"
 #include "soundsourcesndfile.h"
-#include <qstring.h>
-#include <QtDebug>
 
 /*
    Class for reading files using libsndfile

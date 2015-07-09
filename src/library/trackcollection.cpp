@@ -1,9 +1,7 @@
-#include <QtCore>
-#include <QtGui>
 #include <QtSql>
 #include <QtDebug>
 
-#include "trackcollection.h"
+#include "library/trackcollection.h"
 
 #include "defs.h"
 #include "library/librarytablemodel.h"

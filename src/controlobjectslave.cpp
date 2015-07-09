@@ -36,12 +36,14 @@ bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
     bool ret = false;
     if (m_pControl) {
         ret = connect((QObject*)this, SIGNAL(valueChanged(double)),
-                receiver, method, type);
+                      receiver, method, type);
         if (ret) {
-            // connect to ControlObjectPrivate only if required
-            ret = connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
+            // Connect to ControlObjectPrivate only if required. Do not allow
+            // duplicate connections.
+            connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
                     this, SLOT(slotValueChanged(double, QObject*)),
-                    Qt::DirectConnection);
+                    static_cast<Qt::ConnectionType>(Qt::DirectConnection |
+                                                    Qt::UniqueConnection));
         }
     }
     return ret;

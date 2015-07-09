@@ -10,18 +10,18 @@ class SoftwareWaveformWidget : public QWidget, public WaveformWidgetAbstract {
   public:
     virtual ~SoftwareWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::SoftwareWaveform;}
+    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::SoftwareWaveform; }
 
-    static inline QString getWaveformWidgetName() { return tr("Filtered") + " - " + tr("Software");}
-    static inline bool useOpenGl() { return false;}
-    static inline bool useOpenGLShaders() { return false;}
+    static inline QString getWaveformWidgetName() { return tr("Filtered") + " - " + tr("Software"); }
+    static inline bool useOpenGl() { return false; }
+    static inline bool useOpenGLShaders() { return false; }
+    static inline bool developerOnly() { return false; }
 
   protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
 
   private:
-    SoftwareWaveformWidget() {}
     SoftwareWaveformWidget(const char* group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };

@@ -2,7 +2,7 @@
 #include <QtDebug>
 #include <QTime>
 #include <QMutexLocker>
-#include <QDebug>
+#include <QtDebug>
 #include <QtSql/QSqlError>
 #include <time.h>
 

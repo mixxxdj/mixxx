@@ -3,10 +3,12 @@
 #include "library/queryutil.h"
 #include "playermanager.h"
 
-BaseExternalPlaylistModel::BaseExternalPlaylistModel(
-    QObject* parent, TrackCollection* pTrackCollection,
-    QString settingsNamespace, QString playlistsTable,
-    QString playlistTracksTable, QString trackSource)
+BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
+                                                     TrackCollection* pTrackCollection,
+                                                     QString settingsNamespace,
+                                                     QString playlistsTable,
+                                                     QString playlistTracksTable,
+                                                     QString trackSource)
         : BaseSqlTableModel(parent, pTrackCollection,
                             settingsNamespace),
           m_playlistsTable(playlistsTable),
@@ -24,19 +26,19 @@ void BaseExternalPlaylistModel::setTableModel(int id){
 // Must be called from Main thread
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
     QString artist = index.sibling(
-        index.row(), fieldIndex("artist")).data().toString();
+            index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(
-        index.row(), fieldIndex("title")).data().toString();
+            index.row(), fieldIndex("title")).data().toString();
     QString album = index.sibling(
-        index.row(), fieldIndex("album")).data().toString();
+            index.row(), fieldIndex("album")).data().toString();
     QString year = index.sibling(
-        index.row(), fieldIndex("year")).data().toString();
+            index.row(), fieldIndex("year")).data().toString();
     QString genre = index.sibling(
-        index.row(), fieldIndex("genre")).data().toString();
+            index.row(), fieldIndex("genre")).data().toString();
     float bpm = index.sibling(
-        index.row(), fieldIndex("bpm")).data().toString().toFloat();
+            index.row(), fieldIndex("bpm")).data().toString().toFloat();
     QString location = index.sibling(
-        index.row(), fieldIndex("location")).data().toString();
+            index.row(), fieldIndex("location")).data().toString();
 
     if (location.isEmpty()) {
         // Track is lost
@@ -84,7 +86,7 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
 
 bool BaseExternalPlaylistModel::isColumnInternal(int column) {
     if (column == fieldIndex("track_id") ||
-        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
+            (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
     return false;
@@ -127,7 +129,7 @@ bool BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
         }
 
         playlistViewTable = QString("%1_%2").arg(m_playlistTracksTable,
-                                                         QString::number(playlistId));
+                                                 QString::number(playlistId));
         columns << "track_id";
         columns << "position";
 

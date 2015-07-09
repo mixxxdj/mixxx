@@ -16,7 +16,6 @@
 #ifndef DLGPREFSOUNDITEM_H
 #define DLGPREFSOUNDITEM_H
 
-#include <QtCore>
 #include "ui_dlgprefsounditem.h"
 #include "soundmanagerutil.h"
 

@@ -1,8 +1,8 @@
 #ifndef HEXSPINBOX_H
 #define HEXSPINBOX_H
 
-#include <qspinbox.h>
-#include <qvalidator.h>
+#include <QSpinBox>
+#include <QValidator>
 
 class HexSpinBox : public QSpinBox
 {

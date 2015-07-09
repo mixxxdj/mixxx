@@ -8,9 +8,12 @@
 #ifndef DLGCONTROLLERLEARNING_H
 #define DLGCONTROLLERLEARNING_H
 
-#include <QtGui>
+#include <QDialog>
+#include <QList>
 #include <QMenu>
+#include <QSet>
 #include <QSignalMapper>
+#include <QString>
 
 #include "controllers/ui_dlgcontrollerlearning.h"
 #include "controllers/controller.h"

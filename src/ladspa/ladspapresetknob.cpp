@@ -9,9 +9,6 @@
 
 #include "ladspapresetknob.h"
 
-#include <QtCore>
-#include <QtXml>
-
 LADSPAPresetKnob::LADSPAPresetKnob()
 {
 }

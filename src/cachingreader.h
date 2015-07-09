@@ -4,7 +4,7 @@
 #ifndef CACHINGREADER_H
 #define CACHINGREADER_H
 
-#include <QDebug>
+#include <QtDebug>
 #include <QList>
 #include <QVector>
 #include <QLinkedList>

@@ -16,7 +16,6 @@
 ***************************************************************************/
 
 #include <QtDebug>
-#include <QtCore>
 
 #include "sounddevice.h"
 

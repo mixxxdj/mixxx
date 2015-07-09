@@ -10,7 +10,6 @@
 #ifndef LADSPAINSTANCEMONO_H
 #define LADSPAINSTANCEMONO_H
 
-#include <QtCore>
 #include <ladspa.h>
 
 #include "defs.h"

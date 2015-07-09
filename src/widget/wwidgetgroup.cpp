@@ -1,12 +1,15 @@
-#include "wwidgetgroup.h"
-#include "wwidget.h"
-#include "wpixmapstore.h"
-#include "xmlparse.h"
-#include <QLayout>
+#include "widget/wwidgetgroup.h"
 
-WWidgetGroup::WWidgetGroup(QWidget * parent) :
-        QGroupBox(parent),
-        m_pPixmapBack(NULL) {
+#include <QLayout>
+#include <QPainter>
+
+#include "widget/wwidget.h"
+#include "widget/wpixmapstore.h"
+#include "xmlparse.h"
+
+WWidgetGroup::WWidgetGroup(QWidget* parent)
+        : QGroupBox(parent),
+          m_pPixmapBack(NULL) {
     setObjectName("WidgetGroup");
 }
 

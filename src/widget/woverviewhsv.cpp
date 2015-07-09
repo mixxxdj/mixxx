@@ -1,12 +1,15 @@
-#include "woverviewhsv.h"
+#include "widget/woverviewhsv.h"
+
+#include <QPainter>
+#include <QColor>
 
 #include "util/timer.h"
 
 #include "waveform/waveform.h"
 
 WOverviewHSV::WOverviewHSV(const char* pGroup,
-        ConfigObject<ConfigValue>* pConfig, QWidget * parent)
-    : WOverview(pGroup, pConfig, parent)  {
+                           ConfigObject<ConfigValue>* pConfig, QWidget* parent)
+        : WOverview(pGroup, pConfig, parent)  {
 }
 
 bool WOverviewHSV::drawNextPixmapPart() {

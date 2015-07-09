@@ -7,8 +7,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-#include "ladspacontrol.h"
+#include "ladspa/ladspacontrol.h"
 
 // static variable
 int LADSPAControl::m_bufferSize = LADSPA_MAX_BUFFER_SIZE;

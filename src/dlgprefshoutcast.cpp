@@ -18,8 +18,6 @@
  ***************************************************************************/
 
 #include <QtDebug>
-#include <QtCore>
-#include <QtGui>
 
 #include "defs_urls.h"
 #include "dlgprefshoutcast.h"

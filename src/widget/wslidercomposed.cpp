@@ -15,16 +15,13 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wslidercomposed.h"
-#include <qpixmap.h>
+#include "widget/wslidercomposed.h"
+
 #include <QtDebug>
-#include <qpainter.h>
-//Added by qt3to4:
-#include <QMouseEvent>
-#include <QPaintEvent>
 #include <QPainter>
+
 #include "defs.h"
-#include "wpixmapstore.h"
+#include "widget/wpixmapstore.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WAbstractControl(parent),

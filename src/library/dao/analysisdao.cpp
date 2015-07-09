@@ -2,7 +2,7 @@
 #include <QSqlResult>
 #include <QSqlError>
 #include <QTime>
-#include <QDebug>
+#include <QtDebug>
 
 #include "waveform/waveform.h"
 #include "library/dao/analysisdao.h"

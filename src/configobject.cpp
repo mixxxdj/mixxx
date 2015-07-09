@@ -14,9 +14,9 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-#include <qapplication.h>
+#include <QApplication>
 #include "configobject.h"
-#include <qdir.h>
+#include <QDir>
 #include <QtDebug>
 #include "widget/wwidget.h"
 
@@ -28,7 +28,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-#include <qiodevice.h>
+#include <QIODevice>
 #include <QTextStream>
 #include <math.h>
 
@@ -436,4 +436,3 @@ template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath() co
 
 template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueKbd>;
-

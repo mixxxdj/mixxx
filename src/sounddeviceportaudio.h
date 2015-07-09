@@ -20,6 +20,8 @@
 
 #include <portaudio.h>
 
+#include <QString>
+
 #include "sounddevice.h"
 
 class SoundManager;

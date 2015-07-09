@@ -13,7 +13,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QtCore>
 #include "soundmanagerutil.h"
 #include "engine/enginechannel.h"
 

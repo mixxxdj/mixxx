@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include <QDebug>
+#include <QtDebug>
 
 #include "encoder/encodercallback.h"
 #include "errordialoghandler.h"
@@ -155,7 +155,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
             qDebug() << "EncoderFfmpegCore::encodeBuffer: failed to write a header.";
             return;
         }
-    
+
         l_iBufferLen = avio_close_dyn_buf(m_pEncodeFormatCtx->pb,
                                           (uint8_t**)(&l_strBuffer));
         m_pCallback->write(NULL, l_strBuffer, 0, l_iBufferLen);
@@ -253,7 +253,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
         qDebug() << "EncoderFfmpegCore::initEncoder: Codec M4A";
 #ifdef avformat_alloc_output_context2
         avformat_alloc_output_context2(&m_pEncodeFormatCtx, NULL, NULL, "output.m4a");
-#else 
+#else
         m_pEncoderFormat = av_guess_format(NULL, "output.m4a", NULL);
 #endif // avformat_alloc_output_context2
 

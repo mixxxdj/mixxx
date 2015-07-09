@@ -10,13 +10,12 @@
 #ifndef LADSPAPRESET_H
 #define LADSPAPRESET_H
 
-#include <QtCore>
-#include <QtXml>
+#include <QDomElement>
+#include <QString>
+#include <QVector>
 
 #include "ladspaplugin.h"
 #include "ladspapresetknob.h"
-
-class QDomElement;
 
 class LADSPAPresetInstance;
 class LADSPALoader;

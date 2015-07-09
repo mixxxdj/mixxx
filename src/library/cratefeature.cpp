@@ -5,6 +5,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMenu>
+#include <QDesktopServices>
 
 #include "library/cratefeature.h"
 #include "library/parser.h"

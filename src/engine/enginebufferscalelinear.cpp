@@ -15,7 +15,8 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
+#include <QtDebug>
+
 #include "engine/enginebufferscalelinear.h"
 #include "mathstuff.h"
 #include "sampleutil.h"

@@ -15,9 +15,8 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-#include <QtGui>
 #include <QFileDialog>
+#include <QDesktopServices>
 
 #include "dlgprefrecord.h"
 #include "recording/defs_recording.h"

@@ -18,7 +18,7 @@
 #ifndef CONTROLEVENT_H
 #define CONTROLEVENT_H
 
-#include <qevent.h>
+#include <QEvent>
 #include <QObject>
 
 #include "mixxxevent.h"

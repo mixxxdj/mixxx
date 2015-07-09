@@ -20,7 +20,6 @@
 
 #include <QDialog>
 #include <QEvent>
-#include <QtGui>
 
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
