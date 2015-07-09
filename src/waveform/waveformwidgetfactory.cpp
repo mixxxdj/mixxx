@@ -8,7 +8,6 @@
 //Todo: remove that generic import
 #include <QtCore>
 
-#include "util/cmdlineargs.h"
 #include "waveform/waveformwidgetfactory.h"
 
 #include "controlpotmeter.h"
@@ -26,6 +25,7 @@
 #include "widget/wwaveformviewer.h"
 #include "waveform/vsyncthread.h"
 
+#include "util/cmdlineargs.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
 

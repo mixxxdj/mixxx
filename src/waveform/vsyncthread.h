@@ -11,7 +11,7 @@
 #elif defined(__WINDOWS__)
 
 #else
-   #include <qx11info_x11.h>
+    #include <qx11info_x11.h>
 #endif
 
 #include "util/performancetimer.h"
@@ -24,6 +24,9 @@
 #else
     #include <GL/glx.h>
     #include "GL/glxext.h"
+    // clean up after Xlib.h, which #defines values that conflict with QT.
+    #undef Bool
+    #undef Unsorted
 #endif
 
 
@@ -63,7 +66,7 @@ class VSyncThread : public QThread {
   signals:
     void vsyncRender();
     void vsyncSwap();
-        
+
   private:
     bool doRendering;
     QGLWidget *m_glw;
