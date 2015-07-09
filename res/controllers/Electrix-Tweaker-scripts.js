@@ -90,8 +90,6 @@ The 8x4 grid of small buttons is divided in half with each side controlling a de
 			Top button: cycles through vinyl control modes: absolute (LED off), relative (LED indicates cue mode), and constant (LED red). If the deck is in relative mode and playing, pressing the button cycles through cue modes: off (white), cue (yellow), hotcue (green). When the deck is playing in relative mode, pressing the button with shift switches to constant mode.
 			
 			Bottom button: toggle vinyl control. Turns green when vinyl control is enabled. With shift pressed, it toggles passthrough mode and turns white. Pressing the button while passthrough mode is enabled turns passthrough mode off (without toggling whether vinyl control is enabled).
-			
-	The vertical green/white buttons on the bottom left are the navigation buttons. When quantize is off, they are green. The top green button plays the deck in fast-forward and the bottom green button plays it in reverse. When quantize is on, they are white and jump forward/backward 4 beats.
 
 	The yellow button is a shift button.
 	The button to the left of the yellow shift button toggles slip mode.
