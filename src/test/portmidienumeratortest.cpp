@@ -78,6 +78,20 @@ TEST_F(PortMidiEnumeratorTest, InputOutputPortsLinked) {
         "Traktor Kontrol X1 - 1 MIDI input 0",
         "Traktor Kontrol X1 - 1 MIDI output 0"));
 
+    // Lemur Daemon shows 8 port pairs named like:
+    // 'Daemon Input 1' and 'Daemon Output 2'
+    // We explicitly only support such names with numeric index, case sensitively
+    ASSERT_TRUE(shouldLinkInputToOutput("Daemon Input 1", "Daemon Output 1"));
+    ASSERT_TRUE(shouldLinkInputToOutput("Daemon Input 2", "Daemon Output 2"));
+    ASSERT_TRUE(shouldLinkInputToOutput("Daemon Input 1234", "Daemon Output 1234"));
+    ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input", "Daemon Output"));
+    ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input ", "Daemon Output "));
+    ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input 1", "Daemon Input 1"));
+    ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input 1", "daemon output 1"));
+    ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input 1", "Daemon Output 1 "));
+    ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input 1", "Daemon Output 11"));
+    ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input 2", "Daemon Output 12"));
+
     // Dangling numerals after the device name but before MIDI are fine.
     ASSERT_TRUE(shouldLinkInputToOutput(
         "Vestax VCI-100 2 MIDI 12",
