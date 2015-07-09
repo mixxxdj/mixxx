@@ -246,27 +246,32 @@
 								**********************************************
 								-->
 								<PushButton>
-									<TooltipId>beatsync_beatsync_tempo</TooltipId>
+									<TooltipId>sync_enabled</TooltipId>
 									<Style></Style>
-									<NumberStates>1</NumberStates>
+									<NumberStates>2</NumberStates>
 									<State>
 										<Number>0</Number>
 										<Pressed>btn_sync_sampler_overdown.png</Pressed>
 										<Unpressed>btn_sync_sampler.png</Unpressed>
 									</State>
+									<State>
+										<Number>1</Number>
+										<Pressed>btn_sync_sampler_overdown.png</Pressed>
+										<Unpressed>btn_sync_sampler_overdown.png</Unpressed>
+									</State>
 									<Pos>11,68</Pos>
 									<Connection>
-										<ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync</ConfigKey>
+										<ConfigKey>[Sampler<Variable name="samplernum"/>],sync_enabled</ConfigKey>
 										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 										<ButtonState>LeftButton</ButtonState>
 									</Connection>
 									<Connection>
-										<ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync_tempo</ConfigKey>
+										<ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync</ConfigKey>
 										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 										<ButtonState>RightButton</ButtonState>
 									</Connection>
 								</PushButton>
-	
+								
 								<!--
 								**********************************************
 								Button- Hotcue
