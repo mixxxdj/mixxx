@@ -12,7 +12,7 @@ ElectrixTweaker.eqSensitivity = 6
 ElectrixTweaker.vinylMode = {'[Channel1]': true, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 
 /**
- * Electrix Tweaker controller script 0.4.1 for Mixxx 1.12
+ * Electrix Tweaker controller script 0.5 for Mixxx 1.12
  * Copyright (C) 2015 Be <be.0@gmx.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -78,6 +78,19 @@ The 8x4 grid of small buttons is divided in half with each side controlling a de
 	When slip mode is off, pressing a hotcue button will simply jump to that hotcue point.
 	When slip mode is on, the deck will jump to the hotcue and keep playing from there as long as the hotcue button is held down. If the deck was playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump to where it would have been if no hotcue buttons were pressed. If the deck was not playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump back to the last pressed hotcue and stop playing.
 
+	The button in the bottom left of the deck's grid and the button above that are the navigation or vinyl options buttons. By default, they are in navigation button mode. Vinyl option mode can be enabled for a deck by pressing both the top red shift button and the bottom yellow shift button in that deck's grid. Alternatively, vinyl mode can be enabled on startup by editing the ElectrixTweaker.vinylMode variable at the top of the script.
+		In navigation mode:
+			When quantize is off, they are green:
+				forward/reverse playback
+				with shift: temporary pitch bend
+			When quantize is on, they are white:
+				skip forward/backwards by 4 beats
+				with shift: skip forwards/backwards by 1 beat
+		In vinyl mode:
+			Top button: cycles through vinyl control modes: absolute (LED off), relative (LED indicates cue mode), and constant (LED red). If the deck is in relative mode and playing, pressing the button cycles through cue modes: off (white), cue (yellow), hotcue (green). When the deck is playing in relative mode, pressing the button with shift switches to constant mode.
+			
+			Bottom button: toggle vinyl control. Turns green when vinyl control is enabled. With shift pressed, it toggles passthrough mode and turns white. Pressing the button while passthrough mode is enabled turns passthrough mode off (without toggling whether vinyl control is enabled).
+			
 	The vertical green/white buttons on the bottom left are the navigation buttons. When quantize is off, they are green. The top green button plays the deck in fast-forward and the bottom green button plays it in reverse. When quantize is on, they are white and jump forward/backward 4 beats.
 
 	The yellow button is a shift button.
@@ -90,9 +103,7 @@ The 8x4 grid of small buttons is divided in half with each side controlling a de
 
 	While holding shift:
 		Hotcues (yellow shift button): move hotcue to current play position
-		Hotcues (red shfit button at top): delete hotcue
-		Navigation buttons (quantize off): temporary rate adjustment
-		Navigation buttons (quantize on): move by 1 beat
+		Hotcues (red shift button at top): delete hotcue
 		Slip mode: place loop start point at current play position
 		Deck toggle: place loop end point at current play position
 		Quantize: align beatgrid with current play position
