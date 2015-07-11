@@ -126,6 +126,11 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
         return ERR;
     }
 
+    if (MP4GetTrackFixedSampleDuration(m_hFile, m_trackId) != kFramesPerSampleBlock) {
+      qWarning() << "Unsupported frame length:" << MP4GetTrackFixedSampleDuration(m_hFile, m_trackId);
+      return ERR;
+    }
+
     const MP4SampleId numberOfSamples =
             MP4GetTrackNumberOfSamples(m_hFile, m_trackId);
     if (0 >= numberOfSamples) {
