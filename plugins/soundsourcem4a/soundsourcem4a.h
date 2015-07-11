@@ -45,6 +45,7 @@ private:
     InputBuffer m_inputBuffer;
     SINT m_inputBufferLength;
     SINT m_inputBufferOffset;
+    SINT m_framesPerSampleBlock;
 
     NeAACDecHandle m_hDecoder;
 
