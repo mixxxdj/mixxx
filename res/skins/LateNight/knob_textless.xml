@@ -19,6 +19,9 @@
             <Size>40f,34f</Size>
             <Knob>knob_indicator.svg</Knob>
             <BackPath>knob_bg.svg</BackPath>
+            <Ring>knob_ring.svg</Ring>
+            <Centered><Variable name="centered"/></Centered>
+            <RingMaskYOffset>2.353</RingMaskYOffset>
             <MinAngle>-135</MinAngle>
             <MaxAngle>135</MaxAngle>
             <Connection>
