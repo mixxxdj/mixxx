@@ -69,6 +69,11 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
         qDebug() << "Creating user controller presets directory:" << userPresets;
         QDir().mkpath(userPresets);
     }
+    QString localPresets = localPresetsPath(m_pConfig);
+    if (!QDir(localPresets).exists()) {
+        qDebug() << "Creating local controller presets directory:" << localPresets;
+        QDir().mkpath(localPresets);
+    }
 
     // Initialize preset info parsers. This object is only for use in the main
     // thread. Do not touch it from within ControllerManager.
@@ -370,6 +375,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
 QList<QString> ControllerManager::getPresetPaths(ConfigObject<ConfigValue>* pConfig) {
     QList<QString> scriptPaths;
     scriptPaths.append(userPresetsPath(pConfig));
+    scriptPaths.append(localPresetsPath(pConfig));
     scriptPaths.append(resourcePresetsPath(pConfig));
     return scriptPaths;
 }
