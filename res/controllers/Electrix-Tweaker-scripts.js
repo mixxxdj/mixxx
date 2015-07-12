@@ -9,7 +9,7 @@ ElectrixTweaker.samplerSensitivity = 4
 ElectrixTweaker.eqSensitivity = 6
 
 // Set these to true to enable vinyl mode for that deck on startup. This will also enable vinyl control on startup.
-ElectrixTweaker.vinylMode = {'[Channel1]': true, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
+ElectrixTweaker.vinylMode = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 
 /**
  * Electrix Tweaker controller script 0.5 for Mixxx 1.12
