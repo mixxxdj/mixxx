@@ -292,7 +292,7 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
             // that uses one but we may in the future).
             pPainter->save();
             pPainter->setClipping(true);
-            pPainter->setClipRect(targetRect);
+            pPainter->setClipRect(targetRect,Qt::IntersectClip);
             m_pSvg->setViewBox(sourceRect);
             m_pSvg->render(pPainter, targetRect);
             pPainter->restore();

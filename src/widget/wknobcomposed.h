@@ -33,10 +33,15 @@ class WKnobComposed : public WWidget {
     void clear();
     void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
     void setPixmapKnob(PixmapSource source, Paintable::DrawMode mode);
+    void setPixmapRing(PixmapSource source, Paintable::DrawMode mode);
 
     double m_dCurrentAngle;
     PaintablePointer m_pKnob;
     PaintablePointer m_pPixmapBack;
+    PaintablePointer m_pRing;
+    bool m_bCentered;
+    int m_iMaskXOffset;
+    int m_iMaskYOffset;
     KnobEventHandler<WKnobComposed> m_handler;
     double m_dMinAngle;
     double m_dMaxAngle;
