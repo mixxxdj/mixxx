@@ -330,11 +330,11 @@ int main(int argc, char * argv[])
 
     QMessageBox cleaningUpBox;
     cleaningUpBox.setStandardButtons(0);
-    cleaningUpBox.setWindowTitle( QObject::tr("Exiting Mixxx") );
-    cleaningUpBox.setText((
-            "Cleaning up Library\n"
-            "This may take a while.\n"
-            "Do not restart Mixxx until this box has disappeared.") );
+    cleaningUpBox.setWindowTitle(QObject::tr("Exiting Mixxx"));
+    cleaningUpBox.setText(QObject::tr(
+            "Cleaning up the library. This may take some time.\n"
+            "Do not restart Mixxx or shutdown the device until\n "
+            "this box has disappeared."));
     cleaningUpBox.open();
 #if defined(Q_WS_X11)
     extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
