@@ -253,6 +253,7 @@ for (var group in ElectrixTweaker.hotcuesPressed) {
 	}
 }
 ElectrixTweaker.playPressedWhileCueJuggling = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
+ElectrixTweaker.hotcuePressedToSet = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.midEncoderLEDTimer = {'[Channel1]': 0, '[Channel2]': 0, '[Channel3]': 0, '[Channel4]': 0}
 ElectrixTweaker.lowEncoderLEDTimer = {'[Channel1]': 0, '[Channel2]': 0, '[Channel3]': 0, '[Channel4]': 0}
 
@@ -966,6 +967,7 @@ ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 			}
 		} else {
 			engine.setValue(group, 'hotcue_'+cue+'_set', 1)
+			ElectrixTweaker.hotcuePressedToSet[group] = true
 		}
 	} else {
 		ElectrixTweaker.hotcuesPressed[group][cueButton] = false
@@ -977,13 +979,14 @@ ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 		
 		if (ElectrixTweaker.slipMode[group]) {
 			if (! engine.getValue(group, 'slip_enabled')) { // if cue jugging started from pause
-				if (! ElectrixTweaker.anyHotcuesPressed(group)) {
+				if (! ElectrixTweaker.anyHotcuesPressed(group) && ! ElectrixTweaker.hotcuePressedToSet[group]) {
 					engine.setValue(group, 'hotcue_'+cue+'_gotoandstop', 1)
 				}
 			} else if (! ElectrixTweaker.anyHotcuesPressed(group)) {
 				engine.setValue(group, 'slip_enabled', 0)
 			}
 		}
+		ElectrixTweaker.hotcuePressedToSet[group] = false
 	}
 }
 ElectrixTweaker.hotcueLED = function (value, group, control) {
