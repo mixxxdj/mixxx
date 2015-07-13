@@ -24,6 +24,7 @@
 #include <QTextCodec>
 #include <QIODevice>
 #include <QFile>
+#include <QSplashScreen>
 
 #include <stdio.h>
 #include <iostream>
@@ -261,6 +262,17 @@ int main(int argc, char * argv[])
     QThread::currentThread()->setObjectName("Main");
     MixxxApplication a(argc, argv);
 
+    QPixmap pixmap(":/images/templates/logo_mixxx.png");
+    QSplashScreen splash(pixmap);
+    splash.show();
+#if defined(Q_WS_X11)
+    // In asynchronous X11, the window will be mapped to screen
+    // some time after being asked to show itself on the screen.
+    extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
+    qt_x11_wait_for_window_manager(&splash);
+#endif
+    a.processEvents();
+
     // Support utf-8 for all translation strings. Not supported in Qt 5.
     // TODO(rryan): Is this needed when we switch to qt5? Some sources claim it
     // isn't.
@@ -310,10 +322,25 @@ int main(int argc, char * argv[])
     if (!(ErrorDialogHandler::instance()->checkError())) {
         qDebug() << "Displaying mixxx";
         mixxx->show();
+        splash.finish(mixxx);
 
         qDebug() << "Running Mixxx";
         result = a.exec();
     }
+
+    QMessageBox cleaningUpBox;
+    cleaningUpBox.setStandardButtons(0);
+    cleaningUpBox.setWindowTitle( QObject::tr("Exiting Mixxx") );
+    cleaningUpBox.setText((
+            "Cleaning up Library\n"
+            "This may take a while.\n"
+            "Do not restart Mixxx until this box has disappeared.") );
+    cleaningUpBox.open();
+#if defined(Q_WS_X11)
+    extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
+    qt_x11_wait_for_window_manager(&cleaningUpBox);
+#endif
+    a.processEvents();
 
     delete mixxx;
 
