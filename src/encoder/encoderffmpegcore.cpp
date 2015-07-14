@@ -327,7 +327,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     // to something that fits..
     if (l_SCodecCtx->sample_fmt != AV_SAMPLE_FMT_FLT) {
 
-        m_pResample->reSample(l_SFrame, &l_iOut);
+        m_pResample->reSampleMixxx(l_SFrame, &l_iOut);
         // After we have turned our samples to destination
         // Format we must re-alloc l_SFrame.. it easier like this..
         // FFMPEG 2.2 3561060 anb beyond
@@ -517,7 +517,7 @@ AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx,
         l_SCodecCtx->sample_rate = 44100;
         l_SCodecCtx->channels    = 2;
 
-        m_pResample->open(AV_SAMPLE_FMT_FLT, l_SCodecCtx->sample_fmt);
+        m_pResample->openMixxx(AV_SAMPLE_FMT_FLT, l_SCodecCtx->sample_fmt);
         break;
 
     default:
