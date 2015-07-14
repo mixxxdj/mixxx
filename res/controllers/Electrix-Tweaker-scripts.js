@@ -124,23 +124,17 @@ ElectrixTweaker.colorCodes = {
 	'white': 127
 }
 ElectrixTweaker.deckColor = {
-	'[Channel1]': {
-		'hotcues': ElectrixTweaker.colorCodes['cyan'],
-		'switches': ElectrixTweaker.colorCodes['blue']
-	},
-	'[Channel2]': {
-		'hotcues': ElectrixTweaker.colorCodes['cyan'],
-		'switches': ElectrixTweaker.colorCodes['blue']
-	},
-	'[Channel3]':{
-		'hotcues': ElectrixTweaker.colorCodes['red'],
-		'switches': ElectrixTweaker.colorCodes['magenta']
-	},
-	'[Channel4]': {
-		'hotcues': ElectrixTweaker.colorCodes['red'],
-		'switches': ElectrixTweaker.colorCodes['magenta']
-	}
+	'[Channel1]': ElectrixTweaker.colorCodes['blue'],
+	'[Channel2]': ElectrixTweaker.colorCodes['blue'],
+	'[Channel3]': ElectrixTweaker.colorCodes['magenta'],
+	'[Channel4]': ElectrixTweaker.colorCodes['magenta']
 }
+ElectrixTweaker.hotcueColors = [
+	ElectrixTweaker.colorCodes['cyan'],
+	ElectrixTweaker.colorCodes['green'],
+	ElectrixTweaker.colorCodes['red'],
+	ElectrixTweaker.colorCodes['white']
+]
 
 ElectrixTweaker.encoders = {
 	'[Channel1]': {
@@ -348,7 +342,7 @@ ElectrixTweaker.initDeck = function (group) {
 	ElectrixTweaker.connectDeckControls(disconnectDeck, true)
 	
 	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['shift'], ElectrixTweaker.colorCodes['yellow'])
-	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['deckToggle'], ElectrixTweaker.deckColor[group]['switches'])
+	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['deckToggle'], ElectrixTweaker.deckColor[group])
 	
 	ElectrixTweaker.connectDeckControls(group)
 	
@@ -508,7 +502,7 @@ ElectrixTweaker.connectVinylLEDs = function (group, remove) {
 		midi.sendShortMsg(
 			0x90,
 			ElectrixTweaker.buttons[group]['slip'],
-			(ElectrixTweaker.slipMode[group]) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+			(ElectrixTweaker.slipMode[group]) ? ElectrixTweaker.deckColor[group] : ElectrixTweaker.colorCodes['off']
 		)
 	} else {
 		for (var control in controlsToFunctions) {
@@ -550,7 +544,7 @@ ElectrixTweaker.shiftButton = function (channel, control, value, status, group) 
 		}
 	} else {
 		for (channel in ElectrixTweaker.encoders) {
-			engine.stopTimer(ElectrixTweaker.lowEncoderLEDTimer[channel])
+			engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[channel])
 		}
 		ElectrixTweaker.initMode(ElectrixTweaker.deck['[Channel1]'], ElectrixTweaker.mode['[Channel1]'], true)
 		ElectrixTweaker.initMode(ElectrixTweaker.deck['[Channel2]'], ElectrixTweaker.mode['[Channel2]'], true)
@@ -995,7 +989,7 @@ ElectrixTweaker.hotcueLED = function (value, group, control) {
 	midi.sendShortMsg(
 		0x90,
 		ElectrixTweaker.buttons[group]['hotcues'][row][cue - 1 - 4*row],
-		value * ElectrixTweaker.deckColor[group]['hotcues']
+		value * ElectrixTweaker.hotcueColors[ElectrixTweaker.hotcuePage[group]]
 	)
 }
 
@@ -1021,7 +1015,7 @@ ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
 			midi.sendShortMsg(
 				0x90,
 				ElectrixTweaker.buttons[group]['slip'],
-				ElectrixTweaker.slipMode[group] ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+				ElectrixTweaker.slipMode[group] ? ElectrixTweaker.deckColor[group] : ElectrixTweaker.colorCodes['off']
 			)
 		}
 	}
@@ -1062,7 +1056,7 @@ ElectrixTweaker.syncLED = function (value, group, control) {
 	midi.sendShortMsg(
 		0x90,
 		ElectrixTweaker.buttons[group]['sync'],
-		(value) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+		(value) ? ElectrixTweaker.deckColor[group] : ElectrixTweaker.colorCodes['off']
 	)
 }
 
@@ -1084,7 +1078,7 @@ ElectrixTweaker.keylockLED = function (value, group, control) {
 	midi.sendShortMsg(
 		0x90,
 		ElectrixTweaker.buttons[group]['key'],
-		(value) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+		(value) ? ElectrixTweaker.deckColor[group] : ElectrixTweaker.colorCodes['off']
 	)
 }
 
@@ -1102,7 +1096,7 @@ ElectrixTweaker.quantizeLED = function (value, group, control) {
 	midi.sendShortMsg(
 		0x90,
 		ElectrixTweaker.buttons[group]['quantize'],
-		(value) ? ElectrixTweaker.deckColor[group]['switches'] : ElectrixTweaker.colorCodes['off']
+		(value) ? ElectrixTweaker.deckColor[group] : ElectrixTweaker.colorCodes['off']
 	)
 	if (! ElectrixTweaker.vinylMode[group]) {
 		midi.sendShortMsg(
