@@ -1,19 +1,3 @@
-/***************************************************************************
-                          enginebuffer.cpp  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
 
 #include <QtDebug>
 
@@ -287,7 +271,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
-    //m_iRampIter = 0;
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
     df.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -484,14 +467,16 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     verifyPlay(); // verify or update play button and indicator
 }
 
-QString EngineBuffer::getGroup()
-{
+QString EngineBuffer::getGroup() {
     return m_group;
 }
 
-double EngineBuffer::getSpeed()
-{
+double EngineBuffer::getSpeed() {
     return m_speed_old;
+}
+
+bool EngineBuffer::getScratching() {
+    return m_scratching_old;
 }
 
 // WARNING: Always called from the EngineWorker thread pool
