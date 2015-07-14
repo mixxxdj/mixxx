@@ -870,6 +870,10 @@ class FFMPEG(Feature):
                                    --cflags --libs')
             build.env.ParseConfig('pkg-config libavutil --silence-errors \
                                    --cflags --libs')
+
+            build.env.Append(CPPDEFINES='__FFMPEGFILE__')
+            self.status = "Enabled"
+
         else:
             # aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev
             # libdts-dev
