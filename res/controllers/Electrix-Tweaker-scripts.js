@@ -255,7 +255,7 @@ for (var group in ElectrixTweaker.hotcuesPressed) {
 ElectrixTweaker.playPressedWhileCueJuggling = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.hotcuePressedToSet = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.midEncoderLEDTimer = {'[Channel1]': 0, '[Channel2]': 0, '[Channel3]': 0, '[Channel4]': 0}
-ElectrixTweaker.lowEncoderLEDTimer = {'[Channel1]': 0, '[Channel2]': 0, '[Channel3]': 0, '[Channel4]': 0}
+ElectrixTweaker.midEncoderLEDTimer = {'[Channel1]': 0, '[Channel2]': 0, '[Channel3]': 0, '[Channel4]': 0}
 
 ElectrixTweaker.sysexPrefix = [ 240, 00, 01, 106, 01 ]
 ElectrixTweaker.defaultSettings = [
@@ -528,21 +528,21 @@ ElectrixTweaker.shiftButton = function (channel, control, value, status, group) 
 	if (value) {
 		ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], true)
 		for (channel in ElectrixTweaker.deck) {
-			// 			// set mid encoder to relative mode
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Mid']['cc'], 64)
-			// 			// set mid LED ring to walk mode with local control disabled
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Mid']['ring'], 96)
+			// set mid encoder to relative mode
+			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['cc'], 64)
+			// set mid LED ring to walk mode with local control disabled
+			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['ring'], 96)
 			midi.sendShortMsg(
 				0xB0,
-		     ElectrixTweaker.encoders[channel]['Mid']['ring'],
+		     ElectrixTweaker.encoders[channel]['Low']['ring'],
 		     ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[channel]+1]
 			)
 			// set low encoder to relative mode
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['cc'], 64)
+			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Mid']['cc'], 64)
 			// set low encoder LED ring to EQ mode with local control disabled
 			// There seems to be a bug in the Tweaker firmware when local control is enabled one LED ring but not another. If local control is enabled here, the other rings behave confusingly.
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['ring'], 98)
-			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[channel]['Low']['ring'], 64)
+			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Mid']['ring'], 98)
+			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[channel]['Mid']['ring'], 64)
 		}
 		if (ElectrixTweaker.topShift && ElectrixTweaker.bottomShift[group]) {
 			ElectrixTweaker.connectVinylLEDs(group, ElectrixTweaker.vinylMode[group])
@@ -715,20 +715,15 @@ ElectrixTweaker.highEncoderPress = function (channel, control, value, status, gr
 ElectrixTweaker.midEncoder = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (ElectrixTweaker.shift) {
-		if (value == 1 && ElectrixTweaker.hotcuePage[group] < 3) {
-			ElectrixTweaker.connectHotcuePage(group, true)
-			ElectrixTweaker.hotcuePage[group]++
-			ElectrixTweaker.connectHotcuePage(group)
-		} else if (value == 127 && ElectrixTweaker.hotcuePage[group] > 0) {
-			ElectrixTweaker.connectHotcuePage(group, true)
-			ElectrixTweaker.hotcuePage[group]--
-			ElectrixTweaker.connectHotcuePage(group)
+		engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[group])
+		if (value == 127) {
+			engine.setValue(group, 'beatjump_32_backward', 1)
+			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Mid']['ring'], 0)
+		} else {
+			engine.setValue(group, 'beatjump_32_forward', 1)
+			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Mid']['ring'], 127)
 		}
-		midi.sendShortMsg(
-			0xB0,
-			ElectrixTweaker.encoders[group]['Mid']['ring'],
-			ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[group]+1]
-		)
+		ElectrixTweaker.midEncoderLEDTimer[group] = engine.beginTimer(1000, 'midi.sendShortMsg(0xB0, ElectrixTweaker.encoders["'+group+'"]["Mid"]["ring"], 64)', true)
 	} else {
 		switch (ElectrixTweaker.mode[group]) {
 			case 'eq':
@@ -768,15 +763,20 @@ ElectrixTweaker.midEncoderPress = function (channel, control, value, status, gro
 ElectrixTweaker.lowEncoder = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (ElectrixTweaker.shift) {
-		engine.stopTimer(ElectrixTweaker.lowEncoderLEDTimer[group])
-		if (value == 127) {
-			engine.setValue(group, 'beatjump_32_backward', 1)
-			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Low']['ring'], 0)
-		} else {
-			engine.setValue(group, 'beatjump_32_forward', 1)
-			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Low']['ring'], 127)
+		if (value == 1 && ElectrixTweaker.hotcuePage[group] < 3) {
+			ElectrixTweaker.connectHotcuePage(group, true)
+			ElectrixTweaker.hotcuePage[group]++
+			ElectrixTweaker.connectHotcuePage(group)
+		} else if (value == 127 && ElectrixTweaker.hotcuePage[group] > 0) {
+			ElectrixTweaker.connectHotcuePage(group, true)
+			ElectrixTweaker.hotcuePage[group]--
+			ElectrixTweaker.connectHotcuePage(group)
 		}
-		ElectrixTweaker.lowEncoderLEDTimer[group] = engine.beginTimer(1000, 'midi.sendShortMsg(0xB0, ElectrixTweaker.encoders["'+group+'"]["Low"]["ring"], 64)', true)
+		midi.sendShortMsg(
+			0xB0,
+		    ElectrixTweaker.encoders[group]['Low']['ring'],
+		    ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[group]+1]
+		)
 	} else {
 		switch (ElectrixTweaker.mode[group]) {
 			case 'eq':
