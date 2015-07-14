@@ -57,8 +57,10 @@ public:
     EncoderFfmpegResample(AVCodecContext *codecCtx);
     ~EncoderFfmpegResample();
     int open(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt);
+    int openMixxx(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt);
 
     unsigned int reSample(AVFrame *inframe, quint8 **outbuffer);
+    unsigned int reSampleMixxx(AVFrame *inframe, quint8 **outbuffer);
 
 private:
     AVCodecContext *m_pCodecCtx;

@@ -136,7 +136,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     }
 
     m_pResample = new EncoderFfmpegResample(m_pCodecCtx);
-    m_pResample->open(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_FLT);
+    m_pResample->openMixxx(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_FLT);
 
     setChannelCount(m_pCodecCtx->channels);
     setFrameRate(m_pCodecCtx->sample_rate);
@@ -289,7 +289,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 
                     // Try to convert it to Mixxx understand output format
                     // which is pure Stereo Float
-                    l_iRet = m_pResample->reSample(l_pFrame, &l_SObj->bytes);
+                    l_iRet = m_pResample->reSampleMixxx(l_pFrame, &l_SObj->bytes);
 
                     if (l_iRet > 0) {
                         // Remove from cache
