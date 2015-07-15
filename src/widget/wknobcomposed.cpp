@@ -45,11 +45,11 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
         m_bCentered = context.selectBool(node, "Centered", false);
     }
 
-    if (context.hasNode(node, "RingMaskXOffset")) {
+    if (context.hasNode(node, "RingCenterXOffset")) {
         m_iMaskXOffset = context.selectDouble(node, "MaskXOffset");
     }
 
-    if (context.hasNode(node, "RingMaskYOffset")) {
+    if (context.hasNode(node, "RingCenterYOffset")) {
         m_iMaskYOffset = context.selectDouble(node, "MaskYOffset");
     }
 
