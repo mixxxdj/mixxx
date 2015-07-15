@@ -715,7 +715,7 @@ void EngineBuffer::slotControlSlip(double v)
 
 void EngineBuffer::slotControlSlipCancel(double v)
 {
-    if (m_slipEnabled.fetchAndStoreAcquire(0)) {
+    if (m_slipEnabled.fetchAndAddAcquire(0)) {
         m_slipCancelled = static_cast<int>(v > 0.0);
     }
 }
@@ -1154,7 +1154,6 @@ void EngineBuffer::processSlip(int iBufferSize) {
         if (enabled || m_slipCancelled.fetchAndStoreAcquire(0)) {
             m_dSlipPosition = m_filepos_play;
             m_dSlipRate = m_rate_old;
-            m_slipCancelled = 0;
         } else {
             // TODO(owen) assuming that looping will get canceled properly
             double newPlayFrame = m_dSlipPosition / kSamplesPerFrame;
