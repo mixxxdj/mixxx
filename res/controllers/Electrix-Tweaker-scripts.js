@@ -976,6 +976,7 @@ ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
 				if (engine.getValue(group, 'loop_enabled')) {
 					ElectrixTweaker.slipModeUnsetWhileLooping[group] = true
 				}
+				engine.setValue(group, 'slip_cancel', 1)
 				ElectrixTweaker.hotcuesPressed[group] = 0
 			}
 
