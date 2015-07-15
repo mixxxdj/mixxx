@@ -116,6 +116,10 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     p.setRenderHint(QPainter::SmoothPixmapTransform);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
+    if (m_pPixmapBack) {
+        m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
+    }
+
     // We update m_dCurrentAngle since onConnectedControlChanged uses it for
     // no-op detection.
     m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
@@ -136,10 +140,6 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         p.setClipPath(path);
         m_pRing->draw(rect(), &p, m_pRing->rect());
         p.restore();
-    }
-
-    if (m_pPixmapBack) {
-        m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
     }
 
     QTransform transform;
