@@ -239,15 +239,9 @@ ElectrixTweaker.loopSize = {'[Channel1]': 4, '[Channel2]': 4, '[Channel3]': 4, '
 ElectrixTweaker.slipMode = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.deckShift = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.hotcuePage = {'[Channel1]': 0, '[Channel2]': 0, '[Channel3]': 0, '[Channel4]': 0}
-ElectrixTweaker.hotcuesPressed = {'[Channel1]': new Array(8), '[Channel2]': new Array(8), '[Channel3]': new Array(8), '[Channel4]': new Array(8)}
-for (var group in ElectrixTweaker.hotcuesPressed) {
-	var length = ElectrixTweaker.hotcuesPressed[group].length
-	for (i = 0; i <= length; i++) {
-		ElectrixTweaker.hotcuesPressed[group][i] = false
-	}
-}
+ElectrixTweaker.hotcuesPressed = {'[Channel1]': 0, '[Channel2]': 0, '[Channel3]': 0, '[Channel4]': 0}
 ElectrixTweaker.playPressedWhileCueJuggling = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
-ElectrixTweaker.hotcuePressedToSet = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
+ElectrixTweaker.slipModeUnsetWhileLooping = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.midEncoderLEDTimer = {'[Channel1]': 0, '[Channel2]': 0, '[Channel3]': 0, '[Channel4]': 0}
 ElectrixTweaker.midEncoderLEDTimer = {'[Channel1]': 0, '[Channel2]': 0, '[Channel3]': 0, '[Channel4]': 0}
 
@@ -340,6 +334,10 @@ ElectrixTweaker.initDeck = function (group) {
 	}
 	disconnectDeck = '[Channel' + disconnectDeck + ']'
 	ElectrixTweaker.connectDeckControls(disconnectDeck, true)
+	// workaround for https://bugs.launchpad.net/mixxx/+bug/1466606
+	for (i=1; i <= 32; i++) {
+		engine.setValue(disconnectDeck, 'hotcue_'+i+'_activate', 0)
+	}
 	
 	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['shift'], ElectrixTweaker.colorCodes['yellow'])
 	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['deckToggle'], ElectrixTweaker.deckColor[group])
@@ -417,24 +415,24 @@ ElectrixTweaker.initMode = function (group, mode, shift) {
 			
 			midi.sendShortMsg(
 				0xB0,
-		     ElectrixTweaker.encoders[group]['High']['ring'],
-		     ElectrixTweaker.encoderRingSteps[
-		     6 + Math.log(ElectrixTweaker.loopMoveSize[group]) / Math.log(2)
-		     ]
+				ElectrixTweaker.encoders[group]['High']['ring'],
+				ElectrixTweaker.encoderRingSteps[
+					6 + Math.log(ElectrixTweaker.loopMoveSize[group]) / Math.log(2)
+				]
 			)
 			
 			midi.sendShortMsg(
 				0xB0,
-		     ElectrixTweaker.encoders[group]['Mid']['ring'],
-		     64
+				ElectrixTweaker.encoders[group]['Mid']['ring'],
+				64
 			)
 			
 			midi.sendShortMsg(
 				0xB0,
-		     ElectrixTweaker.encoders[group]['Low']['ring'],
-		     ElectrixTweaker.encoderRingSteps[
-		     6 + Math.log(ElectrixTweaker.loopSize[group]) / Math.log(2)
-		     ]
+				ElectrixTweaker.encoders[group]['Low']['ring'],
+				ElectrixTweaker.encoderRingSteps[
+					6 + Math.log(ElectrixTweaker.loopSize[group]) / Math.log(2)
+				]
 			)
 			break
 	}
@@ -528,8 +526,8 @@ ElectrixTweaker.shiftButton = function (channel, control, value, status, group) 
 			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['ring'], 96)
 			midi.sendShortMsg(
 				0xB0,
-		     ElectrixTweaker.encoders[channel]['Low']['ring'],
-		     ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[channel]+1]
+				ElectrixTweaker.encoders[channel]['Low']['ring'],
+				ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[channel]+1]
 			)
 			// set low encoder to relative mode
 			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Mid']['cc'], 64)
@@ -768,8 +766,8 @@ ElectrixTweaker.lowEncoder = function (channel, control, value, status, group) {
 		}
 		midi.sendShortMsg(
 			0xB0,
-		    ElectrixTweaker.encoders[group]['Low']['ring'],
-		    ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[group]+1]
+			ElectrixTweaker.encoders[group]['Low']['ring'],
+			ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[group]+1]
 		)
 	} else {
 		switch (ElectrixTweaker.mode[group]) {
@@ -817,9 +815,12 @@ ElectrixTweaker.lowEncoderPress = function (channel, control, value, status, gro
 				}
 				break
 		}
-	} else if (ElectrixTweaker.mode[group] == 'loop' && ElectrixTweaker.slipMode[group]) {
+	} else if (ElectrixTweaker.mode[group] == 'loop' && (ElectrixTweaker.slipMode[group] || ElectrixTweaker.slipModeUnsetWhileLooping[group])) {
 		engine.setValue(group, 'slip_enabled', ! engine.getValue(group, 'slip_enabled'))
+		if (engine.getValue(group, 'loop_enabled')) {
 		engine.setValue(group, 'reloop_exit', 1)
+		}
+		ElectrixTweaker.slipModeUnsetWhileLooping[group] = false
 	}
 }
 ElectrixTweaker.loopButtonToggleLED = function (value, group, control) {
@@ -829,20 +830,13 @@ ElectrixTweaker.loopButtonToggleLED = function (value, group, control) {
 ElectrixTweaker.modeButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
-			if (ElectrixTweaker.slipMode[group]) {
-				engine.setValue(group, 'slip_enabled', ! engine.getValue(group, 'slip_enabled'))
-			}
-			engine.setValue(group, 'beatloop_' + ElectrixTweaker.loopSize[group] + '_toggle', 1)
-		} else {
-			switch (ElectrixTweaker.mode[group]) {
-				case 'eq':
-					ElectrixTweaker.initMode(group, 'loop')
-					break
-				case 'loop':
-					ElectrixTweaker.initMode(group, 'eq')
-					break
-			}
+		switch (ElectrixTweaker.mode[group]) {
+			case 'eq':
+				ElectrixTweaker.initMode(group, 'loop')
+				break
+			case 'loop':
+				ElectrixTweaker.initMode(group, 'eq')
+				break
 		}
 	}
 }
@@ -864,7 +858,7 @@ ElectrixTweaker.pflButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
 		if (ElectrixTweaker.shift) {
-			engine.setValue(group, 'reloop_exit', ! engine.getValue(group, 'reloop_exit'))
+			engine.setValue(group, 'reloop_exit', 1)
 		} else {
 			engine.setValue(group, 'pfl', ! engine.getValue(group, 'pfl'))
 		}
@@ -887,18 +881,11 @@ ElectrixTweaker.playButton = function (channel, control, value, status, group) {
 			engine.setValue(group, 'cue_default', value)
 		}
 	} else if (value) {
-// 		if (ElectrixTweaker.anyHotcuesPressed(group)) {
-// 			ElectrixTweaker.playPressedWhileCueJuggling[group] = true
-// 			for (i=0; i <= 32; i++) {
-// 				engine.setValue(group, 'hotcue_'+i+'_activate', 0)
-// 			}
-// 		} else {
-			if (engine.getValue(group, 'playposition') == 1) {
-				engine.setValue(group, 'start_play', 1)
-			} else {
-				engine.setValue(group, 'play', ! engine.getValue(group, 'play'))
-			}
-// 		}
+		if (ElectrixTweaker.hotcuesPressed[group]) {
+			ElectrixTweaker.playPressedWhileCueJuggling[group] = true
+		}
+		
+		engine.setValue(group, 'play', ! engine.getValue(group, 'play'))
 	}
 }
 ElectrixTweaker.playButtonLED = function (value, group, control) {
@@ -906,8 +893,8 @@ ElectrixTweaker.playButtonLED = function (value, group, control) {
 		if (
 			(control != 'playposition') // do not spam MIDI signals with each update in playposition while playing
 			&& (
-				(! ElectrixTweaker.anyHotcuesPressed(group))
-// 				|| ElectrixTweaker.playPressedWhileCueJuggling[group]
+				(! ElectrixTweaker.hotcuesPressed[group])
+				|| ElectrixTweaker.playPressedWhileCueJuggling[group]
 			)
 		) {
 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['green'])
@@ -929,14 +916,6 @@ ElectrixTweaker.playButtonLED = function (value, group, control) {
 
 //===================================================================== BUTTON GRID =========================================================
 
-ElectrixTweaker.anyHotcuesPressed = function (group) {
-	var length = ElectrixTweaker.hotcuesPressed[group].length
-	for (i=0; i<=length; i++) {
-		if (ElectrixTweaker.hotcuesPressed[group][i]) {
-			return true
-		}
-	}
-}
 ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	var row = (control < ElectrixTweaker.buttons[group]['hotcues'][1][0]) ? 0 : 1
@@ -950,37 +929,28 @@ ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 				engine.setValue(group, 'hotcue_'+cue+'_clear', 1)
 			} else {
 				if (ElectrixTweaker.slipMode[group]) {
-					if (engine.getValue(group, 'play') && (! ElectrixTweaker.anyHotcuesPressed(group))) {
+					if (engine.getValue(group, 'play') && (! ElectrixTweaker.hotcuesPressed[group])) {
 						engine.setValue(group, 'slip_enabled', 1)
 					}
 					engine.setValue(group, 'hotcue_'+cue+'_activate', 1)
-					ElectrixTweaker.hotcuesPressed[group][cueButton] = true
+					ElectrixTweaker.hotcuesPressed[group]++
 				} else {
 					engine.setValue(group, 'hotcue_'+cue+'_goto', 1)
 				}
 			}
 		} else {
 			engine.setValue(group, 'hotcue_'+cue+'_set', 1)
-			ElectrixTweaker.hotcuePressedToSet[group] = true
 		}
 	} else {
-		ElectrixTweaker.hotcuesPressed[group][cueButton] = false
-		engine.setValue(group, 'hotcue_'+cue+'_activate', 0)
-// 		if (ElectrixTweaker.playPressedWhileCueJuggling[group]) {
-// 			engine.setValue(group, 'play', 1)
-// 			ElectrixTweaker.playPressedWhileCueJuggling[group] = false
-// 		}
-		
-		if (ElectrixTweaker.slipMode[group]) {
-			if (! engine.getValue(group, 'slip_enabled')) { // if cue jugging started from pause
-				if (! ElectrixTweaker.anyHotcuesPressed(group) && ! ElectrixTweaker.hotcuePressedToSet[group]) {
-					engine.setValue(group, 'hotcue_'+cue+'_gotoandstop', 1)
-				}
-			} else if (! ElectrixTweaker.anyHotcuesPressed(group)) {
-				engine.setValue(group, 'slip_enabled', 0)
-			}
+		if (ElectrixTweaker.hotcuesPressed[group]) { // do not go below 0
+			ElectrixTweaker.hotcuesPressed[group]--
 		}
-		ElectrixTweaker.hotcuePressedToSet[group] = false
+		engine.setValue(group, 'hotcue_'+cue+'_activate', 0)
+
+		if (! ElectrixTweaker.hotcuesPressed[group]) {
+			ElectrixTweaker.playPressedWhileCueJuggling[group] = false
+			engine.setValue(group, 'slip_enabled', 0)
+		}
 	}
 }
 ElectrixTweaker.hotcueLED = function (value, group, control) {
@@ -1000,16 +970,15 @@ ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
 			engine.setValue(group, 'loop_in', 1)
 		} else {
 			if (ElectrixTweaker.slipMode[group]) {
-// 				if (ElectrixTweaker.anyHotcuesPressed(group)) {
-// 					ElectrixTweaker.playPressedWhileCueJuggling[group] = true
-// 					engine.setValue(group, 'play', 1)
-// 					engine.trigger(group, 'play')
-// 				}
-				var length = ElectrixTweaker.hotcuesPressed[group].length
-				for (i=0; i<=length; i++) {
-					ElectrixTweaker.hotcuesPressed[group][i] = false
+				if (ElectrixTweaker.hotcuesPressed[group] && ! engine.getValue(group, 'slip_enabled')) {
+					engine.setValue(group, 'play', 0)
 				}
+				if (engine.getValue(group, 'loop_enabled')) {
+					ElectrixTweaker.slipModeUnsetWhileLooping[group] = true
+				}
+				ElectrixTweaker.hotcuesPressed[group] = 0
 			}
+
 			
 			ElectrixTweaker.slipMode[group] = ! ElectrixTweaker.slipMode[group]
 			midi.sendShortMsg(
