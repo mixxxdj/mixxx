@@ -182,6 +182,7 @@ class EngineBuffer : public EngineObject {
     void slotControlSeekAbs(double);
     void slotControlSeekExact(double);
     void slotControlSlip(double);
+    void slotControlSlipCancel(double);
     void slotKeylockEngineChanged(double);
 
     // Request that the EngineBuffer load a track. Since the process is
@@ -311,8 +312,9 @@ class EngineBuffer : public EngineObject {
     double m_dSlipPosition;
     // Saved value of rate for slip mode
     double m_dSlipRate;
-    // m_slipEnabled is a boolean accessed from multiple threads, so we use an atomic int.
+    // m_slipEnabled and m_slipCancelled are booleans accessed from multiple threads, so we use atomic ints.
     QAtomicInt m_slipEnabled;
+    QAtomicInt m_slipCancelled;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
 
@@ -327,6 +329,7 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_fwdButton;
     ControlObject* m_backButton;
     ControlPushButton* m_pSlipButton;
+    ControlPushButton* m_pSlipCancelButton;
 
     ControlObject* m_visualBpm;
     ControlObject* m_visualKey;
