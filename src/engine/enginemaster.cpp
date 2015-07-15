@@ -1,19 +1,3 @@
-/***************************************************************************
-                          enginemaster.cpp  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
 
 #include <QtDebug>
 #include <QList>
@@ -44,8 +28,6 @@
 #include "util/defs.h"
 #include "playermanager.h"
 #include "engine/channelmixer.h"
-
-
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            const char* group,
@@ -179,7 +161,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pMasterTalkoverMix = new ControlObject(ConfigKey(group, "talkover_mix"),
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
-
 
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }
