@@ -186,9 +186,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     connect(m_pSlipCancelButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSlipCancel(double)),
             Qt::DirectConnection);
-    connect(m_pSlipCancelButton, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotControlSlipCancel(double)),
-            Qt::DirectConnection);
     
 
     // BPM to display in the UI (updated more slowly than the actual bpm)
@@ -718,7 +715,9 @@ void EngineBuffer::slotControlSlip(double v)
 
 void EngineBuffer::slotControlSlipCancel(double v)
 {
-    m_slipCancelled = static_cast<int>(v > 0.0);
+    if (m_slipEnabled.fetchAndStoreAcquire(0)) {
+        m_slipCancelled = static_cast<int>(v > 0.0);
+    }
 }
 
 void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
@@ -1150,10 +1149,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 void EngineBuffer::processSlip(int iBufferSize) {
     // Do a single read from m_bSlipEnabled so we don't run in to race conditions.
     bool enabled = static_cast<bool>(load_atomic(m_slipEnabled));
-    bool cancelled = static_cast<bool>(load_atomic(m_slipCancelled));
     if (enabled != m_bSlipEnabledProcessing) {
         m_bSlipEnabledProcessing = enabled;
-        if (enabled || cancelled) {
+        if (enabled || m_slipCancelled.fetchAndStoreAcquire(0)) {
             m_dSlipPosition = m_filepos_play;
             m_dSlipRate = m_rate_old;
             m_slipCancelled = 0;
