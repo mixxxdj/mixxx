@@ -84,6 +84,10 @@ class MixxxMainWindow : public QMainWindow {
     void slotFileLoadSongPlayer1();
     // Opens a file in player 2
     void slotFileLoadSongPlayer2();
+    // Opens a file in player 3
+    void slotFileLoadSongPlayer3();
+    // Opens a file in player 4
+    void slotFileLoadSongPlayer4();
     // exits the application
     void slotFileQuit();
 
@@ -236,6 +240,8 @@ class MixxxMainWindow : public QMainWindow {
 
     QAction* m_pFileLoadSongPlayer1;
     QAction* m_pFileLoadSongPlayer2;
+    QAction* m_pFileLoadSongPlayer3;
+    QAction* m_pFileLoadSongPlayer4;
     QAction* m_pFileQuit;
     QAction* m_pPlaylistsNew;
     QAction* m_pCratesNew;
