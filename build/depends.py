@@ -871,6 +871,7 @@ class MixxxCore(Feature):
                    "skin/skincontext.cpp",
                    "skin/svgparser.cpp",
                    "skin/pixmapsource.cpp",
+                   "skin/launchimage.cpp",
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",

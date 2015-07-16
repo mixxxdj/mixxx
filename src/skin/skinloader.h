@@ -27,6 +27,8 @@ class SkinLoader {
                              VinylControlManager* pVCMan,
                              EffectsManager* pEffectsManager);
 
+    QWidget* loadLaunchImage(QWidget* pParent);
+
     QString getSkinPath();
     QList<QDir> getSkinSearchPaths();
 

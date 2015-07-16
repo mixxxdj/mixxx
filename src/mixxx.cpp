@@ -113,6 +113,21 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
+    // First load launch image to show a the user a quick responds
+    m_pWidgetParent = m_pSkinLoader->loadLaunchImage(this);
+    setCentralWidget(m_pWidgetParent);
+    // move the app in the center of the primary screen
+    slotToCenterOfPrimaryScreen();
+
+    show();
+#if defined(Q_WS_X11)
+    // In asynchronous X11, the window will be mapped to screen
+    // some time after being asked to show itself on the screen.
+    extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
+    qt_x11_wait_for_window_manager(this);
+#endif
+    pApp->processEvents();
+
     initalize(pApp, args);
 }
 
@@ -388,14 +403,14 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
         setCentralWidget(m_pWidgetParent);
     }
 
-    //move the app in the center of the primary screen
+    // move the app in the center of the primary screen
     slotToCenterOfPrimaryScreen();
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
 
-    //Install an event filter to catch certain QT events, such as tooltips.
-    //This allows us to turn off tooltips.
+    // Install an event filter to catch certain QT events, such as tooltips.
+    // This allows us to turn off tooltips.
     pApp->installEventFilter(this); // The eventfilter is located in this
                                     // Mixxx class as a callback.
 
@@ -2059,8 +2074,8 @@ void MixxxMainWindow::rebootMixxxView() {
     QPoint initPosition = pos();
     QSize initSize = size();
 
-    //Everytime a skin is loaded, the Cos objects need to be recreated
-    //See onNewSkinLoaded()
+    // Every time a skin is loaded, the Cos objects need to be recreated
+    // See onNewSkinLoaded()
 #ifdef __VINYLCONTROL__
     delete m_pShowVinylControl;
     m_pShowVinylControl = NULL;

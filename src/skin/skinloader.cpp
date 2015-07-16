@@ -16,6 +16,7 @@
 #include "effects/effectsmanager.h"
 #include "playermanager.h"
 #include "util/debug.h"
+#include "skin/launchimage.h"
 
 SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
         m_pConfig(pConfig) {
@@ -125,6 +126,10 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                             pControllerManager, pLibrary, pVCMan,
                             pEffectsManager);
     return legacy.parseSkin(skinPath, pParent);
+}
+
+QWidget* SkinLoader::loadLaunchImage(QWidget* pParent) {
+    return new LaunchImage(pParent);
 }
 
 QString SkinLoader::pickResizableSkin(QString oldSkin) {
