@@ -65,6 +65,10 @@ class MixxxMainWindow : public QMainWindow {
     // Construtor. files is a list of command line arguments
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
     virtual ~MixxxMainWindow();
+
+    void initalize(QApplication *app, const CmdlineArgs& args);
+    void finalize();
+
     // initializes all QActions of the application
     void initActions();
     // initMenuBar creates the menu_bar and inserts the menuitems

@@ -113,6 +113,14 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
+    initalize(pApp, args);
+}
+
+MixxxMainWindow::~MixxxMainWindow() {
+    finalize();
+}
+
+void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     // We use QSet<int> in signals in the library.
     qRegisterMetaType<QSet<int> >("QSet<int>");
 
@@ -473,7 +481,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             this, SLOT(slotUpdateWindowTitle(TrackPointer)));
 }
 
-MixxxMainWindow::~MixxxMainWindow() {
+void MixxxMainWindow::finalize() {
     // TODO(rryan): Get rid of QTime here.
     QTime qTime;
     qTime.start();
