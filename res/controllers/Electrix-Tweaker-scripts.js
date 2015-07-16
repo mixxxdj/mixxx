@@ -900,14 +900,7 @@ ElectrixTweaker.playButtonLED = function (value, group, control) {
 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['green'])
 		}
 	} else if (engine.getValue(group, 'track_samples')) {
-		if ((engine.getValue(group, 'playposition') < .999)) {
-			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['red'])
-// 		} else if (engine.getValue(group, 'playposition') == engine.getValue(group, 'cue_point')) {
-// 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['yellow'])
-		} else {
-			engine.setValue(group, 'cue_gotoandstop', 1)
-			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['off'])
-		}
+		midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['red'])
 	} else {
 		midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['off'])
 	}
