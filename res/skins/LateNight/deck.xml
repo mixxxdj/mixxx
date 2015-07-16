@@ -59,6 +59,10 @@
                                       <Connection>
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_adjust_set_default</ConfigKey>
                                       </Connection>
+                                      <Connection>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],reset_key</ConfigKey>
+                                        <ButtonState>RightButton</ButtonState>
+                                      </Connection>
                                    </PushButton>
                                    <PushButton>
                                       <Size>16f,16f</Size>
