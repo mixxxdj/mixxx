@@ -57,10 +57,10 @@
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
         <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
         <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-        <SetVariable name="state_0_text">1</SetVariable>
+        <SetVariable name="state_0_text">3</SetVariable>
         <SetVariable name="state_0_pressed"></SetVariable>
         <SetVariable name="state_0_unpressed"></SetVariable>
-        <SetVariable name="state_1_text">1</SetVariable>
+        <SetVariable name="state_1_text">3</SetVariable>
         <SetVariable name="state_1_pressed"></SetVariable>
         <SetVariable name="state_1_unpressed"></SetVariable>
         <SetVariable name="left_connection_control">[Deere],sampler_bank_3</SetVariable>
@@ -73,10 +73,10 @@
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
         <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
         <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-        <SetVariable name="state_0_text">2</SetVariable>
+        <SetVariable name="state_0_text">4</SetVariable>
         <SetVariable name="state_0_pressed"></SetVariable>
         <SetVariable name="state_0_unpressed"></SetVariable>
-        <SetVariable name="state_1_text">2</SetVariable>
+        <SetVariable name="state_1_text">4</SetVariable>
         <SetVariable name="state_1_pressed"></SetVariable>
         <SetVariable name="state_1_unpressed"></SetVariable>
         <SetVariable name="left_connection_control">[Deere],sampler_bank_4</SetVariable>
