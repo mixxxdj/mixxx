@@ -50,6 +50,7 @@ int EncoderFfmpegResample::openMixxx(enum AVSampleFormat inSampleFmt,
 
 unsigned int EncoderFfmpegResample::reSampleMixxx(AVFrame *inframe, quint8 **outbuffer) {
     quint8 *l_ptrBuf = NULL;
+    bool l_bSupported = false;
     qint64 l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
                             inframe->nb_samples,
                             m_pCodecCtx->sample_fmt, 1);
@@ -68,57 +69,72 @@ unsigned int EncoderFfmpegResample::reSampleMixxx(AVFrame *inframe, quint8 **out
     if (l_lInReadBytes < 0) {
         return 0;
     }
-// Avconv 9.x or above
+    l_ptrBuf = (quint8 *)av_malloc(l_lOutReadBytes);
+
+    switch(m_pCodecCtx->sample_fmt) {
 #if LIBAVCODEC_VERSION_INT >= 3482368
-    // Planar A.K.A Non-Interleaced version of samples
-    // FFMPEG 1.2.x and above
-    // Aconv 9.x and above
-    if ( m_pCodecCtx->sample_fmt == AV_SAMPLE_FMT_FLTP) {
-        l_ptrBuf = (quint8 *)av_malloc(l_lOutReadBytes);
-
-        SampleUtil::interleaveBuffer((CSAMPLE *)l_ptrBuf, (CSAMPLE *)inframe->data[0],
-                                     (CSAMPLE *)inframe->data[1], l_lOutReadBytes / 8);
-        outbuffer[0] = l_ptrBuf;
-        return l_lOutReadBytes;
-    } else if ( m_pCodecCtx->sample_fmt == AV_SAMPLE_FMT_S16P) {
-        quint8 *l_ptrConversion = (quint8 *)av_malloc(l_lInReadBytes);
-        l_ptrBuf = (quint8 *)av_malloc(l_lOutReadBytes);
-        quint16 *l_ptrSrc1 = (quint16 *) inframe->data[0];
-        quint16 *l_ptrSrc2 = (quint16 *) inframe->data[1];
-        quint16 *l_ptrDest = (quint16 *) l_ptrConversion;
-
-        // note: LOOP VECTORIZED.
-        for (int i = 0; i < (l_lInReadBytes / 4); ++i) {
-            l_ptrDest[2 * i] = l_ptrSrc1[i];
-            l_ptrDest[2 * i + 1] = l_ptrSrc2[i];
+        case AV_SAMPLE_FMT_FLTP: {
+            SampleUtil::interleaveBuffer((CSAMPLE *)l_ptrBuf, (CSAMPLE *)inframe->data[0],
+                                        (CSAMPLE *)inframe->data[1], l_lOutReadBytes / 8);
+            outbuffer[0] = l_ptrBuf;
+            l_bSupported = true;
         }
+        break;
+        case AV_SAMPLE_FMT_S16P: {
+            quint8 *l_ptrConversion = (quint8 *)av_malloc(l_lInReadBytes);
+            quint16 *l_ptrSrc1 = (quint16 *) inframe->data[0];
+            quint16 *l_ptrSrc2 = (quint16 *) inframe->data[1];
+            quint16 *l_ptrDest = (quint16 *) l_ptrConversion;
 
-        SampleUtil::convertS16ToFloat32((CSAMPLE *)l_ptrBuf, (SAMPLE *)l_ptrConversion, l_lInReadBytes / 2);
-        outbuffer[0] = l_ptrBuf;
-        return l_lOutReadBytes;
-    }
+            // note: LOOP VECTORIZED.
+            for (int i = 0; i < (l_lInReadBytes / 4); ++i) {
+                l_ptrDest[2 * i] = l_ptrSrc1[i];
+                l_ptrDest[2 * i + 1] = l_ptrSrc2[i];
+            }
+
+            SampleUtil::convertS16ToFloat32((CSAMPLE *)l_ptrBuf, (SAMPLE *)l_ptrConversion, l_lInReadBytes / 2);
+            outbuffer[0] = l_ptrBuf;
+            l_bSupported = true;
+        }
+        break;
 #endif
+        case AV_SAMPLE_FMT_FLT: {
+            memcpy(l_ptrBuf, inframe->data[0], l_lInReadBytes);
 
-    // Backup if something really interesting is happening
-    // or Mixxx is using old version of FFMPEG/Avconv via Ubuntu
-    if ( m_pCodecCtx->sample_fmt == AV_SAMPLE_FMT_FLT
-       ) {
-        l_ptrBuf = (quint8 *)av_malloc(l_lInReadBytes);
+            outbuffer[0] = l_ptrBuf;
+            l_bSupported = true;
+        }
+        break;
+        case AV_SAMPLE_FMT_S16: {
+            SampleUtil::convertS16ToFloat32((CSAMPLE *)l_ptrBuf, (SAMPLE *)inframe->data[0], l_lInReadBytes / 2);
+            outbuffer[0] = l_ptrBuf;
+            l_bSupported = true;
+        }
+        break;
 
-        memcpy(l_ptrBuf, inframe->data[0], l_lInReadBytes);
-
-        outbuffer[0] = l_ptrBuf;
-        return l_lInReadBytes;
-    } else if ( m_pCodecCtx->sample_fmt == AV_SAMPLE_FMT_S16) {
-        l_ptrBuf = (quint8 *)av_malloc(l_lOutReadBytes);
-        SampleUtil::convertS16ToFloat32((CSAMPLE *)l_ptrBuf, (SAMPLE *)inframe->data[0], l_lInReadBytes / 2);
-        outbuffer[0] = l_ptrBuf;
-        return l_lOutReadBytes;
-
-    } else {
-        qDebug() << "Unknow sample format:" << av_get_sample_fmt_name(m_pCodecCtx->sample_fmt) << av_get_sample_fmt_name(m_pOutSampleFmt);
+        case AV_SAMPLE_FMT_NONE:
+        case AV_SAMPLE_FMT_U8:
+        case AV_SAMPLE_FMT_S32:
+        case AV_SAMPLE_FMT_DBL:
+        case AV_SAMPLE_FMT_U8P:
+#if LIBAVCODEC_VERSION_INT >= 3482368
+        case AV_SAMPLE_FMT_S32P:
+        case AV_SAMPLE_FMT_DBLP:
+#endif
+        case AV_SAMPLE_FMT_NB:
+        default:
+            qDebug() << "Unsupported sample format:" << av_get_sample_fmt_name(m_pCodecCtx->sample_fmt);
+        break;
     }
 
-    return 0;
+    if(l_bSupported == true)
+    {
+        return l_lOutReadBytes;
+    }
+
+    // If conversion is unsupported still return silence to prevent crash
+    memset(l_ptrBuf, 0x00, l_lOutReadBytes);
+    outbuffer[0] = l_ptrBuf;
+    return l_lOutReadBytes;
 }
 
