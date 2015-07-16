@@ -84,6 +84,10 @@ class MixxxMainWindow : public QMainWindow {
     void slotFileLoadSongPlayer1();
     // Opens a file in player 2
     void slotFileLoadSongPlayer2();
+    // Opens a file in player 3
+    void slotFileLoadSongPlayer3();
+    // Opens a file in player 4
+    void slotFileLoadSongPlayer4();
     // exits the application
     void slotFileQuit();
 
@@ -223,8 +227,6 @@ class MixxxMainWindow : public QMainWindow {
     QMenu* m_pFileMenu;
     // edit_menu contains all items of the menubar entry "Edit"
     QMenu* m_pEditMenu;
-    // library menu
-    QMenu* m_pLibraryMenu;
     // options_menu contains all items of the menubar entry "Options"
     QMenu* m_pOptionsMenu;
     // view_menu contains all items of the menubar entry "View"
@@ -236,6 +238,8 @@ class MixxxMainWindow : public QMainWindow {
 
     QAction* m_pFileLoadSongPlayer1;
     QAction* m_pFileLoadSongPlayer2;
+    QAction* m_pFileLoadSongPlayer3;
+    QAction* m_pFileLoadSongPlayer4;
     QAction* m_pFileQuit;
     QAction* m_pPlaylistsNew;
     QAction* m_pCratesNew;
