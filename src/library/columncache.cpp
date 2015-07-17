@@ -71,6 +71,32 @@ void ColumnCache::setColumns(const QStringList& columns) {
 
     const QString sortInt("cast(%1 as integer)");
     const QString sortNoCase("lower(%1)");
+    const QString sortCircleOfFifths("CASE "
+                                     "WHEN key_id=1  THEN 1  "
+                                     "WHEN key_id=22 THEN 2  "
+                                     "WHEN key_id=8  THEN 3  "
+                                     "WHEN key_id=17 THEN 4  "
+                                     "WHEN key_id=3  THEN 5  "
+                                     "WHEN key_id=24 THEN 6  "
+                                     "WHEN key_id=10 THEN 7  "
+                                     "WHEN key_id=19 THEN 8  "
+                                     "WHEN key_id=5  THEN 9  "
+                                     "WHEN key_id=14 THEN 10 "
+                                     "WHEN key_id=12 THEN 11 "
+                                     "WHEN key_id=21 THEN 12 "
+                                     "WHEN key_id=7  THEN 13 "
+                                     "WHEN key_id=16 THEN 14 "
+                                     "WHEN key_id=2  THEN 15 "
+                                     "WHEN key_id=23 THEN 16 "
+                                     "WHEN key_id=9  THEN 17 "
+                                     "WHEN key_id=18 THEN 18 "
+                                     "WHEN key_id=4  THEN 19 "
+                                     "WHEN key_id=13 THEN 20 "
+                                     "WHEN key_id=11 THEN 21 "
+                                     "WHEN key_id=20 THEN 22 "
+                                     "WHEN key_id=6  THEN 23 "
+                                     "WHEN key_id=15 THEN 24 "
+                                     "END ");
     m_columnSortByIndex.clear();
     // Add the columns that requires a special sort
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ARTIST], sortNoCase);
@@ -85,6 +111,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_FILETYPE], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COMMENT], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY], sortCircleOfFifths);
 
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_LOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_ARTIST], sortNoCase);
