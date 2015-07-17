@@ -353,28 +353,29 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     const int frame = sample / CachingReaderWorker::kChunkChannels;
     DEBUG_ASSERT(0 == (samples_remaining % CachingReaderWorker::kChunkChannels));
     int frames_remaining = samples_remaining / CachingReaderWorker::kChunkChannels;
-    const int start_frame = math_min(m_iTrackNumFramesCallbackSafe, frame);
-    const int start_chunk = chunkForFrame(start_frame);
-    const int end_frame = math_min(m_iTrackNumFramesCallbackSafe, frame + (frames_remaining - 1));
-    const int end_chunk = chunkForFrame(end_frame);
+    const int start_frame = frame;
+    DEBUG_ASSERT(0 <= start_frame);
+    const int end_frame = math_min(m_iTrackNumFramesCallbackSafe, frame + frames_remaining);
+    const int first_chunk = chunkForFrame(start_frame);
+    const int last_chunk = chunkForFrame(end_frame - 1);
 
     int current_frame = frame;
 
     // Sanity checks
-    if (start_chunk > end_chunk) {
+    if (first_chunk > last_chunk) {
         qDebug() << "CachingReader::read() bad chunk range to read ["
-                 << start_chunk << end_chunk << "]";
+                 << first_chunk << last_chunk << "]";
         return 0;
     }
 
-    for (int chunk_num = start_chunk; chunk_num <= end_chunk; chunk_num++) {
+    for (int chunk_num = first_chunk; chunk_num <= last_chunk; chunk_num++) {
         Chunk* current = lookupChunkAndFreshen(chunk_num);
 
         // If the chunk is not in cache, then we must return an error.
         if (current == NULL || current->state != Chunk::READ) {
             // qDebug() << "Couldn't get chunk " << chunk_num
             //          << " in read() of [" << sample << "," << (sample + samples_remaining)
-            //          << "] chunks " << start_chunk << "-" << end_chunk;
+            //          << "] chunks " << first_chunk << "-" << last_chunk;
 
             // Something is wrong. Break out of the loop, that should fill the
             // samples requested with zeroes.
@@ -394,12 +395,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
             break;
         }
 
-        // If we're past the start_chunk then current_sample should be
+        // If we're past the first_chunk then current_sample should be
         // chunk_start_sample.
-        if (start_chunk != chunk_num && chunk_start_frame != current_frame) {
+        if (first_chunk != chunk_num && chunk_start_frame != current_frame) {
             qDebug() << "CachingReader::read() bad chunk parameters"
                      << "chunk_num" << chunk_num
-                     << "start_chunk" << start_chunk
+                     << "first_chunk" << first_chunk
                      << "chunk_start_sample" << chunk_start_frame
                      << "current_sample" << current_frame;
             break;
@@ -496,14 +497,14 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         const int frame = hint.sample / CachingReaderWorker::kChunkChannels;
         DEBUG_ASSERT(0 == (hint.length % CachingReaderWorker::kChunkChannels));
         const int frame_count = hint.length / CachingReaderWorker::kChunkChannels;
-        const int start_frame = math_clamp(frame, 0,
-                                      m_iTrackNumFramesCallbackSafe);
-        const int start_chunk = chunkForFrame(start_frame);
-        int end_frame = math_clamp(frame + (frame_count - 1), 0,
-                m_iTrackNumFramesCallbackSafe);
-        const int end_chunk = chunkForFrame(end_frame);
+        const int start_frame = math_clamp(frame,
+                0, m_iTrackNumFramesCallbackSafe);
+        const int end_frame = math_clamp(frame + frame_count,
+                0, m_iTrackNumFramesCallbackSafe);
+        const int first_chunk = chunkForFrame(start_frame);
+        const int last_chunk = chunkForFrame(math_max(0, end_frame - 1));
 
-        for (int current = start_chunk; current <= end_chunk; ++current) {
+        for (int current = first_chunk; current <= last_chunk; ++current) {
             Chunk* pChunk = lookupChunk(current);
             if (pChunk == NULL) {
                 shouldWake = true;
