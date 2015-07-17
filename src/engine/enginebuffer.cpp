@@ -715,7 +715,7 @@ void EngineBuffer::slotControlSlip(double v)
 
 void EngineBuffer::slotControlSlipCancel(double v)
 {
-    if (m_slipEnabled.fetchAndAddAcquire(0)) {
+    if (load_atomic(m_slipEnabled)) {
         m_slipCancelled = static_cast<int>(v > 0.0);
     }
 }
