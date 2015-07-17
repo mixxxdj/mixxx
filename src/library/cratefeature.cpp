@@ -24,14 +24,13 @@
 #include "util/dnd.h"
 #include "util/time.h"
 
-CrateFeature::CrateFeature(QObject* parent,
+CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
                            ConfigObject<ConfigValue>* pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection),
           m_pConfig(pConfig) {
-    Q_UNUSED(parent);
     m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
@@ -92,6 +91,11 @@ CrateFeature::CrateFeature(QObject* parent,
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
     constructChildModel(-1);
+
+    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
+            this, SLOT(slotTrackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(switchToView(const QString&)),
+            this, SLOT(slotResetSelectedTrack()));
 }
 
 CrateFeature::~CrateFeature() {
@@ -164,9 +168,8 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
         return false;
     }
     bool locked = m_crateDao.isCrateLocked(crateId);
-    QFileInfo file(url.toLocalFile());
-    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName()) ||
-            Parser::isPlaylistFilenameSupported(file.fileName());
+    bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
     return !locked && formatSupported;
 }
 
@@ -511,6 +514,7 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
         TreeItem* item = new TreeItem(crate_name, QString::number(crate_id), this, root);
         bool locked = m_crateDao.isCrateLocked(crate_id);
         item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
+        item->setBold(m_cratesSelectedTrackIsIn.contains(crate_id));
         data_list.append(item);
     }
 
@@ -704,4 +708,35 @@ QString CrateFeature::getRootViewHtml() const {
                 .arg(createCrateLink));
     html.append("</td></tr></table>");
     return html;
+}
+
+void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
+    m_pSelectedTrack = pTrack;
+    int trackId = pTrack.isNull() ? -1 : pTrack->getId();
+    m_crateDao.getCratesTrackIsIn(trackId, &m_cratesSelectedTrackIsIn);
+
+    TreeItem* rootItem = m_childModel.getItem(QModelIndex());
+    if (rootItem == nullptr) {
+        return;
+    }
+
+    // Set all crates the track is in bold (or if there is no track selected,
+    // clear all the bolding).
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
+         it != m_crateList.end(); ++it, ++row) {
+        TreeItem* crate = rootItem->child(row);
+        if (crate == nullptr) {
+            continue;
+        }
+        int crateId = it->first;
+        bool shouldBold = m_cratesSelectedTrackIsIn.contains(crateId);
+        crate->setBold(shouldBold);
+    }
+
+    m_childModel.triggerRepaint();
+}
+
+void CrateFeature::slotResetSelectedTrack() {
+    slotTrackSelected(TrackPointer());
 }

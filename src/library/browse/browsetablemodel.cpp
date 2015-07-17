@@ -8,11 +8,10 @@
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
 #include "library/previewbuttondelegate.h"
-#include "soundsourceproxy.h"
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
-#include "audiotagger.h"
+#include "metadata/audiotagger.h"
 #include "util/dnd.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
@@ -335,56 +334,57 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     qDebug() << "BrowseTableModel::setData(" << index.data() << ")";
     int row = index.row();
     int col = index.column();
-    QString track_location = getTrackLocation(index);
-    AudioTagger tagger(track_location, m_current_directory.token());
+
+    Mixxx::TrackMetadata trackMetadata;
 
     // set tagger information
-    tagger.setArtist(this->index(row, COLUMN_ARTIST).data().toString());
-    tagger.setTitle(this->index(row, COLUMN_TITLE).data().toString());
-    tagger.setAlbum(this->index(row, COLUMN_ALBUM).data().toString());
-    tagger.setKey(this->index(row, COLUMN_KEY).data().toString());
-    tagger.setBpm(this->index(row, COLUMN_BPM).data().toString());
-    tagger.setComment(this->index(row, COLUMN_COMMENT).data().toString());
-    tagger.setTracknumber(
-        this->index(row, COLUMN_TRACK_NUMBER).data().toString());
-    tagger.setYear(this->index(row, COLUMN_YEAR).data().toString());
-    tagger.setGenre(this->index(row, COLUMN_GENRE).data().toString());
-    tagger.setComposer(this->index(row, COLUMN_COMPOSER).data().toString());
-    tagger.setAlbumArtist(this->index(row, COLUMN_ALBUMARTIST).data().toString());
-    tagger.setGrouping(this->index(row, COLUMN_GROUPING).data().toString());
+    trackMetadata.setArtist(this->index(row, COLUMN_ARTIST).data().toString());
+    trackMetadata.setTitle(this->index(row, COLUMN_TITLE).data().toString());
+    trackMetadata.setAlbum(this->index(row, COLUMN_ALBUM).data().toString());
+    trackMetadata.setKey(this->index(row, COLUMN_KEY).data().toString());
+    trackMetadata.setBpm(this->index(row, COLUMN_BPM).data().toDouble());
+    trackMetadata.setComment(this->index(row, COLUMN_COMMENT).data().toString());
+    trackMetadata.setTrackNumber(this->index(row, COLUMN_TRACK_NUMBER).data().toString());
+    trackMetadata.setYear(this->index(row, COLUMN_YEAR).data().toString());
+    trackMetadata.setGenre(this->index(row, COLUMN_GENRE).data().toString());
+    trackMetadata.setComposer(this->index(row, COLUMN_COMPOSER).data().toString());
+    trackMetadata.setAlbumArtist(this->index(row, COLUMN_ALBUMARTIST).data().toString());
+    trackMetadata.setGrouping(this->index(row, COLUMN_GROUPING).data().toString());
 
     // check if one the item were edited
     if (col == COLUMN_ARTIST) {
-        tagger.setArtist(value.toString());
+        trackMetadata.setArtist(value.toString());
     } else if (col == COLUMN_TITLE) {
-        tagger.setTitle(value.toString());
+        trackMetadata.setTitle(value.toString());
     } else if (col == COLUMN_ALBUM) {
-        tagger.setAlbum(value.toString());
+        trackMetadata.setAlbum(value.toString());
     } else if (col == COLUMN_BPM) {
-        tagger.setBpm(value.toString());
+        trackMetadata.setBpm(value.toDouble());
     } else if (col == COLUMN_KEY) {
-        tagger.setKey(value.toString());
+        trackMetadata.setKey(value.toString());
     } else if (col == COLUMN_TRACK_NUMBER) {
-        tagger.setTracknumber(value.toString());
+        trackMetadata.setTrackNumber(value.toString());
     } else if (col == COLUMN_COMMENT) {
-        tagger.setComment(value.toString());
+        trackMetadata.setComment(value.toString());
     } else if (col == COLUMN_GENRE) {
-        tagger.setGenre(value.toString());
+        trackMetadata.setGenre(value.toString());
     } else if (col == COLUMN_COMPOSER) {
-        tagger.setComposer(value.toString());
+        trackMetadata.setComposer(value.toString());
     } else if (col == COLUMN_YEAR) {
-        tagger.setYear(value.toString());
+        trackMetadata.setYear(value.toString());
     } else if (col == COLUMN_ALBUMARTIST) {
-        tagger.setAlbumArtist(value.toString());
+        trackMetadata.setAlbumArtist(value.toString());
     } else if (col == COLUMN_GROUPING) {
-        tagger.setGrouping(value.toString());
+        trackMetadata.setGrouping(value.toString());
     } else {
         qWarning() << "BrowseTableModel::setData(): no tagger column";
         return false;
     }
 
     QStandardItem* item = itemFromIndex(index);
-    if (tagger.save()) {
+    QString track_location = getTrackLocation(index);
+    AudioTagger tagger(track_location, m_current_directory.token());
+    if (OK == tagger.save(trackMetadata)) {
         // Modify underlying interalPointer object
         item->setText(value.toString());
         item->setToolTip(item->text());

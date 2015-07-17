@@ -17,7 +17,7 @@
 #include "util/alphabetafilter.h"
 #include "controllers/softtakeover.h"
 #include "controllers/controllerpreset.h"
-#include "qtscript-bytearray/bytearrayclass.h"
+#include "bytearrayclass.h"
 
 // Forward declaration(s)
 class Controller;
