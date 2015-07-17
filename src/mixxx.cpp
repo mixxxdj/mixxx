@@ -113,7 +113,17 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
+    logBuildDetails();
+    initializeWindow();
+
+    // Check to see if this is the first time this version of Mixxx is run
+    // after an upgrade and make any needed changes.
+    m_pUpgrader = new Upgrade;
+    m_pConfig = m_pUpgrader->versionUpgrade(args.getSettingsPath());
+    ControlDoublePrivate::setUserConfig(m_pConfig);
+
     // First load launch image to show a the user a quick responds
+    m_pSkinLoader = new SkinLoader(m_pConfig);
     m_pWidgetParent = m_pSkinLoader->loadLaunchImage(this);
     setCentralWidget(m_pWidgetParent);
     // move the app in the center of the primary screen
@@ -132,24 +142,18 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
-    finalize();
+    delete m_pUpgrader;
+    // SkinLoader depends on Config;
+    delete m_pSkinLoader;
 }
 
 void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     // We use QSet<int> in signals in the library.
     qRegisterMetaType<QSet<int> >("QSet<int>");
 
-    logBuildDetails();
     ScopedTimer t("MixxxMainWindow::MixxxMainWindow");
     m_runtime_timer.start();
     Time::start();
-    initializeWindow();
-
-    // Check to see if this is the first time this version of Mixxx is run
-    // after an upgrade and make any needed changes.
-    Upgrade upgrader;
-    m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
-    ControlDoublePrivate::setUserConfig(m_pConfig);
 
     Sandbox::initialize(QDir(m_pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
@@ -360,7 +364,6 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     WaveformWidgetFactory::instance()->startVSync(this);
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
-    m_pSkinLoader = new SkinLoader(m_pConfig);
     connect(this, SIGNAL(newSkinLoaded()),
             this, SLOT(onNewSkinLoaded()));
     connect(this, SIGNAL(newSkinLoaded()),
@@ -383,6 +386,8 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     pContextWidget->hide();
     SharedGLContext::setWidget(pContextWidget);
 
+    QWidget* oldWidget = m_pWidgetParent;
+
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this, m_pKeyboard,
@@ -394,17 +399,17 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
         reportCriticalErrorAndQuit(
             "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
+        m_pWidgetParent = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
-        resize(640,480);
     } else {
         // this has to be after the OpenGL widgets are created or depending on a
         // million different variables the first waveform may be horribly
         // corrupted. See bug 521509 -- bkgood ?? -- vrince
         setCentralWidget(m_pWidgetParent);
-    }
 
-    // move the app in the center of the primary screen
-    slotToCenterOfPrimaryScreen();
+        oldWidget->hide();
+        delete oldWidget;
+    }
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -452,7 +457,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
-    if (rescan || hasChanged_MusicDir || upgrader.rescanLibrary()) {
+    if (rescan || hasChanged_MusicDir || m_pUpgrader->rescanLibrary()) {
         m_pLibraryScanner->scan();
     }
     slotNumDecksChanged(m_pNumDecks->get());
@@ -515,10 +520,6 @@ void MixxxMainWindow::finalize() {
     // GUI depends on MixxxKeyboard, PlayerManager, Library
     qDebug() << "delete view " << qTime.elapsed();
     delete m_pWidgetParent;
-
-    // SkinLoader depends on Config
-    qDebug() << "delete SkinLoader " << qTime.elapsed();
-    delete m_pSkinLoader;
 
     // ControllerManager depends on Config
     qDebug() << "delete ControllerManager " << qTime.elapsed();
@@ -2306,5 +2307,8 @@ bool MixxxMainWindow::confirmExit() {
             m_pPrefDlg->close();
         }
     }
+
+    finalize();
+
     return true;
 }

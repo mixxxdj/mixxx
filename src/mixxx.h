@@ -44,6 +44,7 @@ class DlgPreferences;
 class SoundManager;
 class ControlPushButton;
 class DlgDeveloperTools;
+class Upgrade;
 
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -222,6 +223,8 @@ class MixxxMainWindow : public QMainWindow {
     LibraryScanner* m_pLibraryScanner;
     // The library management object
     Library* m_pLibrary;
+
+    Upgrade* m_pUpgrader;
 
     // file_menu contains all items of the menubar entry "File"
     QMenu* m_pFileMenu;

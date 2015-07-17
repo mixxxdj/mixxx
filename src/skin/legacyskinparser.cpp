@@ -383,6 +383,20 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     return widgets[0];
 }
 
+void LegacySkinParser::parseLaunchImageSize(QString skinPath,
+                                            QWidget* pLaunchImage) {
+    QDomElement skinDocument = openSkin(skinPath);
+    if (skinDocument.isNull()) {
+        return;
+    }
+    QString nodeName = skinDocument.nodeName();
+    if (nodeName == "skin") {
+        setupSize(skinDocument, pLaunchImage);
+    }
+}
+
+
+
 QList<QWidget*> wrapWidget(QWidget* pWidget) {
     QList<QWidget*> result;
     if (pWidget != NULL) {

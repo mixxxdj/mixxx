@@ -36,6 +36,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     virtual bool canParse(QString skinPath);
     virtual QWidget* parseSkin(QString skinPath, QWidget* pParent);
 
+    void parseLaunchImageSize(QString skinPath, QWidget* pLaunchImage);
+
     // Legacy support for looking up the scheme list.
     static QList<QString> getSchemeList(QString qSkinPath);
     // Parse a skin manifest from the provided skin document root.

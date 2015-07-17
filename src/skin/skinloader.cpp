@@ -129,7 +129,14 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
 }
 
 QWidget* SkinLoader::loadLaunchImage(QWidget* pParent) {
-    return new LaunchImage(pParent);
+    LaunchImage* launchImage = new LaunchImage(pParent);
+
+    QString skinPath = getSkinPath();
+    if (!skinPath.isEmpty()) {
+        LegacySkinParser legacy(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        legacy.parseLaunchImageSize(skinPath, launchImage);
+    }
+    return launchImage;
 }
 
 QString SkinLoader::pickResizableSkin(QString oldSkin) {
