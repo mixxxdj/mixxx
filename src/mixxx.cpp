@@ -388,6 +388,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
 
     QWidget* oldWidget = m_pWidgetParent;
 
+    setUpdatesEnabled(false);
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this, m_pKeyboard,
@@ -406,10 +407,9 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
         // million different variables the first waveform may be horribly
         // corrupted. See bug 521509 -- bkgood ?? -- vrince
         setCentralWidget(m_pWidgetParent);
-
-        oldWidget->hide();
-        delete oldWidget;
+        // The old central widget is automatically disposed.
     }
+    setUpdatesEnabled(true);
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -507,6 +507,8 @@ void MixxxMainWindow::finalize() {
     qTime.start();
     Timer t("MixxxMainWindow::~MixxxMainWindow");
     t.start();
+
+    setCentralWidget(NULL);
 
     qDebug() << "Destroying MixxxMainWindow";
 
@@ -711,6 +713,11 @@ void MixxxMainWindow::logBuildDetails() {
 }
 
 void MixxxMainWindow::initializeWindow() {
+    QPalette Pal(palette());
+    Pal.setColor(QPalette::Background, QColor(0x202020));
+    setAutoFillBackground(true);
+    setPalette(Pal);
+
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     slotUpdateWindowTitle(TrackPointer());
 }
@@ -2124,7 +2131,6 @@ void MixxxMainWindow::rebootMixxxView() {
     }
 
     setCentralWidget(m_pWidgetParent);
-    update();
     adjustSize();
 
     if (wasFullScreen) {
