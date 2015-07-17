@@ -3,6 +3,8 @@
 #include "library/dao/trackdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/cratedao.h"
+#include "track/keyutils.h"
+
 
 void ColumnCache::setColumns(const QStringList& columns) {
     m_columnsByIndex.clear();
@@ -71,32 +73,53 @@ void ColumnCache::setColumns(const QStringList& columns) {
 
     const QString sortInt("cast(%1 as integer)");
     const QString sortNoCase("lower(%1)");
-    const QString sortCircleOfFifths("CASE "
-                                     "WHEN key_id=1  THEN 1  "
-                                     "WHEN key_id=22 THEN 2  "
-                                     "WHEN key_id=8  THEN 3  "
-                                     "WHEN key_id=17 THEN 4  "
-                                     "WHEN key_id=3  THEN 5  "
-                                     "WHEN key_id=24 THEN 6  "
-                                     "WHEN key_id=10 THEN 7  "
-                                     "WHEN key_id=19 THEN 8  "
-                                     "WHEN key_id=5  THEN 9  "
-                                     "WHEN key_id=14 THEN 10 "
-                                     "WHEN key_id=12 THEN 11 "
-                                     "WHEN key_id=21 THEN 12 "
-                                     "WHEN key_id=7  THEN 13 "
-                                     "WHEN key_id=16 THEN 14 "
-                                     "WHEN key_id=2  THEN 15 "
-                                     "WHEN key_id=23 THEN 16 "
-                                     "WHEN key_id=9  THEN 17 "
-                                     "WHEN key_id=18 THEN 18 "
-                                     "WHEN key_id=4  THEN 19 "
-                                     "WHEN key_id=13 THEN 20 "
-                                     "WHEN key_id=11 THEN 21 "
-                                     "WHEN key_id=20 THEN 22 "
-                                     "WHEN key_id=6  THEN 23 "
-                                     "WHEN key_id=15 THEN 24 "
-                                     "END ");
+    const mixxx::track::io::key::ChromaticKey keysByCircleOfFifths[] = {
+        mixxx::track::io::key::INVALID,
+        
+        mixxx::track::io::key::C_MAJOR,
+        mixxx::track::io::key::A_MINOR,
+        
+        mixxx::track::io::key::G_MAJOR,
+        mixxx::track::io::key::E_MINOR,
+        
+        mixxx::track::io::key::D_MAJOR,
+        mixxx::track::io::key::B_MINOR,
+
+        mixxx::track::io::key::A_MAJOR,
+        mixxx::track::io::key::F_SHARP_MINOR,
+        
+        mixxx::track::io::key::E_MAJOR,
+        mixxx::track::io::key::C_SHARP_MINOR,
+
+        mixxx::track::io::key::B_MAJOR,
+        mixxx::track::io::key::G_SHARP_MINOR,
+
+        mixxx::track::io::key::F_SHARP_MAJOR,
+        mixxx::track::io::key::E_FLAT_MINOR,
+
+        mixxx::track::io::key::D_FLAT_MAJOR,
+        mixxx::track::io::key::B_FLAT_MINOR,
+
+        mixxx::track::io::key::A_FLAT_MAJOR,
+        mixxx::track::io::key::F_MINOR,
+
+        mixxx::track::io::key::E_FLAT_MAJOR,
+        mixxx::track::io::key::C_MINOR,
+
+        mixxx::track::io::key::B_FLAT_MAJOR,
+        mixxx::track::io::key::G_MINOR,
+
+        mixxx::track::io::key::F_MAJOR,
+        mixxx::track::io::key::D_MINOR
+    };
+
+    QString sortCircleOfFifths("CASE key_id ");
+    for (int i = 0; i <= 24; ++i) {
+            sortCircleOfFifths.append(QString("WHEN %1 THEN %2 ")
+                .arg(keysByCircleOfFifths[i]).arg(i));
+    }
+    sortCircleOfFifths.append("END");
+
     m_columnSortByIndex.clear();
     // Add the columns that requires a special sort
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ARTIST], sortNoCase);
