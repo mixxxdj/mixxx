@@ -256,12 +256,12 @@ void CachingReader::process() {
     while (m_readerStatusFIFO.read(&status, 1) == 1) {
         // qDebug() << "Got ReaderStatusUpdate:" << status.status
         //          << (status.chunk ? status.chunk->chunk_number : -1);
+        m_iTrackNumFramesCallbackSafe = status.trackFrameCount;
         if (status.status == TRACK_NOT_LOADED) {
             m_readerStatus = status.status;
         } else if (status.status == TRACK_LOADED) {
             freeAllChunks();
             m_readerStatus = status.status;
-            m_iTrackNumFramesCallbackSafe = status.trackFrameCount;
         } else if ((status.status == CHUNK_READ_SUCCESS) ||
                 (status.status == CHUNK_READ_PARTIAL)) {
             Chunk* pChunk = status.chunk;
@@ -356,18 +356,16 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     const int start_frame = frame;
     DEBUG_ASSERT(0 <= start_frame);
     const int end_frame = math_min(m_iTrackNumFramesCallbackSafe, frame + frames_remaining);
+    if (start_frame >= end_frame) {
+        qWarning() << "Skipping invalid or empty read request starting at"
+                << frame << "of length" << frames_remaining;
+        return 0;
+    }
+
     const int first_chunk = chunkForFrame(start_frame);
     const int last_chunk = chunkForFrame(end_frame - 1);
 
     int current_frame = frame;
-
-    // Sanity checks
-    if (first_chunk > last_chunk) {
-        qDebug() << "CachingReader::read() bad chunk range to read ["
-                 << first_chunk << last_chunk << "]";
-        return 0;
-    }
-
     for (int chunk_num = first_chunk; chunk_num <= last_chunk; chunk_num++) {
         Chunk* current = lookupChunkAndFreshen(chunk_num);
 
@@ -501,6 +499,11 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                 0, m_iTrackNumFramesCallbackSafe);
         const int end_frame = math_clamp(frame + frame_count,
                 0, m_iTrackNumFramesCallbackSafe);
+        if (start_frame >= end_frame) {
+            // skip invalid or empty hint
+            continue;
+        }
+
         const int first_chunk = chunkForFrame(start_frame);
         const int last_chunk = chunkForFrame(math_max(0, end_frame - 1));
 

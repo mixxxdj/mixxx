@@ -125,6 +125,15 @@ class CachingReaderWorker : public EngineWorker {
     // The current audio source of the track loaded
     Mixxx::AudioSourcePointer m_pAudioSource;
 
+    // The maximum frame index of the AudioSource. Might be
+    // adjusted when decoding errors occur to prevent reading
+    // the same chunk(s) over and over again.
+    SINT m_maxFrameIndex;
+
+    SINT getFrameCount() const {
+        return m_maxFrameIndex - m_pAudioSource->getMinFrameIndex();
+    }
+
     QAtomicInt m_stop;
 };
 

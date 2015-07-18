@@ -33,6 +33,7 @@ CachingReaderWorker::CachingReaderWorker(QString group,
           m_tag(QString("CachingReaderWorker %1").arg(m_group)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
           m_pReaderStatusFIFO(pReaderStatusFIFO),
+          m_maxFrameIndex(0),
           m_stop(0) {
 }
 
@@ -43,6 +44,9 @@ void CachingReaderWorker::processChunkReadRequest(
         ChunkReadRequest* request,
         ReaderStatusUpdate* update) {
     //qDebug() << "Processing ChunkReadRequest for" << chunk_number;
+
+    // The current frame count
+    update->trackFrameCount = getFrameCount();
 
     // Initialize the output parameter
     update->chunk = request->chunk;
@@ -75,9 +79,19 @@ void CachingReaderWorker::processChunkReadRequest(
     if (seekFrameIndex != chunkFrameIndex) {
         // Failed to seek to the requested index. The file might
         // be corrupt and decoding should be aborted.
-        qWarning() << "Failed to seek chunk position"
-                << seekFrameIndex << "<>" << chunkFrameIndex;
-        update->status = CHUNK_READ_INVALID;
+        qWarning() << "Failed to seek chunk position:"
+                << "actual =" << seekFrameIndex
+                << ", expected =" << chunkFrameIndex
+                << ", maximum =" << m_pAudioSource->getMaxFrameIndex();
+                << ", maximum =" << getMaxFrameIndex();
+        if (seekFrameIndex <= chunkFrameIndex) {
+            // unexpected/premature end of file -> prevent further
+            // seeks beyond the current seek position
+            m_maxFrameIndex = math_min(seekFrameIndex, m_maxFrameIndex);
+            update->status = CHUNK_READ_EOF;
+        } else {
+            update->status = CHUNK_READ_INVALID;
+        }
         return;
     }
 
@@ -101,8 +115,8 @@ void CachingReaderWorker::processChunkReadRequest(
         // Incomplete read! Corrupt file?
         qWarning() << "Incomplete chunk read @" << seekFrameIndex
                 << "[" << m_pAudioSource->getMinFrameIndex()
-                << "," << m_pAudioSource->getFrameCount()
-                << "]:" << framesRead << "<" << framesToRead;
+                << "," << m_maxFrameIndex
+                << "):" << framesRead << "<" << framesToRead;
         SampleUtil::clear(
                 request->chunk->stereoSamples + (framesRead * kChunkChannels),
                 (framesToRead - framesRead) * kChunkChannels);
@@ -196,8 +210,9 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
             pTrack, QString("The file '%1' could not be loaded.").arg(filename)));
         return;
     }
+    m_maxFrameIndex = m_pAudioSource->getMaxFrameIndex();
 
-    status.trackFrameCount = m_pAudioSource->getFrameCount();
+    status.trackFrameCount = getFrameCount();
     status.status = TRACK_LOADED;
     m_pReaderStatusFIFO->writeBlocking(&status, 1);
 
