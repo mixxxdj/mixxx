@@ -33,7 +33,7 @@ CachingReaderWorker::CachingReaderWorker(QString group,
           m_tag(QString("CachingReaderWorker %1").arg(m_group)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
           m_pReaderStatusFIFO(pReaderStatusFIFO),
-          m_maxFrameIndex(0),
+          m_maxFrameIndex(Mixxx::AudioSource::getMinFrameIndex()),
           m_stop(0) {
 }
 
@@ -45,8 +45,7 @@ void CachingReaderWorker::processChunkReadRequest(
         ReaderStatusUpdate* update) {
     //qDebug() << "Processing ChunkReadRequest for" << chunk_number;
 
-    // The current frame count
-    update->trackFrameCount = getFrameCount();
+    update->maxFrameIndex = m_maxFrameIndex;
 
     // Initialize the output parameter
     update->chunk = request->chunk;
@@ -68,7 +67,7 @@ void CachingReaderWorker::processChunkReadRequest(
         update->status = CHUNK_READ_INVALID;
         return;
     }
-    if (m_pAudioSource->getMaxFrameIndex() <= chunkFrameIndex) {
+    if (chunkFrameIndex >= m_maxFrameIndex) {
         // No more data available for reading
         update->status = CHUNK_READ_EOF;
         return;
@@ -82,12 +81,12 @@ void CachingReaderWorker::processChunkReadRequest(
         qWarning() << "Failed to seek chunk position:"
                 << "actual =" << seekFrameIndex
                 << ", expected =" << chunkFrameIndex
-                << ", maximum =" << m_pAudioSource->getMaxFrameIndex();
-                << ", maximum =" << getMaxFrameIndex();
+                << ", maximum =" << m_maxFrameIndex;
         if (seekFrameIndex <= chunkFrameIndex) {
             // unexpected/premature end of file -> prevent further
             // seeks beyond the current seek position
             m_maxFrameIndex = math_min(seekFrameIndex, m_maxFrameIndex);
+            update->maxFrameIndex = m_maxFrameIndex;
             update->status = CHUNK_READ_EOF;
         } else {
             update->status = CHUNK_READ_INVALID;
@@ -96,7 +95,7 @@ void CachingReaderWorker::processChunkReadRequest(
     }
 
     const SINT framesRemaining =
-            m_pAudioSource->getMaxFrameIndex() - seekFrameIndex;
+            m_maxFrameIndex - seekFrameIndex;
     const SINT framesToRead =
             math_min(kFramesPerChunk, framesRemaining);
     if (0 >= framesToRead) {
@@ -114,7 +113,7 @@ void CachingReaderWorker::processChunkReadRequest(
     if (framesRead < framesToRead) {
         // Incomplete read! Corrupt file?
         qWarning() << "Incomplete chunk read @" << seekFrameIndex
-                << "[" << m_pAudioSource->getMinFrameIndex()
+                << "[" << Mixxx::AudioSource::getMinFrameIndex()
                 << "," << m_maxFrameIndex
                 << "):" << framesRead << "<" << framesToRead;
         SampleUtil::clear(
@@ -184,7 +183,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     ReaderStatusUpdate status;
     status.status = TRACK_NOT_LOADED;
     status.chunk = NULL;
-    status.trackFrameCount = 0;
+    status.maxFrameIndex = Mixxx::AudioSource::getMinFrameIndex();
 
     QString filename = pTrack->getLocation();
 
@@ -202,6 +201,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     audioSrcCfg.channelCountHint = kChunkChannels;
     m_pAudioSource = openAudioSourceForReading(pTrack, audioSrcCfg);
     if (m_pAudioSource.isNull()) {
+        m_maxFrameIndex = Mixxx::AudioSource::getMinFrameIndex();
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";
@@ -212,7 +212,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     }
     m_maxFrameIndex = m_pAudioSource->getMaxFrameIndex();
 
-    status.trackFrameCount = getFrameCount();
+    status.maxFrameIndex = m_maxFrameIndex;
     status.status = TRACK_LOADED;
     m_pReaderStatusFIFO->writeBlocking(&status, 1);
 

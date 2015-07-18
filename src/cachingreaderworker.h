@@ -21,8 +21,8 @@ class AudioSourceProxy;
 // sampleForChunk()
 typedef struct Chunk {
     int chunk_number;
-    int frameCountRead;
-    int frameCountTotal;
+    SINT frameCountRead;
+    SINT frameCountTotal;
     CSAMPLE* stereoSamples;
     Chunk* prev_lru;
     Chunk* next_lru;
@@ -55,11 +55,11 @@ enum ReaderStatus {
 typedef struct ReaderStatusUpdate {
     ReaderStatus status;
     Chunk* chunk;
-    int trackFrameCount;
+    SINT maxFrameIndex;
     ReaderStatusUpdate()
         : status(INVALID)
         , chunk(NULL)
-        , trackFrameCount(0) {
+        , maxFrameIndex(0) {
     }
 } ReaderStatusUpdate;
 
@@ -128,11 +128,9 @@ class CachingReaderWorker : public EngineWorker {
     // The maximum frame index of the AudioSource. Might be
     // adjusted when decoding errors occur to prevent reading
     // the same chunk(s) over and over again.
+    // This frame index references the frame that follows the
+    // last frame with sample data.
     SINT m_maxFrameIndex;
-
-    SINT getFrameCount() const {
-        return m_maxFrameIndex - m_pAudioSource->getMinFrameIndex();
-    }
 
     QAtomicInt m_stop;
 };

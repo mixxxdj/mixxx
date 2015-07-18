@@ -166,7 +166,10 @@ class CachingReader : public QObject {
     // The raw memory buffer which is divided up into chunks.
     SampleBuffer m_sampleBuffer;
 
-    int m_iTrackNumFramesCallbackSafe;
+    // The maximum valid frame index as reported by the worker.
+    // This frame index references the frame that follows the last
+    // frame with sample data.
+    SINT m_maxFrameIndex;
 
     CachingReaderWorker m_worker;
 };
