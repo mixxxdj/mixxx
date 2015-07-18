@@ -93,7 +93,7 @@ class CachingReader : public QObject {
     virtual void newTrack(TrackPointer pTrack);
 
     void setScheduler(EngineWorkerScheduler* pScheduler) {
-        m_pWorker->setScheduler(pScheduler);
+        m_worker.setScheduler(pScheduler);
     }
 
     const static int maximumChunksInMemory;
@@ -168,7 +168,7 @@ class CachingReader : public QObject {
 
     int m_iTrackNumFramesCallbackSafe;
 
-    CachingReaderWorker* m_pWorker;
+    CachingReaderWorker m_worker;
 };
 
 

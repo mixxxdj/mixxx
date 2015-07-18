@@ -26,6 +26,7 @@ CachingReader::CachingReader(QString group,
           m_lruChunk(NULL),
           m_sampleBuffer(CachingReaderWorker::kSamplesPerChunk * maximumChunksInMemory),
           m_iTrackNumFramesCallbackSafe(0) {
+          m_worker(group, &m_chunkReadRequestFIFO, &m_readerStatusFIFO) {
 
     m_allocatedChunks.reserve(m_sampleBuffer.size());
 
@@ -50,29 +51,22 @@ CachingReader::CachingReader(QString group,
         bufferStart += CachingReaderWorker::kSamplesPerChunk;
     }
 
-    m_pWorker = new CachingReaderWorker(group,
-            &m_chunkReadRequestFIFO,
-            &m_readerStatusFIFO);
-
     // Forward signals from worker
-    connect(m_pWorker, SIGNAL(trackLoading()),
+    connect(&m_worker, SIGNAL(trackLoading()),
             this, SIGNAL(trackLoading()),
             Qt::DirectConnection);
-    connect(m_pWorker, SIGNAL(trackLoaded(TrackPointer, int, int)),
+    connect(&m_worker, SIGNAL(trackLoaded(TrackPointer, int, int)),
             this, SIGNAL(trackLoaded(TrackPointer, int, int)),
             Qt::DirectConnection);
-    connect(m_pWorker, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+    connect(&m_worker, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             this, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             Qt::DirectConnection);
 
-    m_pWorker->start(QThread::HighPriority);
+    m_worker.start(QThread::HighPriority);
 }
 
-
 CachingReader::~CachingReader() {
-
-    m_pWorker->quitWait();
-    delete m_pWorker;
+    m_worker.quitWait();
     m_freeChunks.clear();
     m_allocatedChunks.clear();
     m_lruChunk = m_mruChunk = NULL;
@@ -247,8 +241,8 @@ Chunk* CachingReader::lookupChunkAndFreshen(int chunk_number) {
 }
 
 void CachingReader::newTrack(TrackPointer pTrack) {
-    m_pWorker->newTrack(pTrack);
-    m_pWorker->workReady();
+    m_worker.newTrack(pTrack);
+    m_worker.workReady();
 }
 
 void CachingReader::process() {
@@ -536,6 +530,6 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
 
     // If there are chunks to be read, wake up.
     if (shouldWake) {
-        m_pWorker->workReady();
+        m_worker.workReady();
     }
 }
