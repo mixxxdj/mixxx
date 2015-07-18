@@ -4,6 +4,21 @@
 
 namespace Mixxx {
 
+void AudioSource::clampFrameInterval(
+        SINT* pMinFrameIndexOfInterval,
+        SINT* pMaxFrameIndexOfInterval,
+        SINT maxFrameIndexOfAudioSource) {
+    if (*pMinFrameIndexOfInterval < getMinFrameIndex()) {
+        *pMinFrameIndexOfInterval = getMinFrameIndex();
+    }
+    if (*pMaxFrameIndexOfInterval > maxFrameIndexOfAudioSource) {
+        *pMaxFrameIndexOfInterval = maxFrameIndexOfAudioSource;
+    }
+    if (*pMaxFrameIndexOfInterval < *pMinFrameIndexOfInterval) {
+        *pMaxFrameIndexOfInterval = *pMinFrameIndexOfInterval;
+    }
+}
+
 AudioSource::AudioSource(const QUrl& url)
         : UrlResource(url),
           m_channelCount(kChannelCountDefault),
