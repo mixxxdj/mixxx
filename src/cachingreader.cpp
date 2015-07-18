@@ -11,6 +11,20 @@
 #include "util/math.h"
 #include "util/assert.h"
 
+namespace {
+
+// To prevent every bit of code having to guess how many samples
+// forward it makes sense to keep in memory, the hinter can provide
+// either 0 for a forward hint or -1 for a backward hint. We should
+// be calculating an appropriate number of samples to go backward as
+// some function of the latency, but for now just leave this as a
+// constant. 2048 is a pretty good number of samples because 25ms
+// latency corresponds to 1102.5 mono samples and we need double
+// that for stereo samples.
+const SINT kDefaultHintSamples = 1024 * CachingReaderWorker::kChunkChannels;
+
+} // anonymous namespace
+
 // currently CachingReaderWorker::kChunkLength is 65536 (0x10000);
 // For 80 chunks we need 5242880 (0x500000) bytes (5 MiB) of Memory
 //static
@@ -452,16 +466,6 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         return;
     }
 
-    // To prevent every bit of code having to guess how many samples
-    // forward it makes sense to keep in memory, the hinter can provide
-    // either 0 for a forward hint or -1 for a backward hint. We should
-    // be calculating an appropriate number of samples to go backward as
-    // some function of the latency, but for now just leave this as a
-    // constant. 2048 is a pretty good number of samples because 25ms
-    // latency corresponds to 1102.5 mono samples and we need double
-    // that for stereo samples.
-    const int default_samples = 1024 * CachingReaderWorker::kChunkChannels;
-
     // For every chunk that the hints indicated, check if it is in the cache. If
     // any are not, then wake.
     bool shouldWake = false;
@@ -471,11 +475,12 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         // Copy, don't use reference.
         Hint hint = *it;
 
+        // Handle some special length values
         if (hint.length == 0) {
-            hint.length = default_samples;
+            hint.length = kDefaultHintSamples;
         } else if (hint.length == -1) {
-            hint.sample -= default_samples;
-            hint.length = default_samples;
+            hint.sample -= kDefaultHintSamples;
+            hint.length = kDefaultHintSamples;
             if (hint.sample < 0) {
                 hint.length += hint.sample;
                 hint.sample = 0;
