@@ -29,6 +29,7 @@
 #include <QRegExp>
 #include <QFileInfo>
 #include <QLinkedList>
+#include <QMutex>
 
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -112,6 +113,8 @@ class LibraryScanner : public QThread {
 
     // Global scanner state for scan currently in progress.
     ScannerGlobalPointer m_scannerGlobal;
+
+    QMutex m_scanRequestMutex;
 };
 
 #endif

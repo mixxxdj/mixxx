@@ -99,7 +99,10 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collecti
 }
 
 LibraryScanner::~LibraryScanner() {
-    // Cancel any running library scan.
+    // Wait until there is no pending scan request
+    QMutexLocker lock(&m_scanRequestMutex);
+
+    // Cancel a running library scan.
     slotCancel();
 
     // Wait for the thread pool to empty. This is important because ScannerTasks
@@ -180,6 +183,10 @@ void LibraryScanner::slotStartScan() {
     m_scannerGlobal = ScannerGlobalPointer(
             new ScannerGlobal(trackLocations, directoryHashes, extensionFilter,
                               coverExtensionFilter, directoryBlacklist));
+    
+    // from now, we are locked by m_scannerGlobal
+    m_scanRequestMutex.unlock();
+
     m_scannerGlobal->startTimer();
 
     emit(scanStarted());
@@ -350,11 +357,17 @@ void LibraryScanner::slotFinishScan() {
 }
 
 void LibraryScanner::scan() {
-    if (m_scannerGlobal) {
-        qDebug() << "Scan already in progress.";
-        return;
+    if (m_scanRequestMutex.tryLock()) {
+        if (m_scannerGlobal) {
+            qDebug() << "Scan already in progress.";
+            m_scanRequestMutex.unlock();
+            return;
+        }
+        emit(startScan());
+        // mutex is unlocked in slotStartScan after setting m_scannerGlobal
+    } else {
+        qDebug() << "Scan request already in emitted.";
     }
-    emit(startScan());
 }
 
 void LibraryScanner::slotCancel() {
