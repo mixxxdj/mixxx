@@ -52,7 +52,7 @@ WVuMeter::~WVuMeter() {
 }
 
 void WVuMeter::setup(QDomNode node, const SkinContext& context) {
-    
+
     // Set pixmaps
     bool bHorizontal = context.hasNode(node, "Horizontal") &&
     context.selectString(node, "Horizontal") == "true";
@@ -168,17 +168,17 @@ void WVuMeter::paintEvent(QPaintEvent *) {
     QStylePainter p(this);
     p.setBrush(option.palette.text());
     p.drawPrimitive(QStyle::PE_Widget, option);
-    
+
     QRect contentRect = style()->subElementRect(QStyle::SE_FrameContents, &option, this);
     if (contentRect.isNull()) {
         contentRect = rect();
     }
-    
+
     if (!m_pPixmapBack.isNull() && !m_pPixmapBack->isNull()) {
         // Draw background. DrawMode takes care of whether to stretch or not.
         m_pPixmapBack->draw(contentRect, &p);
     }
-    
+
     if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
         const double contentWidth = contentRect.width();
         const double contentHeight = contentRect.height();
@@ -252,9 +252,9 @@ void WVuMeter::paintEvent(QPaintEvent *) {
 QSize WVuMeter::sizeHint() const {
     QStyleOption option;
     option.initFrom(this);
-    
+
     QSize widgetSize = WWidget::sizeHint();
-    
+
     if (!m_pPixmapBack.isNull() && !m_pPixmapBack->isNull()) {
         QSize backSize = style()->sizeFromContents(QStyle::CT_PushButton, &option,
                                                    m_pPixmapBack->size(), this);
@@ -274,7 +274,7 @@ QSize WVuMeter::sizeHint() const {
             widgetSize.setHeight(vuSize.height());
         }
     }
-    
+
     return widgetSize;
 }
 
