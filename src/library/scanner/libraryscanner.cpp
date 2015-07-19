@@ -366,7 +366,7 @@ void LibraryScanner::scan() {
         emit(startScan());
         // mutex is unlocked in slotStartScan after setting m_scannerGlobal
     } else {
-        qDebug() << "Scan request already in emitted.";
+        qDebug() << "Scan request already emitted.";
     }
 }
 
