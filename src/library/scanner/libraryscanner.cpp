@@ -99,11 +99,8 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collecti
 }
 
 LibraryScanner::~LibraryScanner() {
-    // A scan is running.
-    if (m_scannerGlobal) {
-        // Cancel any running library scan.
-        cancel();
-    }
+    // Cancel any running library scan.
+    cancel();
 
     // Wait for the thread pool to empty. This is important because ScannerTasks
     // have pointers to the LibraryScanner and can cause a segfault if they run
