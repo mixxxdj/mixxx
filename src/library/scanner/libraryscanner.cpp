@@ -363,7 +363,7 @@ void LibraryScanner::slotCancel() {
     // but m_scannerGlobal may be cleared in the LibraryScanner thread
     ScannerGlobalPointer scanner = m_scannerGlobal;
     if (scanner) {
-        scanner->setShouldCancel(true);
+        scanner->cancel();
     }
 }
 
