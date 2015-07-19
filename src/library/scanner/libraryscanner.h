@@ -56,7 +56,7 @@ class LibraryScanner : public QThread {
 
   public slots:
     // Call from any thread to cancel the scan.
-    void cancel();
+    void slotCancel();
 
   signals:
     void scanStarted();

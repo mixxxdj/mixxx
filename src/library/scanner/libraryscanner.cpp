@@ -89,7 +89,7 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collecti
     connect(this, SIGNAL(scanFinished()),
             pProgress, SLOT(slotScanFinished()));
     connect(pProgress, SIGNAL(scanCancelled()),
-            this, SLOT(cancel()));
+            this, SLOT(slotCancel()));
     connect(&m_trackDao, SIGNAL(progressVerifyTracksOutside(QString)),
             pProgress, SLOT(slotUpdate(QString)));
     connect(&m_trackDao, SIGNAL(progressCoverArt(QString)),
@@ -100,7 +100,7 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collecti
 
 LibraryScanner::~LibraryScanner() {
     // Cancel any running library scan.
-    cancel();
+    slotCancel();
 
     // Wait for the thread pool to empty. This is important because ScannerTasks
     // have pointers to the LibraryScanner and can cause a segfault if they run
@@ -178,8 +178,8 @@ void LibraryScanner::slotStartScan() {
     QStringList directoryBlacklist = ScannerUtil::getDirectoryBlacklist();
 
     m_scannerGlobal = ScannerGlobalPointer(
-        new ScannerGlobal(trackLocations, directoryHashes, extensionFilter,
-                          coverExtensionFilter, directoryBlacklist));
+            new ScannerGlobal(trackLocations, directoryHashes, extensionFilter,
+                              coverExtensionFilter, directoryBlacklist));
     m_scannerGlobal->startTimer();
 
     emit(scanStarted());
@@ -243,7 +243,8 @@ void LibraryScanner::slotStartScan() {
         // directory.
         MDir dir(dirPath);
 
-        queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal, dir.dir(),
+        queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
+                                                 dir.dir(),
                                                  dir.token()));
     }
 }
@@ -321,7 +322,7 @@ void LibraryScanner::slotFinishScan() {
 
         qDebug() << "Detecting cover art for unscanned files.";
         m_trackDao.detectCoverArtForUnknownTracks(
-            m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
+                m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
 
         // Update BaseTrackCache via signals connected to the main TrackDAO.
         emit(tracksMoved(tracksMovedSetOld, tracksMovedSetNew));
@@ -356,9 +357,13 @@ void LibraryScanner::scan() {
     emit(startScan());
 }
 
-void LibraryScanner::cancel() {
-    if (m_scannerGlobal) {
-        m_scannerGlobal->setShouldCancel(true);
+void LibraryScanner::slotCancel() {
+    // we need to make a local copy because slotCancel is called
+    // from the GUI thread during the destructor
+    // but m_scannerGlobal may be cleared in the LibraryScanner thread
+    ScannerGlobalPointer scanner = m_scannerGlobal;
+    if (scanner) {
+        scanner->setShouldCancel(true);
     }
 }
 
