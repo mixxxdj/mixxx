@@ -15,8 +15,14 @@ Waveform* WaveformFactory::loadWaveformFromAnalysis(
 
 // static
 WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(const QString& version) {
-    if (version == WAVEFORM_4_VERSION) {
+    if (version == WAVEFORM_CURRENT_VERSION) {
+        // use, since is our version
         return VC_USE;
+    }
+
+    if (version == WAVEFORM_4_VERSION) {
+        // Used in Mixxx 1.12 beta, suffers Bug lp:1406389
+        return VC_REMOVE;
     }
 
     if (version == WAVEFORM_2_VERSION) {
@@ -35,8 +41,14 @@ WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(con
 
 // static
 WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionClass(const QString& version) {
-    if (version == WAVEFORMSUMMARY_4_VERSION) {
+    if (version == WAVEFORMSUMMARY_CURRENT_VERSION) {
+        // use, since is our version
         return VC_USE;
+    }
+
+    if (version == WAVEFORMSUMMARY_4_VERSION) {
+        // Used in Mixxx 1.12 beta, suffers Bug lp:1406389
+        return VC_REMOVE;
     }
 
     if (version == WAVEFORMSUMMARY_2_VERSION) {
@@ -55,20 +67,20 @@ WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionCl
 
 // static
 QString WaveformFactory::currentWaveformVersion() {
-    return WAVEFORM_4_VERSION;
+    return WAVEFORM_CURRENT_VERSION;
 }
 
 // static
 QString WaveformFactory::currentWaveformSummaryVersion() {
-    return WAVEFORMSUMMARY_4_VERSION;
+    return WAVEFORMSUMMARY_CURRENT_VERSION;
 }
 
 // static
 QString WaveformFactory::currentWaveformDescription() {
-    return WAVEFORM_4_DESCRIPTION;
+    return WAVEFORM_CURRENT_DESCRIPTION;
 }
 
 // static
 QString WaveformFactory::currentWaveformSummaryDescription() {
-    return WAVEFORMSUMMARY_4_DESCRIPTION;
+    return WAVEFORMSUMMARY_CURRENT_DESCRIPTION;
 }

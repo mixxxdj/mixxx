@@ -39,6 +39,33 @@
                 <Children>
                     <PushButton>
                         <Size>55f,20f</Size>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>MIC/AUX</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>MIC/AUX</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>55f,20f</Size>
                         <TooltipId>show_effects</TooltipId>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
@@ -88,34 +115,6 @@
                     </PushButton>
                 </Children>
             </WidgetGroup>
-            <WidgetGroup>
-                <ObjectName>GuiToggleContainer</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                    <PushButton>
-                        <Size>85f,20f</Size>
-                        <TooltipId>show_samplers</TooltipId>
-                        <ObjectName>GuiToggleButton</ObjectName>
-                        <NumberStates>2</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Text>MICROPHONES</Text>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Text>MICROPHONES</Text>
-                        </State>
-                        <Connection>
-                          <ConfigKey persist="true">[MicrophoneRack],show</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey persist="true">[MicrophoneRack],show</ConfigKey>
-                        </Connection>
-                    </PushButton>
-                </Children>
-            </WidgetGroup>
             <WidgetGroup>  <!-- spacer -->
                 <ObjectName>UIButtonMargin</ObjectName>
                 <Layout>horizontal</Layout>
@@ -128,12 +127,9 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                     <PushButton>
-                        <!-- This is all weird because the default state for a widgetstack
-                        is the pushed state.  So we have to invert everything so the
-                        default is 'don't make the library huge' -->
                         <Size>80f,20f</Size>
                         <TooltipId>maximize_library</TooltipId>
-                        <ObjectName>GuiToggleButtonInverted</ObjectName>
+                        <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>

@@ -239,7 +239,6 @@ void DlgPrefSound::initializePaths() {
 }
 
 void DlgPrefSound::addPath(AudioOutput output) {
-    DlgPrefSoundItem *toInsert;
     // if we already know about this output, don't make a new entry
     foreach (QObject *obj, outputTab->children()) {
         DlgPrefSoundItem *item = qobject_cast<DlgPrefSoundItem*>(obj);
@@ -255,6 +254,8 @@ void DlgPrefSound::addPath(AudioOutput output) {
             }
         }
     }
+
+    DlgPrefSoundItem *toInsert;
     AudioPathType type = output.getType();
     if (AudioPath::isIndexed(type)) {
         toInsert = new DlgPrefSoundItem(outputTab, type,

@@ -31,14 +31,15 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     double samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     double numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;
 
-    // TODO (vRince) not really accurate since waveform size une visual reasampling and
-    // have two mores samples to hold the complete visual data
     int currentPosition = m_waveformRenderer->getPlayPosVSample();
+    //qDebug() << "currentPosition" << currentPosition
+    //         << "samplesPerPixel" << samplesPerPixel
+    //         << "numberOfSamples" << numberOfSamples;
 
     // Some of the pre-roll is on screen. Draw little triangles to indicate
     // where the pre-roll is located.
-    if (currentPosition < numberOfSamples) {
-        int index = static_cast<int>((numberOfSamples - currentPosition) / 2.0);
+    if (currentPosition < numberOfSamples / 2.0) {
+        int index = static_cast<int>(numberOfSamples / 2.0 - currentPosition);
         const int polyWidth = static_cast<int>(40.0 / samplesPerPixel);
         const float halfHeight = m_waveformRenderer->getHeight()/2.0;
         const float halfPolyHeight = m_waveformRenderer->getHeight()/5.0;

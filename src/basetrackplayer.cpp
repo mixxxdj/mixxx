@@ -185,13 +185,13 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
                 this, SLOT(slotSetReplayGain(double)));
     }
 
-    //Request a new track from the reader
+    // Request a new track from the reader
     emit(loadTrack(track, bPlay));
 }
 
 void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer track, QString reason) {
-    // TODO(rryan): Currently load failed doesn't clear the deck as an unload
-    // would. Should we?
+    // This slot can be delayed until a new  track is already loaded
+    // We must not unload the track here
     if (track != NULL) {
         qDebug() << "Failed to load track" << track->getLocation() << reason;
         emit(loadTrackFailed(track));

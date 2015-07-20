@@ -62,7 +62,7 @@ void WTrackText::dropEvent(QDropEvent *event) {
                 *event->mimeData(), m_pGroup, true, false);
         if (!files.isEmpty()) {
             event->accept();
-            emit(trackDropped(files.at(0).canonicalFilePath(), m_pGroup));
+            emit(trackDropped(files.at(0).absoluteFilePath(), m_pGroup));
             return;
         }
     }

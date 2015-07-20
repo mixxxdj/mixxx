@@ -25,19 +25,6 @@ static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames *
 
 }  // namespace
 
-QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("m4a");
-    list.push_back("mp3");
-    list.push_back("mp2");
-    //Can add mp3, mp2, ac3, and others here if you want.
-    //See:
-    //  http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
-
-    //XXX: ... but make sure you implement handling for any new format in ParseHeader!!!!!! -- asantoni
-    return list;
-}
-
 SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)
         : SoundSource(url),
           m_bFileIsMp3(false),
@@ -204,6 +191,23 @@ SINT SoundSourceCoreAudio::readSampleFrames(
         numFramesRead += numFramesToReadInOut;
     }
     return numFramesRead;
+}
+
+QString SoundSourceProviderCoreAudio::getName() const {
+    return "Apple Core Audio";
+}
+
+QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("m4a");
+    supportedFileExtensions.append("mp3");
+    supportedFileExtensions.append("mp2");
+    //Can add mp3, mp2, ac3, and others here if you want.
+    //See:
+    //  http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
+
+    //XXX: ... but make sure you implement handling for any new format in ParseHeader!!!!!! -- asantoni
+    return supportedFileExtensions;
 }
 
 }  // namespace Mixxx

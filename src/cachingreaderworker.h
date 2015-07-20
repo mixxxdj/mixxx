@@ -21,7 +21,8 @@ class AudioSourceProxy;
 // sampleForChunk()
 typedef struct Chunk {
     int chunk_number;
-    int frameCount;
+    int frameCountRead;
+    int frameCountTotal;
     CSAMPLE* stereoSamples;
     Chunk* prev_lru;
     Chunk* next_lru;
@@ -46,6 +47,7 @@ enum ReaderStatus {
     TRACK_NOT_LOADED,
     TRACK_LOADED,
     CHUNK_READ_SUCCESS,
+    CHUNK_READ_PARTIAL,
     CHUNK_READ_EOF,
     CHUNK_READ_INVALID
 };

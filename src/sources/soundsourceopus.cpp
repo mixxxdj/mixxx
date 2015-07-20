@@ -33,12 +33,6 @@ private:
 // Decoded output of opusfile has a fixed sample rate of 48 kHz
 const SINT SoundSourceOpus::kFrameRate = 48000;
 
-QList<QString> SoundSourceOpus::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("opus");
-    return list;
-}
-
 SoundSourceOpus::SoundSourceOpus(QUrl url)
         : SoundSource(url, "opus"),
           m_pOggOpusFile(NULL),
@@ -49,8 +43,11 @@ SoundSourceOpus::~SoundSourceOpus() {
     close();
 }
 
-Result SoundSourceOpus::parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    if (OK == SoundSource::parseTrackMetadata(pMetadata)) {
+Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
+        TrackMetadata* pTrackMetadata,
+        QImage* pCoverArt) const {
+    if (OK == SoundSource::parseTrackMetadataAndCoverArt(
+            pTrackMetadata, pCoverArt)) {
         // Done if the default implementation in the base class
         // supports Opus files.
         return OK;
@@ -72,11 +69,11 @@ Result SoundSourceOpus::parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) cons
     int i = 0;
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
 
-    pMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
-    pMetadata->setSampleRate(Mixxx::SoundSourceOpus::kFrameRate);
-    pMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
-    pMetadata->setDuration(
-            op_pcm_total(l_ptrOpusFile, -1) / pMetadata->getSampleRate());
+    pTrackMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
+    pTrackMetadata->setSampleRate(Mixxx::SoundSourceOpus::kFrameRate);
+    pTrackMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
+    pTrackMetadata->setDuration(
+            op_pcm_total(l_ptrOpusFile, -1) / pTrackMetadata->getSampleRate());
 
     bool hasDate = false;
     for (i = 0; i < l_ptrOpusTags->comments; ++i) {
@@ -85,30 +82,30 @@ Result SoundSourceOpus::parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) cons
         QString l_SPayload = l_SWholeTag.right((l_SWholeTag.length() - l_SWholeTag.indexOf("=")) - 1);
 
         if (!l_STag.compare("ARTIST")) {
-            pMetadata->setArtist(l_SPayload);
+            pTrackMetadata->setArtist(l_SPayload);
         } else if (!l_STag.compare("ALBUM")) {
-            pMetadata->setAlbum(l_SPayload);
+            pTrackMetadata->setAlbum(l_SPayload);
         } else if (!l_STag.compare("BPM")) {
-            pMetadata->setBpm(l_SPayload.toFloat());
+            pTrackMetadata->setBpm(l_SPayload.toFloat());
         } else if (!l_STag.compare("DATE")) {
             // Prefer "DATE" over "YEAR"
-            pMetadata->setYear(l_SPayload.trimmed());
+            pTrackMetadata->setYear(l_SPayload.trimmed());
             // Avoid to overwrite "DATE" with "YEAR"
-            hasDate |= !pMetadata->getYear().isEmpty();
+            hasDate |= !pTrackMetadata->getYear().isEmpty();
         } else if (!hasDate && !l_STag.compare("YEAR")) {
-            pMetadata->setYear(l_SPayload.trimmed());
+            pTrackMetadata->setYear(l_SPayload.trimmed());
         } else if (!l_STag.compare("GENRE")) {
-            pMetadata->setGenre(l_SPayload);
+            pTrackMetadata->setGenre(l_SPayload);
         } else if (!l_STag.compare("TRACKNUMBER")) {
-            pMetadata->setTrackNumber(l_SPayload);
+            pTrackMetadata->setTrackNumber(l_SPayload);
         } else if (!l_STag.compare("COMPOSER")) {
-            pMetadata->setComposer(l_SPayload);
+            pTrackMetadata->setComposer(l_SPayload);
         } else if (!l_STag.compare("ALBUMARTIST")) {
-            pMetadata->setAlbumArtist(l_SPayload);
+            pTrackMetadata->setAlbumArtist(l_SPayload);
         } else if (!l_STag.compare("TITLE")) {
-            pMetadata->setTitle(l_SPayload);
+            pTrackMetadata->setTitle(l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            pMetadata->setReplayGain(Mixxx::TrackMetadata::parseReplayGain(l_SPayload));
+            pTrackMetadata->setReplayGain(Mixxx::TrackMetadata::parseReplayGain(l_SPayload));
         }
 
         // This is left fot debug reasons!!
@@ -254,6 +251,16 @@ SINT SoundSourceOpus::readSampleFramesStereo(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
     return numberOfFramesTotal - numberOfFramesRemaining;
+}
+
+QString SoundSourceProviderOpus::getName() const {
+    return "Xiph.org libopusfile";
+}
+
+QStringList SoundSourceProviderOpus::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("opus");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

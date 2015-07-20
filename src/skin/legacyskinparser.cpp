@@ -83,9 +83,10 @@ QMutex LegacySkinParser::s_safeStringMutex;
 
 static bool sDebug = false;
 
-ControlObject* controlFromConfigKey(ConfigKey key, double defaultValue,
-                                    bool bPersist, bool* created) {
+ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
+                                    bool* created) {
     ControlObject* pControl = ControlObject::getControl(key);
+
     if (pControl) {
         if (created) {
             *created = false;
@@ -99,7 +100,7 @@ ControlObject* controlFromConfigKey(ConfigKey key, double defaultValue,
                << "Creating it.";
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
-    ControlPushButton* controlButton = new ControlPushButton(key, defaultValue, bPersist);
+    ControlPushButton* controlButton = new ControlPushButton(key, bPersist);
     controlButton->setButtonMode(ControlPushButton::TOGGLE);
     if (created) {
         *created = true;
@@ -120,7 +121,7 @@ ControlObject* LegacySkinParser::controlFromConfigNode(QDomElement element,
 
     bool bPersist = m_pContext->selectAttributeBool(keyElement, "persist", false);
 
-    return controlFromConfigKey(key, 0.0, bPersist, created);
+    return controlFromConfigKey(key, bPersist, created);
 }
 
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
@@ -258,7 +259,7 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     QDomNode attributes_node = manifest_node.namedItem("attributes");
     if (!attributes_node.isNull() && attributes_node.isElement()) {
         QDomNodeList attribute_nodes = attributes_node.toElement().elementsByTagName("attribute");
-        for (unsigned int i = 0; i < attribute_nodes.length(); ++i) {
+        for (int i = 0; i < attribute_nodes.count(); ++i) {
             QDomNode attribute_node = attribute_nodes.item(i);
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
@@ -325,8 +326,14 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
             // If there is no existing value for this CO in the skin,
             // update the config with the specified value. If the attribute
             // is set to persist, the value will be read when the control is created.
+            // TODO: This is a hack, but right now it's the cleanest way to
+            // get a CO with a specified initial value.  We should have a better
+            // mechanism to provide initial default values for COs.
+            if (attribute.persist() &&
+                    m_pConfig->getValueString(configKey).isEmpty()) {
+                m_pConfig->set(configKey, ConfigValue(QString::number(value)));
+            }
             ControlObject* pControl = controlFromConfigKey(configKey,
-                                                           value,
                                                            attribute.persist(),
                                                            &created);
             if (created) {
@@ -615,7 +622,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
         ConfigKey configKey = ConfigKey::parseCommaSeparated(currentpage_co);
         QString persist_co = node.attribute("persist");
         bool persist = m_pContext->selectAttributeBool(node, "persist", false);
-        pCurrentPageControl = controlFromConfigKey(configKey, 0.0, persist,
+        pCurrentPageControl = controlFromConfigKey(configKey, persist,
                                                    &createdCurrentPage);
     }
 
@@ -677,14 +684,24 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             if (trigger_configkey.length() > 0) {
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
                 bool created;
-                pControl = controlFromConfigKey(configKey, 0.0, false, &created);
+                pControl = controlFromConfigKey(configKey, false, &created);
                 if (created) {
                     // If we created the control, parent it to the child widget so
                     // it doesn't leak.
                     pControl->setParent(pChild);
                 }
             }
-            pStack->addWidgetWithControl(pChild, pControl);
+            int on_hide_select = -1;
+            QString on_hide_attr = element.attribute("on_hide_select");
+            if (on_hide_attr.length() > 0) {
+                bool ok = false;
+                on_hide_select = on_hide_attr.toInt(&ok);
+                if (!ok) {
+                    on_hide_select = -1;
+                }
+            }
+
+            pStack->addWidgetWithControl(pChild, pControl, on_hide_select);
         }
     }
 
@@ -860,7 +877,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             overviewWidget, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(loadTrackFailed(TrackPointer)),
-               overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
+            overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
 

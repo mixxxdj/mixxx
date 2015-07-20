@@ -17,20 +17,20 @@ namespace {
 const SINT kChunkSizeInBytes = SINT(1) << 19;
 
 QString getModPlugTypeFromUrl(QUrl url) {
-    const QString type(SoundSource::getTypeFromUrl(url));
-    if (type == "mod") {
+    const QString fileExtension(SoundSource::getFileExtensionFromUrl(url));
+    if (fileExtension == "mod") {
         return "Protracker";
-    } else if (type == "med") {
+    } else if (fileExtension == "med") {
         return "OctaMed";
-    } else if (type == "okt") {
+    } else if (fileExtension == "okt") {
         return "Oktalyzer";
-    } else if (type == "s3m") {
+    } else if (fileExtension == "s3m") {
         return "Scream Tracker 3";
-    } else if (type == "stm") {
+    } else if (fileExtension == "stm") {
         return "Scream Tracker";
-    } else if (type == "xm") {
+    } else if (fileExtension == "xm") {
         return "FastTracker2";
-    } else if (type == "it") {
+    } else if (fileExtension == "it") {
         return "Impulse Tracker";
     } else {
         return "Module";
@@ -42,20 +42,6 @@ QString getModPlugTypeFromUrl(QUrl url) {
 const SINT SoundSourceModPlug::kChannelCount = AudioSource::kChannelCountStereo;
 const SINT SoundSourceModPlug::kBitsPerSample = 16;
 const SINT SoundSourceModPlug::kFrameRate = 44100; // 44.1 kHz
-
-QList<QString> SoundSourceModPlug::supportedFileExtensions() {
-    QList<QString> list;
-    // ModPlug supports more formats but file name
-    // extensions are not always present with modules.
-    list.push_back("mod");
-    list.push_back("med");
-    list.push_back("okt");
-    list.push_back("s3m");
-    list.push_back("stm");
-    list.push_back("xm");
-    list.push_back("it");
-    return list;
-}
 
 unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
@@ -76,8 +62,11 @@ SoundSourceModPlug::~SoundSourceModPlug() {
     close();
 }
 
-Result SoundSourceModPlug::parseTrackMetadata(
-        TrackMetadata* pMetadata) const {
+Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
+        TrackMetadata* pTrackMetadata,
+        QImage* /*pCoverArt*/) const {
+    // The modplug library currently does not support reading cover-art from
+    // modplug files -- kain88 (Oct 2014)
     QFile modFile(getLocalFileNameBytes());
     modFile.open(QIODevice::ReadOnly);
     const QByteArray fileBuf(modFile.readAll());
@@ -86,20 +75,14 @@ Result SoundSourceModPlug::parseTrackMetadata(
     ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
             fileBuf.length());
     if (NULL != pModFile) {
-        pMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
-        pMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
-        pMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000);
-        pMetadata->setBitrate(8); // not really, but fill in something...
+        pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
+        pTrackMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
+        pTrackMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000);
+        pTrackMetadata->setBitrate(8); // not really, but fill in something...
         ModPlug::ModPlug_Unload(pModFile);
     }
 
     return pModFile ? OK : ERR;
-}
-
-QImage SoundSourceModPlug::parseCoverArt() const {
-    // The modplug library currently does not support reading cover-art from
-    // modplug files -- kain88 (Oct 2014)
-    return QImage();
 }
 
 Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
@@ -201,6 +184,24 @@ SINT SoundSourceModPlug::readSampleFrames(
     m_seekPos += readFrames;
 
     return readFrames;
+}
+
+QString SoundSourceProviderModPlug::getName() const {
+    return "MODPlug";
+}
+
+QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    // ModPlug supports more formats but file name
+    // extensions are not always present with modules.
+    supportedFileExtensions.append("mod");
+    supportedFileExtensions.append("med");
+    supportedFileExtensions.append("okt");
+    supportedFileExtensions.append("s3m");
+    supportedFileExtensions.append("stm");
+    supportedFileExtensions.append("xm");
+    supportedFileExtensions.append("it");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

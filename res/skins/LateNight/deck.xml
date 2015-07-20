@@ -59,6 +59,10 @@
                                       <Connection>
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_adjust_set_default</ConfigKey>
                                       </Connection>
+                                      <Connection>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],reset_key</ConfigKey>
+                                        <ButtonState>RightButton</ButtonState>
+                                      </Connection>
                                    </PushButton>
                                    <PushButton>
                                       <Size>16f,16f</Size>
@@ -81,10 +85,10 @@
                                       </Connection>
                                   </PushButton>
                                </Children>
-                               <Connection>
+                               <!-- <Connection>
                                    <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
                                    <BindProperty>visible</BindProperty>
-                               </Connection>
+                               </Connection> -->
                            </WidgetGroup>
                            <Key>
                               <ObjectName>TextColor<Variable name="channum" /></ObjectName>
@@ -256,20 +260,20 @@
                         <ObjectName>SyncControls</ObjectName>
                         <Layout>vertical</Layout>
                         <SizePolicy>min,min</SizePolicy>
-                        <MinimumSize>48,</MinimumSize>
+                        <MinimumSize>52,</MinimumSize>
                         <Children>
                             <PushButton>
+                                <Size>52,17</Size>
+                                <ObjectName>SyncToggleButton</ObjectName>
                                 <TooltipId>sync_enabled</TooltipId>
                                 <NumberStates>2</NumberStates>
                                 <State>
                                     <Number>0</Number>
-                                    <Pressed>btn_sync1_overdown.png</Pressed>
-                                    <Unpressed>btn_sync1.png</Unpressed>
+                                    <Text>SYNC</Text>
                                 </State>
                                 <State>
                                     <Number>1</Number>
-                                    <Pressed>btn_sync1_overdown.png</Pressed>
-                                    <Unpressed>btn_sync1_overdown.png</Unpressed>
+                                    <Text>SYNC</Text>
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],sync_enabled</ConfigKey>

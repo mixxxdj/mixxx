@@ -132,8 +132,9 @@ void TrackDAO::finish() {
     // crash prevention: if mixxx crashes, played information will be maintained
     qDebug() << "Clearing played information for this session";
     QSqlQuery query(m_database);
-    if (!query.exec("UPDATE library SET played=0")) {
-        LOG_FAILED_QUERY(query)
+    if (!query.exec("UPDATE library SET played=0 where played>0")) {
+	// Note: whithout where, this call updates every row which takes long
+	LOG_FAILED_QUERY(query)
                 << "Error clearing played value";
     }
 
@@ -666,7 +667,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     }
 
     // Check that track is a supported extension.
-    if (!isTrackFormatSupported(pTrack)) {
+    if (!SoundSourceProxy::isFileSupported(pTrack->getFileInfo())) {
         // TODO(XXX) provide some kind of error code on a per-track basis.
         return;
     }
@@ -1802,13 +1803,6 @@ void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
     }
 }
 
-bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
-    if (pTrack) {
-        return SoundSourceProxy::isFilenameSupported(pTrack->getFilename());
-    }
-    return false;
-}
-
 void TrackDAO::verifyRemainingTracks() {
     // This function is called from the LibraryScanner Thread, which also has a
     // transaction running, so we do NOT NEED to use one here
@@ -1845,12 +1839,10 @@ void TrackDAO::verifyRemainingTracks() {
     }
 }
 
-namespace
-{
+namespace {
     QImage parseCoverArt(const QFileInfo& fileInfo) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
-        SoundSourceProxy proxy(fileInfo.filePath(), pToken);
-        return proxy.parseCoverArt();
+        return CoverArtUtils::extractEmbeddedCover(fileInfo.filePath(), pToken);
     }
 }
 
