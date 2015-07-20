@@ -38,14 +38,14 @@ extern "C" {
 }
 
 class EncoderFfmpegResample {
-public:
+  public:
     EncoderFfmpegResample(AVCodecContext *codecCtx);
     ~EncoderFfmpegResample();
     int openMixxx(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt);
 
     unsigned int reSampleMixxx(AVFrame *inframe, quint8 **outbuffer);
 
-private:
+  private:
     AVCodecContext *m_pCodecCtx;
     enum AVSampleFormat m_pOutSampleFmt;
     enum AVSampleFormat m_pInSampleFmt;

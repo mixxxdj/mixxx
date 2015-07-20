@@ -41,7 +41,7 @@ struct ffmpegCacheObject {
 };
 
 class SoundSourceFFmpeg : public SoundSource {
-public:
+  public:
     explicit SoundSourceFFmpeg(QUrl url);
     ~SoundSourceFFmpeg();
 
@@ -51,7 +51,7 @@ public:
 
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
-private:
+  private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     bool readFramesToCache(unsigned int count, SINT offset);
@@ -85,7 +85,7 @@ private:
 };
 
 class SoundSourceProviderFFmpeg: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override {
         return "FFmpeg";
     }

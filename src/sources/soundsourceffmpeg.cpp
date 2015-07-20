@@ -480,10 +480,10 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                     }
                 }
 
-                if(l_lPos < m_SCache.size() && l_lPos >= 0) {
+                if (l_lPos < m_SCache.size() && l_lPos >= 0) {
                     l_SObj = m_SCache[l_lPos];
                     continue;
-                } else if(l_lPos < 0) {
+                } else if (l_lPos < 0) {
                     l_lPos = 0;
                 } else {
                     l_SObj = m_SCache.last();
