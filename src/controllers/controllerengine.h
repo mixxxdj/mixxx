@@ -83,7 +83,7 @@ class ControllerEngine : public QObject {
     /** Look up registered script function prefixes */
     QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
     /** Disconnect a ControllerEngineConnection */
-    void disconnectControl(const ControllerEngineConnection conn);
+    QScriptValue disconnectControl(const ControllerEngineConnection conn);
 
   protected:
     Q_INVOKABLE double getValue(QString group, QString name);

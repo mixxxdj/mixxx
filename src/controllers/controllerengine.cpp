@@ -784,14 +784,15 @@ void ControllerEngine::trigger(QString group, QString name) {
    -------- ------------------------------------------------------ */
 QScriptValue ControllerEngine::connectControl(QString group, QString name,
                                               QScriptValue callback, bool disconnect) {
-    ConfigKey key(group, name);
     ControlObjectThread* cot = getControlObjectThread(group, name);
-    QScriptValue function;
+    ControllerEngineConnection conn;
+    conn.key = ConfigKey(group, name);
+    conn.ce = this;
 
     if (cot == NULL) {
         qWarning() << "ControllerEngine: script connecting [" << group << "," << name
                    << "], which is non-existent. ignoring.";
-        return QScriptValue();
+        return QScriptValue(false);
     }
 
     if (m_pEngine == NULL) {
@@ -799,34 +800,16 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
     }
 
     if (callback.isString()) {
-        ControllerEngineConnection cb;
-        cb.key = key;
-        cb.id = callback.toString();
-        cb.ce = this;
+        conn.id = callback.toString();
 
-        if (disconnect) {
-            disconnectControl(cb);
-            return QScriptValue(true);
-        }
-
-        function = m_pEngine->evaluate(callback.toString());
-        if (checkException() || !function.isFunction()) {
-            qWarning() << "Could not evaluate callback function:" << callback.toString();
+        conn.function = m_pEngine->evaluate(conn.id);
+        if (checkException() || !conn.function.isFunction()) {
+            qWarning() << "Cannot make connection to" << conn.key
+                       << ": no such callback function" << conn.id;
             return QScriptValue(false);
-        } else if (m_connectedControls.contains(key, cb)) {
-            // Do not allow multiple connections to named functions
-
-            // Return a wrapper to the conn
-            QHash<ConfigKey, ControllerEngineConnection>::iterator i =
-                m_connectedControls.find(key);
-
-            ControllerEngineConnection conn = i.value();
-            return m_pEngine->newQObject(
-                new ControllerEngineConnectionScriptValue(conn),
-                QScriptEngine::ScriptOwnership);
         }
     } else if (callback.isFunction()) {
-        function = callback;
+        conn.function = callback;
     } else if (callback.isQObject()) {
         // Assume a ControllerEngineConnection
         QObject *qobject = callback.toQObject();
@@ -838,46 +821,55 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
             proxy->disconnect();
         }
     } else {
-        qWarning() << "Invalid callback";
+        qWarning() << "Cannot make connection to" << group << name
+                   << ": no such callback function";
         return QScriptValue(false);
     }
 
-    if (function.isFunction()) {
-        qDebug() << "Connection:" << group << name;
+    QScriptContext *ctxt = m_pEngine->currentContext();
+    // Our current context is a function call to engine.connectControl. We
+    // want to grab the 'this' from the caller's context, so we walk up the
+    // stack.
+    if (ctxt) {
+        ctxt = ctxt->parentContext();
+        conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
+    }
+    
+    if (!callback.isString()) {
+        QUuid uuid = QUuid::createUuid();
+        conn.id = uuid.toString();
+    }
+    
+    if (disconnect) {
+        return QScriptValue(disconnectControl(conn));
+    } else {
+        if (m_connectedControls.contains(conn.key, conn)) {
+            qWarning() << "Cannot connect" << conn.key << "to"
+                        << conn.id << ": already connected";
+            return QScriptValue(false);
+        }
+        
         connect(cot, SIGNAL(valueChanged(double)),
                 this, SLOT(slotValueChanged(double)),
                 Qt::QueuedConnection);
         connect(cot, SIGNAL(valueChangedByThis(double)),
                 this, SLOT(slotValueChanged(double)),
                 Qt::QueuedConnection);
+        m_connectedControls.insert(conn.key, conn);
 
-        ControllerEngineConnection conn;
-        conn.key = key;
-        conn.ce = this;
-        conn.function = function;
+        if (m_connectedControls.contains(conn.key, conn)) {
+            qDebug() << "Connection: function" << conn.id
+                     << "connected to" << conn.key;
+            // Return a wrapper to the conn
+            QHash<ConfigKey, ControllerEngineConnection>::iterator i =
+                m_connectedControls.find(conn.key);
 
-        QScriptContext *ctxt = m_pEngine->currentContext();
-        // Our current context is a function call to engine.connectControl. We
-        // want to grab the 'this' from the caller's context, so we walk up the
-        // stack.
-        if (ctxt) {
-            ctxt = ctxt->parentContext();
-            conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
+            conn = i.value();
+            return m_pEngine->newQObject(
+                new ControllerEngineConnectionScriptValue(conn),
+                QScriptEngine::ScriptOwnership);
         }
-
-        if (callback.isString()) {
-            conn.id = callback.toString();
-        } else {
-            QUuid uuid = QUuid::createUuid();
-            conn.id = uuid.toString();
-        }
-
-        m_connectedControls.insert(key, conn);
-        return m_pEngine->newQObject(
-            new ControllerEngineConnectionScriptValue(conn),
-            QScriptEngine::ScriptOwnership);
     }
-
     return QScriptValue(false);
 }
 
@@ -887,25 +879,30 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
                 script function name, true if you want to disconnect
    Output:  true if successful
    -------- ------------------------------------------------------ */
-void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
+QScriptValue ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
     ControlObjectThread* cot = getControlObjectThread(conn.key.group, conn.key.item);
 
     if (m_pEngine == NULL) {
-        return;
+        return QScriptValue(false);
     }
 
     if (m_connectedControls.contains(conn.key, conn)) {
         m_connectedControls.remove(conn.key, conn);
         // Only disconnect the signal if there are no other instances of this control using it
         if (!m_connectedControls.contains(conn.key)) {
+            qDebug() << "Disconnection: function" << conn.id
+                     << "disconnected from" << conn.key;
             disconnect(cot, SIGNAL(valueChanged(double)),
                        this, SLOT(slotValueChanged(double)));
             disconnect(cot, SIGNAL(valueChangedByThis(double)),
                        this, SLOT(slotValueChanged(double)));
+            return QScriptValue(true);
         }
     } else {
-        qWarning() << "Could not Disconnect connection" << conn.id;
+        qWarning() << "Could not Disconnect function" << conn.id
+                   << "from" << conn.key << ": no such connection";
     }
+    return QScriptValue(false);
 }
 
 void ControllerEngineConnectionScriptValue::disconnect() {
