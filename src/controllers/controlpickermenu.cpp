@@ -708,6 +708,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
                tr("Show/hide cover art"), guiMenu);
+    addControl("[Master]", "show_xfader",
+               tr("Crossfader Show/Hide"),
+               tr("Show/hide the crossfader"), guiMenu);
 
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");

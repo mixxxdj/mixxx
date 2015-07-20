@@ -176,6 +176,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggle 4 Decks")
             << tr("Switches between showing 2 decks and 4 decks.");
 
+    add("show_xfader")
+            << tr("Crossfader")
+            << tr("Show/hide the crossfader");
+
     add("show_library")
             << tr("Show Library")
             << tr("Show or hide the track library.");

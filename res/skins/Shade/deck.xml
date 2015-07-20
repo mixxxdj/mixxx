@@ -184,7 +184,7 @@
 												</Spinny>
 											</Children>
 											<Connection>
-												<ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
+												<ConfigKey>[Spinny],show_spinnies</ConfigKey>
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
@@ -351,7 +351,7 @@
 						</NumberBpm>
 						
 						
-												<!--
+                        <!--
 						**********************************************
 						Text- Key number display
 						**********************************************
@@ -570,29 +570,29 @@
 								<ButtonState>RightButton</ButtonState>
 							</Connection>
 						</PushButton>
-	
-						<!--
+
+                        <!--
 						**********************************************
-						Button - Show spinning Vinyl widget
+						Button - Quantize
 						**********************************************
 						-->
 						<PushButton>
-							<TooltipId>show_spinny</TooltipId>
+							<TooltipId>quantize</TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_spinny1.png</Pressed>
-								<Unpressed>btn_spinny1.png</Unpressed>
+								<Pressed>btn_quantize1.png</Pressed>
+								<Unpressed>btn_quantize1.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_spinny1_over.png</Pressed>
-								<Unpressed>btn_spinny1_over.png</Unpressed>
+								<Pressed>btn_quantize1_over.png</Pressed>
+								<Unpressed>btn_quantize1_over.png</Unpressed>
 							</State>
 							<Pos>253,161</Pos>
 							<Connection>
-								<ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
+								<ConfigKey>[Channel<Variable name="channum"/>],quantize</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
@@ -650,32 +650,37 @@
 							</Connection>
 						</PushButton>
 	
-						<!--
-						**********************************************
-						Button - Quantize
-						**********************************************
-						-->
-						<PushButton>
-							<TooltipId>quantize</TooltipId>
-							<Style></Style>
-							<NumberStates>2</NumberStates>
-							<State>
-								<Number>0</Number>
-								<Pressed>btn_quantize1.png</Pressed>
-								<Unpressed>btn_quantize1.png</Unpressed>
-							</State>
-							<State>
-								<Number>1</Number>
-								<Pressed>btn_quantize1_over.png</Pressed>
-								<Unpressed>btn_quantize1_over.png</Unpressed>
-							</State>
-							<Pos>274,180</Pos>
-							<Connection>
-								<ConfigKey>[Channel<Variable name="channum"/>],quantize</ConfigKey>
-								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-								<ButtonState>LeftButton</ButtonState>
-							</Connection>
-						</PushButton>
+                        <!--
+                        **********************************************
+                        Button- Mix Orientation (Routing)
+                        **********************************************
+                        -->
+                        <PushButton>
+                            <TooltipId>orientation</TooltipId>
+                            <Style></Style>
+                            <NumberStates>3</NumberStates>
+                            <State>
+                                <Number>0</Number>
+                                <Pressed>btn_orientation_sampler_left_over.png</Pressed>
+                                <Unpressed>btn_orientation_sampler_left_over.png</Unpressed>
+                            </State>
+                            <State>
+                                <Number>1</Number>
+                                <Pressed>btn_orientation_sampler_master.png</Pressed>
+                                <Unpressed>btn_orientation_sampler_master.png</Unpressed>
+                            </State>
+                            <State>
+                                <Number>2</Number>
+                                <Pressed>btn_orientation_sampler_right_over.png</Pressed>
+                                <Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
+                            </State>
+                            <Pos>274,180</Pos>
+                            <Connection>
+                                <ConfigKey>[Channel<Variable name="channum"/>],orientation</ConfigKey>
+                                <EmitOnDownPress>true</EmitOnDownPress>
+                                <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                        </PushButton>
 	
 						<!--
 						**********************************************

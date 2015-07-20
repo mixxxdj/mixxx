@@ -151,10 +151,16 @@
 
 #LatencyMeter {
   margin: 1px;
+  padding-right: 4px;
+  padding-left: 4px;
+}
+
+#LatencyLabel {
+  padding-bottom: 2px;
 }
 
 #PrimaryMixer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 0px;
   margin: 0px;
   border: 1px solid #585858;
@@ -640,10 +646,8 @@
   color: #09B2AE;
 }
 
-#CrossFadeContainer {
+#CrossFaderContainer {
  qproperty-layoutAlignment: 'AlignCenter';
- background-color: #1e1e1e;
- padding-top: 5px;
 }
 
 #GuiToggleContainer {
@@ -669,6 +673,11 @@
 
 #Crossfader {
   qproperty-layoutAlignment: 'AlignCenter';
+  border: 1px solid #585858;
+  border-left: 0px;
+  border-right: 0px;
+  border-bottom: 0px;
+  padding-top: 5px;
   /*background-color:#1e1e1e;*/
   padding-top: 10px;
 }
@@ -800,9 +809,8 @@
 #ToolbarTop {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #585858;
-  border-top: 0px;
   padding: 0px;
-  background-color: #1e1e1e;
+  background-color: #0f0f0f;
 }
 
 #WaveformMixerContainer {

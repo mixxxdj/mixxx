@@ -108,6 +108,13 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pShowPreviewDeck(NULL),
           m_pShowEffects(NULL),
           m_pShowCoverArt(NULL),
+          m_pShowLibrary(NULL),
+          m_pShowMixer(NULL),
+          m_pShowEqs(NULL),
+          m_pShowXFader(NULL),
+          m_pShow4Decks(NULL),
+          m_pShowSpinnies(NULL),
+          m_pMaximizeLibrary(NULL),
 
           m_pPrefDlg(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
@@ -571,6 +578,13 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShowPreviewDeck;
     delete m_pShowEffects;
     delete m_pShowCoverArt;
+    delete m_pShowLibrary;
+    delete m_pShowMixer;
+    delete m_pShowEqs;
+    delete m_pShowXFader;
+    delete m_pShow4Decks;
+    delete m_pShowSpinnies;
+    delete m_pMaximizeLibrary;
     delete m_pNumAuxiliaries;
     delete m_pNumDecks;
 
@@ -854,6 +868,30 @@ void MixxxMainWindow::slotViewMaximizeLibrary(bool enable) {
     toggleVisibility(ConfigKey("[Master]", "maximize_library"), enable);
 }
 
+void MixxxMainWindow::slotViewShowLibrary(bool enable) {
+    toggleVisibility(ConfigKey("[Library]", "show_library"), enable);
+}
+
+void MixxxMainWindow::slotViewShowMixer(bool enable) {
+    toggleVisibility(ConfigKey("[Master]", "show_mixer"), enable);
+}
+
+void MixxxMainWindow::slotViewShowEqs(bool enable) {
+    toggleVisibility(ConfigKey("[Master]", "show_eqs"), enable);
+}
+
+void MixxxMainWindow::slotViewShowXFader(bool enable) {
+    toggleVisibility(ConfigKey("[Master]", "show_xfader"), enable);
+}
+
+void MixxxMainWindow::slotViewShow4Decks(bool enable) {
+    toggleVisibility(ConfigKey("[Master]", "show_4decks"), enable);
+}
+
+void MixxxMainWindow::slotViewShowSpinnies(bool enable) {
+    toggleVisibility(ConfigKey("[Spinny]", "show_spinnies"), enable);
+}
+
 void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     ControlObject* pVisibilityControl = ControlObject::getControl(key);
     pAction->setEnabled(pVisibilityControl != NULL);
@@ -896,6 +934,41 @@ void MixxxMainWindow::slotToggleCheckedCoverArt() {
     updateCheckedMenuAction(m_pViewShowCoverArt, key);
 }
 
+void MixxxMainWindow::slotToggleCheckedLibrary() {
+    ConfigKey key("[Library]", "show_library");
+    updateCheckedMenuAction(m_pViewShowLibrary, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedMixer() {
+    ConfigKey key("[Master]", "show_mixer");
+    updateCheckedMenuAction(m_pViewShowMixer, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedEqs() {
+    ConfigKey key("[Master]", "show_eqs");
+    updateCheckedMenuAction(m_pViewShowEqs, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedXFader() {
+    ConfigKey key("[Master]", "show_xfader");
+    updateCheckedMenuAction(m_pViewShowXFader, key);
+}
+
+void MixxxMainWindow::slotToggleChecked4Decks() {
+    ConfigKey key("[Master]", "show_4decks");
+    updateCheckedMenuAction(m_pViewShow4Decks, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedSpinnies() {
+    ConfigKey key("[Spinny]", "show_spinnies");
+    updateCheckedMenuAction(m_pViewShowSpinnies, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedMaximizeLibrary() {
+    ConfigKey key("[Master]", "maximize_library");
+    updateCheckedMenuAction(m_pViewMaximizeLibrary, key);
+}
+
 void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS,
                                      ConfigKey key, const char* slot) {
     if (!*pCOS) {
@@ -920,6 +993,18 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[EffectRack1]", "show"));
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
+    setVisibilityOptionState(m_pViewShowLibrary,
+                             ConfigKey("[Library]", "show_library"));
+    setVisibilityOptionState(m_pViewShowMixer,
+                             ConfigKey("[Master]", "show_mixer"));
+    setVisibilityOptionState(m_pViewShowEqs,
+                             ConfigKey("[Master]", "show_eqs"));
+    setVisibilityOptionState(m_pViewShowXFader,
+                             ConfigKey("[Master]", "show_xfader"));
+    setVisibilityOptionState(m_pViewShow4Decks,
+                             ConfigKey("[Master]", "show_4decks"));
+    setVisibilityOptionState(m_pViewShowSpinnies,
+                             ConfigKey("[Spinny]", "show_spinnies"));
     setVisibilityOptionState(m_pViewMaximizeLibrary,
                              ConfigKey("[Master]", "maximize_library"));
 
@@ -943,6 +1028,27 @@ void MixxxMainWindow::onNewSkinLoaded() {
     linkSkinWidget(&m_pShowCoverArt,
                    ConfigKey("[Library]", "show_coverart"),
                    SLOT(slotToggleCheckedCoverArt()));
+    linkSkinWidget(&m_pShowLibrary,
+                   ConfigKey("[Library]", "show_library"),
+                   SLOT(slotToggleCheckedLibrary()));
+    linkSkinWidget(&m_pShowMixer,
+                   ConfigKey("[Master]", "show_mixer"),
+                   SLOT(slotToggleCheckedMixer()));
+    linkSkinWidget(&m_pShowEqs,
+                   ConfigKey("[Master]", "show_eqs"),
+                   SLOT(slotToggleCheckedEqs()));
+    linkSkinWidget(&m_pShowXFader,
+                   ConfigKey("[Master]", "show_xfader"),
+                   SLOT(slotToggleCheckedXFader()));
+    linkSkinWidget(&m_pShow4Decks,
+                   ConfigKey("[Master]", "show_4decks"),
+                   SLOT(slotToggleChecked4Decks()));
+    linkSkinWidget(&m_pShowSpinnies,
+                   ConfigKey("[Spinny]", "show_spinnies"),
+                   SLOT(slotToggleCheckedSpinnies()));
+    linkSkinWidget(&m_pMaximizeLibrary,
+                   ConfigKey("[Master]", "maximize_library"),
+                   SLOT(slotToggleCheckedMaximizeLibrary()));
 }
 
 int MixxxMainWindow::noSoundDlg(void)
@@ -1339,7 +1445,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowSamplers->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowSamplers"),
-                                                  tr("Ctrl+1", "Menubar|View|Show Samplers"))));
+                                                  tr("Ctrl+6", "Menubar|View|Show Samplers"))));
     m_pViewShowSamplers->setStatusTip(showSamplersText);
     m_pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
     connect(m_pViewShowSamplers, SIGNAL(toggled(bool)),
@@ -1354,7 +1460,7 @@ void MixxxMainWindow::initActions()
     m_pViewVinylControl->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowVinylControl"),
-            tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"))));
+            tr("Ctrl+7", "Menubar|View|Show Vinyl Control Section"))));
     m_pViewVinylControl->setStatusTip(showVinylControlText);
     m_pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
     connect(m_pViewVinylControl, SIGNAL(toggled(bool)),
@@ -1369,7 +1475,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowMicrophone->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowMicrophone"),
-            tr("Ctrl+2", "Menubar|View|Show Microphone Section"))));
+            tr("Ctrl+4", "Menubar|View|Show Microphone Section"))));
     m_pViewShowMicrophone->setStatusTip(showMicrophoneText);
     m_pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
     connect(m_pViewShowMicrophone, SIGNAL(toggled(bool)),
@@ -1383,7 +1489,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowPreviewDeck->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowPreviewDeck"),
-                                                  tr("Ctrl+4", "Menubar|View|Show Preview Deck"))));
+                                                  tr("Ctrl+2", "Menubar|View|Show Preview Deck"))));
     m_pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     m_pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
@@ -1411,7 +1517,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowCoverArt->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowCoverArt"),
-                                                  tr("Ctrl+6", "Menubar|View|Show Cover Art"))));
+                                                  tr("Ctrl+¡", "Menubar|View|Show Cover Art"))));
     m_pViewShowCoverArt->setStatusTip(showCoverArtText);
     m_pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
     connect(m_pViewShowCoverArt, SIGNAL(toggled(bool)),
@@ -1430,6 +1536,90 @@ void MixxxMainWindow::initActions()
     m_pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
     connect(m_pViewMaximizeLibrary, SIGNAL(toggled(bool)),
             this, SLOT(slotViewMaximizeLibrary(bool)));
+
+    QString showLibraryTitle = tr("Show Library");
+    QString showLibraryText = tr("Show the library of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pViewShowLibrary = new QAction(showLibraryTitle, this);
+    m_pViewShowLibrary->setCheckable(true);
+    m_pViewShowLibrary->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowLibrary"),
+                                                  tr("Ctrl+3", "Menubar|View|Show Library"))));
+    m_pViewShowLibrary->setStatusTip(showLibraryText);
+    m_pViewShowLibrary->setWhatsThis(buildWhatsThis(showLibraryTitle, showLibraryText));
+    connect(m_pViewShowLibrary, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowLibrary(bool)));
+
+    QString showMixerTitle = tr("Show Mixer");
+    QString showMixerText = tr("Show the mixer section.") +
+            " " + mayNotBeSupported;
+    m_pViewShowMixer = new QAction(showMixerTitle, this);
+    m_pViewShowMixer->setCheckable(true);
+    m_pViewShowMixer->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowMixer"),
+                                                  tr("Ctrl+9", "Menubar|View|Show Mixer"))));
+    m_pViewShowMixer->setStatusTip(showMixerText);
+    m_pViewShowMixer->setWhatsThis(buildWhatsThis(showMixerTitle, showMixerText));
+    connect(m_pViewShowMixer, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowMixer(bool)));
+
+    QString showEqsTitle = tr("Show Eqs");
+    QString showEqsText = tr("Show the equalizers on the mixer section.") +
+            " " + mayNotBeSupported;
+    m_pViewShowEqs = new QAction(showEqsTitle, this);
+    m_pViewShowEqs->setCheckable(true);
+    m_pViewShowEqs->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowEqs"),
+                                                  tr("Ctrl+0", "Menubar|View|Show Eqs"))));
+    m_pViewShowEqs->setStatusTip(showEqsText);
+    m_pViewShowEqs->setWhatsThis(buildWhatsThis(showEqsTitle, showEqsText));
+    connect(m_pViewShowEqs, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowEqs(bool)));
+
+    QString showXFaderTitle = tr("Show Crossfader");
+    QString showXFaderText = tr("Show the crossfader on the mixer section.") +
+            " " + mayNotBeSupported;
+    m_pViewShowXFader = new QAction(showXFaderTitle, this);
+    m_pViewShowXFader->setCheckable(true);
+    m_pViewShowXFader->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowXFader"),
+                                                  tr("Ctrl+'", "Menubar|View|Show Crossfader"))));
+    m_pViewShowXFader->setStatusTip(showXFaderText);
+    m_pViewShowXFader->setWhatsThis(buildWhatsThis(showXFaderTitle, showXFaderText));
+    connect(m_pViewShowXFader, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowXFader(bool)));
+
+    QString show4DecksTitle = tr("Show 4 Decks");
+    QString show4DecksText = tr("Show 4 Decks on the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pViewShow4Decks = new QAction(show4DecksTitle, this);
+    m_pViewShow4Decks->setCheckable(true);
+    m_pViewShow4Decks->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_Show4Decks"),
+                                                  tr("Ctrl+1", "Menubar|View|Show 4 Decks"))));
+    m_pViewShow4Decks->setStatusTip(show4DecksText);
+    m_pViewShow4Decks->setWhatsThis(buildWhatsThis(show4DecksTitle, show4DecksText));
+    connect(m_pViewShow4Decks, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShow4Decks(bool)));
+
+    QString showSpinniesTitle = tr("Show Spinning Vinyl");
+    QString showSpinniesText = tr("Show the spinnining vinyl widget on the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pViewShowSpinnies = new QAction(showSpinniesTitle, this);
+    m_pViewShowSpinnies->setCheckable(true);
+    m_pViewShowSpinnies->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowSpinnies"),
+                                                  tr("Ctrl+8", "Menubar|View|Show Spinning Vinyl"))));
+    m_pViewShowSpinnies->setStatusTip(showSpinniesText);
+    m_pViewShowSpinnies->setWhatsThis(buildWhatsThis(showSpinniesTitle, showSpinniesText));
+    connect(m_pViewShowSpinnies, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowSpinnies(bool)));
 
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
@@ -1608,15 +1798,24 @@ void MixxxMainWindow::initMenuBar() {
 
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
-    m_pViewMenu->addAction(m_pViewShowSamplers);
+    m_pViewMenu->addAction(m_pViewMaximizeLibrary);
+    m_pViewMenu->addSeparator();
+    m_pViewMenu->addAction(m_pViewShow4Decks);
+    m_pViewMenu->addAction(m_pViewShowPreviewDeck);
+    m_pViewMenu->addSeparator();
+    m_pViewMenu->addAction(m_pViewShowLibrary);
     m_pViewMenu->addAction(m_pViewShowMicrophone);
+    m_pViewMenu->addAction(m_pViewShowEffects);
+    m_pViewMenu->addAction(m_pViewShowSamplers);
+    m_pViewMenu->addSeparator();
 #ifdef __VINYLCONTROL__
     m_pViewMenu->addAction(m_pViewVinylControl);
 #endif
-    m_pViewMenu->addAction(m_pViewShowPreviewDeck);
-    m_pViewMenu->addAction(m_pViewShowEffects);
+    m_pViewMenu->addAction(m_pViewShowSpinnies);
+    m_pViewMenu->addAction(m_pViewShowMixer);
+    m_pViewMenu->addAction(m_pViewShowEqs);
+    m_pViewMenu->addAction(m_pViewShowXFader);
     m_pViewMenu->addAction(m_pViewShowCoverArt);
-    m_pViewMenu->addAction(m_pViewMaximizeLibrary);
     m_pViewMenu->addSeparator();
     m_pViewMenu->addAction(m_pViewFullScreen);
 
@@ -2062,11 +2261,26 @@ void MixxxMainWindow::rebootMixxxView() {
     delete m_pShowPreviewDeck;
     delete m_pShowEffects;
     delete m_pShowCoverArt;
+    delete m_pShowLibrary;
+    delete m_pShowMixer;
+    delete m_pShowEqs;
+    delete m_pShowXFader;
+    delete m_pShow4Decks;
+    delete m_pShowSpinnies;
+    delete m_pMaximizeLibrary;
+
     m_pShowSamplers = NULL;
     m_pShowMicrophone = NULL;
     m_pShowPreviewDeck = NULL;
     m_pShowEffects = NULL;
     m_pShowCoverArt = NULL;
+    m_pShowLibrary = NULL;
+    m_pShowMixer = NULL;
+    m_pShowEqs = NULL;
+    m_pShowXFader = NULL;
+    m_pShow4Decks = NULL;
+    m_pShowSpinnies = NULL;
+    m_pMaximizeLibrary = NULL;
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();

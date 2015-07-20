@@ -183,7 +183,7 @@
         							</Children>
         						</WidgetGroup>
 								<WidgetGroup>
-									<ObjectName>Crossfader</ObjectName>
+									<ObjectName>CrossfaderContainer</ObjectName>
 									<Layout>horizontal</Layout>
 									<SizePolicy>me,min</SizePolicy>
 									<Children>
@@ -197,6 +197,10 @@
 											</Connection>
 										</SliderComposed>
 									</Children>
+                                    <Connection>
+                                        <ConfigKey>[Master],show_xfader</ConfigKey>
+                                        <BindProperty>visible</BindProperty>
+                                    </Connection>
 								</WidgetGroup>
         					</Children>
         				  </WidgetGroup>
@@ -220,9 +224,9 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
-            			<WidgetGroup>
-            			    <ObjectName>MasterControls</ObjectName>
-            			    <SizePolicy>min,me</SizePolicy>
+                        <WidgetGroup>
+                            <ObjectName>MasterControls</ObjectName>
+                            <SizePolicy>min,me</SizePolicy>
                             <Layout>vertical</Layout>
                             <Children>
                                 <WidgetGroup>
@@ -356,6 +360,6 @@
                     </WidgetGroup>
                 </Children>
             </WidgetGroup>
-		</Children>
-	</WidgetGroup>
+        </Children>
+    </WidgetGroup>
 </Template>
