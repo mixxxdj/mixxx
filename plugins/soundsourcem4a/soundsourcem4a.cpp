@@ -79,6 +79,7 @@ SoundSourceM4A::SoundSourceM4A(const QUrl& url)
           m_inputBufferOffset(0),
           m_hDecoder(nullptr),
           m_curFrameIndex(getMinFrameIndex()) {
+  m_framesPerSampleBlock = MP4_INVALID_DURATION;
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
