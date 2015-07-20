@@ -30,7 +30,7 @@ class ControllerEngineConnection {
     ConfigKey key;
     QString id;
     QScriptValue function;
-    ControllerEngine *ce;
+    ControllerEngine *controllerEngine;
     QScriptValue context;
 };
 
@@ -47,7 +47,6 @@ class ControllerEngineConnectionScriptValue : public QObject {
         this->conn = conn;
     }
     QString readId() const { return this->conn.id; }
-    Q_INVOKABLE void disconnect();
 
   private:
    ControllerEngineConnection conn;
@@ -83,7 +82,6 @@ class ControllerEngine : public QObject {
     /** Look up registered script function prefixes */
     QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
     /** Disconnect a ControllerEngineConnection */
-    QScriptValue disconnectControl(const ControllerEngineConnection conn);
 
   protected:
     Q_INVOKABLE double getValue(QString group, QString name);
@@ -95,7 +93,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE double getDefaultValue(QString group, QString name);
     Q_INVOKABLE double getDefaultParameter(QString group, QString name);
     Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
-                                    QScriptValue function, bool disconnect = false);
+                                    QScriptValue function, bool remove = false);
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
