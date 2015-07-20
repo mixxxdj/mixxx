@@ -395,6 +395,11 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                  l_iFrameCount;
     }
 
+    if (m_SCache.isEmpty()) {
+        qDebug() << "SoundSourceFFmpeg::readFramesToCache(): Can't read frames. Cache empty!";
+        return false;
+    }
+
     l_SObj = m_SCache.first();
     m_lCacheStartFrame = l_SObj->startFrame;
     l_SObj = m_SCache.last();
