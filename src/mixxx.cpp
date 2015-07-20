@@ -991,7 +991,7 @@ int MixxxMainWindow::noSoundDlg(void)
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(
                 "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#no_or_too_few_sound_cards_appear_in_the_preferences_dialog"));
+                "#i_can_t_select_my_sound_card_in_the_sound_hardware_preferences"));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();

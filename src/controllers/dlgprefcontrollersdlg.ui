@@ -120,7 +120,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="txtHardwareCompatibility">
         <property name="text">
-         <string>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Wiki: Hardware Compatibility&lt;/a&gt;</string>
+         <string>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt;</string>
         </property>
         <property name="openExternalLinks">
          <bool>true</bool>
