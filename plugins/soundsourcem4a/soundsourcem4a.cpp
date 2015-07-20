@@ -73,13 +73,14 @@ SoundSourceM4A::SoundSourceM4A(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
           m_hFile(MP4_INVALID_FILE_HANDLE),
           m_trackId(MP4_INVALID_TRACK_ID),
+          m_framesPerSampleBlock(MP4_INVALID_DURATION),
+          m_numberOfPrefetchSampleBlocks(0),
           m_maxSampleBlockId(MP4_INVALID_SAMPLE_ID),
           m_curSampleBlockId(MP4_INVALID_SAMPLE_ID),
           m_inputBufferLength(0),
           m_inputBufferOffset(0),
           m_hDecoder(nullptr),
           m_curFrameIndex(getMinFrameIndex()) {
-  m_framesPerSampleBlock = MP4_INVALID_DURATION;
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
@@ -173,15 +174,15 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
         free(configBuffer);
     }
 
-    setChannelCount(channelCount);
-    setFrameRate(sampleRate);
-    setFrameCount(((m_maxSampleBlockId - kSampleBlockIdMin) + 1) * m_framesPerSampleBlock);
-
     // Calculate how many sample blocks we need to decode in advance
     // of a random seek in order to get the recommended number of
     // prefetch frames
     m_numberOfPrefetchSampleBlocks  = (kNumberOfPrefetchFrames +
-				      (m_framesPerSampleBlock - 1)) / m_framesPerSampleBlock;
+                                      (m_framesPerSampleBlock - 1)) / m_framesPerSampleBlock;
+
+    setChannelCount(channelCount);
+    setFrameRate(sampleRate);
+    setFrameCount(((m_maxSampleBlockId - kSampleBlockIdMin) + 1) * m_framesPerSampleBlock);
 
     // Resize temporary buffer for decoded sample data
     const SINT sampleBufferCapacity =
