@@ -35,13 +35,7 @@ const MP4SampleId kSampleBlockIdMin = 1;
 // "It must also be assumed that without an explicit value, the playback
 // system will trim 2112 samples from the AAC decoder output when starting
 // playback from any point in the bistream."
-//
-// 2112 frames = 2 * 1024 + 64 < 3 * 1024 = 3 sample blocks
-//
-// Decoding 3 blocks of samples in advance after seeking should
-// compensate for the encoding delay and allow sample accurate
-// seeking.
-const MP4SampleId kNumberOfPrefetchSampleBlocks = 3;
+const SINT kNumberOfPrefetchFrames = 2112;
 
 // Searches for the first audio track in the MP4 file that
 // suits our needs.
@@ -110,9 +104,13 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
         return ERR;
     }
 
+    // Read fixed sample duration.  If the sample duration is not
+    // fixed (that is, if the number of frames per sample block varies
+    // through the file), the call returns MP4_INVALID_DURATION. We
+    // can't currently handle these.
     m_framesPerSampleBlock = MP4GetTrackFixedSampleDuration(m_hFile, m_trackId);
     if (MP4_INVALID_DURATION == m_framesPerSampleBlock) {
-      qWarning() << "No support for variable duration track samples";
+      qWarning() << "Unable to decode tracks with non-fixed sample durations: " << getUrlString();
       return ERR;
     }
 
@@ -177,6 +175,12 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     setChannelCount(channelCount);
     setFrameRate(sampleRate);
     setFrameCount(((m_maxSampleBlockId - kSampleBlockIdMin) + 1) * m_framesPerSampleBlock);
+
+    // Calculate how many sample blocks we need to decode in advance
+    // of a random seek in order to get the recommended number of
+    // prefetch frames
+    m_numberOfPrefetchSampleBlocks  = (kNumberOfPrefetchFrames +
+				      (m_framesPerSampleBlock - 1)) / m_framesPerSampleBlock;
 
     // Resize temporary buffer for decoded sample data
     const SINT sampleBufferCapacity =
@@ -247,14 +251,14 @@ SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
     if ((frameIndex < m_curFrameIndex) || // seeking backwards?
             !isValidSampleBlockId(m_curSampleBlockId) || // invalid seek position?
             (sampleBlockId
-                    > (m_curSampleBlockId + kNumberOfPrefetchSampleBlocks))) { // jumping forward?
+                    > (m_curSampleBlockId + m_numberOfPrefetchSampleBlocks))) { // jumping forward?
         // Restart decoding one or more blocks of samples backwards
         // from the calculated starting block to avoid audible glitches.
         // Implementation note: The type MP4SampleId is unsigned so we
         // need to be careful when subtracting!
-        if ((kSampleBlockIdMin + kNumberOfPrefetchSampleBlocks)
+        if ((kSampleBlockIdMin + m_numberOfPrefetchSampleBlocks)
                 < sampleBlockId) {
-            sampleBlockId -= kNumberOfPrefetchSampleBlocks;
+            sampleBlockId -= m_numberOfPrefetchSampleBlocks;
         } else {
             sampleBlockId = kSampleBlockIdMin;
         }
