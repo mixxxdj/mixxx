@@ -79,7 +79,7 @@ class CachingReader : public QObject {
 
     // Read num_samples from the SoundSource starting with sample into
     // buffer. Returns the total number of samples actually written to buffer.
-    virtual int read(int sample, int num_samples, CSAMPLE* buffer);
+    virtual int read(int sample, int numSamples, CSAMPLE* buffer);
 
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,
@@ -166,10 +166,10 @@ class CachingReader : public QObject {
     // The raw memory buffer which is divided up into chunks.
     SampleBuffer m_sampleBuffer;
 
-    // The maximum valid frame index as reported by the worker.
+    // The maximum readable frame index as reported by the worker.
     // This frame index references the frame that follows the last
     // frame with sample data.
-    SINT m_maxFrameIndex;
+    SINT m_maxReadableFrameIndex;
 
     CachingReaderWorker m_worker;
 };

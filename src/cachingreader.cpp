@@ -39,7 +39,7 @@ CachingReader::CachingReader(QString group,
           m_mruChunk(NULL),
           m_lruChunk(NULL),
           m_sampleBuffer(CachingReaderWorker::kSamplesPerChunk * maximumChunksInMemory),
-          m_maxFrameIndex(Mixxx::AudioSource::getMinFrameIndex()),
+          m_maxReadableFrameIndex(Mixxx::AudioSource::getMinFrameIndex()),
           m_worker(group, &m_chunkReadRequestFIFO, &m_readerStatusFIFO) {
 
     m_allocatedChunks.reserve(m_sampleBuffer.size());
@@ -264,71 +264,71 @@ void CachingReader::process() {
     while (m_readerStatusFIFO.read(&status, 1) == 1) {
         // qDebug() << "Got ReaderStatusUpdate:" << status.status
         //          << (status.chunk ? status.chunk->chunk_number : -1);
-        m_maxFrameIndex = status.maxFrameIndex;
         if (status.status == TRACK_NOT_LOADED) {
             m_readerStatus = status.status;
+            m_maxReadableFrameIndex = Mixxx::AudioSource::getMinFrameIndex();
         } else if (status.status == TRACK_LOADED) {
             freeAllChunks();
             m_readerStatus = status.status;
-        } else if ((status.status == CHUNK_READ_SUCCESS) ||
-                (status.status == CHUNK_READ_PARTIAL)) {
-            Chunk* pChunk = status.chunk;
-
-            // This should not be possible unless there is a bug in
-            // CachingReaderWorker. If it is NULL then the only thing we can do
-            // is to skip this ReaderStatusUpdate.
-            DEBUG_ASSERT_AND_HANDLE(pChunk != NULL) {
-                continue;
+            m_maxReadableFrameIndex = status.maxReadableFrameIndex;
+        } else {
+            m_maxReadableFrameIndex = math_min(status.maxReadableFrameIndex, m_maxReadableFrameIndex);
+            if ((status.status == CHUNK_READ_SUCCESS) ||
+                    (status.status == CHUNK_READ_PARTIAL)) {
+                Chunk* pChunk = status.chunk;
+                // This should not be possible unless there is a bug in
+                // CachingReaderWorker. If it is NULL then the only thing we can do
+                // is to skip this ReaderStatusUpdate.
+                DEBUG_ASSERT_AND_HANDLE(pChunk != NULL) {
+                    continue;
+                }
+                // After a read success the state ought to be READ_IN_PROGRESS.
+                DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
+                // Switch state to READ.
+                pChunk->state = Chunk::READ;
+            } else if (status.status == CHUNK_READ_EOF) {
+                Chunk* pChunk = status.chunk;
+                if (pChunk == NULL) {
+                    qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_EOF ReaderStatusUpdate. Ignoring update.";
+                    continue;
+                }
+                DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
+                freeChunk(pChunk);
+            } else if (status.status == CHUNK_READ_INVALID) {
+                qDebug() << "WARNING: READER THREAD RECEIVED INVALID CHUNK READ";
+                Chunk* pChunk = status.chunk;
+                if (pChunk == NULL) {
+                    qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_INVALID ReaderStatusUpdate. Ignoring update.";
+                    continue;
+                }
+                DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
+                freeChunk(pChunk);
             }
-
-            // After a read success the state ought to be READ_IN_PROGRESS.
-            DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
-
-            // Switch state to READ.
-            pChunk->state = Chunk::READ;
-        } else if (status.status == CHUNK_READ_EOF) {
-            Chunk* pChunk = status.chunk;
-            if (pChunk == NULL) {
-                qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_EOF ReaderStatusUpdate. Ignoring update.";
-                continue;
-            }
-
-            DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
-            freeChunk(pChunk);
-        } else if (status.status == CHUNK_READ_INVALID) {
-            qDebug() << "WARNING: READER THREAD RECEIVED INVALID CHUNK READ";
-            Chunk* pChunk = status.chunk;
-            if (pChunk == NULL) {
-                qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_INVALID ReaderStatusUpdate. Ignoring update.";
-                continue;
-            }
-            DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
-            freeChunk(pChunk);
         }
     }
 }
 
-int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
+int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
     // Check for bad inputs
     DEBUG_ASSERT_AND_HANDLE(sample % CachingReaderWorker::kChunkChannels == 0) {
         // This problem is easy to fix, but this type of call should be
         // complained about loudly.
         --sample;
     }
-    DEBUG_ASSERT_AND_HANDLE(num_samples % CachingReaderWorker::kChunkChannels == 0) {
-        --num_samples;
+    DEBUG_ASSERT_AND_HANDLE(numSamples % CachingReaderWorker::kChunkChannels == 0) {
+        --numSamples;
     }
-    if (num_samples < 0 || !buffer) {
+    if (numSamples < 0 || !buffer) {
         QString temp = QString("Sample = %1").arg(sample);
         qDebug() << "CachingReader::read() invalid arguments sample:" << sample
-                 << "num_samples:" << num_samples << "buffer:" << buffer;
+                 << "numSamples:" << numSamples << "buffer:" << buffer;
         return 0;
     }
 
     // If asked to read 0 samples, don't do anything. (this is a perfectly
     // reasonable request that happens sometimes. If no track is loaded, don't
     // do anything.
-    if (num_samples == 0 || m_readerStatus != TRACK_LOADED) {
+    if (numSamples == 0 || m_readerStatus != TRACK_LOADED) {
         return 0;
     }
 
@@ -337,84 +337,67 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
 
     SINT samplesRead = 0;
 
+    DEBUG_ASSERT(0 == (sample % CachingReaderWorker::kChunkChannels));
+    SINT frameIndex = sample / CachingReaderWorker::kChunkChannels;
+    DEBUG_ASSERT(0 == (numSamples % CachingReaderWorker::kChunkChannels));
+    SINT numFrames = numSamples / CachingReaderWorker::kChunkChannels;
+
     // TODO: is it possible to move this code out of caching reader
     // and into enginebuffer?  It doesn't quite make sense here, although
     // it makes preroll completely transparent to the rest of the code
     // if we're in preroll...
-    if (0 > sample) {
-        SINT samplesToZero = math_min(-sample, num_samples);
-        DEBUG_ASSERT(0 <= samplesToZero);
-        DEBUG_ASSERT(samplesToZero <= num_samples);
-        SampleUtil::clear(buffer, samplesToZero);
-        num_samples -= samplesToZero;
-        if (num_samples == 0) {
-            //everything is zeros, easy
-            return samplesToZero;
-        }
-        buffer += samplesToZero;
-        samplesRead += samplesToZero;
-        sample += samplesToZero;
-    }
-    DEBUG_ASSERT(0 <= sample);
-
-    DEBUG_ASSERT(0 == (sample % CachingReaderWorker::kChunkChannels));
-    SINT frameIndex = sample / CachingReaderWorker::kChunkChannels;
-    DEBUG_ASSERT(0 == (num_samples % CachingReaderWorker::kChunkChannels));
-    SINT numFrames = num_samples / CachingReaderWorker::kChunkChannels;
-
-    SINT minFrameIndex = frameIndex;
-    SINT maxFrameIndex = frameIndex + numFrames;
-    Mixxx::AudioSource::clampFrameInterval(&minFrameIndex, &maxFrameIndex, m_maxFrameIndex);
-    if (minFrameIndex >= maxFrameIndex) {
-        // skip empty frame interval
-        qWarning() << "Skipping invalid or empty read request starting at"
-                << frameIndex << "of length" << numFrames;
-        return 0;
+    if (Mixxx::AudioSource::getMinFrameIndex() > frameIndex) {
+        const SINT prerollFrames = Mixxx::AudioSource::getMinFrameIndex() - frameIndex;
+        const SINT prerollSamples = prerollFrames * CachingReaderWorker::kChunkChannels;
+        SampleUtil::clear(buffer, prerollSamples);
+        buffer += prerollSamples;
+        samplesRead += prerollSamples;
+        frameIndex = Mixxx::AudioSource::getMinFrameIndex();
+        numFrames -= prerollFrames;
     }
 
-    const int firstChunkIndex = chunkForFrame(minFrameIndex);
-    const int lastChunkIndex = chunkForFrame(maxFrameIndex - 1);
+    const SINT maxReadableFrameIndex = math_min(frameIndex + numFrames, m_maxReadableFrameIndex);
+    if (maxReadableFrameIndex > frameIndex) {
+        const int firstChunkIndex = chunkForFrame(frameIndex);
+        const int lastChunkIndex = chunkForFrame(maxReadableFrameIndex - 1);
 
-    frameIndex = minFrameIndex;
-    for (int chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
-        Chunk* current = lookupChunkAndFreshen(chunkIndex);
+        for (int chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
+            Chunk* current = lookupChunkAndFreshen(chunkIndex);
 
-        // If the chunk is not in cache, then we must return an error.
-        if (current == NULL || current->state != Chunk::READ) {
-            // qDebug() << "Couldn't get chunk " << chunk_num
-            //          << " in read() of [" << sample << "," << (sample + samples_remaining)
-            //          << "] chunks " << firstChunkIndex << "-" << lastChunkIndex;
+            // If the chunk is not in cache, then we must return an error.
+            if (current == NULL || current->state != Chunk::READ) {
+                // qDebug() << "Couldn't get chunk " << chunk_num
+                //          << " in read() of [" << sample << "," << (sample + samples_remaining)
+                //          << "] chunks " << firstChunkIndex << "-" << lastChunkIndex;
 
-            // Something is wrong. Break out of the loop, that should fill the
-            // samples requested with zeroes.
-            Counter("CachingReader::read cache miss")++;
-            break;
+                // Something is wrong. Break out of the loop, that should fill the
+                // samples requested with zeroes.
+                Counter("CachingReader::read cache miss")++;
+                break;
+            }
+
+            const SINT minChunkFrameIndex = CachingReaderWorker::frameForChunk(chunkIndex);
+            DEBUG_ASSERT(minChunkFrameIndex <= frameIndex);
+            const SINT maxChunkFrameIndex = math_min(minChunkFrameIndex + current->frameCountTotal, maxReadableFrameIndex);
+            if (maxChunkFrameIndex <= frameIndex) {
+                // no more samples to read
+                break;
+            }
+
+            const SINT sampleOffset = (frameIndex - minChunkFrameIndex) * CachingReaderWorker::kChunkChannels;
+            const SINT samplesToCopy = (maxChunkFrameIndex - frameIndex) * CachingReaderWorker::kChunkChannels;
+            SampleUtil::copy(buffer, current->stereoSamples + sampleOffset, samplesToCopy);
+            buffer += samplesToCopy;
+            samplesRead += samplesToCopy;
+            frameIndex = maxChunkFrameIndex;
         }
-
-        const SINT chunkMinFrameIndex = CachingReaderWorker::frameForChunk(chunkIndex);
-        DEBUG_ASSERT(chunkMinFrameIndex <= frameIndex);
-        const SINT chunkMaxFrameIndex = math_min(chunkMinFrameIndex + current->frameCountTotal, maxFrameIndex);
-        if (chunkMaxFrameIndex <= frameIndex) {
-            // no more samples to read
-            break;
-        }
-
-        const SINT sampleOffset = (frameIndex - chunkMinFrameIndex) * CachingReaderWorker::kChunkChannels;
-        const SINT samplesToCopy = (chunkMaxFrameIndex - frameIndex) * CachingReaderWorker::kChunkChannels;
-        SampleUtil::copy(buffer, current->stereoSamples + sampleOffset, samplesToCopy);
-        buffer += samplesToCopy;
-        samplesRead += samplesToCopy;
-        frameIndex = chunkMaxFrameIndex;
     }
 
     // If we didn't supply all the samples requested, that probably means we're
     // at the end of the file, or something is wrong. Provide zeroes and pretend
     // all is well. The caller can't be bothered to check how long the file is.
-    const SINT samplesRemaining = (maxFrameIndex - frameIndex) * CachingReaderWorker::kChunkChannels;
-    SampleUtil::clear(buffer, samplesRemaining);
-    samplesRead += samplesRemaining;
-
-    return samplesRead;
+    SampleUtil::clear(buffer, numSamples - samplesRead);
+    return numSamples;
 }
 
 void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
@@ -453,16 +436,16 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         DEBUG_ASSERT(0 == (hint.length % CachingReaderWorker::kChunkChannels));
         const SINT hintFrameCount = hint.length / CachingReaderWorker::kChunkChannels;
 
-        SINT minFrameIndex = hintFrame;
-        SINT maxFrameIndex = hintFrame + hintFrameCount;
-        Mixxx::AudioSource::clampFrameInterval(&minFrameIndex, &maxFrameIndex, m_maxFrameIndex);
-        if (minFrameIndex >= maxFrameIndex) {
+        SINT minReadableFrameIndex = hintFrame;
+        SINT maxReadableFrameIndex = hintFrame + hintFrameCount;
+        Mixxx::AudioSource::clampFrameInterval(&minReadableFrameIndex, &maxReadableFrameIndex, m_maxReadableFrameIndex);
+        if (minReadableFrameIndex >= maxReadableFrameIndex) {
             // skip empty frame interval silently
             continue;
         }
 
-        const int firstChunkIndex = chunkForFrame(minFrameIndex);
-        const int lastChunkIndex = chunkForFrame(maxFrameIndex - 1);
+        const int firstChunkIndex = chunkForFrame(minReadableFrameIndex);
+        const int lastChunkIndex = chunkForFrame(maxReadableFrameIndex - 1);
         for (int chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
             Chunk* pChunk = lookupChunk(chunkIndex);
             if (pChunk == NULL) {

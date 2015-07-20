@@ -55,11 +55,11 @@ enum ReaderStatus {
 typedef struct ReaderStatusUpdate {
     ReaderStatus status;
     Chunk* chunk;
-    SINT maxFrameIndex;
+    SINT maxReadableFrameIndex;
     ReaderStatusUpdate()
         : status(INVALID)
         , chunk(NULL)
-        , maxFrameIndex(0) {
+        , maxReadableFrameIndex(Mixxx::AudioSource::getMinFrameIndex()) {
     }
 } ReaderStatusUpdate;
 
@@ -125,12 +125,12 @@ class CachingReaderWorker : public EngineWorker {
     // The current audio source of the track loaded
     Mixxx::AudioSourcePointer m_pAudioSource;
 
-    // The maximum frame index of the AudioSource. Might be
-    // adjusted when decoding errors occur to prevent reading
+    // The maximum readable frame index of the AudioSource. Might
+    // be adjusted when decoding errors occur to prevent reading
     // the same chunk(s) over and over again.
     // This frame index references the frame that follows the
-    // last frame with sample data.
-    SINT m_maxFrameIndex;
+    // last frame with readable sample data.
+    SINT m_maxReadableFrameIndex;
 
     QAtomicInt m_stop;
 };
