@@ -292,7 +292,7 @@ FLAC__StreamDecoderSeekStatus SoundSourceFLAC::flacSeek(FLAC__uint64 offset) {
     if (m_file.seek(offset)) {
         return FLAC__STREAM_DECODER_SEEK_STATUS_OK;
     } else {
-        qWarning() << "SSFLAC: An unrecoverable error occurred ("
+        qWarning() << "SoundSourceFLAC: An unrecoverable error occurred ("
                 << m_file.fileName() << ")";
         return FLAC__STREAM_DECODER_SEEK_STATUS_ERROR;
     }
@@ -461,6 +461,9 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         }
         m_minBlocksize = metadata->data.stream_info.min_blocksize;
         m_maxBlocksize = metadata->data.stream_info.max_blocksize;
+        if (0 >= m_maxBlocksize) {
+            qWarning() << "Invalid max. blocksize" << m_maxBlocksize;
+        }
         const SINT sampleBufferCapacity =
                 m_maxBlocksize * getChannelCount();
         m_sampleBuffer.resetCapacity(sampleBufferCapacity);
@@ -490,7 +493,7 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
         error = "STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM";
         break;
     }
-    qWarning() << "SSFLAC got error" << error << "from libFLAC for file"
+    qWarning() << "FLAC decoding error" << error << "in file"
             << m_file.fileName();
     // not much else to do here... whatever function that initiated whatever
     // decoder method resulted in this error will return an error, and the caller
