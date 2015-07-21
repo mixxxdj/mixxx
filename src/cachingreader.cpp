@@ -13,6 +13,9 @@
 
 namespace {
 
+// NOTE(uklotzde): The following comment has been adopted without
+// modifications and should be rephrased.
+//
 // To prevent every bit of code having to guess how many samples
 // forward it makes sense to keep in memory, the hinter can provide
 // either 0 for a forward hint or -1 for a backward hint. We should
