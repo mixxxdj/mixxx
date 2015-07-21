@@ -416,12 +416,19 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
         SINT size) {
     struct ffmpegCacheObject *l_SObj = NULL;
     qint32 l_lPos = 0;
-    quint32 l_lLeft = 0;
+    quint32 l_lLeft = size * AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET;
     quint32 l_lOffset = 0;
     quint32 l_lBytesToCopy = 0;
     bool l_bEndOfFile = false;
 
     char *l_pBuffer = (char *)buffer;
+
+    // If cache is empty then retun without crash.
+    if (m_SCache.isEmpty()) {
+        qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Cache is empty can't return bytes";
+        memset(l_pBuffer, 0x00, l_lLeft);
+        return false;
+    }
 
     // Is offset bigger than start of cache
     if (offset >= m_lCacheStartFrame) {
@@ -453,6 +460,12 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
             l_lPos = 0;
         }
 
+        // This shouldn't never happen.. because it's nearly imposible
+        // but because it can happen double check
+        if (l_lPos >= m_SCache.size()) {
+            l_lPos = m_SCache.size() - 1;
+        }
+
         // Use this Cache object as starting point
         l_SObj = m_SCache[l_lPos];
 
@@ -460,9 +473,6 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
             qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Out buffer NULL";
             return false;
         }
-
-        // Calculate how many bytes should be copied to buffer
-        l_lLeft = size * AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET;
 
         while (l_lLeft > 0) {
             // If Cache is running low read more
