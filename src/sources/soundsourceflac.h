@@ -53,8 +53,6 @@ private:
     // of subframes (one for each channel)
     SINT m_minBlocksize; // in time samples (audio samples = time samples * chanCount)
     SINT m_maxBlocksize;
-    SINT m_minFramesize;
-    SINT m_maxFramesize;
     SINT m_bitsPerSample;
 
     CSAMPLE m_sampleScaleFactor;

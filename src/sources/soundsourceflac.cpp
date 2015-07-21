@@ -63,8 +63,6 @@ SoundSourceFLAC::SoundSourceFLAC(QUrl url)
           m_decoder(NULL),
           m_minBlocksize(0),
           m_maxBlocksize(0),
-          m_minFramesize(0),
-          m_maxFramesize(0),
           m_bitsPerSample(kBitsPerSampleDefault),
           m_sampleScaleFactor(CSAMPLE_ZERO),
           m_curFrameIndex(getMinFrameIndex()) {
@@ -463,8 +461,6 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         }
         m_minBlocksize = metadata->data.stream_info.min_blocksize;
         m_maxBlocksize = metadata->data.stream_info.max_blocksize;
-        m_minFramesize = metadata->data.stream_info.min_framesize;
-        m_maxFramesize = metadata->data.stream_info.max_framesize;
         const SINT sampleBufferCapacity =
                 m_maxBlocksize * getChannelCount();
         m_sampleBuffer.resetCapacity(sampleBufferCapacity);
