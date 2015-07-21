@@ -66,7 +66,6 @@ SoundSourceFLAC::SoundSourceFLAC(QUrl url)
         : SoundSource(url, "flac"),
           m_file(getLocalFileName()),
           m_decoder(NULL),
-          m_minBlocksize(0),
           m_maxBlocksize(0),
           m_bitsPerSample(kBitsPerSampleDefault),
           m_sampleScaleFactor(CSAMPLE_ZERO),
@@ -472,7 +471,6 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         << bitsPerSample << " <> " << m_bitsPerSample;
             }
         }
-        m_minBlocksize = metadata->data.stream_info.min_blocksize;
         m_maxBlocksize = metadata->data.stream_info.max_blocksize;
         if (0 >= m_maxBlocksize) {
             qWarning() << "Invalid max. blocksize" << m_maxBlocksize;
