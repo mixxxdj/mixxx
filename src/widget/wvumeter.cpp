@@ -169,7 +169,9 @@ void WVuMeter::paintEvent(QPaintEvent *) {
     p.setBrush(option.palette.text());
     p.drawPrimitive(QStyle::PE_Widget, option);
 
+    // Looking for the coordinates of the content considering the QSS box model
     QRect contentRect = style()->subElementRect(QStyle::SE_FrameContents, &option, this);
+    // If no style is applied it will be null so we fallback on the rect method
     if (contentRect.isNull()) {
         contentRect = rect();
     }
