@@ -23,49 +23,49 @@
 class ImgAdd : public ImgColorProcessor {
 
 public:
-	ImgAdd(ImgSource* parent, int amt);
-	virtual QColor doColorCorrection(QColor c);
+    ImgAdd(ImgSource* parent, int amt);
+    virtual QColor doColorCorrection(QColor c);
 
 private:
-	int m_amt;
+    int m_amt;
 };
 
 class ImgMax : public ImgColorProcessor {
 
 public:
-	ImgMax(ImgSource* parent, int amt);
-	virtual QColor doColorCorrection(QColor c);
+    ImgMax(ImgSource* parent, int amt);
+    virtual QColor doColorCorrection(QColor c);
 
 private:
-	int m_amt;
+    int m_amt;
 };
 
 class ImgScaleWhite : public ImgColorProcessor {
 
 public:
-	inline ImgScaleWhite(ImgSource* parent, float amt)
-		: ImgColorProcessor(parent), m_amt(amt) {}
-	virtual QColor doColorCorrection(QColor c);
+    inline ImgScaleWhite(ImgSource* parent, float amt)
+        : ImgColorProcessor(parent), m_amt(amt) {}
+    virtual QColor doColorCorrection(QColor c);
 private:
-	float m_amt;
+    float m_amt;
 };
 
 class ImgHueRot : public ImgColorProcessor {
 
 public:
-	inline ImgHueRot(ImgSource* parent, int amt)
-		: ImgColorProcessor(parent), m_amt(amt) {}
-	virtual QColor doColorCorrection(QColor c);
+    inline ImgHueRot(ImgSource* parent, int amt)
+        : ImgColorProcessor(parent), m_amt(amt) {}
+    virtual QColor doColorCorrection(QColor c);
 
 private:
-	int m_amt;
+    int m_amt;
 };
 
 class ImgHueInv : public ImgColorProcessor {
 
 public:
-	inline ImgHueInv(ImgSource* parent) : ImgColorProcessor(parent) {}
-	virtual QColor doColorCorrection(QColor c);
+    inline ImgHueInv(ImgSource* parent) : ImgColorProcessor(parent) {}
+    virtual QColor doColorCorrection(QColor c);
 };
 
 class ImgHSVTweak : public ImgColorProcessor {
@@ -79,7 +79,7 @@ class ImgHSVTweak : public ImgColorProcessor {
               m_vmin(vmin), m_vmax(vmax),
               m_hconst(hconst), m_sconst(sconst), m_vconst(vconst),
               m_hfact(hfact), m_sfact(sfact), m_vfact(vfact) {}
-	virtual QColor doColorCorrection(QColor c);
+    virtual QColor doColorCorrection(QColor c);
 
   private:
     int m_hmin, m_hmax,

@@ -42,6 +42,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
         m_pTrackCollection(pTrackCollection),
         m_pLibraryControl(new LibraryControl),
         m_pRecordingManager(pRecordingManager) {
+    qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     pTrackCollection->setupControlObject();
 
@@ -265,12 +266,27 @@ void Library::slotRequestAddDir(QString dir) {
     }
 }
 
-void Library::slotRequestRemoveDir(QString dir, bool removeMetadata) {
-    m_pTrackCollection->callSync( [this, &dir] (TrackCollectionPrivate* pTrackCollectionPrivate){
-        // Mark all tracks in this directory as deleted (but don't purge them in
-        // case the user re-adds them manually).
-        pTrackCollectionPrivate->getTrackDAO().markTracksAsMixxxDeleted(dir);
+void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
+    switch (removalType) {
+        case Library::HideTracks:
+            m_pTrackCollection->callSync( [this, &dir] (TrackCollectionPrivate* pTrackCollectionPrivate){
+                // Mark all tracks in this directory as deleted (but don't purge them in
+                // case the user re-adds them manually).
+                pTrackCollectionPrivate->getTrackDAO().markTracksAsMixxxDeleted(dir);
+            },__PRETTY_FUNCTION__);
+            break;
+        case Library::PurgeTracks:
+            m_pTrackCollection->callSync( [this, &dir] (TrackCollectionPrivate* pTrackCollectionPrivate){
+                // The user requested that we purge all metadata.
+                pTrackCollectionPrivate->getTrackDAO().purgeTracks(dir);
+            },__PRETTY_FUNCTION__);
+            break;
+        case Library::LeaveTracksUnchanged:
+        default:
+            break;
 
+    }
+    m_pTrackCollection->callSync( [this, &dir] (TrackCollectionPrivate* pTrackCollectionPrivate){
         // Remove the directory from the directory list.
         pTrackCollectionPrivate->getDirectoryDAO().removeDirectory(dir);
     }, __PRETTY_FUNCTION__);

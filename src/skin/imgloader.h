@@ -23,8 +23,8 @@
 class ImgLoader : public ImgSource {
 
 public:
-	ImgLoader();
-	virtual QImage* getImage(QString img);
+    ImgLoader();
+    virtual QImage* getImage(QString img);
 };
 
 #endif

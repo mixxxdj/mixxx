@@ -1,5 +1,5 @@
 /***************************************************************************
-                          dlgprefplaylist.cpp  -  description
+                          dlgpreflibrary.cpp  -  description
                              -------------------
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -21,26 +21,26 @@
 #include <QStringList>
 #include <QUrl>
 
-#include "dlgprefplaylist.h"
+#include "dlgpreflibrary.h"
 #include "soundsourceproxy.h"
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
 
-DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent,
-        ConfigObject<ConfigValue> * config, Library *pLibrary)
-        :DlgPreferencePage(parent),
-        m_dirListModel(),
-        m_pconfig(config),
-        m_pLibrary(pLibrary) {
+DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
+                               ConfigObject<ConfigValue> * config, Library *pLibrary)
+        : DlgPreferencePage(parent),
+          m_dirListModel(),
+          m_pconfig(config),
+          m_pLibrary(pLibrary) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
 
     connect(this, SIGNAL(requestAddDir(QString)),
             m_pLibrary, SLOT(slotRequestAddDir(QString)));
-    connect(this, SIGNAL(requestRemoveDir(QString, bool)),
-            m_pLibrary, SLOT(slotRequestRemoveDir(QString, bool)));
+    connect(this, SIGNAL(requestRemoveDir(QString, Library::RemovalType)),
+            m_pLibrary, SLOT(slotRequestRemoveDir(QString, Library::RemovalType)));
     connect(this, SIGNAL(requestRelocateDir(QString,QString)),
             m_pLibrary, SLOT(slotRequestRelocateDir(QString,QString)));
     connect(PushButtonAddDir, SIGNAL(clicked()),
@@ -61,10 +61,10 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent,
     }
 }
 
-DlgPrefPlaylist::~DlgPrefPlaylist() {
+DlgPrefLibrary::~DlgPrefLibrary() {
 }
 
-void DlgPrefPlaylist::initialiseDirList(){
+void DlgPrefLibrary::initialiseDirList(){
     // save which index was selected
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
@@ -85,11 +85,11 @@ void DlgPrefPlaylist::initialiseDirList(){
     }
 }
 
-void DlgPrefPlaylist::slotExtraPlugins() {
+void DlgPrefLibrary::slotExtraPlugins() {
     QDesktopServices::openUrl(QUrl(MIXXX_ADDONS_URL));
 }
 
-void DlgPrefPlaylist::slotUpdate() {
+void DlgPrefLibrary::slotUpdate() {
     initialiseDirList();
     //Bundled songs stat tracking
     checkBox_library_scan->setChecked((bool)m_pconfig->getValueString(
@@ -108,7 +108,7 @@ void DlgPrefPlaylist::slotUpdate() {
             ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
 }
 
-void DlgPrefPlaylist::slotAddDir() {
+void DlgPrefLibrary::slotAddDir() {
     QString fd = QFileDialog::getExistingDirectory(
         this, tr("Choose a music library directory"),
         QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
@@ -118,30 +118,63 @@ void DlgPrefPlaylist::slotAddDir() {
     }
 }
 
-void DlgPrefPlaylist::slotRemoveDir() {
+void DlgPrefLibrary::slotRemoveDir() {
     QModelIndex index = dirList->currentIndex();
     QString fd = index.data().toString();
     QMessageBox removeMsgBox;
-    removeMsgBox.setText(tr("Mixxx will hide any information about tracks in "
-                            "this directory. Once you re-add the directory all "
-                            "metadata will be restored"));
-    removeMsgBox.setInformativeText(tr("Do you want to remove this directory?"));
-    removeMsgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-    QPushButton *removeAllButton = removeMsgBox.addButton(tr("Remove Metadata"),
-            QMessageBox::YesRole);
-    removeMsgBox.setDefaultButton(QMessageBox::Cancel);
 
-    int ret = removeMsgBox.exec();
-    bool removeAll = removeMsgBox.clickedButton() == removeAllButton;
+    removeMsgBox.setIcon(QMessageBox::Warning);
+    removeMsgBox.setWindowTitle(tr("Confirm Directory Removal"));
 
-    if (ret == QMessageBox::Yes || removeAll) {
-        emit(requestRemoveDir(fd, removeAll));
-        slotUpdate();
+    removeMsgBox.setText(tr(
+        "Mixxx will no longer watch this directory for new tracks. "
+        "What would you like to do with the tracks from this directory and "
+        "subdirectories?"
+        "<ul>"
+        "<li>Hide all tracks from this directory and subdirectories.</li>"
+        "<li>Delete all metadata for these tracks from Mixxx permanently.</li>"
+        "<li>Leave the tracks unchanged in your library.</li>"
+        "</ul>"
+        "Hiding tracks saves their metadata in case you re-add them in the "
+        "future."));
+    removeMsgBox.setInformativeText(tr(
+        "Metadata means all track details (artist, title, playcount, etc.) as "
+        "well as beatgrids, hotcues, and loops. This choice only affects the "
+        "Mixxx library. No files on disk will be changed or deleted."));
+
+    QPushButton* cancelButton =
+            removeMsgBox.addButton(QMessageBox::Cancel);
+    QPushButton* hideAllButton = removeMsgBox.addButton(
+        tr("Hide Tracks"), QMessageBox::AcceptRole);
+    QPushButton* deleteAllButton = removeMsgBox.addButton(
+        tr("Delete Track Metadata"), QMessageBox::AcceptRole);
+    QPushButton* leaveUnchangedButton = removeMsgBox.addButton(
+        tr("Leave Tracks Unchanged"), QMessageBox::AcceptRole);
+    removeMsgBox.setDefaultButton(cancelButton);
+    removeMsgBox.exec();
+
+    if (removeMsgBox.clickedButton() == cancelButton) {
+        return;
     }
 
+    bool deleteAll = removeMsgBox.clickedButton() == deleteAllButton;
+    bool hideAll = removeMsgBox.clickedButton() == hideAllButton;
+    bool leaveUnchanged = removeMsgBox.clickedButton() == leaveUnchangedButton;
+
+    Library::RemovalType removalType = Library::LeaveTracksUnchanged;
+    if (leaveUnchanged) {
+        removalType = Library::LeaveTracksUnchanged;
+    } else if (deleteAll) {
+        removalType = Library::PurgeTracks;
+    } else if (hideAll) {
+        removalType = Library::HideTracks;
+    }
+
+    emit(requestRemoveDir(fd, removalType));
+    slotUpdate();
 }
 
-void DlgPrefPlaylist::slotRelocateDir() {
+void DlgPrefLibrary::slotRelocateDir() {
     QModelIndex index = dirList->currentIndex();
     QString currentFd = index.data().toString();
 
@@ -158,7 +191,7 @@ void DlgPrefPlaylist::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-        this, tr("relocate to directory"), startDir);
+        this, tr("Relocate to directory"), startDir);
 
     if (!fd.isEmpty()) {
         emit(requestRelocateDir(currentFd, fd));
@@ -166,7 +199,7 @@ void DlgPrefPlaylist::slotRelocateDir() {
     }
 }
 
-void DlgPrefPlaylist::slotApply() {
+void DlgPrefLibrary::slotApply() {
     m_pconfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","WriteAudioTags"),

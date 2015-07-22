@@ -3,9 +3,9 @@
                           enginebufferscalest.h  -  description
                              -------------------
 
-	begin                : November 2004
-	copyright            : (C) 2004 by Tue Haste Andersen
-	email                : haste@diku.dk
+    begin                : November 2004
+    copyright            : (C) 2004 by Tue Haste Andersen
+    email                : haste@diku.dk
 
  ***************************************************************************/
 

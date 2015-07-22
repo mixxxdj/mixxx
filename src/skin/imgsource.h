@@ -44,7 +44,7 @@ class ImgProcessor : public ImgSource {
     virtual void correctImageColors(QImage* p) { (void)p; };
 
   protected:
-	ImgSource* m_parent;
+    ImgSource* m_parent;
 };
 
 class ImgColorProcessor : public ImgProcessor {

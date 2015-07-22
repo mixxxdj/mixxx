@@ -33,6 +33,8 @@ class KeyControl : public EngineControl {
     // The previous rate slider rate.
     double m_dOldRate;
     bool m_bOldKeylock;
+    double m_dPitchCompensation;
+    double m_dPitchCompensationOldPitch;
 
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pPlayButton;

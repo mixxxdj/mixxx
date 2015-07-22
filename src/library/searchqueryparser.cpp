@@ -5,13 +5,15 @@
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
         : m_pTrackCollection(pTrackCollection) {
     m_textFilters << "artist"
+                  << "album_artist"
                   << "album"
                   << "title"
                   << "genre"
                   << "composer"
                   << "grouping"
                   << "comment"
-                  << "key";
+                  << "key"
+                  << "location";
     m_numericFilters << "year"
                      << "track"
                      << "bpm"
@@ -24,6 +26,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     //m_specialFilters << "key";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
+    m_fieldToSqlColumns["album_artist"] << "album_artist";
     m_fieldToSqlColumns["album"] << "album";
     m_fieldToSqlColumns["title"] << "title";
     m_fieldToSqlColumns["genre"] << "genre";
@@ -38,6 +41,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     m_fieldToSqlColumns["key"] << "key";
     m_fieldToSqlColumns["played"] << "timesplayed";
     m_fieldToSqlColumns["rating"] << "rating";
+    m_fieldToSqlColumns["location"] << "location";
 
     m_allFilters.append(m_textFilters);
     m_allFilters.append(m_numericFilters);
