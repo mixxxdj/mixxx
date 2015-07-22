@@ -49,7 +49,7 @@ const bool SoundSource::s_bDebugMetadata = false;
    return type is int: 0 for OK, -1 for an error.
  */
 SoundSource::SoundSource(QString qFilename)
-	: m_qFilename(qFilename)
+    : m_qFilename(qFilename)
 {
     m_iSampleRate = 0;
     m_fBPM = 0.0f;
@@ -127,7 +127,7 @@ QString SoundSource::getTrackNumber()
 }
 float SoundSource::getReplayGain()
 {
-	return m_fReplayGain;
+    return m_fReplayGain;
 }
 float SoundSource::getBPM()
 {
@@ -196,7 +196,7 @@ void SoundSource::setTrackNumber(QString trackNumber)
 }
 void SoundSource::setReplayGain(float replaygain)
 {
-	m_fReplayGain = replaygain;
+    m_fReplayGain = replaygain;
 }
 void SoundSource::setBPM(float bpm)
 {
@@ -465,7 +465,7 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
         TagLib::StringList albumArtistString = xiph->fieldListMap()["ALBUMARTIST"];
         m_sAlbumArtist = TStringToQString(albumArtistString.toString());
     } else {
-    	// try alternative field name
+        // try alternative field name
         if (xiph->fieldListMap().contains("ALBUM_ARTIST")) {
             TagLib::StringList albumArtistString = xiph->fieldListMap()["ALBUM_ARTIST"];
             m_sAlbumArtist = TStringToQString(albumArtistString.toString());

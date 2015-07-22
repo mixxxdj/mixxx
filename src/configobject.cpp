@@ -337,7 +337,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
         }
         file.close();
         if (file.error()!=QFile::NoError) //could be better... should actually say what the error was..
-	  qDebug() << "Error while writing configuration file:" << file.errorString();
+      qDebug() << "Error while writing configuration file:" << file.errorString();
     }
 }
 

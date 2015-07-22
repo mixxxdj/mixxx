@@ -323,12 +323,12 @@ long SoundSourceFFmpeg::seek(long filepos) {
     //l_lSeekPos = (int64_t) round(convertPtsToByteOffset(
     //             m_pFormatCtx->streams[m_iAudioStream]->cur_dts, time_base));
     //if( m_iLastFirstFfmpegByteOffset != 0 ){
-    //		m_iSeekOffset = (int64_t) round((double)l_lSeekPos/4608);
-    //		m_iSeekOffset *= 4608;
-    //		// qDebug() << "--" << m_iSeekOffset - (m_iLastFirstFfmpegByteOffset - l_lSeekPos) << "!!";
-    //	}
+    //      m_iSeekOffset = (int64_t) round((double)l_lSeekPos/4608);
+    //      m_iSeekOffset *= 4608;
+    //      // qDebug() << "--" << m_iSeekOffset - (m_iLastFirstFfmpegByteOffset - l_lSeekPos) << "!!";
+    //  }
     //
-    //	m_iLastFirstFfmpegByteOffset = l_lSeekPos;
+    //  m_iLastFirstFfmpegByteOffset = l_lSeekPos;
     //
     //
     // m_iSeekOffset = m_iOffset = convertPtsToByteOffsetOld(fspos -

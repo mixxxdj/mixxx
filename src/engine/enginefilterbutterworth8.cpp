@@ -1,6 +1,6 @@
 /***************************************************************************
- *      enginefilter.cpp - Wrapper for FidLib Filter Library	           *
- *			----------------------                             *
+ *      enginefilter.cpp - Wrapper for FidLib Filter Library               *
+ *          ----------------------                             *
  *   copyright      : (C) 2007 by John Sully                               *
  *   email          : jsully@scs.ryerson.ca                                *
  *                                                                         *
@@ -25,8 +25,8 @@ inline double _processBandpass(double *coef, double *buf, register double val);
 double inline _processHighpass(double *coef, double *buf, register double val);
 
 inline void zap_buffer_denormals(double *buf, int bufSize) {
-	for(int i=0; i < bufSize; i++)
-		buf[i] = zap_denormal(buf[i]);
+    for(int i=0; i < bufSize; i++)
+        buf[i] = zap_denormal(buf[i]);
 }
 
 EngineFilterButterworth8::EngineFilterButterworth8(int sampleRate, int bufSize)
@@ -193,9 +193,9 @@ void EngineFilterButterworth8Band::process(const CSAMPLE *pIn,
     for (int i=0; i < iBufferSize; i += 2) {
         pOutput[i] = _processBandpass(m_coef, m_buf1, pIn[i]);
         pOutput[i+1] = _processBandpass(m_coef, m_buf2, pIn[i+1]);
-        if(pOutput[i] != pOutput[i])	//Check for NaN
+        if(pOutput[i] != pOutput[i])    //Check for NaN
             pOutput[i] = 0;
-        if(pOutput[i+1] != pOutput[i+1])	//Check for NaN
+        if(pOutput[i+1] != pOutput[i+1])    //Check for NaN
             pOutput[i+1] = 0;
     }
 

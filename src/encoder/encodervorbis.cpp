@@ -77,13 +77,13 @@ int EncoderVorbis::getSerial()
 void EncoderVorbis::writePage() {
 
     /*
-		 * Vorbis streams begin with three headers; the initial header (with
+     * Vorbis streams begin with three headers; the initial header (with
      * most of the codec setup parameters) which is mandated by the Ogg
      * bitstream spec.  The second header holds any comment fields.  The
      * third header holds the bitstream codebook.  We merely need to
      * make the headers, then pass them to libvorbis one at a time;
      * libvorbis handles the additional Ogg bitstream constraints
-		 */
+         */
 
 
     //Write header only once after stream has been initalized
@@ -161,7 +161,7 @@ void EncoderVorbis::initStream() {
         vorbis_comment_add_tag(&m_vcomment, "ARTIST", m_metaDataArtist);
     if (m_metaDataTitle != NULL)
         vorbis_comment_add_tag(&m_vcomment, "TITLE", m_metaDataTitle);
-		if (m_metaDataAlbum != NULL)
+        if (m_metaDataAlbum != NULL)
         vorbis_comment_add_tag(&m_vcomment, "ALBUM", m_metaDataAlbum);
 
     // set up the vorbis headers
@@ -173,9 +173,9 @@ void EncoderVorbis::initStream() {
     ogg_stream_packetin(&m_oggs, &headerComment);
     ogg_stream_packetin(&m_oggs, &headerCode);
 
-		//The encoder is now inialized
-		// Encode method will start streaming by sending the header first
-		m_header_write = true;
+        //The encoder is now inialized
+        // Encode method will start streaming by sending the header first
+        m_header_write = true;
     m_bStreamInitialized = true;
 }
 

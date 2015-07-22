@@ -234,7 +234,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         current = previous;
 
     if (current == m_pSoundButton) {
-    	m_wsound->slotUpdate();
+        m_wsound->slotUpdate();
       switchToPage(m_wsound);
     } else if (current == m_pLibraryButton) {
         switchToPage(m_wlibrary);

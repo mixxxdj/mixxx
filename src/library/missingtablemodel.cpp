@@ -21,26 +21,30 @@ void MissingTableModel::init() {
 // Must be called from m_pTrackCollection thread
 void MissingTableModel::setTableModel(int id) {
     Q_UNUSED(id);
-		QString tableName("missing_songs");
+    QString tableName("missing_songs");
     m_pTrackCollection->callSync(
-                [this, &tableName] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-				QSqlQuery query(pTrackCollectionPrivate->getDatabase());
-				//query.prepare("DROP VIEW " + playlistTableName);
-				//query.exec();
+            [this, &tableName] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
+        //query.prepare("DROP VIEW " + playlistTableName);
+        //query.exec();
 
-				QStringList columns;
-				columns << "library." + LIBRARYTABLE_ID;
+        QStringList columns;
+        columns << "library." + LIBRARYTABLE_ID;
 
-				query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
-											"SELECT "
-											+ columns.join(",") +
-											" FROM library "
-											"INNER JOIN track_locations "
-											"ON library.location=track_locations.id "
-											"WHERE " + MissingTableModel::MISSINGFILTER);
-				if (!query.exec()) {
-						LOG_FAILED_QUERY(query);
-				}
+        query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
+                                    "SELECT "
+                                    + columns.join(",") +
+                                    " FROM library "
+                                    "INNER JOIN track_locations "
+                                    "ON library.location=track_locations.id "
+                                    "WHERE " + MissingTableModel::MISSINGFILTER);
+        if (!query.exec()) {
+                LOG_FAILED_QUERY(query);
+        }
+        //Print out any SQL error, if there was one.
+        if (query.lastError().isValid()) {
+            qDebug() << __FILE__ << __LINE__ << query.lastError();
+        }
     }, __PRETTY_FUNCTION__);
 
     QStringList tableColumns;

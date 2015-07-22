@@ -1,6 +1,6 @@
 /***************************************************************************
- *      enginefilter.cpp - Wrapper for FidLib Filter Library	           *
- *			----------------------                             *
+ *      enginefilter.cpp - Wrapper for FidLib Filter Library               *
+ *          ----------------------                             *
  *   copyright      : (C) 2007 by John Sully                               *
  *   email          : jsully@scs.ryerson.ca                                *
  *                                                                         *
@@ -21,45 +21,45 @@
 
 EngineFilter::EngineFilter(char * conf, int predefinedType)
 {
-	switch(predefinedType)
-	{
-	case PREDEF_BP:
-		processSample = &processSampleBp;
-		fbuf1 = buf1;
-		fbuf2 = buf2;
-		break;
-	case PREDEF_HP:
-		processSample = &processSampleHp;
-		fbuf1 = buf1;
-		fbuf2 = buf2;
-		break;
-	case PREDEF_LP:
-		processSample = &processSampleLp;
-		fbuf1 = buf1;
-		fbuf2 = buf2;
-		break;
-	default:
-		ff = fid_design(conf, 44100., -1., -1., 1, NULL);
-		qDebug() << "Filter " << conf << " Setup: 0x" << ff;
-		run = fid_run_new(ff, &funcp);
-		fbuf1 = fid_run_newbuf(run);
-		fbuf2 = fid_run_newbuf(run);
-		processSample = funcp;
-	}
-	int i;
-	for(i=0; i < FILTER_BUF_SIZE; i++)
-	    buf1[i] = buf2[i] = 0;
+    switch(predefinedType)
+    {
+    case PREDEF_BP:
+        processSample = &processSampleBp;
+        fbuf1 = buf1;
+        fbuf2 = buf2;
+        break;
+    case PREDEF_HP:
+        processSample = &processSampleHp;
+        fbuf1 = buf1;
+        fbuf2 = buf2;
+        break;
+    case PREDEF_LP:
+        processSample = &processSampleLp;
+        fbuf1 = buf1;
+        fbuf2 = buf2;
+        break;
+    default:
+        ff = fid_design(conf, 44100., -1., -1., 1, NULL);
+        qDebug() << "Filter " << conf << " Setup: 0x" << ff;
+        run = fid_run_new(ff, &funcp);
+        fbuf1 = fid_run_newbuf(run);
+        fbuf2 = fid_run_newbuf(run);
+        processSample = funcp;
+    }
+    int i;
+    for(i=0; i < FILTER_BUF_SIZE; i++)
+        buf1[i] = buf2[i] = 0;
 }
 
 EngineFilter::~EngineFilter()
 {
-	if(processSample == funcp) //if we used fidlib
-	{
-		fid_run_freebuf(fbuf2);
-		fid_run_freebuf(fbuf1);
-		fid_run_free(run);
-		free(ff);
-	}
+    if(processSample == funcp) //if we used fidlib
+    {
+        fid_run_freebuf(fbuf2);
+        fid_run_freebuf(fbuf1);
+        fid_run_free(run);
+        free(ff);
+    }
 }
 
 
@@ -80,8 +80,8 @@ void EngineFilter::process(const CSAMPLE * pIn, const CSAMPLE * ppOut, const int
 //250Hz-3Khz Butterworth
 double processSampleBp(void *bufIn, const double sample)
 {
-	double *buf = (double*) bufIn;
-	register double val = sample;
+    double *buf = (double*) bufIn;
+    register double val = sample;
    register double tmp, fir, iir;
    tmp= buf[0]; memmove(buf, buf+1, 15*sizeof(double));
    // use 8.73843261546594e-007 below for unity gain at 100% level
@@ -131,8 +131,8 @@ double processSampleBp(void *bufIn, const double sample)
 //3Khz butterworth
 double processSampleHp(void *bufIn, const double sample)
 {
-	double *buf = (double*) bufIn;
-	register double val = sample;
+    double *buf = (double*) bufIn;
+    register double val = sample;
    register double tmp, fir, iir;
    tmp= buf[0]; memmove(buf, buf+1, 7*sizeof(double));
    // use 0.3307380993576275 below for unity gain at 100% level
@@ -160,8 +160,8 @@ double processSampleHp(void *bufIn, const double sample)
 }
 double processSampleLp(void *bufIn, const double sample)
 {
-	double *buf = (double*) bufIn;
-	register double val = sample;
+    double *buf = (double*) bufIn;
+    register double val = sample;
        register double tmp, fir, iir;
    tmp= buf[0]; memmove(buf, buf+1, 7*sizeof(double));
    iir= val * 9.245468558718278e-015;

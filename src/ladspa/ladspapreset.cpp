@@ -31,14 +31,14 @@ LADSPAPreset::LADSPAPreset(QDomElement element, LADSPALoader * loader)
             continue;
         }
         LADSPAPlugin * plugin = loader->getByLabel(pluginElement.text());
-	if (plugin == NULL)
-	{
-	    m_bValid = false;
-	    qDebug() << "LADSPA: Plugin " << pluginElement.text() << " not found (required by preset " << m_qName << ")";
-	    return; // ?
-	}
+    if (plugin == NULL)
+    {
+        m_bValid = false;
+        qDebug() << "LADSPA: Plugin " << pluginElement.text() << " not found (required by preset " << m_qName << ")";
+        return; // ?
+    }
         m_Plugins[j] = plugin;
-	j++;
+    j++;
     }
     m_Plugins.resize(j);
 

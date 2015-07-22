@@ -235,16 +235,16 @@ void SoundManager::queryDevices() {
         if (!deviceInfo)
             continue;
         /* deviceInfo fields for quick reference:
-            int 	structVersion
-            const char * 	name
-            PaHostApiIndex 	hostApi
-            int 	maxInputChannels
-            int 	maxOutputChannels
-            PaTime 	defaultLowInputLatency
-            PaTime 	defaultLowOutputLatency
-            PaTime 	defaultHighInputLatency
-            PaTime 	defaultHighOutputLatency
-            double 	defaultSampleRate
+            int     structVersion
+            const char *    name
+            PaHostApiIndex  hostApi
+            int     maxInputChannels
+            int     maxOutputChannels
+            PaTime  defaultLowInputLatency
+            PaTime  defaultLowOutputLatency
+            PaTime  defaultHighInputLatency
+            PaTime  defaultHighOutputLatency
+            double  defaultSampleRate
          */
         SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
         m_devices.push_back(currentDevice);

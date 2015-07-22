@@ -79,7 +79,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
     }
     if (y < 0)
     {
-	y = this->height() + y;
+    y = this->height() + y;
     }
     //m_pPresetList->move(x, y);
 
@@ -105,11 +105,11 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
 
     for (unsigned int i = 0; i < m_pPresetManager->getPresetCount(); i++)
     {
-	LADSPAPreset *preset = m_pPresetManager->getPreset(i);
-	if (preset->isValid())
-	    m_pPresetList->addItem(preset->getName());
-	else
-	    m_pPresetList->addItem("-" + preset->getName());
+    LADSPAPreset *preset = m_pPresetManager->getPreset(i);
+    if (preset->isValid())
+        m_pPresetList->addItem(preset->getName());
+    else
+        m_pPresetList->addItem("-" + preset->getName());
     }
 
     m_pSlotTable = new QWidget(this);
