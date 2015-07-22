@@ -164,10 +164,6 @@
 }
 
 #MixerChannelControls {
-  border: 1px solid #585858;
-  border-left: 0px;
-  border-right: 0px;
-  border-top: 0px;
   padding-bottom: 2px;
 }
 
@@ -176,6 +172,14 @@
   padding-right: 2px;
   padding-top: 10px;
   padding-left: 5px;
+}
+
+#MasterVuMeter2ch {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#MasterVuMeter4ch {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #MixerContainer {
@@ -255,7 +259,6 @@
 #KillButtonReversed {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
-
 
 #TitleGutter, #AlbumGutter {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
@@ -637,7 +640,6 @@
   color: #09B2AE;
 }
 
-
 #CrossFadeContainer {
  qproperty-layoutAlignment: 'AlignCenter';
  background-color: #1e1e1e;
@@ -645,8 +647,19 @@
 }
 
 #GuiToggleContainer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 2px;
+  border: 0px solid #585858;
+  border-left:0px;
+  border-right:0px;
+  border-bottom:0px;
+  background-color: transparent;
+}
+
+#GuiToggleContainerPadLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 0px;
+  padding-left: 4px;
   border: 0px solid #585858;
   border-left:0px;
   border-right:0px;
@@ -657,6 +670,7 @@
 #Crossfader {
   qproperty-layoutAlignment: 'AlignCenter';
   /*background-color:#1e1e1e;*/
+  padding-top: 10px;
 }
 
 #PreviewDeck {
@@ -862,8 +876,8 @@
 }
 
 #MicInterior {
-  padding-left:10px;
-  padding-right:10px;
+  padding-left:5px;
+  padding-right:5px;
 }
 
 #MicButtonContainer {
