@@ -40,6 +40,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   private slots:
     void slotNext();
     void slotPrev();
+    void OK();
     void apply();
     void cancel();
     void trackUpdated();
@@ -59,6 +60,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   private:
     void populateFields(TrackPointer pTrack);
     void populateCues(TrackPointer pTrack);
+    void saveTrack();
     void unloadTrack(bool save);
     void clear();
     void init();
