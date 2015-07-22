@@ -25,14 +25,10 @@
 #ifndef ENGINEBUFFERSCALEST_H
 #define ENGINEBUFFERSCALEST_H
 
-#include <QMutex>
-#include "enginebufferscale.h"
+#include "engine/enginebufferscale.h"
 
-/**
-  * Number of samples to read ahead
-  *
-  * Setting this too high (10000) causes stuttering
-  */
+// Number of samples to read ahead. Setting this too high (10000) causes
+// stuttering.
 const int kiSoundTouchReadAheadLength = 1000;
 class ReadAheadManager;
 
@@ -40,52 +36,33 @@ namespace soundtouch {
 class SoundTouch;
 }  // namespace soundtouch
 
-/**
-  * Performs time scaling of audio based on the SoundTouch library.
-  */
+// Uses libsoundtouch to scale audio.
 class EngineBufferScaleST : public EngineBufferScale {
     Q_OBJECT
-public:
+  public:
     EngineBufferScaleST(ReadAheadManager* pReadAheadManager);
-    ~EngineBufferScaleST();
+    virtual ~EngineBufferScaleST();
 
-    /** Toggle pitch independent time stretch */
-    void setPitchIndpTimeStretch(bool b);
-    bool getPitchIndpTimeStretch(void);
+    void setScaleParameters(int iSampleRate,
+                            double* rate_adjust,
+                            double* tempo_adjust,
+                            double* pitch_adjust);
 
-    /** Scale buffer */
+    // Scale buffer.
     CSAMPLE* getScaled(unsigned long buf_size);
 
-    /** Set tempo */
-    double setTempo(double dTempo);
-
-    /** Set base rate */
-    void setBaseRate(double dBaseRate);
-
-    /** Flush buffer */
+    // Flush buffer.
     void clear();
 
-public slots:
-    void slotSetSamplerate(double dSampleRate);
-private:
-    /** Holds the playback direction */
+  private:
+    // Holds the playback direction.
     bool m_bBackwards;
 
-    /** Buffer used to reverse output from SoundTouch
-      * library when playback direction is backwards */
+    // Temporary buffer for reading from the RAMAN.
     CSAMPLE *buffer_back;
 
-    /** SoundTouch time/pitch scaling lib */
+    // SoundTouch time/pitch scaling lib
     soundtouch::SoundTouch* m_pSoundTouch;
-
-    /** True if in pitch independent time stretch mode */
-    bool m_bPitchIndpTimeStretch;
-
-    /** Used when clear is called */
-    bool m_bClear;
-
-    /** Used to protect SoundTouch calls */
-    QMutex m_qMutex;
 
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;

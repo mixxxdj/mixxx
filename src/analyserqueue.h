@@ -24,9 +24,9 @@ class AnalyserQueue : public QThread {
     void queueAnalyseTrack(TrackPointer tio);
 
     static AnalyserQueue* createDefaultAnalyserQueue(
-            ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection);
+            ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
     static AnalyserQueue* createAnalysisFeatureAnalyserQueue(
-            ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection);
+            ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
 
   public slots:
     void slotAnalyseTrack(TrackPointer tio);

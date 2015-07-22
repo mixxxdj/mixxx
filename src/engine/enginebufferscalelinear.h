@@ -35,22 +35,23 @@ public:
     EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager);
     ~EngineBufferScaleLinear();
     CSAMPLE *getScaled(unsigned long buf_size);
-
-    void setBaseRate(double dBaseRate);
-    double setTempo(double dTempo);
     void clear();
 
-private:
+    void setScaleParameters(int iSampleRate,
+                            double* rate_adjust,
+                            double* tempo_adjust,
+                            double* pitch_adjust);
+
+  private:
     CSAMPLE *do_scale(CSAMPLE* buf, unsigned long buf_size,
                       int *samples_read);
 
     /** Holds playback direction */
     bool m_bBackwards;
     bool m_bClear;
-    float m_fOldTempo;          /** Keep the old tempo around so we can interpolate smoothly
-                                    between the old one and the new one to avoid any discontinuities
-                                    in the audio when you change the playback rate */
-    float m_fOldBaseRate;       /** Same as old tempo, but for the base playback rate */
+    double m_dRate;
+    double m_dOldRate;
+
     /** Buffer for handling calls to ReadAheadManager */
     CSAMPLE *buffer_int;
     int buffer_int_size;

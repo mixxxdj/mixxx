@@ -11,18 +11,17 @@
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
+#include "test/mixxxtest.h"
 
 namespace {
 
-class DirectoryDAOTest : public testing::Test {
+class DirectoryDAOTest : public MixxxTest {
   protected:
     virtual void SetUp() {
-        m_pConfig = new ConfigObject<ConfigValue>(
-                QDir::currentPath().append("/src/test/test_data/test.cfg"));
         // make sure to use the current schema.xml file in the repo
-        m_pConfig->set(ConfigKey("[Config]","Path"),
-                (QDir::currentPath().append("/res")));
-        m_pTrackCollection = new TrackCollection(m_pConfig);
+        config()->set(ConfigKey("[Config]","Path"),
+                      QDir::currentPath().append("/res"));
+        m_pTrackCollection = new TrackCollection(config());
     }
 
     virtual void TearDown() {
@@ -36,10 +35,8 @@ class DirectoryDAOTest : public testing::Test {
         query.exec();
 
         delete m_pTrackCollection;
-        delete m_pConfig;
     }
 
-    ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection *m_pTrackCollection;
 };
 
@@ -83,7 +80,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
 
     // the test db should be always empty when tests are started.
     EXPECT_TRUE(dirs.size() == 1);
-    if ( dirs.size() > 0) {
+    if (dirs.size() > 0) {
         EXPECT_TRUE(dirs.at(0) == testParent);
     }
 }

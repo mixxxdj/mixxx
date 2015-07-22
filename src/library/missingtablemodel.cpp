@@ -86,10 +86,9 @@ bool MissingTableModel::isColumnInternal(int column) {
     }
     return false;
 }
+
 bool MissingTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
-        return true;
-    }
+    Q_UNUSED(column);
     return false;
 }
 

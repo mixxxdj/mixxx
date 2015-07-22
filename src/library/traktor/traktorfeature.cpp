@@ -29,8 +29,7 @@ void TraktorTrackModel::init() {
 }
 
 bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY) ||
-        column == fieldIndex(LIBRARYTABLE_BITRATE)) {
+    if (column == fieldIndex(LIBRARYTABLE_BITRATE)) {
         return true;
     }
     return false;
@@ -46,8 +45,7 @@ TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
 }
 
 bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY) ||
-        column == fieldIndex(LIBRARYTABLE_BITRATE)) {
+    if (column == fieldIndex(LIBRARYTABLE_BITRATE)) {
         return true;
     }
     return false;

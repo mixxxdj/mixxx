@@ -180,7 +180,7 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         row_data.insert(COLUMN_BPM, item);
 
-        item = new QStandardItem(tio.getKey());
+        item = new QStandardItem(tio.getKeyText());
         item->setToolTip(item->text());
         row_data.insert(COLUMN_KEY, item);
 
