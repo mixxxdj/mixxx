@@ -27,6 +27,9 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/queryutil.h"
+#include "library/dao/directorydao.h"
+
+class TrackInfoObject;
 
 #define AUTODJ_TABLE "Auto DJ"
 

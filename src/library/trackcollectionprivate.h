@@ -55,9 +55,14 @@ class TrackCollectionPrivate : public QObject {
     CrateDAO& getCrateDAO();
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
+    DirectoryDAO& getDirectoryDAO();
 #ifdef __AUTODJCRATES__
     AutoDJCratesDAO& getAutoDJCratesDAO();
 #endif
+
+    /** Import the files in a given diretory, without recursing into subdirectories */
+    bool importDirectory(const QString& directory, TrackDAO& trackDao,
+                         const QStringList& nameFilters, volatile bool* cancel);
 
     ConfigObject<ConfigValue>* getConfig() {
         return m_pConfig;
@@ -76,6 +81,7 @@ class TrackCollectionPrivate : public QObject {
     AnalysisDao* m_pAnalysisDao;
     TrackDAO* m_pTrackDao;
     AutoDJCratesDAO* m_pAutoDjCratesDao;
+    DirectoryDAO* m_pDirectoryDao;
 
     QQueue<func> m_lambdas;
     volatile bool m_stop;

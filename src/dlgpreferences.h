@@ -44,6 +44,7 @@ class DlgPrefReplayGain;
 class ControllerManager;
 class SkinLoader;
 class PlayerManager;
+class Library;
 class VinylControlManager;
 #ifdef __MODPLUG__
 class DlgPrefModplug;
@@ -54,7 +55,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
   public:
     DlgPreferences(MixxxApp* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
-                   VinylControlManager* pVCManager, ConfigObject<ConfigValue>* config);
+                   VinylControlManager* pVCManager, ConfigObject<ConfigValue>* pConfig,
+                   Library *pLibrary);
     virtual ~DlgPreferences();
 
     void addPageWidget(DlgPreferencePage* pWidget);

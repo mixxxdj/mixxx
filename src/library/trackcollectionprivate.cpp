@@ -33,6 +33,7 @@ TrackCollectionPrivate::TrackCollectionPrivate(ConfigObject<ConfigValue>* pConfi
           m_pAnalysisDao(NULL),
           m_pTrackDao(NULL),
 		  m_pAutoDjCratesDao(NULL),
+          m_pDirectoryDao(NULL),
           m_supportedFileExtensionsRegex(
                   SoundSourceProxy::supportedFileExtensionsRegex(),
                   Qt::CaseInsensitive){
@@ -57,6 +58,7 @@ void TrackCollectionPrivate::initialize(){
     m_pPlaylistDao->initialize();
     m_pCrateDao->initialize();
     m_pCueDao->initialize();
+    m_pDirectoryDao->initialize();
 }
 
 bool TrackCollectionPrivate::checkForTables() {
@@ -74,7 +76,7 @@ bool TrackCollectionPrivate::checkForTables() {
 
     bool checkResult = true;
     MainExecuter::callSync([this, &checkResult](void) {
-        int requiredSchemaVersion = 22; // TODO(xxx) avoid constant 22
+        int requiredSchemaVersion = 23; // TODO(xxx) avoid constant 23
         QString schemaFilename = m_pConfig->getResourcePath();
         schemaFilename.append("schema.xml");
         QString okToExit = tr("Click OK to exit.");
@@ -131,6 +133,10 @@ AutoDJCratesDAO& TrackCollectionPrivate::getAutoDJCratesDAO(){
 }
 #endif
 
+DirectoryDAO& TrackCollectionPrivate::getDirectoryDAO() {
+    return *m_pDirectoryDao;
+}
+
 void TrackCollectionPrivate::createAndPopulateDbConnection() {
     // initialize database connection in TrackCollection
     const QStringList avaiableDrivers = QSqlDatabase::drivers();
@@ -164,7 +170,9 @@ void TrackCollectionPrivate::createAndPopulateDbConnection() {
     m_pCrateDao = new CrateDAO(*m_pDatabase);
     m_pCueDao = new CueDAO(*m_pDatabase);
     m_pAnalysisDao = new AnalysisDao(*m_pDatabase, m_pConfig);
-    m_pTrackDao = new TrackDAO(*m_pDatabase, *m_pCueDao, *m_pPlaylistDao, *m_pCrateDao, *m_pAnalysisDao, m_pConfig);
+    m_pTrackDao = new TrackDAO(*m_pDatabase, *m_pCueDao, *m_pPlaylistDao,
+                               *m_pCrateDao, *m_pAnalysisDao, *m_pDirectoryDao,
+                               m_pConfig);
 #ifdef __AUTODJCRATES__
 		m_pAutoDjCratesDao = new AutoDJCratesDAO(*m_pDatabase,
 												 *m_pTrackDao,
@@ -172,4 +180,5 @@ void TrackCollectionPrivate::createAndPopulateDbConnection() {
 												 *m_pPlaylistDao,
 												 m_pConfig);
 #endif // __AUTODJCRATES__
+    m_pDirectoryDao = new DirectoryDAO(*m_pDatabase);
 }

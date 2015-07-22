@@ -2,8 +2,12 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QItemSelectionModel>
+#include <QMessageBox>
+#include <QTranslator>
+#include <QDir>
 
 #include "library/library.h"
+#include "library/library_preferences.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/sidebarmodel.h"
@@ -243,4 +247,74 @@ QList<TrackPointer> Library::getTracksToAutoLoad() {
         return m_pPromoTracksFeature->getTracksToAutoLoad();
 #endif
     return QList<TrackPointer>();
+}
+
+void Library::slotRequestAddDir(QString dir) {
+    m_pTrackCollection->callSync( [this, &dir] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        if (!pTrackCollectionPrivate->getDirectoryDAO().addDirectory(dir)) {
+            MainExecuter::callSync( [this] () {
+                QMessageBox::information(0, tr("Add Directory to Library"),
+                    tr("This directory is already in your library."));
+            });
+        }
+    }, __PRETTY_FUNCTION__);
+    // set at least on directory in the config file so that it will be possible
+    // to downgrade from 1.12
+    if (m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR).length() < 1){
+        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dir);
+    }
+}
+
+void Library::slotRequestRemoveDir(QString dir, bool removeMetadata) {
+    m_pTrackCollection->callSync( [this, &dir] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        // Mark all tracks in this directory as deleted (but don't purge them in
+        // case the user re-adds them manually).
+        pTrackCollectionPrivate->getTrackDAO().markTracksAsMixxxDeleted(dir);
+
+        // Remove the directory from the directory list.
+        pTrackCollectionPrivate->getDirectoryDAO().removeDirectory(dir);
+    }, __PRETTY_FUNCTION__);
+
+    // Also update the config file if necessary so that downgrading is still
+    // possible.
+    QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+
+    if (QDir(dir) == QDir(confDir)) {
+        QStringList dirList;
+        m_pTrackCollection->callSync( [this, &dir, &dirList] (TrackCollectionPrivate* pTrackCollectionPrivate){
+            dirList = pTrackCollectionPrivate->getDirectoryDAO().getDirs();
+        }, __PRETTY_FUNCTION__);
+        if (!dirList.isEmpty()) {
+            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dirList.first());
+        } else {
+            // Save empty string so that an old version of mixxx knows it has to
+            // ask for a new directory.
+            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, QString());
+        }
+    }
+}
+
+void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
+    QSet<int> movedIds;
+    m_pTrackCollection->callSync( [this, &oldDir,&newDir,&movedIds] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        movedIds = pTrackCollectionPrivate->getDirectoryDAO().relocateDirectory(oldDir, newDir);
+
+        // Clear cache to that all TIO with the old dir information get updated
+        pTrackCollectionPrivate->getTrackDAO().clearCache();
+        pTrackCollectionPrivate->getTrackDAO().databaseTracksMoved(movedIds, QSet<int>());
+    }, __PRETTY_FUNCTION__);
+    // also update the config file if necessary so that downgrading is still
+    // possible
+    QString conDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+    if (oldDir == conDir) {
+        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, newDir);
+    }
+}
+
+QStringList Library::getDirs(){
+    QStringList result;
+    m_pTrackCollection->callSync( [&result] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        result = pTrackCollectionPrivate->getDirectoryDAO().getDirs();
+    }, __PRETTY_FUNCTION__);
+    return result;
 }
