@@ -9,6 +9,8 @@
 #include <QString>
 #include <QWidget>
 
+#include "widget/wpixmapstore.h"
+
 class WWidgetGroup : public QGroupBox {
     Q_OBJECT
   public:
@@ -24,7 +26,7 @@ class WWidgetGroup : public QGroupBox {
 
   private:
     // Associated background pixmap
-    QPixmap *m_pPixmapBack;
+    QPixmapPointer m_pPixmapBack;
     QPixmap m_pixmapBackScaled;
 };
 

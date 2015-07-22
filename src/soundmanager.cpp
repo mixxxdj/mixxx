@@ -31,6 +31,7 @@
 #include "soundmanagerutil.h"
 #include "controlobject.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#include "sampleutil.h"
 
 #ifdef __PORTAUDIO__
 typedef PaError (*SetJackClientName)(const char *name);
@@ -150,10 +151,10 @@ void SoundManager::closeDevices() {
             it.value()->onInputDisconnected(in);
         }
 
-        SAMPLE *buffer = m_inputBuffers.value(in);
+        CSAMPLE* buffer = m_inputBuffers.value(in);
         if (buffer != NULL) {
-            delete [] buffer;
             m_inputBuffers.insert(in, NULL);
+            SampleUtil::free(buffer);
         }
     }
     m_inputBuffers.clear();
@@ -310,7 +311,7 @@ int SoundManager::setupDevices() {
             isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
-            AudioInputBuffer aib(in, new SAMPLE[MAX_BUFFER_LEN]);
+            AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
             err = device->addInput(aib);
             if (err != OK) {
                 delete [] aib.getBuffer();
@@ -476,8 +477,6 @@ void SoundManager::requestBuffer(
     // source list to find out what goes in the buffer data is interlaced in
     // the order of the list
 
-    static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
-
     for (QList<AudioOutputBuffer>::const_iterator i = outputs.begin(),
                  e = outputs.end(); i != e; ++i) {
         const AudioOutputBuffer& out = *i;
@@ -488,7 +487,7 @@ void SoundManager::requestBuffer(
         const int iChannelCount = outChans.getChannelCount();
         const int iChannelBase = outChans.getChannelBase();
 
-        for (unsigned int iFrameNo=0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+        for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
             // iFrameBase is the "base sample" in a frame (ie. the first
             // sample in a frame)
             const unsigned int iFrameBase = iFrameNo * iFrameSize;
@@ -497,18 +496,18 @@ void SoundManager::requestBuffer(
             // this will make sure a sample from each channel is copied
             for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
                 outputBuffer[iFrameBase + iChannelBase + iChannel] =
-                        pAudioOutputBuffer[iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                        pAudioOutputBuffer[iLocalFrameBase + iChannel];
 
                 // Input audio pass-through (useful for debugging)
                 //if (in)
                 //    output[iFrameBase + src.channelBase + iChannel] =
-                //    in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                //    in[iFrameBase + src.channelBase + iChannel];
             }
         }
     }
 }
 
-void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, short* inputBuffer,
+void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, CSAMPLE* inputBuffer,
                               const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
                               SoundDevice* pDevice) {
     Q_UNUSED(pDevice);
@@ -545,7 +544,7 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, short* inpu
         for (QList<AudioInputBuffer>::const_iterator i = inputs.begin(),
                      e = inputs.end(); i != e; ++i) {
             const AudioInputBuffer& in = *i;
-            short* pInputBuffer = in.getBuffer();
+            CSAMPLE* pInputBuffer = in.getBuffer();
             ChannelGroup chanGroup = in.getChannelGroup();
             int iChannelCount = chanGroup.getChannelCount();
             int iChannelBase = chanGroup.getChannelBase();
@@ -572,7 +571,7 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, short* inpu
                  e = inputs.end(); i != e; ++i) {
         const AudioInputBuffer& in = *i;
 
-        short* pInputBuffer = in.getBuffer();
+        CSAMPLE* pInputBuffer = in.getBuffer();
 
         for (QHash<AudioInput, AudioDestination*>::const_iterator it =
                      m_registeredDestinations.find(in);

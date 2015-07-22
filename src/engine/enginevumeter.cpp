@@ -58,10 +58,9 @@ void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize)
     m_iSamplesCalculated += iBufferSize/2;
 
     // Are we ready to update the VU meter?:
-    if (m_iSamplesCalculated > (44100/2/UPDATE_RATE) )
-    {
-        doSmooth(m_fRMSvolumeL, log10(m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1));
-        doSmooth(m_fRMSvolumeR, log10(m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1));
+    if (m_iSamplesCalculated > (44100/2/UPDATE_RATE)) {
+        doSmooth(m_fRMSvolumeL, log10(SHRT_MAX * m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1));
+        doSmooth(m_fRMSvolumeR, log10(SHRT_MAX * m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1));
 
         const double epsilon = .0001;
 

@@ -3,6 +3,7 @@
 
 #include <QString>
 
+#include "defs.h"
 #include "configobject.h"
 #include "vinylcontrol/vinylsignalquality.h"
 
@@ -15,7 +16,7 @@ class VinylControl : public QObject {
 
     virtual void toggleVinylControl(bool enable);
     virtual bool isEnabled();
-    virtual void analyzeSamples(const short* samples, size_t nFrames) = 0;
+    virtual void analyzeSamples(CSAMPLE* pSamples, size_t nFrames) = 0;
     virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo) = 0;
 
   protected:
@@ -23,6 +24,9 @@ class VinylControl : public QObject {
 
     ConfigObject<ConfigValue>* m_pConfig;
     QString m_group;
+
+    // The VC input gain preference.
+    ControlObjectThread* m_pVinylControlInputGain;
 
     ControlObjectThread *playButton; //The ControlObject used to start/stop playback of the song.
     ControlObjectThread *playPos; //The ControlObject used to read the playback position in the song.

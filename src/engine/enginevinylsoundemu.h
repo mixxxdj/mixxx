@@ -17,6 +17,7 @@
 #ifndef ENGINEVINYLSOUNDEMU_H
 #define ENGINEVINYLSOUNDEMU_H
 
+#include "defs.h"
 #include "configobject.h"
 #include "engine/engineobject.h"
 
@@ -35,12 +36,10 @@ class EngineVinylSoundEmu : public EngineObject {
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObject* m_pRateEngine;
-    float m_fSpeed, m_fOldSpeed;
-    float m_fGainFactor;
-
-    float m_fNoise[NOISE_BUFFER_SIZE];
+    double m_dSpeed;
+    double m_dOldSpeed;
+    CSAMPLE m_fNoise[NOISE_BUFFER_SIZE];
     int m_iNoisePos;
 };
-
 
 #endif

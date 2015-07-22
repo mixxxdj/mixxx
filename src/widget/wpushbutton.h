@@ -27,21 +27,18 @@
 #include <QTimer>
 
 #include "widget/wwidget.h"
+#include "widget/wpixmapstore.h"
 #include "controlpushbutton.h"
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
-class WPushButton : public WWidget
-{
+class WPushButton : public WWidget {
     Q_OBJECT
   public:
     WPushButton(QWidget *parent=0);
     // Used by WPushButtonTest.
     WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButtonMode,
                 ControlPushButton::ButtonMode rightButtonMode);
-    ~WPushButton();
+    virtual ~WPushButton();
+
     void setup(QDomNode node);
 
     // Sets the number of states associated with this button, and removes
@@ -72,9 +69,9 @@ class WPushButton : public WWidget
     // Number of states associated with this button
     int m_iNoStates;
     // Array of associated pixmaps
-    QPixmap** m_pPixmaps;
+    QPixmapPointer* m_pPixmaps;
     // Associated background pixmap
-    QPixmap* m_pPixmapBack;
+    QPixmapPointer m_pPixmapBack;
     // short click toggle button long click push button
     ControlPushButton::ButtonMode m_leftButtonMode;
     ControlPushButton::ButtonMode m_rightButtonMode;

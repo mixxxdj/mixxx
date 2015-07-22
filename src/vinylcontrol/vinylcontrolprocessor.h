@@ -44,7 +44,7 @@ class VinylControlProcessor : public QThread, public AudioDestination {
 
     // Called by the engine callback. Must not touch any state in
     // VinylControlProcessor except for m_samplePipes.
-    void receiveBuffer(AudioInput input, const short* pBuffer,
+    void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                        unsigned int iNumFrames);
 
   protected:
@@ -61,8 +61,8 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     // A pre-allocated array of FIFOs for writing samples from the engine
     // callback to the processor thread. There is a maximum of
     // kMaximumVinylControlInputs pipes.
-    FIFO<short>* m_samplePipes[kMaximumVinylControlInputs];
-    short* m_pWorkBuffer;
+    FIFO<CSAMPLE>* m_samplePipes[kMaximumVinylControlInputs];
+    CSAMPLE* m_pWorkBuffer;
     QWaitCondition m_samplesAvailableSignal;
     QMutex m_waitForSampleMutex;
     QMutex m_processorsLock;

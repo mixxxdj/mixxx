@@ -14,7 +14,6 @@ WWidgetGroup::WWidgetGroup(QWidget* parent)
 }
 
 WWidgetGroup::~WWidgetGroup() {
-    WPixmapStore::deletePixmap(m_pPixmapBack);
 }
 
 void WWidgetGroup::setup(QDomNode node) {

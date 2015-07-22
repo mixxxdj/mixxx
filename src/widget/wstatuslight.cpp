@@ -24,29 +24,21 @@
 #include <QtDebug>
 #include <QPixmap>
 
-WStatusLight::WStatusLight(QWidget * parent) : WWidget(parent)
-{
+WStatusLight::WStatusLight(QWidget * parent)
+        : WWidget(parent) {
     m_pPixmapSLs = NULL;
     m_iNoPos = 0;
     m_iPos = 0;
     setNoPos(m_iNoPos);
 }
 
-WStatusLight::~WStatusLight()
-{
-    for (int i = 0; i < m_iNoPos; i++) {
-        WPixmapStore::deletePixmap(m_pPixmapSLs[i]);
-    }
+WStatusLight::~WStatusLight() {
     delete [] m_pPixmapSLs;
 }
 
-void WStatusLight::setNoPos(int iNoPos)
-{
+void WStatusLight::setNoPos(int iNoPos) {
     // If pixmap array is already allocated, delete it
     if (m_pPixmapSLs != NULL) {
-        for (int i = 0; i < m_iNoPos; i++) {
-            WPixmapStore::deletePixmap(m_pPixmapSLs[i]);
-        }
         delete [] m_pPixmapSLs;
     }
 
@@ -54,11 +46,7 @@ void WStatusLight::setNoPos(int iNoPos)
         iNoPos = 2; //values less than 2 make no sense (need at least off, on)
     m_iNoPos = iNoPos;
     m_value = 0.;
-
-    m_pPixmapSLs = new QPixmap*[m_iNoPos];
-    for (int i = 0; i < m_iNoPos; ++i) {
-        m_pPixmapSLs[i] = NULL;
-    }
+    m_pPixmapSLs = new QPixmapPointer[m_iNoPos];
 }
 
 void WStatusLight::setup(QDomNode node)
@@ -77,7 +65,7 @@ void WStatusLight::setup(QDomNode node)
         } else if (i == 1 && !selectNode(node, "PathStatusLight").isNull()) {
             setPixmap(i, getPath(selectNodeQString(node, "PathStatusLight")));
         } else {
-            m_pPixmapSLs[i] = NULL;
+            m_pPixmapSLs[i].clear();
         }
     }
 }
@@ -89,7 +77,7 @@ void WStatusLight::setPixmap(int iState, const QString &filename)
     }
     int pixIdx = iState;
 
-    QPixmap* pPixmap = WPixmapStore::getPixmap(filename);
+    QPixmapPointer pPixmap = WPixmapStore::getPixmap(filename);
 
     if (pPixmap != NULL && !pPixmap->isNull()) {
         m_pPixmapSLs[pixIdx] = pPixmap;
@@ -98,8 +86,7 @@ void WStatusLight::setPixmap(int iState, const QString &filename)
         setFixedSize(pPixmap->size());
     } else {
         qDebug() << "WStatusLight: Error loading pixmap:" << filename << iState;
-        WPixmapStore::deletePixmap(pPixmap);
-        m_pPixmapSLs[pixIdx] = NULL;
+        m_pPixmapSLs[pixIdx].clear();
     }
 }
 

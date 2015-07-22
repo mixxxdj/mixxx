@@ -17,6 +17,7 @@
 
 #include <QtDebug>
 #include <QObject>
+#include <limits.h>
 
 #include "encoder/encodermp3.h"
 #include "encoder/encodercallback.h"
@@ -282,18 +283,17 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
         return;
     int outsize = 0;
     int rc = 0;
-    int i = 0;
 
     outsize = (int)((1.25 * size + 7200) + 1);
     bufferOutGrow(outsize);
 
     bufferInGrow(size);
 
-    // Deinterleave samples
-    for (i = 0; i < size/2; ++i)
-    {
-        m_bufferIn[0][i] = samples[i*2];
-        m_bufferIn[1][i] = samples[i*2+1];
+    // Deinterleave samples. We use normalized floats in the engine [-1.0, 1.0]
+    // but LAME expects samples in the range [SHRT_MIN, SHRT_MAX].
+    for (int i = 0; i < size/2; ++i) {
+        m_bufferIn[0][i] = samples[i*2] * SHRT_MAX;
+        m_bufferIn[1][i] = samples[i*2+1] * SHRT_MAX;
     }
 
     rc = lame_encode_buffer_float(m_lameFlags, m_bufferIn[0], m_bufferIn[1],
@@ -362,4 +362,3 @@ void EncoderMp3::updateMetaData(char* artist, char* title, char* album){
     m_metaDataArtist = artist;
     m_metaDataAlbum = album;
 }
-

@@ -73,12 +73,9 @@ void WVuMeter::setup(QDomNode node)
         m_iPeakFallTime = DEFAULT_FALLTIME;
 }
 
-void WVuMeter::resetPositions()
-{
-    WPixmapStore::deletePixmap(m_pPixmapBack);
-    m_pPixmapBack = NULL;
-    WPixmapStore::deletePixmap(m_pPixmapVu);
-    m_pPixmapVu = NULL;
+void WVuMeter::resetPositions() {
+    m_pPixmapBack.clear();
+    m_pPixmapVu.clear();
 }
 
 void WVuMeter::setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal)

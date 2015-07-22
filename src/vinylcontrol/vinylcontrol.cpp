@@ -10,6 +10,13 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
           m_dVinylPosition(0.0),
           m_fTimecodeQuality(0.0f) {
     // Get Control objects
+    m_pVinylControlInputGain = new ControlObjectThread(VINYL_PREF_KEY, "gain");
+
+    bool gainOk = false;
+    double gain = m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "gain"))
+            .toDouble(&gainOk);
+    m_pVinylControlInputGain->set(gainOk ? gain : 1.0);
+
     playPos             = new ControlObjectThread(group, "playposition");    //Range: -.14 to 1.14
     trackSamples        = new ControlObjectThread(group, "track_samples");
     trackSampleRate     = new ControlObjectThread(group, "track_samplerate");
@@ -67,6 +74,7 @@ VinylControl::~VinylControl() {
         wantenabled->slotSet(true);
     }
 
+    delete m_pVinylControlInputGain;
     delete playPos;
     delete trackSamples;
     delete trackSampleRate;

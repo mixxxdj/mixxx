@@ -29,7 +29,8 @@ class EnginePassthrough : public EngineChannel, public AudioDestination {
 
     // This is called by SoundManager whenever there are new samples from the
     // deck to be processed
-    virtual void receiveBuffer(AudioInput input, const short *pBuffer, unsigned int nFrames);
+    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                               unsigned int nFrames);
 
     // Called by SoundManager whenever the passthrough input is connected to a
     // soundcard input.
