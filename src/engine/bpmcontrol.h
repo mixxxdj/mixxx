@@ -5,7 +5,9 @@
 #ifndef BPMCONTROL_H
 #define BPMCONTROL_H
 
+#include "controlobject.h"
 #include "engine/enginecontrol.h"
+#include "engine/enginesync.h"
 #include "tapfilter.h"
 
 class ControlObject;
@@ -19,34 +21,75 @@ class BpmControl : public EngineControl {
   public:
     BpmControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~BpmControl();
-    double getBpm();
-    double getFileBpm();
+
+    double getBpm() const;
+    double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
+    void onEngineRateChange(double rate);
+    double getSyncAdjustment(bool userTweakingSync);
+    double getSyncedRate() const;
+    // Get the phase offset from the specified position.
+    double getPhaseOffset(double reference_position);
+
+    void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
+    double process(const double dRate,
+                   const double dCurrentSample,
+                   const double dTotalSamples,
+                   const int iBufferSize);
+
+    // Calculates contextual information about beats: the previous beat, the
+    // next beat, the current beat length, and the beat ratio (how far dPosition
+    // lies within the current beat). Returns false if a previous or next beat
+    // does not exist. NULL arguments are safe and ignored.
+    static bool getBeatContext(const BeatsPointer& pBeats,
+                               const double dPosition,
+                               double* dpPrevBeat,
+                               double* dpNextBeat,
+                               double* dpBeatLength,
+                               double* dpBeatPercentage,
+                               const double beatEpsilon=0.0);
+
+    // Returns the shortest change in percentage needed to achieve
+    // target_percentage.
+    // Example: shortestPercentageChange(0.99, 0.01) == 0.02
+    static double shortestPercentageChange(const double& current_percentage,
+                                           const double& target_percentage);
 
   public slots:
-
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
 
   private slots:
     void slotSetEngineBpm(double);
+    void slotFileBpmChanged(double);
+    void slotControlPlay(double);
     void slotControlBeatSync(double);
     void slotControlBeatSyncPhase(double);
     void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
-    void slotAdjustBpm();
+    void slotAdjustRateSlider();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
+    void slotMasterSyncSliderChanged(double);
+    void slotSyncModeChanged(double);
+    void slotSetStatuses();
 
   private:
-    bool syncTempo(EngineBuffer* pOtherEngineBuffer);
-    bool syncPhase(EngineBuffer* pOtherEngineBuffer);
+    double getBeatDistance(double dThisPosition) const;
+    bool syncTempo();
+    bool syncPhase();
 
     // ControlObjects that come from EngineBuffer
     ControlObjectSlave* m_pPlayButton;
     ControlObjectSlave* m_pRateSlider;
+    ControlObject* m_pQuantize;
     ControlObjectSlave* m_pRateRange;
     ControlObjectSlave* m_pRateDir;
+
+    ControlObject* m_pThisBeatDistance;
+
+    // Is vinyl control enabled?
+    ControlObject* m_pVCEnabled;
 
     // ControlObjects that come from LoopingControl
     ControlObjectSlave* m_pLoopEnabled;
@@ -71,10 +114,24 @@ class BpmControl : public EngineControl {
     // playposition.
     ControlPushButton* m_pTranslateBeats;
 
+    double m_dLoopSize; // Only used to see if we shouldn't quantize position.
+    double m_dPreviousSample;
+
+    // Master Sync objects and values.
+    ControlObject *m_pMasterBpm, *m_pMasterSyncSlider;
+    ControlObject *m_pSyncInternalEnabled;
+    ControlObject *m_pSyncMasterEnabled, *m_pSyncEnabled;
+    ControlObject *m_pSyncMode;
+    ControlObject* m_pMasterBeatDistance;
+    double m_dSyncAdjustment;
+    double m_dUserOffset;
+
     TapFilter m_tapFilter;
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
+
+    QString m_sGroup;
 };
 
 

@@ -52,6 +52,8 @@ void MidiOutputHandler::controlChanged(double value) {
         return;
     }
 
+    // Don't update with out of date messages.
+    value = m_cot.get();
     m_lastVal = value;
 
     unsigned char byte3 = m_off;
@@ -60,7 +62,10 @@ void MidiOutputHandler::controlChanged(double value) {
     if (!m_pController->isOpen()) {
         qWarning() << "MIDI device" << m_pController->getName() << "not open for output!";
     } else if (byte3 != 0xFF) {
-        //qDebug() << "MIDI bytes:" << m_status << ", " << m_controllerno << ", " << m_byte2 ;
+        if (m_pController->debugging()) {
+            qDebug() << "sending MIDI bytes:" << m_status << ", " << m_midino << ", "
+                     << byte3 ;
+        }
         m_pController->sendShortMsg(m_status, m_midino, byte3);
     }
 }

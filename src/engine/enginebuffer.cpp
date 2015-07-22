@@ -30,6 +30,7 @@
 #include "engine/enginebufferscalelinear.h"
 #include "engine/enginebufferscaledummy.h"
 #include "mathstuff.h"
+#include "engine/enginesync.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
@@ -41,6 +42,7 @@
 #include "visualplayposition.h"
 #include "engine/cuecontrol.h"
 #include "engine/clockcontrol.h"
+#include "engine/enginemaster.h"
 #include "util/timer.h"
 #include "track/keyutils.h"
 #include "controlobjectslave.h"
@@ -55,7 +57,8 @@
 const double kMaxPlayposRange = 1.14;
 const double kMinPlayposRange = -0.14;
 
-EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
+EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
+                           EngineMaster* pMixingEngine) :
     m_engineLock(QMutex::Recursive),
     m_group(_group),
     m_pConfig(_config),
@@ -82,6 +85,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleST(NULL),
     m_pScaleRB(NULL),
     m_bScalerChanged(false),
+    m_bScalerOverride(false),
     m_bSeekQueued(0),
     m_dQueuedPosition(0),
     m_bLastBufferPaused(true),
@@ -203,27 +207,30 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
     addControl(new QuantizeControl(_group, _config));
+    m_pQuantize = ControlObject::getControl(ConfigKey(_group, "quantize"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-#ifdef __VINYLCONTROL__
-    // If VinylControl is enabled, add a VinylControlControl. This must be done
-    // before RateControl is created.
-    addControl(new VinylControlControl(m_group, _config));
-#endif
-
-    // Create the Rate Controller
-    m_pRateControl = new RateControl(_group, _config);
+    m_pRateControl = new RateControl(_group, _config, pMixingEngine->getEngineSync());
+    pMixingEngine->getEngineSync()->addDeck(m_pRateControl);
+    // Add the Rate Controller
     addControl(m_pRateControl);
-
-    m_fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
-    m_backButton = ControlObject::getControl(ConfigKey(_group, "back"));
+#ifdef __VINYLCONTROL__
+    VinylControlControl *vcc = new VinylControlControl(_group, _config);
+    addControl(vcc);
+    m_pRateControl->setVinylControlControl(vcc);
+#endif
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
+    m_pRateControl->setBpmControl(m_pBpmControl);
+
+
+    m_fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
+    m_backButton = ControlObject::getControl(ConfigKey(_group, "back"));
 
     m_pKeyControl = new KeyControl(_group, _config);
     addControl(m_pKeyControl);
@@ -406,6 +413,11 @@ void EngineBuffer::slotTrackLoading() {
     m_pTrackSamples->set(0); // Stop renderer
 }
 
+void EngineBuffer::loadFakeTrack() {
+	TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    slotTrackLoaded(pTrack, 44100, 44100 * 10);
+}
+
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
@@ -482,6 +494,14 @@ void EngineBuffer::slotControlSeek(double change)
     // Ensure that the file position is even (remember, stereo channel files...)
     if (!even((int)new_playpos))
         new_playpos--;
+
+    if (m_pQuantize->get() > 0.0) {
+        int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(new_playpos));
+        if (!even(offset)) {
+            offset--;
+        }
+        new_playpos += offset;
+    }
 
     queueNewPlaypos(new_playpos);
 }
@@ -729,11 +749,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // Copy scaled audio into pOutput
             memcpy(pOutput, output, sizeof(pOutput[0]) * iBufferSize);
 
-            // Adjust filepos_play by the amount we processed. TODO(XXX) what
-            // happens if samplesRead is a fraction?
-            m_filepos_play =
-                    m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
-                        static_cast<int>(m_filepos_play), samplesRead);
+            if (m_bScalerOverride) {
+                // If testing, we don't have a real log so we fake the position.
+                m_filepos_play += samplesRead;
+            } else {
+                // Adjust filepos_play by the amount we processed. TODO(XXX) what
+                // happens if samplesRead is a fraction?
+                m_filepos_play =
+                        m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
+                                static_cast<int>(m_filepos_play), samplesRead);
+            }
         }
 
         //Crossfade if we just did a seek
@@ -889,13 +914,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     }
 
     // Update indicators that are only updated after every
-    // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider,
-    // rateEngine)
+    // sampleRate/kiUpdateRate samples processed.
     if (m_iSamplesCalculated > (m_pSampleRate->get()/kiUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
-
-        if(rate != m_rateEngine->get())
-            m_rateEngine->set(rate);
 
         //Update the BPM even more slowly
         m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
@@ -913,6 +934,8 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     m_visualPlayPos->set(fFractionalPlaypos, rate,
             (double)iBufferSize/m_file_length_old,
             fractionalPlayposFromAbsolute(m_dSlipPosition));
+    m_rateEngine->set(rate);
+    m_pRateControl->checkTrackPosition(fFractionalPlaypos);
 }
 
 void EngineBuffer::hintReader(const double dRate) {
@@ -1004,3 +1027,9 @@ void EngineBuffer::setReader(CachingReader* pReader) {
             Qt::DirectConnection);
 }
 */
+
+void EngineBuffer::setScalerForTest(EngineBufferScale* pScale) {
+	m_pScale = pScale;
+	// This bool is permanently set and can't be undone.
+	m_bScalerOverride = true;
+}

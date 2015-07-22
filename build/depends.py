@@ -517,6 +517,7 @@ class MixxxCore(Feature):
                    "engine/enginepregain.cpp",
                    "engine/enginechannel.cpp",
                    "engine/enginemaster.cpp",
+                   "engine/enginesync.cpp",
                    "engine/enginedelay.cpp",
                    "engine/engineflanger.cpp",
                    "engine/enginefiltereffect.cpp",

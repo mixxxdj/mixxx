@@ -54,6 +54,7 @@ class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineBufferScaleRubberBand;
+class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
@@ -67,7 +68,7 @@ struct Hint;
 // Length of audio beat marks in samples
 const int audioBeatMarkLen = 40;
 
-
+// Temporary buffer length
 const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
@@ -90,7 +91,8 @@ const int ENGINE_RAMP_UP = 1;
 class EngineBuffer : public EngineObject {
      Q_OBJECT
 public:
-    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
+    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config,
+                 EngineMaster* pMixingEngine);
     ~EngineBuffer();
     bool getPitchIndpTimeStretch(void);
 
@@ -105,7 +107,6 @@ public:
     double getBpm();
     // Returns the BPM of the loaded track (not thread-safe)
     double getFileBpm();
-
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
@@ -126,6 +127,12 @@ public:
 
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
+
+    // For dependency injection of scalers.
+    void setScalerForTest(EngineBufferScale* pScale);
+
+    // For dependency injection of fake tracks.
+    void loadFakeTrack();
 
   public slots:
     void slotControlPlayRequest(double);
@@ -177,6 +184,7 @@ public:
     ConfigObject<ConfigValue>* m_pConfig;
 
     LoopingControl* m_pLoopingControl;
+    EngineSync* m_pEngineSync;
     RateControl* m_pRateControl;
     BpmControl* m_pBpmControl;
     KeyControl* m_pKeyControl;
@@ -247,6 +255,7 @@ public:
     ControlObject* m_rateEngine;
     ControlObject* m_visualBpm;
     ControlObject* m_visualKey;
+    ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
     ControlObjectSlave* m_pSampleRate;
@@ -274,6 +283,8 @@ public:
     EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
+    // Indicates that dependency injection has taken place.
+    bool m_bScalerOverride;
 
     QAtomicInt m_bSeekQueued;
     // TODO(XXX) make a macro or something.

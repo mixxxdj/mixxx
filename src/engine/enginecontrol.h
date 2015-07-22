@@ -64,11 +64,12 @@ class EngineControl : public QObject {
     // target.
     virtual void hintReader(QVector<Hint>* pHintList);
 
-    void setEngineMaster(EngineMaster* pEngineMaster);
+    virtual void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
-    void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
+    virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
+    const char* getGroup() const;
 
     // Called whenever a seek occurs to allow the EngineControl to respond.
     virtual void notifySeek(double dNewPlaypo);
@@ -82,14 +83,14 @@ class EngineControl : public QObject {
     void seekAbs(double sample);
     EngineBuffer* pickSyncTarget();
 
-    const char* getGroup();
     ConfigObject<ConfigValue>* getConfig();
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
 
-  private:
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
+
+  private:
     ControlValueAtomic<double> m_dCurrentSample;
     double m_dTotalSamples;
     EngineMaster* m_pEngineMaster;

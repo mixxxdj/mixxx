@@ -24,7 +24,6 @@
 class ControlObject;
 class EngineBuffer;
 class EnginePregain;
-class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
 class EngineFlanger;
@@ -59,11 +58,19 @@ class EngineChannel : public EngineObject {
         return NULL;
     }
 
+  private slots:
+    void slotOrientationLeft(double v);
+    void slotOrientationRight(double v);
+    void slotOrientationCenter(double v);
+
   private:
     const QString m_group;
     ControlPushButton* m_pMaster;
     ControlPushButton* m_pPFL;
     ControlObject* m_pOrientation;
+    ControlPushButton* m_pOrientationLeft;
+    ControlPushButton* m_pOrientationRight;
+    ControlPushButton* m_pOrientationCenter;
 };
 
 #endif

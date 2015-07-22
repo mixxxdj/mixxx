@@ -91,6 +91,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 // static
 void ControlDoublePrivate::getControls(QList<ControlDoublePrivate*>* pControlList) {
     m_sqCOHashMutex.lock();
+    pControlList->clear();
     for (QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = m_sqCOHash.begin();
          it != m_sqCOHash.end(); ++it) {
         pControlList->push_back(it.value().data());
