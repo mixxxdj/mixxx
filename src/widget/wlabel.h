@@ -22,23 +22,21 @@
 
 #include "widget/wwidget.h"
 
-/**
-  *@author Tue Haste Andersen
-  */
 class WLabel : public WWidget {
     Q_OBJECT
   public:
-    WLabel(QWidget *parent=0);
+    WLabel(QWidget* pParent=NULL);
     virtual ~WLabel();
 
-    void setup(QDomNode node);
+    virtual void setup(QDomNode node);
     virtual QWidget* getComposedWidget() { return m_pLabel; }
 
   protected:
-    QLabel *m_pLabel;
+    QLabel* m_pLabel;
     QString m_qsText;
-    /** Foreground and background colors */
-    QColor m_qFgColor, m_qBgColor;
+    // Foreground and background colors.
+    QColor m_qFgColor;
+    QColor m_qBgColor;
 };
 
 #endif

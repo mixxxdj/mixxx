@@ -25,6 +25,7 @@
 #include <QString>
 #include <QDomNode>
 #include <QPixmap>
+#include <QVector>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -36,21 +37,24 @@ class WStatusLight : public WWidget  {
     virtual ~WStatusLight();
 
     void setup(QDomNode node);
-    void setPixmap(int iState, const QString &filename);
-    void setNoPos(int iNoPos);
 
   public slots:
     void setValue(double v);
 
-  private:
+  protected:
     void paintEvent(QPaintEvent *);
 
-    /** Current position */
+  private:
+    void setPixmap(int iState, const QString &filename);
+    void setNoPos(int iNoPos);
+
+    // Current position
     int m_iPos;
-    /** Number of positions associated with this light */
-    int m_iNoPos;
-    /** Associated pixmaps */
-    QPixmapPointer* m_pPixmapSLs;
+
+    QPixmapPointer m_pPixmapBackground;
+
+    // Associated pixmaps
+    QVector<QPixmapPointer> m_pixmaps;
 };
 
 #endif

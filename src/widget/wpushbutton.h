@@ -25,6 +25,7 @@
 #include <QMouseEvent>
 #include <QFocusEvent>
 #include <QTimer>
+#include <QVector>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -33,9 +34,9 @@
 class WPushButton : public WWidget {
     Q_OBJECT
   public:
-    WPushButton(QWidget *parent=0);
+    WPushButton(QWidget* pParent=NULL);
     // Used by WPushButtonTest.
-    WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButtonMode,
+    WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
                 ControlPushButton::ButtonMode rightButtonMode);
     virtual ~WPushButton();
 
@@ -44,13 +45,6 @@ class WPushButton : public WWidget {
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.
     void setStates(int iStatesW);
-
-    // Associates a pixmap of a given state of the button with the widget
-    void setPixmap(int iState, bool bPressed, const QString &filename);
-
-    // Associates a background pixmap with the widget. This is only needed if
-    // the button pixmaps contains alpha channel values.
-    void setPixmapBackground(const QString &filename);
 
   public slots:
     void setValue(double);
@@ -61,17 +55,28 @@ class WPushButton : public WWidget {
     virtual void mouseReleaseEvent(QMouseEvent *e);
     virtual void focusOutEvent(QFocusEvent* e);
 
+  private:
+    // Associates a pixmap of a given state of the button with the widget
+    void setPixmap(int iState, bool bPressed, const QString &filename);
+
+    // Associates a background pixmap with the widget. This is only needed if
+    // the button pixmaps contains alpha channel values.
+    void setPixmapBackground(const QString &filename);
+
+    bool m_bLeftClickForcePush;
+    bool m_bRightClickForcePush;
+
     // True, if the button is currently pressed
     bool m_bPressed;
 
-  private:
-    bool m_bLeftClickForcePush, m_bRightClickForcePush;
-    // Number of states associated with this button
-    int m_iNoStates;
     // Array of associated pixmaps
-    QPixmapPointer* m_pPixmaps;
+    int m_iNoStates;
+    QVector<QPixmapPointer> m_pressedPixmaps;
+    QVector<QPixmapPointer> m_unpressedPixmaps;
+
     // Associated background pixmap
     QPixmapPointer m_pPixmapBack;
+
     // short click toggle button long click push button
     ControlPushButton::ButtonMode m_leftButtonMode;
     ControlPushButton::ButtonMode m_rightButtonMode;

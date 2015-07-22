@@ -768,7 +768,7 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
         return;
     }
 
-    for (int i = m_rateControls.size(); i < m_iNumConfiguredSamplers; ++i) {
+    for (int i = m_iNumConfiguredSamplers; i < numsamplers; ++i) {
         QString group = PlayerManager::groupForSampler(i);
         m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));

@@ -12,7 +12,7 @@
 #include <QTreeView>
 
 class WLibrarySidebar : public QTreeView {
-  Q_OBJECT
+    Q_OBJECT
   public:
     WLibrarySidebar(QWidget* parent = 0);
     virtual ~WLibrarySidebar();
