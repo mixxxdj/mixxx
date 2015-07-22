@@ -69,11 +69,13 @@ void AnalyserQueue::addAnalyser(Analyser* an) {
 
 // This is called from the AnalyserQueue thread
 bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
-    QMutexLocker queueLocker(&m_qm);
-
     const PlayerInfo& info = PlayerInfo::instance();
     TrackPointer pTrack;
     bool trackWaiting = false;
+    QList<TrackPointer> progress100List;
+    QList<TrackPointer> progress0List;
+
+    m_qm.lock();
     QMutableListIterator<TrackPointer> it(m_tioq);
     while (it.hasNext()) {
         TrackPointer& pTrack = it.next();
@@ -98,15 +100,26 @@ bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
                 }
             }
             if (!processTrack) {
-                emitUpdateProgress(pTrack, 1000);
                 it.remove();
+                progress100List.append(pTrack);
             } else {
-                emitUpdateProgress(pTrack, 0);
+                progress0List.append(pTrack);
             }
         } else if (progress == 1000) {
             it.remove();
         }
     }
+
+    m_qm.unlock();
+
+    // update progress after unlock to avoid a deadlock
+    foreach (TrackPointer pTrack, progress100List) {
+        emitUpdateProgress(pTrack, 1000);
+    }
+    foreach (TrackPointer pTrack, progress0List) {
+        emitUpdateProgress(pTrack, 0);
+    }
+
     if (info.isTrackLoaded(analysingTrack)) {
         return false;
     }
@@ -146,6 +159,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
     }
 
     if (!pLoadTrack && !m_tioq.isEmpty()) {
+        // no prioritized track found, use head track
         pLoadTrack = m_tioq.dequeue();
     }
 
