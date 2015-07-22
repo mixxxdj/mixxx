@@ -68,7 +68,7 @@ void AnalyserQueue::addAnalyser(Analyser* an) {
 }
 
 // This is called from the AnalyserQueue thread
-bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer tio) {
+bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
     QMutexLocker queueLocker(&m_qm);
 
     const PlayerInfo& info = PlayerInfo::instance();
@@ -107,7 +107,7 @@ bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer tio) {
             it.remove();
         }
     }
-    if (info.isTrackLoaded(tio)) {
+    if (info.isTrackLoaded(analysingTrack)) {
         return false;
     }
     return trackWaiting;
@@ -231,9 +231,8 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, const Mixxx::SoundSourcePointer
         //QThread::yieldCurrentThread();
         //QThread::usleep(10);
 
-        //has something new entered the queue?
-        if (load_atomic(m_aiCheckPriorities)) {
-            m_aiCheckPriorities = false;
+        // has something new entered the queue?
+        if (m_aiCheckPriorities.fetchAndStoreAcquire(false)) {
             if (isLoadedTrackWaiting(tio)) {
                 qDebug() << "Interrupting analysis to give preference to a loaded track.";
                 dieflag = true;
@@ -273,7 +272,7 @@ void AnalyserQueue::run() {
     m_progressInfo.current_track = TrackPointer();
     m_progressInfo.track_progress = 0;
     m_progressInfo.queue_size = 0;
-    m_progressInfo.sema.release(); // Initalise with one
+    m_progressInfo.sema.release(); // Initialise with one
 
     while (!m_exit) {
         TrackPointer nextTrack = dequeueNextBlocking();
@@ -328,7 +327,7 @@ void AnalyserQueue::run() {
             emitUpdateProgress(nextTrack, 0);
             bool completed = doAnalysis(nextTrack, pSoundSource);
             if (!completed) {
-                //This track was cancelled
+                // This track was cancelled
                 QListIterator<Analyser*> itf(m_aq);
                 while (itf.hasNext()) {
                     itf.next()->cleanup(nextTrack);
@@ -398,11 +397,10 @@ void AnalyserQueue::slotUpdateProgress() {
     m_progressInfo.sema.release();
 }
 
-//slot
 void AnalyserQueue::slotAnalyseTrack(TrackPointer tio) {
     // This slot is called from the decks and and samplers when the track was loaded.
-    m_aiCheckPriorities = true;
     queueAnalyseTrack(tio);
+    m_aiCheckPriorities = true;
 }
 
 // This is called from the GUI and from the AnalyserQueue thread
