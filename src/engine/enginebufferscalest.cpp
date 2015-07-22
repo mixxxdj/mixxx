@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "enginebufferscalest.h"
+#include "engine/enginebufferscalest.h"
 
 // Fixes redefinition warnings from SoundTouch.
 #undef TRUE

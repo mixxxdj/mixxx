@@ -35,9 +35,8 @@ EngineFilterIIR::~EngineFilterIIR()
 {
 }
 
-void EngineFilterIIR::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
+void EngineFilterIIR::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize)
 {
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
     double GAIN =  coefs[0];
     int i;
     for (i=0; i<iBufferSize; i+=2)
@@ -132,4 +131,3 @@ void EngineFilterIIR::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const i
         yv2[i] = zap_denormal(yv2[i]);
     }
 }
-

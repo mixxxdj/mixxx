@@ -30,15 +30,17 @@
 class ControlPotmeter;
 
 class EngineVuMeter : public EngineObject {
-public:
-    EngineVuMeter(const char *);
-    ~EngineVuMeter();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    Q_OBJECT
+  public:
+    EngineVuMeter(const char* );
+    virtual ~EngineVuMeter();
 
-private:
-    ControlPotmeter *m_ctrlVuMeter;
-    ControlPotmeter *m_ctrlVuMeterL;
-    ControlPotmeter *m_ctrlVuMeterR;
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+
+  private:
+    ControlPotmeter* m_ctrlVuMeter;
+    ControlPotmeter* m_ctrlVuMeterL;
+    ControlPotmeter* m_ctrlVuMeterR;
     FLOAT_TYPE m_fRMSvolumeL;
     FLOAT_TYPE m_fRMSvolumeSumL;
     FLOAT_TYPE m_fRMSvolumeR;

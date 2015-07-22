@@ -59,7 +59,7 @@ class EngineBufferScaleST : public EngineBufferScale {
     bool m_bBackwards;
 
     // Temporary buffer for reading from the RAMAN.
-    CSAMPLE *buffer_back;
+    CSAMPLE* buffer_back;
 
     // SoundTouch time/pitch scaling lib
     soundtouch::SoundTouch* m_pSoundTouch;

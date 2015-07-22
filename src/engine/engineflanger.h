@@ -20,7 +20,7 @@
 #include <QMap>
 #include <QSharedPointer>
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 
 class ControlPotmeter;
 class ControlPushButton;
@@ -29,13 +29,16 @@ class EngineFlangerControls;
 const int max_delay = 5000;
 
 class EngineFlanger : public EngineObject {
+    Q_OBJECT
   public:
-    EngineFlanger(const char *group);
-    ~EngineFlanger();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    EngineFlanger(const char* group);
+    virtual ~EngineFlanger();
+
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+
   private:
     ControlPushButton* m_pFlangerEnable;
-    CSAMPLE *m_pDelay_buffer;
+    CSAMPLE* m_pDelay_buffer;
     int  m_LFOamplitude;
     int m_average_delay_length;
     int m_time;

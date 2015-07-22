@@ -51,9 +51,8 @@ void EngineFilterEffect::applyFilters(const CSAMPLE* pIn, CSAMPLE* pOut,
     SampleUtil::addWithGain(pOut, m_pBandpass_buffer, bandpass_gain, iBufferSize);
 }
 
-void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
+void EngineFilterEffect::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                                  const int iBufferSize) {
-    CSAMPLE* pOutput = (CSAMPLE*)pOut;
     double depth = m_pPotmeterDepth->get();
 
     if (m_pFilterEnable->get() == 0.0) {

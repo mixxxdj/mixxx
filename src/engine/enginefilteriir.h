@@ -20,13 +20,14 @@
 #include "engine/engineobject.h"
 #include "defs.h"
 
-class EngineFilterIIR : public EngineObject
-{
-public:
-    EngineFilterIIR(const double *pCoefs, int iOrder);
-    ~EngineFilterIIR();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-protected:
+class EngineFilterIIR : public EngineObject {
+    Q_OBJECT
+  public:
+    EngineFilterIIR(const double* pCoefs, int iOrder);
+    virtual ~EngineFilterIIR();
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+
+  protected:
     int order;
     const double *coefs;
     #define MAXNZEROS 8

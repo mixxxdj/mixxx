@@ -18,17 +18,17 @@
 #ifndef ENGINEBUFFERSCALEDUMMY_H
 #define ENGINEBUFFERSCALEDUMMY_H
 
-#include "defs.h"
 #include <QObject>
+
+#include "defs.h"
 #include "engine/enginebufferscale.h"
 
 class ReadAheadManager;
 
-class EngineBufferScaleDummy : public EngineBufferScale
-{
-public:
+class EngineBufferScaleDummy : public EngineBufferScale {
+  public:
     EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager);
-    ~EngineBufferScaleDummy();
+    virtual ~EngineBufferScaleDummy();
 
     /** Get new playpos after call to scale() */
     double getNewPlaypos();

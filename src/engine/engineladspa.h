@@ -10,7 +10,7 @@
 #ifndef ENGINELADSPA_H
 #define ENGINELADSPA_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 
 #include "ladspa/ladspainstance.h"
 #include "ladspa/ladspaplugin.h"
@@ -19,37 +19,36 @@ class ControlPotmeter;
 class LADSPAControl;
 class EngineLADSPA;
 
-struct EngineLADSPAControlConnection
-{
-    ControlObject * potmeter;
-    LADSPAControl * control;
+struct EngineLADSPAControlConnection {
+    ControlObject*  potmeter;
+    LADSPAControl*  control;
     bool remove;
 };
 
-typedef QLinkedList<EngineLADSPAControlConnection *> EngineLADSPAControlConnectionLinkedList;
-typedef QVector<EngineLADSPAControlConnection *> EngineLADSPAControlConnectionVector;
+typedef QLinkedList<EngineLADSPAControlConnection*> EngineLADSPAControlConnectionLinkedList;
+typedef QVector<EngineLADSPAControlConnection*> EngineLADSPAControlConnectionVector;
 
-class EngineLADSPA : public EngineObject 
-{
-public:
+class EngineLADSPA : public EngineObject {
+    Q_OBJECT
+  public:
     EngineLADSPA();
-    ~EngineLADSPA();
+    virtual ~EngineLADSPA();
 
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    void addInstance(LADSPAInstance * instance);
-    EngineLADSPAControlConnection * addControl(ControlObject * potmeter, LADSPAControl * control);
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void addInstance(LADSPAInstance* instance);
+    EngineLADSPAControlConnection* addControl(ControlObject* potmeter, LADSPAControl* control);
 
-    static EngineLADSPA * getEngine();
+    static EngineLADSPA* getEngine();
 
-private:
+  private:
     LADSPAInstanceLinkedList m_Instances;
     EngineLADSPAControlConnectionLinkedList m_Connections;
     int m_bufferSize;
     int m_monoBufferSize;
-    CSAMPLE * m_pBufferLeft[2];
-    CSAMPLE * m_pBufferRight[2];
+    CSAMPLE* m_pBufferLeft[2];
+    CSAMPLE* m_pBufferRight[2];
 
-    static EngineLADSPA * m_pEngine;
+    static EngineLADSPA* m_pEngine;
 };
 
 #endif

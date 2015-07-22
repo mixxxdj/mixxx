@@ -18,7 +18,7 @@
 
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
-#include "engineflanger.h"
+#include "engine/engineflanger.h"
 #include "mathstuff.h"
 #include "sampleutil.h"
 
@@ -67,7 +67,7 @@ QWeakPointer<EngineFlangerControls> EngineFlangerControls::m_pInstance;
     LFOamplitude - the amplitude of the modulation of the delay length.
     depth - the depth of the flanger, controlled by a ControlPotmeter.
    ----------------------------------------------------------------*/
-EngineFlanger::EngineFlanger(const char * group) {
+EngineFlanger::EngineFlanger(const char* group) {
     // Init. buffers:
     m_pDelay_buffer = SampleUtil::alloc(max_delay + 1);
     SampleUtil::applyGain(m_pDelay_buffer, 0.0f, max_delay+1);
@@ -104,9 +104,8 @@ EngineFlanger::~EngineFlanger() {
     SampleUtil::free(m_pDelay_buffer);
 }
 
-void EngineFlanger::process(const CSAMPLE * pIn,
-        const CSAMPLE * pOut, const int iBufferSize) {
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
+void EngineFlanger::process(const CSAMPLE* pIn,
+                            CSAMPLE* pOutput, const int iBufferSize) {
     CSAMPLE delayed_sample,prev,next;
     FLOAT_TYPE frac;
 

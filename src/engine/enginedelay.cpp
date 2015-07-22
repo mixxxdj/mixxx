@@ -20,7 +20,7 @@
 /*----------------------------------------------------------------
 
    ----------------------------------------------------------------*/
-EngineDelay::EngineDelay(const char * group)
+EngineDelay::EngineDelay(const char* group)
 {
     m_pDelayBuffer = new CSAMPLE[kiMaxDelay];
     m_iDelayPos = 0;
@@ -35,10 +35,9 @@ EngineDelay::~EngineDelay()
     delete m_pPotmeter;
 }
 
-void EngineDelay::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
+void EngineDelay::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize)
 {
     int iDelaySourcePos = (m_iDelayPos+kiMaxDelay-m_iDelay)%kiMaxDelay;
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
 
     Q_ASSERT(iDelaySourcePos>=0);
     Q_ASSERT(iDelaySourcePos<=kiMaxDelay);

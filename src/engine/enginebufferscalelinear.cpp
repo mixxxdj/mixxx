@@ -93,7 +93,7 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 
 /** Determine if we're changing directions (scratching) and then perform
     a stretch */
-CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
+CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
     if (m_bClear) {
         m_dOldRate = m_dRate;  // If cleared, don't interpolate rate.
         m_bClear = false;
@@ -159,8 +159,8 @@ CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
 }
 
 /** Stretch a specified buffer worth of audio using linear interpolation */
-CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
-        unsigned long buf_size, int* samples_read) {
+CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
+                                           unsigned long buf_size, int* samples_read) {
     float rate_add_old = m_dOldRate;
     float rate_add_new = m_dRate;
     float rate_add_diff = rate_add_new - rate_add_old;

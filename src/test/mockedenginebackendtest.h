@@ -49,7 +49,6 @@ class MockScaler : public EngineBufferScale {
 class MockedEngineBackendTest : public MixxxTest {
   protected:
     virtual void SetUp() {
-        m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
         m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]", false, false);
 
@@ -93,7 +92,6 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pChannel2 = NULL;
         m_pChannel3 = NULL;
         m_pEngineSync = NULL;
-        SampleUtil::free(m_pBuffer);
 
         // Deletes all EngineChannels added to it.
         delete m_pEngineMaster;
@@ -108,7 +106,7 @@ class MockedEngineBackendTest : public MixxxTest {
     }
 
     void ProcessBuffer() {
-        m_pEngineMaster->process(NULL, m_pBuffer, 1024);
+        m_pEngineMaster->process(1024);
     }
 
     ControlObject* m_pNumDecks;
@@ -117,8 +115,6 @@ class MockedEngineBackendTest : public MixxxTest {
     EngineMaster* m_pEngineMaster;
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     MockScaler *m_pMockScaler1, *m_pMockScaler2, *m_pMockScaler3;
-
-    CSAMPLE *m_pBuffer;
 
     static const char* m_sGroup1;
     static const char* m_sGroup2;

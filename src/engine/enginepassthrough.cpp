@@ -93,8 +93,7 @@ void EnginePassthrough::receiveBuffer(AudioInput input, const short* pBuffer, un
     }
 }
 
-void EnginePassthrough::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize) {
-    CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
+void EnginePassthrough::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferSize) {
     Q_UNUSED(pInput);
 
     // If passthrough is enabled, then read into the output buffer. Otherwise,

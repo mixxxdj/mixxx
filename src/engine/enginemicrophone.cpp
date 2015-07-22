@@ -104,9 +104,8 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
     }
 }
 
-void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize) {
+void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferSize) {
     Q_UNUSED(pInput);
-    CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
 
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
     // the appropriate number of samples to throw them away.

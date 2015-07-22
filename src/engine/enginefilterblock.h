@@ -35,13 +35,15 @@ class ControlPushButton;
   *@author Tue and Ken Haste Andersen
   */
 
-class EngineFilterBlock : public EngineObject
-{
-public:
-    EngineFilterBlock(const char *group);
-    ~EngineFilterBlock();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-private:
+class EngineFilterBlock : public EngineObject {
+    Q_OBJECT
+  public:
+    EngineFilterBlock(const char* group);
+    virtual ~EngineFilterBlock();
+
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+
+  private:
     void setFilters(bool forceSetting = false);
 
     CSAMPLE *m_pTemp1, *m_pTemp2, *m_pTemp3;

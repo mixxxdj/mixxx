@@ -96,9 +96,9 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_bPlayAfterLoading(false),
     m_fRampValue(0.0),
     m_iRampState(ENGINE_RAMP_NONE),
-    m_pDitherBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
+    m_pDitherBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
     m_iDitherBufferReadIndex(0),
-    m_pCrossFadeBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
+    m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
     m_iCrossFadeSamples(0),
     m_iLastBufferSize(0) {
 
@@ -107,7 +107,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
         m_pDitherBuffer[i] = static_cast<float>(rand() % 32768) / 32768.0 - 0.5;
     }
 
-    //zero out crossfade buffer
+    // zero out crossfade buffer
     SampleUtil::applyGain(m_pCrossFadeBuffer, 0.0, MAX_BUFFER_LEN);
 
     m_fLastSampleValue[0] = 0;
@@ -308,8 +308,8 @@ EngineBuffer::~EngineBuffer()
     delete m_pKeylock;
     delete m_pEject;
 
-    delete [] m_pDitherBuffer;
-    delete [] m_pCrossFadeBuffer;
+    SampleUtil::free(m_pDitherBuffer);
+    SampleUtil::free(m_pCrossFadeBuffer);
 
     while (m_engineControls.size() > 0) {
         EngineControl* pControl = m_engineControls.takeLast();
@@ -353,7 +353,7 @@ double EngineBuffer::getFileBpm() {
     return m_pBpmControl->getFileBpm();
 }
 
-void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster) {
+void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
     m_engineLock.lock();
     foreach (EngineControl* pControl, m_engineControls) {
         pControl->setEngineMaster(pEngineMaster);
@@ -399,7 +399,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_engineLock.unlock();
 }
 
-const char * EngineBuffer::getGroup()
+const char* EngineBuffer::getGroup()
 {
     return m_group;
 }
@@ -581,7 +581,7 @@ void EngineBuffer::slotControlSlip(double v)
 }
 
 
-void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
+void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSize)
 {
     Q_ASSERT(even(iBufferSize));
     m_pReader->process();
@@ -595,7 +595,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
 
-    CSAMPLE * pOutput = (CSAMPLE *)pOut; // strip const attribute TODO(XXX): avoid this hack
     bool bCurBufferPaused = false;
     double rate = 0;
 
@@ -869,7 +868,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         for (int i=0; i < iBufferSize; i += 2) {
             if (bCurBufferPaused) {
-                float dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
+                CSAMPLE dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
                 m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
                 pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
                 pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;

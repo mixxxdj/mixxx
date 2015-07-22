@@ -18,7 +18,7 @@
 
 #include "configobject.h"
 #include "controlobject.h"
-#include "enginevinylsoundemu.h"
+#include "engine/enginevinylsoundemu.h"
 #include "sampleutil.h"
 
 /** This class emulates the response of a vinyl record's audio to changes
@@ -27,7 +27,7 @@
  *   these slow speeds.
  */
 
-EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue> * pConfig, const char * group)
+EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue>* pConfig, const char* group)
 {
     m_pConfig = pConfig;
     m_pRateEngine = ControlObject::getControl(ConfigKey(group, "rateEngine"));
@@ -46,9 +46,7 @@ EngineVinylSoundEmu::~EngineVinylSoundEmu()
 
 }
 
-void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
-{
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
+void EngineVinylSoundEmu::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
     m_fSpeed = (float)m_pRateEngine->get();
     float rateFrac = 2 * (m_fSpeed - m_fOldSpeed) / (float)iBufferSize;
     float curRate = m_fOldSpeed;

@@ -37,6 +37,6 @@ const int VINYL_STATUS_ERROR = 3;
 #define MIXXX_VINYL_SCOPE_UPDATE_LATENCY_MS 20
 #define MIXXX_VINYL_SCOPE_SIZE 100
 
-const int kMaximumVinylControlInputs = 2;
+const int kMaximumVinylControlInputs = 4;
 
 #endif /* DEFS_VINYLCONTROL_H */

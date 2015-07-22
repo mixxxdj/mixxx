@@ -12,8 +12,8 @@
 #include "cachingreader.h"
 #include "mathstuff.h"
 
-CueControl::CueControl(const char * _group,
-                       ConfigObject<ConfigValue> * _config) :
+CueControl::CueControl(const char* _group,
+                       ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_bHotcueCancel(false),
         m_bPreviewing(false),

@@ -31,7 +31,7 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
 /*----------------------------------------------------------------
    A pregaincontrol is ... a pregain.
    ----------------------------------------------------------------*/
-EnginePregain::EnginePregain(const char * group)
+EnginePregain::EnginePregain(const char* group)
 {
     potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
     //Replay Gain things
@@ -60,11 +60,10 @@ EnginePregain::~EnginePregain()
     s_pReplayGainBoost = NULL;
 }
 
-void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize) {
+void EnginePregain::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
 
     float fEnableReplayGain = s_pEnableReplayGain->get();
     float fReplayGainBoost = s_pReplayGainBoost->get();
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
     float fGain = potmeterPregain->get();
     float fReplayGain = m_pControlReplayGain->get();
     float fReplayGainCorrection=1;
