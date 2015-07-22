@@ -60,8 +60,8 @@ The small multicolor button below the encoders toggles the mode for the encoders
 		Bottom encoder: adjust loop length. Center LED represents 1 beat. Each step to the right doubles the loop size; each step to the left halves the loop size. Press the encoder to toggle loops on/off. With slip mode on, the loop will be a rolling loop and only be active as long as the encoder is held down. That is, when the loop is disabled, the deck will jump to where it would have been if the loop was not activated.
 	
 	While holding shift (in either EQ or loop mode):
-		Middle encoder: scroll through the 4 pages of hotcues on the button grid
-		Low encoder: skips through the track 32 beats at a time
+		Middle encoder: skips through the track 32 beats at a time
+		Low encoder: scroll through the 4 pages of hotcues on the button grid
 
 Small multicolor button above the vertical fader: toggle headphone cueing
 Vertical fader: volume
@@ -72,8 +72,8 @@ While holding shift:
 	Play/pause (with yellow shift buttons at bottom): cue. When previewing from a cue point while a track is paused, let go of shift to let the track continue playing. Let go of the cue button to stop the track and jump back to the cue point.
 	Play/pause (with red shift button at top): jump to cue point and stop
 
-The 8x4 grid of small buttons is divided in half with each side controlling a deck. If that side of the controller is controlling deck 1 or 2, the hotcues are cyan and the switches are blue. If it is controlling deck 3 or 4, the hotcues are red and the switches are magenta.
-	The top two rows are hotcue buttons. By default, they control hotcues 1-8. By pressing shift and turning the middle encoder, they can be switched between 4 pages with 8 hotcues each for a total of 32 hotcues. When there is no hotcue set, they are off.
+The 8x4 grid of small buttons is divided in half with each side controlling a deck.
+	The top two rows are hotcue buttons. By default, they control hotcues 1-8. By pressing shift and turning the low encoder, they can be switched between 4 pages with 8 hotcues each for a total of 32 hotcues. The pages are color coded, in order, cyan, green, red, and white. When there is no hotcue set, the LEDs are off.
 	To set a hotcue point, press a hotcue button that is off.
 	When slip mode is off, pressing a hotcue button will simply jump to that hotcue point.
 	When slip mode is on, the deck will jump to the hotcue and keep playing from there as long as the hotcue button is held down. If the deck was playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump to where it would have been if no hotcue buttons were pressed. If the deck was not playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump back to the last pressed hotcue and stop playing.
