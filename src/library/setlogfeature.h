@@ -34,6 +34,7 @@ public:
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void slotJoinWithPrevious();
     void slotConstructChildModel(int playlistId);
+    void slotGetNewPlaylist();
 
   protected:
     void buildPlaylistList();
@@ -48,6 +49,7 @@ public:
 
     QLinkedList<int> m_recentTracks;
     QAction *m_pJoinWithPreviousAction;
+    QAction *m_pGetNewPlaylist;
     int m_playlistId;
 
   signals:

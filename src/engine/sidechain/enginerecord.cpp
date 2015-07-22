@@ -275,26 +275,27 @@ bool EngineRecord::openFile() {
 
         // Creates a new WAVE or AIFF file and writes header information.
 #ifdef __WINDOWS__
-        LPCWSTR lpcwFilename = (LPCWSTR)m_fileName.utf16(); //Pointer valid until string changed
-        m_pSndfile = sf_wchar_open( lpcwFilename, SFM_WRITE, &m_sfInfo);
+        // Pointer valid until string changed
+        LPCWSTR lpcwFilename = (LPCWSTR)m_fileName.utf16();
+        m_pSndfile = sf_wchar_open(lpcwFilename, SFM_WRITE, &m_sfInfo);
 #else
         QByteArray qbaFilename = m_fileName.toUtf8();
-        m_pSndfile = sf_open(qbaFilename.data(), SFM_WRITE, &m_sfInfo);
+        m_pSndfile = sf_open(qbaFilename.constData(), SFM_WRITE, &m_sfInfo);
 #endif
         if (m_pSndfile) {
             sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
             // Set meta data
             int ret;
 
-            ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_baTitle.data());
+            ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_baTitle.constData());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 
-            ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_baAuthor.data());
+            ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_baAuthor.constData());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 
-            ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_baAlbum.data());
+            ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_baAlbum.constData());
             if(ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 

@@ -21,7 +21,14 @@ SetlogFeature::SetlogFeature(QObject* parent,
                                                    true); //show all tracks
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
-            this, SLOT(slotJoinWithPrevious()));
+            this, SLOT(slotJoinWithPrevious()),
+            Qt::QueuedConnection);
+
+    m_pGetNewPlaylist = new QAction(tr("Create new history playlist"), this);
+    connect(m_pGetNewPlaylist, SIGNAL(triggered()),
+            this, SLOT(slotGetNewPlaylist()),
+            Qt::QueuedConnection);
+
 
 //    connect(this, SIGNAL(constructChildModelBlocking(int)),
 //            this, SLOT(slotConstructChildModel(int)), Qt::BlockingQueuedConnection);
@@ -53,6 +60,9 @@ void SetlogFeature::init() {
             qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
         }
     }, __PRETTY_FUNCTION__);
+
+    // initialised in a new generic slot(get new history playlist purpose)
+    emit(slotGetNewPlaylist());
 }
 
 void SetlogFeature::createChildModel() {
@@ -141,6 +151,15 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
         // The very first setlog cannot be joint
         menu.addAction(m_pJoinWithPreviousAction);
     }
+    int tracksInPlaylist;
+    m_pTrackCollection->callSync([this, &tracksInPlaylist]
+            (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        tracksInPlaylist = pTrackCollectionPrivate->getPlaylistDAO().tracksInPlaylist(m_playlistId);
+    }, __PRETTY_FUNCTION__);
+    if (playlistId == m_playlistId && tracksInPlaylist != 0) {
+        // Todays playlists can change !
+        menu.addAction(m_pGetNewPlaylist);
+    }
     menu.addSeparator();
     menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
@@ -191,6 +210,44 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
             item->setIcon(QIcon());
         }
     }
+}
+
+void SetlogFeature::slotGetNewPlaylist()
+{
+    // qDebug() << "slotGetNewPlaylist() succesfully triggered !";
+
+    //create a new playlist for today
+    QString set_log_name_format;
+    QString set_log_name;
+
+    set_log_name = QDate::currentDate().toString(Qt::ISODate);
+    set_log_name_format = set_log_name + " (%1)";
+    int i = 1;
+
+    // calculate name of the todays setlog
+    m_pTrackCollection->callSync( [&set_log_name, &set_log_name_format, &i] 
+            (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        while (pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(set_log_name) != -1) {
+            set_log_name = set_log_name_format.arg(++i);
+        }
+    }, __PRETTY_FUNCTION__);
+
+    // qDebug() << "Creating session history playlist name:" << set_log_name;
+    m_pTrackCollection->callSync( [this, &set_log_name] 
+            (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        m_playlistId = pTrackCollectionPrivate->
+                            getPlaylistDAO().createPlaylist(set_log_name,
+                                                            PlaylistDAO::PLHT_SET_LOG);
+    }, __PRETTY_FUNCTION__);
+
+    if (m_playlistId == -1) {
+        qDebug() << "Setlog playlist Creation Failed";
+        qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
+    }
+
+    slotPlaylistTableChanged(m_playlistId); // For moving selection
+    emit(showTrackModel(m_pPlaylistTableModel));
+
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
