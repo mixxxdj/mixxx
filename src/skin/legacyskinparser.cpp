@@ -1232,44 +1232,127 @@ void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {
     }
 }
 
+bool parseSizePolicy(QString* input, QSizePolicy::Policy* policy) {
+    if (input->endsWith("me")) {
+        *policy = QSizePolicy::MinimumExpanding;
+        *input = input->left(input->size()-2);
+    } else if (input->endsWith("e")) {
+        *policy = QSizePolicy::Expanding;
+        *input = input->left(input->size()-1);
+    } else if (input->endsWith("i")) {
+        *policy = QSizePolicy::Ignored;
+        *input = input->left(input->size()-1);
+    } else if (input->endsWith("min")) {
+        *policy = QSizePolicy::Minimum;
+        *input = input->left(input->size()-3);
+    } else if (input->endsWith("max")) {
+        *policy = QSizePolicy::Maximum;
+        *input = input->left(input->size()-3);
+    } else if (input->endsWith("p")) {
+        *policy = QSizePolicy::Preferred;
+        *input = input->left(input->size()-1);
+    } else if (input->endsWith("f")) {
+        *policy = QSizePolicy::Fixed;
+        *input = input->left(input->size()-1);
+    } else {
+        return false;
+    }
+    return true;
+}
+
 void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
+    if (!XmlParse::selectNode(node, "MinimumSize").isNull()) {
+        QString size = XmlParse::selectNodeQString(node, "MinimumSize");
+        int comma = size.indexOf(",");
+        QString xs = size.left(comma);
+        QString ys = size.mid(comma+1);
+
+        bool widthOk = false;
+        int x = xs.toInt(&widthOk);
+
+        bool heightOk = false;
+        int y = ys.toInt(&heightOk);
+
+        if (widthOk && heightOk) {
+            pWidget->setMinimumSize(x, y);
+        } else {
+            qDebug() << "Could not parse widget MinimumSize:" << size;
+        }
+    }
+
+    if (!XmlParse::selectNode(node, "MaximumSize").isNull()) {
+        QString size = XmlParse::selectNodeQString(node, "MaximumSize");
+        int comma = size.indexOf(",");
+        QString xs = size.left(comma);
+        QString ys = size.mid(comma+1);
+
+        bool widthOk = false;
+        int x = xs.toInt(&widthOk);
+
+        bool heightOk = false;
+        int y = ys.toInt(&heightOk);
+
+        if (widthOk && heightOk) {
+            pWidget->setMaximumSize(x, y);
+        } else {
+            qDebug() << "Could not parse widget MaximumSize:" << size;
+        }
+    }
+
+    bool hasSizePolicyNode = false;
+    if (!XmlParse::selectNode(node, "SizePolicy").isNull()) {
+        QString size = XmlParse::selectNodeQString(node, "SizePolicy");
+        int comma = size.indexOf(",");
+        QString xs = size.left(comma);
+        QString ys = size.mid(comma+1);
+
+        QSizePolicy sizePolicy = pWidget->sizePolicy();
+
+        QSizePolicy::Policy horizontalPolicy;
+        if (parseSizePolicy(&xs, &horizontalPolicy)) {
+            sizePolicy.setHorizontalPolicy(horizontalPolicy);
+        } else {
+            qDebug() << "Could not parse horizontal size policy:" << xs;
+        }
+
+        QSizePolicy::Policy verticalPolicy;
+        if (parseSizePolicy(&ys, &verticalPolicy)) {
+            sizePolicy.setVerticalPolicy(verticalPolicy);
+        } else {
+            qDebug() << "Could not parse vertical size policy:" << ys;
+        }
+
+        hasSizePolicyNode = true;
+        pWidget->setSizePolicy(sizePolicy);
+    }
+
     if (!XmlParse::selectNode(node, "Size").isNull()) {
         QString size = XmlParse::selectNodeQString(node, "Size");
         int comma = size.indexOf(",");
         QString xs = size.left(comma);
         QString ys = size.mid(comma+1);
-        QSizePolicy sizePolicy;
-        bool shouldSetWidthFixed = false;
 
-        if (xs.endsWith("me")) {
-            //qDebug() << "horizontal minimum expanding";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
-            xs = xs.left(xs.size()-2);
-        } else if (xs.endsWith("e")) {
-            //qDebug() << "horizontal expanding";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
-            xs = xs.left(xs.size()-1);
-        } else if (xs.endsWith("i")) {
-            //qDebug() << "horizontal ignored";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Ignored);
-            xs = xs.left(xs.size()-1);
-        } else if (xs.endsWith("p")) {
-            //qDebug() << "horizontal preferred";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
-            xs = xs.left(xs.size()-1);
-        } else if (xs.endsWith("f")) {
-            //qDebug() << "horizontal fixed";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Fixed);
-            xs = xs.left(xs.size()-1);
-            shouldSetWidthFixed = true;
-        } else {
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Fixed);
+        QSizePolicy sizePolicy = pWidget->sizePolicy();
+
+        bool hasHorizontalPolicy = false;
+        QSizePolicy::Policy horizontalPolicy;
+        if (parseSizePolicy(&xs, &horizontalPolicy)) {
+            sizePolicy.setHorizontalPolicy(horizontalPolicy);
+            hasHorizontalPolicy = true;
+        }
+
+        bool hasVerticalPolicy = false;
+        QSizePolicy::Policy verticalPolicy;
+        if (parseSizePolicy(&ys, &verticalPolicy)) {
+            sizePolicy.setVerticalPolicy(verticalPolicy);
+            hasVerticalPolicy = true;
         }
 
         bool widthOk = false;
         int x = xs.toInt(&widthOk);
         if (widthOk) {
-            if (shouldSetWidthFixed) {
+            if (hasHorizontalPolicy &&
+                    sizePolicy.horizontalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting width fixed to" << x;
                 pWidget->setFixedWidth(x);
             } else {
@@ -1278,36 +1361,11 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             }
         }
 
-        bool shouldSetHeightFixed = false;
-        if (ys.endsWith("me")) {
-            //qDebug() << "vertical minimum expanding";
-            sizePolicy.setVerticalPolicy(QSizePolicy::MinimumExpanding);
-            ys = ys.left(ys.size()-2);
-        } else if (ys.endsWith("e")) {
-            //qDebug() << "vertical expanding";
-            sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
-            ys = ys.left(ys.size()-1);
-        } else if (ys.endsWith("i")) {
-            //qDebug() << "vertical ignored";
-            sizePolicy.setVerticalPolicy(QSizePolicy::Ignored);
-            ys = ys.left(ys.size()-1);
-        } else if (ys.endsWith("p")) {
-            //qDebug() << "vertical preferred";
-            sizePolicy.setVerticalPolicy(QSizePolicy::Preferred);
-            ys = ys.left(ys.size()-1);
-        } else if (ys.endsWith("f")) {
-            //qDebug() << "vertical fixed";
-            sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
-            ys = ys.left(ys.size()-1);
-            shouldSetHeightFixed = true;
-        } else {
-            sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
-        }
-
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
         if (heightOk) {
-            if (shouldSetHeightFixed) {
+            if (hasVerticalPolicy &&
+                    sizePolicy.verticalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting height fixed to" << x;
                 pWidget->setFixedHeight(y);
             } else {
@@ -1316,7 +1374,9 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             }
         }
 
-        pWidget->setSizePolicy(sizePolicy);
+        if (!hasSizePolicyNode) {
+            pWidget->setSizePolicy(sizePolicy);
+        }
     }
 }
 

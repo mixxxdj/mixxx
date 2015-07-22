@@ -371,7 +371,7 @@ void EngineBuffer::queueNewPlaypos(double newpos) {
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
-    //qDebug() << "engine new pos " << newpos;
+    //qDebug() << m_group << "engine new pos " << newpos;
 
     // Before seeking, read extra buffer for crossfading
     CSAMPLE* fadeout = m_pScale->getScaled(m_iLastBufferSize);
@@ -384,8 +384,9 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_iSamplesCalculated = 1000000;
 
     // The right place to do this?
-    if (m_pScale)
+    if (m_pScale) {
         m_pScale->clear();
+    }
     m_pReadAheadManager->notifySeek(m_filepos_play);
 
     // Must hold the engineLock while using m_engineControls
@@ -576,17 +577,7 @@ void EngineBuffer::slotControlSlip(double v)
     }
 
     m_bSlipEnabled = enabled;
-
-    if (enabled) {
-        // TODO(rryan): Should this filepos instead be the RAMAN current
-        // position? filepos_play could be out of date.
-        m_dSlipPosition = m_filepos_play;
-        m_dSlipRate = m_rate_old;
-    } else {
-        // TODO(owen) assuming that looping will get canceled properly
-        slotControlSeekAbs(m_dSlipPosition);
-        m_dSlipPosition = 0;
-    }
+    m_bSlipToggled = true;
 }
 
 
@@ -628,10 +619,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             baserate, paused, iBufferSize, &is_scratching);
         double pitch = m_pKeyControl->getPitchAdjustOctaves();
 
-        // Update the slipped position
-        if (m_bSlipEnabled) {
-            m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
-        }
+        // Update the slipped position and seek if it was disabled.
+        processSlip(iBufferSize);
 
         // If either keylock is enabled or the pitch slider is non-zero then we
         // need to use pitch and time scaling. Scratching always disables
@@ -917,6 +906,26 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     m_bLastBufferPaused = bCurBufferPaused;
     m_iLastBufferSize = iBufferSize;
 }
+
+void EngineBuffer::processSlip(int iBufferSize) {
+    if (m_bSlipToggled) {
+        if (m_bSlipEnabled) {
+            m_dSlipPosition = m_filepos_play;
+            m_dSlipRate = m_rate_old;
+        } else {
+            // TODO(owen) assuming that looping will get canceled properly
+            setNewPlaypos(m_dSlipPosition);
+            m_dSlipPosition = 0;
+        }
+        m_bSlipToggled = false;
+    }
+
+    // Increment slip position even if it was just toggled -- this ensures the position is correct.
+    if (m_bSlipEnabled) {
+        m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
+    }
+}
+
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
