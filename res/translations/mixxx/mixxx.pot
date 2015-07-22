@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-07 12:14+0200\n"
+"POT-Creation-Date: 2013-12-09 16:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -892,7 +892,6 @@ msgid "Enable Auto DJ"
 msgstr ""
 
 #: DlgBeatsDlg#1
-msgctxt "DlgBeatsDlg#1"
 msgid ""
 "When beat detection is enabled, Mixxx detects the beats per minute and beats "
 "of your tracks, \n"
@@ -2017,12 +2016,9 @@ msgid "Key Notation Format Settings"
 msgstr ""
 
 #: DlgPrefKeyDlg#2
-msgctxt "DlgPrefKeyDlg#2"
 msgid ""
-"When beat detection is enabled, Mixxx detects the beats per minute and beats "
-"of your tracks, \n"
-"automatically shows a beat-grid for them, and allows you to synchronize "
-"tracks using their beat information."
+"When key detection is enabled, Mixxx detects the musical key of your tracks \n"
+"and allows you to pitch adjust them for harmonic mixing."
 msgstr ""
 
 #: DlgPrefKeyDlg#3
@@ -2169,6 +2165,165 @@ msgstr ""
 
 #: DlgPrefKeyDlg#38
 msgid "G#m"
+msgstr ""
+
+#: DlgPrefLibrary#1
+msgid "Choose a music directory"
+msgstr ""
+
+#: DlgPrefLibrary#2
+msgid "Confirm Directory Removal"
+msgstr ""
+
+#: DlgPrefLibrary#3
+msgid ""
+"Mixxx will no longer watch this directory for new tracks. What would you "
+"like to do with the tracks from this directory and "
+"subdirectories?<ul><li>Hide all tracks from this directory and "
+"subdirectories.</li><li>Delete all metadata for these tracks from Mixxx "
+"permanently.</li><li>Leave the tracks unchanged in your "
+"library.</li></ul>Hiding tracks saves their metadata in case you re-add them "
+"in the future."
+msgstr ""
+
+#: DlgPrefLibrary#4
+msgid ""
+"Metadata means all track details (artist, title, playcount, etc.) as well as "
+"beatgrids, hotcues, and loops. This choice only affects the Mixxx library. "
+"No files on disk will be changed or deleted."
+msgstr ""
+
+#: DlgPrefLibrary#5
+msgid "Hide Tracks"
+msgstr ""
+
+#: DlgPrefLibrary#6
+msgid "Delete Track Metadata"
+msgstr ""
+
+#: DlgPrefLibrary#7
+msgid "Leave Tracks Unchanged"
+msgstr ""
+
+#: DlgPrefLibrary#8
+msgid "Relink music directory to new location"
+msgstr ""
+
+#: DlgPrefLibraryDlg#1
+msgctxt "DlgPrefLibraryDlg#1"
+msgid "Library"
+msgstr ""
+
+#: DlgPrefLibraryDlg#2
+msgid "Music Directories:"
+msgstr ""
+
+#: DlgPrefLibraryDlg#3
+msgid ""
+"If removed, Mixxx will no longer watch this directory and its subdirectories "
+"for new tracks."
+msgstr ""
+
+#: DlgPrefLibraryDlg#4
+msgctxt "DlgPrefLibraryDlg#4"
+msgid "Remove"
+msgstr ""
+
+#: DlgPrefLibraryDlg#5
+msgid ""
+"Add a directory where your music is stored. Mixxx will watch this directory "
+"and its subdirectories for new tracks."
+msgstr ""
+
+#: DlgPrefLibraryDlg#6
+msgctxt "DlgPrefLibraryDlg#6"
+msgid "Add"
+msgstr ""
+
+#: DlgPrefLibraryDlg#7
+msgid ""
+"If an existing music directory is moved, Mixxx doesn't know where to find "
+"the audio files in it. Choose Relink to select the music directory in its "
+"new location. <br/> This will re-establish the links to the audio files in "
+"the Mixxx library."
+msgstr ""
+
+#: DlgPrefLibraryDlg#8
+msgid "Relink"
+msgstr ""
+
+#: DlgPrefLibraryDlg#9
+msgid "Audio File Formats"
+msgstr ""
+
+#: DlgPrefLibraryDlg#10
+msgid "Additional Format Plugins:"
+msgstr ""
+
+#: DlgPrefLibraryDlg#11
+msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
+msgstr ""
+
+#: DlgPrefLibraryDlg#12
+msgid "Built-in"
+msgstr ""
+
+#: DlgPrefLibraryDlg#13
+msgid "Available Online..."
+msgstr ""
+
+#: DlgPrefLibraryDlg#14
+msgid "Loaded Plugins:"
+msgstr ""
+
+#: DlgPrefLibraryDlg#15
+msgctxt "DlgPrefLibraryDlg#15"
+msgid "None"
+msgstr ""
+
+#: DlgPrefLibraryDlg#16
+msgctxt "DlgPrefLibraryDlg#16"
+msgid "Miscellaneous"
+msgstr ""
+
+#: DlgPrefLibraryDlg#17
+msgid "Synchronize ID3 tags on track modifications"
+msgstr ""
+
+#: DlgPrefLibraryDlg#18
+msgid "Rescan library on start-up"
+msgstr ""
+
+#: DlgPrefLibraryDlg#19
+msgid "Use relative paths for playlist export if possible"
+msgstr ""
+
+#: DlgPrefLibraryDlg#20
+msgid "External Libraries"
+msgstr ""
+
+#: DlgPrefLibraryDlg#21
+msgid "You will need to restart Mixxx for these settings to take effect."
+msgstr ""
+
+#: DlgPrefLibraryDlg#22
+msgid "Show Rhythmbox Library"
+msgstr ""
+
+#: DlgPrefLibraryDlg#23
+msgid "Show Banshee Library"
+msgstr ""
+
+#: DlgPrefLibraryDlg#24
+msgid "Show iTunes Library"
+msgstr ""
+
+#: DlgPrefLibraryDlg#25
+msgid "Show Traktor Library"
+msgstr ""
+
+#: DlgPrefLibraryDlg#26
+msgid "All external libraries shown are write protected."
 msgstr ""
 
 #: DlgPrefMappableController#1
@@ -2459,145 +2614,6 @@ msgstr ""
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
-msgstr ""
-
-#: DlgPrefPlaylist#1
-msgid "Choose a music library directory"
-msgstr ""
-
-#: DlgPrefPlaylist#2
-msgid "Confirm Directory Removal"
-msgstr ""
-
-#: DlgPrefPlaylist#3
-msgid ""
-"Mixxx will no longer watch this directory for new tracks. What would you "
-"like to do with the tracks from this directory and "
-"subdirectories?<ul><li>Hide all tracks from this directory and "
-"subdirectories.</li><li>Delete all metadata for these tracks from Mixxx "
-"permanently.</li><li>Leave the tracks unchanged in your "
-"library.</li></ul>Hiding tracks saves their metadata in case you re-add them "
-"in the future."
-msgstr ""
-
-#: DlgPrefPlaylist#4
-msgid ""
-"Metadata means all track details (artist, title, playcount, etc.) as well as "
-"beatgrids, hotcues, and loops. This choice only affects the Mixxx library. "
-"No files on disk will be changed or deleted."
-msgstr ""
-
-#: DlgPrefPlaylist#5
-msgid "Hide Tracks"
-msgstr ""
-
-#: DlgPrefPlaylist#6
-msgid "Delete Track Metadata"
-msgstr ""
-
-#: DlgPrefPlaylist#7
-msgid "Leave Tracks Unchanged"
-msgstr ""
-
-#: DlgPrefPlaylist#8
-msgid "relocate to directory"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#1
-msgid "Audio File Formats"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#2
-msgid "Additional Format Plugins:"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#3
-msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#4
-msgid "Loaded Plugins:"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#5
-msgctxt "DlgPrefPlaylistDlg#5"
-msgid "None"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#6
-msgctxt "DlgPrefPlaylistDlg#6"
-msgid "Miscellaneous"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#7
-msgid "Synchronize ID3 tags on track modifications"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#8
-msgid "Rescan library on start-up"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#9
-msgid "Use relative paths for playlist export if possible"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#10
-msgid "Show Rhythmbox Library"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#11
-msgid "Show Banshee Library"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#12
-msgid "Show iTunes Library"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#13
-msgid "Show Traktor Library"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#14
-msgid "You will need to restart Mixxx for these settings to take effect"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#15
-msgctxt "DlgPrefPlaylistDlg#15"
-msgid "Library"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#16
-msgid "Music Directory:"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#17
-msgctxt "DlgPrefPlaylistDlg#17"
-msgid "Remove"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#18
-msgctxt "DlgPrefPlaylistDlg#18"
-msgid "Add"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#19
-msgid "Relocate"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#20
-msgid "Built-in"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#21
-msgid "Available Online..."
-msgstr ""
-
-#: DlgPrefPlaylistDlg#22
-msgid "External Libraries"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#23
-msgid "All other libraries are shown write protected"
 msgstr ""
 
 #: DlgPrefRecord#1
