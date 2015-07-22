@@ -135,7 +135,6 @@ QHash<QString,QString> PresetInfo::parseOSCProduct(const QDomElement& element) c
 }
 
 PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue>* pConfig) {
-    controllerDirPaths.append(localPresetsPath(pConfig));
     controllerDirPaths.append(resourcePresetsPath(pConfig));
 
     // Static list of supported default extensions, sorted by popularity

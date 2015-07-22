@@ -86,7 +86,7 @@ Result SoundSourceFLAC::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         qWarning() << "Failed to create FLAC decoder!";
         return ERR;
     }
-    FLAC__stream_decoder_set_md5_checking(m_decoder, FALSE);
+    FLAC__stream_decoder_set_md5_checking(m_decoder, false);
     const FLAC__StreamDecoderInitStatus initStatus(
             FLAC__stream_decoder_init_stream(m_decoder, FLAC_read_cb,
                     FLAC_seek_cb, FLAC_tell_cb, FLAC_length_cb, FLAC_eof_cb,

@@ -1,19 +1,3 @@
-/***************************************************************************
-                          enginepregain.h  -  description
-                             -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef ENGINEPREGAIN_H
 #define ENGINEPREGAIN_H
 
@@ -25,16 +9,29 @@ class ControlAudioTaperPot;
 class ControlPotmeter;
 class ControlObject;
 
+// The pregain control alters the volume of the track based on several inputs,
+// including user pregain adjustment, ReplayGain value, and vinyl-like
+// adjustments in volume relative to playback speed.
 class EnginePregain : public EngineObject {
   public:
     EnginePregain(QString group);
     virtual ~EnginePregain();
 
     void setSpeed(double speed);
+
+    // If the user is scratching and the record reverses direction, the volume
+    // will be ramped to zero and back up again to mimic a vinyl scratch.
+    // If the user is not scratching and the direction is reversed
+    // (e.g. reverse button is pressed), the audio will be immediately
+    // reversed without a ramp to zero.
+    void setScratching(bool scratching);
+
     void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
     double m_dSpeed;
+    double m_dOldSpeed;
+    bool m_scratching;
     float m_fPrevGain;
     ControlAudioTaperPot* m_pPotmeterPregain;
     ControlObject* m_pTotalGain;

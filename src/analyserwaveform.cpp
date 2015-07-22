@@ -29,7 +29,7 @@ AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
     m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
-        m_database.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
+        m_database.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
         m_database.setUserName("mixxx");
         m_database.setPassword("mixxx");
 
@@ -68,12 +68,12 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     } else {
         // Now actually initialize the AnalyserWaveform:
         destroyFilters();
-        resetFilters(tio, sampleRate);
+        createFilters(sampleRate);
 
         //TODO (vrince) Do we want to expose this as settings or whatever ?
         const int mainWaveformSampleRate = 441;
-        //two visual sample per pixel in full width overview in full hd
-        const int summaryWaveformSamples = 2*1920;
+        // two visual sample per pixel in full width overview in full hd
+        const int summaryWaveformSamples = 2 * 1920;
 
         m_waveform = WaveformPointer(new Waveform(
                 sampleRate, totalSamples, mainWaveformSampleRate, -1));
@@ -165,16 +165,17 @@ bool AnalyserWaveform::loadStored(TrackPointer tio) const {
     return false;
 }
 
-void AnalyserWaveform::resetFilters(TrackPointer tio, int sampleRate) {
-    Q_UNUSED(tio);
-    Q_UNUSED(sampleRate);
-    //TODO: (vRince) bind this with *actual* filter values ...
+void AnalyserWaveform::createFilters(int sampleRate) {
     // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
     // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
     // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
     m_filter[Low] = new EngineFilterBessel4Low(sampleRate, 600);
     m_filter[Mid] = new EngineFilterBessel4Band(sampleRate, 600, 4000);
     m_filter[High] = new EngineFilterBessel4High(sampleRate, 4000);
+    // settle filters for silence in preroll to avoids ramping (Bug #1406389)
+    for (int i = 0; i < FilterCount; ++i) {
+        m_filter[i]->assumeSettled();
+    }
 }
 
 void AnalyserWaveform::destroyFilters() {

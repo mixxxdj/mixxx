@@ -97,7 +97,7 @@
 <context>
     <name>BasePlaylistFeature</name>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="256"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="264"/>
         <source>New Playlist</source>
         <translation>Нови списак нумера</translation>
     </message>
@@ -108,7 +108,7 @@
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="31"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="253"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="261"/>
         <source>Create New Playlist</source>
         <translation type="unfinished"/>
     </message>
@@ -139,7 +139,7 @@
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="59"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="325"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="333"/>
         <source>Import Playlist</source>
         <translation>Увези списак нумера</translation>
     </message>
@@ -149,85 +149,85 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="152"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="165"/>
         <source>Enter new name for playlist:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="197"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="205"/>
         <source>Duplicate Playlist</source>
         <translation>Удвостручи списак нумера</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="198"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="254"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="206"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="262"/>
         <source>Enter name for new playlist:</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="63"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="388"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="397"/>
         <source>Export Playlist</source>
         <translation>Извези списак нумера</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="151"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="164"/>
         <source>Rename Playlist</source>
         <translation>Преименуј списак нумера</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="164"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="168"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="177"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="181"/>
         <source>Renaming Playlist Failed</source>
         <translation>Преименовање списка нумера није успело</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="165"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="212"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="266"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="178"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="220"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="274"/>
         <source>A playlist by that name already exists.</source>
         <translation>Већ постоји списак нумера са овим називом.</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="169"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="216"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="270"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="182"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="224"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="278"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Назив списка нумера не може бити празан.</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="201"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="209"/>
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a playlist</extracomment>
         <translation>_умножи</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="211"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="215"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="265"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="269"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="282"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="219"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="223"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="273"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="277"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="290"/>
         <source>Playlist Creation Failed</source>
         <translation>Стварање списка нумера није успело</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="283"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="291"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Дошло је до непознате грешке приликом стварања списка нумера: </translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="327"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="335"/>
         <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
         <translation>Спискови нумера (*.m3u *.m3u8 *.pls *.csv)</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="385"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="394"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="390"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="399"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>М3У списак нумера (*.m3u);;М3У8 списак нумера (*.m3u8);;ПЛС списак нумера (*.pls);;Текстуални ЦСВ (*.csv);;Читљив текст (*.txt)</translation>
     </message>
@@ -3568,46 +3568,36 @@ Apply settings and continue?</source>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
-        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in one of these preset folders:</source>
+        <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller, you can download one online from the Mixxx Forums or Mixxx Wiki. After downloading a preset, place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Preset Folder&quot;:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="101"/>
-        <source>Open Local Preset Folder</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="108"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="107"/>
         <source>Open User Preset Folder</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="115"/>
-        <source>Open System Preset Folder</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="125"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="117"/>
         <source>Resources</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="131"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx Wiki: Hardware Compatibility&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="141"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="133"/>
         <source>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controller Forums&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="151"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="143"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="161"/>
+        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="153"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</source>
         <translation type="unfinished"/>
     </message>
@@ -3812,11 +3802,6 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrolsdlg.ui" line="339"/>
-        <source>Reset speed and pitch </source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="446"/>
         <source>Speed slider range</source>
         <translation type="unfinished"/>
@@ -3855,7 +3840,7 @@ Denon mode:
 - Play = set cue point
 Numark mode:
 - Same as Denon mode, but without a flashing play button
-        </source>
+</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -3936,6 +3921,11 @@ Numark mode:
     <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="221"/>
         <source>Permanent Speed Adjustment Buttons</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrolsdlg.ui" line="339"/>
+        <source>Reset speed and pitch</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -4911,6 +4901,11 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="20"/>
+        <source>ReplayGain Loudness Normalization</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/dlgprefreplaygaindlg.ui" line="36"/>
         <source>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</source>
         <translation>Израчунајте нормализацију појачања пуштања за нумере којима недостају метаподаци појачања пуштања.</translation>
@@ -4918,11 +4913,6 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/dlgprefreplaygaindlg.ui" line="26"/>
         <source>Apply loudness normalization to loaded tracks.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="20"/>
-        <source>ReplayGain Loudness Normalization  </source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -6554,52 +6544,52 @@ milliseconds</extracomment>
 <context>
     <name>HidController</name>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="197"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="193"/>
         <source>Generic HID Mouse</source>
         <translation>Општи ХИД миш</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="198"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="194"/>
         <source>Generic HID Joystick</source>
         <translation>Општи ХИД џојстик</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="199"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="195"/>
         <source>Generic HID Gamepad</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="200"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="196"/>
         <source>Generic HID Keyboard</source>
         <translation>Општа ХИД тастатура</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="201"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="197"/>
         <source>Generic HID Multiaxis Controller</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="202"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="198"/>
         <source>Unknown HID Desktop Device</source>
         <translation>Непознати ХИД стони уређај</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="209"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="205"/>
         <source>HID Infrared Control</source>
         <translation>ХИД Инфрацрвени управљач</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="211"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="207"/>
         <source>Unknown Apple HID Device</source>
         <translation>Непознат Ејпол ХИД уређај</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="216"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="212"/>
         <source>HID Unknown Device</source>
         <translation>ХИД непознат уређај</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="222"/>
+        <location filename="../../src/controllers/hid/hidcontroller.cpp" line="218"/>
         <source>HID Interface Number</source>
         <translation>Број ХИД сучеља</translation>
     </message>
@@ -6647,13 +6637,13 @@ milliseconds</extracomment>
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1038"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1055"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1047"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1064"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -6661,57 +6651,57 @@ support.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1953"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1970"/>
         <source>activate</source>
         <translation>покрени</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1958"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1975"/>
         <source>toggle</source>
         <translation>окини</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1968"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1985"/>
         <source>right</source>
         <translation>десно</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1973"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1990"/>
         <source>left</source>
         <translation>лево</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1978"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1995"/>
         <source>right small</source>
         <translation>мали десни</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1983"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2000"/>
         <source>left small</source>
         <translation>мали леви</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1988"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2005"/>
         <source>up</source>
         <translation>горе</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1993"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2010"/>
         <source>down</source>
         <translation>доле</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1998"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2015"/>
         <source>up small</source>
         <translation>мало горе</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2003"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2020"/>
         <source>down small</source>
         <translation>мало доле</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2035"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2052"/>
         <source>Shortcut</source>
         <translation>Пречица</translation>
     </message>
@@ -6817,643 +6807,653 @@ support.</source>
         <translation>Изаберите директоријум музичке библиотеке</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1650"/>
-        <location filename="../../src/mixxx.cpp" line="1837"/>
-        <location filename="../../src/mixxx.cpp" line="1871"/>
-        <location filename="../../src/mixxx.cpp" line="1900"/>
-        <location filename="../../src/mixxx.cpp" line="1969"/>
+        <location filename="../../src/mixxx.cpp" line="1661"/>
+        <location filename="../../src/mixxx.cpp" line="1848"/>
+        <location filename="../../src/mixxx.cpp" line="1882"/>
+        <location filename="../../src/mixxx.cpp" line="1911"/>
+        <location filename="../../src/mixxx.cpp" line="1980"/>
         <source>Mixxx</source>
         <translation>Миксикс</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="951"/>
+        <location filename="../../src/mixxx.cpp" line="952"/>
         <source>Sound Device Busy</source>
         <translation>Звучни уређај је заузет</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="954"/>
+        <location filename="../../src/mixxx.cpp" line="955"/>
         <source>Mixxx was unable to access all the configured sound devices. Another application is using a sound device Mixxx is configured to use or a device is not plugged in.</source>
         <translation>Миксикс није био у могућности да приступи свим подешеним звучним уређајима. Други програм користи звучни уређај на који је Миксикс подешен да га користи или уређај није прикључен.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="959"/>
+        <location filename="../../src/mixxx.cpp" line="960"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Покушајте поново&lt;/b&gt; након што затворите други прог или поново прикључите звучни уређај</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="963"/>
-        <location filename="../../src/mixxx.cpp" line="1027"/>
+        <location filename="../../src/mixxx.cpp" line="964"/>
+        <location filename="../../src/mixxx.cpp" line="1028"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Поново подесите&lt;/b&gt; подешавања звучног уређаја Миксикса.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="966"/>
+        <location filename="../../src/mixxx.cpp" line="967"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Нађите &lt;b&gt;Помоћ&lt;/b&gt; на Викију Миксикса.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="969"/>
-        <location filename="../../src/mixxx.cpp" line="1030"/>
+        <location filename="../../src/mixxx.cpp" line="970"/>
+        <location filename="../../src/mixxx.cpp" line="1031"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Изађите&lt;/b&gt; из Миксикса.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="974"/>
+        <location filename="../../src/mixxx.cpp" line="975"/>
         <source>Retry</source>
         <translation>Покушај поново</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="976"/>
-        <location filename="../../src/mixxx.cpp" line="1036"/>
+        <location filename="../../src/mixxx.cpp" line="977"/>
+        <location filename="../../src/mixxx.cpp" line="1037"/>
         <source>Reconfigure</source>
         <translation>Поново подеси</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="978"/>
+        <location filename="../../src/mixxx.cpp" line="979"/>
         <source>Help</source>
         <translation>Помоћ</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="980"/>
-        <location filename="../../src/mixxx.cpp" line="1037"/>
+        <location filename="../../src/mixxx.cpp" line="981"/>
+        <location filename="../../src/mixxx.cpp" line="1038"/>
         <source>Exit</source>
         <translation>Изађи</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1019"/>
+        <location filename="../../src/mixxx.cpp" line="1020"/>
         <source>No Output Devices</source>
         <translation>Нема излазних уређаја</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1020"/>
+        <location filename="../../src/mixxx.cpp" line="1021"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Миксикс је подешен без иједног излазног звучног уређаја. Обрада звука ће бити онемогућена без подешеног излазног уређаја.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1024"/>
+        <location filename="../../src/mixxx.cpp" line="1025"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Наствите&lt;/b&gt; без икаквих излаза.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1035"/>
+        <location filename="../../src/mixxx.cpp" line="1036"/>
         <source>Continue</source>
         <translation>Настави</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1074"/>
+        <location filename="../../src/mixxx.cpp" line="1075"/>
         <source>Load Track to Deck &amp;%1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1075"/>
+        <location filename="../../src/mixxx.cpp" line="1076"/>
         <source>Loads a track in deck %1</source>
         <translation>Учитајте нумеру на носач 1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1076"/>
+        <location filename="../../src/mixxx.cpp" line="1077"/>
         <source>Open</source>
         <translation>Отвори</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1083"/>
+        <location filename="../../src/mixxx.cpp" line="1084"/>
         <source>Ctrl+o</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1096"/>
+        <location filename="../../src/mixxx.cpp" line="1097"/>
         <source>Ctrl+Shift+O</source>
         <translation>Ктрл-Помак+О</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1104"/>
+        <location filename="../../src/mixxx.cpp" line="1105"/>
         <source>&amp;Exit</source>
         <translation>&amp;Изађи</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1105"/>
+        <location filename="../../src/mixxx.cpp" line="1106"/>
         <source>Quits Mixxx</source>
         <translation>Изађите из Миксикса</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1109"/>
+        <location filename="../../src/mixxx.cpp" line="1110"/>
         <source>Ctrl+q</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1115"/>
+        <location filename="../../src/mixxx.cpp" line="1116"/>
         <source>&amp;Rescan Library</source>
         <translation>Поново &amp;прегледај библиотеку</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1116"/>
+        <location filename="../../src/mixxx.cpp" line="1117"/>
         <source>Rescans library folders for changes to tracks.</source>
         <translation>Поново прегледајте фасцикле библиотеке за променама на нумерама.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1124"/>
+        <location filename="../../src/mixxx.cpp" line="1125"/>
         <source>Create &amp;New Playlist</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1125"/>
+        <location filename="../../src/mixxx.cpp" line="1126"/>
         <source>Create a new playlist</source>
         <translation>Направите нови списак нумера</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1130"/>
+        <location filename="../../src/mixxx.cpp" line="1131"/>
         <source>Ctrl+n</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1137"/>
+        <location filename="../../src/mixxx.cpp" line="1138"/>
         <source>Create New &amp;Crate</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1138"/>
+        <location filename="../../src/mixxx.cpp" line="1139"/>
         <source>Create a new crate</source>
         <translation>Направите нову гајбицу</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1143"/>
+        <location filename="../../src/mixxx.cpp" line="1144"/>
         <source>Ctrl+Shift+N</source>
         <translation>Ктрл-Помак+Н</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1150"/>
+        <location filename="../../src/mixxx.cpp" line="1151"/>
         <source>&amp;Full Screen</source>
         <translation>&amp;Цео екран</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1151"/>
+        <location filename="../../src/mixxx.cpp" line="1152"/>
         <source>Display Mixxx using the full screen</source>
         <translation>Прикажите Миксикс користећи цео екран</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1154"/>
+        <location filename="../../src/mixxx.cpp" line="1155"/>
         <source>Ctrl+Shift+F</source>
         <translation>Ктрл-Помак+Ф</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1156"/>
+        <location filename="../../src/mixxx.cpp" line="1157"/>
         <source>F11</source>
         <translation>Ф11</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1172"/>
+        <location filename="../../src/mixxx.cpp" line="1173"/>
         <source>Enable &amp;Keyboard Shortcuts</source>
         <translation>Укључи пречице на &amp;тастатури</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1173"/>
+        <location filename="../../src/mixxx.cpp" line="1174"/>
         <source>Toggles keyboard shortcuts on or off</source>
         <translation>Укључите или искључите пречице тастатуре</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1180"/>
+        <location filename="../../src/mixxx.cpp" line="1181"/>
         <source>Ctrl+`</source>
         <translation>Ктрл+`</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1189"/>
+        <location filename="../../src/mixxx.cpp" line="1190"/>
         <source>&amp;Preferences</source>
         <translation>&amp;Поставке</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1190"/>
+        <location filename="../../src/mixxx.cpp" line="1191"/>
         <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
         <translation>Измените подешавања Миксикса (нпр. пуштање, МИДИ, управљања)</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1196"/>
+        <location filename="../../src/mixxx.cpp" line="1197"/>
         <source>Ctrl+,</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1201"/>
+        <location filename="../../src/mixxx.cpp" line="1202"/>
         <source>Ctrl+P</source>
         <translation>Ктрл+П</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1209"/>
+        <location filename="../../src/mixxx.cpp" line="1212"/>
         <source>&amp;About</source>
         <translation>&amp;О програму</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1210"/>
+        <location filename="../../src/mixxx.cpp" line="1213"/>
         <source>About the application</source>
         <translation>О самом програму</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1217"/>
+        <location filename="../../src/mixxx.cpp" line="1220"/>
         <source>&amp;Community Support</source>
         <translation>&amp;Подршка заједнице</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1218"/>
+        <location filename="../../src/mixxx.cpp" line="1221"/>
         <source>Get help with Mixxx</source>
         <translation>Потражите помоћ за Миксикс</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1224"/>
+        <location filename="../../src/mixxx.cpp" line="1227"/>
         <source>&amp;User Manual</source>
         <translation>&amp;Корисничко упутство</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1225"/>
+        <location filename="../../src/mixxx.cpp" line="1228"/>
         <source>Read the Mixxx user manual.</source>
         <translation>Прочитајте корисничко упутство Миксикса.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1231"/>
+        <location filename="../../src/mixxx.cpp" line="1234"/>
+        <source>&amp;Keyboard Shortcuts</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1235"/>
+        <source>Speed up your workflow with keyboard shortcuts.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1241"/>
         <source>Send Us &amp;Feedback</source>
         <translation>Пошаљите нам &amp;повратне информације</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1232"/>
+        <location filename="../../src/mixxx.cpp" line="1242"/>
         <source>Send feedback to the Mixxx team.</source>
         <translation>Пошаљите повратне информације екипи Миксикса.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1238"/>
+        <location filename="../../src/mixxx.cpp" line="1248"/>
         <source>&amp;Translate This Application</source>
         <translation>&amp;Преведи овај програм</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1239"/>
+        <location filename="../../src/mixxx.cpp" line="1249"/>
         <source>Help translate this application into your language.</source>
         <translation>Помозите у превођењу овог програма на наш језик насушни.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1246"/>
+        <location filename="../../src/mixxx.cpp" line="1256"/>
         <source>Use timecoded vinyls on external turntables to control Mixxx</source>
         <translation>Користите плоче са временским кодирањем на спољним грамофонима да управљате Миксиксом</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1258"/>
+        <location filename="../../src/mixxx.cpp" line="1268"/>
         <source>Enable Vinyl Control &amp;%1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1267"/>
+        <location filename="../../src/mixxx.cpp" line="1277"/>
         <source>Ctrl+t</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1270"/>
+        <location filename="../../src/mixxx.cpp" line="1280"/>
         <source>Ctrl+y</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1273"/>
+        <location filename="../../src/mixxx.cpp" line="1283"/>
         <source>Ctrl+u</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1276"/>
+        <location filename="../../src/mixxx.cpp" line="1286"/>
         <source>Ctrl+i</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1306"/>
+        <location filename="../../src/mixxx.cpp" line="1316"/>
         <source>Enable Live &amp;Broadcasting</source>
         <translation>Укључи емитовање &amp;уживо</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1307"/>
+        <location filename="../../src/mixxx.cpp" line="1317"/>
         <source>Stream your mixes to a shoutcast or icecast server</source>
         <translation>Пошаљите ток ваших радова на сервер шоуткаста или ајскаста</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1312"/>
+        <location filename="../../src/mixxx.cpp" line="1322"/>
         <source>Ctrl+L</source>
         <translation>Ктрл+Л</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1323"/>
+        <location filename="../../src/mixxx.cpp" line="1333"/>
         <source>May not be supported on all skins.</source>
         <translation>Не може бити подржано на свим маскама.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1324"/>
+        <location filename="../../src/mixxx.cpp" line="1334"/>
         <source>Show Samplers</source>
         <translation>Прикажи узорчнике</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1325"/>
+        <location filename="../../src/mixxx.cpp" line="1335"/>
         <source>Show the sample deck section of the Mixxx interface.</source>
         <translation>Прикажите одељак носача узорка у сучељу Миксикса.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1332"/>
+        <location filename="../../src/mixxx.cpp" line="1342"/>
         <source>Ctrl+1</source>
         <comment>Menubar|View|Show Samplers</comment>
         <translation>Ктрл+1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1338"/>
+        <location filename="../../src/mixxx.cpp" line="1348"/>
         <source>Show Vinyl Control Section</source>
         <translation>Прикажи одељак управљања плочом</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1339"/>
+        <location filename="../../src/mixxx.cpp" line="1349"/>
         <source>Show the vinyl control section of the Mixxx interface.</source>
         <translation>Прикажите одељак управљања плочом у сучељу Миксикса.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1347"/>
+        <location filename="../../src/mixxx.cpp" line="1357"/>
         <source>Ctrl+3</source>
         <comment>Menubar|View|Show Vinyl Control Section</comment>
         <translation>Ктрл+3</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1354"/>
+        <location filename="../../src/mixxx.cpp" line="1364"/>
         <source>Show Microphone Section</source>
         <translation>Прикажи одељак микрофона</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1355"/>
+        <location filename="../../src/mixxx.cpp" line="1365"/>
         <source>Show the microphone section of the Mixxx interface.</source>
         <translation>Прикажите одељак микрофона у сучељу Миксикса.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1362"/>
+        <location filename="../../src/mixxx.cpp" line="1372"/>
         <source>Ctrl+2</source>
         <comment>Menubar|View|Show Microphone Section</comment>
         <translation>Ктрл+2</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1368"/>
+        <location filename="../../src/mixxx.cpp" line="1378"/>
         <source>Show Preview Deck</source>
         <translation>Прикажи носач прегледа</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1369"/>
+        <location filename="../../src/mixxx.cpp" line="1379"/>
         <source>Show the preview deck in the Mixxx interface.</source>
         <translation>Прикажите носач прегледа у сучељу Миксикса.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1376"/>
+        <location filename="../../src/mixxx.cpp" line="1386"/>
         <source>Ctrl+4</source>
         <comment>Menubar|View|Show Preview Deck</comment>
         <translation>Ктрл+4</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1382"/>
+        <location filename="../../src/mixxx.cpp" line="1392"/>
         <source>Show Effect Rack</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1383"/>
+        <location filename="../../src/mixxx.cpp" line="1393"/>
         <source>Show the effect rack in the Mixxx interface.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1390"/>
+        <location filename="../../src/mixxx.cpp" line="1400"/>
         <source>Ctrl+5</source>
         <comment>Menubar|View|Show Effect Rack</comment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1396"/>
+        <location filename="../../src/mixxx.cpp" line="1406"/>
         <source>Show Cover Art</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1397"/>
+        <location filename="../../src/mixxx.cpp" line="1407"/>
         <source>Show cover art in the Mixxx interface.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1410"/>
+        <location filename="../../src/mixxx.cpp" line="1420"/>
         <source>Maximize Library</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1411"/>
+        <location filename="../../src/mixxx.cpp" line="1421"/>
         <source>Maximize the track library to take up all the available screen space.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1424"/>
+        <location filename="../../src/mixxx.cpp" line="1434"/>
         <source>&amp;Record Mix</source>
         <translation>&amp;Сними микс</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1425"/>
+        <location filename="../../src/mixxx.cpp" line="1435"/>
         <source>Record your mix to a file</source>
         <translation>Снимите ваш микс у датотеку</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1430"/>
+        <location filename="../../src/mixxx.cpp" line="1440"/>
         <source>Ctrl+R</source>
         <translation>Ктрл+Р</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1438"/>
+        <location filename="../../src/mixxx.cpp" line="1448"/>
         <source>&amp;Reload Skin</source>
         <translation>&amp;Поново учитај маску</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1439"/>
+        <location filename="../../src/mixxx.cpp" line="1449"/>
         <source>Reload the skin</source>
         <translation>Поново учитајте маску</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1444"/>
+        <location filename="../../src/mixxx.cpp" line="1454"/>
         <source>Ctrl+Shift+R</source>
         <translation>Ктрл+Помак+Р</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1483"/>
+        <location filename="../../src/mixxx.cpp" line="1493"/>
         <source>Stats: &amp;Base Bucket</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1564"/>
+        <location filename="../../src/mixxx.cpp" line="1574"/>
         <source>&amp;Developer</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1452"/>
+        <location filename="../../src/mixxx.cpp" line="1462"/>
         <source>Opens the developer tools dialog</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1457"/>
+        <location filename="../../src/mixxx.cpp" line="1467"/>
         <source>Ctrl+Shift+T</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1504"/>
+        <location filename="../../src/mixxx.cpp" line="1514"/>
         <source>Enables the debugger during skin parsing</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1512"/>
+        <location filename="../../src/mixxx.cpp" line="1522"/>
         <source>Ctrl+Shift+D</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1404"/>
+        <location filename="../../src/mixxx.cpp" line="1414"/>
         <source>Ctrl+6</source>
         <comment>Menubar|View|Show Cover Art</comment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1418"/>
+        <location filename="../../src/mixxx.cpp" line="1428"/>
         <source>Space</source>
         <comment>Menubar|View|Maximize Library</comment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1451"/>
+        <location filename="../../src/mixxx.cpp" line="1461"/>
         <source>Developer &amp;Tools</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1466"/>
+        <location filename="../../src/mixxx.cpp" line="1476"/>
         <source>Stats: &amp;Experiment Bucket</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1467"/>
+        <location filename="../../src/mixxx.cpp" line="1477"/>
         <source>Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1473"/>
+        <location filename="../../src/mixxx.cpp" line="1483"/>
         <source>Ctrl+Shift+E</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1484"/>
+        <location filename="../../src/mixxx.cpp" line="1494"/>
         <source>Enables base mode. Collects stats in the BASE tracking bucket.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1490"/>
+        <location filename="../../src/mixxx.cpp" line="1500"/>
         <source>Ctrl+Shift+B</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1503"/>
+        <location filename="../../src/mixxx.cpp" line="1513"/>
         <source>Deb&amp;ugger Enabled</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1559"/>
+        <location filename="../../src/mixxx.cpp" line="1569"/>
         <source>&amp;File</source>
         <translation>&amp;Датотека</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1560"/>
+        <location filename="../../src/mixxx.cpp" line="1570"/>
         <source>&amp;Options</source>
         <translation>&amp;Опције</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1561"/>
+        <location filename="../../src/mixxx.cpp" line="1571"/>
         <source>&amp;Library</source>
         <translation>&amp;Библиотека</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1562"/>
+        <location filename="../../src/mixxx.cpp" line="1572"/>
         <source>&amp;View</source>
         <translation>Пре&amp;глед</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1563"/>
+        <location filename="../../src/mixxx.cpp" line="1573"/>
         <source>&amp;Help</source>
         <translation>По&amp;моћ</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1576"/>
+        <location filename="../../src/mixxx.cpp" line="1586"/>
         <source>&amp;Vinyl Control</source>
         <translation>&amp;Управљање плочом</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1644"/>
+        <location filename="../../src/mixxx.cpp" line="1655"/>
         <source>Load track to Deck %1</source>
         <translation>Учитај нумеру на носач %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1645"/>
+        <location filename="../../src/mixxx.cpp" line="1656"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>Носач %1 тренутно пушта нумеру.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1647"/>
+        <location filename="../../src/mixxx.cpp" line="1658"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Да ли сигурно желите да учитате нову нумеру?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1838"/>
+        <location filename="../../src/mixxx.cpp" line="1849"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1872"/>
+        <location filename="../../src/mixxx.cpp" line="1883"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1901"/>
+        <location filename="../../src/mixxx.cpp" line="1912"/>
         <source>There is no input device selected for this auxiliary input.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1970"/>
+        <location filename="../../src/mixxx.cpp" line="1981"/>
         <source>There is no input device selected for this microphone.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2079"/>
+        <location filename="../../src/mixxx.cpp" line="2096"/>
         <source>Error in skin file</source>
         <translation>Грешка у датотеци маске</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2080"/>
+        <location filename="../../src/mixxx.cpp" line="2097"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>Изабрана маска не може бити учитана.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2206"/>
+        <location filename="../../src/mixxx.cpp" line="2223"/>
         <source>OpenGL Direct Rendering</source>
         <translation>Посредно исцртавање ОпенГЛ-а</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2207"/>
+        <location filename="../../src/mixxx.cpp" line="2224"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation>Непосредно исцртавање није укључено на вашем рачунару.&lt;br&gt;&lt;br&gt;Ово значи да ће приказивање таласног облика бити врло&lt;br&gt;&lt;b&gt;споро и да ће преоптеретити ваш процесор&lt;/b&gt;. Или ажурирајте ваше&lt;br&gt;подешавање да укључите непосредно исцртавање, или искључите&lt;br&gt;приказивање таласног облика у поставкама Миксикса тако што ћете&lt;br&gt;изабрати „Празно“ као приказ таласног облика у одељку „Сучеље“.&lt;br&gt;&lt;br&gt;НАПОМЕНА: Ако користите НВИДИА хардвер,&lt;br&gt;непосредно исцртавање можда није присутно, али ви не бисте требали&lt;br&gt;да искусите умањене перформансе.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2241"/>
-        <location filename="../../src/mixxx.cpp" line="2249"/>
         <location filename="../../src/mixxx.cpp" line="2258"/>
+        <location filename="../../src/mixxx.cpp" line="2266"/>
+        <location filename="../../src/mixxx.cpp" line="2275"/>
         <source>Confirm Exit</source>
         <translation>Потврди излаз</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2242"/>
+        <location filename="../../src/mixxx.cpp" line="2259"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Носач тренутно пушта. Да изађем из Миксикса?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2250"/>
+        <location filename="../../src/mixxx.cpp" line="2267"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Узорчник тренутно пушта. Да изађем из Миксикса?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2259"/>
+        <location filename="../../src/mixxx.cpp" line="2276"/>
         <source>The preferences window is still open.</source>
         <translation>Прозор поставки је још увек отворен.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2260"/>
+        <location filename="../../src/mixxx.cpp" line="2277"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Да одбацим могуће измене и да напустим Миксикс?</translation>
     </message>
@@ -7540,7 +7540,7 @@ Please select an input device in the sound hardware preferences first.</source>
     </message>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="39"/>
-        <location filename="../../src/library/playlistfeature.cpp" line="206"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="216"/>
         <source>Playlists</source>
         <translation>Списак нумера</translation>
     </message>
@@ -7550,27 +7550,27 @@ Please select an input device in the sound hardware preferences first.</source>
         <translation>Откључај</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="207"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="217"/>
         <source>Playlists are ordered lists of songs that allow you to plan your DJ sets.</source>
         <translation>Спискови нумера су уређени спискови песама који вам омогућавају да испланирате ваше ДиЏеј скупове.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="208"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="218"/>
         <source>Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.</source>
         <translation>Неки диџеји изграде спискове нумера пре него ли обаве изведбу, а неки то раде у току саме представе.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="209"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="219"/>
         <source>When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you&apos;ve chosen to play.</source>
         <translation>Када користите списак нумера током живог ДиЏеј скупа, сетите се да увек обратите пажњу на то како ваша публика реагује на музику коју сте изабрали за пуштање.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="210"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="220"/>
         <source>It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.</source>
         <translation>Можда ће бити потребно да прескочите неке песме са припремљеног списка нумера или да додате неке друге песме у циљу одржања енергије публике.</translation>
     </message>
     <message>
-        <location filename="../../src/library/playlistfeature.cpp" line="211"/>
+        <location filename="../../src/library/playlistfeature.cpp" line="221"/>
         <source>Create New Playlist</source>
         <translation type="unfinished"/>
     </message>
@@ -7578,58 +7578,58 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/upgrade.cpp" line="394"/>
+        <location filename="../../src/upgrade.cpp" line="429"/>
         <source>Upgrading Mixxx</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="395"/>
+        <location filename="../../src/upgrade.cpp" line="430"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="398"/>
+        <location filename="../../src/upgrade.cpp" line="433"/>
         <source>Scan</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="399"/>
+        <location filename="../../src/upgrade.cpp" line="434"/>
         <source>Later</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="408"/>
+        <location filename="../../src/upgrade.cpp" line="443"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation>Надограђујем МИксикс са в1.9.x/1.10.x.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="410"/>
+        <location filename="../../src/upgrade.cpp" line="445"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation>Миксикс има нови и побољшани откривач такта.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="411"/>
+        <location filename="../../src/upgrade.cpp" line="446"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="415"/>
+        <location filename="../../src/upgrade.cpp" line="450"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation>Ово не утиче на сачуване наговештаје, битне наговештаје, спискове нумера или гајбице.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="417"/>
+        <location filename="../../src/upgrade.cpp" line="452"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation>Ако не желите да Миксикс поново обради ваше нумере, изаберите „Задржи тренутне мреже тактова“. Ово подешавање можете да измените било када у одељку „Откривање такта“ у поставкама.</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="421"/>
+        <location filename="../../src/upgrade.cpp" line="456"/>
         <source>Keep Current Beatgrids</source>
         <translation>Задржи тренутне мреже тактова</translation>
     </message>
     <message>
-        <location filename="../../src/upgrade.cpp" line="422"/>
+        <location filename="../../src/upgrade.cpp" line="457"/>
         <source>Generate New Beatgrids</source>
         <translation>Створи нове мреже тактова</translation>
     </message>
@@ -7851,58 +7851,68 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="25"/>
+        <source>Adjusts the bit depth of the samples.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/bitcrushereffect.cpp" line="39"/>
         <source>Downsampling</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="19"/>
+        <location filename="../../src/effects/native/bitcrushereffect.cpp" line="40"/>
+        <source>Adjusts the sample rate, to which the signal is downsampled.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="20"/>
         <source>Echo</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="22"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="23"/>
         <source>Simple Echo with pingpong</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="26"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="27"/>
         <source>Send</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="28"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="29"/>
         <source>How much of the signal to send into the delay buffer</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="38"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="41"/>
         <source>Delay</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="39"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="40"/>
         <source>Delay time (seconds)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="50"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="51"/>
         <source>Feedback</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="52"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="53"/>
         <source>Amount the echo fades each time it loops</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="62"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="63"/>
         <source>PingPong</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/effects/native/echoeffect.cpp" line="64"/>
+        <location filename="../../src/effects/native/echoeffect.cpp" line="65"/>
         <source>As the ping-pong amount increases, increasing amounts of the echoed signal is bounced between the left and right speakers.</source>
         <translation type="unfinished"/>
     </message>
@@ -7966,8 +7976,23 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="31"/>
+        <source>Controls the intensity of the effect.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="42"/>
+        <source>Sets the value for the delay length.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="52"/>
         <source>Period</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/flangereffect.cpp" line="53"/>
+        <source>Controls the speed of the effect.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8017,6 +8042,7 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="25"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="25"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="30"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="28"/>
         <location filename="../../src/test/super_link_test.cpp" line="44"/>
         <source>Gain for Low Filter</source>
@@ -8074,6 +8100,7 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/bessel4lvmixeqeffect.cpp" line="71"/>
         <location filename="../../src/effects/native/bessel8lvmixeqeffect.cpp" line="71"/>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="63"/>
         <location filename="../../src/effects/native/linkwitzriley8eqeffect.cpp" line="74"/>
         <source>Gain for High Filter</source>
         <translation type="unfinished"/>
@@ -8100,6 +8127,11 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/graphiceqeffect.cpp" line="18"/>
         <source>An 8 band Graphic EQ based on Biquad Filters</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/graphiceqeffect.cpp" line="50"/>
+        <source>Gain for Band Filter %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8281,7 +8313,7 @@ To abort this action, press Cancel on the file dialog.</source>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="49"/>
-        <location filename="../../src/library/setlogfeature.cpp" line="293"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="310"/>
         <source>History</source>
         <translation>Историјат</translation>
     </message>
@@ -8296,22 +8328,22 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation>Закључај</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="294"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="311"/>
         <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
         <translation>Одељак историјата самостално чува списак нумера које сте пуштали у вашим диџеј скуповима.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="295"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="312"/>
         <source>This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.</source>
         <translation>Ово је пригодно да се сетите шта сте радили у вашим диџеј скуповима, да поставите спискове скупова, или да пријавите ваше изведбе организацијама за лиценцирање.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="296"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="313"/>
         <source>Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.</source>
         <translation>Сваки пут када покренете Миксикс, прави се нови одељак историјата. Можете да га извезете као списак нумера у различитим облицима или да га поново изведете са Самосталним Диџејом.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="297"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="314"/>
         <source>You can join the current history session with a previous one by right-clicking and selecting &quot;Join with previous&quot;.</source>
         <translation>Можете да придружите сесију тренутног историјата са претходном тако што ћете кликнути десним тастером миша и изабрати „Споји са претходном“.</translation>
     </message>
@@ -9977,19 +10009,19 @@ Click OK to exit.</source>
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="344"/>
+        <location filename="../../src/widget/woverview.cpp" line="348"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Спреман сам за пуштање, обрађујем ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="347"/>
+        <location filename="../../src/widget/woverview.cpp" line="351"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Учитавам нумеру ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="351"/>
+        <location filename="../../src/widget/woverview.cpp" line="355"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Завршавам ..</translation>
@@ -9998,15 +10030,66 @@ Click OK to exit.</source>
 <context>
     <name>WSearchLineEdit</name>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="26"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="19"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
+        <source>Clear input</source>
+        <comment>Clear the search bar input field</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="27"/>
         <source>Ctrl+F</source>
         <comment>Search|Focus</comment>
         <translation>Ктрл+Ф</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="174"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
         <source>Search...</source>
-        <translation>Потражи...</translation>
+        <comment>noun</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <source>Search</source>
+        <comment>noun</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <source>Enter a string to search for</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
+        <source>Shortcut</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <source>Ctrl+F</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <source>Focus</source>
+        <comment>Give search bar input focus</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
+        <source>Ctrl+Backspace</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
+        <source>Esc</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
+        <source>Exit search</source>
+        <comment>Exit search bar and leave focus</comment>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

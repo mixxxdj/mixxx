@@ -32,8 +32,8 @@
 #ifndef _DSP_DELAY_H_
 #define _DSP_DELAY_H_
 
-#include "effects/native/reverb/dsp/util.h"
-#include "effects/native/reverb/dsp/FPTruncateMode.h"
+#include "util.h"
+#include "FPTruncateMode.h"
 
 namespace DSP {
 

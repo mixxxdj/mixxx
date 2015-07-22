@@ -95,6 +95,10 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     //qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     if (bEnabled) {
+        // Already enabled?  Do nothing.
+        if (pSyncable->getSyncMode() != SYNC_NONE) {
+            return;
+        }
         bool foundPlayingDeck = false;
         if (m_pMasterSyncable == NULL) {
             // There is no master. If any other deck is playing we will match
@@ -166,6 +170,10 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             pSyncable->requestSyncPhase();
         }
     } else {
+        // Already disabled?  Do nothing.
+        if (pSyncable->getSyncMode() == SYNC_NONE) {
+            return;
+        }
         deactivateSync(pSyncable);
     }
     checkUniquePlayingSyncable();

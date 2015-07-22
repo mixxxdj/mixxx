@@ -95,14 +95,14 @@ void MessageHandler(QtMsgType type,
         //FIXME: cerr << doesn't get printed until after mixxx quits (???)
         for (int i = 9; i >= 0; --i) {
             if (i == 0) {
-                logFileName = QString("%1/mixxx.log").arg(logLocation);
+                logFileName = QDir(logLocation).filePath("mixxx.log");
             } else {
-                logFileName = QString("%1/mixxx.log.%2").arg(logLocation).arg(i);
+                logFileName = QDir(logLocation).filePath(QString("mixxx.log.%1").arg(i));
             }
             QFileInfo logbackup(logFileName);
             if (logbackup.exists()) {
                 QString olderlogname =
-                        QString("%1/mixxx.log.%2").arg(logLocation).arg(i + 1);
+                        QDir(logLocation).filePath(QString("mixxx.log.%1").arg(i + 1));
                 // This should only happen with number 10
                 if (QFileInfo(olderlogname).exists()) {
                     QFile::remove(olderlogname);
@@ -171,6 +171,7 @@ void MessageHandler(QtMsgType type,
 
 int main(int argc, char * argv[])
 {
+    Console console;
 
 #ifdef Q_OS_LINUX
     XInitThreads();
@@ -247,8 +248,6 @@ int main(int argc, char * argv[])
         fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
         return(0);
     }
-
-    Console console();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     qInstallMsgHandler(MessageHandler);

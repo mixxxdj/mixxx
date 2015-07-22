@@ -71,6 +71,33 @@
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
                             <PushButton>
+                                <Size>40f,20f</Size>
+                                <ObjectName>GuiToggleButton</ObjectName>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Text>EQ</Text>
+                                </State>
+                                <State>
+                                  <Number>1</Number>
+                                  <Text>EQ</Text>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                                  <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                                <Connection>
+                                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                                </Connection>
+                            </PushButton>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <ObjectName>GuiToggleContainer</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                            <PushButton>
                                 <Size>55f,20f</Size>
                                 <ObjectName>GuiToggleButton</ObjectName>
                                 <NumberStates>2</NumberStates>
@@ -282,7 +309,7 @@
                 <SizePolicy>min,me</SizePolicy>
                 <MinimumSize>450,</MinimumSize>
                 <Children>
-                    <WidgetGroup> spacer to push logo to the right
+                    <WidgetGroup>
                         <Layout>horizontal</Layout>
                         <SizePolicy>e,min</SizePolicy>
                         <Children/>

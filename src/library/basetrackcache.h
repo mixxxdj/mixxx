@@ -17,6 +17,7 @@
 #include "library/columncache.h"
 #include "trackinfoobject.h"
 #include "util.h"
+#include "util/memory.h"
 
 class SearchQueryParser;
 class QueryNode;
@@ -83,7 +84,7 @@ class BaseTrackCache : public QObject {
     void getTrackValueForColumn(TrackPointer pTrack, int column,
                                 QVariant& trackValue) const;
 
-    QueryNode* parseQuery(QString query, QString extraFilter,
+    std::unique_ptr<QueryNode> parseQuery(QString query, QString extraFilter,
                           QStringList idStrings) const;
     int findSortInsertionPoint(TrackPointer pTrack,
                                const int sortColumn,
