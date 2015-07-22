@@ -5,8 +5,8 @@
 #include <QString>
 #include <QScopedPointer>
 
-#include "engine/clock.h"
-#include "engine/syncable.h"
+#include "engine/sync/clock.h"
+#include "engine/sync/syncable.h"
 #include "engine/enginechannel.h"
 
 class ControlObject;
@@ -16,7 +16,7 @@ class EngineSync;
 class InternalClock : public QObject, public Clock, public Syncable {
     Q_OBJECT
   public:
-    InternalClock(const char* pGroup, EngineSync* pEngineSync);
+    InternalClock(const char* pGroup, SyncableListener* pEngineSync);
     virtual ~InternalClock();
 
     const QString& getGroup() const {
@@ -42,19 +42,22 @@ class InternalClock : public QObject, public Clock, public Syncable {
 
     void setBpm(double bpm);
     double getBpm() const;
+    void setInstantaneousBpm(double bpm);
 
     void onCallbackStart(int sampleRate, int bufferSize);
 
   private slots:
     void slotBpmChanged(double bpm);
+    void slotBeatDistanceChanged(double beat_distance);
     void slotSyncMasterEnabledChangeRequest(double state);
 
   private:
     void updateBeatLength(int sampleRate, double bpm);
 
     QString m_group;
-    EngineSync* m_pEngineSync;
+    SyncableListener* m_pEngineSync;
     QScopedPointer<ControlObject> m_pClockBpm;
+    QScopedPointer<ControlObject> m_pClockBeatDistance;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     SyncMode m_mode;
 

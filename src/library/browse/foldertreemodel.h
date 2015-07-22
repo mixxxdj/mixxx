@@ -11,11 +11,9 @@
 #include "library/treeitem.h"
 
 class TreeItem;
-/*
- * This class represents a folder item within the Browse Feature
- * The class is derived from TreeItemModel to support lazy model
- * initialization.
- */
+// This class represents a folder item within the Browse Feature
+// The class is derived from TreeItemModel to support lazy model
+// initialization.
 
 class FolderTreeModel : public TreeItemModel {
     Q_OBJECT

@@ -4,10 +4,9 @@
 #include <QScopedPointer>
 
 #include "engine/enginecontrol.h"
-#include "engine/syncable.h"
+#include "engine/sync/syncable.h"
 
 class EngineChannel;
-class EngineSync;
 class BpmControl;
 class RateControl;
 class ControlObject;
@@ -18,7 +17,7 @@ class SyncControl : public EngineControl, public Syncable {
     Q_OBJECT
   public:
     SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
-                EngineChannel* pChannel, EngineSync* pEngineSync);
+                EngineChannel* pChannel, SyncableListener* pEngineSync);
     virtual ~SyncControl();
 
     const QString& getGroup() const { return m_sGroup; }
@@ -29,17 +28,31 @@ class SyncControl : public EngineControl, public Syncable {
     bool isPlaying() const;
 
     double getBeatDistance() const;
+    // Must never result in a call to
+    // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     void setBeatDistance(double beatDistance);
 
     double getBpm() const;
+    // Must never result in a call to
+    // SyncableListener::notifyBpmChanged or signal loops could occur.
     void setBpm(double bpm);
 
+    // Must never result in a call to
+    // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
+    // occur.
+    void setInstantaneousBpm(double bpm);
+
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
-    void checkTrackPosition(double fractionalPlaypos);
+
+    void reportTrackPosition(double fractionalPlaypos);
+    void reportPlayerSpeed(double speed, bool scratching);
 
   private slots:
     // Fired by changes in play.
     void slotControlPlay(double v);
+
+    // Fired by changes in vinyl control status.
+    void slotVinylControlChanged(double v);
 
     // Fired by changes in rate, rate_dir, rateRange.
     void slotRateChanged();
@@ -50,8 +63,6 @@ class SyncControl : public EngineControl, public Syncable {
     // Fired by changed to beat_distance (typically only from BpmControl during
     // BpmControl::process()).
     void slotBeatDistanceChanged(double beatDistance);
-
-    void slotRateEngineChanged(double rate);
 
     // Change request handlers for sync properties.
     void slotSyncModeChangeRequest(double state);
@@ -64,9 +75,10 @@ class SyncControl : public EngineControl, public Syncable {
     // EngineSync can ask us what our EngineChannel is. EngineMaster in turn
     // asks EngineSync what EngineChannel is the "master" channel.
     EngineChannel* m_pChannel;
-    EngineSync* m_pEngineSync;
+    SyncableListener* m_pEngineSync;
     BpmControl* m_pBpmControl;
     RateControl* m_pRateControl;
+    bool m_bOldScratching;
 
     QScopedPointer<ControlObject> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
@@ -79,7 +91,7 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlObjectSlave> m_pRateSlider;
     QScopedPointer<ControlObjectSlave> m_pRateDirection;
     QScopedPointer<ControlObjectSlave> m_pRateRange;
-    QScopedPointer<ControlObjectSlave> m_pRateEngine;
+    QScopedPointer<ControlObjectSlave> m_pVCEnabled;
 };
 
 

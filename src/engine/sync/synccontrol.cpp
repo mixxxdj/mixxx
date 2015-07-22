@@ -1,20 +1,22 @@
-#include "engine/synccontrol.h"
+#include "engine/sync/synccontrol.h"
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "controlobjectslave.h"
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
-#include "engine/enginesync.h"
 
 const double kTrackPositionMasterHandoff = 0.99;
 
 SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
-                         EngineChannel* pChannel, EngineSync* pEngineSync)
+                         EngineChannel* pChannel, SyncableListener* pEngineSync)
         : EngineControl(pGroup, pConfig),
           m_sGroup(pGroup),
           m_pChannel(pChannel),
-          m_pEngineSync(pEngineSync) {
+          m_pEngineSync(pEngineSync),
+          m_pBpmControl(NULL),
+          m_pRateControl(NULL),
+          m_bOldScratching(false) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton.reset(new ControlObjectSlave(pGroup, "play", this));
@@ -45,6 +47,8 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
     connect(m_pSyncBeatDistance.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatDistanceChanged(double)),
             Qt::DirectConnection);
+
+    // BPMControl and RateControl will be initialized later.
 }
 
 SyncControl::~SyncControl() {
@@ -76,10 +80,17 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pRateRange->connectValueChanged(this, SLOT(slotRateChanged()),
                                       Qt::DirectConnection);
 
-    m_pRateEngine.reset(new ControlObjectSlave(getGroup(), "rateEngine", this));
-    m_pRateEngine->connectValueChanged(this, SLOT(slotRateEngineChanged(double)),
-                                       Qt::DirectConnection);
+#ifdef __VINYLCONTROL__
+    m_pVCEnabled.reset(new ControlObjectSlave(
+        getGroup(), "vinylcontrol_enabled", this));
 
+    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+    Q_ASSERT(m_pVCEnabled->valid());
+
+    m_pVCEnabled->connectValueChanged(this, SLOT(slotVinylControlChanged(double)),
+                                      Qt::DirectConnection);
+#endif
 }
 
 void SyncControl::notifySyncModeChanged(SyncMode mode) {
@@ -89,6 +100,10 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     m_pSyncMode->setAndConfirm(mode);
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
     m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
+    if (mode == SYNC_FOLLOWER && m_pVCEnabled->get()) {
+        // If follower mode is enabled, disable vinyl control.
+        m_pVCEnabled->set(0.0);
+    }
 }
 
 double SyncControl::getBeatDistance() const {
@@ -107,11 +122,32 @@ double SyncControl::getBpm() const {
 
 void SyncControl::setBpm(double bpm) {
     qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
-    // Sets the effective BPM in BpmControl (results in changes to rate and
-    m_pBpmControl->setBpmFromMaster(bpm);
+
+    if (getSyncMode() == SYNC_NONE) {
+        qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
+        return;
+    }
+
+    // Vinyl Control overrides.
+    if (m_pVCEnabled->get() > 0.0) {
+        return;
+    }
+
+    double fileBpm = m_pFileBpm->get();
+    if (fileBpm > 0.0) {
+        double newRate = (bpm / m_pFileBpm->get() - 1.0)
+                / m_pRateDirection->get() / m_pRateRange->get();
+        m_pRateSlider->set(newRate);
+    } else {
+        m_pRateSlider->set(0);
+    }
 }
 
-void SyncControl::checkTrackPosition(double fractionalPlaypos) {
+void SyncControl::setInstantaneousBpm(double bpm) {
+    m_pBpmControl->setInstantaneousBpm(bpm);
+}
+
+void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     // If we're close to the end, and master, disable master so we don't stop
     // the party.
     if (getSyncMode() == SYNC_MASTER &&
@@ -126,6 +162,13 @@ bool SyncControl::isPlaying() const {
 
 void SyncControl::slotControlPlay(double play) {
     m_pEngineSync->notifyPlaying(this, play > 0.0);
+}
+
+void SyncControl::slotVinylControlChanged(double enabled) {
+    if (enabled && getSyncMode() == SYNC_FOLLOWER) {
+        // If vinyl control was enabled and we're a follower, disable sync mode.
+        m_pEngineSync->requestSyncMode(this, SYNC_NONE);
+    }
 }
 
 void SyncControl::slotSyncModeChangeRequest(double state) {
@@ -174,17 +217,23 @@ void SyncControl::slotFileBpmChanged() {
 }
 
 void SyncControl::slotRateChanged() {
-    // This slot is fired by rate, rate_dir, rateRange, and file_bpm.
+    // This slot is fired by rate, rate_dir, and rateRange changes.
     const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
     double bpm = m_pFileBpm ? m_pFileBpm->get() * rate : 0.0;
     m_pEngineSync->notifyBpmChanged(this, bpm, false);
 }
 
 void SyncControl::slotBeatDistanceChanged(double beatDistance) {
+    // TODO(rryan): This update should not be received over a CO -- BpmControl
+    // should call directly.
     m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);
 }
 
-void SyncControl::slotRateEngineChanged(double rateEngine) {
-    double instantaneous_bpm = m_pFileBpm->get() * rateEngine;
+void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
+    if (m_bOldScratching ^ scratching) {
+        m_pEngineSync->notifyScratching(this, scratching);
+        m_bOldScratching = scratching;
+    }
+    double instantaneous_bpm = m_pFileBpm->get() * speed;
     m_pEngineSync->notifyInstantaneousBpmChanged(this, instantaneous_bpm);
 }

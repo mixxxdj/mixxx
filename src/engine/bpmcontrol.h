@@ -7,7 +7,7 @@
 
 #include "controlobject.h"
 #include "engine/enginecontrol.h"
-#include "engine/syncable.h"
+#include "engine/sync/syncable.h"
 #include "tapfilter.h"
 
 class ControlObject;
@@ -24,7 +24,6 @@ class BpmControl : public EngineControl {
 
     double getBpm() const;
     double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
-    void onEngineRateChange(double rate);
     double getSyncAdjustment(bool userTweakingSync);
     double getSyncedRate() const;
     // Get the phase offset from the specified position.
@@ -36,7 +35,7 @@ class BpmControl : public EngineControl {
                    const double dTotalSamples,
                    const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
-    void setBpmFromMaster(double);
+    void setInstantaneousBpm(double instantaneousBpm);
 
     // Calculates contextual information about beats: the previous beat, the
     // next beat, the current beat length, and the beat ratio (how far dPosition
@@ -83,13 +82,11 @@ class BpmControl : public EngineControl {
 
     // ControlObjects that come from EngineBuffer
     ControlObjectSlave* m_pPlayButton;
+    ControlObjectSlave* m_pReverseButton;
     ControlObjectSlave* m_pRateSlider;
     ControlObject* m_pQuantize;
     ControlObjectSlave* m_pRateRange;
     ControlObjectSlave* m_pRateDir;
-
-    // Is vinyl control enabled?
-    ControlObject* m_pVCEnabled;
 
     // ControlObjects that come from LoopingControl
     ControlObjectSlave* m_pLoopEnabled;
@@ -118,10 +115,10 @@ class BpmControl : public EngineControl {
     double m_dPreviousSample;
 
     // Master Sync objects and values.
-    ControlObject* m_pMasterBpm;
     ControlObject* m_pSyncMode;
     ControlObjectSlave* m_pThisBeatDistance;
     double m_dSyncTargetBeatDistance;
+    double m_dSyncInstantaneousBpm;
     double m_dSyncAdjustment;
     double m_dUserOffset;
 

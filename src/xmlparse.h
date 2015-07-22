@@ -30,6 +30,7 @@ public:
     ~XmlParse();
 
     static QDomNode selectNode(const QDomNode &nodeHeader, const QString sNode);
+    static QDomElement selectElement(const QDomNode &nodeHeader, const QString& sNode);
     static int selectNodeInt(const QDomNode &nodeHeader, const QString sNode);
     static float selectNodeFloat(const QDomNode &nodeHeader, const QString sNode);
     static QString selectNodeQString(const QDomNode &nodeHeader, const QString sNode);

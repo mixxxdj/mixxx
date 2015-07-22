@@ -48,6 +48,7 @@ class LibraryScanner : public QThread {
 
     void run();
     void scan(QWidget* parent);
+
     void scan();
     bool importDirectory(const QString &directory, const QStringList &nameFilters, volatile bool *cancel);
     void addTrackToChunk(const QString filePath);
@@ -78,8 +79,8 @@ class LibraryScanner : public QThread {
     CueDAO m_cueDao;
     PlaylistDAO m_playlistDao;
     CrateDAO m_crateDao;
-    AnalysisDao m_analysisDao;
     DirectoryDAO m_directoryDao;
+    AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
     QStringList m_nameFilters;
     volatile bool m_bCancelLibraryScan;

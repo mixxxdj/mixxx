@@ -22,12 +22,14 @@ BpmControl::BpmControl(const char* _group,
         EngineControl(_group, _config),
         m_dPreviousSample(0),
         m_dSyncTargetBeatDistance(0.0),
+        m_dSyncInstantaneousBpm(0.0),
         m_dSyncAdjustment(1.0),
         m_dUserOffset(0.0),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
     m_pPlayButton = new ControlObjectSlave(_group, "play", this);
     m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)), Qt::DirectConnection);
+    m_pReverseButton = new ControlObjectSlave(_group, "reverse", this);
     m_pRateSlider = new ControlObjectSlave(_group, "rate", this);
     m_pRateSlider->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
     m_pQuantize = ControlObject::getControl(_group, "quantize");
@@ -42,9 +44,6 @@ BpmControl::BpmControl(const char* _group,
 
     m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotFileBpmChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pFileBpm, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
 
@@ -85,17 +84,7 @@ BpmControl::BpmControl(const char* _group,
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlObjectSlave(_group, "beat_distance", this);
-
-    m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"));
-
     m_pSyncMode = ControlObject::getControl(ConfigKey(_group, "sync_mode"));
-
-#ifdef __VINYLCONTROL__
-    m_pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
-    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
-    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(m_pVCEnabled);
-#endif
 }
 
 BpmControl::~BpmControl() {
@@ -121,12 +110,12 @@ double BpmControl::getBpm() const {
 }
 
 void BpmControl::slotFileBpmChanged(double bpm) {
+    Q_UNUSED(bpm);
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
     // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
     if (getSyncMode() == SYNC_NONE) {
-        double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
-        m_pEngineBpm->set(bpm * dRate);
+        slotAdjustRateSlider();
     }
 }
 
@@ -290,32 +279,7 @@ double BpmControl::getSyncedRate() const {
         // XXX TODO: what to do about this case
         return 1.0;
     } else {
-        return m_pMasterBpm->get() / m_pFileBpm->get();
-    }
-}
-
-void BpmControl::setBpmFromMaster(double bpm) {
-    // Vinyl overrides
-    if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
-        return;
-    }
-
-    if (getSyncMode() == SYNC_NONE) {
-        return;
-    }
-
-    // If the bpm is the same, nothing to do.
-    if (floatCompare(bpm, m_pEngineBpm->get())) {
-        return;
-    }
-
-    if (m_pFileBpm->get() > 0.0) {
-        double newRate = bpm / m_pFileBpm->get();
-        m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
-        m_pEngineBpm->set(bpm);
-    } else {
-        m_pRateSlider->set(0);
-        m_pEngineBpm->set(0);
+        return m_dSyncInstantaneousBpm / m_pFileBpm->get();
     }
 }
 
@@ -361,6 +325,11 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     if (m_pBeats == NULL) {
         // No beat information.
         return 1.0;
+    }
+    if (m_pReverseButton->get()) {
+        // If we are going backwards, we can't do the math correctly.
+        m_dSyncAdjustment = 1.0;
+        return m_dSyncAdjustment;
     }
 
     // This is the deck position at the start of the callback.
@@ -644,12 +613,6 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     return dNewPlaypos - dThisPosition;
 }
 
-void BpmControl::onEngineRateChange(double rate) {
-    if (getSyncMode() == SYNC_FOLLOWER) {
-        m_pEngineBpm->set(rate * m_pFileBpm->get());
-    }
-}
-
 void BpmControl::slotAdjustRateSlider() {
     // Adjust playback bpm in response to a change in the rate slider.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
@@ -725,4 +688,8 @@ double BpmControl::process(const double dRate,
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {
     m_dSyncTargetBeatDistance = beatDistance;
+}
+
+void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
+    m_dSyncInstantaneousBpm = instantaneousBpm;
 }

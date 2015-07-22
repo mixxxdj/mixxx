@@ -21,7 +21,7 @@ void DirectoryDAO::initialize() {
 
 int DirectoryDAO::addDirectory(const QString& newDir) {
     // Do nothing if the dir to add is a child of a directory that is already in
-    // the db.:
+    // the db.
     ScopedTransaction transaction(m_database);
     QStringList dirs = getDirs();
     QString childDir;
@@ -36,6 +36,7 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
     }
 
     if (!childDir.isEmpty()) {
+        qDebug() << "return already watching";
         return ALREADY_WATCHING;
     }
 
@@ -60,15 +61,12 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
 bool DirectoryDAO::isChildDir(QString testDir, QString dirStr){
     QDir test = QDir(testDir);
     QDir dir = QDir(dirStr);
-
-    bool child = false;
+    bool child = dir == test;
     while (test.cdUp()) {
-        // a parent of test is equal to dir
         if (dir == test) {
             child = true;
         }
     }
-
     // qDebug() << "--- test related function ---";
     // qDebug() << "testDir " << testDir;
     // qDebug() << "dir" << dirStr;

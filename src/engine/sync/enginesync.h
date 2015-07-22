@@ -19,30 +19,14 @@
 #ifndef ENGINESYNC_H
 #define ENGINESYNC_H
 
-#include "engine/enginecontrol.h"
-#include "engine/syncable.h"
+#include "configobject.h"
+#include "engine/sync/syncable.h"
+#include "engine/sync/basesyncablelistener.h"
 
-class EngineChannel;
-class ControlObject;
-class ControlPushButton;
-class ControlPotmeter;
-class InternalClock;
-
-class EngineSync : public EngineControl, public SyncableListener {
-    Q_OBJECT
+class EngineSync : public BaseSyncableListener {
   public:
     explicit EngineSync(ConfigObject<ConfigValue>* pConfig);
     virtual ~EngineSync();
-
-    void addSyncableDeck(Syncable* pSyncable);
-    EngineChannel* getMaster() const;
-    void onCallbackStart(int sampleRate, int bufferSize);
-
-    // Only for testing. Do not use.
-    Syncable* getSyncableForGroup(const QString& group);
-    Syncable* getMasterSyncable() {
-        return m_pMasterSyncable;
-    }
 
     // Used by Syncables to tell EngineSync it wants to be enabled in a
     // specific mode. If the state change is accepted, EngineSync calls
@@ -60,14 +44,9 @@ class EngineSync : public EngineControl, public SyncableListener {
     void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm);
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance);
     void notifyPlaying(Syncable* pSyncable, bool playing);
-
-  private slots:
-    void slotSyncRateSliderChanged(double);
+    void notifyScratching(Syncable* pSyncable, bool scratching);
 
   private:
-    // Choices about master selection often hinge on how many decks are playing back.
-    int playingSyncDeckCount() const;
-
     // Activate a specific syncable as master.
     void activateMaster(Syncable* pSyncable);
 
@@ -75,19 +54,8 @@ class EngineSync : public EngineControl, public SyncableListener {
     // beat_distance to match the master.
     void activateFollower(Syncable* pSyncable);
 
-    // Picks a new master (does not pick pDontPick) and calls
-    // activateChannelMaster on it. Clears m_bExplicitMasterSelected because the
-    // master it picks is not explicitly selected by the user.
-    void findNewMaster(Syncable* pDontPick);
-
-    ConfigObject<ConfigValue>* m_pConfig;
-    InternalClock* m_pInternalClock;
-    Syncable* m_pMasterSyncable;
-    ControlObject* m_pMasterBpm;
-    ControlObject* m_pMasterBeatDistance;
-    ControlPotmeter* m_pMasterRateSlider;
-    QList<Syncable*> m_syncables;
-    bool m_bExplicitMasterSelected;
+    // Unsets all sync state on a Syncable.
+    void deactivateSync(Syncable* pSyncable);
 };
 
 #endif

@@ -31,7 +31,7 @@
 #include "engine/enginebufferscalelinear.h"
 #include "engine/enginebufferscaledummy.h"
 #include "mathstuff.h"
-#include "engine/enginesync.h"
+#include "engine/sync/enginesync.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
@@ -39,7 +39,7 @@
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
 #include "engine/keycontrol.h"
-#include "engine/synccontrol.h"
+#include "engine/sync/synccontrol.h"
 #include "engine/quantizecontrol.h"
 #include "visualplayposition.h"
 #include "engine/cuecontrol.h"
@@ -220,14 +220,13 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
                                      pMixingEngine->getEngineSync());
     addControl(m_pSyncControl);
 
+#ifdef __VINYLCONTROL__
+    addControl(new VinylControlControl(_group, _config));
+#endif
+
     m_pRateControl = new RateControl(_group, _config);
     // Add the Rate Controller
     addControl(m_pRateControl);
-#ifdef __VINYLCONTROL__
-    VinylControlControl *vcc = new VinylControlControl(_group, _config);
-    addControl(vcc);
-    m_pRateControl->setVinylControlControl(vcc);
-#endif
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
@@ -293,6 +292,7 @@ EngineBuffer::~EngineBuffer()
     delete m_rateEngine;
     delete m_playposSlider;
     delete m_visualBpm;
+    delete m_visualKey;
 
     delete m_pSlipButton;
     delete m_pRepeat;
@@ -504,14 +504,6 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    if (m_pQuantize->get() > 0.0) {
-        int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(new_playpos));
-        if (!even(offset)) {
-            offset--;
-        }
-        new_playpos += offset;
-    }
-
     queueNewPlaypos(new_playpos);
 }
 
@@ -649,6 +641,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
         if (m_bSeekQueued.testAndSetAcquire(1, 0)) {
+            // If we are playing and quantize is on, match phase when seeking.
+            if (!paused && m_pQuantize->get() > 0.0) {
+                int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
+                if (!even(offset)) {
+                    offset--;
+                }
+                m_dQueuedPosition += offset;
+            }
             setNewPlaypos(m_dQueuedPosition);
         }
 
@@ -801,6 +801,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         }
         m_engineLock.unlock();
 
+        // Report our speed to SyncControl. If we are the master then it will
+        // broadcast this update to followers.
+        m_pSyncControl->reportPlayerSpeed(speed, is_scratching);
 
         // Update all the indicators that EngineBuffer publishes to allow
         // external parts of Mixxx to observe its status.
@@ -831,6 +834,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     } else { // if (!bTrackLoading && m_pause.tryLock()) {
         // If we can't get the pause lock then this buffer will be silence.
         bCurBufferPaused = true;
+
+        // We are stopped. Report a speed of 0 to SyncControl.
+        m_pSyncControl->reportPlayerSpeed(0.0, false);
     }
 
     if (!bTrackLoading) {
@@ -912,20 +918,30 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     m_iLastBufferSize = iBufferSize;
 }
 
-void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
+void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Increase samplesCalculated by the buffer size
     m_iSamplesCalculated += iBufferSize;
 
     double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
-    if(rate > 0 && fFractionalPlaypos == 1.0) {
-        rate = 0;
+    if(speed > 0 && fFractionalPlaypos == 1.0) {
+        speed = 0;
     }
+
+    // Report fractional playpos to SyncControl.
+    // TODO(rryan) It's kind of hacky that this is in updateIndicators but it
+    // prevents us from computing fFractionalPlaypos multiple times per
+    // EngineBuffer::process().
+    m_pSyncControl->reportTrackPosition(fFractionalPlaypos);
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.
     if (m_iSamplesCalculated > (m_pSampleRate->get()/kiUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
+
+        if (speed != m_rateEngine->get()) {
+            m_rateEngine->set(speed);
+        }
 
         //Update the BPM even more slowly
         m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
@@ -940,11 +956,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
     // Update visual control object, this needs to be done more often than the
     // rateEngine and playpos slider
-    m_visualPlayPos->set(fFractionalPlaypos, rate,
+    m_visualPlayPos->set(fFractionalPlaypos, speed,
             (double)iBufferSize/m_file_length_old,
             fractionalPlayposFromAbsolute(m_dSlipPosition));
-    m_rateEngine->set(rate);
-    m_pSyncControl->checkTrackPosition(fFractionalPlaypos);
 }
 
 void EngineBuffer::hintReader(const double dRate) {
@@ -1038,7 +1052,7 @@ void EngineBuffer::setReader(CachingReader* pReader) {
 */
 
 void EngineBuffer::setScalerForTest(EngineBufferScale* pScale) {
-	m_pScale = pScale;
-	// This bool is permanently set and can't be undone.
-	m_bScalerOverride = true;
+    m_pScale = pScale;
+    // This bool is permanently set and can't be undone.
+    m_bScalerOverride = true;
 }

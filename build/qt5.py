@@ -904,6 +904,7 @@ def enable_modules(self, modules, debug=False, crosscompiling=False) :
         'QtGui'      : ['QT_GUI_LIB'],
         'QtNetwork'  : ['QT_NETWORK_LIB'],
         'QtCore'     : ['QT_CORE_LIB'],
+        'QtWidgets'  : ['QT_WIDGETS_LIB'],
     }
     for module in modules :
         try : self.AppendUnique(CPPDEFINES=moduleDefines[module])
