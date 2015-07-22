@@ -371,14 +371,6 @@ ElectrixTweaker.connectDeckControls = function (group, remove) {
 	}
 	ElectrixTweaker.connectHotcuePage(group, remove)
 	
-	var eqsToFunctions = {
-		'filterHigh': 'ElectrixTweaker.eqEncoderLEDs',
-		'filterMid': 'ElectrixTweaker.eqEncoderLEDs',
-		'filterLow': 'ElectrixTweaker.eqEncoderLEDs',
-		'filterHighKill': 'ElectrixTweaker.eqEncoderKillButtonLED',
-		'filterMidKill': 'ElectrixTweaker.eqEncoderKillButtonLED',
-		'filterLowKill': 'ElectrixTweaker.eqEncoderKillButtonLED'
-	}
 	if (remove) {
 		ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], true)
 		ElectrixTweaker.connectVinylLEDs(group, true)
