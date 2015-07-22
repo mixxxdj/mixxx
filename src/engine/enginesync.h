@@ -20,78 +20,74 @@
 #define ENGINESYNC_H
 
 #include "engine/enginecontrol.h"
+#include "engine/syncable.h"
 
 class EngineChannel;
 class ControlObject;
 class ControlPushButton;
 class ControlPotmeter;
-class RateControl;
+class InternalClock;
 
-enum SYNC_MODE {
-    SYNC_NONE = 0,
-    SYNC_FOLLOWER = 1,
-    SYNC_MASTER = 2
-};
-
-class EngineSync : public EngineControl {
+class EngineSync : public EngineControl, public SyncableListener {
     Q_OBJECT
-
   public:
     explicit EngineSync(ConfigObject<ConfigValue>* pConfig);
     virtual ~EngineSync();
 
-    void addChannel(EngineChannel* pChannel);
-    void addDeck(RateControl* pRate);
+    void addSyncableDeck(Syncable* pSyncable);
     EngineChannel* getMaster() const;
-    void process(int bufferSize);
-    RateControl* getRateControlForGroup(const QString& group);
-    const QString getSyncSource() const { return m_sSyncSource; }
-    // Used by RateControl to tell the master sync it wants to be enabled.
-    void setChannelSyncMode(RateControl* pRateControl, int state);
-    // Similar, but will accept master or follower mode.
-    void setChannelSyncMode(RateControl* pRateControl);
-    void setChannelRateSlider(RateControl* pRateControl, double new_bpm);
-    void setDeckPlaying(RateControl* pRateControl, bool playing);
+    void onCallbackStart(int sampleRate, int bufferSize);
+
+    // Only for testing. Do not use.
+    Syncable* getSyncableForGroup(const QString& group);
+    Syncable* getMasterSyncable() {
+        return m_pMasterSyncable;
+    }
+
+    // Used by Syncables to tell EngineSync it wants to be enabled in a
+    // specific mode. If the state change is accepted, EngineSync calls
+    // Syncable::notifySyncModeChanged.
+    void requestSyncMode(Syncable* pSyncable, SyncMode state);
+
+    // Used by Syncables to tell EngineSync it wants to be enabled in any mode
+    // (master/follower).
+    void requestEnableSync(Syncable* pSyncable, bool enabled);
+
+    // Syncables notify EngineSync directly about various events. EngineSync
+    // does not have a say in whether these succeed or not, they are simply
+    // notifications.
+    void notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged=false);
+    void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm);
+    void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance);
+    void notifyPlaying(Syncable* pSyncable, bool playing);
 
   private slots:
-    void slotMasterBpmChanged(double);
     void slotSyncRateSliderChanged(double);
-    void slotSourceRateEngineChanged(double);
-    void slotSourceBpmChanged(double);
-    void slotSourceBeatDistanceChanged(double);
-    void slotSampleRateChanged(double);
-    void slotInternalMasterChanged(double);
 
   private:
-    int playingSyncDeckCount();
-    void setMaster(const QString& group);
-    bool setChannelMaster(RateControl* pRateControl);
-    void setInternalMaster();
-    void chooseNewMaster(const QString& dontpick);
-    void disableCurrentMaster();
-    void updateSamplesPerBeat();
-    void setPseudoPosition(double percent);
-    void initializeInternalBeatDistance();
-    void initializeInternalBeatDistance(RateControl* pRateControl);
-    double getInternalBeatDistance() const;
+    // Choices about master selection often hinge on how many decks are playing back.
+    int playingSyncDeckCount() const;
+
+    // Activate a specific syncable as master.
+    void activateMaster(Syncable* pSyncable);
+
+    // Activate a specific channel as Follower. Sets the syncable's bpm and
+    // beat_distance to match the master.
+    void activateFollower(Syncable* pSyncable);
+
+    // Picks a new master (does not pick pDontPick) and calls
+    // activateChannelMaster on it. Clears m_bExplicitMasterSelected because the
+    // master it picks is not explicitly selected by the user.
+    void findNewMaster(Syncable* pDontPick);
 
     ConfigObject<ConfigValue>* m_pConfig;
-
-    RateControl* m_pChannelMaster;
-
+    InternalClock* m_pInternalClock;
+    Syncable* m_pMasterSyncable;
     ControlObject* m_pMasterBpm;
     ControlObject* m_pMasterBeatDistance;
-    ControlObject* m_pSampleRate;
-    ControlPushButton* m_pSyncInternalEnabled;
-    ControlPotmeter* m_pInternalRateSlider;
-
-    QList<RateControl*> m_ratecontrols;
-    QString m_sSyncSource;
+    ControlPotmeter* m_pMasterRateSlider;
+    QList<Syncable*> m_syncables;
     bool m_bExplicitMasterSelected;
-    double m_dSamplesPerBeat;
-
-    // Used for maintaining internal master sync.
-    double m_dPseudoBufferPos;
 };
 
 #endif

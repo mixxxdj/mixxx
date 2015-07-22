@@ -277,8 +277,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     }
     ScopedTimer t("EngineMaster::process");
 
-    // Update internal master sync if necessary.
-    m_pMasterSync->process(iBufferSize);
+    int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
+    // Update internal master sync.
+    m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
 
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);
@@ -431,8 +432,6 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
         pBuffer->bindWorkers(m_pWorkerScheduler);
         pBuffer->setEngineMaster(this);
     }
-
-    m_pMasterSync->addChannel(pChannel);
 }
 
 EngineChannel* EngineMaster::getChannel(QString group) {
