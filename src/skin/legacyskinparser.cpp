@@ -295,33 +295,77 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
         // so that fullscreen will expand with the right color to fill in the
         // non-background areas. We put the inner widget in a layout inside the
         // outer widget so that it stays centered in fullscreen mode.
-        QWidget* pOuterWidget = new QWidget(m_pParent);
-        QWidget* pInnerWidget = new QWidget(pOuterWidget);
 
-        // Background is only valid at the top level.
-        QDomElement background = XmlParse::selectElement(node, "Background");
-        if (!background.isNull()) {
-            parseBackground(background, pOuterWidget, pInnerWidget);
+        // If the root widget has a layout we are loading a "new style" skin.
+        QString layout = XmlParse::selectNodeQString(node, "Layout");
+        bool newStyle = !layout.isEmpty();
+
+        qDebug() << "Skin is a" << (newStyle ? ">=1.12.0" : "<1.12.0") << "style skin.";
+
+        // pOuterWidget is only for old-style skins.
+        QWidget* pOuterWidget = NULL;
+        QWidget* pInnerWidget = NULL;
+        QLayout* pInnerLayout = NULL;
+
+        if (newStyle) {
+            pInnerWidget = new QWidget(m_pParent);
+
+            if (layout == "vertical") {
+                pInnerLayout = new QVBoxLayout(pInnerWidget);
+                pInnerLayout->setSpacing(0);
+                pInnerLayout->setContentsMargins(0, 0, 0, 0);
+                pInnerWidget->setLayout(pInnerLayout);
+            } else if (layout == "horizontal") {
+                pInnerLayout = new QHBoxLayout(pInnerWidget);
+                pInnerLayout->setSpacing(0);
+                pInnerLayout->setContentsMargins(0, 0, 0, 0);
+                pInnerWidget->setLayout(pInnerLayout);
+            } else {
+                qDebug() << "Could not parse root skin Layout:" << layout;
+            }
+        } else {
+            pOuterWidget = new QWidget(m_pParent);
+            pInnerWidget = new QWidget(pOuterWidget);
+
+            // <Background> is only valid for old-style skins.
+            QDomElement background = XmlParse::selectElement(node, "Background");
+            if (!background.isNull()) {
+                parseBackground(background, pOuterWidget, pInnerWidget);
+            }
         }
+
+        // Interpret <Size>, <SizePolicy>, <Style>, etc. tags for the root node.
+        setupWidget(node, pInnerWidget, false);
 
         m_pParent = pInnerWidget;
 
-        // Descend children, should only happen for the root node.
-        QDomNodeList children = node.childNodes();
+        QDomNode childrenNode = XmlParse::selectNode(node, "Children");
+
+        // For backwards compatibility, allow children to be specified outside
+        // of a <Children> block.
+        QDomNodeList children = childrenNode.isNull() ? node.childNodes() :
+                childrenNode.childNodes();
 
         for (int i = 0; i < children.count(); ++i) {
             QDomNode node = children.at(i);
 
             if (node.isElement()) {
-                parseNode(node.toElement());
+                QWidget* pChild = parseNode(node.toElement());
+                if (pChild != NULL && pInnerLayout != NULL) {
+                    pInnerLayout->addWidget(pChild);
+                }
             }
         }
 
-        // Keep innerWidget centered (for fullscreen).
-        pOuterWidget->setLayout(new QHBoxLayout(pOuterWidget));
-        pOuterWidget->layout()->setContentsMargins(0, 0, 0, 0);
-        pOuterWidget->layout()->addWidget(pInnerWidget);
-        return pOuterWidget;
+        if (pOuterWidget) {
+            // Keep innerWidget centered (for fullscreen).
+            pOuterWidget->setLayout(new QHBoxLayout(pOuterWidget));
+            pOuterWidget->layout()->setContentsMargins(0, 0, 0, 0);
+            pOuterWidget->layout()->addWidget(pInnerWidget);
+            return pOuterWidget;
+        } else {
+            return pInnerWidget;
+        }
     } else if (nodeName == "SliderComposed") {
         return parseSliderComposed(node);
     } else if (nodeName == "PushButton") {
@@ -359,8 +403,6 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
         return parseWidgetGroup(node);
     } else if (nodeName == "WidgetStack") {
         return parseWidgetStack(node);
-    } else if (nodeName == "Style") {
-        return parseStyle(node);
     } else if (nodeName == "Spinny") {
         return parseSpinny(node);
     } else if (nodeName == "Time") {
@@ -1214,15 +1256,6 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
     return safe;
 }
 
-QWidget* LegacySkinParser::parseStyle(QDomElement node) {
-    QString style = node.text();
-    m_pParent->setStyleSheet(style);
-    // This doesn't actually create a widget. If you return m_pParent then you
-    // risk creating loops in the widget hierarchy if someone makes <Style> in
-    // e.g. a WidgetGroup <Children> block.
-    return NULL;
-}
-
 void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {
     if (!XmlParse::selectNode(node, "Pos").isNull()) {
         QString pos = XmlParse::selectNodeQString(node, "Pos");
@@ -1273,9 +1306,14 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
 
-        if (widthOk && heightOk) {
+        // -1 means do not set.
+        if (widthOk && heightOk && x >= 0 && y >= 0) {
             pWidget->setMinimumSize(x, y);
-        } else {
+        } else if (widthOk && x >= 0) {
+            pWidget->setMinimumWidth(x);
+        } else if (heightOk && y >= 0) {
+            pWidget->setMinimumHeight(y);
+        } else if (!widthOk && !heightOk) {
             qDebug() << "Could not parse widget MinimumSize:" << size;
         }
     }
@@ -1292,9 +1330,14 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
 
-        if (widthOk && heightOk) {
+        // -1 means do not set.
+        if (widthOk && heightOk && x >= 0 && y >= 0) {
             pWidget->setMaximumSize(x, y);
-        } else {
+        } else if (widthOk && x >= 0) {
+            pWidget->setMaximumWidth(x);
+        } else if (heightOk && y >= 0) {
+            pWidget->setMaximumHeight(y);
+        } else if (!widthOk && !heightOk) {
             qDebug() << "Could not parse widget MaximumSize:" << size;
         }
     }
@@ -1381,6 +1424,12 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
 }
 
 void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosition) {
+    // Override the widget object name.
+    QString objectName = XmlParse::selectNodeQString(node, "ObjectName");
+    if (!objectName.isEmpty()) {
+        pWidget->setObjectName(objectName);
+    }
+
     if (setPosition) {
         setupPosition(node, pWidget);
     }

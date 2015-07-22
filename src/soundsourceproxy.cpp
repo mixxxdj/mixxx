@@ -332,19 +332,23 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
     if (sndsrc->parseHeader() == OK) {
         //Dump the metadata from the soundsource into the TIO
         //qDebug() << "Album:" << sndsrc->getAlbum(); //Sanity check to make sure we've actually parsed metadata and not the filename
-        p->setArtist(sndsrc->getArtist());
-        QString title = sndsrc->getTitle();
-        if (title.isEmpty()) {
-            // If no title is returned, use the file name (without the extension)
-            int start = qFilename.lastIndexOf(QRegExp("[/\\\\]"))+1;
-            int end = qFilename.lastIndexOf('.');
-            if (end == -1) end = qFilename.length();
-            title = qFilename.mid(start,end-start);
+
+        // If Artist, Title and Type fields are not blank, modify them.
+        // Otherwise, keep the values extracted by the function TrackInfoObject::parseFilename()
+        if (!(sndsrc->getArtist().isEmpty())) {
+            p->setArtist(sndsrc->getArtist());
         }
-        p->setTitle(title);
+
+        if (!(sndsrc->getTitle().isEmpty())) {
+            p->setTitle(sndsrc->getTitle());
+        }
+
+        if (!(sndsrc->getType().isEmpty())) {
+            p->setType(sndsrc->getType());
+        }
+
         p->setAlbum(sndsrc->getAlbum());
         p->setAlbumArtist(sndsrc->getAlbumArtist());
-        p->setType(sndsrc->getType());
         p->setYear(sndsrc->getYear());
         p->setGenre(sndsrc->getGenre());
         p->setComposer(sndsrc->getComposer());

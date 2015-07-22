@@ -68,7 +68,6 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseLabel(QDomElement node);
     QWidget* parseKnob(QDomElement node);
     QWidget* parseTableView(QDomElement node);
-    QWidget* parseStyle(QDomElement node);
     QWidget* parseSpinny(QDomElement node);
     QWidget* parseSearchBox(QDomElement node);
     QWidget* parseSplitter(QDomElement node);

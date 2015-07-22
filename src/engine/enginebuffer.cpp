@@ -914,7 +914,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
             m_dSlipRate = m_rate_old;
         } else {
             // TODO(owen) assuming that looping will get canceled properly
-            setNewPlaypos(m_dSlipPosition);
+            slotControlSeekAbs(m_dSlipPosition);
             m_dSlipPosition = 0;
         }
         m_bSlipToggled = false;
