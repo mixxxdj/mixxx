@@ -1,7 +1,7 @@
 #include "widget/wwidgetgroup.h"
 
 #include <QLayout>
-#include <QPainter>
+#include <QStylePainter>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -14,6 +14,47 @@ WWidgetGroup::WWidgetGroup(QWidget* pParent)
 }
 
 WWidgetGroup::~WWidgetGroup() {
+}
+
+void WWidgetGroup::setLayoutSpacing(int spacing) {
+    //qDebug() << "WWidgetGroup::setSpacing" << spacing;
+    if (spacing < 0) {
+        qDebug() << "WWidgetGroup: Invalid spacing:" << spacing;
+        return;
+    }
+    QLayout* pLayout = layout();
+    if (pLayout) {
+        pLayout->setSpacing(spacing);
+    }
+}
+
+void WWidgetGroup::setLayoutContentsMargins(QRect rectMargins) {
+    // qDebug() << "WWidgetGroup::setLayoutContentsMargins" << rectMargins.x()
+    //          << rectMargins.y() << rectMargins.width() << rectMargins.height();
+
+    if (rectMargins.x() < 0 || rectMargins.y() < 0 ||
+            rectMargins.width() < 0 || rectMargins.height() < 0) {
+        qDebug() << "WWidgetGroup: Invalid ContentsMargins rectangle:"
+                 << rectMargins;
+        return;
+    }
+
+    setContentsMargins(rectMargins.x(), rectMargins.y(),
+                       rectMargins.width(), rectMargins.height());
+    QLayout* pLayout = layout();
+    if (pLayout) {
+        pLayout->setContentsMargins(rectMargins.x(), rectMargins.y(),
+                                    rectMargins.width(), rectMargins.height());
+    }
+}
+
+void WWidgetGroup::setLayoutAlignment(int alignment) {
+    //qDebug() << "WWidgetGroup::setLayoutAlignment" << alignment;
+
+    QLayout* pLayout = layout();
+    if (pLayout) {
+        pLayout->setAlignment(static_cast<Qt::Alignment>(alignment));
+    }
 }
 
 void WWidgetGroup::setup(QDomNode node) {
@@ -47,7 +88,7 @@ void WWidgetGroup::setup(QDomNode node) {
 
 void WWidgetGroup::setPixmapBackground(const QString &filename) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPixmap(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename);
     if (!m_pPixmapBack) {
         qDebug() << "WWidgetGroup: Error loading background pixmap:" << filename;
     }
@@ -61,19 +102,15 @@ void WWidgetGroup::addWidget(QWidget* pChild) {
 }
 
 void WWidgetGroup::paintEvent(QPaintEvent* pe) {
-    if(m_pPixmapBack) {
-        if (m_pixmapBackScaled.isNull()) {
-            m_pixmapBackScaled = m_pPixmapBack->scaled(size());
-        }
-        QPainter p(this);
-        p.drawPixmap(0, 0, m_pixmapBackScaled);
-    }
-    // Paint things styled by style sheet
     QGroupBox::paintEvent(pe);
+
+    if (m_pPixmapBack) {
+        QStylePainter p(this);
+        m_pPixmapBack->draw(rect(), &p);
+    }
 }
 
 void WWidgetGroup::resizeEvent(QResizeEvent* re) {
-    m_pixmapBackScaled = QPixmap();
     // Paint things styled by style sheet
     QGroupBox::resizeEvent(re);
 }

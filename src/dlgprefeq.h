@@ -59,11 +59,9 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
 
-#ifndef __LOFI__
     ControlObjectThread m_COTLoFreq;
     ControlObjectThread m_COTHiFreq;
     ControlObjectThread m_COTLoFi;
-#endif
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 };

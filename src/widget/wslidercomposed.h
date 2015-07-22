@@ -56,8 +56,6 @@ private:
     bool m_bRightButtonPressed;
     /** Internal storage of slider position in pixels */
     int m_iPos, m_iStartHandlePos, m_iStartMousePos;
-    /** Length of slider in pixels */
-    int m_iSliderLength;
     /** Length of handle in pixels */
     int m_iHandleLength;
     /** True if it's a horizontal slider */
@@ -67,9 +65,9 @@ private:
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
     /** Pointer to pixmap of the slider */
-    QPixmapPointer m_pSlider;
+    PaintablePointer m_pSlider;
     /** Pointer to pixmap of the handle */
-    QPixmapPointer m_pHandle;
+    PaintablePointer m_pHandle;
 };
 
 #endif

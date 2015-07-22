@@ -73,7 +73,7 @@ void WStatusLight::setPixmap(int iState, const QString& filename) {
         return;
     }
 
-    QPixmapPointer pPixmap = WPixmapStore::getPixmap(filename);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
 
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
         m_pixmaps[iState] = pPixmap;
@@ -116,11 +116,11 @@ void WStatusLight::paintEvent(QPaintEvent *) {
         return;
     }
 
-    QPixmapPointer pPixmap = m_pixmaps[m_iPos];
+    PaintablePointer pPixmap = m_pixmaps[m_iPos];
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         return;
     }
 
-    p.drawPixmap(0, 0, *pPixmap);
+    pPixmap->draw(0, 0, &p);
 }

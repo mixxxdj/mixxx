@@ -51,10 +51,10 @@ class WStatusLight : public WWidget  {
     // Current position
     int m_iPos;
 
-    QPixmapPointer m_pPixmapBackground;
+    PaintablePointer m_pPixmapBackground;
 
     // Associated pixmaps
-    QVector<QPixmapPointer> m_pixmaps;
+    QVector<PaintablePointer> m_pixmaps;
 };
 
 #endif

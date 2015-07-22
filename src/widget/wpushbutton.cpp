@@ -144,14 +144,14 @@ void WPushButton::setStates(int iStates) {
 
 void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) {
 
-    QVector<QPixmapPointer>& pixmaps = bPressed ?
+    QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
     if (iState < 0 || iState >= pixmaps.size()) {
         return;
     }
 
-    QPixmapPointer pPixmap = WPixmapStore::getPixmap(filename);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << "WPushButton: Error loading pixmap:" << filename;
@@ -165,7 +165,7 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) 
 
 void WPushButton::setPixmapBackground(const QString &filename) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPixmap(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << "WPushButton: Error loading background pixmap:" << filename;
     }
@@ -195,7 +195,7 @@ void WPushButton::paintEvent(QPaintEvent* e) {
         return;
     }
 
-    const QVector<QPixmapPointer>& pixmaps = m_bPressed ?
+    const QVector<PaintablePointer>& pixmaps = m_bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
     int idx = static_cast<int>(value) % m_iNoStates;
@@ -206,12 +206,12 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     }
 
     if (m_pPixmapBack) {
-        p.drawPixmap(0, 0, *m_pPixmapBack);
+        m_pPixmapBack->draw(0, 0, &p);
     }
 
-    QPixmapPointer pPixmap = pixmaps[idx];
+    PaintablePointer pPixmap = pixmaps[idx];
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
-        p.drawPixmap(0, 0, *pPixmap);
+        pPixmap->draw(0, 0, &p);
     }
 
     QString text = m_text[idx];

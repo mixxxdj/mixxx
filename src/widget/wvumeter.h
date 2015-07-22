@@ -35,7 +35,8 @@ class WVuMeter : public WWidget  {
     virtual ~WVuMeter();
 
     void setup(QDomNode node);
-    void setPixmaps(const QString &backFilename, const QString &vuFilename,
+    void setPixmapBackground(const QString& filename);
+    void setPixmaps(const QString &vuFilename,
                     bool bHorizontal=false);
     void setValue(double fValue);
 
@@ -53,8 +54,8 @@ class WVuMeter : public WWidget  {
     /** Number of positions associated with this knob */
     int m_iNoPos;
     /** Associated pixmaps */
-    QPixmapPointer m_pPixmapBack;
-    QPixmapPointer m_pPixmapVu;
+    PaintablePointer m_pPixmapBack;
+    PaintablePointer m_pPixmapVu;
     /** True if it's a horizontal vu meter */
     bool m_bHorizontal;
 

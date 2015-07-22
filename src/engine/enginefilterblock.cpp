@@ -19,11 +19,13 @@
 
 #include "controlpushbutton.h"
 #include "controllogpotmeter.h"
+#include "controlobjectslave.h"
 #include "engine/enginefilterblock.h"
 #include "engine/enginefilteriir.h"
 #include "engine/enginefilter.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "sampleutil.h"
+#include "util/timer.h"
 
 ControlPotmeter* EngineFilterBlock::s_loEqFreq = NULL;
 ControlPotmeter* EngineFilterBlock::s_hiEqFreq = NULL;
@@ -35,12 +37,8 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     ihighFreq = 0;
     blofi = false;
 
-#ifdef __LOFI__
-    low = new EngineFilterIIR(bessel_lowpass4_DJM800,4);
-    band = new EngineFilterIIR(bessel_bandpass8_DJM800,8);
-    high = new EngineFilterIIR(bessel_highpass4_DJM800,4);
-    qDebug() << "Using LoFi EQs";
-#else
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+    m_iOldSampleRate = 0;
 
     //Setup Filter Controls
 
@@ -55,7 +53,6 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
     //Load Defaults
     setFilters(true);
 
-#endif
     /*
        lowrbj = new EngineFilterRBJ();
        lowrbj->calc_filter_coeffs(6, 100., 44100., 0.3, 0., true);
@@ -107,6 +104,7 @@ EngineFilterBlock::~EngineFilterBlock()
     delete filterKillMid;
     delete filterpotHigh;
     delete filterKillHigh;
+    delete m_pSampleRate;
 
     // Delete and clear these static controls. We need to clear them so that
     // other instances of EngineFilterBlock won't delete them as well.
@@ -118,38 +116,37 @@ EngineFilterBlock::~EngineFilterBlock()
     s_lofiEq = NULL;
 }
 
-void EngineFilterBlock::setFilters(bool forceSetting)
-{
-    if((ilowFreq != (int)s_loEqFreq->get()) ||
-       (ihighFreq != (int)s_hiEqFreq->get()) ||
-       (blofi != (int)s_lofiEq->get()) || forceSetting)
-    {
+void EngineFilterBlock::setFilters(bool forceSetting) {
+    int iSampleRate = static_cast<int>(m_pSampleRate->get());
+    if (m_iOldSampleRate != iSampleRate ||
+            (ilowFreq != (int)s_loEqFreq->get()) ||
+            (ihighFreq != (int)s_hiEqFreq->get()) ||
+            (blofi != (int)s_lofiEq->get()) ||
+            forceSetting) {
         delete low;
         delete band;
         delete high;
         ilowFreq = (int)s_loEqFreq->get();
         ihighFreq = (int)s_hiEqFreq->get();
         blofi = (int)s_lofiEq->get();
-        if(blofi)
-        {
+        m_iOldSampleRate = iSampleRate;
+        if (blofi) {
             // why is this DJM800 at line ~34 (LOFI ifdef) and just
             // bessel_lowpass# here? bkgood
             low = new EngineFilterIIR(bessel_lowpass4,4);
             band = new EngineFilterIIR(bessel_bandpass,8);
             high = new EngineFilterIIR(bessel_highpass4,4);
-        }
-        else
-        {
-            low = new EngineFilterButterworth8Low(44100, (int)s_loEqFreq->get());
-            band = new EngineFilterButterworth8Band(44100,
-                    (int)s_loEqFreq->get(), (int)s_hiEqFreq->get());
-            high = new EngineFilterButterworth8High(44100, (int)s_hiEqFreq->get());
+        } else {
+            low = new EngineFilterButterworth8Low(iSampleRate, ilowFreq);
+            band = new EngineFilterButterworth8Band(iSampleRate, ilowFreq, ihighFreq);
+            high = new EngineFilterButterworth8High(iSampleRate, ihighFreq);
         }
 
     }
 }
 
 void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
+    ScopedTimer t("EngineFilterBlock::process");
     float fLow=0.f, fMid=0.f, fHigh=0.f;
     if (filterKillLow->get()==0.)
         fLow = filterpotLow->get(); //*0.7;
@@ -158,9 +155,7 @@ void EngineFilterBlock::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int 
     if (filterKillHigh->get()==0.)
         fHigh = filterpotHigh->get(); //*1.2;
 
-#ifndef __LOFI__
     setFilters();
-#endif
 
     low->process(pIn, m_pTemp1, iBufferSize);
     band->process(pIn, m_pTemp2, iBufferSize);

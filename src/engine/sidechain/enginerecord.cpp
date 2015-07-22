@@ -274,7 +274,13 @@ bool EngineRecord::openFile() {
             m_sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
 
         // Creates a new WAVE or AIFF file and writes header information.
-        m_pSndfile = sf_open(m_fileName.toLocal8Bit(), SFM_WRITE, &m_sfInfo);
+#ifdef __WINDOWS__
+        LPCWSTR lpcwFilename = (LPCWSTR)m_fileName.utf16(); //Pointer valid until string changed
+        m_pSndfile = sf_wchar_open( lpcwFilename, SFM_WRITE, &m_sfInfo);
+#else
+        QByteArray qbaFilename = m_fileName.toUtf8();
+        m_pSndfile = sf_open(qbaFilename.data(), SFM_WRITE, &m_sfInfo);
+#endif
         if (m_pSndfile) {
             sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
             // Set meta data

@@ -21,20 +21,53 @@
 #include <QPixmap>
 #include <QHash>
 #include <QSharedPointer>
+#include <QSvgRenderer>
+#include <QImage>
+#include <QScopedPointer>
+#include <QPainter>
+#include <QRectF>
 
 #include "skin/imgsource.h"
 
-typedef QSharedPointer<QPixmap> QPixmapPointer;
-typedef QWeakPointer<QPixmap> QWeakPixmapPointer;
+// Wrapper around QImage and QSvgRenderer to support rendering SVG images in
+// high fidelity.
+class Paintable {
+  public:
+    // Takes ownership of QImage.
+    Paintable(QImage* pImage);
+    Paintable(const QString& fileName);
+
+    QSize size() const;
+    int width() const;
+    int height() const;
+
+    void draw(int x, int y, QPainter* pPainter);
+    void draw(const QPointF& point, QPainter* pPainter,
+              const QRectF& sourceRect);
+    void draw(const QRectF& targetRect, QPainter* pPainter);
+    void draw(const QRectF& targetRect, QPainter* pPainter,
+              const QRectF& sourceRect);
+    bool isNull() const;
+
+  private:
+    void resizeSvgPixmap(const QRectF& targetRect, const QRectF& sourceRect);
+
+    QScopedPointer<QPixmap> m_pPixmap;
+    QScopedPointer<QSvgRenderer> m_pSvg;
+    QScopedPointer<QPixmap> m_pPixmapSvg;
+};
+
+typedef QSharedPointer<Paintable> PaintablePointer;
+typedef QWeakPointer<Paintable> WeakPaintablePointer;
 
 class WPixmapStore {
   public:
-    static QPixmapPointer getPixmap(const QString &fileName);
-    static QPixmap* getPixmapNoCache(const QString &fileName);
+    static PaintablePointer getPaintable(const QString& fileName);
+    static QPixmap* getPixmapNoCache(const QString& fileName);
     static void setLoader(QSharedPointer<ImgSource> ld);
 
   private:
-    static QHash<QString, QWeakPixmapPointer> m_pixmapCache;
+    static QHash<QString, WeakPaintablePointer> m_paintableCache;
     static QSharedPointer<ImgSource> m_loader;
 };
 
