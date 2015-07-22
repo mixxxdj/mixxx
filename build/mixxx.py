@@ -50,8 +50,8 @@ class MixxxBuild(object):
                                    'sparc', 'ia64', 'armel', 'armhf', 'hurd-i386',
                                    'sh3', 'sh4',
                                    'kfreebsd-amd64', 'kfreebsd-i386',
-                                   'i486', 'i386', 'powerpc', 'powerpc64',
-                                   'powerpcspe', 's390x',
+                                   'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
+                                   'powerpc64', 'powerpcspe', 's390x',
                                    'amd64', 'amd64', 'em64t', 'intel64']:
             raise Exception("invalid machine type")
 
@@ -87,22 +87,22 @@ class MixxxBuild(object):
             Script.Exit(1)
 
         if flags_force32:
-            if self.machine in ['powerpc', 'powerpc64']:
+            if self.machine in ['powerpc', 'powerpc64', 'ppc', 'ppc64']:
                 self.machine = 'powerpc'
             else:
                 self.machine = 'x86'
         elif flags_force64:
-            if self.machine in ['powerpc', 'powerpc64']:
+            if self.machine in ['powerpc', 'powerpc64', 'ppc', 'ppc64']:
                 self.machine = 'powerpc64'
             else:
                 self.machine = 'x86_64'
         self.machine_is_64bit = self.machine.lower(
-            ) in ['x86_64', 'powerpc64', 'amd64', 'em64t', 'intel64']
+            ) in ['x86_64', 'powerpc64', 'ppc64', 'amd64', 'em64t', 'intel64']
         self.bitwidth = 64 if self.machine_is_64bit else 32
         self.architecture_is_x86 = self.machine.lower(
             ) in ['x86', 'x86_64', 'i386', 'i486', 'i586', 'i686', 'em64t', 'intel64']
         self.architecture_is_powerpc = self.machine.lower(
-            ) in ['powerpc', 'powerpc64']
+            ) in ['powerpc', 'powerpc64', 'ppc', 'ppc64']
 
         self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
 

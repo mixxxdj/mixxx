@@ -39,8 +39,9 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
     void clear();
 
     void setScaleParameters(int iSampleRate,
-                            double* rate_adjust,
-                            double* tempo_adjust,
+                            double base_rate,
+                            bool speed_affects_pitch,
+                            double* speed_adjust,
                             double* pitch_adjust);
 
   private:

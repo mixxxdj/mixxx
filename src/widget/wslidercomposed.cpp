@@ -24,7 +24,8 @@
 #include "widget/wpixmapstore.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
-    : WAbstractControl(parent),
+    : WWidget(parent),
+      m_bRightButtonPressed(false),
       m_iPos(0),
       m_iStartHandlePos(0),
       m_iStartMousePos(0),

@@ -50,22 +50,22 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear()
 }
 
 void EngineBufferScaleLinear::setScaleParameters(int iSampleRate,
-                                                 double* rate_adjust,
-                                                 double* tempo_adjust,
+                                                 double base_rate,
+                                                 bool speed_affects_pitch,
+                                                 double* speed_adjust,
                                                  double* pitch_adjust) {
     m_iSampleRate = iSampleRate;
 
-    // EBSL doesn't support tempo adjustment so we assume it is 1.
-    if (*tempo_adjust != 1.0) {
-        qDebug() << "WARNING: EngineBufferScaleLinear being used with tempo != 1. Ignoring.";
-        *tempo_adjust = 1.0;
+    // EBSL doesn't support pitch-independent tempo adjustment.
+    if (!speed_affects_pitch) {
+        qWarning() << "WARNING: EngineBufferScaleLinear requested to adjust"
+                   << "tempo independent of pitch. Ignoring.";
     }
 
     m_dOldRate = m_dRate;
-    // pitch_adjust is measured in octave change. This exp() function (magic
-    // constants taken from SoundTouch) converts it from octaves of change to
-    // rate change.
-    m_dRate = *rate_adjust * KeyUtils::octaveChangeToPowerOf2(*pitch_adjust);
+    // pitch_adjust is measured in octave change. Convert it to a rate using
+    // octaveChangeToPowerOf2.
+    m_dRate = base_rate * *speed_adjust * KeyUtils::octaveChangeToPowerOf2(*pitch_adjust);
 
     // Determine playback direction
     m_bBackwards = m_dRate < 0.0;

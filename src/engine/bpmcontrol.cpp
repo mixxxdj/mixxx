@@ -423,6 +423,12 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
                                    &dBeatPercentage, 0.01)) {
         return dBeatPercentage;
     }
+
+    if (getSyncMode() != SYNC_NONE && m_pQuantize->get()) {
+        qWarning() << getGroup() << "No beatgrid but sync and quantize enabled. "
+                                    "Disabling quantize mode";
+        m_pQuantize->set(0.0);
+    }
     return 0.0;
 }
 
