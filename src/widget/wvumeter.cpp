@@ -113,7 +113,7 @@ void WVuMeter::setValue(double fValue)
         idx = 0;
 
     setPeak(idx);
-    m_fValue = fValue;
+    m_value = fValue;
 
     QTime currentTime = QTime::currentTime();
     int msecsElapsed = m_lastUpdate.msecsTo(currentTime);
@@ -156,7 +156,7 @@ void WVuMeter::paintEvent(QPaintEvent *)
 {
     ScopedTimer t("WVuMeter::paintEvent");
     if (m_pPixmapBack && m_pPixmapVu) {
-        int idx = (int)(m_fValue*(float)(m_iNoPos)/128.);
+        int idx = (int)(m_value*(float)(m_iNoPos)/128.);
 
         // Range check
         if (idx>m_iNoPos)

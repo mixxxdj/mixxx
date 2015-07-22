@@ -36,11 +36,11 @@ class ControlObjectThreadWidget : public ControlObjectThreadMain {
     ControlObjectThreadWidget(const char* g, const char* i, QObject* pParent = NULL);
     ControlObjectThreadWidget(const QString& g, const QString& i, QObject* pParent = NULL);
     virtual ~ControlObjectThreadWidget();
-    /** Associates a QWidget with the ControlObject. */
+    // Associates a QWidget with the ControlObject.
     void setWidget(QWidget *widget,
                    bool connectValueFromWidget=true, bool connectValueToWidget = true,
                    EmitOption emitOption=EMIT_ON_PRESS, Qt::MouseButton state=Qt::NoButton);
-    /** Associates a the enabled/disabled state of a widget with the state of a ControlObject. */
+    // Associates a the enabled/disabled state of a widget with the state of a ControlObject. */
     void setWidgetOnOff(QWidget *widget);
 
     virtual double get();

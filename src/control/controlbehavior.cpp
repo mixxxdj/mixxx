@@ -164,6 +164,7 @@ double ControlTTRotaryBehavior::widgetParameterToValue(double dParam) {
 
 // static
 const int ControlPushButtonBehavior::kPowerWindowTimeMillis = 300;
+const int ControlPushButtonBehavior::kLongPressLatchingTimeMillis = 300;
 
 ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
                                                      int iNumStates)
@@ -187,31 +188,32 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
                 pControl->set(0.0, NULL);
             }
         }
-    } else if (m_buttonMode == TOGGLE) {
+    } else if (m_buttonMode == TOGGLE || m_buttonMode == LONGPRESSLATCHING) {
         // This block makes push-buttons act as toggle buttons.
-        if (m_iNumStates > 2) { // multistate button
+        if (m_iNumStates > 1) { // multistate button
             if (dParam > 0.) { // looking for NOTE_ON doesn't seem to work...
                 // This is a possibly race condition if another writer wants
                 // to change the value at the same time. We allow the race here,
                 // because this is possibly what the user expects if he changes
                 // the same control from different devices.
                 double value = pControl->get();
-                value++;
-                if (value >= m_iNumStates) {
-                    pControl->set(0, NULL);
-                } else {
+                value = (int)(value + 1.) % m_iNumStates;
+                pControl->set(value, NULL);
+                if (m_buttonMode == LONGPRESSLATCHING) {
+                    m_pushTimer.setSingleShot(true);
+                    m_pushTimer.start(kLongPressLatchingTimeMillis);
+                }
+            } else if (o == MIDI_NOTE_OFF) {
+                double value = pControl->get();
+                if (m_buttonMode == LONGPRESSLATCHING &&
+                        m_pushTimer.isActive() && value >= 1.0) {
+                    // revert toggle if button is released too early
+                    value = (int)(value - 1.0) % m_iNumStates;
                     pControl->set(value, NULL);
                 }
             }
-        } else {
-            if (o == MIDI_NOTE_ON) {
-                if (dParam > 0.) {
-                    double value = pControl->get();
-                    pControl->set(!value, NULL);
-                }
-            }
         }
-    } else { //Not a toggle button (trigger only when button pushed)
+    } else { // Not a toggle button (trigger only when button pushed)
         if (o == MIDI_NOTE_ON) {
             double value = pControl->get();
             pControl->set(!value, NULL);
