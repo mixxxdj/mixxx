@@ -17,7 +17,8 @@
 
 #include "widget/wpushbutton.h"
 
-#include <QPainter>
+#include <QStylePainter>
+#include <QStyleOption>
 #include <QPixmap>
 #include <QtDebug>
 #include <QMouseEvent>
@@ -68,9 +69,11 @@ void WPushButton::setup(QDomNode node) {
     QDomNode state = selectNode(node, "State");
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
-            setPixmap(selectNodeInt(state, "Number"), true,
+            int iState = selectNodeInt(state, "Number");
+            setPixmap(iState, true,
                       getPath(selectNodeQString(state, "Pressed")));
-            setPixmap(selectNodeInt(state, "Number"), false,
+            m_text[iState] = selectNodeQString(state, "Text");
+            setPixmap(iState, false,
                       getPath(selectNodeQString(state, "Unpressed")));
         }
         state = state.nextSibling();
@@ -129,11 +132,13 @@ void WPushButton::setStates(int iStates) {
     // Clear existing pixmaps.
     m_pressedPixmaps.resize(0);
     m_unpressedPixmaps.resize(0);
+    m_text.resize(0);
 
     if (iStates > 0) {
         m_iNoStates = iStates;
         m_pressedPixmaps.resize(iStates);
         m_unpressedPixmaps.resize(iStates);
+        m_text.resize(iStates);
     }
 }
 
@@ -179,7 +184,12 @@ void WPushButton::setValue(double v) {
     update();
 }
 
-void WPushButton::paintEvent(QPaintEvent *) {
+void WPushButton::paintEvent(QPaintEvent* e) {
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter p(this);
+    p.drawPrimitive(QStyle::PE_Widget, option);
+
     double value = m_value;
     if (m_iNoStates == 0) {
         return;
@@ -195,7 +205,6 @@ void WPushButton::paintEvent(QPaintEvent *) {
         return;
     }
 
-    QPainter p(this);
     if (m_pPixmapBack) {
         p.drawPixmap(0, 0, *m_pPixmapBack);
     }
@@ -203,6 +212,11 @@ void WPushButton::paintEvent(QPaintEvent *) {
     QPixmapPointer pPixmap = pixmaps[idx];
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
         p.drawPixmap(0, 0, *pPixmap);
+    }
+
+    QString text = m_text[idx];
+    if (!text.isEmpty()) {
+        p.drawText(rect(), Qt::AlignCenter, text);
     }
 }
 

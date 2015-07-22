@@ -40,6 +40,12 @@ class WPushButton : public WWidget {
                 ControlPushButton::ButtonMode rightButtonMode);
     virtual ~WPushButton();
 
+    Q_PROPERTY(bool pressed READ isPressed);
+
+    bool isPressed() const {
+        return m_bPressed;
+    }
+
     void setup(QDomNode node);
 
     // Sets the number of states associated with this button, and removes
@@ -71,6 +77,7 @@ class WPushButton : public WWidget {
 
     // Array of associated pixmaps
     int m_iNoStates;
+    QVector<QString> m_text;
     QVector<QPixmapPointer> m_pressedPixmaps;
     QVector<QPixmapPointer> m_unpressedPixmaps;
 

@@ -56,6 +56,29 @@ bool namesMatchMidiPattern(const QString input_name,
     return false;
 }
 
+bool namesMatchInOutPattern(const QString input_name,
+                            const QString output_name) {
+    QString basePattern = "^(.*) %1 (\\d+)( .*)?$";
+    QRegExp inputPattern(basePattern.arg("in"));
+    QRegExp outputPattern(basePattern.arg("out"));
+
+    int inputMatch = inputPattern.indexIn(input_name);
+    if (inputMatch == 0) {
+        QString inputDeviceName = inputPattern.cap(1);
+        QString inputDeviceIndex = inputPattern.cap(2);
+        int outputMatch = outputPattern.indexIn(output_name);
+        if (outputMatch == 0) {
+            QString outputDeviceName = outputPattern.cap(1);
+            QString outputDeviceIndex = outputPattern.cap(2);
+            if (outputDeviceName.compare(inputDeviceName, Qt::CaseInsensitive) == 0 &&
+                outputDeviceIndex == inputDeviceIndex) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 bool namesMatchPattern(const QString input_name,
                        const QString output_name) {
     // This is a broad pattern that matches a text blob followed by a numeral
@@ -124,6 +147,8 @@ bool shouldLinkInputToOutput(const QString input_name,
     if (input_name_stripped == output_name_stripped ||
         namesMatchMidiPattern(input_name_stripped, output_name_stripped) ||
         namesMatchMidiPattern(input_name, output_name) ||
+        namesMatchInOutPattern(input_name_stripped, output_name_stripped) ||
+        namesMatchInOutPattern(input_name, output_name) ||
         namesMatchPattern(input_name_stripped, output_name_stripped) ||
         namesMatchPattern(input_name, output_name)) {
         return true;
