@@ -280,19 +280,15 @@ void AnalyserQueue::run() {
 
         // It's important to check for m_exit here in case we decided to exit
         // while blocking for a new track.
-        if (m_exit)
-            return;
+        if (m_exit) {
+            break;
+        }
 
         // If the track is NULL, try to get the next one.
         // Could happen if the track was queued but then deleted.
         // Or if dequeueNextBlocking is unblocked by exit == true
         if (!nextTrack) {
-            m_qm.lock();
-            m_queue_size = m_tioq.size();
-            m_qm.unlock();
-            if (m_queue_size == 0) {
-                emit(queueEmpty()); // emit asynchrony for no deadlock
-            }
+            emptyCheck();
             continue;
         }
 
@@ -303,6 +299,7 @@ void AnalyserQueue::run() {
         Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.open());
         if (pSoundSource.isNull()) {
             qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
+            emptyCheck();
             continue;
         }
 
@@ -353,15 +350,18 @@ void AnalyserQueue::run() {
             emitUpdateProgress(nextTrack, 1000); // 100%
             qDebug() << "Skipping track analysis because no analyzer initialized.";
         }
-
-        m_qm.lock();
-        m_queue_size = m_tioq.size();
-        m_qm.unlock();
-        if (m_queue_size == 0) {
-            emit(queueEmpty()); // emit asynchrony for no deadlock
-        }
+        emptyCheck();
     }
     emit(queueEmpty()); // emit in case of exit;
+}
+
+void AnalyserQueue::emptyCheck() {
+    m_qm.lock();
+    m_queue_size = m_tioq.size();
+    m_qm.unlock();
+    if (m_queue_size == 0) {
+        emit(queueEmpty()); // emit asynchrony for no deadlock
+    }
 }
 
 // This is called from the AnalyserQueue thread
