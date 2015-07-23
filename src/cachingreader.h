@@ -111,8 +111,16 @@ class CachingReader : public QObject {
     static Chunk* insertIntoLRUList(Chunk* chunk, Chunk* head);
 
     // Given a sample number, return the chunk number corresponding to it.
-    inline static int chunkForFrame(int frame_number) {
-        return frame_number / CachingReaderWorker::kFramesPerChunk;
+    inline static SINT chunkForFrame(SINT frameIndex) {
+        return frameIndex / CachingReaderWorker::kFramesPerChunk;
+    }
+
+    inline static SINT frames2samples(SINT frames) {
+        return frames * CachingReaderWorker::kChunkChannels;
+    }
+    inline static SINT samples2frames(SINT samples) {
+        DEBUG_ASSERT(0 == (samples % CachingReaderWorker::kChunkChannels));
+        return samples / CachingReaderWorker::kChunkChannels;
     }
 
     const ConfigObject<ConfigValue>* m_pConfig;

@@ -340,31 +340,36 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
 
     SINT samplesRead = 0;
 
-    DEBUG_ASSERT(0 == (sample % CachingReaderWorker::kChunkChannels));
-    SINT frameIndex = sample / CachingReaderWorker::kChunkChannels;
-    DEBUG_ASSERT(0 == (numSamples % CachingReaderWorker::kChunkChannels));
-    SINT numFrames = numSamples / CachingReaderWorker::kChunkChannels;
+    SINT frameIndex = samples2frames(sample);
+    SINT numFrames = samples2frames(numSamples);
 
     // TODO: is it possible to move this code out of caching reader
     // and into enginebuffer?  It doesn't quite make sense here, although
     // it makes preroll completely transparent to the rest of the code
     // if we're in preroll...
     if (Mixxx::AudioSource::getMinFrameIndex() > frameIndex) {
-        const SINT prerollFrames = Mixxx::AudioSource::getMinFrameIndex() - frameIndex;
-        const SINT prerollSamples = prerollFrames * CachingReaderWorker::kChunkChannels;
+        const SINT prerollFrames = math_min(numFrames,
+                Mixxx::AudioSource::getMinFrameIndex() - frameIndex);
+        const SINT prerollSamples = frames2samples(prerollFrames);
         SampleUtil::clear(buffer, prerollSamples);
+        if (prerollSamples == numSamples) {
+            return numSamples; // early exit
+        }
         buffer += prerollSamples;
         samplesRead += prerollSamples;
-        frameIndex = Mixxx::AudioSource::getMinFrameIndex();
+        frameIndex += prerollFrames;
         numFrames -= prerollFrames;
     }
+    DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= frameIndex);
 
-    const SINT maxReadableFrameIndex = math_min(frameIndex + numFrames, m_maxReadableFrameIndex);
+    const SINT maxFrameIndex = frameIndex + numFrames;
+    const SINT maxReadableFrameIndex = math_min(maxFrameIndex, m_maxReadableFrameIndex);
     if (maxReadableFrameIndex > frameIndex) {
         const int firstChunkIndex = chunkForFrame(frameIndex);
         const int lastChunkIndex = chunkForFrame(maxReadableFrameIndex - 1);
 
         for (int chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
+            DEBUG_ASSERT(maxReadableFrameIndex >= frameIndex);
             Chunk* current = lookupChunkAndFreshen(chunkIndex);
 
             // If the chunk is not in cache, then we must return an error.
@@ -379,26 +384,33 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
                 break;
             }
 
-            const SINT minChunkFrameIndex = CachingReaderWorker::frameForChunk(chunkIndex);
-            DEBUG_ASSERT(minChunkFrameIndex <= frameIndex);
-            const SINT maxChunkFrameIndex = math_min(minChunkFrameIndex + current->frameCountTotal, maxReadableFrameIndex);
-            if (maxChunkFrameIndex <= frameIndex) {
-                // no more samples to read
-                break;
-            }
+            const SINT chunkFrameIndex = CachingReaderWorker::frameForChunk(chunkIndex);
+            DEBUG_ASSERT(chunkFrameIndex <= frameIndex);
+            DEBUG_ASSERT((chunkIndex == firstChunkIndex) ||
+                    (chunkFrameIndex == frameIndex));
+            const SINT chunkFrameOffset = frameIndex - chunkFrameIndex;
+            DEBUG_ASSERT(chunkFrameOffset >= 0);
+            const SINT chunkFrameCount = math_min(
+                    current->frameCountTotal,
+                    maxReadableFrameIndex - chunkFrameIndex);
 
-            const SINT sampleOffset = (frameIndex - minChunkFrameIndex) * CachingReaderWorker::kChunkChannels;
-            const SINT samplesToCopy = (maxChunkFrameIndex - frameIndex) * CachingReaderWorker::kChunkChannels;
-            SampleUtil::copy(buffer, current->stereoSamples + sampleOffset, samplesToCopy);
+            const SINT framesToCopy = chunkFrameCount - chunkFrameOffset;
+            DEBUG_ASSERT(framesToCopy >= 0);
+            const SINT chunkSampleOffset = frames2samples(chunkFrameOffset);
+            const CSAMPLE* const chunkSamples =
+                    current->stereoSamples + chunkSampleOffset;
+            const SINT samplesToCopy = frames2samples(framesToCopy);
+            SampleUtil::copy(buffer, chunkSamples, samplesToCopy);
             buffer += samplesToCopy;
             samplesRead += samplesToCopy;
-            frameIndex = maxChunkFrameIndex;
+            frameIndex += framesToCopy;
         }
     }
 
     // If we didn't supply all the samples requested, that probably means we're
     // at the end of the file, or something is wrong. Provide zeroes and pretend
     // all is well. The caller can't be bothered to check how long the file is.
+    DEBUG_ASSERT(numSamples >= samplesRead);
     SampleUtil::clear(buffer, numSamples - samplesRead);
     return numSamples;
 }
