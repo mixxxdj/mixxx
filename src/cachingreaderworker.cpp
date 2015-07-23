@@ -49,8 +49,7 @@ void CachingReaderWorker::processChunkReadRequest(
 
     // Initialize the output parameter
     update->chunk = request->chunk;
-    update->chunk->frameCountRead = 0;
-    update->chunk->frameCountTotal = 0;
+    update->chunk->frameCount = 0;
 
     const int chunk_number = request->chunk->chunk_number;
     if (!m_pAudioSource || chunk_number < 0) {
@@ -108,17 +107,13 @@ void CachingReaderWorker::processChunkReadRequest(
             m_pAudioSource->readSampleFramesStereo(
                     framesToRead, request->chunk->stereoSamples, kSamplesPerChunk);
     DEBUG_ASSERT(framesRead <= framesToRead);
-    update->chunk->frameCountRead = framesRead;
-    update->chunk->frameCountTotal = framesToRead;
+    update->chunk->frameCount = framesRead;
     if (framesRead < framesToRead) {
         // Incomplete read! Corrupt file?
         qWarning() << "Incomplete chunk read @" << seekFrameIndex
                 << "[" << Mixxx::AudioSource::getMinFrameIndex()
                 << "," << m_maxReadableFrameIndex
                 << "):" << framesRead << "<" << framesToRead;
-        SampleUtil::clear(
-                request->chunk->stereoSamples + (framesRead * kChunkChannels),
-                (framesToRead - framesRead) * kChunkChannels);
         update->status = CHUNK_READ_PARTIAL;
     } else {
         update->status = CHUNK_READ_SUCCESS;

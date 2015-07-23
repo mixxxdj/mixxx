@@ -55,8 +55,7 @@ CachingReader::CachingReader(QString group,
     for (int i = 0; i < maximumChunksInMemory; ++i) {
         Chunk* c = new Chunk;
         c->chunk_number = -1;
-        c->frameCountRead = 0;
-        c->frameCountTotal = 0;
+        c->frameCount = 0;
         c->stereoSamples = bufferStart;
         c->next_lru = NULL;
         c->prev_lru = NULL;
@@ -158,8 +157,7 @@ void CachingReader::freeChunk(Chunk* pChunk) {
     m_mruChunk = removeFromLRUList(pChunk, m_mruChunk);
     pChunk->state = Chunk::FREE;
     pChunk->chunk_number = -1;
-    pChunk->frameCountRead = 0;
-    pChunk->frameCountTotal = 0;
+    pChunk->frameCount = 0;
     m_freeChunks.push_back(pChunk);
 }
 
@@ -180,8 +178,7 @@ void CachingReader::freeAllChunks() {
         if (pChunk->state != Chunk::FREE) {
             pChunk->state = Chunk::FREE;
             pChunk->chunk_number = -1;
-            pChunk->frameCountRead = 0;
-            pChunk->frameCountTotal = 0;
+            pChunk->frameCount = 0;
             pChunk->next_lru = NULL;
             pChunk->prev_lru = NULL;
             m_freeChunks.append(pChunk);
@@ -391,7 +388,7 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
             const SINT chunkFrameOffset = frameIndex - chunkFrameIndex;
             DEBUG_ASSERT(chunkFrameOffset >= 0);
             const SINT chunkFrameCount = math_min(
-                    current->frameCountTotal,
+                    current->frameCount,
                     maxReadableFrameIndex - chunkFrameIndex);
 
             const SINT framesToCopy = chunkFrameCount - chunkFrameOffset;

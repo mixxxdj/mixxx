@@ -21,8 +21,7 @@ class AudioSourceProxy;
 // sampleForChunk()
 typedef struct Chunk {
     int chunk_number;
-    SINT frameCountRead;
-    SINT frameCountTotal;
+    SINT frameCount;
     CSAMPLE* stereoSamples;
     Chunk* prev_lru;
     Chunk* next_lru;
