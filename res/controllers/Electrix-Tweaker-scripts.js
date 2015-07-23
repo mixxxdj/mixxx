@@ -12,7 +12,7 @@ ElectrixTweaker.eqSensitivity = 6
 ElectrixTweaker.vinylMode = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 
 /**
- * Electrix Tweaker controller script 0.5 for Mixxx 1.12
+ * Electrix Tweaker controller script 1.0 for Mixxx 1.12
  * Copyright (C) 2015 Be <be.0@gmx.com>
  *
  * This program is free software; you can redistribute it and/or
