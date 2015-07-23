@@ -23,24 +23,8 @@ namespace Mixxx {
 
 namespace {
 
-// According to the specification each AAC sample block decodes
-// to 1024 sample frames. The rarely used AAC-960 profile with
-// a block size of 960 frames is not supported.
-const SINT kFramesPerSampleBlock = 1024;
-
 // MP4SampleId is 1-based
 const MP4SampleId kSampleBlockIdMin = 1;
-
-inline SINT getFrameIndexForSampleBlockId(
-        MP4SampleId sampleBlockId) {
-    return AudioSource::getMinFrameIndex() +
-        (sampleBlockId - kSampleBlockIdMin) * kFramesPerSampleBlock;
-}
-
-inline SINT getFrameCountForSampleBlockId(
-        MP4SampleId sampleBlockId) {
-    return ((sampleBlockId - kSampleBlockIdMin) + 1) * kFramesPerSampleBlock;
-}
 
 // Decoding will be restarted one or more blocks of samples
 // before the actual position after seeking randomly in the
@@ -51,13 +35,7 @@ inline SINT getFrameCountForSampleBlockId(
 // "It must also be assumed that without an explicit value, the playback
 // system will trim 2112 samples from the AAC decoder output when starting
 // playback from any point in the bistream."
-//
-// 2112 frames = 2 * 1024 + 64 < 3 * 1024 = 3 sample blocks
-//
-// Decoding 3 blocks of samples in advance after seeking should
-// compensate for the encoding delay and allow sample accurate
-// seeking.
-const MP4SampleId kNumberOfPrefetchSampleBlocks = 3;
+const SINT kNumberOfPrefetchFrames = 2112;
 
 // Searches for the first audio track in the MP4 file that
 // suits our needs.
@@ -95,6 +73,8 @@ SoundSourceM4A::SoundSourceM4A(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
           m_hFile(MP4_INVALID_FILE_HANDLE),
           m_trackId(MP4_INVALID_TRACK_ID),
+          m_framesPerSampleBlock(MP4_INVALID_DURATION),
+          m_numberOfPrefetchSampleBlocks(0),
           m_maxSampleBlockId(MP4_INVALID_SAMPLE_ID),
           m_curSampleBlockId(MP4_INVALID_SAMPLE_ID),
           m_inputBufferLength(0),
@@ -124,6 +104,16 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     if (MP4_INVALID_TRACK_ID == m_trackId) {
         qWarning() << "No AAC track found:" << getUrlString();
         return ERR;
+    }
+
+    // Read fixed sample duration.  If the sample duration is not
+    // fixed (that is, if the number of frames per sample block varies
+    // through the file), the call returns MP4_INVALID_DURATION. We
+    // can't currently handle these.
+    m_framesPerSampleBlock = MP4GetTrackFixedSampleDuration(m_hFile, m_trackId);
+    if (MP4_INVALID_DURATION == m_framesPerSampleBlock) {
+      qWarning() << "Unable to decode tracks with non-fixed sample durations: " << getUrlString();
+      return ERR;
     }
 
     const MP4SampleId numberOfSamples =
@@ -184,13 +174,19 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
         free(configBuffer);
     }
 
+    // Calculate how many sample blocks we need to decode in advance
+    // of a random seek in order to get the recommended number of
+    // prefetch frames
+    m_numberOfPrefetchSampleBlocks  = (kNumberOfPrefetchFrames +
+                                      (m_framesPerSampleBlock - 1)) / m_framesPerSampleBlock;
+
     setChannelCount(channelCount);
     setFrameRate(sampleRate);
-    setFrameCount(getFrameCountForSampleBlockId(m_maxSampleBlockId));
+    setFrameCount(((m_maxSampleBlockId - kSampleBlockIdMin) + 1) * m_framesPerSampleBlock);
 
     // Resize temporary buffer for decoded sample data
     const SINT sampleBufferCapacity =
-            frames2samples(kFramesPerSampleBlock);
+            frames2samples(m_framesPerSampleBlock);
     m_sampleBuffer.resetCapacity(sampleBufferCapacity);
 
     // Invalidate current position to enforce the following
@@ -225,7 +221,8 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 
     NeAACDecPostSeekReset(m_hDecoder, sampleBlockId);
     m_curSampleBlockId = sampleBlockId;
-    m_curFrameIndex = getFrameIndexForSampleBlockId(m_curSampleBlockId);
+    m_curFrameIndex = AudioSource::getMinFrameIndex() +
+      (sampleBlockId - kSampleBlockIdMin) * m_framesPerSampleBlock;
 
     // Discard input buffer
     m_inputBufferLength = 0;
@@ -251,19 +248,19 @@ SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
     }
 
     MP4SampleId sampleBlockId = kSampleBlockIdMin
-            + (frameIndex / kFramesPerSampleBlock);
+            + (frameIndex / m_framesPerSampleBlock);
     DEBUG_ASSERT(isValidSampleBlockId(sampleBlockId));
     if ((frameIndex < m_curFrameIndex) || // seeking backwards?
             !isValidSampleBlockId(m_curSampleBlockId) || // invalid seek position?
             (sampleBlockId
-                    > (m_curSampleBlockId + kNumberOfPrefetchSampleBlocks))) { // jumping forward?
+                    > (m_curSampleBlockId + m_numberOfPrefetchSampleBlocks))) { // jumping forward?
         // Restart decoding one or more blocks of samples backwards
         // from the calculated starting block to avoid audible glitches.
         // Implementation note: The type MP4SampleId is unsigned so we
         // need to be careful when subtracting!
-        if ((kSampleBlockIdMin + kNumberOfPrefetchSampleBlocks)
+        if ((kSampleBlockIdMin + m_numberOfPrefetchSampleBlocks)
                 < sampleBlockId) {
-            sampleBlockId -= kNumberOfPrefetchSampleBlocks;
+            sampleBlockId -= m_numberOfPrefetchSampleBlocks;
         } else {
             sampleBlockId = kSampleBlockIdMin;
         }
@@ -346,11 +343,11 @@ SINT SoundSourceM4A::readSampleFrames(
 
         // NOTE(uklotzde): The sample buffer for NeAACDecDecode2 has to
         // be big enough for a whole block of decoded samples, which
-        // contains up to kFramesPerSampleBlock frames. Otherwise
+        // contains up to m_framesPerSampleBlock frames. Otherwise
         // we need to use a temporary buffer.
         CSAMPLE* pDecodeBuffer; // in/out parameter
         SINT decodeBufferCapacity;
-        const SINT decodeBufferCapacityMin = frames2samples(kFramesPerSampleBlock);
+        const SINT decodeBufferCapacityMin = frames2samples(m_framesPerSampleBlock);
         if (pSampleBuffer && (decodeBufferCapacityMin <= numberOfSamplesRemaining)) {
             // Decode samples directly into sampleBuffer
             pDecodeBuffer = pSampleBuffer;
