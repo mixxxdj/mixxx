@@ -359,22 +359,14 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
     }
     DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= frameIndex);
 
-    const SINT maxFrameIndex = frameIndex + numFrames;
-    SINT maxReadableFrameIndex = math_min(maxFrameIndex, m_maxReadableFrameIndex);
-    if (maxReadableFrameIndex > frameIndex) {
-        const int firstChunkIndex = chunkForFrame(frameIndex);
-        const int lastChunkIndex = chunkForFrame(maxReadableFrameIndex - 1);
+    if (0 < numFrames) {
+        const SINT maxFrameIndex = frameIndex + numFrames;
+        DEBUG_ASSERT(0 < maxFrameIndex);
 
-        for (int chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
-            DEBUG_ASSERT(maxReadableFrameIndex >= frameIndex);
+        const SINT firstChunkIndex = chunkForFrame(frameIndex);
+        SINT lastChunkIndex = chunkForFrame(maxFrameIndex - 1);
+        for (SINT chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
             Chunk* current = lookupChunkAndFreshen(chunkIndex);
-
-            // The max. readable frame index might be lowered with each
-            // read operation!
-            maxReadableFrameIndex = math_min(maxFrameIndex, m_maxReadableFrameIndex);
-            if (maxReadableFrameIndex <= frameIndex) {
-                break; // exit loop
-            }
 
             // If the chunk is not in cache, then we must return an error.
             if (current == NULL || current->state != Chunk::READ) {
@@ -387,6 +379,15 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
                 Counter("CachingReader::read cache miss")++;
                 break;
             }
+
+            // The max. readable frame index might change with each
+            // read operation!
+            const SINT maxReadableFrameIndex = math_min(maxFrameIndex, m_maxReadableFrameIndex);
+            if (maxReadableFrameIndex <= frameIndex) {
+                break; // exit loop
+            }
+            DEBUG_ASSERT(0 < maxReadableFrameIndex);
+            lastChunkIndex = chunkForFrame(maxReadableFrameIndex - 1);
 
             const SINT chunkFrameIndex = CachingReaderWorker::frameForChunk(chunkIndex);
             DEBUG_ASSERT(chunkFrameIndex <= frameIndex);
