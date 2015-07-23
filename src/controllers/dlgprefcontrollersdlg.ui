@@ -111,6 +111,22 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QLabel" name="createMapping">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>You can create your own mapping by using the MIDI Learning Wizard when you select your controller in the sidebar. You can edit mappings by selecting the &quot;Input Mappings&quot; and &quot;Output Mappings&quot; tabs in the preference page for your controller. See the Resources below for more details on making mappings.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
