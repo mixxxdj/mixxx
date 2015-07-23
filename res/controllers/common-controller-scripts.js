@@ -129,6 +129,25 @@ script.absoluteNonLin = function (value, low, mid, high, min, max) {
 }
 
 /* -------- ------------------------------------------------------
+     script.absoluteNonLinInverse
+ Purpose: Maps a non-linear Mixxx control to an absolute linear value (inverse of the above function).
+ Helpful for sending MIDI messages to controllers and comparing non-linear Mixxx controls to incoming MIDI values.
+ Input:  MixxxControl value; lowest, middle, and highest MixxxControl value;
+ bottom of output range, top of output range. (Default output range is standard MIDI 0..127)
+ Output: MixxxControl value scaled to output range
+ -------- ------------------------------------------------------ */
+script.absoluteNonLinInverse = function (value, low, mid, high, min, max) {
+	if (!min) min = 0;
+	if (!max) max = 127;
+	var center = (max-min)/2;
+	if (value==mid)
+		return center;
+	if (value<mid)
+		return (center/(mid-low)) * (value-low);
+	return center + (center/(high-mid)) * (value-mid);
+}
+
+/* -------- ------------------------------------------------------
      script.crossfaderCurve
    Purpose: Adjusts the cross-fader's curve using a hardware control
    Input:   Current value of the hardware control, min and max values for that control
