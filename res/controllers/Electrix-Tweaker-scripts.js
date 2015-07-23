@@ -338,7 +338,13 @@ ElectrixTweaker.initDeck = function (group) {
 	}
 	
 	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['shift'], ElectrixTweaker.colorCodes['yellow'])
-	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['deckToggle'], ElectrixTweaker.deckColor[group])	
+	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['deckToggle'], ElectrixTweaker.deckColor[group])
+	midi.sendShortMsg(
+		0x90,
+		ElectrixTweaker.buttons[group]['slip'],
+		ElectrixTweaker.slipMode[group] ? ElectrixTweaker.deckColor[group] : ElectrixTweaker.colorCodes['off']
+	)
+	
 	ElectrixTweaker.mode[group] = ElectrixTweaker.mode[disconnectDeck]
 	
 	ElectrixTweaker.connectDeckControls(group)
