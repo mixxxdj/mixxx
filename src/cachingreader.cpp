@@ -360,7 +360,7 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
     DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= frameIndex);
 
     const SINT maxFrameIndex = frameIndex + numFrames;
-    const SINT maxReadableFrameIndex = math_min(maxFrameIndex, m_maxReadableFrameIndex);
+    SINT maxReadableFrameIndex = math_min(maxFrameIndex, m_maxReadableFrameIndex);
     if (maxReadableFrameIndex > frameIndex) {
         const int firstChunkIndex = chunkForFrame(frameIndex);
         const int lastChunkIndex = chunkForFrame(maxReadableFrameIndex - 1);
@@ -368,6 +368,13 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
         for (int chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
             DEBUG_ASSERT(maxReadableFrameIndex >= frameIndex);
             Chunk* current = lookupChunkAndFreshen(chunkIndex);
+
+            // The max. readable frame index might be lowered with each
+            // read operation!
+            maxReadableFrameIndex = math_min(maxFrameIndex, m_maxReadableFrameIndex);
+            if (maxReadableFrameIndex <= frameIndex) {
+                break; // exit loop
+            }
 
             // If the chunk is not in cache, then we must return an error.
             if (current == NULL || current->state != Chunk::READ) {
@@ -390,6 +397,9 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
             const SINT chunkFrameCount = math_min(
                     current->frameCount,
                     maxReadableFrameIndex - chunkFrameIndex);
+            if (chunkFrameCount < chunkFrameOffset) {
+                break; // exit loop
+            }
 
             const SINT framesToCopy = chunkFrameCount - chunkFrameOffset;
             DEBUG_ASSERT(framesToCopy >= 0);
