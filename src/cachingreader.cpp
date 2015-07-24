@@ -340,84 +340,92 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
     SINT frameIndex = samples2frames(sample);
     SINT numFrames = samples2frames(numSamples);
 
-    // TODO: is it possible to move this code out of caching reader
-    // and into enginebuffer?  It doesn't quite make sense here, although
-    // it makes preroll completely transparent to the rest of the code
-    // if we're in preroll...
+    // Fill the buffer up to the first readable sample with
+    // silence. This may happen when the engine is in preroll,
+    // i.e. if the frame index points a region before the first
+    // track sample.
     if (Mixxx::AudioSource::getMinFrameIndex() > frameIndex) {
         const SINT prerollFrames = math_min(numFrames,
                 Mixxx::AudioSource::getMinFrameIndex() - frameIndex);
         const SINT prerollSamples = frames2samples(prerollFrames);
         SampleUtil::clear(buffer, prerollSamples);
-        if (prerollSamples == numSamples) {
-            return numSamples; // early exit
-        }
         buffer += prerollSamples;
         samplesRead += prerollSamples;
         frameIndex += prerollFrames;
         numFrames -= prerollFrames;
     }
-    DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= frameIndex);
 
-    if (0 < numFrames) {
-        const SINT maxFrameIndex = frameIndex + numFrames;
-        DEBUG_ASSERT(0 < maxFrameIndex);
+    // Read the actual samples from the audio source into the
+    // buffer. The buffer will be filled with silence for every
+    // unreadable sample or samples outside of the track region
+    // later at the end of this function.
+    if (numSamples > samplesRead) {
+        // If any unread samples from the track are left the current
+        // frame index must be at or beyond the first track sample.
+        DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= frameIndex);
 
-        const SINT firstChunkIndex = chunkForFrame(frameIndex);
-        SINT lastChunkIndex = chunkForFrame(maxFrameIndex - 1);
-        for (SINT chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
-            Chunk* current = lookupChunkAndFreshen(chunkIndex);
+        SINT maxReadableFrameIndex = math_min(frameIndex + numFrames, m_maxReadableFrameIndex);
+        if (maxReadableFrameIndex > frameIndex) {
+            // The intersection between the readable samples from the track
+            // and the requested samples is not empty, so start reading.
 
-            // If the chunk is not in cache, then we must return an error.
-            if (current == NULL || current->state != Chunk::READ) {
-                // qDebug() << "Couldn't get chunk " << chunk_num
-                //          << " in read() of [" << sample << "," << (sample + samples_remaining)
-                //          << "] chunks " << firstChunkIndex << "-" << lastChunkIndex;
+            const SINT firstChunkIndex = chunkForFrame(frameIndex);
+            SINT lastChunkIndex = chunkForFrame(maxReadableFrameIndex - 1);
+            for (SINT chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
 
-                // Something is wrong. Break out of the loop, that should fill the
-                // samples requested with zeroes.
-                Counter("CachingReader::read cache miss")++;
-                break;
+                const Chunk* const pChunk = lookupChunkAndFreshen(chunkIndex);
+                // If the chunk is not in cache, then we must return an error.
+                if (!pChunk || (pChunk->state != Chunk::READ)) {
+                    Counter("CachingReader::read(): Failed to read chunk on cache miss")++;
+                    // Exit the loop and fill the remaining buffer with silence
+                    break;
+                }
+
+                // Please note that m_maxReadableFrameIndex might change with
+                // every read operation! On a cache miss audio data will be
+                // read from the audio source in lookupChunkAndFreshen() and
+                // the max. readable frame index might be adjusted if decoding
+                // errors occur.
+                maxReadableFrameIndex = math_min(maxReadableFrameIndex, m_maxReadableFrameIndex);
+                if (maxReadableFrameIndex <= frameIndex) {
+                    // No more readable data available. Exit the loop and
+                    // fill the remaining buffer with silence.
+                    break;
+                }
+                DEBUG_ASSERT(0 < maxReadableFrameIndex);
+                lastChunkIndex = chunkForFrame(maxReadableFrameIndex - 1);
+
+                const SINT chunkFrameIndex = CachingReaderWorker::frameForChunk(chunkIndex);
+                DEBUG_ASSERT(chunkFrameIndex <= frameIndex);
+                DEBUG_ASSERT((chunkIndex == firstChunkIndex) ||
+                        (chunkFrameIndex == frameIndex));
+                const SINT chunkFrameOffset = frameIndex - chunkFrameIndex;
+                DEBUG_ASSERT(chunkFrameOffset >= 0);
+                const SINT chunkFrameCount = math_min(
+                        pChunk->frameCount,
+                        maxReadableFrameIndex - chunkFrameIndex);
+                if (chunkFrameCount < chunkFrameOffset) {
+                    // No more readable data available from this chunk (and
+                    // consequently all following chunks). Exit the loop and
+                    // fill the remaining buffer with silence.
+                    break;
+                }
+
+                const SINT framesToCopy = chunkFrameCount - chunkFrameOffset;
+                DEBUG_ASSERT(framesToCopy >= 0);
+                const SINT chunkSampleOffset = frames2samples(chunkFrameOffset);
+                const CSAMPLE* const chunkSamples =
+                        pChunk->stereoSamples + chunkSampleOffset;
+                const SINT samplesToCopy = frames2samples(framesToCopy);
+                SampleUtil::copy(buffer, chunkSamples, samplesToCopy);
+                buffer += samplesToCopy;
+                samplesRead += samplesToCopy;
+                frameIndex += framesToCopy;
             }
-
-            // The max. readable frame index might change with each
-            // read operation!
-            const SINT maxReadableFrameIndex = math_min(maxFrameIndex, m_maxReadableFrameIndex);
-            if (maxReadableFrameIndex <= frameIndex) {
-                break; // exit loop
-            }
-            DEBUG_ASSERT(0 < maxReadableFrameIndex);
-            lastChunkIndex = chunkForFrame(maxReadableFrameIndex - 1);
-
-            const SINT chunkFrameIndex = CachingReaderWorker::frameForChunk(chunkIndex);
-            DEBUG_ASSERT(chunkFrameIndex <= frameIndex);
-            DEBUG_ASSERT((chunkIndex == firstChunkIndex) ||
-                    (chunkFrameIndex == frameIndex));
-            const SINT chunkFrameOffset = frameIndex - chunkFrameIndex;
-            DEBUG_ASSERT(chunkFrameOffset >= 0);
-            const SINT chunkFrameCount = math_min(
-                    current->frameCount,
-                    maxReadableFrameIndex - chunkFrameIndex);
-            if (chunkFrameCount < chunkFrameOffset) {
-                break; // exit loop
-            }
-
-            const SINT framesToCopy = chunkFrameCount - chunkFrameOffset;
-            DEBUG_ASSERT(framesToCopy >= 0);
-            const SINT chunkSampleOffset = frames2samples(chunkFrameOffset);
-            const CSAMPLE* const chunkSamples =
-                    current->stereoSamples + chunkSampleOffset;
-            const SINT samplesToCopy = frames2samples(framesToCopy);
-            SampleUtil::copy(buffer, chunkSamples, samplesToCopy);
-            buffer += samplesToCopy;
-            samplesRead += samplesToCopy;
-            frameIndex += framesToCopy;
         }
     }
 
-    // If we didn't supply all the samples requested, that probably means we're
-    // at the end of the file, or something is wrong. Provide zeroes and pretend
-    // all is well. The caller can't be bothered to check how long the file is.
+    // Finally fill the remaining buffer with silence.
     DEBUG_ASSERT(numSamples >= samplesRead);
     SampleUtil::clear(buffer, numSamples - samplesRead);
     return numSamples;
