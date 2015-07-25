@@ -13,9 +13,6 @@
 #include "util/fifo.h"
 
 
-// forward declaration(s)
-class AudioSourceProxy;
-
 // A Chunk is a section of audio that is being cached. The chunk_number can be
 // used to figure out the sample number of the first sample in data by using
 // sampleForChunk()
