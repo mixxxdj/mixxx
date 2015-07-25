@@ -173,6 +173,24 @@
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.jogTouch</key>
+                <status>0x90</status>
+                <midino>0x67</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.jogTouch</key>
+                <status>0x91</status>
+                <midino>0x67</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Headphone]_enable</key>
                 <status>0x94</status>
@@ -386,6 +404,24 @@
                 <midino>0x58</midino>
                 <options>
                     <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.vinylButton</key>
+                <status>0x90</status>
+                <midino>0x4E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.vinylButton</key>
+                <status>0x91</status>
+                <midino>0x4E</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -750,7 +786,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.jogScratchTouch</key>
+                <key>PioneerDDJSB.jogTouch</key>
                 <status>0x90</status>
                 <midino>0x36</midino>
                 <options>
@@ -759,7 +795,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.jogScratchTouch</key>
+                <key>PioneerDDJSB.jogTouch</key>
                 <status>0x91</status>
                 <midino>0x36</midino>
                 <options>
@@ -768,7 +804,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.jogSeekTouch</key>
+                <key>PioneerDDJSB.jogTouch</key>
                 <status>0x90</status>
                 <midino>0x35</midino>
                 <options>
@@ -786,7 +822,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.jogSeekTouch</key>
+                <key>PioneerDDJSB.jogTouch</key>
                 <status>0x91</status>
                 <midino>0x35</midino>
                 <options>
@@ -1227,6 +1263,24 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>PioneerDDJSB.jogRingTickShift</key>
+                <status>0xB0</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.jogRingTickShift</key>
+                <status>0xB1</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>hotcue_4_clear</key>
                 <status>0x97</status>
                 <midino>0x0B</midino>
@@ -1254,7 +1308,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.jogSeekTurn</key>
+                <key>PioneerDDJSB.jogPlatterTick</key>
                 <status>0xB0</status>
                 <midino>0x23</midino>
                 <options>
@@ -1281,7 +1335,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.jogSeekTurn</key>
+                <key>PioneerDDJSB.jogPlatterTick</key>
                 <status>0xB1</status>
                 <midino>0x23</midino>
                 <options>
@@ -1290,7 +1344,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.jogScratchTurn</key>
+                <key>PioneerDDJSB.jogPlatterTick</key>
                 <status>0xB0</status>
                 <midino>0x22</midino>
                 <options>
@@ -1317,7 +1371,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.jogScratchTurn</key>
+                <key>PioneerDDJSB.jogPlatterTick</key>
                 <status>0xB1</status>
                 <midino>0x22</midino>
                 <options>
@@ -1326,7 +1380,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.jogPitchBend</key>
+                <key>PioneerDDJSB.jogRingTick</key>
                 <status>0xB0</status>
                 <midino>0x21</midino>
                 <options>
@@ -1344,7 +1398,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.jogPitchBend</key>
+                <key>PioneerDDJSB.jogRingTick</key>
                 <status>0xB1</status>
                 <midino>0x21</midino>
                 <options>
@@ -1353,7 +1407,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.jogFastSeekTurn</key>
+                <key>PioneerDDJSB.jogPlatterTickShift</key>
                 <status>0xB0</status>
                 <midino>0x1F</midino>
                 <options>
@@ -1362,7 +1416,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.jogFastSeekTurn</key>
+                <key>PioneerDDJSB.jogPlatterTickShift</key>
                 <status>0xB1</status>
                 <midino>0x1F</midino>
                 <options>

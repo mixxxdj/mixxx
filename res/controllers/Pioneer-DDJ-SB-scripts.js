@@ -37,6 +37,8 @@ PioneerDDJSB.init = function (id) {
         [false, false, false]
     ];
 
+    PioneerDDJSB.scratchMode = [false, false];
+
     PioneerDDJSB.ledGroups = {
         'hotCue': 0x00,
         'autoLoop': 0x10,
@@ -362,110 +364,61 @@ PioneerDDJSB.getJogWheelDelta = function (value) {
     return value - 0x40;
 };
 
-// Toggle scratching for a channel
-PioneerDDJSB.toggleScratch = function (channel, isEnabled) {
-    var deck = channel + 1;
-    if (isEnabled) {
-        engine.scratchEnable(
-            deck,
-            PioneerDDJSB.settings.jogResolution,
-            PioneerDDJSB.settings.vinylSpeed,
-            PioneerDDJSB.settings.alpha,
-            PioneerDDJSB.settings.beta
-        );
-    } else {
-        engine.scratchDisable(deck);
-    }
-};
-
-// Detect when the user touches and releases the jog-wheel while 
-// jog-mode is set to vinyl to enable and disable scratching.
-PioneerDDJSB.jogScratchTouch = function (channel, control, value, status, group) {
-    /*var deck = channel + 1;
-
-     if (!engine.getValue(group, 'play'))
-     {
-     PioneerDDJSB.toggleScratch(channel, value == 0x7F);
-     }
-     else
-     {
-     var activate = value > 0;
-
-     if (activate)
-     {
-     engine.brake(deck, true, 1, 1); // enable brake effect
-     PioneerDDJSB.toggleScratch(channel, true);
-     }
-     else
-     {
-     engine.brake(deck, false, 1, 1); // disable brake effect
-     PioneerDDJSB.toggleScratch(channel, false);
-     }
-     }*/
-};
-
-// Scratch or seek with the jog-wheel.
-PioneerDDJSB.jogScratchTurn = function (channel, control, value, status) {
-    PioneerDDJSB.jogSeekTurn(channel, control, value, status);
-    //var deck = channel + 1;
-
-    // Only scratch if we're in scratching mode, when 
-    // user is touching the top of the jog-wheel.
-    //if (engine.isScratching(deck)) 
-    //{
-    // engine.scratchTick(deck, PioneerDDJSB.getJogWheelDelta(value));
-    //}
-};
-
-// Pitch bend using the jog-wheel, or finish a scratch when the wheel 
-// is still turning after having released it.
-PioneerDDJSB.jogPitchBend = function (channel, control, value, status, group) {
-    //if (!engine.getValue(group, 'play'))
-    //return;
-
-    var deck = channel + 1;
+PioneerDDJSB.jogRingTick = function (channel, control, value, status, group) {
     PioneerDDJSB.pitchBend(channel, PioneerDDJSB.getJogWheelDelta(value));
 };
 
-// Pitch bend a channel
+PioneerDDJSB.jogRingTickShift = function (channel, control, value, status, group) {
+    PioneerDDJSB.pitchBend(channel, PioneerDDJSB.getJogWheelDelta(value) * 20);
+};
+
+PioneerDDJSB.jogPlatterTick = function (channel, control, value, status, group) {
+    if (PioneerDDJSB.scratchMode[channel]) {
+        engine.scratchTick(channel + 1, PioneerDDJSB.getJogWheelDelta(value));
+    } else {
+        PioneerDDJSB.pitchBend(channel, PioneerDDJSB.getJogWheelDelta(value));
+    }
+};
+
+PioneerDDJSB.jogPlatterTickShift = function (channel, control, value, status, group) {
+    if (PioneerDDJSB.scratchMode[channel]) {
+        engine.scratchTick(channel + 1, PioneerDDJSB.getJogWheelDelta(value));
+    } else {
+        PioneerDDJSB.pitchBend(channel, PioneerDDJSB.getJogWheelDelta(value) * 20);
+    }
+};
+
+PioneerDDJSB.jogTouch = function (channel, control, value, status) {
+    if (PioneerDDJSB.scratchMode[channel]) {
+        if (value === 0x7F) {
+            engine.scratchEnable(
+                channel + 1,
+                PioneerDDJSB.settings.jogResolution,
+                PioneerDDJSB.settings.vinylSpeed,
+                PioneerDDJSB.settings.alpha,
+                PioneerDDJSB.settings.beta,
+                true
+            );
+        } else {
+            engine.scratchDisable(channel + 1, true);
+        }
+    }
+};
+
+PioneerDDJSB.vinylButton = function (channel, control, value, status) {
+    if (value === 0x7F) {
+        PioneerDDJSB.scratchMode[channel] = !PioneerDDJSB.scratchMode[channel];
+        if (!PioneerDDJSB.scratchMode[channel]) {
+            engine.scratchDisable(channel + 1, true);
+        }
+        midi.sendShortMsg(0x90 + channel, 0x4E, PioneerDDJSB.scratchMode[channel] ? 0x7F : 0x00);
+    }
+};
+
 PioneerDDJSB.pitchBend = function (channel, movement) {
-    var deck = channel + 1, group = '[Channel' + deck + ']';
-
-    // Make this a little less sensitive.
-    movement /= 5;
-
-    engine.setValue(group, 'jog', movement);
-};
-
-// Called when the jog-mode is not set to vinyl, and the jog wheel is touched.
-// If we are not playing we want to seek through it and this is done in scratch mode
-PioneerDDJSB.jogSeekTouch = function (channel, control, value, status, group) {
-    // if (engine.getValue(group, 'play'))
-    // return;
-
-    // var deck = channel + 1;
-    // PioneerDDJSB.toggleScratch(channel, value == 0x7F);
-};
-
-// Call when the jog-wheel is turned. The related jogSeekTouch function 
-// sets up whether we will be scratching or pitch-bending depending 
-// on whether a song is playing or not.
-PioneerDDJSB.jogSeekTurn = function (channel, control, value, status, group) {
-    //PioneerDDJSB.toggleScratch(channel, value == 0x7F);
-    //if (engine.getValue(group, 'play'))
-    // return;
-
-    var deck = channel + 1;
-    engine.setValue('[Channel' + deck + ']', 'jog', PioneerDDJSB.getJogWheelDelta(value) / 3);
-};
-
-PioneerDDJSB.jogFastSeekTurn = function (channel, control, value, status, group) {
-    //PioneerDDJSB.toggleScratch(channel, value == 0x7F);
-    //if (engine.getValue(group, 'play'))
-    // return;
-
-    var deck = channel + 1;
-    engine.setValue('[Channel' + deck + ']', 'jog', PioneerDDJSB.getJogWheelDelta(value) * 20);
+    var deck = channel + 1,
+        group = '[Channel' + deck + ']';
+    engine.setValue(group, 'jog', movement / 5);
 };
 
 
