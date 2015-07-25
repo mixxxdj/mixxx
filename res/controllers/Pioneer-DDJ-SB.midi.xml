@@ -192,9 +192,89 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>MIDI Learned from 26 messages.</description>
+                <status>0x97</status>
+                <midino>0x6B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>MIDI Learned from 18 messages.</description>
+                <status>0x98</status>
+                <midino>0x6B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel3]_enable</key>
+                <description>MIDI Learned from 24 messages.</description>
+                <status>0x97</status>
+                <midino>0x6A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel3]_enable</key>
+                <description>MIDI Learned from 16 messages.</description>
+                <status>0x98</status>
+                <midino>0x6A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>next_chain</key>
+                <description>MIDI Learned from 22 messages.</description>
+                <status>0x97</status>
+                <midino>0x69</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>next_chain</key>
+                <description>MIDI Learned from 4 messages.</description>
+                <status>0x98</status>
+                <midino>0x69</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>prev_chain</key>
+                <description>MIDI Learned from 20 messages.</description>
+                <status>0x97</status>
+                <midino>0x68</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Headphone]_enable</key>
                 <status>0x94</status>
                 <midino>0x65</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>prev_chain</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x98</status>
+                <midino>0x68</midino>
                 <options>
                     <normal/>
                 </options>
@@ -534,7 +614,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.FXButton</key>
+                <key>PioneerDDJSB.fxButton</key>
                 <status>0x94</status>
                 <midino>0x49</midino>
                 <options>
@@ -552,7 +632,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.FXButton</key>
+                <key>PioneerDDJSB.fxButton</key>
                 <status>0x95</status>
                 <midino>0x49</midino>
                 <options>
@@ -561,7 +641,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.FXButton</key>
+                <key>PioneerDDJSB.fxButton</key>
                 <status>0x94</status>
                 <midino>0x48</midino>
                 <options>
@@ -588,7 +668,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.FXButton</key>
+                <key>PioneerDDJSB.fxButton</key>
                 <status>0x95</status>
                 <midino>0x48</midino>
                 <options>
@@ -597,7 +677,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.FXButton</key>
+                <key>PioneerDDJSB.fxButton</key>
                 <status>0x94</status>
                 <midino>0x47</midino>
                 <options>
@@ -624,7 +704,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.FXButton</key>
+                <key>PioneerDDJSB.fxButton</key>
                 <status>0x95</status>
                 <midino>0x47</midino>
                 <options>
@@ -678,7 +758,7 @@
             </control>
             <control>
                 <group>[Playlist]</group>
-                <key>PioneerDDJSB.ShiftedRotarySelector</key>
+                <key>PioneerDDJSB.shiftedRotarySelector</key>
                 <status>0xB6</status>
                 <midino>0x64</midino>
                 <options>
@@ -696,7 +776,7 @@
             </control>
             <control>
                 <group>[Playlist]</group>
-                <key>PioneerDDJSB.RotarySelectorShiftedClick</key>
+                <key>PioneerDDJSB.rotarySelectorShiftedClick</key>
                 <status>0x96</status>
                 <midino>0x42</midino>
                 <options>
@@ -722,21 +802,21 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
-                <key>PioneerDDJSB.RotarySelectorClick</key>
-                <status>0x96</status>
-                <midino>0x41</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[PreviewDeck1]</group>
                 <key>LoadSelectedTrackAndPlay</key>
                 <status>0x96</status>
                 <midino>0x41</midino>
                 <options>
                     <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>PioneerDDJSB.rotarySelectorClick</key>
+                <status>0x96</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1011,7 +1091,7 @@
             </control>
             <control>
                 <group>[Playlist]</group>
-                <key>PioneerDDJSB.RotarySelector</key>
+                <key>PioneerDDJSB.rotarySelector</key>
                 <status>0xB6</status>
                 <midino>0x40</midino>
                 <options>
@@ -1510,7 +1590,7 @@
                 <status>0xB0</status>
                 <midino>0x13</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1519,7 +1599,7 @@
                 <status>0xB6</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1528,7 +1608,7 @@
                 <status>0xB1</status>
                 <midino>0x13</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1537,7 +1617,7 @@
                 <status>0xB6</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1546,7 +1626,7 @@
                 <status>0xB0</status>
                 <midino>0x0F</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1555,7 +1635,7 @@
                 <status>0xB1</status>
                 <midino>0x0F</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1564,7 +1644,7 @@
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1573,7 +1653,7 @@
                 <status>0xB1</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1582,7 +1662,7 @@
                 <status>0xB0</status>
                 <midino>0x07</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1591,12 +1671,12 @@
                 <status>0xB1</status>
                 <midino>0x07</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.FXKnob</key>
+                <key>PioneerDDJSB.fxKnob</key>
                 <status>0xB4</status>
                 <midino>0x06</midino>
                 <options>
@@ -1605,7 +1685,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.FXKnob</key>
+                <key>PioneerDDJSB.fxKnob</key>
                 <status>0xB5</status>
                 <midino>0x06</midino>
                 <options>
@@ -1627,7 +1707,7 @@
                 <status>0xB6</status>
                 <midino>0x05</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1645,7 +1725,7 @@
                 <status>0xB4</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1654,7 +1734,7 @@
                 <status>0xB5</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
         </controls>

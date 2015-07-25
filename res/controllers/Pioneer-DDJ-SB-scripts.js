@@ -37,6 +37,17 @@ PioneerDDJSB.init = function (id) {
         [false, false, false]
     ];
 
+    // used for soft takeover workaround
+    PioneerDDJSB.fxParamsActiveValues = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ];
+
+    PioneerDDJSB.fxPreviousKnobValues = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ];
+
     PioneerDDJSB.scratchMode = [false, false];
 
     PioneerDDJSB.ledGroups = {
@@ -50,29 +61,14 @@ PioneerDDJSB.init = function (id) {
 
     PioneerDDJSB.looprollIntervals = [0.0625, 0.125, 0.25, 0.5];
 
-    PioneerDDJSB.setFXSoftTakeover(true);
-
-    PioneerDDJSB.BindControlConnections(false);
+    PioneerDDJSB.bindControlConnections(false);
 };
 
 PioneerDDJSB.shutdown = function () {
-    PioneerDDJSB.BindControlConnections(true);
+    PioneerDDJSB.bindControlConnections(true);
 };
 
-PioneerDDJSB.setFXSoftTakeover = function (activate) {
-    // Set softTakeover for controls effected by the effects knobs
-    var deck,
-        parameter;
-
-    for (deck = 1; deck <= 2; deck++) {
-        engine.softTakeover('[EffectRack1_EffectUnit' + deck + ']', 'mix', activate);
-        for (parameter = 1; parameter <= 3; parameter++) {
-            engine.softTakeover('[EffectRack1_EffectUnit' + deck + '_Effect1]', 'parameter' + parameter, activate);
-        }
-    }
-};
-
-PioneerDDJSB.BulkBindControlConnections = function (group, controlsToFunctions, remove) {
+PioneerDDJSB.bulkBindControlConnections = function (group, controlsToFunctions, remove) {
     //noinspection AssignmentToFunctionParameterJS
     var control;
     remove = (remove === undefined) ? remove : false;
@@ -85,7 +81,7 @@ PioneerDDJSB.BulkBindControlConnections = function (group, controlsToFunctions, 
     };
 };
 
-PioneerDDJSB.BindControlConnections = function (isUnbinding) {
+PioneerDDJSB.bindControlConnections = function (isUnbinding) {
     var controlsToFunctions = {},
         samplerIndex,
         samplerGroup,
@@ -98,51 +94,51 @@ PioneerDDJSB.BindControlConnections = function (isUnbinding) {
 
     for (samplerIndex = 1; samplerIndex <= 4; samplerIndex++) {
         samplerGroup = '[Sampler' + samplerIndex + ']';
-        engine.connectControl(samplerGroup, 'duration', 'PioneerDDJSB.SamplerLeds', isUnbinding);
+        engine.connectControl(samplerGroup, 'duration', 'PioneerDDJSB.samplerLeds', isUnbinding);
     }
 
     for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
         effectUnitGroup = '[EffectRack1_EffectUnit' + fxUnitIndex + ']';
         controlsToFunctions = {
-            'group_[Headphone]_enable': 'PioneerDDJSB.FXLeds',
-            'group_[Channel1]_enable': 'PioneerDDJSB.FXLeds',
-            'group_[Channel2]_enable': 'PioneerDDJSB.FXLeds'
+            'group_[Headphone]_enable': 'PioneerDDJSB.fxLeds',
+            'group_[Channel1]_enable': 'PioneerDDJSB.fxLeds',
+            'group_[Channel2]_enable': 'PioneerDDJSB.fxLeds'
         };
-        PioneerDDJSB.BulkBindControlConnections(effectUnitGroup, controlsToFunctions, isUnbinding);
+        PioneerDDJSB.bulkBindControlConnections(effectUnitGroup, controlsToFunctions, isUnbinding);
     }
 
     for (channelIndex = 1; channelIndex <= 2; channelIndex++) {
         channelGroup = '[Channel' + channelIndex + ']';
         controlsToFunctions = {
-            'play': 'PioneerDDJSB.PlayLeds',
-            'cue_default': 'PioneerDDJSB.CueLeds',
-            'pfl': 'PioneerDDJSB.HeadphoneCueLed',
-            'keylock': 'PioneerDDJSB.KeyLockLeds',
-            'slip_enabled': 'PioneerDDJSB.ToggleVinylLed',
-            'quantize': 'PioneerDDJSB.ToggleQuantizeLed',
-            'beat_active': 'PioneerDDJSB.ToggleBeatLed',
-            'loop_in': 'PioneerDDJSB.ToggleLoopInLed',
-            'loop_out': 'PioneerDDJSB.ToggleLoopOutLed',
-            'filterLowKill': 'PioneerDDJSB.ToggleLowKillLed',
-            'filterMidKill': 'PioneerDDJSB.ToggleMidKillLed',
-            'filterHighKill': 'PioneerDDJSB.ToggleHighKillLed',
-            'mute': 'PioneerDDJSB.ToggleMuteLed',
-            'loop_enabled': 'PioneerDDJSB.ToggleLoopExitLed'
+            'play': 'PioneerDDJSB.playLeds',
+            'cue_default': 'PioneerDDJSB.cueLeds',
+            'pfl': 'PioneerDDJSB.headphoneCueLed',
+            'keylock': 'PioneerDDJSB.keyLockLeds',
+            'slip_enabled': 'PioneerDDJSB.vinylLed',
+            'quantize': 'PioneerDDJSB.quantizeLed',
+            'beat_active': 'PioneerDDJSB.beatLed',
+            'loop_in': 'PioneerDDJSB.loopInLed',
+            'loop_out': 'PioneerDDJSB.loopOutLed',
+            'filterLowKill': 'PioneerDDJSB.lowKillLed',
+            'filterMidKill': 'PioneerDDJSB.midKillLed',
+            'filterHighKill': 'PioneerDDJSB.highKillLed',
+            'mute': 'PioneerDDJSB.muteLed',
+            'loop_enabled': 'PioneerDDJSB.loopExitLed'
         };
 
         for (i = 1; i <= 8; i++) {
-            controlsToFunctions['hotcue_' + i + '_enabled'] = 'PioneerDDJSB.HotCuePerformancePadLed';
+            controlsToFunctions['hotcue_' + i + '_enabled'] = 'PioneerDDJSB.hotCueLeds';
         }
 
         for (index in PioneerDDJSB.loopIntervals) {
-            controlsToFunctions['beatloop_' + PioneerDDJSB.loopIntervals[index] + '_enabled'] = 'PioneerDDJSB.BeatloopPerformancePadLed';
+            controlsToFunctions['beatloop_' + PioneerDDJSB.loopIntervals[index] + '_enabled'] = 'PioneerDDJSB.beatloopLeds';
         }
 
         for (index in PioneerDDJSB.looprollIntervals) {
-            controlsToFunctions['beatlooproll_' + PioneerDDJSB.looprollIntervals[index] + '_activate'] = 'PioneerDDJSB.ToggleBeatlooprollLeds';
+            controlsToFunctions['beatlooproll_' + PioneerDDJSB.looprollIntervals[index] + '_activate'] = 'PioneerDDJSB.beatlooprollLeds';
         }
 
-        PioneerDDJSB.BulkBindControlConnections(channelGroup, controlsToFunctions, isUnbinding);
+        PioneerDDJSB.bulkBindControlConnections(channelGroup, controlsToFunctions, isUnbinding);
     }
 };
 
@@ -152,12 +148,12 @@ PioneerDDJSB.BindControlConnections = function (isUnbinding) {
 
 // Returns the control code for a led on the pads.
 // groupShift is true when the group has been selected while pressing shift
-PioneerDDJSB.PadLedTranslator = function (ledGroup, ledNumber, shift, groupShift) {
+PioneerDDJSB.padLedTranslator = function (ledGroup, ledNumber, shift, groupShift) {
     return (groupShift ? 0x40 : 0x00) + (shift ? 0x08 : 0x00) + ledGroup + (+ledNumber);
 };
 
 
-PioneerDDJSB.FXLeds = function (value, group, control) {
+PioneerDDJSB.fxLeds = function (value, group, control) {
     midi.sendShortMsg(
         0x94 + PioneerDDJSB.fxGroups[group],
         0x47 + PioneerDDJSB.fxControls[control],
@@ -170,20 +166,20 @@ PioneerDDJSB.FXLeds = function (value, group, control) {
     );
 };
 
-PioneerDDJSB.HeadphoneCueLed = function (value, group, control) {
+PioneerDDJSB.headphoneCueLed = function (value, group, control) {
     midi.sendShortMsg(0x90 + PioneerDDJSB.channelGroups[group], 0x54, value ? 0x7F : 0x00);
     midi.sendShortMsg(0x90 + PioneerDDJSB.channelGroups[group], 0x68, value ? 0x7F : 0x00);
 };
 
-PioneerDDJSB.CueLeds = function (value, group, control) {
+PioneerDDJSB.cueLeds = function (value, group, control) {
     midi.sendShortMsg(0x90 + PioneerDDJSB.channelGroups[group], 0x0C, value ? 0x7F : 0x00);
 };
 
-PioneerDDJSB.KeyLockLeds = function (value, group, control) {
+PioneerDDJSB.keyLockLeds = function (value, group, control) {
     midi.sendShortMsg(0x90 + PioneerDDJSB.channelGroups[group], 0x1A, value ? 0x7F : 0x00);
 };
 
-PioneerDDJSB.PlayLeds = function (value, group, control) {
+PioneerDDJSB.playLeds = function (value, group, control) {
     var channel = PioneerDDJSB.channelGroups[group];
     midi.sendShortMsg(0x90 + channel, 0x0B, value ? 0x7F : 0x00); // Play / Pause LED
     midi.sendShortMsg(0x90 + channel, 0x0C, value ? 0x7F : 0x00); // Cue LED
@@ -191,103 +187,103 @@ PioneerDDJSB.PlayLeds = function (value, group, control) {
     midi.sendShortMsg(0x90 + channel, 0x48, value ? 0x7F : 0x00); // Cue LED when shifted
 };
 
-PioneerDDJSB.ToggleVinylLed = function (value, group, control) {
+PioneerDDJSB.vinylLed = function (value, group, control) {
     midi.sendShortMsg(0x90 + PioneerDDJSB.channelGroups[group], 0x17, value ? 0x7F : 0x00);
 };
 
-PioneerDDJSB.ToggleQuantizeLed = function (value, group, control) {
+PioneerDDJSB.quantizeLed = function (value, group, control) {
     midi.sendShortMsg(0x90 + PioneerDDJSB.channelGroups[group], 0x5C, value ? 0x7F : 0x00);
 };
 
-PioneerDDJSB.ToggleBeatLed = function (value, group, control) {
+PioneerDDJSB.beatLed = function (value, group, control) {
     midi.sendShortMsg(0x90 + PioneerDDJSB.channelGroups[group], 0x58, value ? 0x7F : 0x00);
 };
 
-PioneerDDJSB.ToggleLoopInLed = function (value, group, control) {
+PioneerDDJSB.loopInLed = function (value, group, control) {
     midi.sendShortMsg(
         0x97 + PioneerDDJSB.channelGroups[group],
-        PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 0, false, false),
+        PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 0, false, false),
         value ? 0x7F : 0x00
     );
 };
 
-PioneerDDJSB.ToggleLoopOutLed = function (value, group, control) {
+PioneerDDJSB.loopOutLed = function (value, group, control) {
     midi.sendShortMsg(
         0x97 + PioneerDDJSB.channelGroups[group],
-        PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 1, false, false),
+        PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 1, false, false),
         value ? 0x7F : 0x00
     );
 };
 
-PioneerDDJSB.ToggleLoopExitLed = function (value, group, control) {
+PioneerDDJSB.loopExitLed = function (value, group, control) {
     midi.sendShortMsg(
         0x97 + PioneerDDJSB.channelGroups[group],
-        PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 2, false, false),
+        PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 2, false, false),
         value ? 0x7F : 0x00
     );
 };
 
-PioneerDDJSB.ToggleLowKillLed = function (value, group, control) {
+PioneerDDJSB.lowKillLed = function (value, group, control) {
     midi.sendShortMsg(
         0x97 + PioneerDDJSB.channelGroups[group],
-        PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 0, false, true),
+        PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 0, false, true),
         value ? 0x7F : 0x00
     );
 };
 
-PioneerDDJSB.ToggleMidKillLed = function (value, group, control) {
+PioneerDDJSB.midKillLed = function (value, group, control) {
     midi.sendShortMsg(
         0x97 + PioneerDDJSB.channelGroups[group],
-        PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 1, false, true),
+        PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 1, false, true),
         value ? 0x7F : 0x00
     );
 };
 
-PioneerDDJSB.ToggleHighKillLed = function (value, group, control) {
+PioneerDDJSB.highKillLed = function (value, group, control) {
     midi.sendShortMsg(
         0x97 + PioneerDDJSB.channelGroups[group],
-        PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 2, false, true),
+        PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 2, false, true),
         value ? 0x7F : 0x00
     );
 };
 
-PioneerDDJSB.ToggleMuteLed = function (value, group, control) {
+PioneerDDJSB.muteLed = function (value, group, control) {
     midi.sendShortMsg(
         0x97 + PioneerDDJSB.channelGroups[group],
-        PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 3, false, true),
+        PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.manualLoop, 3, false, true),
         value ? 0x7F : 0x00
     );
 };
 
-PioneerDDJSB.SamplerLeds = function (value, group, control) {
+PioneerDDJSB.samplerLeds = function (value, group, control) {
     var sampler = PioneerDDJSB.samplerGroups[group],
         channel;
 
     for (channel = 0; channel < 2; channel++) {
         midi.sendShortMsg(
             0x97 + channel,
-            PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.sampler, sampler, false, false),
+            PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.sampler, sampler, false, false),
             value ? 0x7F : 0x00
         );
         midi.sendShortMsg(
             0x97 + channel,
-            PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.sampler, sampler, false, true),
+            PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.sampler, sampler, false, true),
             value ? 0x7F : 0x00
         );
         midi.sendShortMsg(
             0x97 + channel,
-            PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.sampler, sampler, true, false),
+            PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.sampler, sampler, true, false),
             value ? 0x7F : 0x00
         );
         midi.sendShortMsg(
             0x97 + channel,
-            PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.sampler, sampler, true, true),
+            PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.sampler, sampler, true, true),
             value ? 0x7F : 0x00
         );
     }
 };
 
-PioneerDDJSB.BeatloopPerformancePadLed = function (value, group, control) {
+PioneerDDJSB.beatloopLeds = function (value, group, control) {
     var channel = PioneerDDJSB.channelGroups[group],
         index,
         padNum,
@@ -299,14 +295,14 @@ PioneerDDJSB.BeatloopPerformancePadLed = function (value, group, control) {
             shifted = (index >= 4);
             midi.sendShortMsg(
                 0x97 + channel,
-                PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.autoLoop, padNum, shifted, false),
+                PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.autoLoop, padNum, shifted, false),
                 value ? 0x7F : 0x00
             );
         }
     }
 };
 
-PioneerDDJSB.ToggleBeatlooprollLeds = function (value, group, control) {
+PioneerDDJSB.beatlooprollLeds = function (value, group, control) {
     var channel = PioneerDDJSB.channelGroups[group],
         index;
 
@@ -314,14 +310,14 @@ PioneerDDJSB.ToggleBeatlooprollLeds = function (value, group, control) {
         if (control === 'beatlooproll_' + PioneerDDJSB.looprollIntervals[index] + '_activate') {
             midi.sendShortMsg(
                 0x97 + channel,
-                PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.autoLoop, index, false, true),
+                PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.autoLoop, index, false, true),
                 value ? 0x7F : 0x00
             );
         }
     }
 };
 
-PioneerDDJSB.HotCuePerformancePadLed = function (value, group, control) {
+PioneerDDJSB.hotCueLeds = function (value, group, control) {
     var shiftedGroup = false,
         channel = PioneerDDJSB.channelGroups[group],
         padIndex = null,
@@ -341,14 +337,14 @@ PioneerDDJSB.HotCuePerformancePadLed = function (value, group, control) {
     // Pad LED without shift key
     midi.sendShortMsg(
         0x97 + channel,
-        PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.hotCue, padIndex, false, shiftedGroup),
+        PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.hotCue, padIndex, false, shiftedGroup),
         value ? 0x7F : 0x00
     );
 
     // Pad LED with shift key
     midi.sendShortMsg(
         0x97 + channel,
-        PioneerDDJSB.PadLedTranslator(PioneerDDJSB.ledGroups.hotCue, padIndex, true, shiftedGroup),
+        PioneerDDJSB.padLedTranslator(PioneerDDJSB.ledGroups.hotCue, padIndex, true, shiftedGroup),
         value ? 0x7F : 0x00
     );
 };
@@ -427,7 +423,7 @@ PioneerDDJSB.pitchBend = function (channel, movement) {
 ///////////////////////////////////////////////////////////////
 // Handles the rotary selector for choosing tracks, library items, crates, etc.
 
-PioneerDDJSB.CalculateRotaryDelta = function (value) {
+PioneerDDJSB.getRotaryDelta = function (value) {
     var delta = 0x40 - Math.abs(0x40 - value),
         isCounterClockwise = value > 0x40;
 
@@ -437,25 +433,30 @@ PioneerDDJSB.CalculateRotaryDelta = function (value) {
     return delta;
 };
 
-PioneerDDJSB.RotarySelector = function (channel, control, value, status) {
-    var delta = PioneerDDJSB.CalculateRotaryDelta(value);
+PioneerDDJSB.rotarySelector = function (channel, control, value, status) {
+    var delta = PioneerDDJSB.getRotaryDelta(value);
     engine.setValue('[Playlist]', 'SelectTrackKnob', delta);
 };
 
-PioneerDDJSB.ShiftedRotarySelector = function (channel, control, value, status) {
-    var delta = PioneerDDJSB.CalculateRotaryDelta(value),
+PioneerDDJSB.shiftedRotarySelector = function (channel, control, value, status) {
+    var delta = PioneerDDJSB.getRotaryDelta(value),
         f = (delta > 0 ? 'SelectNextPlaylist' : 'SelectPrevPlaylist');
 
     engine.setValue('[Playlist]', f, Math.abs(delta));
 };
 
-PioneerDDJSB.RotarySelectorShiftedClick = function (channel, control, value, status) {
+PioneerDDJSB.rotarySelectorShiftedClick = function (channel, control, value, status) {
     if (value === 0x7F) {
         engine.setValue('[Playlist]', 'ToggleSelectedSidebarItem', 1);
     }
 };
 
-PioneerDDJSB.FXButton = function (channel, control, value, status) {
+
+///////////////////////////////////////////////////////////////
+//                         FX SECTION                        //
+///////////////////////////////////////////////////////////////
+
+PioneerDDJSB.fxButton = function (channel, control, value, status) {
     var deck = channel - 4,
         button = control - 0x47;
 
@@ -469,28 +470,49 @@ PioneerDDJSB.FXButton = function (channel, control, value, status) {
     }
 };
 
-PioneerDDJSB.FXKnob = function (channel, control, value, status) {
+PioneerDDJSB.fxKnob = function (channel, control, value, status) {
     var deck = channel - 4,
         anyButtonPressed = false,
-        i;
+        parameter;
 
-    for (i = 0; i < 3; i++) {
-        if (PioneerDDJSB.fxButtonPressed[deck][i]) {
+    for (parameter = 0; parameter < 3; parameter++) {
+        if (PioneerDDJSB.fxButtonPressed[deck][parameter]) {
             anyButtonPressed = true;
         }
     }
 
     if (!anyButtonPressed) {
-        engine.setValue('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'mix', value / 0x7F);
+        if (PioneerDDJSB.softTakeoverEmulation(deck, 3, value)) {
+            engine.setValue('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'mix', value / 0x7F);
+        }
     } else {
-        for (i = 0; i < 3; i++) {
-            if (PioneerDDJSB.fxButtonPressed[deck][i]) {
+        for (parameter = 0; parameter < 3; parameter++) {
+            if (PioneerDDJSB.fxButtonPressed[deck][parameter] && PioneerDDJSB.softTakeoverEmulation(deck, parameter, value)) {
                 engine.setParameter(
                     '[EffectRack1_EffectUnit' + (deck + 1) + '_Effect1]',
-                    'parameter' + (i + 1),
+                    'parameter' + (parameter + 1),
                     value / 0x7F
                 );
             }
         }
     }
+};
+
+PioneerDDJSB.softTakeoverEmulation = function (deck, index, currentValue) {
+    var deltaToPreviousToActive = PioneerDDJSB.fxPreviousKnobValues[deck][index] - PioneerDDJSB.fxParamsActiveValues[deck][index],
+        deltaToActive = currentValue - PioneerDDJSB.fxParamsActiveValues[deck][index],
+        passedOverStoredValue = (deltaToActive * deltaToPreviousToActive) < 0;
+
+    print("new: " + currentValue + " previous: " + PioneerDDJSB.fxPreviousKnobValues[deck][index] + " active: " + PioneerDDJSB.fxParamsActiveValues[deck][index]);
+
+    PioneerDDJSB.fxPreviousKnobValues[deck][index] = currentValue;
+
+    if (passedOverStoredValue || Math.abs(deltaToActive) < 15) {
+        print("yep, passedover is " + passedOverStoredValue + " deltaToActive is " + deltaToActive);
+
+        PioneerDDJSB.fxParamsActiveValues[deck][index] = currentValue;
+        return true;
+    }
+    print("nope");
+    return false;
 };
