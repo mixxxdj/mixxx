@@ -639,6 +639,7 @@ class MixxxCore(Feature):
                    "engine/readaheadmanager.cpp",
                    "engine/enginetalkoverducking.cpp",
                    "cachingreader.cpp",
+                   "cachingreaderchunk.cpp",
                    "cachingreaderworker.cpp",
 
                    "analyserrg.cpp",
