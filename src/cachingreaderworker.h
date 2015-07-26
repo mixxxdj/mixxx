@@ -7,50 +7,31 @@
 #include <QThread>
 #include <QString>
 
+#include "cachingreaderchunk.h"
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
 #include "util/fifo.h"
 
 
-// A Chunk is a section of audio that is being cached. The chunk_number can be
-// used to figure out the sample number of the first sample in data by using
-// sampleForChunk()
-typedef struct Chunk {
-    int chunk_number;
-    SINT frameCount;
-    CSAMPLE* stereoSamples;
-    Chunk* prev_lru;
-    Chunk* next_lru;
+typedef struct CachingReaderChunkReadRequest {
+    CachingReaderChunk* chunk;
 
-    enum State {
-        FREE,
-        ALLOCATED,
-        READ_IN_PROGRESS,
-        READ
-    };
-    State state;
-} Chunk;
-
-typedef struct ChunkReadRequest {
-    Chunk* chunk;
-
-    ChunkReadRequest() { chunk = NULL; }
-} ChunkReadRequest;
+    CachingReaderChunkReadRequest() { chunk = NULL; }
+} CachingReaderChunkReadRequest;
 
 enum ReaderStatus {
     INVALID,
     TRACK_NOT_LOADED,
     TRACK_LOADED,
     CHUNK_READ_SUCCESS,
-    CHUNK_READ_PARTIAL,
     CHUNK_READ_EOF,
     CHUNK_READ_INVALID
 };
 
 typedef struct ReaderStatusUpdate {
     ReaderStatus status;
-    Chunk* chunk;
+    CachingReaderChunk* chunk;
     SINT maxReadableFrameIndex;
     ReaderStatusUpdate()
         : status(INVALID)
@@ -65,7 +46,7 @@ class CachingReaderWorker : public EngineWorker {
   public:
     // Construct a CachingReader with the given group.
     CachingReaderWorker(QString group,
-            FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
+            FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
             FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
     virtual ~CachingReaderWorker();
 
@@ -78,17 +59,6 @@ class CachingReaderWorker : public EngineWorker {
 
     void quitWait();
 
-    // A Chunk is a memory-resident section of audio that has been cached. Each
-    // chunk holds a fixed number of stereo frames given by kFramesPerChunk.
-    static const SINT kChunkChannels;
-    static const SINT kFramesPerChunk;
-    static const SINT kSamplesPerChunk; // = kFramesPerChunk * kChunkChannels
-
-    // Given a chunk number, return the start sample number for the chunk.
-    static SINT frameForChunk(SINT chunk_number) {
-        return chunk_number * kFramesPerChunk;
-    }
-
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
@@ -96,13 +66,12 @@ class CachingReaderWorker : public EngineWorker {
     void trackLoadFailed(TrackPointer pTrack, QString reason);
 
   private:
-
     QString m_group;
     QString m_tag;
 
     // Thread-safe FIFOs for communication between the engine callback and
     // reader thread.
-    FIFO<ChunkReadRequest>* m_pChunkReadRequestFIFO;
+    FIFO<CachingReaderChunkReadRequest>* m_pChunkReadRequestFIFO;
     FIFO<ReaderStatusUpdate>* m_pReaderStatusFIFO;
 
     // Queue of Tracks to load, and the corresponding lock. Must acquire the
@@ -114,8 +83,8 @@ class CachingReaderWorker : public EngineWorker {
     void loadTrack(const TrackPointer& pTrack);
 
     // Read the given chunk_number from the file into pChunk's data
-    // buffer. Fills length/sample information about Chunk* as well.
-    void processChunkReadRequest(ChunkReadRequest* request,
+    // buffer. Fills length/sample information about CachingReaderChunk* as well.
+    void processCachingReaderChunkReadRequest(CachingReaderChunkReadRequest* request,
                                  ReaderStatusUpdate* update);
 
     // The current audio source of the track loaded

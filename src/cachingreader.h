@@ -96,7 +96,7 @@ class CachingReader : public QObject {
         m_worker.setScheduler(pScheduler);
     }
 
-    const static int maximumChunksInMemory;
+    const static int maximumCachingReaderChunksInMemory;
 
   signals:
     // Emitted once a new track is loaded and ready to be read from.
@@ -105,71 +105,53 @@ class CachingReader : public QObject {
     void trackLoadFailed(TrackPointer pTrack, QString reason);
 
   private:
-    // Removes a chunk from the LRU list
-    static Chunk* removeFromLRUList(Chunk* chunk, Chunk* head);
-    // Inserts a chunk into the LRU list
-    static Chunk* insertIntoLRUList(Chunk* chunk, Chunk* head);
-
-    // Given a sample number, return the chunk number corresponding to it.
-    inline static SINT chunkForFrame(SINT frameIndex) {
-        return frameIndex / CachingReaderWorker::kFramesPerChunk;
-    }
-
-    inline static SINT frames2samples(SINT frames) {
-        return frames * CachingReaderWorker::kChunkChannels;
-    }
-    inline static SINT samples2frames(SINT samples) {
-        DEBUG_ASSERT(0 == (samples % CachingReaderWorker::kChunkChannels));
-        return samples / CachingReaderWorker::kChunkChannels;
-    }
-
     const ConfigObject<ConfigValue>* m_pConfig;
 
     // Thread-safe FIFOs for communication between the engine callback and
     // reader thread.
-    FIFO<ChunkReadRequest> m_chunkReadRequestFIFO;
+    FIFO<CachingReaderChunkReadRequest> m_chunkReadRequestFIFO;
     FIFO<ReaderStatusUpdate> m_readerStatusFIFO;
 
     // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns NULL. If it is present then
     // freshenChunk is called on the chunk to make it the MRU chunk.
-    Chunk* lookupChunkAndFreshen(int chunk_number);
+    CachingReaderChunk* lookupChunkAndFreshen(SINT chunkIndex);
 
     // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns NULL.
-    Chunk* lookupChunk(int chunk_number);
+    CachingReaderChunk* lookupChunk(SINT chunkIndex);
 
     // Moves the provided chunk to the MRU position.
-    void freshenChunk(Chunk* pChunk);
+    void freshenChunk(CachingReaderChunk* pChunk);
 
-    // Returns a Chunk to the free list
-    void freeChunk(Chunk* pChunk);
+    // Returns a CachingReaderChunk to the free list
+    void freeChunk(CachingReaderChunk* pChunk);
 
     // Returns all allocated chunks to the free list
     void freeAllChunks();
 
     // Gets a chunk from the free list. Returns NULL if none available.
-    Chunk* allocateChunk(int chunk);
+    CachingReaderChunk* allocateChunk(SINT chunkIndex);
 
-    // Gets a chunk from the free list, frees the LRU Chunk if none available.
-    Chunk* allocateChunkExpireLRU(int chunk);
+    // Gets a chunk from the free list, frees the LRU CachingReaderChunk if none available.
+    CachingReaderChunk* allocateChunkExpireLRU(SINT chunkIndex);
 
     ReaderStatus m_readerStatus;
 
-    // Keeps track of all Chunks we've allocated.
-    QVector<Chunk*> m_chunks;
+    // Keeps track of all CachingReaderChunks we've allocated.
+    QVector<CachingReaderChunk*> m_chunks;
 
     // List of free chunks. Linked list so that we have constant time insertions
     // and deletions. Iteration is not necessary.
-    QLinkedList<Chunk*> m_freeChunks;
+    QLinkedList<CachingReaderChunk*> m_freeChunks;
 
-    // Keeps track of what Chunks we've allocated and indexes them based on what
+    // Keeps track of what CachingReaderChunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
-    QHash<int, Chunk*> m_allocatedChunks;
+    QHash<int, CachingReaderChunk*> m_allocatedCachingReaderChunks;
 
     // The linked list of recently-used chunks.
-    Chunk* m_mruChunk;
-    Chunk* m_lruChunk;
+    CachingReaderChunk* m_mruCachingReaderChunk;
+    CachingReaderChunk* m_lruCachingReaderChunk;
 
     // The raw memory buffer which is divided up into chunks.
     SampleBuffer m_sampleBuffer;
