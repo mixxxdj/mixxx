@@ -6,7 +6,7 @@
 #include "util/math.h"
 
 
-const SINT CachingReaderChunk::kDefaultIndex = -1;
+const SINT CachingReaderChunkWorker::kDefaultIndex = -1;
 
 // One chunk should contain 1/2 - 1/4th of a second of audio.
 // 8192 frames contain about 170 ms of audio at 48 kHz, which
@@ -16,87 +16,29 @@ const SINT CachingReaderChunk::kDefaultIndex = -1;
 // easier memory alignment.
 // TODO(XXX): The optimum value of the "constant" kFrames depends
 // on the properties of the AudioSource as the remarks above suggest!
-const SINT CachingReaderChunk::kChannels = Mixxx::AudioSource::kChannelCountStereo;
-const SINT CachingReaderChunk::kFrames = 8192; // ~ 170 ms at 48 kHz
-const SINT CachingReaderChunk::kSamples =
-        CachingReaderChunk::frames2samples(CachingReaderChunk::kFrames);
+const SINT CachingReaderChunkWorker::kChannels = Mixxx::AudioSource::kChannelCountStereo;
+const SINT CachingReaderChunkWorker::kFrames = 8192; // ~ 170 ms at 48 kHz
+const SINT CachingReaderChunkWorker::kSamples =
+        CachingReaderChunkWorker::frames2samples(CachingReaderChunkWorker::kFrames);
 
-CachingReaderChunk::CachingReaderChunk(
+CachingReaderChunkWorker::CachingReaderChunkWorker(
         CSAMPLE* sampleBuffer)
         : m_index(kDefaultIndex),
-          m_pPrev(nullptr),
-          m_pNext(nullptr),
-          m_state(FREE),
           m_sampleBuffer(sampleBuffer),
           m_frameCount(0) {
 }
 
-CachingReaderChunk::~CachingReaderChunk() {
-    DEBUG_ASSERT(READ_PENDING != m_state);
+CachingReaderChunkWorker::~CachingReaderChunkWorker() {
 }
 
-void CachingReaderChunk::init(SINT index) {
-    DEBUG_ASSERT(kDefaultIndex == m_index);
-    DEBUG_ASSERT(FREE == m_state);
+void CachingReaderChunkWorker::init(SINT index) {
     m_index = index;
-    m_state = READY;
-}
-
-void CachingReaderChunk::free() {
-    DEBUG_ASSERT(READ_PENDING != m_state);
-    m_index = kDefaultIndex;
-    m_state = FREE;
     m_frameCount = 0;
 }
 
-void CachingReaderChunk::insertIntoListBefore(
-        CachingReaderChunk* pBefore) {
-    DEBUG_ASSERT(nullptr == m_pNext);
-    DEBUG_ASSERT(nullptr == m_pPrev);
-
-    m_pNext = pBefore;
-    if (pBefore) {
-        if (pBefore->m_pPrev) {
-            m_pPrev = pBefore->m_pPrev;
-            DEBUG_ASSERT(m_pPrev->m_pNext == pBefore);
-            m_pPrev->m_pNext = this;
-        }
-        pBefore->m_pPrev = this;
-    }
-}
-
-void CachingReaderChunk::removeFromList(
-        CachingReaderChunk** ppHead,
-        CachingReaderChunk** ppTail) {
-    // Remove this chunk from the doubly-linked list...
-    CachingReaderChunk* pNext = m_pNext;
-    CachingReaderChunk* pPrev = m_pPrev;
-    m_pNext = nullptr;
-    m_pPrev = nullptr;
-
-    // ...reconnect the remaining list elements...
-    if (pNext) {
-        DEBUG_ASSERT(this == pNext->m_pPrev);
-        pNext->m_pPrev = pPrev;
-    }
-    if (pPrev) {
-        DEBUG_ASSERT(this == pPrev->m_pNext);
-        pPrev->m_pNext = pNext;
-    }
-
-    // ...and adjust head/tail.
-    if (ppHead && (this == *ppHead)) {
-        *ppHead = pNext;
-    }
-    if (ppTail && (this == *ppTail)) {
-        *ppTail = pPrev;
-    }
-}
-
-bool CachingReaderChunk::isReadable(
+bool CachingReaderChunkWorker::isReadable(
         const Mixxx::AudioSourcePointer& pAudioSource,
         SINT maxReadableFrameIndex) const {
-    DEBUG_ASSERT(getState() != FREE);
     DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= maxReadableFrameIndex);
 
     if (!isValid() || pAudioSource.isNull()) {
@@ -108,10 +50,9 @@ bool CachingReaderChunk::isReadable(
     return frameIndex <= maxFrameIndex;
 }
 
-SINT CachingReaderChunk::readSampleFrames(
+SINT CachingReaderChunkWorker::readSampleFrames(
         const Mixxx::AudioSourcePointer& pAudioSource,
         SINT* pMaxReadableFrameIndex) {
-    DEBUG_ASSERT(getState() == READ_PENDING);
     DEBUG_ASSERT(pMaxReadableFrameIndex);
 
     const SINT frameIndex = frameForIndex(getIndex());
@@ -169,11 +110,77 @@ SINT CachingReaderChunk::readSampleFrames(
     return m_frameCount;
 }
 
-void CachingReaderChunk::copySamples(
+void CachingReaderChunkWorker::copySamples(
         CSAMPLE* sampleBuffer, SINT sampleOffset, SINT sampleCount) const {
-    DEBUG_ASSERT(getState() == READY);
     DEBUG_ASSERT(0 <= sampleOffset);
     DEBUG_ASSERT(0 <= sampleCount);
     DEBUG_ASSERT((sampleOffset + sampleCount) <= frames2samples(m_frameCount));
     SampleUtil::copy(sampleBuffer, m_sampleBuffer + sampleOffset, sampleCount);
+}
+
+CachingReaderChunk::CachingReaderChunk(
+        CSAMPLE* sampleBuffer)
+        : CachingReaderChunkWorker(sampleBuffer),
+          m_state(FREE),
+          m_pPrev(nullptr),
+          m_pNext(nullptr) {
+}
+
+CachingReaderChunk::~CachingReaderChunk() {
+}
+
+void CachingReaderChunk::init(SINT index) {
+    DEBUG_ASSERT(READ_PENDING != m_state);
+    CachingReaderChunkWorker::init(index);
+    m_state = READY;
+}
+
+void CachingReaderChunk::free() {
+    DEBUG_ASSERT(READ_PENDING != m_state);
+    CachingReaderChunkWorker::init(kDefaultIndex);
+    m_state = FREE;
+}
+
+void CachingReaderChunk::insertIntoListBefore(
+        CachingReaderChunk* pBefore) {
+    DEBUG_ASSERT(nullptr == m_pNext);
+    DEBUG_ASSERT(nullptr == m_pPrev);
+
+    m_pNext = pBefore;
+    if (pBefore) {
+        if (pBefore->m_pPrev) {
+            m_pPrev = pBefore->m_pPrev;
+            DEBUG_ASSERT(m_pPrev->m_pNext == pBefore);
+            m_pPrev->m_pNext = this;
+        }
+        pBefore->m_pPrev = this;
+    }
+}
+
+void CachingReaderChunk::removeFromList(
+        CachingReaderChunk** ppHead,
+        CachingReaderChunk** ppTail) {
+    // Remove this chunk from the double-linked list...
+    CachingReaderChunk* pNext = m_pNext;
+    CachingReaderChunk* pPrev = m_pPrev;
+    m_pNext = nullptr;
+    m_pPrev = nullptr;
+
+    // ...reconnect the remaining list elements...
+    if (pNext) {
+        DEBUG_ASSERT(this == pNext->m_pPrev);
+        pNext->m_pPrev = pPrev;
+    }
+    if (pPrev) {
+        DEBUG_ASSERT(this == pPrev->m_pNext);
+        pPrev->m_pNext = pNext;
+    }
+
+    // ...and adjust head/tail.
+    if (ppHead && (this == *ppHead)) {
+        *ppHead = pNext;
+    }
+    if (ppTail && (this == *ppTail)) {
+        *ppTail = pPrev;
+    }
 }

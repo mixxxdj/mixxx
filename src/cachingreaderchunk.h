@@ -3,15 +3,14 @@
 
 #include "sources/audiosource.h"
 
-
 // A Chunk is a memory-resident section of audio that has been cached.
 // Each chunk holds a fixed number kFrames of frames with samples for
 // kChannels.
 // The class is not thread-safe although it is shared between CachingReader
 // and CachingReaderWorker! A lock-free FIFO ensures that only a single
-// thread has exclusive access on each chunk. The state READ_PENDING
-// indicates that the worker thread is in control.
-class CachingReaderChunk {
+// thread has exclusive access on each chunk. This abstract base class
+// is available for both the worker thread and the cache.
+class CachingReaderChunkWorker {
 public:
     static const SINT kDefaultIndex;
     static const SINT kChannels;
@@ -41,6 +40,59 @@ public:
         return samples / kChannels;
     }
 
+    virtual ~CachingReaderChunkWorker();
+
+    SINT getIndex() const {
+        return m_index;
+    }
+
+    bool isValid() const {
+        return 0 <= getIndex();
+    }
+
+    SINT getFrameCount() const {
+        return m_frameCount;
+    }
+
+    // Check if the audio source has sample data available
+    // for this chunk.
+    bool isReadable(
+            const Mixxx::AudioSourcePointer& pAudioSource,
+            SINT maxReadableFrameIndex) const;
+
+    // Read sample frames from the audio source and return the
+    // number of frames that have been read. The in/out parameter
+    // pMaxReadableFrameIndex is adjusted if reading fails.
+    SINT readSampleFrames(
+            const Mixxx::AudioSourcePointer& pAudioSource,
+            SINT* pMaxReadableFrameIndex);
+
+    // Copy sampleCount samples starting at sampleOffset from
+    // the chunk's internal buffer into sampleBuffer.
+    void copySamples(
+            CSAMPLE* sampleBuffer,
+            SINT sampleOffset,
+            SINT sampleCount) const;
+
+protected:
+    explicit CachingReaderChunkWorker(CSAMPLE* sampleBuffer);
+
+    void init(SINT index);
+
+private:
+    volatile SINT m_index;
+
+    // The worker thread will fill the sample buffer and
+    // set the frame count.
+    CSAMPLE* const m_sampleBuffer;
+    volatile SINT m_frameCount;
+};
+
+// The derived class is only accessible for the cache, but not the
+// worker thread. The state READ_PENDING indicates that the worker
+// thread is in control.
+class CachingReaderChunk: public CachingReaderChunkWorker {
+public:
     explicit CachingReaderChunk(CSAMPLE* sampleBuffer);
     virtual ~CachingReaderChunk();
 
@@ -78,52 +130,11 @@ public:
             CachingReaderChunk** ppHead,
             CachingReaderChunk** ppTail);
 
-    SINT getIndex() const {
-        return m_index;
-    }
-
-    bool isValid() const {
-        return 0 <= getIndex();
-    }
-
-    SINT getFrameCount() const {
-        return m_frameCount;
-    }
-
-    // Check if the audio source has sample data available
-    // for this chunk.
-    bool isReadable(
-            const Mixxx::AudioSourcePointer& pAudioSource,
-            SINT maxReadableFrameIndex) const;
-
-    // Read sample frames from the audio source and return the
-    // number of frames that have been read. The in/out parameter
-    // pMaxReadableFrameIndex is adjusted if reading fails.
-    SINT readSampleFrames(
-            const Mixxx::AudioSourcePointer& pAudioSource,
-            SINT* pMaxReadableFrameIndex);
-
-    // Copy sampleCount samples starting at sampleOffset from
-    // the chunk's internal buffer into sampleBuffer.
-    void copySamples(
-            CSAMPLE* sampleBuffer,
-            SINT sampleOffset,
-            SINT sampleCount) const;
-
 private:
-    SINT m_index;
+    State m_state;
 
-    CachingReaderChunk* m_pPrev; // in double-linked list
-    CachingReaderChunk* m_pNext; // in double-linked list
-
-    // The state is read from both the cache and the worker thread.
-    // But only the cache is allowed to modify the state.
-    volatile State m_state;
-
-    // The worker thread will fill the sample buffer and
-    // set the frame count.
-    CSAMPLE* const m_sampleBuffer;
-    SINT m_frameCount;
+    CachingReaderChunk* m_pPrev; // previous item in double-linked list
+    CachingReaderChunk* m_pNext; // next item in double-linked list
 };
 
 
