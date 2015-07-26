@@ -51,10 +51,7 @@ private:
     // subblocks (one for each chan)
     // flac stores in 'frames', each of which has a header and a certain number
     // of subframes (one for each channel)
-    SINT m_minBlocksize; // in time samples (audio samples = time samples * chanCount)
-    SINT m_maxBlocksize;
-    SINT m_minFramesize;
-    SINT m_maxFramesize;
+    SINT m_maxBlocksize; // in time samples (audio samples = time samples * chanCount)
     SINT m_bitsPerSample;
 
     CSAMPLE m_sampleScaleFactor;

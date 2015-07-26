@@ -7,6 +7,11 @@ namespace Mixxx {
 
 namespace {
 
+// The maximum number of retries to fix seek errors. On a seek error
+// the next seek will start one (or more) sample blocks before the
+// position of the preceding seek operation that has failed.
+const int kSeekErrorMaxRetryCount = 3;
+
 // begin callbacks (have to be regular functions because normal libFLAC isn't C++-aware)
 
 FLAC__StreamDecoderReadStatus FLAC_read_cb(const FLAC__StreamDecoder*,
@@ -61,10 +66,7 @@ SoundSourceFLAC::SoundSourceFLAC(QUrl url)
         : SoundSource(url, "flac"),
           m_file(getLocalFileName()),
           m_decoder(NULL),
-          m_minBlocksize(0),
           m_maxBlocksize(0),
-          m_minFramesize(0),
-          m_maxFramesize(0),
           m_bitsPerSample(kBitsPerSampleDefault),
           m_sampleScaleFactor(CSAMPLE_ZERO),
           m_curFrameIndex(getMinFrameIndex()) {
@@ -120,57 +122,65 @@ SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    // Avoid unnecessary seeking
-    // NOTE(uklotzde): Disabling this optimization might reveal rare
-    // seek errors on certain FLAC files were the decoder loses sync!
-    if (m_curFrameIndex == frameIndex) {
-        return m_curFrameIndex;
-    }
-
-    // Discard decoded sample data before seeking
-    m_sampleBuffer.reset();
-
     // Seek to the new position
-    if (FLAC__stream_decoder_seek_absolute(m_decoder, frameIndex)) {
-        // Set the new position
-        m_curFrameIndex = frameIndex;
-        DEBUG_ASSERT(FLAC__STREAM_DECODER_SEEK_ERROR != FLAC__stream_decoder_get_state(m_decoder));
-    } else {
-        qWarning() << "Seek error at" << frameIndex << "in" << m_file.fileName();
+    SINT seekFrameIndex = frameIndex;
+    int retryCount = 0;
+    // NOTE(uklotzde): This loop avoids unnecessary seek operations.
+    // If the file is decoded from the beginning to the end during
+    // continuous playback no seek operations are necessary. This
+    // may hide rare seek errors that we have observed in some "flaky"
+    // FLAC files. The retry strategy implemented by this loop tries
+    // to solve these issues when randomly seeking through such a file.
+    while ((seekFrameIndex != m_curFrameIndex) &&
+            (retryCount <= kSeekErrorMaxRetryCount)){
+        // Discard decoded sample data before seeking
+        m_sampleBuffer.reset();
         // Invalidate the current position
         m_curFrameIndex = getMaxFrameIndex();
-        if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) {
-            // Flush the input stream of the decoder according to the
-            // documentation of FLAC__stream_decoder_seek_absolute()
-            if (!FLAC__stream_decoder_flush(m_decoder)) {
-                qWarning() << "Failed to flush input buffer of the FLAC decoder after seeking in"
-                        << m_file.fileName();
-                // Invalidate the current position...
-                m_curFrameIndex = getMaxFrameIndex();
-                // ...and abort
-                return m_curFrameIndex;
+        if (FLAC__stream_decoder_seek_absolute(m_decoder, seekFrameIndex)) {
+            // Success: Set the new position
+            m_curFrameIndex = seekFrameIndex;
+            DEBUG_ASSERT(FLAC__STREAM_DECODER_SEEK_ERROR != FLAC__stream_decoder_get_state(m_decoder));
+        } else {
+            // Failure
+            qWarning() << "Seek error at" << seekFrameIndex << "in" << m_file.fileName();
+            if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) {
+                // Flush the input stream of the decoder according to the
+                // documentation of FLAC__stream_decoder_seek_absolute()
+                if (!FLAC__stream_decoder_flush(m_decoder)) {
+                    qWarning() << "Failed to flush input buffer of the FLAC decoder after seek failure in"
+                            << m_file.fileName();
+                    // Invalidate the current position again...
+                    m_curFrameIndex = getMaxFrameIndex();
+                    // ...and abort
+                    return m_curFrameIndex;
+                }
             }
-            // Discard previously decoded sample data before decoding
-            // the next block of samples
-            m_sampleBuffer.reset();
-            // Trigger decoding of the next block to update the current position
-            if (!FLAC__stream_decoder_process_single(m_decoder)) {
-                qWarning() << "Failed to resync FLAC decoder after seeking in"
-                        << m_file.fileName();
-                // Invalidate the current position...
-                m_curFrameIndex = getMaxFrameIndex();
-                // ...and abort
-                return m_curFrameIndex;
-            }
-            DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-            if (m_curFrameIndex < frameIndex) {
-                // Adjust the current position
-                skipSampleFrames(frameIndex - m_curFrameIndex);
+            if (getMinFrameIndex() < seekFrameIndex) {
+                // The next seek position should start at a preceding sample block.
+                // By subtracting max. blocksize from the current seek position it
+                // is guaranteed that the targeted sample blocks of subsequent seek
+                // operations will differ.
+                DEBUG_ASSERT(0 < m_maxBlocksize);
+                seekFrameIndex -= m_maxBlocksize;
+                if (seekFrameIndex < getMinFrameIndex()) {
+                    seekFrameIndex = getMinFrameIndex();
+                }
+            } else {
+                // We have already reached the beginning of the file
+                // and cannot move the seek position backward any
+                // further!
+                break; // exit loop
             }
         }
+    } while (m_curFrameIndex != seekFrameIndex);
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+
+    if (frameIndex > m_curFrameIndex) {
+        // Adjust the current position
+        skipSampleFrames(frameIndex - m_curFrameIndex);
     }
 
-    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     return m_curFrameIndex;
 }
 
@@ -294,7 +304,7 @@ FLAC__StreamDecoderSeekStatus SoundSourceFLAC::flacSeek(FLAC__uint64 offset) {
     if (m_file.seek(offset)) {
         return FLAC__STREAM_DECODER_SEEK_STATUS_OK;
     } else {
-        qWarning() << "SSFLAC: An unrecoverable error occurred ("
+        qWarning() << "SoundSourceFLAC: An unrecoverable error occurred ("
                 << m_file.fileName() << ")";
         return FLAC__STREAM_DECODER_SEEK_STATUS_ERROR;
     }
@@ -461,10 +471,10 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         << bitsPerSample << " <> " << m_bitsPerSample;
             }
         }
-        m_minBlocksize = metadata->data.stream_info.min_blocksize;
         m_maxBlocksize = metadata->data.stream_info.max_blocksize;
-        m_minFramesize = metadata->data.stream_info.min_framesize;
-        m_maxFramesize = metadata->data.stream_info.max_framesize;
+        if (0 >= m_maxBlocksize) {
+            qWarning() << "Invalid max. blocksize" << m_maxBlocksize;
+        }
         const SINT sampleBufferCapacity =
                 m_maxBlocksize * getChannelCount();
         m_sampleBuffer.resetCapacity(sampleBufferCapacity);
@@ -494,7 +504,7 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
         error = "STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM";
         break;
     }
-    qWarning() << "SSFLAC got error" << error << "from libFLAC for file"
+    qWarning() << "FLAC decoding error" << error << "in file"
             << m_file.fileName();
     // not much else to do here... whatever function that initiated whatever
     // decoder method resulted in this error will return an error, and the caller
