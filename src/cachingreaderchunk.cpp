@@ -117,39 +117,53 @@ SINT CachingReaderChunk::readSampleFrames(
     const SINT frameIndex = frameForIndex(getIndex());
     const SINT maxFrameIndex = math_min(
             *pMaxReadableFrameIndex, pAudioSource->getMaxFrameIndex());
-    const SINT seekFrameIndex =
+    const SINT framesRemaining =
+            *pMaxReadableFrameIndex - frameIndex;
+    const SINT framesToRead =
+            math_min(kFrames, framesRemaining);
+
+    SINT seekFrameIndex =
             pAudioSource->seekSampleFrame(frameIndex);
-    if (seekFrameIndex != frameIndex) {
+    if (frameIndex != seekFrameIndex) {
         // Failed to seek to the requested index. The file might
         // be corrupt and decoding should be aborted.
         qWarning() << "Failed to seek chunk position:"
                 << "actual =" << seekFrameIndex
                 << ", expected =" << frameIndex
                 << ", maximum =" << maxFrameIndex;
-        if (seekFrameIndex <= frameIndex) {
+        if (frameIndex >= seekFrameIndex) {
+            // Simple strategy to compensate for seek inaccuracies in
+            // faulty files: Try to skip some samples up to the requested
+            // seek position. But only skip twice as many frames/samples
+            // as have been requested to avoid decoding great portions of
+            // the file for small read requests on seek errors.
+            const SINT framesToSkip = frameIndex - seekFrameIndex;
+            if (framesToSkip <= (2 * framesToRead)) {
+                seekFrameIndex += pAudioSource->skipSampleFrames(framesToSkip);
+            }
+        }
+        if (frameIndex != seekFrameIndex) {
             // Unexpected/premature end of file -> prevent further
             // seeks beyond the current seek position
             *pMaxReadableFrameIndex = math_min(seekFrameIndex, *pMaxReadableFrameIndex);
+            // Don't read any samples on a seek failure!
+            m_frameCount = 0;
+            return m_frameCount;
         }
-        // Don't read any sample on a seek failure
-        m_frameCount = 0;
-    } else {
-        const SINT framesRemaining =
-                *pMaxReadableFrameIndex - seekFrameIndex;
-        const SINT framesToRead =
-                math_min(kFrames, framesRemaining);
-        DEBUG_ASSERT(CachingReaderChunk::kChannels
-                == Mixxx::AudioSource::kChannelCountStereo);
-        m_frameCount = pAudioSource->readSampleFramesStereo(
-                framesToRead, m_sampleBuffer, kSamples);
-        if (m_frameCount < framesToRead) {
-            qWarning() << "Failed to read chunk samples:"
-                    << "actual =" << m_frameCount
-                    << ", expected =" << framesToRead;
-            // Adjust the max. readable frame index for future
-            // read requests to avoid repeated invalid reads.
-            *pMaxReadableFrameIndex = frameIndex + m_frameCount;
-        }
+    }
+
+    DEBUG_ASSERT(frameIndex == seekFrameIndex);
+    DEBUG_ASSERT(CachingReaderChunk::kChannels
+            == Mixxx::AudioSource::kChannelCountStereo);
+    m_frameCount = pAudioSource->readSampleFramesStereo(
+            framesToRead, m_sampleBuffer, kSamples);
+    if (m_frameCount < framesToRead) {
+        qWarning() << "Failed to read chunk samples:"
+                << "actual =" << m_frameCount
+                << ", expected =" << framesToRead;
+        // Adjust the max. readable frame index for future
+        // read requests to avoid repeated invalid reads.
+        *pMaxReadableFrameIndex = frameIndex + m_frameCount;
     }
 
     return m_frameCount;
