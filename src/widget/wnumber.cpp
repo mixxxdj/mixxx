@@ -31,17 +31,17 @@ WNumber::WNumber(QWidget* pParent)
 WNumber::~WNumber() {
 }
 
-void WNumber::setup(QDomNode node) {
-    WLabel::setup(node);
+void WNumber::setup(QDomNode node, const SkinContext& context) {
+    WLabel::setup(node, context);
 
     // Number of digits
     // TODO(rryan): This has been unused for a long time yet our skins specify
     // this value all over the place.
-    m_iNoDigits = selectNodeInt(node, "NumberOfDigits");
+    m_iNoDigits = context.selectInt(node, "NumberOfDigits");
 
     // Constant factor
-    if (!selectNode(node, "ConstFactor").isNull()) {
-        m_dConstFactor = selectNodeQString(node, "ConstFactor").toDouble();
+    if (context.hasNode(node, "ConstFactor")) {
+        m_dConstFactor = context.selectString(node, "ConstFactor").toDouble();
     }
 
     setValue(0.);

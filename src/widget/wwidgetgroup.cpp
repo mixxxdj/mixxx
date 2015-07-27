@@ -6,7 +6,6 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
-#include "xmlparse.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),
@@ -58,17 +57,17 @@ void WWidgetGroup::setLayoutAlignment(int alignment) {
     }
 }
 
-void WWidgetGroup::setup(QDomNode node) {
+void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
 
     // Set background pixmap if available
-    if (!WWidget::selectNode(node, "BackPath").isNull()) {
-        setPixmapBackground(WWidget::getPath(WWidget::selectNodeQString(node, "BackPath")));
+    if (context.hasNode(node, "BackPath")) {
+        setPixmapBackground(WWidget::getPath(context.selectString(node, "BackPath")));
     }
 
     QLayout* pLayout = NULL;
-    if (!XmlParse::selectNode(node, "Layout").isNull()) {
-        QString layout = XmlParse::selectNodeQString(node, "Layout");
+    if (context.hasNode(node, "Layout")) {
+        QString layout = context.selectString(node, "Layout");
         if (layout == "vertical") {
             pLayout = new QVBoxLayout();
             pLayout->setSpacing(0);
@@ -82,7 +81,7 @@ void WWidgetGroup::setup(QDomNode node) {
         }
     }
 
-    if (pLayout && !XmlParse::selectNode(node, "SizeConstraint").isNull()) {
+    if (pLayout && context.hasNode(node, "SizeConstraint")) {
         QMap<QString, QLayout::SizeConstraint> constraints;
         constraints["SetDefaultConstraint"] = QLayout::SetDefaultConstraint;
         constraints["SetFixedSize"] = QLayout::SetFixedSize;
@@ -91,7 +90,7 @@ void WWidgetGroup::setup(QDomNode node) {
         constraints["SetMinAndMaxSize"] = QLayout::SetMinAndMaxSize;
         constraints["SetNoConstraint"] = QLayout::SetNoConstraint;
 
-        QString sizeConstraintStr = XmlParse::selectNodeQString(node, "SizeConstraint");
+        QString sizeConstraintStr = context.selectString(node, "SizeConstraint");
         if (constraints.contains(sizeConstraintStr)) {
             pLayout->setSizeConstraint(constraints[sizeConstraintStr]);
         } else {

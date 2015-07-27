@@ -21,6 +21,7 @@
 #include <QLabel>
 
 #include "widget/wlabel.h"
+#include "skin/skincontext.h"
 
 class WNumber : public WLabel  {
     Q_OBJECT
@@ -28,7 +29,7 @@ class WNumber : public WLabel  {
     WNumber(QWidget* pParent=NULL);
     virtual ~WNumber();
 
-    virtual void setup(QDomNode node);
+    virtual void setup(QDomNode node, const SkinContext& context);
 
   public slots:
     void setValue(double dValue);

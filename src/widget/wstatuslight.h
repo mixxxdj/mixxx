@@ -29,6 +29,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
 class WStatusLight : public WWidget  {
    Q_OBJECT
@@ -36,7 +37,7 @@ class WStatusLight : public WWidget  {
     WStatusLight(QWidget *parent=0);
     virtual ~WStatusLight();
 
-    void setup(QDomNode node);
+    void setup(QDomNode node, const SkinContext& context);
 
   public slots:
     void setValue(double v);

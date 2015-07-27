@@ -30,6 +30,7 @@
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 #include "controlpushbutton.h"
+#include "skin/skincontext.h"
 
 class WPushButton : public WWidget {
     Q_OBJECT
@@ -46,7 +47,7 @@ class WPushButton : public WWidget {
         return m_bPressed;
     }
 
-    void setup(QDomNode node);
+    void setup(QDomNode node, const SkinContext& context);
 
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.

@@ -8,19 +8,21 @@
 #include <QTimer>
 
 #include "widget/wlabel.h"
+#include "skin/skincontext.h"
 
 class WTime: public WLabel {
     Q_OBJECT
   public:
     WTime(QWidget *parent=0);
     virtual ~WTime();
-    void setup(QDomNode node);
+
+    void setup(QDomNode node, const SkinContext& context);
 
   private slots:
     void refreshTime();
 
   private:
-    void setTimeFormat(QDomNode node);
+    void setTimeFormat(QDomNode node, const SkinContext& context);
 
     QTimer* m_pTimer;
     QString m_sTimeFormat;

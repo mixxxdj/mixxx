@@ -10,6 +10,7 @@
 #include "widget/knobeventhandler.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wimagestore.h"
+#include "skin/skincontext.h"
 
 class WKnobComposed : public WWidget {
     Q_OBJECT
@@ -17,7 +18,7 @@ class WKnobComposed : public WWidget {
     WKnobComposed(QWidget* pParent=NULL);
     virtual ~WKnobComposed();
 
-    void setup(QDomNode node);
+    void setup(QDomNode node, const SkinContext& context);
 
   protected:
     void wheelEvent(QWheelEvent *e);

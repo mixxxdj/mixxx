@@ -5,7 +5,7 @@
 #include "widget/wimagestore.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-
+#include "xmlparse.h"
 #include "skin/imgsource.h"
 #include "skin/imgloader.h"
 #include "skin/imgcolor.h"
@@ -27,7 +27,7 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
         }
 
         while (!sch.isNull() && !found) {
-            QString thisname = WWidget::selectNodeQString(sch, "Name");
+            QString thisname = XmlParse::selectNodeQString(sch, "Name");
             if (thisname == schname) {
                 found = true;
             } else {
@@ -71,9 +71,9 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
         } else if (name == "hueinv") {
             ret = new ImgHueInv(ret);
         } else if (name == "add") {
-            ret = new ImgAdd(ret, WWidget::selectNodeInt(f, "Amount"));
+            ret = new ImgAdd(ret, XmlParse::selectNodeInt(f, "Amount"));
         } else if (name == "scalewhite") {
-            ret = new ImgScaleWhite(ret, WWidget::selectNodeFloat(f, "Amount"));
+            ret = new ImgScaleWhite(ret, XmlParse::selectNodeFloat(f, "Amount"));
         } else if (name == "hsvtweak") {
             int hmin = 0;
             int hmax = 359;
@@ -88,20 +88,20 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
             int sconst = 0;
             int vconst = 0;
 
-            if (!f.namedItem("HMin").isNull()) { hmin = WWidget::selectNodeInt(f, "HMin"); }
-            if (!f.namedItem("HMax").isNull()) { hmax = WWidget::selectNodeInt(f, "HMax"); }
-            if (!f.namedItem("SMin").isNull()) { smin = WWidget::selectNodeInt(f, "SMin"); }
-            if (!f.namedItem("SMax").isNull()) { smax = WWidget::selectNodeInt(f, "SMax"); }
-            if (!f.namedItem("VMin").isNull()) { vmin = WWidget::selectNodeInt(f, "VMin"); }
-            if (!f.namedItem("VMax").isNull()) { vmax = WWidget::selectNodeInt(f, "VMax"); }
+            if (!f.namedItem("HMin").isNull()) { hmin = XmlParse::selectNodeInt(f, "HMin"); }
+            if (!f.namedItem("HMax").isNull()) { hmax = XmlParse::selectNodeInt(f, "HMax"); }
+            if (!f.namedItem("SMin").isNull()) { smin = XmlParse::selectNodeInt(f, "SMin"); }
+            if (!f.namedItem("SMax").isNull()) { smax = XmlParse::selectNodeInt(f, "SMax"); }
+            if (!f.namedItem("VMin").isNull()) { vmin = XmlParse::selectNodeInt(f, "VMin"); }
+            if (!f.namedItem("VMax").isNull()) { vmax = XmlParse::selectNodeInt(f, "VMax"); }
 
-            if (!f.namedItem("HConst").isNull()) { hconst = WWidget::selectNodeInt(f, "HConst"); }
-            if (!f.namedItem("SConst").isNull()) { sconst = WWidget::selectNodeInt(f, "SConst"); }
-            if (!f.namedItem("VConst").isNull()) { vconst = WWidget::selectNodeInt(f, "VConst"); }
+            if (!f.namedItem("HConst").isNull()) { hconst = XmlParse::selectNodeInt(f, "HConst"); }
+            if (!f.namedItem("SConst").isNull()) { sconst = XmlParse::selectNodeInt(f, "SConst"); }
+            if (!f.namedItem("VConst").isNull()) { vconst = XmlParse::selectNodeInt(f, "VConst"); }
 
-            if (!f.namedItem("HFact").isNull()) { hfact = WWidget::selectNodeFloat(f, "HFact"); }
-            if (!f.namedItem("SFact").isNull()) { sfact = WWidget::selectNodeFloat(f, "SFact"); }
-            if (!f.namedItem("VFact").isNull()) { vfact = WWidget::selectNodeFloat(f, "VFact"); }
+            if (!f.namedItem("HFact").isNull()) { hfact = XmlParse::selectNodeFloat(f, "HFact"); }
+            if (!f.namedItem("SFact").isNull()) { sfact = XmlParse::selectNodeFloat(f, "SFact"); }
+            if (!f.namedItem("VFact").isNull()) { vfact = XmlParse::selectNodeFloat(f, "VFact"); }
 
             ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
                                   sfact, sconst, vfact, vconst);

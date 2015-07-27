@@ -67,20 +67,20 @@ WOverview::~WOverview() {
     }
 }
 
-void WOverview::setup(QDomNode node) {
-    m_signalColors.setup(node);
+void WOverview::setup(QDomNode node, const SkinContext& context) {
+    m_signalColors.setup(node, context);
 
     m_qColorBackground = m_signalColors.getBgColor();
 
     // Clear the background pixmap, if it exists.
     m_backgroundPixmap = QPixmap();
-    m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
+    m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (m_backgroundPixmapPath != "") {
         m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);
-    const QString endOfTrackColorName = WWidget::selectNodeQString(node, "EndOfTrackColor");
+    const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
         m_endOfTrackColor.setNamedColor(endOfTrackColorName);
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
@@ -91,7 +91,7 @@ void WOverview::setup(QDomNode node) {
     setPalette(palette);
 
     //setup hotcues and cue and loop(s)
-    m_marks.setup(m_group, node, m_signalColors);
+    m_marks.setup(m_group, node, context, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
@@ -104,7 +104,7 @@ void WOverview::setup(QDomNode node) {
         if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(WaveformMarkRange());
             WaveformMarkRange& markRange = m_markRanges.back();
-            markRange.setup(m_group, child, m_signalColors);
+            markRange.setup(m_group, child, context, m_signalColors);
 
             connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
                      this, SLOT(onMarkRangeChange(double)));

@@ -42,19 +42,19 @@ WSliderComposed::~WSliderComposed() {
     unsetPixmaps();
 }
 
-void WSliderComposed::setup(QDomNode node) {
+void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     // Setup pixmaps
-    QString pathSlider = getPath(selectNodeQString(node, "Slider"));
-    QString pathHandle = getPath(selectNodeQString(node, "Handle"));
-    QString pathHorizontal = selectNodeQString(node, "Horizontal");
+    QString pathSlider = getPath(context.selectString(node, "Slider"));
+    QString pathHandle = getPath(context.selectString(node, "Handle"));
+    QString pathHorizontal = context.selectString(node, "Horizontal");
     bool h = false;
     if (pathHorizontal.contains("true",Qt::CaseInsensitive)) {
         h = true;
     }
     setPixmaps(h, pathSlider, pathHandle);
 
-    if (!selectNode(node, "EventWhileDrag").isNull()) {
-        if (selectNodeQString(node, "EventWhileDrag").contains("no")) {
+    if (context.hasNode(node, "EventWhileDrag")) {
+        if (context.selectString(node, "EventWhileDrag").contains("no")) {
             m_bEventWhileDrag = false;
         }
     }

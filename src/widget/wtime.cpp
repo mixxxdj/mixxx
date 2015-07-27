@@ -13,20 +13,20 @@ WTime::~WTime() {
     delete m_pTimer;
 }
 
-void WTime::setup(QDomNode node) {
-    WLabel::setup(node);
-    setTimeFormat(node);
+void WTime::setup(QDomNode node, const SkinContext& context) {
+    WLabel::setup(node, context);
+    setTimeFormat(node, context);
     m_pTimer->start(m_iInterval);
     connect(m_pTimer, SIGNAL(timeout()),
             this, SLOT(refreshTime()));
     refreshTime();
 }
 
-void WTime::setTimeFormat(QDomNode node) {
+void WTime::setTimeFormat(QDomNode node, const SkinContext& context) {
     // if a custom format is defined, all other formatting flags are ignored
-    if (selectNode(node, "CustomFormat").isNull()) {
+    if (!context.hasNode(node, "CustomFormat")) {
         // check if seconds should be shown
-        QString secondsFormat = selectNodeQString(node, "ShowSeconds");
+        QString secondsFormat = context.selectString(node, "ShowSeconds");
        if(secondsFormat == "true" || secondsFormat == "yes") {
            m_sTimeFormat = "h:mm:ss";
            m_iInterval = s_iSecondInterval;
@@ -35,7 +35,7 @@ void WTime::setTimeFormat(QDomNode node) {
            m_iInterval = s_iMinuteInterval;
        }
        // check if 24 hour format or 12 hour format is selected
-       QString clockFormat = selectNodeQString(node, "ClockFormat");
+       QString clockFormat = context.selectString(node, "ClockFormat");
        if (clockFormat == "24" || clockFormat == "24hrs") {
        } else if (clockFormat == "12" ||
                   clockFormat == "12hrs" ||
@@ -48,7 +48,7 @@ void WTime::setTimeFormat(QDomNode node) {
        }
     } else {
         // set the time format to the custom format
-        m_sTimeFormat = selectNodeQString(node, "CustomFormat");
+        m_sTimeFormat = context.selectString(node, "CustomFormat");
     }
 }
 

@@ -6,6 +6,7 @@
 #include <QColor>
 
 #include "configobject.h"
+#include "skin/skincontext.h"
 
 class ControlObjectThread;
 class QDomNode;
@@ -16,7 +17,8 @@ class WaveformMark {
     WaveformMark();
     ~WaveformMark();
     void setup(const QString& group, const QDomNode& node,
-            const WaveformSignalColors& signalColors);
+               const SkinContext& context,
+               const WaveformSignalColors& signalColors);
     void setKeyAndIndex(const ConfigKey& key, int i);
 
   private:

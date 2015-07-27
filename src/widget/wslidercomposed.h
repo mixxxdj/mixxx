@@ -27,6 +27,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+#include "skin/skincontext.h"
 
 /**
   * A widget for a slider composed of a background pixmap and a handle.
@@ -36,10 +37,11 @@
 
 class WSliderComposed : public WWidget  {
     Q_OBJECT
-public:
+  public:
     WSliderComposed(QWidget *parent=0);
-    ~WSliderComposed();
-    void setup(QDomNode node);
+    virtual ~WSliderComposed();
+
+    void setup(QDomNode node, const SkinContext& context);
     void setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);

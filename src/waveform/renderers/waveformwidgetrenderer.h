@@ -30,7 +30,7 @@ class WaveformWidgetRenderer {
     bool init();
     virtual bool onInit() {return true;}
 
-    void setup(const QDomNode& node);
+    void setup(const QDomNode& node, const SkinContext& context);
     void onPreRender(VSyncThread* vsyncThread);
     void draw(QPainter* painter, QPaintEvent* event);
 

@@ -6,7 +6,6 @@
 #include "waveformsignalcolors.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "xmlparse.h"
 #include "widget/wskincolor.h"
 
 WaveformMarkRange::WaveformMarkRange()
@@ -50,8 +49,9 @@ double WaveformMarkRange::end() {
 }
 
 void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
-        const WaveformSignalColors& signalColors) {
-    m_activeColor = XmlParse::selectNodeQString(node, "Color");
+                              const SkinContext& context,
+                              const WaveformSignalColors& signalColors) {
+    m_activeColor = context.selectString(node, "Color");
     if (m_activeColor == "") {
         //vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
@@ -61,7 +61,7 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
         m_activeColor = WSkinColor::getCorrectColor(m_activeColor);
     }
 
-    m_disabledColor = XmlParse::selectNodeQString(node, "DisabledColor");
+    m_disabledColor = context.selectString(node, "DisabledColor");
     if (m_disabledColor == "") {
         //vRince kind of legacy fallback ...
         // Read the text color, otherwise use the parent's SignalColor.
@@ -70,11 +70,11 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
     }
 
     m_markStartPointControl = new ControlObjectThread(
-            group, XmlParse::selectNodeQString(node, "StartControl"));
+            group, context.selectString(node, "StartControl"));
     m_markEndPointControl = new ControlObjectThread(
-            group, XmlParse::selectNodeQString(node, "EndControl"));
+            group, context.selectString(node, "EndControl"));
     m_markEnabledControl = new ControlObjectThread(
-            group, XmlParse::selectNodeQString(node, "EnabledControl"));
+            group, context.selectString(node, "EnabledControl"));
 }
 
 void WaveformMarkRange::generateImage(int weidth, int height) {
