@@ -13,6 +13,7 @@
 #include "soundsourceproxy.h"
 #include "sampleutil.h"
 #include "util/compatibility.h"
+#include "util/event.h"
 
 // There's a little math to this, but not much: 48khz stereo audio is 384kb/sec
 // if using float samples. We want the chunk size to be a power of 2 so it's
@@ -32,6 +33,7 @@ CachingReaderWorker::CachingReaderWorker(const char* group,
         FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
         FIFO<ReaderStatusUpdate>* pReaderStatusFIFO)
         : m_pGroup(group),
+          m_tag(QString("CachingReaderWorker %1").arg(m_pGroup)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
           m_pReaderStatusFIFO(pReaderStatusFIFO),
           m_pCurrentSoundSource(NULL),
@@ -109,6 +111,7 @@ void CachingReaderWorker::run() {
     ChunkReadRequest request;
     ReaderStatusUpdate status;
 
+    Event::start(m_tag);
     while (!deref(m_stop)) {
         if (m_newTrack) {
             m_newTrackMutex.lock();
@@ -121,7 +124,9 @@ void CachingReaderWorker::run() {
             processChunkReadRequest(&request, &status);
             m_pReaderStatusFIFO->writeBlocking(&status, 1);
         } else {
+            Event::end(m_tag);
             m_semaRun.acquire();
+            Event::start(m_tag);
         }
     }
 }

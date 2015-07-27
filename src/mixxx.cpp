@@ -61,6 +61,7 @@
 #include "util/debug.h"
 #include "util/statsmanager.h"
 #include "util/timer.h"
+#include "util/time.h"
 #include "util/version.h"
 #include "util/compatibility.h"
 #include "playerinfo.h"
@@ -256,6 +257,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     logBuildDetails();
     ScopedTimer t("MixxxApp::MixxxApp");
     m_runtime_timer.start();
+    Time::start();
     initializeWindow();
 
     // Only record stats in developer mode.
@@ -276,8 +278,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
-    bool bFirstRun = upgrader.isFirstRun();
-    bool bUpgraded = upgrader.isUpgraded();
+    ControlDoublePrivate::setUserConfig(m_pConfig);
 
     QString resourcePath = m_pConfig->getResourcePath();
 
@@ -483,10 +484,11 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
+    const QList<QString>& musicFiles = args.getMusicFiles();
     for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-            && i < args.getMusicFiles().count(); ++i) {
-        if ( SoundSourceProxy::isFilenameSupported(args.getMusicFiles().at(i))) {
-            m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
+                 && i < musicFiles.count(); ++i) {
+        if (SoundSourceProxy::isFilenameSupported(musicFiles.at(i))) {
+            m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
 
@@ -661,6 +663,7 @@ MixxxApp::~MixxxApp() {
     delete m_pTrackCollection;
 
     qDebug() << "delete config " << qTime.elapsed();
+    ControlDoublePrivate::setUserConfig(NULL);
     delete m_pConfig;
 
     PlayerInfo::destroy();

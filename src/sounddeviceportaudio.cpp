@@ -32,6 +32,7 @@
 #include "controlobject.h"
 #include "visualplayposition.h"
 #include "util/timer.h"
+#include "util/trace.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
@@ -279,7 +280,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
                                           float *output, float *in,
                                           const PaStreamCallbackTimeInfo *timeInfo,
                                           PaStreamCallbackFlags statusFlags) {
-    ScopedTimer t("SoundDevicePortAudio::callbackProcess " + getInternalName());
+    Trace trace("SoundDevicePortAudio::callbackProcess " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
     // Turn on TimeCritical priority for the callback thread. If we are running

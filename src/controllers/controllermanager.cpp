@@ -7,7 +7,7 @@
 
 #include <QSet>
 
-#include "util/sleepableqthread.h"
+#include "util/trace.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -270,6 +270,7 @@ void ControllerManager::stopPolling() {
 }
 
 void ControllerManager::pollDevices() {
+    Trace tracer("ControllerManager::pollDevices");
     bool eventsProcessed(false);
     // Continue to poll while any device returned data.
     do {

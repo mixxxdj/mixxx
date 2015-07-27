@@ -10,6 +10,7 @@
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
 #include "mixxxutils.cpp"
+#include "util/trace.h"
 
 
 BrowseThread* BrowseThread::m_instance = NULL;
@@ -77,9 +78,11 @@ void BrowseThread::executePopulation(QString& path, BrowseTableModel* client) {
 
 void BrowseThread::run() {
     m_mutex.lock();
-    while(!m_bStopThread) {
+
+    while (!m_bStopThread) {
         //Wait until the user has selected a folder
         m_locationUpdated.wait(&m_mutex);
+        Trace trace("BrowseThread");
 
         //Terminate thread if Mixxx closes
         if(m_bStopThread) {

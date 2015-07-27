@@ -2,42 +2,42 @@
 #define TRACE_H
 
 #include <QString>
-#include <QTime>
+#include <QtDebug>
 
 #include "util/cmdlineargs.h"
 #include "util/stat.h"
+#include "util/event.h"
+#include "util/performancetimer.h"
 
 class Trace {
   public:
-    explicit Trace(const QString& tag, bool stdout=true, bool time=false)
+    explicit Trace(const QString& tag, bool stdout=false, bool time=true)
             : m_tag(tag),
               m_stdout(stdout),
               m_time(time) {
+        Event::start(m_tag);
         if (m_time) {
             m_timer.start();
         }
         if (m_stdout) {
             qDebug() << "START [" << m_tag << "]";
         }
-        Stat::track(m_tag + "_enter", Stat::TRACE_START, Stat::COUNT, 0);
-
     }
     virtual ~Trace() {
-        int elapsed = m_time ? m_timer.elapsed() : 0;
+        Event::end(m_tag);
+        qint64 elapsed = m_time ? m_timer.elapsed() : 0;
         if (m_stdout) {
             if (m_time) {
                 qDebug() << "END [" << m_tag << "]"
-                         << QString("elapsed: %1ms").arg(elapsed);
+                         << QString("elapsed: %1ns").arg(elapsed);
             } else {
                 qDebug() << "END [" << m_tag << "]";
             }
         }
-
-        Stat::track(m_tag + "_exit", Stat::TRACE_FINISH, Stat::COUNT, 0);
         if (m_time) {
             Stat::track(
                 m_tag + "_duration",
-                Stat::DURATION_MSEC,
+                Stat::DURATION_NANOSEC,
                 Stat::COUNT | Stat::AVERAGE | Stat::SAMPLE_VARIANCE | Stat::MAX | Stat::MIN,
                 elapsed);
         }
@@ -46,7 +46,7 @@ class Trace {
   private:
     const QString m_tag;
     const bool m_stdout, m_time;
-    QTime m_timer;
+    PerformanceTimer m_timer;
 
 };
 

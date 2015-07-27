@@ -25,6 +25,7 @@
 #include "libraryscannerdlg.h"
 #include "library/queryutil.h"
 #include "trackinfoobject.h"
+#include "util/trace.h"
 
 #define MAX_CHUNK_SIZE 50
 
@@ -128,6 +129,7 @@ LibraryScanner::~LibraryScanner() {
 }
 
 void LibraryScanner::run() {
+    Trace trace("LibraryScanner");
     unsigned static id = 0; // the id of this thread, for debugging purposes
             //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));

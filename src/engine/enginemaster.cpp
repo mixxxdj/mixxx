@@ -35,6 +35,7 @@
 #include "engine/sync/enginesync.h"
 #include "sampleutil.h"
 #include "util/timer.h"
+#include "util/trace.h"
 #include "playermanager.h"
 #include "engine/channelmixer.h"
 
@@ -284,7 +285,7 @@ void EngineMaster::process(const int iBufferSize) {
         QThread::currentThread()->setObjectName("Engine");
         haveSetName = true;
     }
-    ScopedTimer t("EngineMaster::process");
+    Trace t("EngineMaster::process");
 
     int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
     // Update internal master sync.
@@ -296,7 +297,6 @@ void EngineMaster::process(const int iBufferSize) {
     unsigned int headphoneOutput = 0;
 
     // Prepare each channel for output
-    Timer timer("EngineMaster::process channels");
     processChannels(busChannelConnectionFlags, &headphoneOutput, iBufferSize);
 
     // Compute headphone mix
@@ -306,8 +306,6 @@ void EngineMaster::process(const int iBufferSize) {
     CSAMPLE cmaster_gain = 0.5*(cf_val+1.);
     // qDebug() << "head val " << cf_val << ", head " << chead_gain
     //          << ", master " << cmaster_gain;
-
-    timer.elapsed(true);
 
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);
