@@ -25,6 +25,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     SyncMode getSyncMode() const;
     void notifySyncModeChanged(SyncMode mode);
+    void requestSyncPhase();
     bool isPlaying() const;
 
     double getBeatDistance() const;
@@ -104,6 +105,7 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlObjectSlave> m_pVCEnabled;
     QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
     QScopedPointer<ControlObjectSlave> m_pEjectButton;
+    QScopedPointer<ControlObjectSlave> m_pSyncPhaseButton;
 };
 
 

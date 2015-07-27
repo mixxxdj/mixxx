@@ -113,6 +113,7 @@ class EngineBuffer : public EngineObject {
     void setEngineMaster(EngineMaster*);
 
     void queueNewPlaypos(double newpos);
+    void requestSyncPhase();
 
     // Reset buffer playpos and set file playpos. This must only be called
     // while holding the pause mutex
@@ -294,6 +295,7 @@ class EngineBuffer : public EngineObject {
     bool m_bScalerOverride;
 
     QAtomicInt m_bSeekQueued;
+    QAtomicInt m_bSyncPhaseQueued;
     // TODO(XXX) make a macro or something.
 #if defined(__GNUC__)
     double m_dQueuedPosition __attribute__ ((aligned(sizeof(double))));

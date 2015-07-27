@@ -66,7 +66,7 @@ void VinylControlControl::trackUnloaded(TrackPointer pTrack) {
 }
 
 void VinylControlControl::slotControlVinylSeek(double change) {
-    if(isnan(change) || change > 1.14 || change < -1.14) {
+    if (isnan(change) || change > 1.14 || change < -0.14) {
         // This seek is ridiculous.
         return;
     }
