@@ -9,7 +9,7 @@
 LaunchImage::LaunchImage(QWidget* pParent)
         : QWidget(pParent) {
     setStyleSheet("background-color: #202020;");
-    QPixmap pic(":/images/mixxx-icon-symbolic.png");
+    QPixmap pic(":/images/mixxx-icon-logo-symbolic.png");
     QLabel *label = new QLabel(this);
     label->setPixmap(pic);
 
