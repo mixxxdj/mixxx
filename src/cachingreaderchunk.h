@@ -40,6 +40,7 @@ public:
         return samples / kChannels;
     }
 
+    CachingReaderChunkForWorker(const CachingReaderChunkForWorker&) = delete;
     virtual ~CachingReaderChunkForWorker();
 
     SINT getIndex() const {
