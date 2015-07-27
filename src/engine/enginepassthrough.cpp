@@ -20,6 +20,11 @@ EnginePassthrough::EnginePassthrough(const char* pGroup)
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
+
+    // Default passthrough to enabled on the master and disabled on PFL. User
+    // can over-ride by setting the "pfl" or "master" controls.
+    setMaster(true);
+    setPFL(false);
 }
 
 EnginePassthrough::~EnginePassthrough() {
@@ -29,17 +34,9 @@ EnginePassthrough::~EnginePassthrough() {
     delete m_pPassing;
 }
 
-bool EnginePassthrough::isActive() {
+bool EnginePassthrough::isActive() const {
     bool enabled = m_pEnabled->get() > 0.0;
     return enabled && !m_sampleBuffer.isEmpty();
-}
-
-bool EnginePassthrough::isPFL() {
-    return true;
-}
-
-bool EnginePassthrough::isMaster() {
-    return true;
 }
 
 void EnginePassthrough::onInputConnected(AudioInput input) {
@@ -49,7 +46,7 @@ void EnginePassthrough::onInputConnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(1.0f);
+    m_pEnabled->set(1.0);
 }
 
 void EnginePassthrough::onInputDisconnected(AudioInput input) {
@@ -59,18 +56,22 @@ void EnginePassthrough::onInputDisconnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pEnabled->set(0.0f);
+    m_pEnabled->set(0.0);
 }
 
 void EnginePassthrough::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                       unsigned int nFrames) {
+    if (m_pPassing->get() <= 0.0) {
+        return;
+    }
+
     if (input.getType() != AudioPath::EXTPASSTHROUGH) {
         // This is an error!
         qDebug() << "WARNING: EnginePassthrough receieved an AudioInput for a non-passthrough type!";
         return;
     }
 
-    const unsigned int iChannels = AudioInput::channelsNeededForType(input.getType());
+    const unsigned int iChannels = input.getChannelGroup().getChannelCount();
 
     // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
@@ -102,7 +103,7 @@ void EnginePassthrough::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
     if (pWriteBuffer != NULL) {
         // TODO(rryan) do we need to verify the input is the one we asked for?
         // Oh well.
-        unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer,
+        unsigned int samplesWritten = m_sampleBuffer.write(pWriteBuffer,
                                                            samplesToWrite);
         if (samplesWritten < samplesToWrite) {
             // Buffer overflow. We aren't processing samples fast enough. This
@@ -118,7 +119,7 @@ void EnginePassthrough::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int 
 
     // If passthrough is enabled, then read into the output buffer. Otherwise,
     // skip the appropriate number of samples to throw them away.
-    if (m_pPassing->get() > 0.0f) {
+    if (m_pPassing->get() > 0.0) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
         if (samplesRead < iBufferSize) {
             // Buffer underflow. There aren't getting samples fast enough. This

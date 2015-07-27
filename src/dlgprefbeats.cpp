@@ -18,7 +18,14 @@ using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
         : DlgPreferencePage(parent),
-          m_pconfig(_config) {
+          m_pconfig(_config),
+          m_minBpm(0),
+          m_maxBpm(0),
+          m_banalyserEnabled(false),
+          m_bfixedtempoEnabled(false),
+          m_boffsetEnabled(false),
+          m_FastAnalysisEnabled(false),
+          m_bReanalyze(false) {
     setupUi(this);
 
     populate();

@@ -39,7 +39,7 @@ BeatGrid::BeatGrid(TrackInfoObject* pTrack, const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),
           m_iSampleRate(pTrack->getSampleRate()),
-          m_dBeatLength(0.0f) {
+          m_dBeatLength(0.0) {
     qDebug() << "New BeatGrid";
     if (pByteArray != NULL) {
         readByteArray(pByteArray);

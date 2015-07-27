@@ -93,6 +93,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pSlipEnabled;
 
     bool m_bLoopingEnabled;
+    bool m_bLoopRollActive;
     int m_iLoopEndSample;
     int m_iLoopStartSample;
     int m_iCurrentSample;

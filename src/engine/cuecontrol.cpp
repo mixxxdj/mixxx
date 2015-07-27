@@ -192,7 +192,7 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
     if (loadCue != NULL) {
         m_pCuePoint->set(loadCue->getPosition());
     } else {
-        m_pCuePoint->set(0.0f);
+        m_pCuePoint->set(0.0);
     }
 
     int cueRecall = getConfig()->getValueString(
@@ -218,7 +218,7 @@ void CueControl::trackUnloaded(TrackPointer pTrack) {
     // Store the cue point in a load cue.
     double cuePoint = m_pCuePoint->get();
 
-    if (cuePoint != -1 && cuePoint != 0.0f) {
+    if (cuePoint != -1 && cuePoint != 0.0) {
         Cue* loadCue = NULL;
         const QList<Cue*>& cuePoints = pTrack->getCuePoints();
         QListIterator<Cue*> it(cuePoints);
@@ -415,7 +415,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
             if (pCue->getPosition() == -1) {
                 hotcueSet(pControl, v);
             } else {
-                if (!m_bPreviewingHotcue && m_pPlayButton->get() == 1.0f) {
+                if (!m_bPreviewingHotcue && m_pPlayButton->get() == 1.0) {
                     hotcueGoto(pControl, v);
                 } else {
                     hotcueActivatePreview(pControl, v);
@@ -648,7 +648,7 @@ void CueControl::cueSimple(double v) {
     QMutexLocker lock(&m_mutex);
     // Simple cueing is if the player is not playing, set the cue point --
     // otherwise seek to the cue point.
-    if (m_pPlayButton->get() == 0.0f) {
+    if (m_pPlayButton->get() == 0.0) {
         return cueSet(v);
     }
 
@@ -683,7 +683,7 @@ void CueControl::cueCDJ(double v) {
 
             seekAbs(cuePoint);
         } else {
-            if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
+            if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0) {
                 m_pPlayButton->set(1.0);
                 m_bPreviewing = true;
             } else {
@@ -735,7 +735,7 @@ bool CueControl::isCuePreviewing() {
 
 void CueControl::cueDefault(double v) {
     // Decide which cue implementation to call based on the user preference
-    if (m_pCueMode->get() == 0.0f) {
+    if (m_pCueMode->get() == 0.0) {
         cueCDJ(v);
     } else {
         cueSimple(v);

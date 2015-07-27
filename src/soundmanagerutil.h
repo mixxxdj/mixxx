@@ -76,7 +76,15 @@ public:
     static AudioPathType getTypeFromString(QString string);
     static bool isIndexed(AudioPathType type);
     static AudioPathType getTypeFromInt(int typeInt);
-    static unsigned char channelsNeededForType(AudioPathType type);
+
+    // Returns the minimum number of channels needed on a sound device for an
+    // AudioPathType.
+    static unsigned char minChannelsForType(AudioPathType type);
+
+    // Returns the maximum number of channels needed on a sound device for an
+    // AudioPathType.
+    static unsigned char maxChannelsForType(AudioPathType type);
+
 protected:
     virtual void setType(AudioPathType type) = 0;
     AudioPathType m_type;
@@ -93,6 +101,7 @@ protected:
 class AudioOutput : public AudioPath {
   public:
     AudioOutput(AudioPathType type = INVALID, unsigned char channelBase = 0,
+                unsigned char channels = 0,
                 unsigned char index = 0);
     virtual ~AudioOutput();
     QDomElement toXML(QDomElement *element) const;
@@ -124,7 +133,7 @@ class AudioOutputBuffer : public AudioOutput {
 class AudioInput : public AudioPath {
   public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
-               unsigned char index = 0);
+               unsigned char channels = 0, unsigned char index = 0);
     virtual ~AudioInput();
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);

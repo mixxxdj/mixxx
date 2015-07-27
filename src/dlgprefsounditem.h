@@ -52,7 +52,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
   private:
     SoundDevice* getDevice() const; // if this returns NULL, we don't have a valid AudioPath
     void setDevice(const QString &deviceName);
-    void setChannel(unsigned int channel);
+    void setChannel(unsigned int channelBase, unsigned int channels);
     int hasSufficientChannels(const SoundDevice *device) const;
 
     AudioPathType m_type;
@@ -60,7 +60,9 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     QList<SoundDevice*> m_devices;
     bool m_isInput;
     QString m_savedDevice;
-    unsigned int m_savedChannel;
+    // Because QVariant supports QPoint natively we use a QPoint to store the
+    // channel info. x is the channel base and y is the channel count.
+    QPoint m_savedChannel;
 };
 
 #endif

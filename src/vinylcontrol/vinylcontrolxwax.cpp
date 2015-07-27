@@ -63,6 +63,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
           m_iPitchRingSize(0),
           m_iPitchRingPos(0),
           m_iPitchRingFilled(0),
+          m_dDisplayPitch(0.0),
           m_pSteadySubtle(new SteadyPitch(0.12)),
           m_pSteadyGross(new SteadyPitch(0.5)),
           m_bCDControl(false),
@@ -115,11 +116,11 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
         tc_def = timecoder_find_definition(timecode);
     }
 
-    double speed = 1.0f;
+    double speed = 1.0;
     double rpm = 100.0 / 3.0;
     if (strVinylSpeed == MIXXX_VINYL_SPEED_45) {
         rpm = 45.0;
-        speed = 1.35f;
+        speed = 1.35;
     }
 
     double latency = ControlObject::getControl(
@@ -170,7 +171,7 @@ VinylControlXwax::~VinylControlXwax() {
     // VinylControlProcessor so we are probably leaking the LUTs.
     s_bLUTInitialized = false;
 
-    controlScratch->slotSet(0.0f);
+    controlScratch->slotSet(0.0);
 }
 
 //static
@@ -333,7 +334,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     if (!m_bAtRecordEnd && reportedPlayButton) {
         if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                (filePosition + m_iLeadInTime) * 1000.0f > m_uiSafeZone &&
+                (filePosition + m_iLeadInTime) * 1000.0 > m_uiSafeZone &&
                 !m_bForceResync) {
             // corner case: we are waiting for resync so don't enable just yet
             enableRecordEndMode();
@@ -361,8 +362,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
         if (m_bAtRecordEnd) {
             //ok, it's still valid, blink
-            if ((reportedPlayButton && (int)(filePosition * 2.0f) % 2) ||
-                (!reportedPlayButton && (int)(m_iPosition / 500.0f) % 2))
+            if ((reportedPlayButton && (int)(filePosition * 2.0) % 2) ||
+                (!reportedPlayButton && (int)(m_iPosition / 500.0) % 2))
                 vinylStatus->slotSet(VINYL_STATUS_WARNING);
             else
                 vinylStatus->slotSet(VINYL_STATUS_DISABLED);
@@ -385,8 +386,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                         qDebug() << "position greater than safe, select mode" << m_iPosition << m_uiSafeZone;
                         m_bTrackSelectMode = true;
                         togglePlayButton(false);
-                        resetSteadyPitch(0.0f, 0.0f);
-                        controlScratch->slotSet(0.0f);
+                        resetSteadyPitch(0.0, 0.0);
+                        controlScratch->slotSet(0.0);
                     }
                     doTrackSelection(true, dVinylPitch, m_iPosition);
                 }
@@ -431,7 +432,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         //or 1 (plays back at that rate)
 
         double newScratch = reportedPlayButton ? rateDir->get() *
-                (rateSlider->get() * rateRange->get()) + 1.0f : 0.0;
+                (rateSlider->get() * rateRange->get()) + 1.0 : 0.0;
         controlScratch->slotSet(newScratch);
 
         //is there any reason we'd need to do anything else?
@@ -469,32 +470,32 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                     resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 }
                 m_bForceResync = false;
-            } else if (fabs(m_dVinylPosition - filePosition) > 0.1f &&
-                       m_dVinylPosition < -2.0f) {
+            } else if (fabs(m_dVinylPosition - filePosition) > 0.1 &&
+                       m_dVinylPosition < -2.0) {
                 //At first I thought it was a bug to resync to leadin in relative mode,
                 //but after using it that way it's actually pretty convenient.
                 //qDebug() << "Vinyl leadin";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 if (uiUpdateTime(filePosition))
-                    rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch) - 1.0f) / rateRange->get());
+                    rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch) - 1.0) / rateRange->get());
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                       (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0f)) {
+                       (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
                 //If the position from the timecode is more than a few seconds off, resync the position.
                 //qDebug() << "resync position (>15.0 sec)";
                 //qDebug() << m_dVinylPosition << m_dVinylPositionOld << m_dVinylPosition - m_dVinylPositionOld;
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bCDControl &&
-                       fabs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1f) {
+                       fabs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1) {
                 //qDebug() << "CDJ resync position (>0.1 sec)";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
             } else if (playPos->get() >= 1.0 && dVinylPitch > 0) {
                 //end of track, force stop
                 togglePlayButton(false);
-                resetSteadyPitch(0.0f, 0.0f);
-                controlScratch->slotSet(0.0f);
+                resetSteadyPitch(0.0, 0.0);
+                controlScratch->slotSet(0.0);
                 m_iPitchRingPos = 0;
                 m_iPitchRingFilled = 0;
                 return;
@@ -520,8 +521,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             if (playPos->get() >= 1.0 && dVinylPitch > 0) {
                 //end of track, force stop
                 togglePlayButton(false);
-                resetSteadyPitch(0.0f, 0.0f);
-                controlScratch->slotSet(0.0f);
+                resetSteadyPitch(0.0, 0.0);
+                controlScratch->slotSet(0.0);
                 m_iPitchRingPos = 0;
                 m_iPitchRingFilled = 0;
                 return;
@@ -529,7 +530,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
             if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                 fabs(dVinylPitch) < 0.05 &&
-                fabs(m_dDriftAmt) >= 0.3f) {
+                fabs(m_dDriftAmt) >= 0.3) {
                 //qDebug() << "slow, out of sync, syncing position";
                 syncPosition();
             }
@@ -558,23 +559,41 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         }
 
         //only smooth when we have good position (no smoothing for scratching)
-        double averagePitch = 0.0f;
+        double averagePitch = 0.0;
         if (m_iPosition != -1 && reportedPlayButton) {
             for (int i = 0; i < m_iPitchRingFilled; ++i) {
                 averagePitch += m_pPitchRing[i];
             }
             averagePitch /= m_iPitchRingFilled;
             // Round out some of the noise
-            averagePitch = round(averagePitch * 10000.0f);
-            averagePitch /= 10000.0f;
+            averagePitch = round(averagePitch * 10000.0);
+            averagePitch /= 10000.0;
         } else {
             averagePitch = dVinylPitch;
         }
 
         controlScratch->slotSet(averagePitch + dDriftControl);
         if (m_iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition)) {
-            rateSlider->slotSet(rateDir->get() *
-                                (fabs(averagePitch + dDriftControl) - 1.0f) / rateRange->get());
+            double true_pitch = averagePitch + dDriftControl;
+            double pitch_difference = true_pitch - m_dDisplayPitch;
+
+            // The true pitch can show a misleading amount of variance --
+            // differences of .1% or less can show up as 1 or 2 bpm changes.
+            // Therefore we react slowly to bpm changes to show a more steady
+            // number to the user.
+            if (fabs(pitch_difference) > 0.5) {
+                // For large changes in pitch (start/stop, usually), immediately
+                // update the display.
+                m_dDisplayPitch = true_pitch;
+            } else if (fabs(pitch_difference) > 0.005) {
+                // For medium changes in pitch, take 4 callback loops to
+                // converge on the correct amount.
+                m_dDisplayPitch += pitch_difference * .25;
+            } else {
+                // For extremely small changes, converge very slowly.
+                m_dDisplayPitch += pitch_difference * .01;
+            }
+            rateSlider->slotSet(rateDir->get() * (m_dDisplayPitch - 1.0) / rateRange->get());
             m_dUiUpdateTime = filePosition;
         }
 
@@ -588,10 +607,10 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         //if it hasn't been long,
         //let the track play a wee bit more before deciding we've stopped
 
-        rateSlider->slotSet(0.0f);
+        rateSlider->slotSet(0.0);
 
         if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                fabs(m_dVinylPosition - filePosition) >= 0.1f) {
+                fabs(m_dVinylPosition - filePosition) >= 0.1) {
             //qDebug() << "stopped, out of sync, syncing position";
             syncPosition();
         }
@@ -600,8 +619,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                filePosition == m_dOldFilePos) {
             //We are not playing any more
             togglePlayButton(false);
-            resetSteadyPitch(0.0f, 0.0f);
-            controlScratch->slotSet(0.0f);
+            resetSteadyPitch(0.0, 0.0);
+            controlScratch->slotSet(0.0);
             //resetSteadyPitch(dVinylPitch, filePosition);
             // Notify the UI that the timecode quality is garbage/missing.
             m_fTimecodeQuality = 0.0f;
@@ -628,7 +647,7 @@ void VinylControlXwax::enableConstantMode() {
     mode->slotSet((double)m_iVCMode);
     togglePlayButton(true);
     double rate = controlScratch->get();
-    rateSlider->slotSet(rateDir->get() * (fabs(rate) - 1.0f) / rateRange->get());
+    rateSlider->slotSet(rateDir->get() * (fabs(rate) - 1.0) / rateRange->get());
     controlScratch->slotSet(rate);
 }
 
@@ -637,7 +656,7 @@ void VinylControlXwax::enableConstantMode(double rate) {
     m_iVCMode = MIXXX_VCMODE_CONSTANT;
     mode->slotSet((double)m_iVCMode);
     togglePlayButton(true);
-    rateSlider->slotSet(rateDir->get() * (fabs(rate) - 1.0f) / rateRange->get());
+    rateSlider->slotSet(rateDir->get() * (fabs(rate) - 1.0) / rateRange->get());
     controlScratch->slotSet(rate);
 }
 
@@ -739,9 +758,9 @@ bool VinylControlXwax::checkEnabled(bool was, bool is) {
         //the track will keep playing at the previous rate.
         //This allows for single-deck control, dj handoffs, etc.
 
-        togglePlayButton(playButton->get() || fabs(controlScratch->get()) > 0.05f);
-        controlScratch->slotSet(rateDir->get() * (rateSlider->get() * rateRange->get()) + 1.0f);
-        resetSteadyPitch(0.0f, 0.0f);
+        togglePlayButton(playButton->get() || fabs(controlScratch->get()) > 0.05);
+        controlScratch->slotSet(rateDir->get() * (rateSlider->get() * rateRange->get()) + 1.0);
+        resetSteadyPitch(0.0, 0.0);
         m_bForceResync = true;
         if (!was)
             m_dOldFilePos = 0.0;

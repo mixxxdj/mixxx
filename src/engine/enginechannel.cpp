@@ -53,11 +53,19 @@ const QString& EngineChannel::getGroup() const {
     return m_group;
 }
 
-bool EngineChannel::isPFL() {
+void EngineChannel::setPFL(bool enabled) {
+    m_pPFL->set(enabled ? 1.0 : 0.0);
+}
+
+bool EngineChannel::isPFL() const {
     return m_pPFL->get() > 0.0;
 }
 
-bool EngineChannel::isMaster() {
+void EngineChannel::setMaster(bool enabled) {
+    m_pMaster->set(enabled ? 1.0 : 0.0);
+}
+
+bool EngineChannel::isMaster() const {
     return m_pMaster->get() > 0.0;
 }
 

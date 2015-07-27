@@ -19,6 +19,7 @@
 #include "util.h"
 
 class SearchQueryParser;
+class QueryNode;
 class TrackCollection;
 class TrackCollectionPrivate;
 
@@ -77,10 +78,10 @@ class BaseTrackCache : public QObject {
     void updateTrackInIndex(int trackId);
     void updateTracksInIndex(QSet<int> trackIds);
     void getTrackValueForColumn(TrackPointer pTrack, int column,
-                                    QVariant& trackValue) const;
+                                QVariant& trackValue) const;
 
-    QString filterClause(QString query, QString extraFilter,
-                         QStringList idStrings) const;
+    QueryNode* parseQuery(QString query, QString extraFilter,
+                          QStringList idStrings) const;
     QString orderByClause(int sortColumn, Qt::SortOrder sortOrder,
                           TrackCollectionPrivate* pTrackCollectionPrivate) const;
     int findSortInsertionPoint(TrackPointer pTrack,
@@ -115,14 +116,9 @@ class BaseTrackCache : public QObject {
     bool m_bIndexBuilt;
     bool m_bIsCaching;
     QHash<int, QVector<QVariant> > m_trackInfo;
+    QMutex* m_pTrackInfoMutex;
     TrackCollection* m_pTrackCollection;
     SearchQueryParser* m_pQueryParser;
-    
-    QStringList m_numericFilters;
-    QRegExp m_operatorMatcher;
-    QRegExp m_numericFilterMatcher;
-    QRegExp m_stringFilterMatcher;
-    QMutex* m_pTrackInfoMutex;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };

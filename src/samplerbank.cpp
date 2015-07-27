@@ -24,7 +24,7 @@ SamplerBank::~SamplerBank() {
 }
 
 void SamplerBank::slotSaveSamplerBank(double v) {
-    if (v == 0.0f)
+    if (v == 0.0)
         return;
 
     QString s = QFileDialog::getSaveFileName(NULL, tr("Save Sampler Bank"));
@@ -63,7 +63,7 @@ void SamplerBank::slotSaveSamplerBank(double v) {
 }
 
 void SamplerBank::slotLoadSamplerBank(double v) {
-    if (v == 0.0f)
+    if (v == 0.0)
         return;
 
     QString s = QFileDialog::getOpenFileName(NULL, tr("Load Sampler Bank"));

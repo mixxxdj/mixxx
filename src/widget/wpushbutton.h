@@ -61,6 +61,7 @@ class WPushButton : public WWidget {
     virtual void mousePressEvent(QMouseEvent *e);
     virtual void mouseReleaseEvent(QMouseEvent *e);
     virtual void focusOutEvent(QFocusEvent* e);
+    void fillDebugTooltip(QStringList* debug);
 
   private:
     // Associates a pixmap of a given state of the button with the widget

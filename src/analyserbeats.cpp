@@ -295,7 +295,7 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 
     // If the user prefers to replace old beatgrids with newly generated ones or
     // the old beatgrid has 0-bpm then we replace it.
-    bool zeroCurrentBpm = pCurrentBeats->getBpm() == 0.0f;
+    bool zeroCurrentBpm = pCurrentBeats->getBpm() == 0.0;
     if (m_bPreferencesReanalyzeOldBpm || zeroCurrentBpm) {
         if (zeroCurrentBpm) {
             qDebug() << "Replacing 0-BPM beatgrid with a" << pBeats->getBpm()

@@ -133,6 +133,12 @@ class SampleUtil {
                                        const CSAMPLE* pSrcFadeIn,
                                        int iNumSamples);
 
+    // Mix a buffer down to mono, putting the result in both of the channels.
+    // This uses a simple (L+R)/2 method, which assumes that the audio is
+    // "mono-compatible", ie there are no major out-of-phase parts of the signal.
+    static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                int iNumSamples);
+
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
     // etc.)
     #include "sampleutil_autogen.h"

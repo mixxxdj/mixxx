@@ -160,7 +160,7 @@ void WDisplay::paintEvent(QPaintEvent* ) {
 
     // If we are disabled, use the disabled pixmaps. If not, use the regular
     // pixmaps.
-    const QVector<PaintablePointer>& pixmaps = (controlDisabled() && m_bDisabledLoaded) ?
+    const QVector<PaintablePointer>& pixmaps = (!isEnabled() && m_bDisabledLoaded) ?
             m_disabledPixmaps : m_pixmaps;
 
     if (pixmaps.empty()) {

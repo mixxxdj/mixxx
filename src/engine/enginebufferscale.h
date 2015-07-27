@@ -26,8 +26,8 @@
 //  instantaneous velocities of advanced scratching (Uzi) and spin-backs.
 //  (Yes, I can actually spin the SCS.1d faster than 15x nominal.
 //  Why do we even have this parameter? -- Sean)
-#define MAX_SEEK_SPEED 100.0f
-#define MIN_SEEK_SPEED 0.010f
+#define MAX_SEEK_SPEED 100.0
+#define MIN_SEEK_SPEED 0.010
 // I'll hurt you if you change MIN_SEEK_SPEED. SoundTouch freaks out and
 // just gives us stuttering if you set the speed to be lower than this.
 // This took me ages to figure out.

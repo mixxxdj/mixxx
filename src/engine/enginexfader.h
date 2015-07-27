@@ -2,8 +2,8 @@
 #define ENGINEXFADER_H
 
 // HACK until we have Control 2.0
-#define MIXXX_XFADER_ADDITIVE   0.0f
-#define MIXXX_XFADER_CONSTPWR   1.0f
+#define MIXXX_XFADER_ADDITIVE   0.0
+#define MIXXX_XFADER_CONSTPWR   1.0
 
 class EngineXfader {
   public:
@@ -14,4 +14,3 @@ class EngineXfader {
 };
 
 #endif /* ENGINEXFADER_H */
-

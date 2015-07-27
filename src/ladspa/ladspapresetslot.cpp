@@ -93,7 +93,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
         ConfigKey *key = new ConfigKey("[LADSPA]", keyString);
         qDebug() << "Key string:" << keyString;
         ControlObject *control = new ControlPushButton(*key, false);
-        control->set(1.0f);
+        control->set(1.0);
         m_pEnableButton = new WPushButton(m_pScrollWidget);
         buttonElement.firstChildElement("Connection").firstChildElement("ConfigKey").firstChild().setNodeValue("[LADSPA]," + keyString);
         m_pEnableButton->setup(buttonElement);

@@ -26,9 +26,9 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
         : EngineBufferScale(),
           m_pReadAheadManager(pReadAheadManager) {
     m_dRate = 1.0;
-    m_dOldRate = 1.0f;
-    m_dCurSampleIndex = 0.0f;
-    m_dNextSampleIndex = 0.0f;
+    m_dOldRate = 1.0;
+    m_dCurSampleIndex = 0.0;
+    m_dNextSampleIndex = 0.0;
 
     for (int i=0; i<2; i++)
         m_fPrevSample[i] = 0.0f;

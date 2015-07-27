@@ -99,7 +99,7 @@ class SoundManager : public QObject {
                     const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
                     SoundDevice* pDevice);
 
-    void registerOutput(AudioOutput output, const AudioSource *src);
+    void registerOutput(AudioOutput output, AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
@@ -109,7 +109,7 @@ class SoundManager : public QObject {
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
-    void outputRegistered(AudioOutput output, const AudioSource *src);
+    void outputRegistered(AudioOutput output, AudioSource *src);
     void inputRegistered(AudioInput input, AudioDestination *dest);
 
   private:
@@ -130,10 +130,11 @@ class SoundManager : public QObject {
     QMutex m_requestBufferMutex;
     SoundManagerConfig m_config;
     SoundDevice* m_pErrorDevice;
-    QHash<AudioOutput, const AudioSource*> m_registeredSources;
+    QHash<AudioOutput, AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
+    CSAMPLE* m_pDownmixBuffer;
 };
 
 #endif

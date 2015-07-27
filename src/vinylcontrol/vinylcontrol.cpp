@@ -61,7 +61,7 @@ void VinylControl::toggleVinylControl(bool enable) {
     // Reset the scratch control to make sure we don't get stuck moving forwards or backwards.
     // actually that might be a good thing
     //if (!enable)
-    //    controlScratch->slotSet(0.0f);
+    //    controlScratch->slotSet(0.0);
 }
 
 VinylControl::~VinylControl() {

@@ -107,14 +107,15 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     }
 
     FieldEscaper escaper(m_database);
-    QString startsWithOldFolder =
-            escaper.escapeString(escaper.escapeStringForLike(oldFolder % '/', '%') + '%');
+    // on Windows the absolute path starts with the drive name
+    // we also need to check for that
+    QString startsWithOldFolder = escaper.escapeStringForLike(QDir(oldFolder).absolutePath() + "/", '%') + "%";
     // Also update information in the track_locations table. This is where mixxx
-    // gets the location information for a track.
+    // gets the location information for a track. Put marks around %1 so that this also works on windows
     query.prepare(QString("SELECT library.id, track_locations.id, track_locations.location "
                           "FROM library INNER JOIN track_locations ON "
                           "track_locations.id = library.location WHERE "
-                          "track_locations.location LIKE %1 ESCAPE '%'")
+                          "track_locations.location LIKE '%1' ESCAPE '%'")
                   .arg(startsWithOldFolder));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
@@ -142,6 +143,12 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
             LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
             return QSet<int>();
         }
+    }
+
+    query.prepare(QString("SELECT location FROM track_locations"));
+    query.exec();
+    while (query.next()) {
+	    qDebug() << query.value(0).toString();
     }
 
     qDebug() << "Relocated tracks:" << ids.size();

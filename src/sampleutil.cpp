@@ -283,3 +283,12 @@ void SampleUtil::linearCrossfadeBuffers(CSAMPLE* pDest,
         cross_mix += cross_inc;
     }
 }
+
+// static
+void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                int iNumSamples) {
+    for (int i = 0; i + 1 < iNumSamples; i += 2) {
+        pDest[i] = (pSrc[i] + pSrc[i + 1]) / 2;
+        pDest[i + 1] = pDest[i];
+    }
+}

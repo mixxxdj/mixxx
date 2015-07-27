@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QDir>
 #include <QtSql>
 
 #include "library/dao/trackdao.h"
@@ -711,7 +712,7 @@ void TrackDAO::purgeTracks(const QString& dir) {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
-    QString likeClause = escaper.escapeStringForLike(dir + "/", '%') + "%";
+    QString likeClause = escaper.escapeStringForLike(QDir(dir).absolutePath() + "/", '%') + "%";
 
     query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
                           "ON library.location = track_locations.id "

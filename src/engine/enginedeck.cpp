@@ -121,7 +121,7 @@ EngineBuffer* EngineDeck::getEngineBuffer() {
     return m_pBuffer;
 }
 
-bool EngineDeck::isActive() {
+bool EngineDeck::isActive() const {
     if (m_bPassthroughWasActive && !m_bPassthroughIsActive) {
         return true;
     }
@@ -141,7 +141,7 @@ void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigne
         return;
     }
 
-    const unsigned int iChannels = AudioInput::channelsNeededForType(input.getType());
+    const unsigned int iChannels = input.getChannelGroup().getChannelCount();
 
     // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
@@ -201,7 +201,7 @@ void EngineDeck::onInputDisconnected(AudioInput input) {
     m_sampleBuffer.clear();
 }
 
-bool EngineDeck::isPassthroughActive() {
+bool EngineDeck::isPassthroughActive() const {
     return (m_bPassthroughIsActive && !m_sampleBuffer.isEmpty());
 }
 

@@ -36,6 +36,21 @@ class ControlPushButton : public ControlObject {
          LONGPRESSLATCHING,
     };
 
+    static QString buttonModeToString(int mode) {
+        switch(mode) {
+            case ControlPushButton::PUSH:
+                return "PUSH";
+            case ControlPushButton::TOGGLE:
+                return "TOGGLE";
+            case ControlPushButton::POWERWINDOW:
+                return "POWERWINDOW";
+            case ControlPushButton::LONGPRESSLATCHING:
+                return "LONGPRESSLATCHING";
+            default:
+                return "UNKNOWN";
+        }
+    }
+
     ControlPushButton(ConfigKey key);
     virtual ~ControlPushButton();
 

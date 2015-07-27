@@ -54,6 +54,8 @@ available_features = [features.Mad,
                       features.MSVSHacks,
                       features.Vamp,
                       features.AutoDjCrates,
+                      features.ColorDiagnostics,
+                      features.AddressSanitizer,
 
                       # "Features" of dubious quality
                       features.PerfTools,

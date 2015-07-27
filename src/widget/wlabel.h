@@ -19,6 +19,7 @@
 #define WLABEL_H
 
 #include <QLabel>
+#include <QEvent>
 
 #include "widget/wbasewidget.h"
 #include "skin/skincontext.h"
@@ -32,6 +33,9 @@ class WLabel : public QLabel, public WBaseWidget {
     virtual void setup(QDomNode node, const SkinContext& context);
 
   protected:
+    bool event(QEvent* pEvent);
+    void fillDebugTooltip(QStringList* debug);
+
     QString m_qsText;
     // Foreground and background colors.
     QColor m_qFgColor;

@@ -33,3 +33,10 @@ void WWidget::onConnectedControlValueChanged(double value) {
     Q_UNUSED(value);
     update();
 }
+
+bool WWidget::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QWidget::event(pEvent);
+}

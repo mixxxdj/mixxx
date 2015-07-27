@@ -20,7 +20,7 @@ class LoopingControlTest : public MixxxTest {
     virtual void SetUp() {
         m_pQuantizeEnabled.reset(
             new ControlPushButton(ConfigKey(m_pGroup, "quantize")));
-        m_pQuantizeEnabled->set(1.0f);
+        m_pQuantizeEnabled->set(1.0);
         m_pQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
         m_pNextBeat.reset(new ControlObject(ConfigKey(m_pGroup, "beat_next")));
         m_pNextBeat->set(-1);

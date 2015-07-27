@@ -63,3 +63,15 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
         }
     }
 }
+
+bool WLabel::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QLabel::event(pEvent);
+}
+
+void WLabel::fillDebugTooltip(QStringList* debug) {
+    WBaseWidget::fillDebugTooltip(debug);
+    *debug << QString("Text: \"%1\"").arg(text());
+}

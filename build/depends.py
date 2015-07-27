@@ -616,6 +616,7 @@ class MixxxCore(Feature):
                    "soundsource.cpp",
 
                    "sharedglcontext.cpp",
+                   "widget/controlwidgetconnection.cpp",
                    "widget/wbasewidget.cpp",
                    "widget/wwidget.cpp",
                    "widget/wwidgetgroup.cpp",
@@ -644,6 +645,8 @@ class MixxxCore(Feature):
                    "widget/wtrackproperty.cpp",
                    "widget/wtime.cpp",
                    "widget/wkey.cpp",
+                   "widget/wcombobox.cpp",
+                   "widget/wsplitter.cpp",
 
                    "mathstuff.cpp",
 
@@ -669,6 +672,7 @@ class MixxxCore(Feature):
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
                    "library/librarytablemodel.cpp",
+                   "library/searchquery.cpp",
                    "library/searchqueryparser.cpp",
                    "library/analysislibrarytablemodel.cpp",
                    "library/missingtablemodel.cpp",
@@ -796,7 +800,6 @@ class MixxxCore(Feature):
                    "skin/skinloader.cpp",
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
-                   "skin/propertybinder.cpp",
                    "skin/tooltips.cpp",
                    "skin/skincontext.cpp",
 
@@ -894,9 +897,9 @@ class MixxxCore(Feature):
             if build.toolchain_is_msvs:
                 build.env.Append(LINKFLAGS="/MANIFEST")
         elif build.platform_is_osx:
-            #Need extra room for code signing (App Store)
-            build.env.Append(LINKFLAGS="-headerpad=ffff")
-            build.env.Append(LINKFLAGS="-headerpad_max_install_names")
+            # Need extra room for code signing (App Store)
+            build.env.Append(LINKFLAGS="-Wl,-headerpad,ffff")
+            build.env.Append(LINKFLAGS="-Wl,-headerpad_max_install_names")
 
         return sources
 
@@ -1008,21 +1011,15 @@ class MixxxCore(Feature):
                 build.platform_is_bsd:
             mixxx_files = [
                 ('SETTINGS_PATH', '.mixxx/'),
-                ('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'),
-                ('SETTINGS_FILE', 'mixxx.cfg'),
-                ('TRACK_FILE', 'mixxxtrack.xml')]
+                ('SETTINGS_FILE', 'mixxx.cfg')]
         elif build.platform_is_osx:
             mixxx_files = [
                 ('SETTINGS_PATH', 'Library/Application Support/Mixxx/'),
-                ('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'),
-                ('SETTINGS_FILE', 'mixxx.cfg'),
-                ('TRACK_FILE', 'mixxxtrack.xml')]
+                ('SETTINGS_FILE', 'mixxx.cfg')]
         elif build.platform_is_windows:
             mixxx_files = [
                 ('SETTINGS_PATH', 'Local Settings/Application Data/Mixxx/'),
-                ('BPMSCHEME_FILE', 'mixxxbpmscheme.xml'),
-                ('SETTINGS_FILE', 'mixxx.cfg'),
-                ('TRACK_FILE', 'mixxxtrack.xml')]
+                ('SETTINGS_FILE', 'mixxx.cfg')]
         # Escape the filenames so they don't end up getting screwed up in the
         # shell.
         mixxx_files = [(k, r'\"%s\"' % v) for k, v in mixxx_files]

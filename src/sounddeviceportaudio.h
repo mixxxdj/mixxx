@@ -41,6 +41,9 @@ class SoundDevicePortAudio : public SoundDevice {
     int open();
     int close();
     QString getError() const;
+
+    // This callback function gets called everytime the sound device runs out of
+    // samples (ie. when it needs more sound to play)
     int callbackProcess(unsigned long framesPerBuffer,
                         float *output, float* in,
                         const PaStreamCallbackTimeInfo *timeInfo,
@@ -70,6 +73,8 @@ class SoundDevicePortAudio : public SoundDevice {
     int m_underflowUpdateCount;
 };
 
+// Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by
+// PortAudio, which knows nothing about C++.
 int paV19Callback(const void* inputBuffer, void* outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo* timeInfo,

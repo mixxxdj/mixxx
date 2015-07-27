@@ -50,7 +50,7 @@ TEST_F(ControllerEngineTest, scriptSetValue) {
     ControlObject *co = new ControlObject(ConfigKey("[Channel1]", "co"));
     co->set(0.0);
     cEngine->execute("setValue");
-    EXPECT_DOUBLE_EQ(co->get(), 1.0f);
+    EXPECT_DOUBLE_EQ(co->get(), 1.0);
 
     delete co;
 }
@@ -65,7 +65,7 @@ TEST_F(ControllerEngineTest, scriptGetSetValue) {
     ScopedControl co(new ControlObject(ConfigKey("[Channel1]", "co")));
     co->set(0.0);
     cEngine->execute("getSetValue");
-    EXPECT_DOUBLE_EQ(co->get(), 1.0f);
+    EXPECT_DOUBLE_EQ(co->get(), 1.0);
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlNamedFunction) {
