@@ -211,11 +211,6 @@ void DlgPrefVinyl::slotUpdate()
     else if (iMode == MIXXX_VCMODE_RELATIVE)
         RelativeMode->setChecked(true);
 
-    // Honour the Needle Skip Prevention setting.
-    NeedleSkipEnable->setChecked(
-            (bool)config->getValueString(ConfigKey(VINYL_PREF_KEY,
-                                                   "needle_skip_prevention")).toInt());
-
     SignalQualityEnable->setChecked(
             (bool)config->getValueString(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")).toInt());
 
@@ -252,8 +247,6 @@ void DlgPrefVinyl::slotApply()
         iMode = MIXXX_VCMODE_RELATIVE;
 
     config->set(ConfigKey(VINYL_PREF_KEY, "mode"), ConfigValue(iMode));
-    config->set(ConfigKey(VINYL_PREF_KEY, "needle_skip_prevention"),
-                ConfigValue((int)(NeedleSkipEnable->isChecked())));
     config->set(ConfigKey(VINYL_PREF_KEY,"show_signal_quality"),
                 ConfigValue((int)(SignalQualityEnable->isChecked())));
 

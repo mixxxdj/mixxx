@@ -21,8 +21,8 @@
 #include "dlgprefrecord.h"
 #include "recording/defs_recording.h"
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
 #include "encoder/encoder.h"
+#include "controlobjectthread.h"
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(parent),

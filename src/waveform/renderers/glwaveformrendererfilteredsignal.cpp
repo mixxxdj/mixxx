@@ -1,11 +1,9 @@
-#include "controlobjectthreadmain.h"
-
 #include "defs.h"
 #include "glwaveformrendererfilteredsignal.h"
 #include "trackinfoobject.h"
 #include "waveform/waveform.h"
 #include "waveformwidgetrenderer.h"
-
+#include "controlobjectthread.h"
 #include "waveform/waveformwidgetfactory.h"
 
 #include <QDomNode>
@@ -97,7 +95,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     if (m_pHighKillControlObject && m_pHighKillControlObject->get() == 1.0) {
         highGain = 0;
-    }    
+    }
 
     float meanIndex;
 
@@ -163,7 +161,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glEnd();
     } else { //top || bottom
         glMatrixMode(GL_PROJECTION);
-        glPushMatrix();        
+        glPushMatrix();
         glLoadIdentity();
         if( m_alignment == Qt::AlignBottom)
             glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
@@ -171,7 +169,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
             glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();        
+        glPushMatrix();
         glLoadIdentity();
 
         glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);

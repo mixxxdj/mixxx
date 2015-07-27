@@ -342,8 +342,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Vinyl Status")
             << tr("Provides visual feedback for vinyl control status:")
             << tr("Green for control enabled.")
-            << tr("Blinking yellow for when the needle reaches the end of the record.")
-            << tr("Red for needle skip detected.");
+            << tr("Blinking yellow for when the needle reaches the end of the record.");
 
     add("loop_in")
             << tr("Loop-In Marker")

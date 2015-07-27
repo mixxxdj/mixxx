@@ -21,7 +21,7 @@
 #include <QMimeData>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "trackinfoobject.h"
@@ -76,7 +76,7 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     m_backgroundPixmap = QPixmap();
     m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (m_backgroundPixmapPath != "") {
-        m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
+        m_backgroundPixmap = QPixmap(context.getSkinPath(m_backgroundPixmapPath));
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);
@@ -120,14 +120,14 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
 }
 
-void WOverview::setValue(double fValue) {
+void WOverview::onConnectedControlValueChanged(double dValue) {
     if (!m_bDrag)
     {
         // Calculate handle position
-        int iPos = valueToPosition(fValue);
+        int iPos = valueToPosition(dValue);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            //qDebug() << "WOverview::setValue" << fValue << ">>" << m_iPos;
+            //qDebug() << "WOverview::onConnectedControlValueChanged" << dValue << ">>" << m_iPos;
             update();
         }
     }
@@ -247,14 +247,14 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
 
-    float fValue = positionToValue(m_iPos);
+    double dValue = positionToValue(m_iPos);
 
-    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << fValue;
+    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::RightButton) {
-        emit(valueChangedRightUp(fValue));
+        setControlParameterRightUp(dValue);
     } else {
-        emit(valueChangedLeftUp(fValue));
+        setControlParameterLeftUp(dValue);
     }
     m_bDrag = false;
 }
@@ -466,9 +466,21 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
 }
 
 void WOverview::resizeEvent(QResizeEvent *) {
-    //Those coeficient map position from [0;width-1] to value [14;114]
-    m_a = (float)((width()-1))/( 114.f - 14.f);
-    m_b = 14.f * m_a;
+    // Play-position potmeters range from -0.14 to 1.14. This is to give VC and
+    // MIDI control access to the pre-roll area.
+    // TODO(rryan): get these limits from the CO itself.
+    const double kMaxPlayposRange = 1.14;
+    const double kMinPlayposRange = -0.14;
+
+    // Values of zero and one in normalized space.
+    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
+    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
+
+    // These coeficients convert between widget space and normalized value
+    // space.
+    m_a = (width() - 1) / (one - zero);
+    m_b = zero * m_a;
+
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
 }

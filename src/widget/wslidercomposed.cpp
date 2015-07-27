@@ -26,6 +26,7 @@
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
+      m_dOldValue(0.0),
       m_bRightButtonPressed(false),
       m_iPos(0),
       m_iStartHandlePos(0),
@@ -44,14 +45,16 @@ WSliderComposed::~WSliderComposed() {
 
 void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     // Setup pixmaps
-    QString pathSlider = getPath(context.selectString(node, "Slider"));
-    QString pathHandle = getPath(context.selectString(node, "Handle"));
-    QString pathHorizontal = context.selectString(node, "Horizontal");
-    bool h = false;
-    if (pathHorizontal.contains("true",Qt::CaseInsensitive)) {
-        h = true;
+    unsetPixmaps();
+
+    if (context.hasNode(node, "Slider")) {
+        QString pathSlider = context.getSkinPath(context.selectString(node, "Slider"));
+        setSliderPixmap(pathSlider);
     }
-    setPixmaps(h, pathSlider, pathHandle);
+
+    QString pathHandle = context.getSkinPath(context.selectString(node, "Handle"));
+    bool h = context.selectBool(node, "Horizontal", false);
+    setHandlePixmap(h, pathHandle);
 
     if (context.hasNode(node, "EventWhileDrag")) {
         if (context.selectString(node, "EventWhileDrag").contains("no")) {
@@ -60,9 +63,7 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle) {
-    m_bHorizontal = bHorizontal;
-    unsetPixmaps();
+void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
     m_pSlider = WPixmapStore::getPaintable(filenameSlider);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << filenameSlider;
@@ -70,7 +71,10 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
         // Set size of widget, using size of slider pixmap
         setFixedSize(m_pSlider->size());
     }
+}
 
+void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameHandle) {
+    m_bHorizontal = bHorizontal;
     m_pHandle = WPixmapStore::getPaintable(filenameHandle);
     if (!m_pHandle) {
         qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
@@ -78,7 +82,7 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        setValue(m_value);
+        onConnectedControlValueChanged(getControlParameterLeft());
         update();
     }
 }
@@ -101,24 +105,31 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 
         int sliderLength = m_bHorizontal ? width() : height();
 
+        // Clamp to the range [0, sliderLength - m_iHandleLength].
         if (m_iPos > (sliderLength - m_iHandleLength)) {
             m_iPos = sliderLength - m_iHandleLength;
         } else if (m_iPos < 0) {
             m_iPos = 0;
         }
 
-        // value ranges from 0 to 127
-        m_value = (double)m_iPos * (127. / (double)(sliderLength - m_iHandleLength));
+        // Divide by (sliderLength - m_iHandleLength) to produce a normalized
+        // value in the range of [0.0, 1.0].  1.0
+        double newValue = static_cast<double>(m_iPos) /
+                static_cast<double>(sliderLength - m_iHandleLength);
         if (!m_bHorizontal) {
-            m_value = 127. - m_value;
+            newValue = 1.0 - newValue;
         }
+
+        // If we don't change this, then updates might be rejected in
+        // onConnectedControlValueChanged.
+        m_dOldValue = newValue;
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
             if (e->button() == Qt::RightButton) {
-                emit(valueChangedRightUp(m_value));
+                setControlParameterRightUp(newValue);
             } else {
-                emit(valueChangedLeftUp(m_value));
+                setControlParameterLeftUp(newValue);
             }
         }
 
@@ -128,9 +139,16 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 }
 
 void WSliderComposed::wheelEvent(QWheelEvent *e) {
-    double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
-    double newValue = getValue() + (wheelDirection);
-    this->updateValue(newValue);
+    // For legacy (MIDI) reasons this is tuned to 127.
+    double wheelDirection = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
+    double newValue = getControlParameter() + wheelDirection;
+
+    // Clamp to [0.0, 1.0]
+    newValue = math_max(0.0, math_min(1.0, newValue));
+
+    setControlParameterDown(newValue);
+    setControlParameterUp(newValue);
+    update();
 
     e->accept();
 
@@ -142,9 +160,9 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
         mouseMoveEvent(e);
 
         if (e->button() == Qt::RightButton) {
-            emit(valueChangedRightUp(m_value));
+            setControlParameterRightUp(getControlParameterRight());
         } else {
-            emit(valueChangedLeftUp(m_value));
+            setControlParameterLeftUp(getControlParameterLeft());
         }
 
         m_bDrag = false;
@@ -162,7 +180,7 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
         m_bDrag = true;
     } else {
         if (e->button() == Qt::RightButton) {
-            emit(valueReset());
+            resetControlParameters();
             m_bRightButtonPressed = true;
         } else {
             if (m_bHorizontal) {
@@ -192,18 +210,16 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 }
 
-void WSliderComposed::setValue(double fValue) {
-    if (!m_bDrag && m_value != fValue) {
-        // Set value without emitting a valueChanged signal
-        // and force display update
-        m_value = fValue;
+void WSliderComposed::onConnectedControlValueChanged(double dValue) {
+    if (!m_bDrag && m_dOldValue != dValue) {
+        m_dOldValue = dValue;
 
         // Calculate handle position
         if (!m_bHorizontal) {
-            fValue = 127-fValue;
+            dValue = 1.0 - dValue;
         }
         int sliderLength = m_bHorizontal ? width() : height();
-        m_iPos = (int)((fValue / 127.) * (double)(sliderLength - m_iHandleLength));
+        m_iPos = static_cast<int>(dValue * (sliderLength - m_iHandleLength));
 
         if (m_iPos > (sliderLength - m_iHandleLength)) {
             m_iPos = sliderLength - m_iHandleLength;

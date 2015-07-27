@@ -9,11 +9,17 @@
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),
+          WBaseWidget(this),
           m_pPixmapBack(NULL) {
     setObjectName("WidgetGroup");
 }
 
 WWidgetGroup::~WWidgetGroup() {
+}
+
+int WWidgetGroup::layoutSpacing() const {
+    QLayout* pLayout = layout();
+    return pLayout ? pLayout->spacing() : 0;
 }
 
 void WWidgetGroup::setLayoutSpacing(int spacing) {
@@ -26,6 +32,14 @@ void WWidgetGroup::setLayoutSpacing(int spacing) {
     if (pLayout) {
         pLayout->setSpacing(spacing);
     }
+}
+
+QRect WWidgetGroup::layoutContentsMargins() const {
+    QLayout* pLayout = layout();
+    QMargins margins = pLayout ? pLayout->contentsMargins() :
+            contentsMargins();
+    return QRect(margins.left(), margins.top(),
+                 margins.right(), margins.bottom());
 }
 
 void WWidgetGroup::setLayoutContentsMargins(QRect rectMargins) {
@@ -48,6 +62,11 @@ void WWidgetGroup::setLayoutContentsMargins(QRect rectMargins) {
     }
 }
 
+Qt::Alignment WWidgetGroup::layoutAlignment() const {
+    QLayout* pLayout = layout();
+    return pLayout ? pLayout->alignment() : Qt::Alignment();
+}
+
 void WWidgetGroup::setLayoutAlignment(int alignment) {
     //qDebug() << "WWidgetGroup::setLayoutAlignment" << alignment;
 
@@ -62,7 +81,7 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(WWidget::getPath(context.selectString(node, "BackPath")));
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")));
     }
 
     QLayout* pLayout = NULL;

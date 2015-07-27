@@ -9,7 +9,9 @@
 
 const int expand_time = 250;
 
-WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
+WLibrarySidebar::WLibrarySidebar(QWidget* parent)
+        : QTreeView(parent),
+          WBaseWidget(this) {
     //Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);

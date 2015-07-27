@@ -148,20 +148,23 @@ void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
     m_pBehavior = QSharedPointer<ControlNumericBehavior>(pBehavior);
 }
 
-void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSender) {
+void ControlDoublePrivate::setParameter(double dParam, QObject* pSender) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (pBehavior.isNull()) {
         set(dParam, pSender);
     } else {
-        set(pBehavior->widgetParameterToValue(dParam), pSender);
+        set(pBehavior->parameterToValue(dParam), pSender);
     }
 }
 
-double ControlDoublePrivate::getWidgetParameter() const {
+double ControlDoublePrivate::getParameter() const {
+    return getParameterForValue(get());
+}
+
+double ControlDoublePrivate::getParameterForValue(double value) const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
-    double value = get();
     if (!pBehavior.isNull()) {
-        value = pBehavior->valueToWidgetParameter(value);
+        value = pBehavior->valueToParameter(value);
     }
     return value;
 }

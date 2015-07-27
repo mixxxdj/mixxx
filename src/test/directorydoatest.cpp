@@ -145,7 +145,7 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     trackDAO.addTracksFinish(false);
 
     QSet<int> ids = directoryDao.relocateDirectory("/Test", "/new");
-    EXPECT_EQ(ids.size(), 2);
+    EXPECT_EQ(2, ids.size());
 
     QStringList dirs = directoryDao.getDirs();
     ASSERT_EQ(2, dirs.size());

@@ -50,13 +50,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="NeedleSkipEnable">
-        <property name="text">
-         <string>Enable Needle Skip Prevention</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <spacer name="verticalSpacer_3">
         <property name="orientation">
          <enum>Qt::Vertical</enum>

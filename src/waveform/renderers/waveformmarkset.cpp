@@ -4,7 +4,6 @@
 #include "waveformmarkset.h"
 #include "engine/cuecontrol.h"
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
 
 WaveformMarkSet::WaveformMarkSet() {
 }

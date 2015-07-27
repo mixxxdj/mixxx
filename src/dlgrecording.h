@@ -15,7 +15,6 @@
 class WTrackTableView;
 class AnalyserQueue;
 class QSqlTableModel;
-class ControlObjectThreadMain;
 
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
@@ -58,5 +57,3 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 };
 
 #endif //DLGRECORDING_H
-
-

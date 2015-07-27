@@ -44,8 +44,9 @@ class ControlDoublePrivate : public QObject {
     // by this function.
     void setBehavior(ControlNumericBehavior* pBehavior);
 
-    void setWidgetParameter(double dParam, QObject* pSender);
-    double getWidgetParameter() const;
+    void setParameter(double dParam, QObject* pSender);
+    double getParameter() const;
+    double getParameterForValue(double value) const;
 
     void setMidiParameter(MidiOpCode opcode, double dParam);
     double getMidiParameter() const;

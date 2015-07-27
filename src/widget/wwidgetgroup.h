@@ -9,10 +9,11 @@
 #include <QString>
 #include <QWidget>
 
+#include "widget/wbasewidget.h"
 #include "widget/wpixmapstore.h"
 #include "skin/skincontext.h"
 
-class WWidgetGroup : public QFrame {
+class WWidgetGroup : public QFrame, public WBaseWidget {
     Q_OBJECT
   public:
     WWidgetGroup(QWidget* pParent=NULL);
@@ -29,12 +30,15 @@ class WWidgetGroup : public QFrame {
     //}
     //
     // The property must be DESIGNABLE to style it with Qt CSS.
-    Q_PROPERTY(int layoutSpacing WRITE setLayoutSpacing DESIGNABLE true);
-    Q_PROPERTY(QRect layoutContentsMargins WRITE setLayoutContentsMargins DESIGNABLE true);
-    Q_PROPERTY(Qt::Alignment layoutAlignment WRITE setLayoutAlignment DESIGNABLE true);
+    Q_PROPERTY(int layoutSpacing READ layoutSpacing WRITE setLayoutSpacing DESIGNABLE true);
+    Q_PROPERTY(QRect layoutContentsMargins READ layoutContentsMargins WRITE setLayoutContentsMargins DESIGNABLE true);
+    Q_PROPERTY(Qt::Alignment layoutAlignment READ layoutAlignment WRITE setLayoutAlignment DESIGNABLE true);
 
+    int layoutSpacing() const;
     void setLayoutSpacing(int spacing);
+    QRect layoutContentsMargins() const;
     void setLayoutContentsMargins(QRect margins);
+    Qt::Alignment layoutAlignment() const;
     void setLayoutAlignment(int alignment);
 
     void setup(QDomNode node, const SkinContext& context);

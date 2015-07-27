@@ -66,8 +66,6 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
           m_pSteadySubtle(new SteadyPitch(0.12)),
           m_pSteadyGross(new SteadyPitch(0.5)),
           m_bCDControl(false),
-          m_bNeedleSkipPrevention(static_cast<bool>(m_pConfig->getValueString(
-              ConfigKey(VINYL_PREF_KEY, "needle_skip_prevention")).toInt())),
           m_bTrackSelectMode(false),
           m_pControlTrackSelector(NULL),
           m_pControlTrackLoader(NULL),
@@ -98,7 +96,6 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
         timecode = (char*)"serato_2b";
     } else if (strVinylType == MIXXX_VINYL_SERATOCD) {
         timecode = (char*)"serato_cd";
-        m_bNeedleSkipPrevention = false;
         m_bCDControl = true;
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
         timecode = (char*)"traktor_a";
@@ -147,7 +144,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
     // do this once across the VinylControlXwax instances.
     s_xwaxLUTMutex.lock();
 
-    timecoder_init(&timecoder, tc_def, speed, iSampleRate);
+    timecoder_init(&timecoder, tc_def, speed, iSampleRate, /* photo */ false);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
@@ -157,7 +154,6 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
     s_xwaxLUTMutex.unlock();
 
     qDebug() << "Starting vinyl control xwax thread";
-    m_timeSinceSteadyPitch.start();
 }
 
 VinylControlXwax::~VinylControlXwax() {
@@ -306,8 +302,9 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         } else {
             // go ahead and switch
             m_iVCMode = reportedMode;
-            if (reportedMode == MIXXX_VCMODE_ABSOLUTE)
+            if (reportedMode == MIXXX_VCMODE_ABSOLUTE) {
                 m_bForceResync = true;
+            }
         }
 
         //if we are out of error mode...
@@ -322,6 +319,13 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         m_iVCMode = MIXXX_VCMODE_RELATIVE;
         mode->slotSet((double)m_iVCMode);
     }
+
+    // Don't allow cueing mode to be enabled in absolute mode.
+    if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
+            cueing->get() != MIXXX_RELATIVE_CUE_OFF) {
+        cueing->set(MIXXX_RELATIVE_CUE_OFF);
+    }
+
     //are we newly playing near the end of the record?  (in absolute mode, this happens
     //when the filepos is past safe (more accurate),
     //but it can also happen in relative mode if the vinylpos is nearing the end
@@ -333,7 +337,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 !m_bForceResync) {
             // corner case: we are waiting for resync so don't enable just yet
             enableRecordEndMode();
-        } else if ((m_iVCMode == MIXXX_VCMODE_RELATIVE || m_iVCMode == MIXXX_VCMODE_CONSTANT) &&
+        } else if (m_iVCMode != MIXXX_VCMODE_ABSOLUTE &&
                        m_iPosition != -1 &&
                        m_iPosition > static_cast<int>(m_uiSafeZone)) {
             enableRecordEndMode();
@@ -475,24 +479,12 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 if (uiUpdateTime(filePosition))
                     rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch) - 1.0f) / rateRange->get());
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                       (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 15.0f)) {
+                       (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0f)) {
                 //If the position from the timecode is more than a few seconds off, resync the position.
                 //qDebug() << "resync position (>15.0 sec)";
                 //qDebug() << m_dVinylPosition << m_dVinylPositionOld << m_dVinylPosition - m_dVinylPositionOld;
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
-            } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bNeedleSkipPrevention &&
-                       fabs(m_dVinylPosition - m_dVinylPositionOld) > 0.4 &&
-                       (m_timeSinceSteadyPitch.elapsed() < 400 || reportedPlayButton)) {
-                //red alert, moved wrong direction or jumped forward a lot,
-                //and we were just playing nicely...
-                //move to constant mode and keep playing
-                qDebug() << "WARNING: needle skip detected!:";
-                qDebug() << filePosition << m_dOldFilePos << m_dVinylPosition << m_dVinylPositionOld;
-                qDebug() << (m_dVinylPosition - m_dVinylPositionOld) * (dVinylPitch / fabs(dVinylPitch));
-                //try setting the rate to the steadypitch value
-                enableConstantMode(m_pSteadySubtle->steadyValue());
-                vinylStatus->slotSet(VINYL_STATUS_ERROR);
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bCDControl &&
                        fabs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1f) {
                 //qDebug() << "CDJ resync position (>0.1 sec)";
@@ -593,7 +585,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
         //POSITION: NO  PITCH: NO
         //if it's been a long time, we're stopped.
-        //if it hasn't been long, and we're preventing needle skips,
+        //if it hasn't been long,
         //let the track play a wee bit more before deciding we've stopped
 
         rateSlider->slotSet(0.0f);
@@ -605,7 +597,6 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         }
 
         if(fabs(filePosition - m_dOldFilePos) >= 0.1 ||
-               !m_bNeedleSkipPrevention ||
                filePosition == m_dOldFilePos) {
             //We are not playing any more
             togglePlayButton(false);
@@ -659,9 +650,6 @@ void VinylControlXwax::disableRecordEndMode() {
 
 void VinylControlXwax::togglePlayButton(bool on) {
     if (m_bIsEnabled && (playButton->get() > 0) != on) {
-        //switching from on to off -- restart counter for checking needleskip
-        if (!on)
-            m_timeSinceSteadyPitch.restart();
         playButton->slotSet((float)on);  //and we all float on all right
     }
 }
@@ -802,9 +790,7 @@ float VinylControlXwax::getAngle() {
     if (pos == -1)
         return -1.0;
 
-    pos /= 1000.0;
-
     float rps = timecoder_revs_per_sec(&timecoder);
     //invert angle to make vinyl spin direction correct
-    return 360 - ((int)(pos * 360.0 * rps) % 360);
+    return 360 - ((int)(when * 360.0 * rps) % 360);
 }

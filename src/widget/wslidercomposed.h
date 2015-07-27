@@ -42,7 +42,8 @@ class WSliderComposed : public WWidget  {
     virtual ~WSliderComposed();
 
     void setup(QDomNode node, const SkinContext& context);
-    void setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle);
+    void setSliderPixmap(const QString& filenameSlider);
+    void setHandlePixmap(bool bHorizontal, const QString& filenameHandle);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
@@ -50,10 +51,11 @@ class WSliderComposed : public WWidget  {
     void wheelEvent(QWheelEvent *e);
     inline bool isHorizontal() const { return m_bHorizontal; };
 public slots:
-    void setValue(double);
+    void onConnectedControlValueChanged(double);
 private:
     void unsetPixmaps();
 
+    double m_dOldValue;
     // True if right mouse button is pressed.
     bool m_bRightButtonPressed;
     /** Internal storage of slider position in pixels */

@@ -1,6 +1,5 @@
 #include "sampler.h"
 
-#include "controlobjectthreadmain.h"
 #include "controlobject.h"
 
 Sampler::Sampler(QObject* pParent,

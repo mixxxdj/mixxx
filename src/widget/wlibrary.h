@@ -10,11 +10,12 @@
 #include <QString>
 
 #include "library/libraryview.h"
+#include "widget/wbasewidget.h"
 
 class MixxxKeyboard;
 class TrackCollection;
 
-class WLibrary : public QStackedWidget {
+class WLibrary : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WLibrary(QWidget* parent, TrackCollection* pTrackCollection);

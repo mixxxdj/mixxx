@@ -13,6 +13,7 @@
 #include "skin/tooltips.h"
 #include "proto/skin.pb.h"
 
+class WBaseWidget;
 class Library;
 class MixxxKeyboard;
 class PlayerManager;
@@ -82,9 +83,11 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);
-    void setupWidget(QDomNode node, QWidget* pWidget, bool setupPosition=true);
-    void setupConnections(QDomNode node, QWidget* pWidget);
-    void addShortcutToToolTip(QWidget* pWidget, const QString& shortcut, const QString& cmd);
+    void setupBaseWidget(QDomNode node, WBaseWidget* pBaseWidget);
+    void setupWidget(QDomNode node, QWidget* pWidget,
+                     bool setupPosition=true);
+    void setupConnections(QDomNode node, WBaseWidget* pWidget);
+    void addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut, const QString& cmd);
     QString getLibraryStyle(QDomNode node);
     QString getStyleFromNode(QDomNode node);
 

@@ -39,6 +39,7 @@ class BpmControl;
 class KeyControl;
 class RateControl;
 class SyncControl;
+class VinylControlControl;
 class LoopingControl;
 class ClockControl;
 class CueControl;
@@ -46,7 +47,6 @@ class ReadAheadManager;
 class ControlObject;
 class ControlObjectSlave;
 class ControlPushButton;
-class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
@@ -202,6 +202,7 @@ class EngineBuffer : public EngineObject {
     LoopingControl* m_pLoopingControl;
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
+    VinylControlControl* m_pVinylControlControl;
     RateControl* m_pRateControl;
     BpmControl* m_pBpmControl;
     KeyControl* m_pKeyControl;
@@ -284,9 +285,6 @@ class EngineBuffer : public EngineObject {
 
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
-
-    ControlObject* m_pVinylStatus;  // Status of vinyl control
-    ControlObject* m_pVinylSeek;
 
     // Fwd and back controls, start and end of track control
     ControlPushButton* m_startButton;

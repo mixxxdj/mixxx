@@ -22,6 +22,7 @@ class WNumberRate : public WNumber {
     WNumberRate(const char *group, QWidget *parent=0);
     virtual ~WNumberRate();
 
+  private slots:
     void setValue(double dValue);
 
   private:

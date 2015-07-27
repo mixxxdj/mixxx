@@ -7,7 +7,8 @@
 #include <QStackedWidget>
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
+#include "widget/wbasewidget.h"
 
 class WidgetStackControlListener : public QObject {
     Q_OBJECT
@@ -31,7 +32,7 @@ class WidgetStackControlListener : public QObject {
     const int m_index;
 };
 
-class WWidgetStack : public QStackedWidget {
+class WWidgetStack : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WWidgetStack(QWidget* pParent,

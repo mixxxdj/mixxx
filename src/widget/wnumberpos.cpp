@@ -6,8 +6,7 @@
 #include "wnumberpos.h"
 #include "mathstuff.h"
 #include "controlobject.h"
-#include "controlobjectthreadwidget.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
@@ -19,31 +18,32 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
 
     m_pShowTrackTimeRemaining = new ControlObjectThread(
             "[Controls]", "ShowDurationRemaining");
-    connect(m_pShowTrackTimeRemaining, SIGNAL(valueChanged(double)),
+    m_pShowTrackTimeRemaining->connectValueChanged(
             this, SLOT(slotSetRemain(double)));
     slotSetRemain(m_pShowTrackTimeRemaining->get());
 
-    // We cannot use the parameter from the skin because this would be a connection
-    // to a ControlObjectThreadWidget and would be normalized to midi values
-    // -0.14 .. 1.14.  Instead we use the engine's playposition value
-    // which is normalized from 0 to 1.  As a result, the
-    // <Connection> parameter is no longer necessary in skin definitions, but
-    // leaving it in is harmless.
-    m_pVisualPlaypos = new ControlObjectThreadMain(group, "playposition");
-    connect(m_pVisualPlaypos, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
+    // We cannot use the parameter from the skin because this would be
+    // normalized to parameter values -0.14 .. 1.14.  Instead we use the
+    // engine's playposition value which is normalized from 0 to 1.  As a
+    // result, the <Connection> parameter is no longer necessary in skin
+    // definitions, but leaving it in is harmless.
+    m_pVisualPlaypos = new ControlObjectThread(group, "playposition");
+    m_pVisualPlaypos->connectValueChanged(this, SLOT(slotSetValue(double)));
 
-    m_pTrackSamples = new ControlObjectThreadWidget(
+    m_pTrackSamples = new ControlObjectThread(
             group, "track_samples");
-    connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
+    m_pTrackSamples->connectValueChanged(
             this, SLOT(slotSetTrackSamples(double)));
+
     // Tell the CO to re-emit its value since we could be created after it was
     // set to a valid value.
     m_pTrackSamples->emitValueChanged();
 
-    m_pTrackSampleRate = new ControlObjectThreadWidget(
+    m_pTrackSampleRate = new ControlObjectThread(
             group, "track_samplerate");
-    connect(m_pTrackSampleRate, SIGNAL(valueChanged(double)),
+    m_pTrackSampleRate->connectValueChanged(
             this, SLOT(slotSetTrackSampleRate(double)));
+
     // Tell the CO to re-emit its value since we could be created after it was
     // set to a valid value.
     m_pTrackSampleRate->emitValueChanged();
@@ -106,7 +106,7 @@ void WNumberPos::slotSetValue(double dValue) {
     // we care about. Slice it off.
     valueString = valueString.left(valueString.length() - 1);
 
-    m_pLabel->setText(QString("%1%2").arg(m_qsText, valueString));
+    setText(QString("%1%2").arg(m_qsText, valueString));
 }
 
 void WNumberPos::slotSetRemain(double remain) {

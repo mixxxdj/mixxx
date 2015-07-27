@@ -47,12 +47,16 @@ void WNumber::setup(QDomNode node, const SkinContext& context) {
     setValue(0.);
 }
 
+void WNumber::onConnectedControlValueChanged(double v) {
+    setValue(v);
+}
+
 void WNumber::setValue(double dValue) {
     double v = dValue + m_dConstFactor;
     int d1 = (int)floor((v-floor(v))*10.);
     int d2 = (int)floor((v-floor(v))*100.)%10;
 
-    m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg(
+    setText(QString(m_qsText).append("%1.%2%3").arg(
         QString("%1").arg(static_cast<int>(v), 3, 10),
         QString("%1").arg(d1, 1, 10),
         QString("%1").arg(d2, 1, 10)));

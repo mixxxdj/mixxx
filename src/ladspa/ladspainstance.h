@@ -18,7 +18,6 @@
 
 #include <defs.h>
 #include <controlobject.h>
-#include <controlobjectthreadmain.h>
 
 class LADSPAInstance
 {

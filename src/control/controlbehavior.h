@@ -19,8 +19,8 @@ class ControlNumericBehavior {
     virtual bool setFilter(double* dValue);
 
     virtual double defaultValue(double dDefault) const;
-    virtual double valueToWidgetParameter(double dValue);
-    virtual double widgetParameterToValue(double dParam);
+    virtual double valueToParameter(double dValue);
+    virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
@@ -33,8 +33,8 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
 
     virtual bool setFilter(double* dValue);
     virtual double defaultValue(double dDefault) const;
-    virtual double valueToWidgetParameter(double dValue);
-    virtual double widgetParameterToValue(double dParam);
+    virtual double valueToParameter(double dValue);
+    virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
@@ -52,8 +52,8 @@ class ControlLogpotmeterBehavior : public ControlPotmeterBehavior {
     virtual ~ControlLogpotmeterBehavior();
 
     virtual double defaultValue(double dDefault) const;
-    virtual double valueToWidgetParameter(double dValue);
-    virtual double widgetParameterToValue(double dParam);
+    virtual double valueToParameter(double dValue);
+    virtual double parameterToValue(double dParam);
 
   protected:
     bool m_bTwoState;
@@ -65,14 +65,15 @@ class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
     ControlLinPotmeterBehavior(double dMinValue, double dMaxValue);
     virtual ~ControlLinPotmeterBehavior();
 
-    virtual double valueToWidgetParameter(double dValue);
-    virtual double widgetParameterToValue(double dParam);
+    virtual double valueToMidiParameter(double dValue);
+    virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
+                                           ControlDoublePrivate* pControl);
 };
 
 class ControlTTRotaryBehavior : public ControlNumericBehavior {
   public:
-    virtual double valueToWidgetParameter(double dValue);
-    virtual double widgetParameterToValue(double dParam);
+    virtual double valueToParameter(double dValue);
+    virtual double parameterToValue(double dParam);
 };
 
 class ControlPushButtonBehavior : public ControlNumericBehavior {

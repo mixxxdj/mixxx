@@ -8,7 +8,7 @@
 #include "waveformwidgetrenderer.h"
 
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"

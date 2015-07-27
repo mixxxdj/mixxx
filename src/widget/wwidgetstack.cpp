@@ -35,6 +35,7 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
                            ControlObject* pNextControl,
                            ControlObject* pPrevControl)
         : QStackedWidget(pParent),
+          WBaseWidget(this),
           m_nextControl(pNextControl ? pNextControl->getKey() : ConfigKey()),
           m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()) {
     connect(&m_nextControl, SIGNAL(valueChanged(double)),

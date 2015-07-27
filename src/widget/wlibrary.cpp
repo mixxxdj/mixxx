@@ -11,6 +11,7 @@
 
 WLibrary::WLibrary(QWidget* parent, TrackCollection *pTrackCollection)
         : QStackedWidget(parent),
+          WBaseWidget(this),
           m_mutex(QMutex::Recursive),
           m_pTrackCollection(pTrackCollection) {
 }

@@ -39,7 +39,8 @@ WDisplay::~WDisplay() {
 void WDisplay::setup(QDomNode node, const SkinContext& context) {
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(getPath(context.selectString(node, "BackPath")));
+        setPixmapBackground(context.getSkinPath(
+            context.selectString(node, "BackPath")));
     }
 
     // Number of states
@@ -49,7 +50,7 @@ void WDisplay::setup(QDomNode node, const SkinContext& context) {
     // Load knob pixmaps
     QString path = context.selectString(node, "Path");
     for (int i = 0; i < m_pixmaps.size(); ++i) {
-        setPixmap(&m_pixmaps, i, getPath(path.arg(i)));
+        setPixmap(&m_pixmaps, i, context.getSkinPath(path.arg(i)));
     }
 
     // See if disabled images is defined, and load them...
@@ -57,7 +58,7 @@ void WDisplay::setup(QDomNode node, const SkinContext& context) {
         QString disabledPath = context.selectString(node, "DisabledPath");
         for (int i = 0; i < m_disabledPixmaps.size(); ++i) {
             setPixmap(&m_disabledPixmaps, i,
-                      getPath(disabledPath.arg(i)));
+                      context.getSkinPath(disabledPath.arg(i)));
         }
         m_bDisabledLoaded = true;
     }
@@ -108,8 +109,43 @@ void WDisplay::setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
 }
 
 int WDisplay::getActivePixmapIndex() const {
-    return static_cast<int>(
-        m_value * static_cast<double>(m_pixmaps.size()) / 128.0);
+    // When there are an even number of pixmaps by convention we want a value of
+    // 0.5 to align to the lower of the two middle pixmaps. In Mixxx < 1.12.0 we
+    // accomplished this by the below formula:
+    // index = (m_value - 64.0/127.0) * (numPixmaps() - 1) + numPixmaps() / 2.0;
+
+    // But it's just as good to use m_value * numPixmaps() - epsilon. Using
+    // numPixmaps() instead of numPixmaps() - 1 ensures that every pixmap shares
+    // an equal slice of the value. Using m_value * (numPixmaps() - 1) gives an
+    // unequal slice of the value to the last pixmaps.
+
+    // Example:
+    // 3 pixmaps
+    // m_value * numPixmaps()
+    // idx: 0       1       2       3
+    // val: 0.0 ... 0.3 ... 0.6 ... 1.0
+    // Even distribution of value range, value 1 is out of bounds (3).
+
+    // m_value * (numPixmaps() - 1)
+    // idx: 0       1       2
+    // val: 0.0 ... 0.5 ... 1.0
+    // Pixmap 2 is only shown at value 1.
+
+    // floor(m_value * (numPixmaps() - 1) + 0.5)
+    // idx: 0       1        2
+    // val: 0.0 ... 0.25 ... 0.75 ... 1.0
+    // Pixmap 0 and Pixmap 2 only shown for 0.25 of value range
+
+    // 4 pixmaps
+    // m_value * numPixmaps()
+    // idx: 0       1        2       3        4
+    // val: 0.0 ... 0.25 ... 0.5 ... 0.75 ... 1.0
+    // Even distribution of value range, value 1 is out of bounds (4).
+
+    // Subtracting an epsilon prevents out of bound values at the end of the
+    // range and biases the middle value towards the lower of the 2 center
+    // pixmaps when there are an even number of pixmaps.
+    return static_cast<int>(getControlParameterDisplay() * numPixmaps() - 0.00001);
 }
 
 void WDisplay::paintEvent(QPaintEvent* ) {
@@ -124,7 +160,7 @@ void WDisplay::paintEvent(QPaintEvent* ) {
 
     // If we are disabled, use the disabled pixmaps. If not, use the regular
     // pixmaps.
-    const QVector<PaintablePointer>& pixmaps = (m_bOff && m_bDisabledLoaded) ?
+    const QVector<PaintablePointer>& pixmaps = (controlDisabled() && m_bDisabledLoaded) ?
             m_disabledPixmaps : m_pixmaps;
 
     if (pixmaps.empty()) {

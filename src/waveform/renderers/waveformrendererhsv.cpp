@@ -10,8 +10,6 @@
 
 #include "defs.h"
 
-#include "controlobjectthreadmain.h"
-
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase( waveformWidgetRenderer) {

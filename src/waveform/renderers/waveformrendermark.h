@@ -6,8 +6,6 @@
 #include "util.h"
 #include "skin/skincontext.h"
 
-class ControlObjectThreadMain;
-
 class WaveformRenderMark : public WaveformRendererAbstract {
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidgetRenderer);

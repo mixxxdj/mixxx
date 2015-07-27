@@ -40,8 +40,6 @@ class WKnob : public WDisplay {
     void mouseReleaseEvent(QMouseEvent *e);
 
   private:
-    int getActivePixmapIndex() const;
-
     KnobEventHandler<WKnob> m_handler;
     friend class KnobEventHandler<WKnob>;
 };

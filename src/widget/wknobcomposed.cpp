@@ -17,12 +17,12 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(getPath(context.selectString(node, "BackPath")));
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")));
     }
 
     // Set background pixmap if available
     if (context.hasNode(node, "Knob")) {
-        setPixmapKnob(getPath(context.selectString(node, "Knob")));
+        setPixmapKnob(context.getSkinPath(context.selectString(node, "Knob")));
     }
 
     if (context.hasNode(node, "MinAngle")) {
@@ -71,8 +71,8 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     if (!m_pKnob.isNull() && !m_pKnob->isNull()) {
         p.translate(width() / 2.0, height() / 2.0);
 
-        // Value is now in the range [0, 1].
-        double value = getValue() / 127.0;
+        // Value is in the range [0, 1].
+        double value = getControlParameterDisplay();
 
         double angle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * value;
         p.rotate(angle);

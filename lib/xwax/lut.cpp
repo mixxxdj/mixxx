@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Mark Hills <mark@pogo.org.uk>
+ * Copyright (C) 2013 Mark Hills <mark@xwax.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,13 +46,13 @@ int lut_init(struct lut *lut, int nslots)
             " (%d slots per hash, %zuKb)\n",
             hashes, nslots, nslots / hashes, bytes / 1024);
 
-    lut->slot = (struct slot*)malloc(sizeof(struct slot) * nslots);
+    lut->slot = static_cast<struct slot*>(malloc(sizeof(struct slot) * nslots));
     if (lut->slot == NULL) {
         perror("malloc");
         return -1;
     }
 
-    lut->table = (slot_no_t*)malloc(sizeof(slot_no_t) * hashes);
+    lut->table = static_cast<slot_no_t*>(malloc(sizeof(slot_no_t) * hashes));
     if (lut->table == NULL) {
         perror("malloc");
         return -1;

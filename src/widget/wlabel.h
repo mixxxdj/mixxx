@@ -20,20 +20,18 @@
 
 #include <QLabel>
 
-#include "widget/wwidget.h"
+#include "widget/wbasewidget.h"
 #include "skin/skincontext.h"
 
-class WLabel : public WWidget {
+class WLabel : public QLabel, public WBaseWidget {
     Q_OBJECT
   public:
     WLabel(QWidget* pParent=NULL);
     virtual ~WLabel();
 
     virtual void setup(QDomNode node, const SkinContext& context);
-    virtual QWidget* getComposedWidget() { return m_pLabel; }
 
   protected:
-    QLabel* m_pLabel;
     QString m_qsText;
     // Foreground and background colors.
     QColor m_qFgColor;

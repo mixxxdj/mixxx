@@ -28,12 +28,6 @@ WKnob::WKnob(QWidget* pParent)
 WKnob::~WKnob() {
 }
 
-int WKnob::getActivePixmapIndex() const {
-    // TODO(rryan): Ew.
-    int iNoPos = numPixmaps();
-    return (int)(((m_value-64.)*(((float)iNoPos-1.)/127.))+((float)iNoPos/2.));
-}
-
 void WKnob::mouseMoveEvent(QMouseEvent* e) {
     m_handler.mouseMoveEvent(this, e);
 }
