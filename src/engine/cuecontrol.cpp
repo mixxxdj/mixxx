@@ -205,7 +205,7 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
     }
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
-    seekAbs(loadCuePoint);
+    seekExact(loadCuePoint);
 }
 
 void CueControl::trackUnloaded(TrackPointer pTrack) {
@@ -327,7 +327,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     bool playing = m_pPlayButton->get() > 0;
     if (!playing && m_pQuantizeEnabled->get() > 0.0) {
         lock.unlock();  // prevent deadlock.
-        seekAbs(cuePosition);
+        seekExact(cuePosition);
     }
 }
 
@@ -347,7 +347,7 @@ void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
     if (pCue) {
         int position = pCue->getPosition();
         if (position != -1) {
-            seekAbs(position);
+            seekExact(position);
         }
     }
 }
@@ -369,7 +369,7 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
         int position = pCue->getPosition();
         if (position != -1) {
             m_pPlayButton->set(0.0);
-            seekAbs(position);
+            seekExact(position);
         }
     }
 }
@@ -390,7 +390,7 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
     if (pCue) {
         int position = pCue->getPosition();
         if (position != -1) {
-            seekAbs(position);
+            seekExact(position);
             m_pPlayButton->set(1.0);
         }
     }
@@ -458,7 +458,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
 
-            seekAbs(iPosition);
+            seekExact(iPosition);
         }
     } else if (m_bPreviewingHotcue) {
         // This is a activate release and we are previewing at least one
@@ -485,7 +485,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                     m_pPlayButton->set(0.0);
                     // Need to unlock before emitting any signals to prevent deadlock.
                     lock.unlock();
-                    seekAbs(iPosition);
+                    seekExact(iPosition);
                 }
             }
         }
@@ -590,7 +590,7 @@ void CueControl::cueGoto(double v)
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    seekAbs(cuePoint);
+    seekExact(cuePoint);
 }
 
 void CueControl::cueGotoAndPlay(double v)
@@ -617,7 +617,7 @@ void CueControl::cueGotoAndStop(double v)
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    seekAbs(cuePoint);
+    seekExact(cuePoint);
 }
 
 void CueControl::cuePreview(double v)
@@ -637,7 +637,7 @@ void CueControl::cuePreview(double v)
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    seekAbs(cuePoint);
+    seekExact(cuePoint);
 }
 
 void CueControl::cueSimple(double v) {
@@ -656,7 +656,7 @@ void CueControl::cueSimple(double v) {
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    seekAbs(cuePoint);
+    seekExact(cuePoint);
 }
 
 void CueControl::cueCDJ(double v) {
@@ -680,7 +680,7 @@ void CueControl::cueCDJ(double v) {
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
 
-            seekAbs(cuePoint);
+            seekExact(cuePoint);
         } else {
             if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
                 m_pPlayButton->set(1.0);
@@ -694,7 +694,7 @@ void CueControl::cueCDJ(double v) {
                 // necessarily where we currently are
                 if (m_pQuantizeEnabled->get() > 0.0) {
                     lock.unlock();  // prevent deadlock.
-                    seekAbs(m_pCuePoint->get());
+                    seekExact(m_pCuePoint->get());
                 }
             }
         }
@@ -705,7 +705,7 @@ void CueControl::cueCDJ(double v) {
         // Need to unlock before emitting any signals to prevent deadlock.
         lock.unlock();
 
-        seekAbs(cuePoint);
+        seekExact(cuePoint);
     }
     else {
         // Re-trigger the play button value so controllers get the correct one

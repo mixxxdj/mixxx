@@ -81,6 +81,8 @@ class EngineControl : public QObject {
   protected:
     void seek(double fractionalPosition);
     void seekAbs(double sample);
+    // Seek to an exact sample and don't allow quantizing adjustment.
+    void seekExact(double sample);
     EngineBuffer* pickSyncTarget();
 
     ConfigObject<ConfigValue>* getConfig();

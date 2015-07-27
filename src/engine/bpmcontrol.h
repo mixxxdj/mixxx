@@ -11,9 +11,10 @@
 #include "tapfilter.h"
 
 class ControlObject;
+class ControlObjectSlave;
 class ControlPushButton;
 class EngineBuffer;
-class ControlObjectSlave;
+class SyncControl;
 
 class BpmControl : public EngineControl {
     Q_OBJECT
@@ -79,6 +80,8 @@ class BpmControl : public EngineControl {
     double getBeatDistance(double dThisPosition) const;
     bool syncTempo();
     bool syncPhase();
+
+    friend class SyncControl;
 
     // ControlObjects that come from EngineBuffer
     ControlObjectSlave* m_pPlayButton;
