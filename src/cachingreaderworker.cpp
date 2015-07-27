@@ -35,20 +35,28 @@ void CachingReaderWorker::processCachingReaderChunkReadRequest(
     update->maxReadableFrameIndex = m_maxReadableFrameIndex;
     update->chunk = request->chunk;
 
+    // Before trying to read any data we need to check if the audio source
+    // is available and if any audio data that is needed by the chunk is
+    // actually available.
     if (!update->chunk->isReadable(m_pAudioSource, m_maxReadableFrameIndex)) {
         update->status = CHUNK_READ_INVALID;
         return;
     }
 
+    // Try to read the data required for the chunk from the audio source
+    // and adjust the max. readable frame index if decoding errors occur.
     const SINT framesRead = request->chunk->readSampleFrames(
             m_pAudioSource, &m_maxReadableFrameIndex);
 
     if (0 < framesRead) {
         update->status = CHUNK_READ_SUCCESS;
     } else {
-        // The chunk might have become unreadable during the previous
-        // read attempt if no data is available. Otherwise we have simply
-        // reached the end of the track.
+        // If no data has been read we need to distinguish two different
+        // cases. If the chunk claims that the audio source is still readable
+        // even with the resulting (and possibly modified) max. frame index
+        // we have simply reached the end of the track. Otherwise the chunk
+        // is beyond the readable range of the audio source and we need to
+        // declare this read request as invalid.
         if (update->chunk->isReadable(m_pAudioSource, m_maxReadableFrameIndex)) {
             update->status = CHUNK_READ_EOF;
         } else {
@@ -139,6 +147,10 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
             pTrack, QString("The file '%1' could not be loaded.").arg(filename)));
         return;
     }
+
+    // Initially assume that the complete content offered by audio source
+    // is available for reading. Later if read errors occur this value will
+    // be decreased to avoid repeated reading of corrupt audio data.
     m_maxReadableFrameIndex = m_pAudioSource->getMaxFrameIndex();
 
     status.maxReadableFrameIndex = m_maxReadableFrameIndex;
