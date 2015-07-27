@@ -3,7 +3,7 @@
     <info>
         <name>Pioneer DDJ-SB</name>
         <author>Joan Ardiaca Jové</author>
-        <description>Pioneer DDJ-SB configuration for 2 decks</description>
+        <description>Pioneer DDJ-SB configuration for 4 decks. Use the tempo range buttons to switch decks.</description>
     </info>
     <controller id="PIONEER">
         <scriptfiles>
@@ -156,20 +156,20 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>PioneerDDJSB.headphoneCueButton</key>
                 <status>0x90</status>
                 <midino>0x68</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>PioneerDDJSB.headphoneCueButton</key>
                 <status>0x91</status>
                 <midino>0x68</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -193,7 +193,6 @@
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Channel4]_enable</key>
-                <description>MIDI Learned from 26 messages.</description>
                 <status>0x97</status>
                 <midino>0x6B</midino>
                 <options>
@@ -203,7 +202,6 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>group_[Channel4]_enable</key>
-                <description>MIDI Learned from 18 messages.</description>
                 <status>0x98</status>
                 <midino>0x6B</midino>
                 <options>
@@ -213,7 +211,6 @@
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Channel3]_enable</key>
-                <description>MIDI Learned from 24 messages.</description>
                 <status>0x97</status>
                 <midino>0x6A</midino>
                 <options>
@@ -223,7 +220,6 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>group_[Channel3]_enable</key>
-                <description>MIDI Learned from 16 messages.</description>
                 <status>0x98</status>
                 <midino>0x6A</midino>
                 <options>
@@ -233,7 +229,6 @@
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>next_chain</key>
-                <description>MIDI Learned from 22 messages.</description>
                 <status>0x97</status>
                 <midino>0x69</midino>
                 <options>
@@ -243,7 +238,6 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>next_chain</key>
-                <description>MIDI Learned from 4 messages.</description>
                 <status>0x98</status>
                 <midino>0x69</midino>
                 <options>
@@ -253,7 +247,6 @@
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>prev_chain</key>
-                <description>MIDI Learned from 20 messages.</description>
                 <status>0x97</status>
                 <midino>0x68</midino>
                 <options>
@@ -272,7 +265,6 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>prev_chain</key>
-                <description>MIDI Learned from 2 messages.</description>
                 <status>0x98</status>
                 <midino>0x68</midino>
                 <options>
@@ -307,6 +299,15 @@
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.deckToggleButton</key>
+                <status>0x90</status>
+                <midino>0x60</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Master]</group>
                 <key>maximize_library</key>
                 <status>0x96</status>
@@ -334,6 +335,15 @@
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.deckToggleButton</key>
+                <status>0x91</status>
+                <midino>0x60</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>group_[Channel1]_enable</key>
                 <status>0x95</status>
@@ -344,119 +354,119 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>mute</key>
+                <key>PioneerDDJSB.muteButton</key>
                 <status>0x97</status>
                 <midino>0x63</midino>
                 <options>
-                    <switch/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>quantize</key>
+                <key>PioneerDDJSB.quantizeButton</key>
                 <status>0x90</status>
                 <midino>0x5C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>mute</key>
+                <key>PioneerDDJSB.muteButton</key>
                 <status>0x98</status>
                 <midino>0x63</midino>
                 <options>
-                    <switch/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterHighKill</key>
+                <key>PioneerDDJSB.highKillButton</key>
                 <status>0x97</status>
                 <midino>0x62</midino>
                 <options>
-                    <switch/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>quantize</key>
+                <key>PioneerDDJSB.quantizeButton</key>
                 <status>0x91</status>
                 <midino>0x5C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterHighKill</key>
+                <key>PioneerDDJSB.highKillButton</key>
                 <status>0x98</status>
                 <midino>0x62</midino>
                 <options>
-                    <switch/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterMidKill</key>
+                <key>PioneerDDJSB.midKillButton</key>
                 <status>0x97</status>
                 <midino>0x61</midino>
                 <options>
-                    <switch/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterMidKill</key>
+                <key>PioneerDDJSB.midKillButton</key>
                 <status>0x98</status>
                 <midino>0x61</midino>
                 <options>
-                    <switch/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterLowKill</key>
+                <key>PioneerDDJSB.lowKillButton</key>
                 <status>0x97</status>
                 <midino>0x60</midino>
                 <options>
-                    <switch/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatsync</key>
+                <key>PioneerDDJSB.syncButton</key>
                 <status>0x90</status>
                 <midino>0x58</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterLowKill</key>
+                <key>PioneerDDJSB.lowKillButton</key>
                 <status>0x98</status>
                 <midino>0x60</midino>
                 <options>
-                    <switch/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatsync</key>
+                <key>PioneerDDJSB.syncButton</key>
                 <status>0x91</status>
                 <midino>0x58</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>PioneerDDJSB.headphoneCueButton</key>
                 <status>0x90</status>
                 <midino>0x54</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -470,11 +480,11 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>PioneerDDJSB.headphoneCueButton</key>
                 <status>0x91</status>
                 <midino>0x54</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -506,79 +516,79 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.5_activate</key>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
                 <status>0x97</status>
                 <midino>0x53</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.5_activate</key>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
                 <status>0x98</status>
                 <midino>0x53</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.25_activate</key>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
                 <status>0x97</status>
                 <midino>0x52</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.25_activate</key>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
                 <status>0x98</status>
                 <midino>0x52</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.125_activate</key>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
                 <status>0x97</status>
                 <midino>0x51</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.125_activate</key>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
                 <status>0x98</status>
                 <midino>0x51</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.0625_activate</key>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
                 <status>0x97</status>
                 <midino>0x50</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.0625_activate</key>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
                 <status>0x98</status>
                 <midino>0x50</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>script.brake</key>
+                <key>PioneerDDJSB.brakeButton</key>
                 <status>0x90</status>
                 <midino>0x48</midino>
                 <options>
@@ -587,7 +597,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>script.brake</key>
+                <key>PioneerDDJSB.brakeButton</key>
                 <status>0x91</status>
                 <midino>0x48</midino>
                 <options>
@@ -596,20 +606,20 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>reverseroll</key>
+                <key>PioneerDDJSB.reverseRollButton</key>
                 <status>0x90</status>
                 <midino>0x47</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reverseroll</key>
+                <key>PioneerDDJSB.reverseRollButton</key>
                 <status>0x91</status>
                 <midino>0x47</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -623,11 +633,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_8_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x4B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -650,20 +660,20 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_8_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x4B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_7_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x4A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -686,20 +696,20 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_7_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x4A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_6_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x49</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -713,47 +723,47 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_6_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x49</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_5_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x48</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
+                <key>PioneerDDJSB.loadButton</key>
                 <status>0x96</status>
                 <midino>0x47</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_5_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x48</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
+                <key>PioneerDDJSB.loadButton</key>
                 <status>0x96</status>
                 <midino>0x46</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -767,11 +777,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_8_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x43</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -785,20 +795,20 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_8_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x43</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_7_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x42</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -821,47 +831,47 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_7_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x42</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_6_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x41</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_6_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x41</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_5_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x40</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_5_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x40</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1046,47 +1056,47 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>loop_double</key>
+                <key>PioneerDDJSB.loopDoubleButton</key>
                 <status>0x97</status>
                 <midino>0x2B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>loop_double</key>
+                <key>PioneerDDJSB.loopDoubleButton</key>
                 <status>0x98</status>
                 <midino>0x2B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>loop_halve</key>
+                <key>PioneerDDJSB.loopHalveButton</key>
                 <status>0x97</status>
                 <midino>0x23</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>loop_halve</key>
+                <key>PioneerDDJSB.loopHalveButton</key>
                 <status>0x98</status>
                 <midino>0x23</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>reloop_exit</key>
+                <key>PioneerDDJSB.loopExitButton</key>
                 <status>0x97</status>
                 <midino>0x22</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1100,245 +1110,254 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reloop_exit</key>
+                <key>PioneerDDJSB.loopExitButton</key>
                 <status>0x98</status>
                 <midino>0x22</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>loop_out</key>
+                <key>PioneerDDJSB.loopOutButton</key>
                 <status>0x97</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>keylock</key>
+                <key>PioneerDDJSB.keyLockButton</key>
                 <status>0x90</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <status>0xB6</status>
+                <midino>0x3F</midino>
+                <options>
+                    <fourteen-bit-lsb/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>loop_out</key>
+                <key>PioneerDDJSB.loopOutButton</key>
                 <status>0x98</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>loop_in</key>
+                <key>PioneerDDJSB.loopInButton</key>
                 <status>0x97</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>keylock</key>
+                <key>PioneerDDJSB.keyLockButton</key>
                 <status>0x91</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>loop_in</key>
+                <key>PioneerDDJSB.loopInButton</key>
                 <status>0x98</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>slip_enabled</key>
+                <key>PioneerDDJSB.slipButton</key>
                 <status>0x90</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>slip_enabled</key>
+                <key>PioneerDDJSB.slipButton</key>
                 <status>0x91</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_64_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x97</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_32_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x97</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_64_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_32_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_16_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x97</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_16_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_8_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x97</status>
                 <midino>0x13</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>cue_default</key>
+                <key>PioneerDDJSB.cueButton</key>
                 <status>0x90</status>
                 <midino>0x0C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_8_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
                 <midino>0x13</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_4_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x97</status>
                 <midino>0x12</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>cue_default</key>
+                <key>PioneerDDJSB.cueButton</key>
                 <status>0x91</status>
                 <midino>0x0C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>PioneerDDJSB.playButton</key>
                 <status>0x90</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_4_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
                 <midino>0x12</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_2_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x97</status>
                 <midino>0x11</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>play</key>
+                <key>PioneerDDJSB.playButton</key>
                 <status>0x91</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_2_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
                 <midino>0x11</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_1_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x97</status>
                 <midino>0x10</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_1_toggle</key>
+                <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
                 <midino>0x10</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1361,29 +1380,29 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_4_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_4_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_3_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x0A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1397,20 +1416,20 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_3_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x0A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_2_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x09</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1433,20 +1452,20 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_2_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x09</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_1_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x08</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1469,11 +1488,11 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_1_clear</key>
+                <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x08</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1505,65 +1524,65 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_4_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_4_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_3_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_3_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_2_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_2_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>hotcue_1_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1572,106 +1591,106 @@
                 <status>0xB6</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal/>
+                    <fourteen-bit-msb/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>hotcue_1_activate</key>
+                <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x98</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>volume</key>
+                <key>PioneerDDJSB.deckFader</key>
                 <status>0xB0</status>
                 <midino>0x13</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[QuickEffectRack1_[Channel2]]</group>
-                <key>super1</key>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.filterKnob</key>
                 <status>0xB6</status>
                 <midino>0x18</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>volume</key>
+                <key>PioneerDDJSB.deckFader</key>
                 <status>0xB1</status>
                 <midino>0x13</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[QuickEffectRack1_[Channel1]]</group>
-                <key>super1</key>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.filterKnob</key>
                 <status>0xB6</status>
                 <midino>0x17</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterLow</key>
+                <key>PioneerDDJSB.filterLowKnob</key>
                 <status>0xB0</status>
                 <midino>0x0F</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterLow</key>
+                <key>PioneerDDJSB.filterLowKnob</key>
                 <status>0xB1</status>
                 <midino>0x0F</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterMid</key>
+                <key>PioneerDDJSB.filterMidKnob</key>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterMid</key>
+                <key>PioneerDDJSB.filterMidKnob</key>
                 <status>0xB1</status>
                 <midino>0x0B</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterHigh</key>
+                <key>PioneerDDJSB.filterHighKnob</key>
                 <status>0xB0</status>
                 <midino>0x07</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterHigh</key>
+                <key>PioneerDDJSB.filterHighKnob</key>
                 <status>0xB1</status>
                 <midino>0x07</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1694,11 +1713,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>rate</key>
+                <key>PioneerDDJSB.tempoSlider</key>
                 <status>0xB0</status>
                 <midino>0x00</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1712,29 +1731,29 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>rate</key>
+                <key>PioneerDDJSB.tempoSlider</key>
                 <status>0xB1</status>
                 <midino>0x00</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pregain</key>
+                <key>PioneerDDJSB.gainKnob</key>
                 <status>0xB4</status>
                 <midino>0x00</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pregain</key>
+                <key>PioneerDDJSB.gainKnob</key>
                 <status>0xB5</status>
                 <midino>0x00</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
         </controls>
