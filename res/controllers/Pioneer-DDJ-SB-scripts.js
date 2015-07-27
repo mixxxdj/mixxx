@@ -1,7 +1,7 @@
 var PioneerDDJSB = function () {};
 
 PioneerDDJSB.init = function (id) {
-    PioneerDDJSB.settings = {
+    PioneerDDJSB.scratchSettings = {
         'alpha': 1.0 / 8,
         'beta': 1.0 / 8 / 32,
         'jogResolution': 720,
@@ -389,10 +389,10 @@ PioneerDDJSB.jogTouch = function (channel, control, value, status) {
         if (value === 0x7F) {
             engine.scratchEnable(
                 channel + 1,
-                PioneerDDJSB.settings.jogResolution,
-                PioneerDDJSB.settings.vinylSpeed,
-                PioneerDDJSB.settings.alpha,
-                PioneerDDJSB.settings.beta,
+                PioneerDDJSB.scratchSettings.jogResolution,
+                PioneerDDJSB.scratchSettings.vinylSpeed,
+                PioneerDDJSB.scratchSettings.alpha,
+                PioneerDDJSB.scratchSettings.beta,
                 true
             );
         } else {
@@ -499,20 +499,11 @@ PioneerDDJSB.fxKnob = function (channel, control, value, status) {
 };
 
 PioneerDDJSB.softTakeoverEmulation = function (deck, index, currentValue) {
-    var deltaToPreviousToActive = PioneerDDJSB.fxPreviousKnobValues[deck][index] - PioneerDDJSB.fxParamsActiveValues[deck][index],
-        deltaToActive = currentValue - PioneerDDJSB.fxParamsActiveValues[deck][index],
-        passedOverStoredValue = (deltaToActive * deltaToPreviousToActive) < 0;
+    var deltaToActive = currentValue - PioneerDDJSB.fxParamsActiveValues[deck][index];
 
-    print("new: " + currentValue + " previous: " + PioneerDDJSB.fxPreviousKnobValues[deck][index] + " active: " + PioneerDDJSB.fxParamsActiveValues[deck][index]);
-
-    PioneerDDJSB.fxPreviousKnobValues[deck][index] = currentValue;
-
-    if (passedOverStoredValue || Math.abs(deltaToActive) < 15) {
-        print("yep, passedover is " + passedOverStoredValue + " deltaToActive is " + deltaToActive);
-
+    if (Math.abs(deltaToActive) < 15) {
         PioneerDDJSB.fxParamsActiveValues[deck][index] = currentValue;
         return true;
     }
-    print("nope");
     return false;
 };
