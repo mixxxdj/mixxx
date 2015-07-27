@@ -37,7 +37,7 @@ TreeItemModel::~TreeItemModel() {
 
 //Our Treeview Model supports exactly a single column
 int TreeItemModel::columnCount(const QModelIndex &parent) const {
-    Q_UNUSED(parent)
+    Q_UNUSED(parent);
     return 1;
 }
 

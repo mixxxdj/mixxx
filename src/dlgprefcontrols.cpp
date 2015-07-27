@@ -38,6 +38,7 @@
 #include "playermanager.h"
 #include "controlobject.h"
 #include "mixxx.h"
+#include "defs_urls.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
@@ -163,20 +164,27 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetLocale(int)));
 
     //
-    // Default Cue Behavior
+    // Cue Mode
     //
 
+    // Add "(?)" with a manual link to the label
+    labelCueMode->setText(
+            labelCueMode->text() +
+            " <a href=\"" +
+            MIXXX_MANUAL_URL +
+            "/chapters/user_interface.html#using-cue-modes\">(?)</a>");
+
     // Set default value in config file and control objects, if not present
-    QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault"));
-    if(cueDefault.length() == 0) {
-        m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(0));
-        cueDefault = "0";
-    }
+    // Default is "0" = Mixxx Mode
+    QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault"), "0");
     int cueDefaultValue = cueDefault.toInt();
 
     // Update combo box
-    ComboBoxCueDefault->addItem(tr("CDJ Mode"));
-    ComboBoxCueDefault->addItem(tr("Simple"));
+    ComboBoxCueDefault->addItem(tr("Mixxx mode"));
+    ComboBoxCueDefault->addItem(tr("Pioneer mode"));
+    ComboBoxCueDefault->addItem(tr("Denon mode"));
+    ComboBoxCueDefault->addItem(tr("Numark mode"));
+
     ComboBoxCueDefault->setCurrentIndex(cueDefaultValue);
 
     slotSetCueDefault(cueDefaultValue);
@@ -243,12 +251,20 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     ComboBoxSkinconf->clear();
 
-    QDir dir(m_pConfig->getResourcePath() + "skins/");
-    dir.setFilter(QDir::Dirs);
+    QDir skinsDir(m_pConfig->getResourcePath() + "skins/");
+    skinsDir.setFilter(QDir::Dirs);
+
+    QList<QFileInfo> list = skinsDir.entryInfoList();
+
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        // Show developer skins
+        QDir developerSkinsDir(m_pConfig->getResourcePath() + "developer_skins/");
+        developerSkinsDir.setFilter(QDir::Dirs);
+        list += developerSkinsDir.entryInfoList();
+    }
 
     QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
-    QList<QFileInfo> list = dir.entryInfoList();
     int j=0;
     for (int i=0; i<list.size(); ++i)
     {
@@ -264,6 +280,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             ++j;
         }
     }
+
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
