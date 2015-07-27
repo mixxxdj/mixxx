@@ -191,7 +191,7 @@ void CachingReader::process() {
             // Take over control of the chunk from the worker.
             // This has to be done before freeing all chunks
             // after a new track has been loaded (see below)!
-            pChunk->finishReading();
+            pChunk->takeFromWorker();
             if (status.status != CHUNK_READ_SUCCESS) {
                 // Discard chunks that are empty (EOF) or invalid
                 freeChunk(pChunk);
@@ -391,12 +391,14 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                 }
                 CachingReaderChunkReadRequest request;
                 request.chunk = pChunk;
-                pChunk->beginReading();
+                pChunk->giveToWorker();
                 // qDebug() << "Requesting read of chunk" << current << "into" << pChunk;
                 // qDebug() << "Requesting read into " << request.chunk->data;
                 if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
-                    qDebug() << "ERROR: Could not submit read request for "
+                    qWarning() << "ERROR: Could not submit read request for "
                              << chunkIndex;
+                    pChunk->takeFromWorker();
+                    freeChunk(pChunk);
                 }
                 //qDebug() << "Checking chunk " << current << " shouldWake:" << shouldWake << " chunksToRead" << m_chunksToRead.size();
             } else if (pChunk->getState() == CachingReaderChunk::READY) {

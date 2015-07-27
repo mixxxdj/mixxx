@@ -109,13 +109,12 @@ public:
         return m_state;
     }
 
-    // Please note that the state must exclusively be controlled by the
-    // cache and not the worker thread!
-    void beginReading() {
+    // The state is controlled by the cache as the owner of each chunk!
+    void giveToWorker() {
         DEBUG_ASSERT(READY == m_state);
         m_state = READ_PENDING;
     }
-    void finishReading() {
+    void takeFromWorker() {
         DEBUG_ASSERT(READ_PENDING == m_state);
         m_state = READY;
     }
