@@ -140,22 +140,8 @@ int SoundSourceFFmpeg::open() {
     AVDictionary *l_iFormatOpts = NULL;
 
     m_iOffset = 0;
-#ifdef __WINDOWS__
-    // From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
-    // If you try this conversion, f.isValid() will return false in many cases
-    // and processTaglibFile() will fail
-    //
-    // The method toLocal8Bit() returns the local 8-bit representation
-    // of the string as a QByteArray. The returned byte array is undefined if
-    // the string contains characters not supported
-    // by the local 8-bit encoding.
-    //
-    // See https://ffmpeg.org/trac/ffmpeg/ticket/819 for relevant bug report.
-    //
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
-#else
-    QByteArray qBAFilename = m_qFilename.toUtf8();
-#endif
+
     // Initialize FFMPEG
     // FFmpegInit();
 
@@ -647,22 +633,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
 
 int SoundSourceFFmpeg::parseHeader() {
     qDebug() << "ffmpeg: SoundSourceFFmpeg::parseHeader" << m_qFilename;
-#ifdef __WINDOWS__
-    // From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
-    // If you try this conversion, f.isValid() will return false in many cases
-    // and processTaglibFile() will fail
-    //
-    // The method toLocal8Bit() returns the local 8-bit representation of
-    // the string as a QByteArray. The returned byte array is undefined if the
-    // string contains characters not supported
-    // by the local 8-bit encoding.
-    //
-    // See https://ffmpeg.org/trac/ffmpeg/ticket/819 for relevant bug report.
-    //
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
-#else
-    QByteArray qBAFilename = m_qFilename.toUtf8();
-#endif
 
     AVFormatContext * FmtCtx = avformat_alloc_context();
     AVCodecContext * CodecCtx;
