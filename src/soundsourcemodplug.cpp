@@ -103,7 +103,7 @@ int SoundSourceModPlug::open() {
         // reserve enough space in sample buffer
         m_sampleBuf.resize(currentSize + CHUNKSIZE);
         bytesRead = ModPlug::ModPlug_Read(m_pModFile,
-                                          m_sampleBuf.constData() + currentSize,
+                                          m_sampleBuf.data() + currentSize,
                                           CHUNKSIZE);
         // adapt to actual size
         currentSize += bytesRead;

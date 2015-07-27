@@ -49,18 +49,19 @@ class TrackCollection;
 #include "util/timer.h"
 
 class ControlObjectThread;
+class QTranslator;
 
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
 // For the main view, an instance of class MixxxView is
 // created which creates your view.
-class MixxxApp : public QMainWindow {
+class MixxxMainWindow : public QMainWindow {
     Q_OBJECT
 
   public:
     // Construtor. files is a list of command line arguments
-    MixxxApp(QApplication *app, const CmdlineArgs& args);
-    virtual ~MixxxApp();
+    MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
+    virtual ~MixxxMainWindow();
     // initializes all QActions of the application
     void initActions();
     // initMenuBar creates the menu_bar and inserts the menuitems
@@ -126,8 +127,8 @@ class MixxxApp : public QMainWindow {
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
-    bool eventFilter(QObject *obj, QEvent *event);
-    void closeEvent(QCloseEvent *event);
+    virtual bool eventFilter(QObject *obj, QEvent *event);
+    virtual void closeEvent(QCloseEvent *event);
 
   private:
     void logBuildDetails();
@@ -135,6 +136,9 @@ class MixxxApp : public QMainWindow {
     void initializeKeyboard();
     void initializeTranslations(QApplication* pApp);
     void initializeTrackCollection();
+    bool loadTranslations(const QLocale& systemLocale, QString userLocale,
+                          const QString& translation, const QString& prefix,
+                          const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
 

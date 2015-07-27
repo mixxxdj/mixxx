@@ -13,7 +13,7 @@
 #include <QList>
 
 #include "util/fifo.h"
-#include "singleton.h"
+#include "util/singleton.h"
 #include "util/stat.h"
 #include "util/event.h"
 

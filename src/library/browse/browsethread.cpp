@@ -9,9 +9,8 @@
 #include "library/browse/browsethread.h"
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
-#include "mixxxutils.cpp"
+#include "util/time.h"
 #include "util/trace.h"
-
 
 BrowseThread* BrowseThread::m_instance = NULL;
 static QMutex s_Mutex;
@@ -174,7 +173,8 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         row_data.insert(COLUMN_COMMENT, item);
 
-        QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
+        QString duration = Time::formatSeconds(qVariantValue<int>(
+                tio.getDuration()), false);
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         row_data.insert(COLUMN_DURATION, item);

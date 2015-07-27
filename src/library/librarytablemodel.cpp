@@ -1,7 +1,6 @@
 
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
-#include "mixxxutils.cpp"
 #include "playermanager.h"
 
 const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =

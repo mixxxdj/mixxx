@@ -7,7 +7,6 @@
 #include "library/cratetablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "mixxxutils.cpp"
 #include "playermanager.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent,

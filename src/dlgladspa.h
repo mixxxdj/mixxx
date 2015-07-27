@@ -10,7 +10,7 @@
 #ifndef DLGLADSPA_H
 #define DLGLADSPA_H
 
-class MixxxApp;
+class MixxxMainWindow;
 class LADSPAView;
 
 class DlgLADSPA : public QDialog

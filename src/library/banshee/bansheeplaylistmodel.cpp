@@ -5,7 +5,6 @@
 #include "library/banshee/bansheeplaylistmodel.h"
 #include "library/banshee/bansheedbconnection.h"
 #include "library/queryutil.h"
-#include "mixxxutils.cpp"
 #include "library/starrating.h"
 #include "library/previewbuttondelegate.h"
 #include "track/beatfactory.h"

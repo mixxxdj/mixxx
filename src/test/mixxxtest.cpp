@@ -1,6 +1,6 @@
 #include "test/mixxxtest.h"
 
-#include "singleton.h"
+#include "util/singleton.h"
 
 // Specialize the Singleton template for QApplication because it doesn't have a
 // 0-args constructor.
