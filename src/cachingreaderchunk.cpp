@@ -6,7 +6,7 @@
 #include "util/math.h"
 
 
-const SINT CachingReaderChunkWorker::kDefaultIndex = -1;
+const SINT CachingReaderChunkWorker::kInvalidIndex = -1;
 
 // One chunk should contain 1/2 - 1/4th of a second of audio.
 // 8192 frames contain about 170 ms of audio at 48 kHz, which
@@ -23,7 +23,7 @@ const SINT CachingReaderChunkWorker::kSamples =
 
 CachingReaderChunkWorker::CachingReaderChunkWorker(
         CSAMPLE* sampleBuffer)
-        : m_index(kDefaultIndex),
+        : m_index(kInvalidIndex),
           m_sampleBuffer(sampleBuffer),
           m_frameCount(0) {
 }
@@ -137,7 +137,7 @@ void CachingReaderChunk::init(SINT index) {
 
 void CachingReaderChunk::free() {
     DEBUG_ASSERT(READ_PENDING != m_state);
-    CachingReaderChunkWorker::init(kDefaultIndex);
+    CachingReaderChunkWorker::init(kInvalidIndex);
     m_state = FREE;
 }
 

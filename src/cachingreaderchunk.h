@@ -12,7 +12,7 @@
 // is available for both the worker thread and the cache.
 class CachingReaderChunkWorker {
 public:
-    static const SINT kDefaultIndex;
+    static const SINT kInvalidIndex;
     static const SINT kChannels;
     static const SINT kFrames;
     static const SINT kSamples;
@@ -121,11 +121,15 @@ public:
     }
 
     // Inserts a chunk into the double-linked list before the
-    // given element
+    // given chunk. If the list is currently empty simply pass
+    // pBefore = nullptr. Please note that if pBefore points to
+    // the head of the current list this chunk becomes the new
+    // head of the list.
     void insertIntoListBefore(
             CachingReaderChunk* pBefore);
     // Removes a chunk from the double-linked list and optionally
-    // adjusts head/tail pointers
+    // adjusts head/tail pointers. Pass ppHead/ppTail = nullptr if
+    // you prefer to adjust those pointers manually.
     void removeFromList(
             CachingReaderChunk** ppHead,
             CachingReaderChunk** ppTail);
