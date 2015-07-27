@@ -6,7 +6,7 @@
 #include "util/math.h"
 
 
-const SINT CachingReaderChunkWorker::kInvalidIndex = -1;
+const SINT CachingReaderChunkForWorker::kInvalidIndex = -1;
 
 // One chunk should contain 1/2 - 1/4th of a second of audio.
 // 8192 frames contain about 170 ms of audio at 48 kHz, which
@@ -16,27 +16,27 @@ const SINT CachingReaderChunkWorker::kInvalidIndex = -1;
 // easier memory alignment.
 // TODO(XXX): The optimum value of the "constant" kFrames depends
 // on the properties of the AudioSource as the remarks above suggest!
-const SINT CachingReaderChunkWorker::kChannels = Mixxx::AudioSource::kChannelCountStereo;
-const SINT CachingReaderChunkWorker::kFrames = 8192; // ~ 170 ms at 48 kHz
-const SINT CachingReaderChunkWorker::kSamples =
-        CachingReaderChunkWorker::frames2samples(CachingReaderChunkWorker::kFrames);
+const SINT CachingReaderChunkForWorker::kChannels = Mixxx::AudioSource::kChannelCountStereo;
+const SINT CachingReaderChunkForWorker::kFrames = 8192; // ~ 170 ms at 48 kHz
+const SINT CachingReaderChunkForWorker::kSamples =
+        CachingReaderChunkForWorker::frames2samples(CachingReaderChunkForWorker::kFrames);
 
-CachingReaderChunkWorker::CachingReaderChunkWorker(
+CachingReaderChunkForWorker::CachingReaderChunkForWorker(
         CSAMPLE* sampleBuffer)
         : m_index(kInvalidIndex),
           m_sampleBuffer(sampleBuffer),
           m_frameCount(0) {
 }
 
-CachingReaderChunkWorker::~CachingReaderChunkWorker() {
+CachingReaderChunkForWorker::~CachingReaderChunkForWorker() {
 }
 
-void CachingReaderChunkWorker::init(SINT index) {
+void CachingReaderChunkForWorker::init(SINT index) {
     m_index = index;
     m_frameCount = 0;
 }
 
-bool CachingReaderChunkWorker::isReadable(
+bool CachingReaderChunkForWorker::isReadable(
         const Mixxx::AudioSourcePointer& pAudioSource,
         SINT maxReadableFrameIndex) const {
     DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= maxReadableFrameIndex);
@@ -50,7 +50,7 @@ bool CachingReaderChunkWorker::isReadable(
     return frameIndex <= maxFrameIndex;
 }
 
-SINT CachingReaderChunkWorker::readSampleFrames(
+SINT CachingReaderChunkForWorker::readSampleFrames(
         const Mixxx::AudioSourcePointer& pAudioSource,
         SINT* pMaxReadableFrameIndex) {
     DEBUG_ASSERT(pMaxReadableFrameIndex);
@@ -110,7 +110,7 @@ SINT CachingReaderChunkWorker::readSampleFrames(
     return m_frameCount;
 }
 
-void CachingReaderChunkWorker::copySamples(
+void CachingReaderChunkForWorker::copySamples(
         CSAMPLE* sampleBuffer, SINT sampleOffset, SINT sampleCount) const {
     DEBUG_ASSERT(0 <= sampleOffset);
     DEBUG_ASSERT(0 <= sampleCount);
@@ -120,7 +120,7 @@ void CachingReaderChunkWorker::copySamples(
 
 CachingReaderChunk::CachingReaderChunk(
         CSAMPLE* sampleBuffer)
-        : CachingReaderChunkWorker(sampleBuffer),
+        : CachingReaderChunkForWorker(sampleBuffer),
           m_state(FREE),
           m_pPrev(nullptr),
           m_pNext(nullptr) {
@@ -131,13 +131,13 @@ CachingReaderChunk::~CachingReaderChunk() {
 
 void CachingReaderChunk::init(SINT index) {
     DEBUG_ASSERT(READ_PENDING != m_state);
-    CachingReaderChunkWorker::init(index);
+    CachingReaderChunkForWorker::init(index);
     m_state = READY;
 }
 
 void CachingReaderChunk::free() {
     DEBUG_ASSERT(READ_PENDING != m_state);
-    CachingReaderChunkWorker::init(kInvalidIndex);
+    CachingReaderChunkForWorker::init(kInvalidIndex);
     m_state = FREE;
 }
 

@@ -10,7 +10,7 @@
 // and CachingReaderWorker! A lock-free FIFO ensures that only a single
 // thread has exclusive access on each chunk. This abstract base class
 // is available for both the worker thread and the cache.
-class CachingReaderChunkWorker {
+class CachingReaderChunkForWorker {
 public:
     static const SINT kInvalidIndex;
     static const SINT kChannels;
@@ -40,7 +40,7 @@ public:
         return samples / kChannels;
     }
 
-    virtual ~CachingReaderChunkWorker();
+    virtual ~CachingReaderChunkForWorker();
 
     SINT getIndex() const {
         return m_index;
@@ -75,7 +75,7 @@ public:
             SINT sampleCount) const;
 
 protected:
-    explicit CachingReaderChunkWorker(CSAMPLE* sampleBuffer);
+    explicit CachingReaderChunkForWorker(CSAMPLE* sampleBuffer);
 
     void init(SINT index);
 
@@ -91,7 +91,7 @@ private:
 // The derived class is only accessible for the cache, but not the
 // worker thread. The state READ_PENDING indicates that the worker
 // thread is in control.
-class CachingReaderChunk: public CachingReaderChunkWorker {
+class CachingReaderChunk: public CachingReaderChunkForWorker {
 public:
     explicit CachingReaderChunk(CSAMPLE* sampleBuffer);
     virtual ~CachingReaderChunk();
