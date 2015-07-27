@@ -116,6 +116,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     logBuildDetails();
     initializeWindow();
 
+    m_pFileMenu = new QMenu(tr("&File"), menuBar());
+    menuBar()->addMenu(m_pFileMenu);
+
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
     m_pUpgrader = new Upgrade;
@@ -1597,7 +1600,6 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 
 void MixxxMainWindow::initMenuBar() {
     // MENUBAR
-    m_pFileMenu = new QMenu(tr("&File"), menuBar());
     m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
     m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
     m_pViewMenu = new QMenu(tr("&View"), menuBar());
@@ -1605,7 +1607,10 @@ void MixxxMainWindow::initMenuBar() {
     m_pDeveloperMenu = new QMenu(tr("&Developer"), menuBar());
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
+
     // menuBar entry fileMenu
+    // m_pFileMenu is already shown in the launch Image to reserve
+    // space for the whole menu
     m_pFileMenu->addAction(m_pFileLoadSongPlayer1);
     m_pFileMenu->addAction(m_pFileLoadSongPlayer2);
     m_pFileMenu->addSeparator();
@@ -1667,7 +1672,6 @@ void MixxxMainWindow::initMenuBar() {
     m_pHelpMenu->addSeparator();
     m_pHelpMenu->addAction(m_pHelpAboutApp);
 
-    menuBar()->addMenu(m_pFileMenu);
     menuBar()->addMenu(m_pLibraryMenu);
     menuBar()->addMenu(m_pViewMenu);
     menuBar()->addMenu(m_pOptionsMenu);
