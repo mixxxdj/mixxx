@@ -1,3 +1,13 @@
+/*
+    Latest code at https://github.com/jardiacaj/mixxx).
+
+    This mapping for the Pioneer DDJ-SB was made by Joan Ardiaca Jové (joan.ardiaca@gmail.com)
+    basing on the work of wingcom (wwingcomm@gmail.com, https://github.com/wingcom/Mixxx-Pioneer-DDJ-SB).
+    which in turn was based on the work of Hilton Rudham (https://github.com/hrudham/Mixxx-Pioneer-DDJ-SR).
+
+    Just as wingcom's and Rudham's work, this mapping is pusblished under the MIT license.
+ */
+
 var PioneerDDJSB = function () {};
 
 PioneerDDJSB.init = function (id) {

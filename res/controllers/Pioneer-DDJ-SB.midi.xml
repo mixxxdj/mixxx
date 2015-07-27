@@ -2,7 +2,7 @@
 <MixxxControllerPreset mixxxVersion="1.10.0+" schemaVersion="1">
     <info>
         <name>Pioneer DDJ-SB</name>
-        <author>joan.ardiaca@gmail.com</author>
+        <author>Joan Ardiaca Jové</author>
         <description>Pioneer DDJ-SB configuration for 2 decks</description>
     </info>
     <controller id="PIONEER">
