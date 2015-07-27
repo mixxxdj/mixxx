@@ -802,21 +802,21 @@
                 </options>
             </control>
             <control>
-                <group>[PreviewDeck1]</group>
-                <key>LoadSelectedTrackAndPlay</key>
-                <status>0x96</status>
-                <midino>0x41</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <group>[Playlist]</group>
                 <key>PioneerDDJSB.rotarySelectorClick</key>
                 <status>0x96</status>
                 <midino>0x41</midino>
                 <options>
                     <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[PreviewDeck1]</group>
+                <key>LoadSelectedTrackAndPlay</key>
+                <status>0x96</status>
+                <midino>0x41</midino>
+                <options>
+                    <normal/>
                 </options>
             </control>
             <control>
