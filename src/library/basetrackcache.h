@@ -32,9 +32,9 @@ class BaseTrackCache : public QObject {
     Q_OBJECT
   public:
     BaseTrackCache(TrackCollection* pTrackCollection,
-                   QString tableName,
-                   QString idColumn,
-                   QList<QString> columns,
+                   const QString& tableName,
+                   const QString& idColumn,
+                   const QStringList& columns,
                    bool isCaching);
     virtual ~BaseTrackCache();
 
@@ -47,7 +47,6 @@ class BaseTrackCache : public QObject {
     ////////////////////////////////////////////////////////////////////////////
 
     virtual QVariant data(int trackId, int column) const;
-    virtual const QStringList columns() const;
     virtual int columnCount() const;
     virtual int fieldIndex(const QString column) const;
     virtual void filterAndSort(const QSet<int>& trackIds,
@@ -100,7 +99,7 @@ class BaseTrackCache : public QObject {
 
     const QString m_tableName;
     const QString m_idColumn;
-    const QStringList m_columns;
+    const int m_columnCount;
     const QString m_columnsJoined;
     const QHash<QString, int> m_columnIndex;
 

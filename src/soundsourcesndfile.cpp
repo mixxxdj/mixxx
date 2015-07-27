@@ -62,7 +62,7 @@ int SoundSourceSndFile::open()
     LPCWSTR lpcwFilename = (LPCWSTR)m_qFilename.utf16();
     fh = sf_wchar_open(lpcwFilename, SFM_READ, info);
 #else
-    QByteArray qbaFilename = m_qFilename.toUtf8();
+    QByteArray qbaFilename = m_qFilename.toLocal8Bit();
     fh = sf_open(qbaFilename.constData(), SFM_READ, info);
 #endif
 

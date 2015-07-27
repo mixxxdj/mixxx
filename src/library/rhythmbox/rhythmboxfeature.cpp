@@ -30,23 +30,23 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
             << "duration"
             << "bitrate"
             << "bpm";
-    pTrackCollection->addTrackSource(QString("rhythmbox"),
-                    QSharedPointer<BaseTrackCache>( new BaseTrackCache(m_pTrackCollection,
-                                        tableName, idColumn, columns, false)));
+    m_trackSource = QSharedPointer<BaseTrackCache>(
+            new BaseTrackCache(m_pTrackCollection,
+                    tableName, idColumn, columns, false));
 
     m_pRhythmboxTrackModel = new BaseExternalTrackModel(
         this, m_pTrackCollection,
         "mixxx.db.model.rhythmbox",
         "rhythmbox_library",
-        "rhythmbox");
-
+        m_trackSource);
     m_pRhythmboxTrackModel->init();
+
     m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.rhythmbox_playlist",
         "rhythmbox_playlists",
         "rhythmbox_playlist_tracks",
-        "rhythmbox");
+        m_trackSource);
 
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
@@ -83,7 +83,7 @@ BaseSqlTableModel* RhythmboxFeature::createPlaylistModelForPlaylist(QString play
                                             "mixxx.db.model.rhythmbox_playlist",
                                             "rhythmbox_playlists",
                                             "rhythmbox_playlist_tracks",
-                                            "rhythmbox");
+                                            m_trackSource);
     pModel->setPlaylist(playlist);
     pModel->setPlaylistUI();
     return pModel;
@@ -438,8 +438,7 @@ void RhythmboxFeature::onTrackCollectionLoaded() {
         // this is dangerous since this feature uses its own DB not in the Collection
         m_pTrackCollection->callSync(
             [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
-                m_pTrackCollection->getTrackSource("rhythmbox")
-                    ->buildIndex(pTrackCollectionPrivate);
+                m_trackSource->buildIndex(pTrackCollectionPrivate);
             }, __PRETTY_FUNCTION__);
 
         //m_pRhythmboxTrackModel->select();

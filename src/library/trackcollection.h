@@ -125,8 +125,9 @@ class TrackCollection : public QThread {
     void setupControlObject();
     void setUiEnabled(const bool enabled);
 
-    QSharedPointer<BaseTrackCache> getTrackSource(const QString& name);
-    void addTrackSource(const QString& name, QSharedPointer<BaseTrackCache> trackSource);
+    QSharedPointer<BaseTrackCache> getTrackSource();
+    void setTrackSource(QSharedPointer<BaseTrackCache> trackSource);
+    void cancelLibraryScan();
 
     ConfigObject<ConfigValue>* getConfig();
 
@@ -136,7 +137,6 @@ class TrackCollection : public QThread {
   private:
     TrackCollectionPrivate* m_pTrackCollectionPrivate;
     ConfigObject<ConfigValue>* m_pConfig;
-    QHash<QString, QSharedPointer<BaseTrackCache> > m_trackSources;
     QQueue<func> m_lambdas;
     volatile bool m_stop;
     QMutex m_lambdasQueueMutex; // mutex for accessing queue of lambdas
@@ -145,6 +145,7 @@ class TrackCollection : public QThread {
     ControlObjectThread* m_pCOTPlaylistIsBusy;
 
     int m_inCallSyncCount;
+    QSharedPointer<BaseTrackCache> m_defaultTrackSource;
 };
 
 #endif

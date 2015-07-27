@@ -17,11 +17,12 @@
 #include "library/treeitem.h"
 
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
-                                     TrackCollection* pTrackCollection)
+                                     TrackCollection* pTrackCollection,
+                                     QSharedPointer<BaseTrackCache> trackSource)
         : BaseExternalTrackModel(parent, pTrackCollection,
                                  "mixxx.db.model.traktor_tablemodel",
                                  "traktor_library",
-                                 "traktor") {
+                                 trackSource) {
 }
 
 void TraktorTrackModel::init() {
@@ -36,12 +37,13 @@ bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
 }
 
 TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
-                                           TrackCollection* pTrackCollection)
+                                           TrackCollection* pTrackCollection,
+                                           QSharedPointer<BaseTrackCache> trackSource)
         : BaseExternalPlaylistModel(parent, pTrackCollection,
                                     "mixxx.db.model.traktor.playlistmodel",
                                     "traktor_playlists",
                                     "traktor_playlist_tracks",
-                                    "traktor") {
+                                    trackSource) {
 }
 
 bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
@@ -72,16 +74,16 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
             << "bitrate"
             << "bpm"
             << "key";
-    pTrackCollection->addTrackSource(QString("traktor"), QSharedPointer<BaseTrackCache>(
+    m_trackSource = QSharedPointer<BaseTrackCache>(
         new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
-                           columns, false)));
+                           columns, false));
 
     m_isActivated = false;
-    m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection);
+    m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection, m_trackSource);
 
     m_pTraktorTableModel->init();
 
-    m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
+    m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection, m_trackSource);
 
     m_title = tr("Traktor");
 
@@ -110,7 +112,7 @@ TraktorFeature::~TraktorFeature() {
 }
 
 BaseSqlTableModel* TraktorFeature::createPlaylistModelForPlaylist(QString playlist) {
-    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pTrackCollection);
+    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pTrackCollection, m_trackSource);
     pModel->setPlaylist(playlist);
     pModel->setPlaylistUI();
     return pModel;
@@ -610,8 +612,7 @@ void TraktorFeature::onTrackCollectionLoaded() {
         // this is dangerous since this feature uses its own DB not in the Collection
         m_pTrackCollection->callSync(
             [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
-                m_pTrackCollection->getTrackSource("traktor")
-                    ->buildIndex(pTrackCollectionPrivate);
+                m_trackSource->buildIndex(pTrackCollectionPrivate);
             }, __PRETTY_FUNCTION__);
 
         //m_pTraktorTableModel->select();

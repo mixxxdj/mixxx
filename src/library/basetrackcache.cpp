@@ -22,16 +22,16 @@ const QHash<QString, int> buildReverseIndex(const QList<QString> items) {
 }  // namespace
 
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
-                               QString tableName,
-                               QString idColumn,
-                               QList<QString> columns,
+                               const QString& tableName,
+                               const QString& idColumn,
+                               const QStringList& columns,
                                bool isCaching)
         : QObject(),
           m_tableName(tableName),
           m_idColumn(idColumn),
-          m_columns(columns),
-          m_columnsJoined(m_columns.join(",")),
-          m_columnIndex(buildReverseIndex(m_columns)),
+          m_columnCount(columns.size()),
+          m_columnsJoined(columns.join(",")),
+          m_columnIndex(buildReverseIndex(columns)),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_pTrackCollection(pTrackCollection),
@@ -73,12 +73,8 @@ BaseTrackCache::~BaseTrackCache() {
     delete m_pTrackInfoMutex;
 }
 
-const QStringList BaseTrackCache::columns() const {
-    return m_columns;
-}
-
 int BaseTrackCache::columnCount() const {
-    return m_columns.size();
+    return m_columnCount;
 }
 
 int BaseTrackCache::fieldIndex(const QString columnName) const {

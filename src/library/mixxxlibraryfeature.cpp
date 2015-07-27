@@ -21,7 +21,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         : LibraryFeature(parent),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
-          m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
+          m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library")),
           m_pMissingView(NULL),
           m_pHiddenView(NULL),
           m_pConfig(pConfig),
@@ -112,9 +112,9 @@ void MixxxLibraryFeature::init() {
                 Qt::DirectConnection);
     }, __PRETTY_FUNCTION__);
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
-    m_pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
-
+    //m_pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
     // These rely on the 'default' track source being present.
+    m_pTrackCollection->setTrackSource(m_pBaseTrackCache);
 
     // NOTE(tro) Moved next commented line to c-tor initialization list
     // m_pLibraryTableModel = new LibraryTableModel(this, m_pTrackCollection);

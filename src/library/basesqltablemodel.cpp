@@ -23,16 +23,15 @@ const bool sDebug = false;
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
                                      QString settingsNamespace)
-        :  QAbstractTableModel(pParent),
-           TrackModel(pTrackCollection, settingsNamespace),
-           m_pTrackCollection(pTrackCollection),
-           m_pRowInfo(new QVector<RowInfo>),
-           m_pNewRowInfo(new QVector<RowInfo>),
-           m_currentSearch(""),
-           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
-           m_iPreviewDeckTrackId(-1) {
+        : QAbstractTableModel(pParent),
+          TrackModel(pTrackCollection, settingsNamespace),
+          m_pTrackCollection(pTrackCollection),
+          m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
+          m_iPreviewDeckTrackId(-1),
+          m_pRowInfo(new QVector<RowInfo>),
+          m_pNewRowInfo(new QVector<RowInfo>),
+          m_currentSearch("") {
     m_bInitialized = false;
-    m_bDirty = true;
     m_iSortColumn = 0;
     m_eSortOrder = Qt::AscendingOrder;
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
@@ -95,6 +94,29 @@ void BaseSqlTableModel::initHeaderData() {
 
     setHeaderData(fieldIndex("preview"),
                   Qt::Horizontal, tr("Preview"));
+
+
+#define CLM_VIEW_ORDER "view_order"
+#define CLM_ARTIST "artist"
+#define CLM_TITLE "title"
+#define CLM_DURATION "duration"
+#define CLM_URI "uri"
+#define CLM_ALBUM "album"
+#define CLM_ALBUM_ARTIST "album_artist"
+#define CLM_YEAR "year"
+#define CLM_RATING "rating"
+#define CLM_GENRE "genre"
+#define CLM_GROUPING "grouping"
+#define CLM_TRACKNUMBER "tracknumber"
+#define CLM_DATEADDED "dateadded"
+#define CLM_BPM "bpm"
+#define CLM_BITRATE "bitrate"
+#define CLM_COMMENT "comment"
+#define CLM_PLAYCOUNT "playcount"
+#define CLM_COMPOSER "composer"
+#define CLM_PREVIEW "preview"
+
+
 }
 
 bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
@@ -242,26 +264,28 @@ void BaseSqlTableModel::select(TrackCollectionPrivate* pTrackCollectionPrivate) 
         sortColumn = 0;
     }
 
-    // If we were sorting a table column, then secondary sort by id. TODO(rryan)
-    // we should look into being able to drop the secondary sort to save time
-    // but going for correctness first.
-    m_trackSource->filterAndSort(trackIds, m_currentSearch,
-                                 m_currentSearchFilter,
-                                 sortColumn, m_eSortOrder,
-                                 &m_trackSortOrder,
-                                 pTrackCollectionPrivate);
+    if (m_trackSource) {
+        // If we were sorting a table column, then secondary sort by id. TODO(rryan)
+        // we should look into being able to drop the secondary sort to save time
+        // but going for correctness first.
+        m_trackSource->filterAndSort(trackIds, m_currentSearch,
+                                     m_currentSearchFilter,
+                                     sortColumn, m_eSortOrder,
+                                     &m_trackSortOrder,
+                                     pTrackCollectionPrivate);
 
-    // Re-sort the track IDs since filterAndSort can change their order or mark
-    // them for removal (by setting their row to -1).
-    for (QVector<RowInfo>::iterator it = m_pNewRowInfo->begin();
-         it != m_pNewRowInfo->end(); ++it) {
-        // If the sort column is not a track column then we will sort only to
-        // separate removed tracks (order == -1) from present tracks (order ==
-        // 0). Otherwise we sort by the order that filterAndSort returned to us.
-        if (sortColumn == 0) {
-            it->order = m_trackSortOrder.contains(it->trackId) ? 0 : -1;
-        } else {
-            it->order = m_trackSortOrder.value(it->trackId, -1);
+        // Re-sort the track IDs since filterAndSort can change their order or mark
+        // them for removal (by setting their row to -1).
+        for (QVector<RowInfo>::iterator it = m_pNewRowInfo->begin();
+             it != m_pNewRowInfo->end(); ++it) {
+            // If the sort column is not a track column then we will sort only to
+            // separate removed tracks (order == -1) from present tracks (order ==
+            // 0). Otherwise we sort by the order that filterAndSort returned to us.
+            if (sortColumn == 0) {
+                it->order = m_trackSortOrder.contains(it->trackId) ? 0 : -1;
+            } else {
+                it->order = m_trackSortOrder.value(it->trackId, -1);
+            }
         }
     }
 
@@ -312,16 +336,15 @@ void BaseSqlTableModel::slotPopulateQueryResult() {
     m_pRowInfo = m_pNewRowInfo;
     m_pNewRowInfo = pOldRowInfo;
 
-    m_bDirty = false;
     endInsertRows();
-    DBG() << "BaseSqlTableModel::select() end";
+    //int elapsed = time.elapsed();
+    qDebug() << this << "select() finished"; //took" << elapsed << "ms" << rowInfo.size();
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,
                                  const QString& idColumn,
                                  const QStringList& tableColumns,
                                  QSharedPointer<BaseTrackCache> trackSource) {
-    Q_ASSERT(trackSource);
     if (sDebug) {
         qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
     }
@@ -335,8 +358,10 @@ void BaseSqlTableModel::setTable(const QString& tableName,
                    this, SLOT(tracksChanged(QSet<int>)));
     }
     m_trackSource = trackSource;
-    connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<int>)),
-            this, SLOT(tracksChanged(QSet<int>)));
+    if (m_trackSource) {
+        connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<int>)),
+                this, SLOT(tracksChanged(QSet<int>)));
+    }
 
     // Build a map from the column names to their indices, used by fieldIndex()
     m_tableColumnIndex.clear();
@@ -344,8 +369,9 @@ void BaseSqlTableModel::setTable(const QString& tableName,
         m_tableColumnIndex[m_tableColumns[i]] = i;
     }
 
+    initHeaderData();
+
     m_bInitialized = true;
-    m_bDirty = true;
 }
 
 const QString BaseSqlTableModel::currentSearch() const {
@@ -368,7 +394,6 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
 
     m_currentSearch = searchText;
     m_currentSearchFilter = extraFilter;
-    m_bDirty = true;
 }
 
 void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
@@ -403,7 +428,6 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
     m_iSortColumn = column;
     m_eSortOrder = order;
-    m_bDirty = true;
 }
 
 void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
@@ -476,9 +500,11 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         case Qt::ToolTipRole:
         case Qt::DisplayRole:
             if (column == fieldIndex(LIBRARYTABLE_DURATION)) {
-                if (qVariantCanConvert<int>(value)) {
-                    value = MixxxUtils::secondsToMinutes(
-                        qVariantValue<int>(value));
+                int duration = value.toInt();
+                if (duration > 0) {
+                    value = MixxxUtils::secondsToMinutes(duration);
+                } else {
+                    value = QString();
                 }
             } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
                 if (qVariantCanConvert<int>(value))
@@ -498,6 +524,24 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = gmtDate.toLocalTime();
             } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
+            } else if (column == fieldIndex(LIBRARYTABLE_YEAR)) {
+                int year = value.toInt();
+                if (year <= 0) {
+                    // clear invalid values
+                    value = QString();
+                }
+            } else if (column == fieldIndex(LIBRARYTABLE_TRACKNUMBER)) {
+                int track_number = value.toInt();
+                if (track_number <= 0) {
+                    // clear invalid values
+                    value = QString();
+                }
+            } else if (column == fieldIndex(LIBRARYTABLE_BITRATE)) {
+                int bitrate = value.toInt();
+                if (bitrate <= 0) {
+                    // clear invalid values
+                    value = QString();
+                }
             } else if (column == fieldIndex(LIBRARYTABLE_KEY)) {
                 // If we know the semantic key via the LIBRARYTABLE_KEY_ID
                 // column (as opposed to the string representation of the key
@@ -516,6 +560,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 }
                 // Otherwise, just use the column value.
             }
+
             break;
         case Qt::EditRole:
             if (column == fieldIndex(LIBRARYTABLE_BPM)) {
@@ -532,11 +577,11 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         case Qt::CheckStateRole:
             if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
                 bool played = index.sibling(
-                    row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
+                        row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
                 value = played ? Qt::Checked : Qt::Unchecked;
             } else if (column == fieldIndex(LIBRARYTABLE_BPM)) {
                 bool locked = index.sibling(
-                    row, fieldIndex(LIBRARYTABLE_BPM_LOCK)).data().toBool();
+                        row, fieldIndex(LIBRARYTABLE_BPM_LOCK)).data().toBool();
                 value = locked ? Qt::Checked : Qt::Unchecked;
             }
             break;

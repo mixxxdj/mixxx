@@ -8,7 +8,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection,
-                       QString settingsNamespace, bool showAll=false);
+                       const char* settingsNamespace, bool showAll = false);
     virtual ~PlaylistTableModel();
     void setTableModel(int playlistId = -1);
 

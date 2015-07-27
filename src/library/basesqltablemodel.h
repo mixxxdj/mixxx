@@ -27,7 +27,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     //  This class also has protected variables that should be used in childs
     //  m_pTrackCollection, m_trackDAO
 
-    virtual void setTableModel(int id=-1) = 0;
     virtual bool isColumnInternal(int column) = 0;
     virtual bool isColumnHiddenByDefault(int column) = 0;
     virtual TrackModel::CapabilitiesFlags getCapabilities() const = 0;
@@ -86,12 +85,15 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
 
     TrackCollection* m_pTrackCollection;
 
+    QString m_previewDeckGroup;
+    int m_iPreviewDeckTrackId;
+
   public slots:
     void slotPopulateQueryResult();
 
   private slots:
-    void tracksChanged(QSet<int> trackIds);
-    void trackLoaded(QString group, TrackPointer pTrack);
+    virtual void tracksChanged(QSet<int> trackIds);
+    virtual void trackLoaded(QString group, TrackPointer pTrack);
 
  signals:
     void queryExecuted();
@@ -131,14 +133,11 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     int m_iSortColumn;
     Qt::SortOrder m_eSortOrder;
     bool m_bInitialized;
-    bool m_bDirty;
     QSqlRecord m_queryRecord;
     QHash<int, int> m_trackSortOrder;
     QHash<int, QLinkedList<int> > m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
-    QString m_previewDeckGroup;
-    int m_iPreviewDeckTrackId;
     QVector<QHash<int, QVariant> > m_headerInfo;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);

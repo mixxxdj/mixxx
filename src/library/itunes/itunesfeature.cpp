@@ -48,24 +48,22 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
             << "bitrate"
             << "bpm"
             << "rating";
-    pTrackCollection->addTrackSource(
-        QString("itunes"), QSharedPointer<BaseTrackCache>(
+
+    m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
-                               columns, false)));
+                               columns, false));
     m_pITunesTrackModel = new BaseExternalTrackModel(
         this, m_pTrackCollection,
         "mixxx.db.model.itunes",
         "itunes_library",
-        "itunes");
-
+        m_trackSource);
     m_pITunesTrackModel->init();
-
     m_pITunesPlaylistModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.itunes_playlist",
         "itunes_playlists",
         "itunes_playlist_tracks",
-        "itunes");
+        m_trackSource);
     m_isActivated = false;
     m_title = tr("iTunes");
 
@@ -95,7 +93,7 @@ BaseSqlTableModel* ITunesFeature::createPlaylistModelForPlaylist(QString playlis
         "mixxx.db.model.itunes_playlist",
         "itunes_playlists",
         "itunes_playlist_tracks",
-        "itunes");
+        m_trackSource);
     pModel->setPlaylist(playlist);
     pModel->setPlaylistUI();
     return pModel;
@@ -737,8 +735,7 @@ void ITunesFeature::onTrackCollectionLoaded() {
         // this is dangerous, as this feature uses its own DB-object not in Collection
         m_pTrackCollection->callSync(
             [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-                m_pTrackCollection->getTrackSource("itunes")->
-                    buildIndex(pTrackCollectionPrivate);
+                m_trackSource->buildIndex(pTrackCollectionPrivate);
             },__PRETTY_FUNCTION__);
 
         //m_pITunesTrackModel->select();

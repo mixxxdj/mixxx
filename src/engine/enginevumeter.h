@@ -22,8 +22,8 @@
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
 #define UPDATE_RATE 20
 
-//SMOOTHING FACTORS
-//Must be from 0-1 the lower the factor, the more smoothing that is applied
+// SMOOTHING FACTORS
+// Must be from 0-1 the lower the factor, the more smoothing that is applied
 #define ATTACK_SMOOTHING 1. // .85
 #define DECAY_SMOOTHING .1  //.16//.4
 
@@ -32,10 +32,10 @@ class ControlPotmeter;
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
   public:
-    EngineVuMeter(const char* );
+    EngineVuMeter(const char*);
     virtual ~EngineVuMeter();
 
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
   private:
     ControlPotmeter* m_ctrlVuMeter;
