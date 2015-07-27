@@ -47,6 +47,9 @@ void CachingReaderWorker::processCachingReaderChunkReadRequest(
     // and adjust the max. readable frame index if decoding errors occur.
     const SINT framesRead = request->chunk->readSampleFrames(
             m_pAudioSource, &m_maxReadableFrameIndex);
+    // Re-adjust the max. readable frame index that might have been
+    // modified by the previous read operation.
+    update->maxReadableFrameIndex = m_maxReadableFrameIndex;
 
     if (0 < framesRead) {
         update->status = CHUNK_READ_SUCCESS;
