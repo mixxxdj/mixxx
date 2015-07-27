@@ -1209,6 +1209,15 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>PioneerDDJSB.deckFaderLSB</key>
+                <status>0xB0</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x97</status>
                 <midino>0x19</midino>
@@ -1227,6 +1236,24 @@
             </control>
             <control>
                 <group>[Channel2]</group>
+                <key>PioneerDDJSB.deckFaderLSB</key>
+                <status>0xB1</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.filterKnobLSB</key>
+                <status>0xB6</status>
+                <midino>0x38</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
                 <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
                 <midino>0x19</midino>
@@ -1244,6 +1271,15 @@
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.filterKnobLSB</key>
+                <status>0xB6</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel2]</group>
                 <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
@@ -1254,6 +1290,24 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>PioneerDDJSB.filterLowKnobLSB</key>
+                <status>0xB0</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.filterLowKnobLSB</key>
+                <status>0xB1</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x97</status>
                 <midino>0x13</midino>
@@ -1307,6 +1361,15 @@
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.filterMidKnobLSB</key>
+                <status>0xB0</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel2]</group>
                 <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
@@ -1335,6 +1398,15 @@
             </control>
             <control>
                 <group>[Channel2]</group>
+                <key>PioneerDDJSB.filterMidKnobLSB</key>
+                <status>0xB1</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
                 <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
                 <midino>0x11</midino>
@@ -1356,6 +1428,15 @@
                 <key>PioneerDDJSB.beatloopButtons</key>
                 <status>0x98</status>
                 <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.filterHighKnobLSB</key>
+                <status>0xB0</status>
+                <midino>0x27</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1365,6 +1446,15 @@
                 <key>PioneerDDJSB.jogRingTickShift</key>
                 <status>0xB0</status>
                 <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.filterHighKnobLSB</key>
+                <status>0xB1</status>
+                <midino>0x27</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1451,6 +1541,15 @@
                 </options>
             </control>
             <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSB.fxKnobLSB</key>
+                <status>0xB4</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel2]</group>
                 <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
@@ -1487,6 +1586,15 @@
                 </options>
             </control>
             <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSB.fxKnobLSB</key>
+                <status>0xB5</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel2]</group>
                 <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
@@ -1500,6 +1608,15 @@
                 <key>PioneerDDJSB.jogRingTick</key>
                 <status>0xB1</status>
                 <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.tempoSliderLSB</key>
+                <status>0xB0</status>
+                <midino>0x20</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1511,6 +1628,24 @@
                 <midino>0x1F</midino>
                 <options>
                     <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.tempoSliderLSB</key>
+                <status>0xB1</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <status>0xB6</status>
+                <midino>0x25</midino>
+                <options>
+                    <fourteen-bit-lsb/>
                 </options>
             </control>
             <control>
@@ -1527,6 +1662,15 @@
                 <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.gainKnobLSB</key>
+                <status>0xB4</status>
+                <midino>0x20</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1545,6 +1689,15 @@
                 <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.gainKnobMSB</key>
+                <status>0xB5</status>
+                <midino>0x20</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1605,7 +1758,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.deckFader</key>
+                <key>PioneerDDJSB.deckFaderMSB</key>
                 <status>0xB0</status>
                 <midino>0x13</midino>
                 <options>
@@ -1614,7 +1767,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.filterKnob</key>
+                <key>PioneerDDJSB.filterKnobMSB</key>
                 <status>0xB6</status>
                 <midino>0x18</midino>
                 <options>
@@ -1623,7 +1776,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.deckFader</key>
+                <key>PioneerDDJSB.deckFaderMSB</key>
                 <status>0xB1</status>
                 <midino>0x13</midino>
                 <options>
@@ -1632,7 +1785,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.filterKnob</key>
+                <key>PioneerDDJSB.filterKnobMSB</key>
                 <status>0xB6</status>
                 <midino>0x17</midino>
                 <options>
@@ -1641,7 +1794,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.filterLowKnob</key>
+                <key>PioneerDDJSB.filterLowKnobMSB</key>
                 <status>0xB0</status>
                 <midino>0x0F</midino>
                 <options>
@@ -1650,7 +1803,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.filterLowKnob</key>
+                <key>PioneerDDJSB.filterLowKnobMSB</key>
                 <status>0xB1</status>
                 <midino>0x0F</midino>
                 <options>
@@ -1659,7 +1812,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.filterMidKnob</key>
+                <key>PioneerDDJSB.filterMidKnobMSB</key>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>
@@ -1668,7 +1821,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.filterMidKnob</key>
+                <key>PioneerDDJSB.filterMidKnobMSB</key>
                 <status>0xB1</status>
                 <midino>0x0B</midino>
                 <options>
@@ -1677,7 +1830,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.filterHighKnob</key>
+                <key>PioneerDDJSB.filterHighKnobMSB</key>
                 <status>0xB0</status>
                 <midino>0x07</midino>
                 <options>
@@ -1686,7 +1839,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.filterHighKnob</key>
+                <key>PioneerDDJSB.filterHighKnobMSB</key>
                 <status>0xB1</status>
                 <midino>0x07</midino>
                 <options>
@@ -1695,7 +1848,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.fxKnob</key>
+                <key>PioneerDDJSB.fxKnobMSB</key>
                 <status>0xB4</status>
                 <midino>0x06</midino>
                 <options>
@@ -1704,7 +1857,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.fxKnob</key>
+                <key>PioneerDDJSB.fxKnobMSB</key>
                 <status>0xB5</status>
                 <midino>0x06</midino>
                 <options>
@@ -1713,7 +1866,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.tempoSlider</key>
+                <key>PioneerDDJSB.tempoSliderMSB</key>
                 <status>0xB0</status>
                 <midino>0x00</midino>
                 <options>
@@ -1726,12 +1879,12 @@
                 <status>0xB6</status>
                 <midino>0x05</midino>
                 <options>
-                    <soft-takeover/>
+                    <fourteen-bit-msb/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.tempoSlider</key>
+                <key>PioneerDDJSB.tempoSliderMSB</key>
                 <status>0xB1</status>
                 <midino>0x00</midino>
                 <options>
@@ -1740,7 +1893,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.gainKnob</key>
+                <key>PioneerDDJSB.gainKnobMSB</key>
                 <status>0xB4</status>
                 <midino>0x00</midino>
                 <options>
@@ -1749,7 +1902,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.gainKnob</key>
+                <key>PioneerDDJSB.gainKnobMSB</key>
                 <status>0xB5</status>
                 <midino>0x00</midino>
                 <options>
