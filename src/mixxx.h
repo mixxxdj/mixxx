@@ -45,6 +45,7 @@ class SoundManager;
 class ControlPushButton;
 class DlgDeveloperTools;
 class Upgrade;
+class LaunchImage;
 
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -190,6 +191,7 @@ class MixxxMainWindow : public QMainWindow {
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
+    LaunchImage* m_pLaunchImage;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;

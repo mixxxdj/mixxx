@@ -18,7 +18,7 @@ LaunchImage::LaunchImage(QWidget* pParent)
     m_pProgressBar = new QProgressBar(this);
     m_pProgressBar->setTextVisible(false);
     m_pProgressBar->setMaximumWidth(pic.width());
-    m_pProgressBar->setMaximumHeight(5);
+    m_pProgressBar->setMaximumHeight(3);
     m_pProgressBar->setStyleSheet(
             "QProgressBar::chunk {"
                 "background-color: white;"

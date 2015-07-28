@@ -76,6 +76,7 @@
 #include "util/math.h"
 #include "util/experiment.h"
 #include "util/font.h"
+#include "skin/launchimage.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -127,7 +128,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // First load launch image to show a the user a quick responds
     m_pSkinLoader = new SkinLoader(m_pConfig);
-    m_pWidgetParent = m_pSkinLoader->loadLaunchImage(this);
+    m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
+    m_pWidgetParent = (QWidget*)m_pLaunchImage;
     setCentralWidget(m_pWidgetParent);
     // move the app in the center of the primary screen
     slotToCenterOfPrimaryScreen();
@@ -168,7 +170,10 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     QString resourcePath = m_pConfig->getResourcePath();
     initializeTranslations(pApp);
 
-    initializeFonts();
+    initializeFonts(); // long
+
+    m_pLaunchImage->progress(2);
+    pApp->processEvents();
 
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt();
@@ -190,8 +195,11 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
 
-    // Sets up the default EffectChains and EffectRacks
+    // Sets up the default EffectChains and EffectRacks (long)
     m_pEffectsManager->setupDefaults();
+
+    m_pLaunchImage->progress(8);
+    pApp->processEvents();
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
 #ifdef __SHOUTCAST__
@@ -201,8 +209,11 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime
     // after the players are added to the engine (as is done currently) -- bkgood
+    // (long)
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
+    m_pLaunchImage->progress(11);
+    pApp->processEvents();
     // TODO(rryan): Fold microphone and aux creation into a manager
     // (e.g. PlayerManager, though they aren't players).
 
@@ -286,7 +297,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     m_pVCManager = NULL;
 #endif
 
-    // Create the player manager.
+    // Create the player manager. (long)
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager,
                                          m_pEffectsManager, m_pEngine);
     m_pPlayerManager->addConfiguredDecks();
@@ -295,6 +306,9 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
+
+    m_pLaunchImage->progress(30);
+    pApp->processEvents();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
@@ -313,10 +327,14 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
 
     CoverArtCache::create();
 
+    // (long)
     m_pLibrary = new Library(this, m_pConfig,
                              m_pPlayerManager,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
+
+    m_pLaunchImage->progress(35);
+    pApp->processEvents();
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
@@ -359,13 +377,20 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Initialize controller sub-system,
-    //  but do not set up controllers until the end of the application startup
+    // but do not set up controllers until the end of the application startup
+    // (long)
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(m_pConfig);
 
-    WaveformWidgetFactory::create();
+    m_pLaunchImage->progress(47);
+    pApp->processEvents();
+
+     WaveformWidgetFactory::create(); // long
     WaveformWidgetFactory::instance()->startVSync(this);
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
+
+    m_pLaunchImage->progress(52);
+    pApp->processEvents();
 
     connect(this, SIGNAL(newSkinLoaded()),
             this, SLOT(onNewSkinLoaded()));
@@ -379,6 +404,9 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
+    m_pLaunchImage->progress(60);
+    pApp->processEvents();
+
     initializeKeyboard();
     initActions();
     initMenuBar();
@@ -388,6 +416,9 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     QGLWidget* pContextWidget = new QGLWidget(this);
     pContextWidget->hide();
     SharedGLContext::setWidget(pContextWidget);
+
+    m_pLaunchImage->progress(63);
+    pApp->processEvents();
 
     QWidget* oldWidget = m_pWidgetParent;
 
