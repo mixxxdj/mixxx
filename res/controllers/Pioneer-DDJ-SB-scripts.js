@@ -99,13 +99,15 @@ PioneerDDJSB.init = function (id) {
 
     PioneerDDJSB.setAllSoftTakeover(false);
     PioneerDDJSB.bindNonDeckControlConnections(false);
-    PioneerDDJSB.initDeck('[Channel1]');
-    PioneerDDJSB.initDeck('[Channel2]');
+    PioneerDDJSB.initDeck('[Channel1]', true);
+    PioneerDDJSB.initDeck('[Channel2]', true);
 };
 
 PioneerDDJSB.shutdown = function () {
     PioneerDDJSB.bindAllControlConnections(true);
     PioneerDDJSB.setAllSoftTakeover(true);
+    PioneerDDJSB.bindDeckControlConnections('[Channel3]', true);
+    PioneerDDJSB.bindDeckControlConnections('[Channel4]', true);
 };
 
 
@@ -251,20 +253,25 @@ PioneerDDJSB.deckToggleButton = function (channel, control, value, status, group
             deckNumber -= 2;
         }
         PioneerDDJSB.deckSwitchTable[group] = '[Channel' + deckNumber + ']';
-        PioneerDDJSB.initDeck(PioneerDDJSB.deckSwitchTable[group]);
+        PioneerDDJSB.initDeck(PioneerDDJSB.deckSwitchTable[group], false);
         PioneerDDJSB.setDeckSoftTakeover(PioneerDDJSB.deckSwitchTable[group], true);
         PioneerDDJSB.setDeckSoftTakeover(PioneerDDJSB.deckSwitchTable[group]);
     }
 };
 
-PioneerDDJSB.initDeck = function (group) {
-    var disconnectDeck = parseInt(PioneerDDJSB.channelRegEx.exec(group)[1])
+PioneerDDJSB.initDeck = function (group, isFirstBinding) {
+    var disconnectDeck = parseInt(PioneerDDJSB.channelRegEx.exec(group)[1]);
+
     if (disconnectDeck <= 2) {
         disconnectDeck += 2;
     } else {
         disconnectDeck -= 2;
     }
-    PioneerDDJSB.bindDeckControlConnections('[Channel' + disconnectDeck + ']', true);
+
+    if (!isFirstBinding) {
+        PioneerDDJSB.bindDeckControlConnections('[Channel' + disconnectDeck + ']', true);
+    }
+
     PioneerDDJSB.bindDeckControlConnections(group, false);
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.shiftKeyLock, disconnectDeck <= 2);
     PioneerDDJSB.triggerVinylLed(PioneerDDJSB.channelGroups[group]);
