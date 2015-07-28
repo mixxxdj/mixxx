@@ -6,11 +6,15 @@
 // A Chunk is a memory-resident section of audio that has been cached.
 // Each chunk holds a fixed number kFrames of frames with samples for
 // kChannels.
+//
 // The class is not thread-safe although it is shared between CachingReader
 // and CachingReaderWorker! A lock-free FIFO ensures that only a single
 // thread has exclusive access on each chunk. This abstract base class
 // is available for both the worker thread and the cache.
-class CachingReaderChunkForWorker {
+//
+// This is the common (abstract) base class for both the cache (as the owner)
+// and the worker.
+class CachingReaderChunk {
 public:
     static const SINT kInvalidIndex;
     static const SINT kChannels;
@@ -40,8 +44,9 @@ public:
         return samples / kChannels;
     }
 
-    CachingReaderChunkForWorker(const CachingReaderChunkForWorker&) = delete;
-    virtual ~CachingReaderChunkForWorker();
+    // Disable copy and move constructors
+    CachingReaderChunk(const CachingReaderChunk&) = delete;
+    CachingReaderChunk(CachingReaderChunk&&) = delete;
 
     SINT getIndex() const {
         return m_index;
@@ -76,7 +81,8 @@ public:
             SINT sampleCount) const;
 
 protected:
-    explicit CachingReaderChunkForWorker(CSAMPLE* sampleBuffer);
+    explicit CachingReaderChunk(CSAMPLE* sampleBuffer);
+    virtual ~CachingReaderChunk();
 
     void init(SINT index);
 
@@ -89,13 +95,13 @@ private:
     volatile SINT m_frameCount;
 };
 
-// The derived class is only accessible for the cache, but not the
-// worker thread. The state READ_PENDING indicates that the worker
-// thread is in control.
-class CachingReaderChunk: public CachingReaderChunkForWorker {
+// This derived class is only accessible for the cache as the owner,
+// but not the worker thread. The state READ_PENDING indicates that
+// the worker thread is in control.
+class CachingReaderChunkForOwner: public CachingReaderChunk {
 public:
-    explicit CachingReaderChunk(CSAMPLE* sampleBuffer);
-    virtual ~CachingReaderChunk();
+    explicit CachingReaderChunkForOwner(CSAMPLE* sampleBuffer);
+    virtual ~CachingReaderChunkForOwner();
 
     void init(SINT index);
     void free();
@@ -126,19 +132,19 @@ public:
     // the head of the current list this chunk becomes the new
     // head of the list.
     void insertIntoListBefore(
-            CachingReaderChunk* pBefore);
+            CachingReaderChunkForOwner* pBefore);
     // Removes a chunk from the double-linked list and optionally
     // adjusts head/tail pointers. Pass ppHead/ppTail = nullptr if
     // you prefer to adjust those pointers manually.
     void removeFromList(
-            CachingReaderChunk** ppHead,
-            CachingReaderChunk** ppTail);
+            CachingReaderChunkForOwner** ppHead,
+            CachingReaderChunkForOwner** ppTail);
 
 private:
     State m_state;
 
-    CachingReaderChunk* m_pPrev; // previous item in double-linked list
-    CachingReaderChunk* m_pNext; // next item in double-linked list
+    CachingReaderChunkForOwner* m_pPrev; // previous item in double-linked list
+    CachingReaderChunkForOwner* m_pNext; // next item in double-linked list
 };
 
 

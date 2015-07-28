@@ -115,43 +115,43 @@ class CachingReader : public QObject {
     // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns NULL. If it is present then
     // freshenChunk is called on the chunk to make it the MRU chunk.
-    CachingReaderChunk* lookupChunkAndFreshen(SINT chunkIndex);
+    CachingReaderChunkForOwner* lookupChunkAndFreshen(SINT chunkIndex);
 
     // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns NULL.
-    CachingReaderChunk* lookupChunk(SINT chunkIndex);
+    CachingReaderChunkForOwner* lookupChunk(SINT chunkIndex);
 
     // Moves the provided chunk to the MRU position.
-    void freshenChunk(CachingReaderChunk* pChunk);
+    void freshenChunk(CachingReaderChunkForOwner* pChunk);
 
     // Returns a CachingReaderChunk to the free list
-    void freeChunk(CachingReaderChunk* pChunk);
+    void freeChunk(CachingReaderChunkForOwner* pChunk);
 
     // Returns all allocated chunks to the free list
     void freeAllChunks();
 
     // Gets a chunk from the free list. Returns NULL if none available.
-    CachingReaderChunk* allocateChunk(SINT chunkIndex);
+    CachingReaderChunkForOwner* allocateChunk(SINT chunkIndex);
 
     // Gets a chunk from the free list, frees the LRU CachingReaderChunk if none available.
-    CachingReaderChunk* allocateChunkExpireLRU(SINT chunkIndex);
+    CachingReaderChunkForOwner* allocateChunkExpireLRU(SINT chunkIndex);
 
     ReaderStatus m_readerStatus;
 
     // Keeps track of all CachingReaderChunks we've allocated.
-    QVector<CachingReaderChunk*> m_chunks;
+    QVector<CachingReaderChunkForOwner*> m_chunks;
 
     // List of free chunks. Linked list so that we have constant time insertions
     // and deletions. Iteration is not necessary.
-    QLinkedList<CachingReaderChunk*> m_freeChunks;
+    QLinkedList<CachingReaderChunkForOwner*> m_freeChunks;
 
     // Keeps track of what CachingReaderChunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
-    QHash<int, CachingReaderChunk*> m_allocatedCachingReaderChunks;
+    QHash<int, CachingReaderChunkForOwner*> m_allocatedCachingReaderChunks;
 
     // The linked list of recently-used chunks.
-    CachingReaderChunk* m_mruCachingReaderChunk;
-    CachingReaderChunk* m_lruCachingReaderChunk;
+    CachingReaderChunkForOwner* m_mruCachingReaderChunk;
+    CachingReaderChunkForOwner* m_lruCachingReaderChunk;
 
     // The raw memory buffer which is divided up into chunks.
     SampleBuffer m_sampleBuffer;

@@ -6,7 +6,7 @@
 #include "util/math.h"
 
 
-const SINT CachingReaderChunkForWorker::kInvalidIndex = -1;
+const SINT CachingReaderChunk::kInvalidIndex = -1;
 
 // One chunk should contain 1/2 - 1/4th of a second of audio.
 // 8192 frames contain about 170 ms of audio at 48 kHz, which
@@ -16,27 +16,27 @@ const SINT CachingReaderChunkForWorker::kInvalidIndex = -1;
 // easier memory alignment.
 // TODO(XXX): The optimum value of the "constant" kFrames depends
 // on the properties of the AudioSource as the remarks above suggest!
-const SINT CachingReaderChunkForWorker::kChannels = Mixxx::AudioSource::kChannelCountStereo;
-const SINT CachingReaderChunkForWorker::kFrames = 8192; // ~ 170 ms at 48 kHz
-const SINT CachingReaderChunkForWorker::kSamples =
-        CachingReaderChunkForWorker::frames2samples(CachingReaderChunkForWorker::kFrames);
+const SINT CachingReaderChunk::kChannels = Mixxx::AudioSource::kChannelCountStereo;
+const SINT CachingReaderChunk::kFrames = 8192; // ~ 170 ms at 48 kHz
+const SINT CachingReaderChunk::kSamples =
+        CachingReaderChunk::frames2samples(CachingReaderChunk::kFrames);
 
-CachingReaderChunkForWorker::CachingReaderChunkForWorker(
+CachingReaderChunk::CachingReaderChunk(
         CSAMPLE* sampleBuffer)
         : m_index(kInvalidIndex),
           m_sampleBuffer(sampleBuffer),
           m_frameCount(0) {
 }
 
-CachingReaderChunkForWorker::~CachingReaderChunkForWorker() {
+CachingReaderChunk::~CachingReaderChunk() {
 }
 
-void CachingReaderChunkForWorker::init(SINT index) {
+void CachingReaderChunk::init(SINT index) {
     m_index = index;
     m_frameCount = 0;
 }
 
-bool CachingReaderChunkForWorker::isReadable(
+bool CachingReaderChunk::isReadable(
         const Mixxx::AudioSourcePointer& pAudioSource,
         SINT maxReadableFrameIndex) const {
     DEBUG_ASSERT(Mixxx::AudioSource::getMinFrameIndex() <= maxReadableFrameIndex);
@@ -50,7 +50,7 @@ bool CachingReaderChunkForWorker::isReadable(
     return frameIndex <= maxFrameIndex;
 }
 
-SINT CachingReaderChunkForWorker::readSampleFrames(
+SINT CachingReaderChunk::readSampleFrames(
         const Mixxx::AudioSourcePointer& pAudioSource,
         SINT* pMaxReadableFrameIndex) {
     DEBUG_ASSERT(pMaxReadableFrameIndex);
@@ -110,7 +110,7 @@ SINT CachingReaderChunkForWorker::readSampleFrames(
     return m_frameCount;
 }
 
-void CachingReaderChunkForWorker::copySamples(
+void CachingReaderChunk::copySamples(
         CSAMPLE* sampleBuffer, SINT sampleOffset, SINT sampleCount) const {
     DEBUG_ASSERT(0 <= sampleOffset);
     DEBUG_ASSERT(0 <= sampleCount);
@@ -118,31 +118,31 @@ void CachingReaderChunkForWorker::copySamples(
     SampleUtil::copy(sampleBuffer, m_sampleBuffer + sampleOffset, sampleCount);
 }
 
-CachingReaderChunk::CachingReaderChunk(
+CachingReaderChunkForOwner::CachingReaderChunkForOwner(
         CSAMPLE* sampleBuffer)
-        : CachingReaderChunkForWorker(sampleBuffer),
+        : CachingReaderChunk(sampleBuffer),
           m_state(FREE),
           m_pPrev(nullptr),
           m_pNext(nullptr) {
 }
 
-CachingReaderChunk::~CachingReaderChunk() {
+CachingReaderChunkForOwner::~CachingReaderChunkForOwner() {
 }
 
-void CachingReaderChunk::init(SINT index) {
+void CachingReaderChunkForOwner::init(SINT index) {
     DEBUG_ASSERT(READ_PENDING != m_state);
-    CachingReaderChunkForWorker::init(index);
+    CachingReaderChunk::init(index);
     m_state = READY;
 }
 
-void CachingReaderChunk::free() {
+void CachingReaderChunkForOwner::free() {
     DEBUG_ASSERT(READ_PENDING != m_state);
-    CachingReaderChunkForWorker::init(kInvalidIndex);
+    CachingReaderChunk::init(kInvalidIndex);
     m_state = FREE;
 }
 
-void CachingReaderChunk::insertIntoListBefore(
-        CachingReaderChunk* pBefore) {
+void CachingReaderChunkForOwner::insertIntoListBefore(
+        CachingReaderChunkForOwner* pBefore) {
     DEBUG_ASSERT(nullptr == m_pNext);
     DEBUG_ASSERT(nullptr == m_pPrev);
 
@@ -157,12 +157,12 @@ void CachingReaderChunk::insertIntoListBefore(
     }
 }
 
-void CachingReaderChunk::removeFromList(
-        CachingReaderChunk** ppHead,
-        CachingReaderChunk** ppTail) {
+void CachingReaderChunkForOwner::removeFromList(
+        CachingReaderChunkForOwner** ppHead,
+        CachingReaderChunkForOwner** ppTail) {
     // Remove this chunk from the double-linked list...
-    CachingReaderChunk* pNext = m_pNext;
-    CachingReaderChunk* pPrev = m_pPrev;
+    CachingReaderChunkForOwner* pNext = m_pNext;
+    CachingReaderChunkForOwner* pPrev = m_pPrev;
     m_pNext = nullptr;
     m_pPrev = nullptr;
 
