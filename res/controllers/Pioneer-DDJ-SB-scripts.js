@@ -41,7 +41,9 @@ PioneerDDJSB.init = function (id) {
     PioneerDDJSB.fxControls = {
         'group_[Channel1]_enable': 0x00,
         'group_[Channel2]_enable': 0x01,
-        'group_[Headphone]_enable': 0x02
+        'group_[Headphone]_enable': 0x02,
+        'group_[Channel3]_enable': 0x03,
+        'group_[Channel4]_enable': 0x04
     };
 
     PioneerDDJSB.fxButtonPressed = [
@@ -124,7 +126,9 @@ PioneerDDJSB.bindFXControlConnections = function (effectUnitGroup, isUnbinding) 
     var controlsToFunctions = {
         'group_[Headphone]_enable': 'PioneerDDJSB.fxLeds',
         'group_[Channel1]_enable': 'PioneerDDJSB.fxLeds',
-        'group_[Channel2]_enable': 'PioneerDDJSB.fxLeds'
+        'group_[Channel2]_enable': 'PioneerDDJSB.fxLeds',
+        'group_[Channel3]_enable': 'PioneerDDJSB.fxLeds',
+        'group_[Channel4]_enable': 'PioneerDDJSB.fxLeds'
     };
     PioneerDDJSB.bulkBindControlConnections(effectUnitGroup, controlsToFunctions, isUnbinding);
 };
@@ -521,8 +525,12 @@ PioneerDDJSB.fxLeds = function (value, group, control) {
     var deck = PioneerDDJSB.fxGroups[group],
         ledNumber = PioneerDDJSB.fxControls[control];
 
-    PioneerDDJSB.fxLedControl(deck, ledNumber, false, value);
-    PioneerDDJSB.fxLedControl(deck, ledNumber, true, value);
+    if (ledNumber < 3) {
+        PioneerDDJSB.fxLedControl(deck, ledNumber, false, value);
+        PioneerDDJSB.fxLedControl(deck, ledNumber, true, value);
+    } else {
+        PioneerDDJSB.padLedControl(deck, PioneerDDJSB.ledGroups.manualLoop, true, ledNumber - 1, true, value);
+    }
 };
 
 PioneerDDJSB.headphoneCueLed = function (value, group, control) {
