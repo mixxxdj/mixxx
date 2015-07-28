@@ -2,15 +2,6 @@
 
 namespace Mixxx {
 
-QList<QString> SoundSourceSndFile::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("aiff");
-    list.push_back("aif");
-    list.push_back("wav");
-    list.push_back("flac");
-    return list;
-}
-
 SoundSourceSndFile::SoundSourceSndFile(QUrl url)
         : SoundSource(url),
           m_pSndFile(NULL) {
@@ -90,6 +81,19 @@ SINT SoundSourceSndFile::readSampleFrames(
                 << sf_strerror(m_pSndFile);
         return 0;
     }
+}
+
+QString SoundSourceProviderSndFile::getName() const {
+    return "libsndfile";
+}
+
+QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("aiff");
+    supportedFileExtensions.append("aif");
+    supportedFileExtensions.append("wav");
+    supportedFileExtensions.append("flac");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

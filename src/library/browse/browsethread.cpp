@@ -120,7 +120,7 @@ void BrowseThread::populateModel() {
     m_path_mutex.unlock();
 
     // Refresh the name filters in case we loaded new SoundSource plugins.
-    QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
+    QStringList nameFilters(SoundSourceProxy::getSupportedFileNamePatterns());
 
     QDirIterator fileIt(thisPath.dir().absolutePath(), nameFilters,
                         QDir::Files | QDir::NoDotAndDotDot);

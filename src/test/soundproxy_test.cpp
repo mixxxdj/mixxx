@@ -10,35 +10,38 @@
 
 class SoundSourceProxyTest: public MixxxTest {
   protected:
-    static QStringList getFileExtensions() {
-        QStringList extensions;
-        extensions << "aiff" << "flac" << "mp3" << "ogg" << "wav";
-#ifdef __OPUS__
-        extensions << "opus";
-#endif
-        if (SoundSourceProxy::isFilenameSupported("filename.m4a")) {
-            extensions << "m4a";
+    static QStringList getFileNameSuffixes() {
+        QStringList availableFileNameSuffixes;
+        availableFileNameSuffixes << ".aiff" << ".flac" << ".m4a" << "-png.mp3" << ".ogg" << ".opus" << ".wav";
+        QStringList supportedFileNameSuffixes;
+        for (const auto& fileNameSuffix: availableFileNameSuffixes) {
+            // We need to check for the whole file name here!
+            if (SoundSourceProxy::isFileNameSupported(fileNameSuffix)) {
+                supportedFileNameSuffixes << fileNameSuffix;
+            }
         }
-        return extensions;
+        return supportedFileNameSuffixes;
     }
 
-    static void SetUpTestCase() {
-        SoundSourceProxy::loadPlugins();
+    static QStringList getFilePaths() {
+        const QString basePath(QDir::current().absoluteFilePath("src/test/id3-test-data"));
+        const QDir baseDir(basePath);
+        QStringList filePaths;
+        for (const auto& fileNameSuffix: getFileNameSuffixes()) {
+            filePaths.append(baseDir.absoluteFilePath("cover-test" + fileNameSuffix));
+        }
+        return filePaths;
     }
 
-    static Mixxx::AudioSourcePointer openAudioSource(const QString& fileName) {
-        return SoundSourceProxy(fileName).openAudioSource();
+    static Mixxx::AudioSourcePointer openAudioSource(const QString& filePath) {
+        return SoundSourceProxy(filePath).openAudioSource();
     }
 };
 
 TEST_F(SoundSourceProxyTest, open) {
     // This test piggy-backs off of the cover-test files.
-    const QString kFilePathPrefix(
-            QDir::currentPath() + "/src/test/id3-test-data/cover-test.");
-
-    foreach (const QString& fileExtension, getFileExtensions()) {
-        const QString filePath(kFilePathPrefix + fileExtension);
-        ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
+    for (const auto& filePath: getFilePaths()) {
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
         Mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
         ASSERT_TRUE(!pAudioSource.isNull());
@@ -52,7 +55,7 @@ TEST_F(SoundSourceProxyTest, readArtist) {
     SoundSourceProxy proxy(
             QDir::currentPath().append("/src/test/id3-test-data/artist.mp3"));
     Mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
+    EXPECT_EQ(OK, proxy.parseTrackMetadataAndCoverArt(&trackMetadata, NULL));
     EXPECT_EQ("Test Artist", trackMetadata.getArtist());
 }
 
@@ -60,7 +63,7 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
     SoundSourceProxy proxy(
         QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3"));
     Mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
+    EXPECT_EQ(OK, proxy.parseTrackMetadataAndCoverArt(&trackMetadata, NULL));
     EXPECT_EQ("TITLE2", trackMetadata.getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbum());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumArtist());
@@ -80,12 +83,10 @@ TEST_F(SoundSourceProxyTest, seekForward) {
     // those samples decoded after seeking are quite noticeable!
     const CSAMPLE kOpusSeekDecodingError = 0.2f;
 
-    const QString kFilePathPrefix(
-            QDir::currentPath() + "/src/test/id3-test-data/cover-test.");
+    for (const auto& filePath: getFilePaths()) {
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
-    foreach (const QString& fileExtension, getFileExtensions()) {
-        const QString filePath(kFilePathPrefix + fileExtension);
-        ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
+        qDebug() << "Seek forward test:" << filePath;
 
         Mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
         ASSERT_FALSE(pContReadSource.isNull());
@@ -118,7 +119,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             for (SINT readSampleOffset = 0;
                     readSampleOffset < readSampleCount;
                     ++readSampleOffset) {
-                if ("opus" == fileExtension) {
+                if (filePath.endsWith(".opus")) {
                     EXPECT_NEAR(contReadData[readSampleOffset], seekReadData[readSampleOffset], kOpusSeekDecodingError)
                             << "Mismatch in " << filePath.toStdString()
                             << " at seek frame index " << seekFrameIndex

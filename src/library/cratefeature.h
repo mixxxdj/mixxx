@@ -9,19 +9,22 @@
 #include <QUrl>
 #include <QIcon>
 #include <QPoint>
+#include <QSet>
 
 #include "library/libraryfeature.h"
 #include "library/cratetablemodel.h"
+#include "library/library.h"
 
 #include "treeitemmodel.h"
 #include "configobject.h"
+#include "trackinfoobject.h"
 
 class TrackCollection;
 
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(QObject* parent,
+    CrateFeature(Library* pLibrary,
                  TrackCollection* pTrackCollection,
                  ConfigObject<ConfigValue>* pConfig);
     virtual ~CrateFeature();
@@ -60,6 +63,10 @@ class CrateFeature : public LibraryFeature {
     void slotCrateTableRenamed(int playlistId, QString a_strName);
     void htmlLinkClicked(const QUrl& link);
 
+  private slots:
+    void slotTrackSelected(TrackPointer pTrack);
+    void slotResetSelectedTrack();
+
   private:
     QString getRootViewHtml() const;
     QModelIndex constructChildModel(int selected_id);
@@ -85,6 +92,8 @@ class CrateFeature : public LibraryFeature {
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
     ConfigObject<ConfigValue>* m_pConfig;
+    TrackPointer m_pSelectedTrack;
+    QSet<int> m_cratesSelectedTrackIsIn;
 };
 
 #endif /* CRATEFEATURE_H */

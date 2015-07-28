@@ -150,12 +150,6 @@ bool decodeFrameHeader(
 
 } // anonymous namespace
 
-QList<QString> SoundSourceMp3::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("mp3");
-    return list;
-}
-
 SoundSourceMp3::SoundSourceMp3(QUrl url)
         : SoundSource(url, "mp3"),
           m_file(getLocalFileName()),
@@ -493,6 +487,18 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
+    // Handle trivial case
+    if (m_curFrameIndex == frameIndex) {
+        // Nothing to do
+        return m_curFrameIndex;
+    }
+    // Handle edge case
+    if (getMaxFrameIndex() <= frameIndex) {
+        // EOF reached
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
     SINT seekFrameIndex = findSeekFrameIndex(
             frameIndex);
     DEBUG_ASSERT(SINT(m_seekFrameList.size()) > seekFrameIndex);
@@ -529,10 +535,14 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
     // Decoding starts before the actual target position
     DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
 
-    // Skip (= decode and discard) prefetch data
-    const SINT skipFrameCount = frameIndex - m_curFrameIndex;
-    skipSampleFrames(skipFrameCount);
-    DEBUG_ASSERT(m_curFrameIndex == frameIndex);
+    // Skip (= decode and discard) all samples up to the target position
+    const SINT prefetchFrameCount = frameIndex - m_curFrameIndex;
+    const SINT skipFrameCount = skipSampleFrames(prefetchFrameCount);
+    DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
+    if (skipFrameCount < prefetchFrameCount) {
+        qWarning() << "Failed to prefetch sample data while seeking"
+                << skipFrameCount << "<" << prefetchFrameCount;
+    }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     return m_curFrameIndex;
@@ -586,7 +596,7 @@ SINT SoundSourceMp3::readSampleFrames(
                 if (isUnrecoverableError(m_madStream)) {
                     qWarning() << "Unrecoverable MP3 frame decoding error:"
                             << mad_stream_errorstr(&m_madStream);
-                    // Abort
+                    // Abort decoding
                     break;
                 }
                 if (isRecoverableError(m_madStream)) {
@@ -603,14 +613,12 @@ SINT SoundSourceMp3::readSampleFrames(
                                 << mad_stream_errorstr(&m_madStream);
                         }
                     }
-                    // Acknowledge error...
-                    m_madStream.error = MAD_ERROR_NONE;
-                    // ...and continue
+                    // Continue decoding
                 }
             }
             if (pMadThisFrame == m_madStream.this_frame) {
                 qDebug() << "Retry decoding MP3 frame @" << m_curFrameIndex;
-                // Retry
+                // Retry decoding
                 continue;
             }
 
@@ -698,6 +706,16 @@ SINT SoundSourceMp3::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
     return numberOfFramesTotal - numberOfFramesRemaining;
+}
+
+QString SoundSourceProviderMp3::getName() const {
+    return "MAD: MPEG Audio Decoder";
+}
+
+QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("mp3");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

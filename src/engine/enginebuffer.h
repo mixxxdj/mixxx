@@ -124,6 +124,7 @@ class EngineBuffer : public EngineObject {
 
     // Return the current rate (not thread-safe)
     double getSpeed();
+    bool getScratching();
     // Returns current bpm value (not thread-safe)
     double getBpm();
     // Returns the BPM of the loaded track around the current position (not thread-safe)
@@ -328,7 +329,6 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_backButton;
     ControlPushButton* m_pSlipButton;
 
-    ControlObject* m_rateEngine;
     ControlObject* m_visualBpm;
     ControlObject* m_visualKey;
     ControlObject* m_pQuantize;

@@ -201,10 +201,13 @@ docs_files += Glob('#./README')
 docs_files += Glob('#./Mixxx-Manual.pdf')
 
 #.desktop file for KDE/GNOME menu
-dotdesktop_files = Glob('#src/mixxx.desktop')
+dotdesktop_files = Glob('#res/linux/mixxx.desktop')
 
 #.appdata.xml file for KDE/GNOME AppStream iniative
-dotappstream_files = Glob('#src/mixxx.appdata.xml')
+dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
+
+#udev rule file for HID controllers
+hidudev_files = Glob('#res/linux/mixxx-usb-hid.rules')
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
@@ -243,6 +246,19 @@ else:
         suffix = 'd4.dll' if build.build_is_debug else '4.dll'
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
         dll_files.extend(qt_modules)
+
+# Qt imageformats plugin
+imgfmtdll_files = []
+qt_imagesformats = depends.Qt.enabled_imageformats(build)
+
+if qt5:
+        suffix = 'd.dll' if build.build_is_debug else '.dll'
+        qt_imagesformats = ['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats]
+        imgfmtdll_files.extend(qt_imagesformats)
+else:
+        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
+        qt_imagesformats = ['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats]
+        imgfmtdll_files.extend(qt_imagesformats)
 
 sqldll_files = []
 if int(flags.get('qt_sqlite_plugin', 0)):
@@ -291,6 +307,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
                 icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
                 promotracks = env.Install(os.path.join(unix_share_path, 'mixxx', 'promo'), promotracks_files)
+                hidudev = env.Install('/etc/udev/rules.d', hidudev_files)
 
                 #Makes each of those Install builders get fired off when you run "scons install" :)
                 env.Alias('install', binary)
@@ -306,6 +323,8 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', icon)
                 env.Alias('install', promotracks)
                 env.Alias('install', vamp_plugin)
+                if os.access('/etc/udev/rules.d', os.W_OK):
+                        env.Alias('install', hidudev)
 
                 #Delete the old Mixxx installation (because SCONS won't overwrite it)
                 #if 'install' in COMMAND_LINE_TARGETS:
@@ -475,6 +494,11 @@ if build.platform_is_windows:
         env.Alias('mixxx', vamp_plugins)
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
+
+        # imageformats DLL
+        if imgfmtdll_files:
+                imageformats_dll = env.Install(os.path.join(base_dist_dir, "imageformats"), imgfmtdll_files)
+                env.Alias('mixxx', imageformats_dll)
 
         # QSQLite DLL
         if sqldll_files:

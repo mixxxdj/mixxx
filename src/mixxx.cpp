@@ -128,7 +128,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
     ControlDoublePrivate::setUserConfig(m_pConfig);
 
-    Sandbox::initialize(m_pConfig->getSettingsPath().append("/sandbox.cfg"));
+    Sandbox::initialize(QDir(m_pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
     // Only record stats in developer mode.
     if (m_cmdLineArgs.getDeveloper()) {
@@ -414,10 +414,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             ConfigKey("[Library]", "SupportedFileExtensions")).split(
                 ",", QString::SkipEmptyParts));
     QSet<QString> curr_plugins = QSet<QString>::fromList(
-        SoundSourceProxy::supportedFileExtensions());
+        SoundSourceProxy::getSupportedFileExtensions());
     rescan = rescan || (prev_plugins != curr_plugins);
     m_pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
-        QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
+        QStringList(SoundSourceProxy::getSupportedFileExtensions()).join(","));
 
     // Scan the library directory. Initialize this after the skinloader has
     // loaded a skin, see Bug #1047435
@@ -463,7 +463,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     const QList<QString>& musicFiles = args.getMusicFiles();
     for (int i = 0; i < (int)m_pPlayerManager->numDecks()
             && i < musicFiles.count(); ++i) {
-        if (SoundSourceProxy::isFilenameSupported(musicFiles.at(i))) {
+        if (SoundSourceProxy::isFileNameSupported(musicFiles.at(i))) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
@@ -694,6 +694,7 @@ void MixxxMainWindow::initializeWindow() {
 void MixxxMainWindow::initializeFonts() {
     QDir fontsDir(m_pConfig->getResourcePath());
     if (!fontsDir.cd("fonts")) {
+        qWarning("MixxxMainWindow::initializeFonts: cd fonts failed");
         return;
     }
 
@@ -784,7 +785,7 @@ void MixxxMainWindow::initializeKeyboard() {
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
-    QString userKeyboard = m_cmdLineArgs.getSettingsPath() + "Custom.kbd.cfg";
+    QString userKeyboard = QDir(m_cmdLineArgs.getSettingsPath()).filePath("Custom.kbd.cfg");
 
     //Empty keyboard configuration
     m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>("");
@@ -1206,6 +1207,8 @@ void MixxxMainWindow::initActions()
     connect(m_pOptionsPreferences, SIGNAL(triggered()),
             this, SLOT(slotOptionsPreferences()));
 
+    QString externalLinkSuffix = QChar(0x21D7);
+    
     QString aboutTitle = tr("&About");
     QString aboutText = tr("About the application");
     m_pHelpAboutApp = new QAction(aboutTitle, this);
@@ -1214,28 +1217,35 @@ void MixxxMainWindow::initActions()
     connect(m_pHelpAboutApp, SIGNAL(triggered()),
             this, SLOT(slotHelpAbout()));
 
-    QString supportTitle = tr("&Community Support");
+    QString supportTitle = tr("&Community Support") + externalLinkSuffix;
     QString supportText = tr("Get help with Mixxx");
     m_pHelpSupport = new QAction(supportTitle, this);
     m_pHelpSupport->setStatusTip(supportText);
     m_pHelpSupport->setWhatsThis(buildWhatsThis(supportTitle, supportText));
     connect(m_pHelpSupport, SIGNAL(triggered()), this, SLOT(slotHelpSupport()));
 
-    QString manualTitle = tr("&User Manual");
+    QString manualTitle = tr("&User Manual") + externalLinkSuffix;
     QString manualText = tr("Read the Mixxx user manual.");
     m_pHelpManual = new QAction(manualTitle, this);
     m_pHelpManual->setStatusTip(manualText);
     m_pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
     connect(m_pHelpManual, SIGNAL(triggered()), this, SLOT(slotHelpManual()));
 
-    QString feedbackTitle = tr("Send Us &Feedback");
+    QString shortcutsTitle = tr("&Keyboard Shortcuts") + externalLinkSuffix;
+    QString shortcutsText = tr("Speed up your workflow with keyboard shortcuts.");
+    m_pHelpShortcuts = new QAction(shortcutsTitle, this);
+    m_pHelpShortcuts->setStatusTip(shortcutsText);
+    m_pHelpShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
+    connect(m_pHelpShortcuts, SIGNAL(triggered()), this, SLOT(slotHelpShortcuts()));
+    
+    QString feedbackTitle = tr("Send Us &Feedback") + externalLinkSuffix;
     QString feedbackText = tr("Send feedback to the Mixxx team.");
     m_pHelpFeedback = new QAction(feedbackTitle, this);
     m_pHelpFeedback->setStatusTip(feedbackText);
     m_pHelpFeedback->setWhatsThis(buildWhatsThis(feedbackTitle, feedbackText));
     connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
 
-    QString translateTitle = tr("&Translate This Application");
+    QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
     QString translateText = tr("Help translate this application into your language.");
     m_pHelpTranslation = new QAction(translateTitle, this);
     m_pHelpTranslation->setStatusTip(translateText);
@@ -1620,6 +1630,7 @@ void MixxxMainWindow::initMenuBar() {
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
     m_pHelpMenu->addAction(m_pHelpManual);
+    m_pHelpMenu->addAction(m_pHelpShortcuts);
     m_pHelpMenu->addAction(m_pHelpFeedback);
     m_pHelpMenu->addAction(m_pHelpTranslation);
     m_pHelpMenu->addSeparator();
@@ -1662,7 +1673,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             loadTrackText,
             m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR),
             QString("Audio (%1)")
-                .arg(SoundSourceProxy::supportedFileExtensionsString()));
+                .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
 
 
     if (!trackPath.isNull()) {
@@ -1995,6 +2006,12 @@ void MixxxMainWindow::slotHelpTranslation() {
     QUrl qTranslationUrl;
     qTranslationUrl.setUrl(MIXXX_TRANSLATION_URL);
     QDesktopServices::openUrl(qTranslationUrl);
+}
+
+void MixxxMainWindow::slotHelpShortcuts() {
+    QUrl qShortcutsUrl;
+    qShortcutsUrl.setUrl(MIXXX_SHORTCUTS_URL);
+    QDesktopServices::openUrl(qShortcutsUrl);
 }
 
 void MixxxMainWindow::slotHelpManual() {

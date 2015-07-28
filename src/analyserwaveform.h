@@ -14,9 +14,7 @@
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP
 
-class EngineObjectConstIn;
-class EngineFilterButterworth8;
-class EngineFilterBessel4;
+class EngineFilterIIRBase;
 class Waveform;
 class AnalysisDao;
 
@@ -153,7 +151,7 @@ class AnalyserWaveform : public Analyser {
     void storeCurentStridePower();
     void resetCurrentStride();
 
-    void resetFilters(TrackPointer tio, int sampleRate);
+    void createFilters(int sampleRate);
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
 
@@ -170,7 +168,7 @@ class AnalyserWaveform : public Analyser {
     int m_currentStride;
     int m_currentSummaryStride;
 
-    EngineObjectConstIn* m_filter[FilterCount];
+    EngineFilterIIRBase* m_filter[FilterCount];
     std::vector<float> m_buffers[FilterCount];
 
     QTime* m_timer;

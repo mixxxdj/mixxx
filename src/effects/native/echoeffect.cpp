@@ -6,6 +6,7 @@
 
 #define INCREMENT_RING(index, increment, length) index = (index + increment) % length
 #define RAMP_LENGTH 500
+#define CHANNEL_COUNT 2
 
 // static
 QString EchoEffect::getId() {
@@ -87,10 +88,7 @@ EchoEffect::~EchoEffect() {
 }
 
 int EchoEffect::getDelaySamples(double delay_time, const unsigned int sampleRate) const {
-    int delay_samples = delay_time * sampleRate;
-    if (delay_samples % 2 == 1) {
-        --delay_samples;
-    }
+    int delay_samples = CHANNEL_COUNT * delay_time * sampleRate;
     if (delay_samples > static_cast<int>(MAX_BUFFER_LEN)) {
         qWarning() << "Delay buffer requested is larger than max buffer!";
         delay_samples = static_cast<int>(MAX_BUFFER_LEN);
@@ -107,6 +105,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     Q_UNUSED(handle);
     Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
+    DEBUG_ASSERT(0 == (numSamples % CHANNEL_COUNT));
     EchoGroupState& gs = *pGroupState;
     double delay_time = m_pDelayParameter->value();
     double send_amount = m_pSendParameter->value();
@@ -134,7 +133,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     gs.prev_delay_samples = delay_samples;
 
     // Feedback the delay buffer and then add the new input.
-    for (unsigned int i = 0; i < numSamples; i += 2) {
+    for (unsigned int i = 0; i < numSamples; i += CHANNEL_COUNT) {
         // Ramp the beginning and end of the delay buffer to prevent clicks.
         double write_ramper = 1.0;
         if (gs.write_position < RAMP_LENGTH) {
@@ -152,12 +151,12 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                 SampleUtil::clampSample(gs.delay_buf[gs.write_position]);
         gs.delay_buf[gs.write_position + 1] =
                 SampleUtil::clampSample(gs.delay_buf[gs.write_position + 1]);
-        INCREMENT_RING(gs.write_position, 2, delay_samples);
+        INCREMENT_RING(gs.write_position, CHANNEL_COUNT, delay_samples);
     }
 
     // Pingpong the output.  If the pingpong value is zero, all of the
     // math below should result in a simple copy of delay buf to pOutput.
-    for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
+    for (unsigned int i = 0; i < numSamples; i += CHANNEL_COUNT) {
         if (gs.ping_pong_left) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
@@ -180,7 +179,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                     (1 + pingpong_frac)) / 2.0;
         }
 
-        INCREMENT_RING(read_position, 2, delay_samples);
+        INCREMENT_RING(read_position, CHANNEL_COUNT, delay_samples);
         // If the buffer has looped around, flip-flop the ping-pong.
         if (read_position == 0) {
             gs.ping_pong_left = !gs.ping_pong_left;

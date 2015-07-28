@@ -1,5 +1,5 @@
-#ifndef METADATASOURCE_H
-#define METADATASOURCE_H
+#ifndef MIXXX_METADATASOURCE_H
+#define MIXXX_METADATASOURCE_H
 
 #include "metadata/trackmetadata.h"
 #include "util/defs.h" // Result
@@ -8,17 +8,16 @@
 
 namespace Mixxx {
 
-// Interface for metadata
+// Interface for parsing track metadata and cover art.
 class MetadataSource {
 public:
-    // Only metadata that is quickly readable should be read.
-    // The implementation is free to set inaccurate estimated
-    // values here.
-    virtual Result parseTrackMetadata(TrackMetadata* pMetadata) const = 0;
-
-    // Returns the first cover art image embedded within the
-    // file (if any).
-    virtual QImage parseCoverArt() const = 0;
+    // Read both track metadata and cover art at once, because this
+    // is should be the most common use case. Both parameters are
+    // output parameters and might be NULL if their result is not
+    // needed.
+    virtual Result parseTrackMetadataAndCoverArt(
+            TrackMetadata* pTrackMetadata,
+            QImage* pCoverArt) const = 0;
 
 protected:
     virtual ~MetadataSource() {}
@@ -26,4 +25,4 @@ protected:
 
 } //namespace Mixxx
 
-#endif // METADATASOURCE_H
+#endif // MIXXX_METADATASOURCE_H

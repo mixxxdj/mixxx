@@ -1,7 +1,7 @@
 #ifndef MIXXX_SOUNDSOURCEFFMPEG_H
 #define MIXXX_SOUNDSOURCEFFMPEG_H
 
-#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 
 #include <encoder/encoderffmpegresample.h>
 
@@ -41,23 +41,21 @@ struct ffmpegCacheObject {
 };
 
 class SoundSourceFFmpeg : public SoundSource {
-public:
-    static QList<QString> supportedFileExtensions();
-
+  public:
     explicit SoundSourceFFmpeg(QUrl url);
     ~SoundSourceFFmpeg();
 
-    void close() /*override*/;
+    void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) override;
 
-    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
+    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
-private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
+  private:
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     bool readFramesToCache(unsigned int count, SINT offset);
-    bool getBytesFromCache(char *buffer, SINT offset, SINT size);
+    bool getBytesFromCache(CSAMPLE* buffer, SINT offset, SINT size);
     SINT getSizeofCache();
     void clearCache();
 
@@ -81,7 +79,22 @@ private:
     QVector<struct ffmpegCacheObject  *> m_SCache;
     QVector<struct ffmpegLocationObject  *> m_SJumpPoints;
     SINT m_lLastStoredPos;
+    SINT m_lStoreCount;
     SINT m_lStoredSeekPoint;
+    struct ffmpegLocationObject *m_SStoredJumpPoint;
+};
+
+class SoundSourceProviderFFmpeg: public SoundSourceProvider {
+  public:
+    QString getName() const override {
+        return "FFmpeg";
+    }
+
+    QStringList getSupportedFileExtensions() const override;
+
+    SoundSourcePointer newSoundSource(const QUrl& url) override {
+        return SoundSourcePointer(new SoundSourceFFmpeg(url));
+    }
 };
 
 } // namespace Mixxx

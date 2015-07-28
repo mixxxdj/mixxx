@@ -200,6 +200,16 @@ class Qt(Dependence):
             qt_modules.extend(['QtWidgets', 'QtConcurrent'])
         return qt_modules
 
+    @staticmethod
+    def enabled_imageformats(build):
+        qt5 = Qt.qt5_enabled(build)
+        qt_imageformats = [
+            'qgif', 'qico', 'qjpeg',  'qmng', 'qtga', 'qtiff', 'qsvg'
+        ]
+        if qt5:
+            qt_imageformats.extend(['qdds', 'qicns', 'qjp2', 'qwbmp', 'qwebp'])
+        return qt_imageformats
+
     def satisfy(self):
         pass
 
@@ -340,6 +350,11 @@ class Qt(Dependence):
                 build.env.Append(LINKFLAGS="-Wl,-rpath," + framework_path)
                 build.env.Append(LINKFLAGS="-L" + framework_path)
 
+        # Mixxx requires C++11 support. Windows enables C++11 features by
+        # default but Clang/GCC require a flag.
+        if not build.platform_is_windows:
+            build.env.Append(CXXFLAGS='-std=c++11')
+
 
 class TestHeaders(Dependence):
     def configure(self, build, conf):
@@ -471,6 +486,23 @@ class ProtoBuf(Dependence):
                 "Could not find libprotobuf or its development headers.")
 
 
+class QtScriptByteArray(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/qtscript-bytearray')
+
+    def sources(self, build):
+        return ['#lib/qtscript-bytearray/bytearrayclass.cpp',
+                '#lib/qtscript-bytearray/bytearrayprototype.cpp']
+
+
+class Reverb(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/reverb')
+
+    def sources(self, build):
+        return ['#lib/reverb/Reverb.cc']
+
+
 class MixxxCore(Feature):
 
     def description(self):
@@ -556,7 +588,6 @@ class MixxxCore(Feature):
                    "effects/native/echoeffect.cpp",
                    "effects/native/autopaneffect.cpp",
                    "effects/native/phasereffect.cpp",
-                   "effects/native/reverb/Reverb.cc",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",
@@ -638,8 +669,6 @@ class MixxxCore(Feature):
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midienumerator.cpp",
                    "controllers/midi/midioutputhandler.cpp",
-                   "controllers/qtscript-bytearray/bytearrayclass.cpp",
-                   "controllers/qtscript-bytearray/bytearrayprototype.cpp",
                    "controllers/softtakeover.cpp",
 
                    "main.cpp",
@@ -648,7 +677,9 @@ class MixxxCore(Feature):
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
 
+                   "sources/soundsourceproviderregistry.cpp",
                    "sources/soundsourceplugin.cpp",
+                   "sources/soundsourcepluginlibrary.cpp",
                    "sources/soundsource.cpp",
                    "sources/audiosource.cpp",
 
@@ -1140,18 +1171,19 @@ class MixxxCore(Feature):
         build.env.Append(CPPPATH=['.'])
 
         # Set up flags for config/track listing files
+        # SETTINGS_PATH not needed for windows and MacOSX because we now use QDesktopServices::storageLocation(QDesktopServices::DataLocation)
         if build.platform_is_linux or \
                 build.platform_is_bsd:
             mixxx_files = [
+                # TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+                # to QDir::filePath elsewhere in the code. This is candidate for removal.
                 ('SETTINGS_PATH', '.mixxx/'),
                 ('SETTINGS_FILE', 'mixxx.cfg')]
         elif build.platform_is_osx:
             mixxx_files = [
-                ('SETTINGS_PATH', 'Library/Application Support/Mixxx/'),
                 ('SETTINGS_FILE', 'mixxx.cfg')]
         elif build.platform_is_windows:
             mixxx_files = [
-                ('SETTINGS_PATH', 'Local Settings/Application Data/Mixxx/'),
                 ('SETTINGS_FILE', 'mixxx.cfg')]
 
         # Escape the filenames so they don't end up getting screwed up in the
@@ -1175,7 +1207,8 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand, SecurityFramework, CoreServices]
+                Chromaprint, RubberBand, SecurityFramework, CoreServices,
+                QtScriptByteArray, Reverb]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
