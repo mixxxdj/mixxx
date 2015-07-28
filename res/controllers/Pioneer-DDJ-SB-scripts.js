@@ -1,3 +1,5 @@
+var PioneerDDJSB = function () {};
+
 /*
     Latest code at https://github.com/jardiacaj/mixxx).
 
@@ -8,7 +10,17 @@
     Just as wingcom's and Rudham's work, this mapping is pusblished under the MIT license.
  */
 
-var PioneerDDJSB = function () {};
+///////////////////////////////////////////////////////////////
+//                       USER OPTIONS                        //
+///////////////////////////////////////////////////////////////
+
+// if true the sync button blinks with the beat, if false led is lit when sync is enabled
+PioneerDDJSB.blinkingSync = true;
+
+///////////////////////////////////////////////////////////////
+//                      INIT & SHUTDOWN                      //
+///////////////////////////////////////////////////////////////
+
 
 PioneerDDJSB.init = function (id) {
     PioneerDDJSB.scratchSettings = {
@@ -57,11 +69,6 @@ PioneerDDJSB.init = function (id) {
         [0, 0, 0, 0]
     ];
 
-    PioneerDDJSB.fxPreviousKnobValues = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0]
-    ];
-
     PioneerDDJSB.scratchMode = [false, false, false, false];
 
     PioneerDDJSB.ledGroups = {
@@ -90,8 +97,8 @@ PioneerDDJSB.init = function (id) {
 
     PioneerDDJSB.looprollIntervals = [0.0625, 0.125, 0.25, 0.5];
 
-    PioneerDDJSB.setAllSoftTakeover();
-    PioneerDDJSB.bindNonDeckControlConnections();
+    PioneerDDJSB.setAllSoftTakeover(false);
+    PioneerDDJSB.bindNonDeckControlConnections(false);
     PioneerDDJSB.initDeck('[Channel1]');
     PioneerDDJSB.initDeck('[Channel2]');
 };
@@ -108,7 +115,7 @@ PioneerDDJSB.shutdown = function () {
 
 PioneerDDJSB.bulkBindControlConnections = function (group, controlsToFunctions, remove) {
     var control;
-    remove = (remove === undefined) ? remove : false;
+    remove = (remove === undefined) ? false : remove;
 
     for (control in controlsToFunctions) {
         engine.connectControl(group, control, controlsToFunctions[control], remove);
@@ -142,7 +149,6 @@ PioneerDDJSB.bindDeckControlConnections = function (channelGroup, isUnbinding) {
             'keylock': 'PioneerDDJSB.keyLockLeds',
             'slip_enabled': 'PioneerDDJSB.vinylLed',
             'quantize': 'PioneerDDJSB.quantizeLed',
-            'beat_active': 'PioneerDDJSB.beatLed',
             'loop_in': 'PioneerDDJSB.loopInLed',
             'loop_out': 'PioneerDDJSB.loopOutLed',
             'filterLowKill': 'PioneerDDJSB.lowKillLed',
@@ -153,6 +159,12 @@ PioneerDDJSB.bindDeckControlConnections = function (channelGroup, isUnbinding) {
             'loop_double': 'PioneerDDJSB.loopDoubleLed',
             'loop_halve': 'PioneerDDJSB.loopHalveLed'
         };
+
+    if (PioneerDDJSB.blinkingSync) {
+        controlsToFunctions.beat_active = 'PioneerDDJSB.beatLed';
+    } else {
+        controlsToFunctions.sync_enabled = 'PioneerDDJSB.beatLed';
+    }
 
     for (i = 1; i <= 8; i++) {
         controlsToFunctions['hotcue_' + i + '_enabled'] = 'PioneerDDJSB.hotCueLeds';
@@ -253,7 +265,7 @@ PioneerDDJSB.initDeck = function (group) {
         disconnectDeck -= 2;
     }
     PioneerDDJSB.bindDeckControlConnections('[Channel' + disconnectDeck + ']', true);
-    PioneerDDJSB.bindDeckControlConnections(group);
+    PioneerDDJSB.bindDeckControlConnections(group, false);
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.shiftKeyLock, disconnectDeck <= 2);
     PioneerDDJSB.triggerVinylLed(PioneerDDJSB.channelGroups[group]);
 };
@@ -432,7 +444,7 @@ PioneerDDJSB.brakeButton = function (channel, control, value, status, group) {
 
 PioneerDDJSB.syncButton = function (channel, control, value, status, group) {
     if (value) {
-        engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'beatsync', 1);
+        PioneerDDJSB.toggleEngineValue(PioneerDDJSB.deckSwitchTable[group], 'sync_enabled');
     }
 };
 
