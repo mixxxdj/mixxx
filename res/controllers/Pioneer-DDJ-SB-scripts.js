@@ -351,12 +351,14 @@ PioneerDDJSB.headphoneCueButton = function (channel, control, value, status, gro
 };
 
 PioneerDDJSB.hotCueButtons = function (channel, control, value, status, group) {
-    engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'hotcue_' + ((control % 0x36) + 1) + '_activate', value);
+    var hotCueIndex = (control >= 0x40 ? control - 0x40 + 5 : control + 1);
+    engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'hotcue_' + hotCueIndex + '_activate', value);
 };
 
 PioneerDDJSB.clearHotCueButtons = function (channel, control, value, status, group) {
+    var hotCueIndex = (control >= 0x48 ? control - 0x48 + 5 : control - 7);
     if (value) {
-        engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'hotcue_' + ((control % 0x40) - 7) + '_clear', 1);
+        engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'hotcue_' + hotCueIndex + '_clear', 1);
     }
 };
 
