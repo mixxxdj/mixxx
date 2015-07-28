@@ -26,33 +26,26 @@ CachingReaderWorker::CachingReaderWorker(
 CachingReaderWorker::~CachingReaderWorker() {
 }
 
-void CachingReaderWorker::processCachingReaderChunkReadRequest(
-        CachingReaderChunkReadRequest* request,
-        ReaderStatusUpdate* update) {
-    //qDebug() << "Processing CachingReaderChunkReadRequest for" << chunk_number;
-
-    // Initialize the output parameters
-    update->maxReadableFrameIndex = m_maxReadableFrameIndex;
-    update->chunk = request->chunk;
+ReaderStatusUpdate CachingReaderWorker::processReadRequest(
+        const CachingReaderChunkReadRequest& request) {
+    CachingReaderChunk* pChunk = request.chunk;
+    DEBUG_ASSERT(pChunk);
 
     // Before trying to read any data we need to check if the audio source
     // is available and if any audio data that is needed by the chunk is
     // actually available.
-    if (!update->chunk->isReadable(m_pAudioSource, m_maxReadableFrameIndex)) {
-        update->status = CHUNK_READ_INVALID;
-        return;
+    if (!pChunk->isReadable(m_pAudioSource, m_maxReadableFrameIndex)) {
+        return ReaderStatusUpdate(CHUNK_READ_INVALID, pChunk, m_maxReadableFrameIndex);
     }
 
     // Try to read the data required for the chunk from the audio source
     // and adjust the max. readable frame index if decoding errors occur.
-    const SINT framesRead = request->chunk->readSampleFrames(
+    const SINT framesRead = pChunk->readSampleFrames(
             m_pAudioSource, &m_maxReadableFrameIndex);
-    // Re-adjust the max. readable frame index that might have been
-    // modified by the previous read operation.
-    update->maxReadableFrameIndex = m_maxReadableFrameIndex;
 
+    ReaderStatus status;
     if (0 < framesRead) {
-        update->status = CHUNK_READ_SUCCESS;
+        status = CHUNK_READ_SUCCESS;
     } else {
         // If no data has been read we need to distinguish two different
         // cases. If the chunk claims that the audio source is still readable
@@ -60,12 +53,13 @@ void CachingReaderWorker::processCachingReaderChunkReadRequest(
         // we have simply reached the end of the track. Otherwise the chunk
         // is beyond the readable range of the audio source and we need to
         // declare this read request as invalid.
-        if (update->chunk->isReadable(m_pAudioSource, m_maxReadableFrameIndex)) {
-            update->status = CHUNK_READ_EOF;
+        if (pChunk->isReadable(m_pAudioSource, m_maxReadableFrameIndex)) {
+            status = CHUNK_READ_EOF;
         } else {
-            update->status = CHUNK_READ_INVALID;
+            status = CHUNK_READ_INVALID;
         }
     }
+    return ReaderStatusUpdate(status, pChunk, m_maxReadableFrameIndex);
 }
 
 // WARNING: Always called from a different thread (GUI)
@@ -78,13 +72,12 @@ void CachingReaderWorker::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes
     QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
 
-    TrackPointer pLoadTrack;
     CachingReaderChunkReadRequest request;
-    ReaderStatusUpdate status;
 
     Event::start(m_tag);
     while (!load_atomic(m_stop)) {
         if (m_newTrack) {
+            TrackPointer pLoadTrack;
             { // locking scope
                 QMutexLocker locker(&m_newTrackMutex);
                 pLoadTrack = m_newTrack;
@@ -92,9 +85,9 @@ void CachingReaderWorker::run() {
             } // implicitly unlocks the mutex
             loadTrack(pLoadTrack);
         } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
-            // Read the requested chunks.
-            processCachingReaderChunkReadRequest(&request, &status);
-            m_pReaderStatusFIFO->writeBlocking(&status, 1);
+            // Read the requested chunk and send the result
+            const ReaderStatusUpdate update(processReadRequest(request));
+            m_pReaderStatusFIFO->writeBlocking(&update, 1);
         } else {
             Event::end(m_tag);
             m_semaRun.acquire();

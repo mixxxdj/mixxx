@@ -17,7 +17,10 @@
 typedef struct CachingReaderChunkReadRequest {
     CachingReaderChunk* chunk;
 
-    CachingReaderChunkReadRequest() { chunk = NULL; }
+    explicit CachingReaderChunkReadRequest(
+            CachingReaderChunk* chunkArg = nullptr)
+        : chunk(chunkArg) {
+    }
 } CachingReaderChunkReadRequest;
 
 enum ReaderStatus {
@@ -35,8 +38,16 @@ typedef struct ReaderStatusUpdate {
     SINT maxReadableFrameIndex;
     ReaderStatusUpdate()
         : status(INVALID)
-        , chunk(NULL)
+        , chunk(nullptr)
         , maxReadableFrameIndex(Mixxx::AudioSource::getMinFrameIndex()) {
+    }
+    ReaderStatusUpdate(
+            ReaderStatus statusArg,
+            CachingReaderChunk* chunkArg,
+            SINT maxReadableFrameIndexArg)
+        : status(statusArg)
+        , chunk(chunkArg)
+        , maxReadableFrameIndex(maxReadableFrameIndexArg) {
     }
 } ReaderStatusUpdate;
 
@@ -82,10 +93,8 @@ class CachingReaderWorker : public EngineWorker {
     // Internal method to load a track. Emits trackLoaded when finished.
     void loadTrack(const TrackPointer& pTrack);
 
-    // Read the given chunk_number from the file into pChunk's data
-    // buffer. Fills length/sample information about CachingReaderChunk* as well.
-    void processCachingReaderChunkReadRequest(CachingReaderChunkReadRequest* request,
-                                 ReaderStatusUpdate* update);
+    ReaderStatusUpdate processReadRequest(
+            const CachingReaderChunkReadRequest& request);
 
     // The current audio source of the track loaded
     Mixxx::AudioSourcePointer m_pAudioSource;

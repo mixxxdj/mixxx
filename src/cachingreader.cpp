@@ -389,8 +389,7 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                     qDebug() << "ERROR: Couldn't allocate spare CachingReaderChunk to make CachingReaderChunkReadRequest.";
                     continue;
                 }
-                CachingReaderChunkReadRequest request;
-                request.chunk = pChunk;
+                CachingReaderChunkReadRequest request(pChunk);
                 pChunk->giveToWorker();
                 // qDebug() << "Requesting read of chunk" << current << "into" << pChunk;
                 // qDebug() << "Requesting read into " << request.chunk->data;
