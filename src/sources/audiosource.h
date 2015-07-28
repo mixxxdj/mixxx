@@ -209,6 +209,15 @@ public:
         }
     }
 
+    // Utility function to clamp the frame index interval
+    // [*pMinFrameIndexOfInterval, *pMaxFrameIndexOfInterval)
+    // to valid frame indexes. The lower bound is inclusive and
+    // the upper bound is exclusive!
+    static void clampFrameInterval(
+            SINT* pMinFrameIndexOfInterval,
+            SINT* pMaxFrameIndexOfInterval,
+            SINT maxFrameIndexOfAudioSource);
+
 protected:
     explicit AudioSource(const QUrl& url);
 
