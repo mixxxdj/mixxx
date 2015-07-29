@@ -72,6 +72,8 @@ The small button below the encoders toggles the mode for the encoders on that si
 		Middle right encoder: master balance
 		Lower right encoder: right deck gain
 
+		Pressing the encoders resets the parameters they control to their default values except for cue/master mix in headphones.
+
 Small button above the vertical fader: toggle headphone cueing
 Vertical fader: volume
 Buttons below faders: play/pause
@@ -724,17 +726,25 @@ ElectrixTweaker.highEncoder = function (channel, control, value, status, group) 
 ElectrixTweaker.highEncoderPress = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		switch (ElectrixTweaker.mode[group]) {
-			case 'eq':
-				if (ElectrixTweaker.deckShift[group]) {
-					engine.setValue(group, 'filterHigh', 1)
-				} else {
-					engine.setValue(group, 'filterHighKill', ! engine.getValue(group, 'filterHighKill'))
-				}
-				break
-			case 'loop':
-				// What to do with this?
-				break
+		if (ElectrixTweaker.topShift) {
+			if (control == ElectrixTweaker.encoders['[Channel1]']['High']['button']) {
+				engine.setValue('[Master]', 'headVolume', 1)
+			} else {
+				engine.setValue('[Master]', 'volume', 1)
+			}
+		} else {
+			switch (ElectrixTweaker.mode[group]) {
+				case 'eq':
+					if (ElectrixTweaker.deckShift[group]) {
+						engine.setValue(group, 'filterHigh', 1)
+					} else {
+						engine.setValue(group, 'filterHighKill', ! engine.getValue(group, 'filterHighKill'))
+					}
+					break
+				case 'loop':
+					// What to do with this?
+					break
+			}
 		}
 	}
 }
@@ -782,6 +792,8 @@ ElectrixTweaker.midEncoderPress = function (channel, control, value, status, gro
 		if (ElectrixTweaker.topShift) {
 			if (control == ElectrixTweaker.encoders['[Channel1]']['Mid']['button']) {
 				engine.setValue('[Master]', 'headSplit', ! engine.getValue('[Master]', 'headSplit'))
+			} else {
+				engine.setValue('[Master]', 'balance', 0)
 			}
 		} else {
 			switch (ElectrixTweaker.mode[group]) {
@@ -844,24 +856,28 @@ ElectrixTweaker.lowEncoder = function (channel, control, value, status, group) {
 ElectrixTweaker.lowEncoderPress = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		switch (ElectrixTweaker.mode[group]) {
-			case 'eq':
-				if (ElectrixTweaker.deckShift[group]) {
-					engine.setValue(group, 'filterLow', 1)
-				} else {
-					engine.setValue(group, 'filterLowKill', ! engine.getValue(group, 'filterLowKill'))
-				}
-				break
-			case 'loop':
-				if (ElectrixTweaker.slipMode[group]) {
-					engine.setValue(group, 'slip_enabled', ! engine.getValue(group, 'slip_enabled'))
-				}
-				if (engine.getValue(group, 'loop_enabled')) {
-					engine.setValue(group, 'reloop_exit', 1)
-				} else {
-					engine.setValue(group, 'beatloop_' + ElectrixTweaker.loopSize[group] + '_activate', 1)
-				}
-				break
+		if (ElectrixTweaker.topShift) {
+			engine.setValue(group, 'pregain', 1)
+		} else {
+			switch (ElectrixTweaker.mode[group]) {
+				case 'eq':
+					if (ElectrixTweaker.deckShift[group]) {
+						engine.setValue(group, 'filterLow', 1)
+					} else {
+						engine.setValue(group, 'filterLowKill', ! engine.getValue(group, 'filterLowKill'))
+					}
+					break
+				case 'loop':
+					if (ElectrixTweaker.slipMode[group]) {
+						engine.setValue(group, 'slip_enabled', ! engine.getValue(group, 'slip_enabled'))
+					}
+					if (engine.getValue(group, 'loop_enabled')) {
+						engine.setValue(group, 'reloop_exit', 1)
+					} else {
+						engine.setValue(group, 'beatloop_' + ElectrixTweaker.loopSize[group] + '_activate', 1)
+					}
+					break
+			}
 		}
 	} else if (ElectrixTweaker.mode[group] == 'loop' && (ElectrixTweaker.slipMode[group] || ElectrixTweaker.slipModeUnsetWhileLooping[group])) {
 		engine.setValue(group, 'slip_enabled', ! engine.getValue(group, 'slip_enabled'))
