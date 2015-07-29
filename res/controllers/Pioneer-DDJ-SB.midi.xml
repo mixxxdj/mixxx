@@ -470,6 +470,24 @@
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
+                <status>0x97</status>
+                <midino>0x5B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
+                <status>0x97</status>
+                <midino>0x5A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Samplers]</group>
                 <key>show_samplers</key>
                 <status>0x96</status>
@@ -488,6 +506,33 @@
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
+                <status>0x98</status>
+                <midino>0x5B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
+                <status>0x98</status>
+                <midino>0x5A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
+                <status>0x97</status>
+                <midino>0x59</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[EffectRack1]</group>
                 <key>show</key>
                 <status>0x96</status>
@@ -497,8 +542,35 @@
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
+                <status>0x98</status>
+                <midino>0x59</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.vinylButton</key>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
+                <status>0x97</status>
+                <midino>0x58</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.beatloopRollButtons</key>
+                <status>0x98</status>
+                <midino>0x58</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.slipButton</key>
                 <status>0x90</status>
                 <midino>0x4E</midino>
                 <options>
@@ -507,7 +579,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.vinylButton</key>
+                <key>PioneerDDJSB.slipButton</key>
                 <status>0x91</status>
                 <midino>0x4E</midino>
                 <options>
@@ -812,21 +884,21 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
-                <key>PioneerDDJSB.rotarySelectorClick</key>
-                <status>0x96</status>
-                <midino>0x41</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[PreviewDeck1]</group>
                 <key>LoadSelectedTrackAndPlay</key>
                 <status>0x96</status>
                 <midino>0x41</midino>
                 <options>
                     <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>PioneerDDJSB.rotarySelectorClick</key>
+                <status>0x96</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1074,6 +1146,42 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>PioneerDDJSB.loopMoveForwardButton</key>
+                <status>0x97</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.loopMoveForwardButton</key>
+                <status>0x98</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.loopMoveBackButton</key>
+                <status>0x97</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.loopMoveBackButton</key>
+                <status>0x98</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>PioneerDDJSB.loopHalveButton</key>
                 <status>0x97</status>
                 <midino>0x23</midino>
@@ -1182,7 +1290,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>PioneerDDJSB.slipButton</key>
+                <key>PioneerDDJSB.vinylButton</key>
                 <status>0x90</status>
                 <midino>0x17</midino>
                 <options>
@@ -1191,7 +1299,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.slipButton</key>
+                <key>PioneerDDJSB.vinylButton</key>
                 <status>0x91</status>
                 <midino>0x17</midino>
                 <options>
