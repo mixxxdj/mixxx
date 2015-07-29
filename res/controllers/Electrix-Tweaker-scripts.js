@@ -286,7 +286,7 @@ ElectrixTweaker.init = function () {
 	}
 	
 	midi.sendShortMsg(0x90, 39, 127) // light up arrow
-	midi.sendShortMsg(0x90, 40, 127) // light shift button
+	midi.sendShortMsg(0x90, 40, 127) // light top shift button
 	midi.sendShortMsg(0x90, 41, 127) // light down arrow
 // 	midi.sendSysexMsg(ElectrixTweaker.requestConfiguration, ElectrixTweaker.requestConfiguration.length)
 // 	for (var msg in ElectrixTweaker.defaultSettings) {
@@ -482,7 +482,7 @@ ElectrixTweaker.connectVinylLEDs = function (group, remove) {
 }
 
 ElectrixTweaker.topShiftButton = function (channel, control, value, status, group) {
-	ElectrixTweaker.shift = ! ElectrixTweaker.shift
+// 	ElectrixTweaker.shift = ! ElectrixTweaker.shift
 	ElectrixTweaker.topShift = ! ElectrixTweaker.topShift
 
 	ElectrixTweaker.connectEncoderMode(ElectrixTweaker.deck['[Channel1]'], ElectrixTweaker.mode[group], value/127)
@@ -521,7 +521,7 @@ ElectrixTweaker.topShiftButton = function (channel, control, value, status, grou
 
 ElectrixTweaker.deckShiftButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	ElectrixTweaker.shift = ! ElectrixTweaker.shift
+// 	ElectrixTweaker.shift = ! ElectrixTweaker.shift
 	ElectrixTweaker.deckShift[group] = ! ElectrixTweaker.deckShift[group]
 	if (value) {
 		// set mid encoder to relative mode
@@ -552,7 +552,7 @@ ElectrixTweaker.deckShiftButton = function (channel, control, value, status, gro
 // ================================================== ARROWS + BIG ENCODER ====================================================
 
 ElectrixTweaker.bigEncoder = function (channel, control, value, status, group) {
-	if (ElectrixTweaker.shift) {
+	if (ElectrixTweaker.topShift) {
 		for (i=0 ; i<35; i++) {
 			engine.setValue('[Playlist]', (value == 1) ? 'SelectNextTrack' : 'SelectPrevTrack', 1)
 		}
@@ -562,7 +562,7 @@ ElectrixTweaker.bigEncoder = function (channel, control, value, status, group) {
 }
 ElectrixTweaker.bigEncoderButton = function (channel, control, value, status, group) {
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.topShift) {
 			engine.setValue('[Playlist]', 'LoadSelectedIntoFirstStopped', 1)
 		} else {
 			engine.setValue('[Master]', 'maximize_library', ! engine.getValue('[Master]', 'maximize_library'))
@@ -572,7 +572,7 @@ ElectrixTweaker.bigEncoderButton = function (channel, control, value, status, gr
 ElectrixTweaker.arrowSide = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.topShift) {
 				engine.setValue(group, 'eject', 1)
 				engine.beginTimer(250, 'engine.setValue("'+group+'", "eject", 0)', true)
 		} else {
@@ -585,7 +585,7 @@ ElectrixTweaker.arrowSideLED = function (value, group, control) {
 }
 ElectrixTweaker.arrowUp = function (channel, control, value, status, group) {
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.topShift) {
 			engine.setValue('[Playlist]', 'ToggleSelectedSidebarItem', 1)
 		} else {
 			engine.setValue('[Playlist]', 'SelectPrevPlaylist', 1)
@@ -594,7 +594,7 @@ ElectrixTweaker.arrowUp = function (channel, control, value, status, group) {
 }
 ElectrixTweaker.arrowDown = function (channel, control, value, status, group) {
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.topShift) {
 			engine.setValue('[Playlist]', 'ToggleSelectedSidebarItem', 1)
 		} else {
 			engine.setValue('[Playlist]', 'SelectNextPlaylist', 1)
@@ -607,7 +607,7 @@ ElectrixTweaker.arrowDown = function (channel, control, value, status, group) {
 ElectrixTweaker.oneShot = function (channel, control, value, status, group) {
 	if (value) {
 		if (engine.getValue(group, 'track_samples')) {
-			if (ElectrixTweaker.shift) {
+			if (ElectrixTweaker.topShift) {
 				engine.setValue(group, 'key', 0)
 				engine.setValue(group, 'sync_enabled', 0)
 				engine.setValue(group, 'repeat', 0)
@@ -639,25 +639,17 @@ ElectrixTweaker.oneShotLED = function (value, group, control) {
 
 ElectrixTweaker.leftKnob = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-// 	if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
+	// soft takeover
+	if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
 		engine.setValue('[QuickEffectRack1_'+group+']', 'super1', script.absoluteLin(value, 0, 1))
-// 	}
+	}
 }
 ElectrixTweaker.rightKnob = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-// 	if (ElectrixTweaker.shift) {
-// 		if (value == 127) {
-// 			engine.setValue('[Master]', 'headSplit', ! engine.getValue('[Master]', 'headSplit'))
-// 		} else {
-// 			if (Math.abs(engine.getValue('[Master]', 'headMix') - (value - 64)/64) < .2) {
-// 				engine.setValue('[Master]', 'headMix', script.absoluteLin(value, -1, 1))
-// 			}
-// 		}
-// 	} else {
-		if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
-			engine.setValue('[QuickEffectRack1_'+group+']', 'super1', script.absoluteLin(value, 0, 1))
-		}
-// 	}
+	// soft takeover
+	if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
+		engine.setValue('[QuickEffectRack1_'+group+']', 'super1', script.absoluteLin(value, 0, 1))
+	}
 }
 
 ElectrixTweaker.eqEncoderLEDs = function (value, group, control) {
@@ -725,7 +717,7 @@ ElectrixTweaker.highEncoderPress = function (channel, control, value, status, gr
 	if (value) {
 		switch (ElectrixTweaker.mode[group]) {
 			case 'eq':
-				if (ElectrixTweaker.shift) {
+				if (ElectrixTweaker.deckShift[group]) {
 					engine.setValue(group, 'filterHigh', 1)
 				} else {
 					engine.setValue(group, 'filterHighKill', ! engine.getValue(group, 'filterHighKill'))
@@ -785,7 +777,7 @@ ElectrixTweaker.midEncoderPress = function (channel, control, value, status, gro
 		} else {
 			switch (ElectrixTweaker.mode[group]) {
 				case 'eq':
-					if (ElectrixTweaker.shift) {
+					if (ElectrixTweaker.deckShift[group]) {
 						engine.setValue(group, 'filterMid', 1)
 					} else {
 						engine.setValue(group, 'filterMidKill', ! engine.getValue(group, 'filterMidKill'))
@@ -845,7 +837,7 @@ ElectrixTweaker.lowEncoderPress = function (channel, control, value, status, gro
 	if (value) {
 		switch (ElectrixTweaker.mode[group]) {
 			case 'eq':
-				if (ElectrixTweaker.shift) {
+				if (ElectrixTweaker.deckShift[group]) {
 					engine.setValue(group, 'filterLow', 1)
 				} else {
 					engine.setValue(group, 'filterLowKill', ! engine.getValue(group, 'filterLowKill'))
@@ -892,7 +884,7 @@ ElectrixTweaker.modeButton = function (channel, control, value, status, group) {
 
 ElectrixTweaker.fader = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
+	if (ElectrixTweaker.deckShift[group]) {
 		if (Math.abs(engine.getValue(group, 'rate') - (value - 64)/64) < .2) {
 			engine.setValue(group, 'rate', script.absoluteLin(value, -1, 1))
 		}
@@ -906,7 +898,7 @@ ElectrixTweaker.fader = function (channel, control, value, status, group) {
 ElectrixTweaker.pflButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			engine.setValue(group, 'reloop_exit', 1)
 		} else {
 			engine.setValue(group, 'pfl', ! engine.getValue(group, 'pfl'))
@@ -923,12 +915,10 @@ ElectrixTweaker.pflButtonLED = function (value, group, control) {
 
 ElectrixTweaker.playButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
-		if (ElectrixTweaker.topShift && value) {
-			engine.setValue(group, 'cue_gotoandstop', 1)
-		} else {
-			engine.setValue(group, 'cue_default', value)
-		}
+	if (ElectrixTweaker.deckShift[group]) {
+		engine.setValue(group, 'cue_default', value)
+	} else if (ElectrixTweaker.topShift) {
+		engine.setValue(group, 'cue_gotoandstop', 1)
 	} else if (value) {
 		if (ElectrixTweaker.hotcuesPressed[group]) {
 			ElectrixTweaker.playPressedWhileCueJuggling[group] = true
@@ -965,7 +955,7 @@ ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 	var cue = cueButton + (8 * ElectrixTweaker.hotcuePage[group])
 	if (value) {
 		if (engine.getValue(group, 'hotcue_'+cue+'_enabled')) {
-			if (ElectrixTweaker.shift && (! ElectrixTweaker.topShift)) {
+			if (ElectrixTweaker.deckShift[group]) {
 				engine.setValue(group, 'hotcue_'+cue+'_set', 1)
 			} else if (ElectrixTweaker.topShift) {
 				engine.setValue(group, 'hotcue_'+cue+'_clear', 1)
@@ -1008,7 +998,7 @@ ElectrixTweaker.hotcueLED = function (value, group, control) {
 ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			engine.setValue(group, 'loop_in', 1)
 		} else {
 			if (ElectrixTweaker.slipMode[group]) {
@@ -1035,7 +1025,7 @@ ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
 
 ElectrixTweaker.deckToggle = function (channel, control, value, status, group) {
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			engine.setValue(ElectrixTweaker.deck[group], 'loop_out', 1)
 		} else {
 			var deckNumber = parseInt(
@@ -1057,7 +1047,7 @@ ElectrixTweaker.deckToggle = function (channel, control, value, status, group) {
 ElectrixTweaker.sync = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			engine.setValue(group, 'rate', 0)
 		} else {
 			engine.setValue(group, 'sync_enabled', ! engine.getValue(group, 'sync_enabled'))
@@ -1075,7 +1065,7 @@ ElectrixTweaker.syncLED = function (value, group, control) {
 ElectrixTweaker.key = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			if (engine.getValue(group, 'file_key') != engine.getValue(group, 'key')) {
 				engine.setValue(group, 'reset_key', 1)
 			} else {
@@ -1097,7 +1087,7 @@ ElectrixTweaker.keylockLED = function (value, group, control) {
 ElectrixTweaker.quantize = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			engine.setValue(group, 'beats_translate_curpos', 1)
 		} else {
 			engine.setValue(group, 'quantize', ! engine.getValue(group, 'quantize'))
@@ -1183,14 +1173,14 @@ ElectrixTweaker.forward = function (channel, control, value, status, group) {
 	} else {
 		if (engine.getValue(group, 'quantize')) {
 			if (value) {
-				if (ElectrixTweaker.shift) {
+				if (ElectrixTweaker.deckShift[group]) {
 					engine.setValue(group, 'beatjump_1_forward', 1)
 				} else {
 					engine.setValue(group, 'beatjump_4_forward', 1)
 				}
 			}
 		} else {
-			if (ElectrixTweaker.shift) {
+			if (ElectrixTweaker.deckShift[group]) {
 				engine.setValue(group, 'rate_temp_up', value / 127)
 			} else {
 				engine.setValue(group, 'fwd', value)
@@ -1202,7 +1192,7 @@ ElectrixTweaker.back = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (ElectrixTweaker.vinylMode[group]) {
 		if (value) {
-			if (ElectrixTweaker.shift || engine.getValue(group, 'passthrough')) {
+			if (ElectrixTweaker.deckShift[group] || engine.getValue(group, 'passthrough')) {
 				engine.setValue(group, 'passthrough', ! engine.getValue(group, 'passthrough'))
 			} else {
 				engine.setValue(group, 'vinylcontrol_enabled', ! engine.getValue(group, 'vinylcontrol_enabled'))
@@ -1211,14 +1201,14 @@ ElectrixTweaker.back = function (channel, control, value, status, group) {
 	} else {
 		if (engine.getValue(group, 'quantize')) {
 			if (value) {
-				if (ElectrixTweaker.shift) {
+				if (ElectrixTweaker.deckShift[group]) {
 					engine.setValue(group, 'beatjump_1_backward', 1)
 				} else {
 					engine.setValue(group, 'beatjump_4_backward', 1)
 				}
 			}
 		} else {
-			if (ElectrixTweaker.shift) {
+			if (ElectrixTweaker.deckShift[group]) {
 				engine.setValue(group, 'rate_temp_down', value / 127)
 			} else {
 				engine.setValue(group, 'back', value)
