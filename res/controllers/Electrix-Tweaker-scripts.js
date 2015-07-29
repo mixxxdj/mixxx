@@ -679,7 +679,6 @@ ElectrixTweaker.masterGainLEDs = function (value, group, control) {
 }
 
 ElectrixTweaker.masterBalanceLEDs = function (value, group, control) {
-	print(script.absoluteLinInverse(value, -1, 1))
 	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders['[Channel2]']['Mid']['cc'], script.absoluteLinInverse(value, -1, 1))
 }
 
