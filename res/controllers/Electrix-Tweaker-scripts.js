@@ -229,7 +229,7 @@ ElectrixTweaker.buttons['[Channel4]'] = ElectrixTweaker.buttons['[Channel2]']
 
 ElectrixTweaker.shift = false
 ElectrixTweaker.topShift = false
-ElectrixTweaker.bottomShift = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
+ElectrixTweaker.deckShift = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.deck = {'[Channel1]': '[Channel1]', '[Channel2]': '[Channel2]'}
 ElectrixTweaker.mode = {'[Channel1]': 'eq', '[Channel2]': 'eq', '[Channel3]': 'eq', '[Channel4]': 'eq'}
 ElectrixTweaker.loopMoveSize = {'[Channel1]': 1, '[Channel2]': 1, '[Channel3]': 1, '[Channel4]': 1}
@@ -481,44 +481,72 @@ ElectrixTweaker.connectVinylLEDs = function (group, remove) {
 	}
 }
 
-ElectrixTweaker.shiftButton = function (channel, control, value, status, group) {
+ElectrixTweaker.topShiftButton = function (channel, control, value, status, group) {
+	ElectrixTweaker.shift = ! ElectrixTweaker.shift
+	ElectrixTweaker.topShift = ! ElectrixTweaker.topShift
+
+	ElectrixTweaker.connectEncoderMode(ElectrixTweaker.deck['[Channel1]'], ElectrixTweaker.mode[group], value/127)
+	ElectrixTweaker.connectEncoderMode(ElectrixTweaker.deck['[Channel2]'], ElectrixTweaker.mode[group], value/127)
+	if (value) {
+		for (group in ElectrixTweaker.deck) {
+			for (var encoder in ElectrixTweaker.encoders[group]) {
+				// set encoder to absolute EQ mode with speed 5
+				midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['cc'], 70 + 8*ElectrixTweaker.eqSensitivity)
+				// enable local control of LED ring
+				midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['ring'], 70)
+			}
+			engine.connectControl(ElectrixTweaker.deck[group], 'pregain', 'ElectrixTweaker.gainLEDs')
+			engine.trigger(ElectrixTweaker.deck[group], 'pregain')
+		}
+	} else {
+		for (group in ElectrixTweaker.deck) {
+			engine.connectControl(ElectrixTweaker.deck[group], 'pregain', 'ElectrixTweaker.gainLEDs', true)
+		}
+	}
+	
+	var controlsToFunctions = {
+		'volume': 'ElectrixTweaker.masterGainLEDs',
+		'balance': 'ElectrixTweaker.masterBalanceLEDs',
+		'headVolume': 'ElectrixTweaker.headGainLEDs',
+		'headMix': 'ElectrixTweaker.headMixLEDs',
+		'headSplit': 'ElectrixTweaker.headSplitLED'
+	}
+	for (var control in controlsToFunctions) {
+		engine.connectControl('[Master]', control, controlsToFunctions[control], ! value/127)
+		if (value) {
+			engine.trigger('[Master]', control)
+		}
+	}
+}
+
+ElectrixTweaker.deckShiftButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	ElectrixTweaker.shift = ! ElectrixTweaker.shift
-	if (control == 0x28) {
-		ElectrixTweaker.topShift = ! ElectrixTweaker.topShift
-	} else if (control == ElectrixTweaker.buttons[group]['shift']) {
-		ElectrixTweaker.bottomShift[group] = ! ElectrixTweaker.bottomShift[group]
-	}
+	ElectrixTweaker.deckShift[group] = ! ElectrixTweaker.deckShift[group]
 	if (value) {
-		for (channel in ElectrixTweaker.deck) {
-			// set mid encoder to relative mode
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['cc'], 64)
-			// set mid LED ring to walk mode with local control disabled
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['ring'], 96)
-			midi.sendShortMsg(
-				0xB0,
-				ElectrixTweaker.encoders[channel]['Low']['ring'],
-				ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[channel]+1]
-			)
-			// set low encoder to relative mode
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Mid']['cc'], 64)
-			// set low encoder LED ring to EQ mode with local control disabled
-			// There seems to be a bug in the Tweaker firmware when local control is enabled one LED ring but not another. If local control is enabled here, the other rings behave confusingly.
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Mid']['ring'], 98)
-			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[channel]['Mid']['ring'], 64)
-		}
-		if (ElectrixTweaker.topShift && ElectrixTweaker.bottomShift[group]) {
+		// set mid encoder to relative mode
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Low']['cc'], 64)
+		// set mid LED ring to walk mode with local control disabled
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Low']['ring'], 96)
+		midi.sendShortMsg(
+			0xB0,
+			ElectrixTweaker.encoders[group]['Low']['ring'],
+			ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[group]+1]
+		)
+		// set low encoder to relative mode
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Mid']['cc'], 64)
+		// set low encoder LED ring to EQ mode with local control disabled
+		// There seems to be a bug in the Tweaker firmware when local control is enabled one LED ring but not another. If local control is enabled here, the other rings behave confusingly.
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Mid']['ring'], 98)
+		midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Mid']['ring'], 64)
+		if (ElectrixTweaker.topShift && ElectrixTweaker.deckShift[group]) {
 			ElectrixTweaker.connectVinylLEDs(group, ElectrixTweaker.vinylMode[group])
 			ElectrixTweaker.vinylMode[group] = ! ElectrixTweaker.vinylMode[group]
 		}
 	} else {
-		for (channel in ElectrixTweaker.encoders) {
-			engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[channel])
-		}
-		
+		engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[group])
 	}
-	ElectrixTweaker.connectEncoderMode(ElectrixTweaker.deck['[Channel1]'], ElectrixTweaker.mode[ElectrixTweaker.deck['[Channel1]']], value/127)
-	ElectrixTweaker.connectEncoderMode(ElectrixTweaker.deck['[Channel2]'], ElectrixTweaker.mode[ElectrixTweaker.deck['[Channel2]']], value/127)
+	ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], value/127)
 }
 
 // ================================================== ARROWS + BIG ENCODER ====================================================
@@ -617,19 +645,19 @@ ElectrixTweaker.leftKnob = function (channel, control, value, status, group) {
 }
 ElectrixTweaker.rightKnob = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
-		if (value == 127) {
-			engine.setValue('[Master]', 'headSplit', ! engine.getValue('[Master]', 'headSplit'))
-		} else {
-			if (Math.abs(engine.getValue('[Master]', 'headMix') - (value - 64)/64) < .2) {
-				engine.setValue('[Master]', 'headMix', script.absoluteLin(value, -1, 1))
-			}
-		}
-	} else {
+// 	if (ElectrixTweaker.shift) {
+// 		if (value == 127) {
+// 			engine.setValue('[Master]', 'headSplit', ! engine.getValue('[Master]', 'headSplit'))
+// 		} else {
+// 			if (Math.abs(engine.getValue('[Master]', 'headMix') - (value - 64)/64) < .2) {
+// 				engine.setValue('[Master]', 'headMix', script.absoluteLin(value, -1, 1))
+// 			}
+// 		}
+// 	} else {
 		if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
 			engine.setValue('[QuickEffectRack1_'+group+']', 'super1', script.absoluteLin(value, 0, 1))
 		}
-	}
+// 	}
 }
 
 ElectrixTweaker.eqEncoderLEDs = function (value, group, control) {
@@ -643,20 +671,53 @@ ElectrixTweaker.eqEncoderKillButtonLED = function (value, group, control) {
 	midi.sendShortMsg(0x90, ElectrixTweaker.encoders[group][encoder]['button'], value * 127)
 }
 
+ElectrixTweaker.masterGainLEDs = function (value, group, control) {
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders['[Channel2]']['High']['cc'], script.absoluteNonLinInverse(value, 0, 1, 4))
+}
+
+ElectrixTweaker.masterBalanceLEDs = function (value, group, control) {
+	print(script.absoluteLinInverse(value, -1, 1))
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders['[Channel2]']['Mid']['cc'], script.absoluteLinInverse(value, -1, 1))
+}
+
+ElectrixTweaker.headGainLEDs = function (value, group, control) {
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders['[Channel1]']['High']['cc'], script.absoluteNonLinInverse(value, 0, 1, 4))
+}
+
+ElectrixTweaker.headMixLEDs = function (value, group, control) {
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders['[Channel1]']['Mid']['cc'], script.absoluteLinInverse(value, -1, 1))
+}
+
+ElectrixTweaker.headSplitLED = function (value, group, control) {
+	midi.sendShortMsg(0x90, ElectrixTweaker.encoders['[Channel1]']['Mid']['button'], value * 127)
+}
+
+ElectrixTweaker.gainLEDs = function (value, group, control) {
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Low']['cc'], script.absoluteNonLinInverse(value, 0, 1, 4))
+}
+
 ElectrixTweaker.highEncoder = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	switch (ElectrixTweaker.mode[group]) {
-		case 'eq':
-			engine.setValue(group, 'filterHigh', script.absoluteNonLin(value, 0, 1, 4) )
-			break
-		case 'loop':
-			if ((value == 127) && (ElectrixTweaker.loopMoveSize[group] >= Math.pow(2, -5))) {
-				ElectrixTweaker.loopMoveSize[group] = ElectrixTweaker.loopMoveSize[group] / 2
-			} else if ((value == 1) && (ElectrixTweaker.loopMoveSize[group] <= Math.pow(2, 5))) {
-				ElectrixTweaker.loopMoveSize[group] = ElectrixTweaker.loopMoveSize[group] * 2
-			}
-			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['High']['ring'], ElectrixTweaker.encoderRingSteps[ 6 + Math.log(ElectrixTweaker.loopMoveSize[group]) / Math.log(2) ] )
-			break
+	if (ElectrixTweaker.topShift) {
+		if (control == ElectrixTweaker.encoders['[Channel1]']['High']['cc']) {
+			engine.setValue('[Master]', 'headVolume', script.absoluteNonLin(value, 0, 1, 5))
+		} else {
+			engine.setValue('[Master]', 'volume', script.absoluteNonLin(value, 0, 1, 5))
+		}
+	} else {
+		switch (ElectrixTweaker.mode[group]) {
+			case 'eq':
+				engine.setValue(group, 'filterHigh', script.absoluteNonLin(value, 0, 1, 4) )
+				break
+			case 'loop':
+				if ((value == 127) && (ElectrixTweaker.loopMoveSize[group] >= Math.pow(2, -5))) {
+					ElectrixTweaker.loopMoveSize[group] = ElectrixTweaker.loopMoveSize[group] / 2
+				} else if ((value == 1) && (ElectrixTweaker.loopMoveSize[group] <= Math.pow(2, 5))) {
+					ElectrixTweaker.loopMoveSize[group] = ElectrixTweaker.loopMoveSize[group] * 2
+				}
+				midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['High']['ring'], ElectrixTweaker.encoderRingSteps[ 6 + Math.log(ElectrixTweaker.loopMoveSize[group]) / Math.log(2) ] )
+				break
+		}
 	}
 }
 ElectrixTweaker.highEncoderPress = function (channel, control, value, status, group) {
@@ -678,7 +739,13 @@ ElectrixTweaker.highEncoderPress = function (channel, control, value, status, gr
 }
 ElectrixTweaker.midEncoder = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
+	if (ElectrixTweaker.topShift) {
+		if (control == ElectrixTweaker.encoders['[Channel1]']['Mid']['cc']) {
+			engine.setValue('[Master]', 'headMix', script.absoluteLin(value, -1, 1))
+		} else {
+			engine.setValue('[Master]', 'balance', script.absoluteLin(value, -1, 1))
+		}
+	} else if (ElectrixTweaker.deckShift[group]) {
 		engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[group])
 		if (value == 127) {
 			engine.setValue(group, 'beatjump_32_backward', 1)
@@ -711,22 +778,30 @@ ElectrixTweaker.midEncoder = function (channel, control, value, status, group) {
 ElectrixTweaker.midEncoderPress = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		switch (ElectrixTweaker.mode[group]) {
-			case 'eq':
-				if (ElectrixTweaker.shift) {
-					engine.setValue(group, 'filterMid', 1)
-				} else {
-					engine.setValue(group, 'filterMidKill', ! engine.getValue(group, 'filterMidKill'))
-				}
-				break
-			case 'loop':
-				// What to do with this?
+		if (ElectrixTweaker.topShift) {
+			if (control == ElectrixTweaker.encoders['[Channel1]']['Mid']['button']) {
+				engine.setValue('[Master]', 'headSplit', ! engine.getValue('[Master]', 'headSplit'))
+			}
+		} else {
+			switch (ElectrixTweaker.mode[group]) {
+				case 'eq':
+					if (ElectrixTweaker.shift) {
+						engine.setValue(group, 'filterMid', 1)
+					} else {
+						engine.setValue(group, 'filterMidKill', ! engine.getValue(group, 'filterMidKill'))
+					}
+					break
+				case 'loop':
+					// What to do with this?
+			}
 		}
 	}
 }
 ElectrixTweaker.lowEncoder = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
+	if (ElectrixTweaker.topShift) {
+		engine.setValue(group, 'pregain', script.absoluteNonLin(value, 0, 1, 4))
+	} else if (ElectrixTweaker.deckShift[group]) {
 		if (value == 1 && ElectrixTweaker.hotcuePage[group] < 3) {
 			ElectrixTweaker.connectHotcuePage(group, true)
 			ElectrixTweaker.hotcuePage[group]++
