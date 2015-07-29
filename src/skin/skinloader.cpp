@@ -129,7 +129,8 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
 }
 
 LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {
-    LaunchImage* launchImage = new LaunchImage(pParent);
+    QString imagePath(":/images/mixxx-icon-logo-symbolic.png");
+    LaunchImage* launchImage = new LaunchImage(pParent, imagePath);
 
     QString skinPath = getSkinPath();
     if (!skinPath.isEmpty()) {

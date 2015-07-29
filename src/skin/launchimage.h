@@ -6,10 +6,14 @@
 class QProgressBar;
 
 class LaunchImage: public QWidget {
+    Q_OBJECT
   public:
-    LaunchImage(QWidget* pParent);
+    LaunchImage(QWidget* pParent, const QString& imagePath);
     virtual ~LaunchImage();
     void progress(int value);
+
+  protected:
+    virtual void paintEvent(QPaintEvent *);
 
   private:
     QProgressBar* m_pProgressBar;
