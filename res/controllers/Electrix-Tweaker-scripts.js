@@ -280,11 +280,9 @@ ElectrixTweaker.init = function () {
 	if (engine.getValue('[Master]', 'num_samplers') < 8) {
 		engine.setValue('[Master]', 'num_samplers', 8)
 	}
-	engine.softTakeover('[Master]', 'headMix', true)
-	engine.softTakeover('[Master]', 'headVolume', true)
 	for (var group in ElectrixTweaker.encoders) { // loop over each [Channel]
-		engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
-		engine.softTakeover(group, 'volume', true)
+// 		engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
+// 		engine.softTakeover(group, 'volume', true)
 		// uncomment the line below when Bug #1472868 is fixed
 // 		ElectrixTweaker.vinylMode[group] = engine.getValue(group, 'vinylcontrol_enabled')
 		engine.setValue(group, 'vinylcontrol_enabled', ElectrixTweaker.vinylMode[group])
@@ -900,6 +898,7 @@ ElectrixTweaker.fader = function (channel, control, value, status, group) {
 			engine.setValue(group, 'rate', script.absoluteLin(value, -1, 1))
 		}
 	} else {
+		// soft takeover
 		if (Math.abs(value - script.absoluteNonLinInverse(engine.getValue(group, 'volume'), 0, .25, 1)) < 30) {
 			engine.setValue(group, 'volume', script.absoluteNonLin(value, 0, .25, 1))
 		}
