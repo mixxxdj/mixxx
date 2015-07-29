@@ -30,76 +30,87 @@ ElectrixTweaker.vinylMode = {'[Channel1]': false, '[Channel2]': false, '[Channel
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Description:
-The shift buttons are the small circular button in the middle of the arrows at the top and the yellow buttons in the grid at the bottom.
+There are two different kinds of shift buttons. The top shift button is the small circular button in the middle of the arrows. The deck shift buttons are the yellow buttons in the small button grids towards the bottom. The deck shift buttons only affect the side of the controller that they are on.
 
 Big encoder: scroll through library
-Big encoder + shift: scroll through library quickly
+Big encoder + top shift: scroll through library quickly
 Big encoder press: toggle big library view
-Big encoder press + shift: load selected track into first stopped deck
+Big encoder press + top shift: load selected track into first stopped deck
 
-Side arrows load the selected track into the corresponding deck and light up when the deck is loaded. Press shift and a side arrow to eject the track in that deck (by default, Mixxx only lets you eject a track when it is paused).
+Side arrows load the selected track into the corresponding deck and light up when the deck is loaded. Press top shift and a side arrow to eject the track in that deck (by default, Mixxx only lets you eject a track when it is paused).
 
-Up and down arrows navigate the left library pane. Press shift and either the up or down arrow to expand a category.
+Up and down arrows navigate the left library pane. Press top shift and either the up or down arrow to expand a category.
 
 Big velocity sensitive buttons: one shot samplers
 	Off when empty, red when loaded
 	Press a button to load the selected sample into a sampler and play it
 	Press a button to play a sample. When the button is released, the sample will stop playing.
+	Press top shift and a sampler button to eject a sample from a sampler
 	Samples will play with their volume proportional to how much force was used to strike the button. You can adjust the sensitivity or disable the velocity sensitivity (and make them work as on/off switches) by adjusting options at the top of the JavaScript file in a text editor.
 
 The analog knobs control filters for each deck.
-Pressing shift and turning the right analog knob controls cue/master mix in the headphones. Turning it all the way to the right with shift pressed toggles split cue mode.
 
 The small button below the encoders toggles the mode for the encoders on that side. White is EQ mode, purple is loop mode.
-	In EQ mode, the encoders control high, mid, and low EQs from top to bottom. Pressing the encoder kills the EQ. Pressing the encoder while holding shift resets the EQ to center. You can adjust the sensitivity of the EQs by adjusting the option at the top of the JavaScript file in a text editor.
+	In EQ mode, the encoders control high, mid, and low EQs from top to bottom. Pressing the encoder kills the EQ. Pressing the encoder while holding deck shift resets the EQ to center. You can adjust the sensitivity of the EQs by adjusting the option at the top of the JavaScript file in a text editor.
 
 	In loop mode:
 		Top encoder: adjust loop move size. Center LED represents 1 beat. Each step to the right doubles the move size; each step to the left halves the move size.
 		Middle encoder: move loop backwards and forwards by the number of beats set with the top encoder
 		Bottom encoder: adjust loop length. Center LED represents 1 beat. Each step to the right doubles the loop size; each step to the left halves the loop size. Press the encoder to toggle loops on/off. With slip mode on, when the loop is disabled, the deck will jump to where it would have been if the loop was not activated. Loops in slip mode are only active as long as the encoder is held down. 
 
-	While holding shift (in either EQ or loop mode):
+	While holding deck shift (in either EQ or loop mode):
 		Middle encoder: skips through the track 32 beats at a time
 		Low encoder: scroll through the 4 pages of hotcues on the button grid
+
+	While holding top shift:
+		Top left encoder: headphone gain
+		Middle left encoder: cue/master mix in headphones
+		Middle left encoder press: toggle split cue mode (master output in right ear, headphone cue output in left ear)
+		Lower left encoder: left deck gain
+
+		Top right encoder: master gain
+		Middle right encoder: master balance
+		Lower right encoder: right deck gain
 
 Small button above the vertical fader: toggle headphone cueing
 Vertical fader: volume
 Buttons below faders: play/pause
-While holding shift:
+While holding deck shift:
 	Headphone button: exit loop
-	Play/pause (with yellow shift buttons at bottom): cue. While a track is paused, hold shift and the cue button to preview from the cue point. Let go of the cue button to stop the track and jump back to the cue point. Let go of shift to let the track continue playing. 
-	Play/pause (with red shift button at top): jump to cue point and stop
+	Play/pause: cue. While a track is paused, hold shift and the cue button to preview from the cue point. Let go of the cue button to stop the track and jump back to the cue point. Let go of shift to let the track continue playing. 
+Play/pause with top shift: jump to cue point and stop
 
 The 8x4 grid of small buttons is divided in half with each side controlling a deck.
-	The top two rows are hotcue buttons. By default, they control hotcues 1-8. By pressing shift and turning the low encoder, they can be switched between 4 pages with 8 hotcues each for a total of 32 hotcues. The pages are color coded, in order, cyan, green, red, and white. When there is no hotcue set, the LEDs are off.
+	The top two rows are hotcue buttons. By default, they control hotcues 1-8. By pressing deck shift and turning the low encoder, they can be switched between 4 pages with 8 hotcues each for a total of 32 hotcues. The pages are color coded, in order, cyan, green, red, and white. When there is no hotcue set, the LEDs are off.
 	To set a hotcue point, press a hotcue button that is off.
 	When slip mode is off, pressing a hotcue button will simply jump to that hotcue point.
 	When slip mode is on, if the deck is playing, it will jump to the hotcue and jump back to where it would have been when the button is released. If the deck was not playing, the deck will preview from the hotcue as long as the button is pressed. Pressing play while the button is pressed will let the deck continue playing after the button is released.
+	To move a hotcue, press the hotcue button while holding deck shift.
+	To delete a hotcue, press the hotcue button while holding top shift.
 
-	The button in the bottom left of the deck's grid and the button above that are the navigation or vinyl options buttons. By default, they are in navigation button mode. Vinyl option mode can be enabled for a deck by pressing both the top red shift button and the bottom yellow shift button in that deck's grid. Alternatively, vinyl mode can be enabled on startup by editing the ElectrixTweaker.vinylMode variable at the top of the script.
+	The button in the bottom left of the deck's grid and the button above that are the navigation or vinyl options buttons. By default, they are in navigation button mode. Vinyl option mode can be enabled for a deck by pressing deck shift while holding top shift. Alternatively, vinyl mode can be enabled on startup by editing the ElectrixTweaker.vinylMode variable at the top of the script.
 		In navigation mode:
 			When quantize is off, they are green:
 				forward/reverse playback
-				with shift: temporary pitch bend
+				with deck shift: temporary pitch bend
 			When quantize is on, they are white:
 				skip forward/backwards by 4 beats
-				with shift: skip forwards/backwards by 1 beat
+				with deck shift: skip forwards/backwards by 1 beat
 		In vinyl mode:
-			Top button: cycles through vinyl control modes: absolute (LED off), relative (LED indicates cue mode), and constant (LED red). If the deck is in relative mode and playing, pressing the button cycles through cue modes: off (white), cue (yellow), hotcue (green). When the deck is playing in relative mode, pressing the button with shift switches to constant mode.
+			Top button: cycles through vinyl control modes: absolute (LED off), relative (LED indicates cue mode), and constant (LED red). If the deck is in relative mode and playing, pressing the button cycles through cue modes: off (white), cue (yellow), hotcue (green). When the deck is playing in relative mode, pressing the button with deck shift switches to constant mode.
 			
-			Bottom button: toggle vinyl control. Turns green when vinyl control is enabled. With shift pressed, it toggles passthrough mode and turns white. Pressing the button while passthrough mode is enabled turns passthrough mode off (without toggling whether vinyl control is enabled).
+			Bottom button: toggle vinyl control. Turns green when vinyl control is enabled. With deck shift pressed, it toggles passthrough mode and turns white. Pressing the button while passthrough mode is enabled turns passthrough mode off (without toggling whether vinyl control is enabled).
 
-	The yellow button is a shift button.
-	The button to the left of the yellow shift button toggles slip mode.
-	The button to the right of the yellow shift button toggles betwen decks 1 & 3 on the left and decks 2 & 4 on the left. When a side is on deck 1 or 2, the switch buttons are blue. When a side is on deck 2 or 4, the switch buttons are magenta.
+	The yellow button is the deck shift button.
+	The button to the left of the yellow deck shift button toggles slip mode.
+	The button to the right of the yellow deck shift button toggles betwen decks 1 & 3 on the left and decks 2 & 4 on the left. When a side is on deck 1 or 2, the switch buttons are blue. When a side is on deck 2 or 4, the switch buttons are magenta.
 
 	The button to the right of the bottom green/white navigation buttons toggles quantize mode.
-	The next button to the right (below the yellow shift button) toggles keylock.
+	The next button to the right (below the yellow deck shift button) toggles keylock.
 	The next button to the right (the bottom right button in the deck's grid) toggles sync lock.
 
-	While holding shift:
-		Hotcues (yellow shift button): move hotcue to current play position
-		Hotcues (red shift button at top): delete hotcue
+	While holding deck shift:
+		Hotcues: move hotcue to current play position
 		Slip mode: place loop start point at current play position
 		Deck toggle: place loop end point at current play position
 		Quantize: align beatgrid with current play position
