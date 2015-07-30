@@ -4,12 +4,13 @@
     A standard knob.
   Variables:
     control: The control to connect to.
+    color: The color of the knobs marker.
 -->
 <Template>
   <KnobComposed>
     <TooltipId><Variable name="TooltipId"/></TooltipId>
     <Size>40f,34f</Size>
-    <Knob>knob.svg</Knob>
+    <Knob>knob_<Variable name="color"/>.svg</Knob>
     <BackPath>knob_bg.svg</BackPath>
     <MinAngle>-135</MinAngle>
     <MaxAngle>135</MaxAngle>

@@ -9,5 +9,5 @@
       <stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
     </linearGradient>
   </defs>
-  <rect width="50" height="5" fill="url(#vumeterGrad)"/>
+  <rect width="50" height="4" fill="url(#vumeterGrad)"/>
 </svg>
