@@ -9,21 +9,38 @@
 #include <QPainter>
 
 
-LaunchImage::LaunchImage(QWidget* pParent, const QString& imagePath)
+LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
         : QWidget(pParent) {
-    setStyleSheet("LaunchImage { background-color: #ff2020; }"
-                  "QProgressBar { border: 0px; background-color: #202020; }"
-                  "QProgressBar::chunk { background-color: white; }"
-                 );
+    if (styleSheet.isEmpty()) {
+        setStyleSheet(
+                "LaunchImage { background-color: #202020; }"
+                "QLabel { "
+                    "image: url(:/images/mixxx-icon-logo-symbolic.png);"
+                    "padding:0;"
+                    "margin:0;"
+                    "border:none;"
+                    "min-width: 208px;"
+                    "min-height: 48px;"
+                    "max-width: 208px;"
+                    "max-height: 48px;"
+                "}"
+                "QProgressBar {"
+                    "background-color: #202020; "
+                    "border:none;"
+                    "min-width: 208px;"
+                    "min-height: 3px;"
+                    "max-width: 208px;"
+                    "max-height: 3px;"
+                "}"
+                "QProgressBar::chunk { background-color: #f3efed; }");
+    } else {
+        setStyleSheet(styleSheet);
+    }
 
-    QPixmap image(imagePath);
     QLabel *label = new QLabel(this);
-    label->setPixmap(image);
 
     m_pProgressBar = new QProgressBar(this);
     m_pProgressBar->setTextVisible(false);
-    m_pProgressBar->setMaximumWidth(image.width());
-    m_pProgressBar->setMaximumHeight(3);
 
     QHBoxLayout* hbox = new QHBoxLayout(this);
     QVBoxLayout* vbox = new QVBoxLayout(this);

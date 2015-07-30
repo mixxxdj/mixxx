@@ -129,15 +129,14 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
 }
 
 LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {
-    QString imagePath(":/images/mixxx-icon-logo-symbolic.png");
-    LaunchImage* launchImage = new LaunchImage(pParent, imagePath);
-
     QString skinPath = getSkinPath();
-    if (!skinPath.isEmpty()) {
-        LegacySkinParser legacy(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-        legacy.parseLaunchImageSize(skinPath, launchImage);
+    LegacySkinParser legacy(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    LaunchImage* pLaunchImage = legacy.parseLaunchImage(skinPath, pParent);
+    if (pLaunchImage == NULL) {
+        // Construct default LaunchImage
+        pLaunchImage = new LaunchImage(pParent, QString());
     }
-    return launchImage;
+    return pLaunchImage;
 }
 
 QString SkinLoader::pickResizableSkin(QString oldSkin) {

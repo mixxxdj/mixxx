@@ -26,6 +26,7 @@
 
 #include "skin/colorschemeparser.h"
 #include "skin/skincontext.h"
+#include "skin/launchimage.h"
 
 #include "effects/effectsmanager.h"
 
@@ -383,16 +384,26 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     return widgets[0];
 }
 
-void LegacySkinParser::parseLaunchImageSize(QString skinPath,
-                                            QWidget* pLaunchImage) {
+LaunchImage* LegacySkinParser::parseLaunchImage(QString skinPath, QWidget* pParent) {
     QDomElement skinDocument = openSkin(skinPath);
     if (skinDocument.isNull()) {
-        return;
+        return NULL;
     }
+
     QString nodeName = skinDocument.nodeName();
-    if (nodeName == "skin") {
-        setupSize(skinDocument, pLaunchImage);
+    if (nodeName != "skin") {
+        return NULL;
     }
+
+    // This allows image urls like
+    // url(skin:/style/mixxx-icon-logo-symbolic.png);
+    QStringList skinPaths(skinPath);
+    QDir::setSearchPaths("skin", skinPaths);
+
+    QString styleSheet = parseLaunchImageStyle(skinDocument);
+    LaunchImage* pLaunchImage = new LaunchImage(pParent, styleSheet);
+    setupSize(skinDocument, pLaunchImage);
+    return pLaunchImage;
 }
 
 
@@ -2072,3 +2083,9 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget, const QString&
     tooltip += nativeShortcut;
     pWidget->appendBaseTooltip(tooltip);
 }
+
+QString LegacySkinParser::parseLaunchImageStyle(QDomNode node) {
+    return m_pContext->selectString(node, "LaunchImageStyle");
+}
+
+
