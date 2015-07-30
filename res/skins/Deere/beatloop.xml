@@ -14,24 +14,18 @@
     <SizePolicy>min,max</SizePolicy>
 
     <Children>
-      <PushButton>
-        <TooltipId>loop_halve</TooltipId>
-        <ObjectName>LoopHalve</ObjectName>
-        <!-- Grow to be as tall as the outer WidgetGroup -->
-        <MinimumSize><Variable name="SmallVerticalStretchButtonMinimumSize"/></MinimumSize>
-        <MaximumSize><Variable name="SmallVerticalStretchButtonMaximumSize"/></MaximumSize>
-        <SizePolicy><Variable name="SmallVerticalStretchButtonSizePolicy"/></SizePolicy>
-        <NumberStates>1</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>◀</Text>
-        </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,loop_halve</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
+      <!-- Grow to be as tall as the outer WidgetGroup -->
+      <Template src="skin:left_1state_button.xml">
+        <SetVariable name="TooltipId">loop_halve</SetVariable>
+        <SetVariable name="ObjectName">LoopHalveButton</SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="VerticalStretchButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="VerticalStretchButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="VerticalStretchButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_chevron_left_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_chevron_left_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,loop_halve</SetVariable>
+      </Template>
 
       <WidgetGroup>
         <Layout>vertical</Layout>
@@ -93,24 +87,18 @@
         </Children>
       </WidgetGroup>
 
-      <PushButton>
-        <TooltipId>loop_double</TooltipId>
-        <ObjectName>LoopDouble</ObjectName>
-        <!-- Grow to be as tall as the outer WidgetGroup -->
-        <MinimumSize><Variable name="SmallVerticalStretchButtonMinimumSize"/></MinimumSize>
-        <MaximumSize><Variable name="SmallVerticalStretchButtonMaximumSize"/></MaximumSize>
-        <SizePolicy><Variable name="SmallVerticalStretchButtonSizePolicy"/></SizePolicy>
-        <NumberStates>1</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>▶</Text>
-        </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,loop_double</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
+      <!-- Grow to be as tall as the outer WidgetGroup -->
+      <Template src="skin:left_1state_button.xml">
+        <SetVariable name="TooltipId">loop_double</SetVariable>
+        <SetVariable name="ObjectName">LoopDoubleButton</SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="VerticalStretchButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="VerticalStretchButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="VerticalStretchButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_chevron_right_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_chevron_right_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,loop_double</SetVariable>
+      </Template>
     </Children>
   </WidgetGroup>
 </Template>

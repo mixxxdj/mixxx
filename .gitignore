@@ -7,6 +7,10 @@
 *.pyc
 *.rej
 *_build
+dist32
+dist64
+src/mixxx.rc.include
+src/mixxx.res
 *~
 .#*
 .sconf_temp

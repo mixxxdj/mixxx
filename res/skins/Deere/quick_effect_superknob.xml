@@ -16,6 +16,7 @@
       <Template src="skin:knob.xml">
         <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
         <SetVariable name="control">super1</SetVariable>
+        <SetVariable name="color">blue</SetVariable>
       </Template>
       <WidgetGroup>
         <Layout>horizontal</Layout>
@@ -31,11 +32,15 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>O</Text>
+              <Text></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Text>K</Text>
+              <Text></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
             </State>
             <Connection>
               <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
