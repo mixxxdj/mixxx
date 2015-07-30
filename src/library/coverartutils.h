@@ -22,15 +22,6 @@ class CoverArtUtils {
         return QString(":/images/library/cover_default.png");
     }
 
-    static QString pixmapCacheKey(const quint16 hash,
-                                  const int width) {
-        if (width == 0) {
-            return QString("CoverArtCache_%1").arg(QString::number(hash));
-        }
-        return QString("CoverArtCache_%1_%2")
-                .arg(QString::number(hash)).arg(width);
-    }
-
     // Extracts the first cover art image embedded within the file at
     // trackLocation. You must provide a security token for accessing
     // trackLocation.
@@ -80,21 +71,6 @@ class CoverArtUtils {
     static quint16 calculateHash(const QImage& image) {
         return qChecksum(reinterpret_cast<const char*>(image.constBits()),
                          image.byteCount());
-    }
-
-    // Resizes the image (preserving aspect ratio) if it is larger than
-    // maxEdgeSize on either side.
-    static QImage maybeResizeImage(const QImage& image, int maxEdgeSize) {
-        if (image.width() > maxEdgeSize || image.height() > maxEdgeSize) {
-            return image.scaled(maxEdgeSize, maxEdgeSize, Qt::KeepAspectRatio,
-                                Qt::SmoothTransformation);
-        }
-        return image;
-    }
-
-    // Resizes the image (preserving aspect ratio) to width.
-    static QImage resizeImage(const QImage& image, int width) {
-        return image.scaledToWidth(width, Qt::SmoothTransformation);
     }
 
     static QStringList supportedCoverArtExtensions() {
