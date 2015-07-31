@@ -25,12 +25,12 @@ namespace {
     // The transformation mode when scaling images
     const Qt::TransformationMode kTransformationMode = Qt::SmoothTransformation;
 
-    // Resizes the image (preserving aspect ratio) if it is larger than
-    // maxEdgeSize on either side.
-    inline QImage limitImageSize(const QImage& image, int maxSize) {
-        if ((image.width() > maxSize) || (image.height() > maxSize)) {
+    // Resizes the image (preserving aspect ratio) if the size of width or height
+    // exceeds maxEdgeSize.
+    inline QImage limitImageSize(const QImage& image, int maxEdgeSize) {
+        if ((image.width() > maxEdgeSize) || (image.height() > maxEdgeSize)) {
             return image.scaled(
-                    maxSize, maxSize,
+                    maxEdgeSize, maxEdgeSize,
                     Qt::KeepAspectRatio,
                     kTransformationMode);
         } else {
