@@ -21,6 +21,9 @@
 #include <QObject>
 #include <QMessageBox>
 #include <QTextCodec>
+#include <QVector>
+#include <QThread>
+#include <QMutex>
 
 #include "configobject.h"
 #include "controlobject.h"
@@ -36,6 +39,15 @@
 #define SHOUTCAST_CONNECTED 2
 
 class Encoder;
+
+// This one is used as cache object
+struct shoutcastCacheObject {
+    quint64 time;
+    unsigned char *header;
+    unsigned char *body;
+    int headerLen;
+    int bodyLen;
+};
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
@@ -87,6 +99,9 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     void errorDialog(QString text, QString detailedError);
     void infoDialog(QString text, QString detailedError);
 
+    void serverWrite(unsigned char *header, unsigned char *body,
+               int headerLen, int bodyLen);
+
     QByteArray encodeString(const QString& string);
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
@@ -118,6 +133,13 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     bool m_protocol_is_icecast2;
     bool m_protocol_is_shoutcast;
     bool m_ogg_dynamic_update;
+    QVector<struct shoutcastCacheObject  *> m_pShoutcastCache;
+    bool m_bThreadQuit;
+    QThread m_SThread;
+    QMutex m_SMutex;
+
+  private slots:
+    void shoutcastThread();
 };
 
 #endif

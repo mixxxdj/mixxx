@@ -92,12 +92,31 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
         errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
         return;
     }
+
+    m_bThreadQuit = false;
+    this->moveToThread(&m_SThread);
+    connect(&m_SThread, SIGNAL(started()), this, SLOT(shoutcastThread()));
+    connect(this, SIGNAL(finished()), &m_SThread, SLOT(deleteLater()));
 }
 
 EngineShoutcast::~EngineShoutcast() {
+    m_bThreadQuit = true;
+
     if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
+    }
+
+    // Make sure everything is send from cache
+    // before we stop
+    while (1) {
+      m_SMutex.lock();
+      if (m_pShoutcastCache.size() == 0) {
+         m_SMutex.unlock();
+         break;
+      }
+      m_SMutex.unlock();
+      sleep(1);
     }
 
     delete m_pUpdateShoutcastFromPrefs;
@@ -113,14 +132,32 @@ EngineShoutcast::~EngineShoutcast() {
         shout_free(m_pShout);
     }
     shout_shutdown();
+
+    m_SThread.quit();
 }
 
 bool EngineShoutcast::serverDisconnect() {
+    m_bThreadQuit = true;
+
     if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
         m_encoder = NULL;
     }
+
+    // Make sure everything is send from cache
+    // before we stop
+    while (1) {
+      m_SMutex.lock();
+      if (m_pShoutcastCache.size() == 0) {
+         m_SMutex.unlock();
+         break;
+      }
+      m_SMutex.unlock();
+      sleep(1);
+    }
+
+    m_SThread.quit();
 
     m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
 
@@ -441,6 +478,10 @@ bool EngineShoutcast::serverConnect() {
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         qDebug() << "***********Connected to streaming server...";
         m_pShoutcastStatus->set(SHOUTCAST_CONNECTED);
+
+        m_bThreadQuit = false;
+        m_SThread.start();
+
         return true;
     }
     //otherwise disable shoutcast in preferences
@@ -454,6 +495,45 @@ bool EngineShoutcast::serverConnect() {
 }
 
 void EngineShoutcast::write(unsigned char *header, unsigned char *body,
+                            int headerLen, int bodyLen) {
+    struct shoutcastCacheObject *l_SCacheObj = (struct shoutcastCacheObject *) malloc(sizeof(struct shoutcastCacheObject));
+
+    if (l_SCacheObj == NULL)
+    {
+       qDebug() << "EngineShoutcast::write: Can't allocate memory!";
+       return;
+    }
+
+    memset(l_SCacheObj, 0x00, sizeof(struct shoutcastCacheObject));
+    l_SCacheObj->header = (unsigned char *)malloc(headerLen);
+
+    if (l_SCacheObj->header == NULL) {
+       qDebug() << "EngineShoutcast::write: Can't allocate memory!";
+       free(l_SCacheObj);
+       return;
+    }
+
+    l_SCacheObj->body = (unsigned char *)malloc(bodyLen);
+
+    if (l_SCacheObj->body == NULL) {
+       qDebug() << "EngineShoutcast::write: Can't allocate memory!";
+       free(l_SCacheObj->header);
+       free(l_SCacheObj);
+       return;
+    }
+
+    memcpy(l_SCacheObj->header, header, headerLen);
+    memcpy(l_SCacheObj->body, body, bodyLen);
+
+    l_SCacheObj->headerLen = headerLen;
+    l_SCacheObj->bodyLen = bodyLen;
+
+    m_SMutex.lock();
+    m_pShoutcastCache.append(l_SCacheObj);
+    m_SMutex.unlock();
+}
+
+void EngineShoutcast::serverWrite(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
     int ret;
 
@@ -705,4 +785,63 @@ void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
+}
+
+void EngineShoutcast::shoutcastThread() {
+    struct shoutcastCacheObject *l_SCacheObj = NULL;
+    unsigned int m_lCacheSize = 0;
+
+    // We IDLE until the cache has filled a bit
+    while (1)
+    {
+       sleep(5);
+       m_SMutex.lock();
+       m_lCacheSize = m_pShoutcastCache.size();
+       if (m_lCacheSize > 10) {
+          m_SMutex.unlock();
+          break;
+       }
+       m_SMutex.unlock();
+    }
+
+    while (1)
+    {
+        shout_sync(m_pShout);
+        m_SMutex.lock();
+        // Ok this shouldn't happen cache is empty and we have nothing to send.
+        // wait for next to come.
+        if (m_bThreadQuit == false && m_pShoutcastCache.size() == 0) {
+            qDebug() << "EngineShoutcast::shoutcastThread: Encoding not fast enough. Cache is empty!";
+            qDebug() << "EngineShoutcast::shoutcastThread: This means your stream will break";
+            m_SMutex.unlock();
+            sleep(5);
+            continue;
+        } else if (m_pShoutcastCache.size() > 0) {
+            // Take first cache object and remove it
+            l_SCacheObj = m_pShoutcastCache.first();
+            m_pShoutcastCache.remove(0);
+            m_lCacheSize = m_pShoutcastCache.size();
+        } else {
+            // We don't have anything to send anymore
+            l_SCacheObj = NULL;
+            m_lCacheSize = 0;
+        }
+        m_SMutex.unlock();
+
+        if (l_SCacheObj != NULL) {
+            // I don't know if emiting Signal is more QT style but doing it like this now.
+            serverWrite(l_SCacheObj->header,
+                        l_SCacheObj->body,
+                        l_SCacheObj->headerLen,
+                        l_SCacheObj->bodyLen);
+
+            free(l_SCacheObj->header);
+            free(l_SCacheObj->body);
+            free(l_SCacheObj);
+        }
+
+        if (m_bThreadQuit == true && m_lCacheSize == 0) {
+          break;
+        }
+    }
 }
