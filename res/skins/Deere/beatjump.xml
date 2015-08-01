@@ -26,7 +26,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -35,6 +35,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
@@ -58,7 +59,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-          <Template src="skin:left_1state_button.xml">
+          <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -67,6 +68,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
           <Template src="skin:beatjump_button.xml">
@@ -90,7 +92,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -99,6 +101,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
@@ -122,7 +125,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-          <Template src="skin:left_1state_button.xml">
+          <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -131,6 +134,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
           <Template src="skin:beatjump_button.xml">
@@ -154,7 +158,7 @@
             <SetVariable name="direction">backward</SetVariable>
           </Template>
 
-          <Template src="skin:left_1state_button.xml">
+          <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -163,6 +167,7 @@
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
             <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+            <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
           </Template>
 
           <Template src="skin:beatjump_button.xml">
@@ -186,7 +191,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-         <Template src="skin:left_1state_button.xml">
+         <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -195,6 +200,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
          <Template src="skin:beatjump_button.xml">
@@ -218,7 +224,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-         <Template src="skin:left_1state_button.xml">
+         <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -227,6 +233,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
          <Template src="skin:beatjump_button.xml">
@@ -250,7 +257,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -259,6 +266,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
@@ -282,7 +290,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -291,6 +299,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
@@ -314,7 +323,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -323,6 +332,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
@@ -346,7 +356,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -355,6 +365,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
@@ -378,7 +389,7 @@
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -387,6 +398,7 @@
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
