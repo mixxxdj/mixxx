@@ -26,6 +26,7 @@
 #include "library/dao/libraryhashdao.h"
 #include "library/coverartcache.h"
 #include "util/assert.h"
+#include "util/file.h"
 #include "util/timer.h"
 #include "util/math.h"
 
