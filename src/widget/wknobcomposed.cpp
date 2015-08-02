@@ -133,7 +133,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         if (m_bCentered) {
             path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d),90,-m_dCurrentAngle);
         } else {
-            path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d),m_dMinAngle,m_dMinAngle-m_dCurrentAngle);
+            path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d),-m_dMinAngle+90,m_dMinAngle-m_dCurrentAngle);
         }
         path.closeSubpath();
         p.save();
