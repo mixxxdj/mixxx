@@ -45,10 +45,6 @@
             <Connection>
               <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
-              <Transform>
-                <Invert/>
-                  <Add>1</Add>
-              </Transform>
             </Connection>
           </EffectPushButton>
 
