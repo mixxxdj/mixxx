@@ -84,14 +84,25 @@ class LibraryScanner : public QThread {
     void slotFinishScan();
 
     // ScannerTask signal handlers.
-    void taskDone(bool success);
-    void directoryHashedAndScanned(const QString& directoryPath,
+    void slotTaskDone(bool success);
+    void slotDirectoryHashedAndScanned(const QString& directoryPath,
                                    bool newDirectory, int hash);
-    void directoryUnchanged(const QString& directoryPath);
-    void trackExists(const QString& trackPath);
-    void addNewTrack(TrackPointer pTrack);
+    void slotDirectoryUnchanged(const QString& directoryPath);
+    void slotTrackExists(const QString& trackPath);
+    void slotAddNewTrack(TrackPointer pTrack);
 
   private:
+    void cancelAndQuit();
+    void cancel();
+
+    enum ScannerState {
+        IDLE,
+        STARTING,
+        SCANNING,
+        CANCELING,
+    };
+
+
     // The library trackcollection. Do not touch this from the library scanner
     // thread.
     TrackCollection* m_pCollection;
@@ -114,7 +125,8 @@ class LibraryScanner : public QThread {
     // Global scanner state for scan currently in progress.
     ScannerGlobalPointer m_scannerGlobal;
 
-    QMutex m_scanRequestMutex;
+    QMutex m_stateMutex;
+    ScannerState m_state;
 };
 
 #endif

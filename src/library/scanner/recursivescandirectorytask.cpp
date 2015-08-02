@@ -21,6 +21,10 @@ void RecursiveScanDirectoryTask::run() {
         return;
     }
 
+    // For making the scanner slow
+    //qDebug() << "Burn CPU";
+    //for (int i = 0;i < 1000000000; i++) asm("nop");
+
     // Note, we save on filesystem operations (and random work) by initializing
     // a QDirIterator with a QDir instead of a QString -- but it inherits its
     // Filter from the QDir so we have to set it first. If the QDir has not done

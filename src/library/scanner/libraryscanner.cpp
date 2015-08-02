@@ -45,7 +45,8 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collecti
                 m_analysisDao(m_database, collection->getConfig()),
                 m_trackDao(m_database, m_cueDao, m_playlistDao,
                            m_crateDao, m_analysisDao, m_libraryHashDao,
-                           collection->getConfig()) {
+                           collection->getConfig()),
+                m_state(IDLE) {
     // Don't initialize m_database here, we need to do it in run() so the DB
     // conn is in the right thread.
     qDebug() << "Starting LibraryScanner thread.";
@@ -99,22 +100,7 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collecti
 }
 
 LibraryScanner::~LibraryScanner() {
-    // Wait until there is no pending scan request
-    QMutexLocker lock(&m_scanRequestMutex);
-
-    // Cancel a running library scan.
-    slotCancel();
-
-    // Wait for the thread pool to empty. This is important because ScannerTasks
-    // have pointers to the LibraryScanner and can cause a segfault if they run
-    // after the LibraryScanner has been destroyed.
-    m_pool.waitForDone();
-
-    // Quit the event loop gracefully.
-    quit();
-
-    // Wait for thread to finish
-    wait();
+    cancelAndQuit();
 
     // There should never be an outstanding transaction when this code is
     // called. If there is, it means we probably aren't committing a transaction
@@ -170,6 +156,17 @@ void LibraryScanner::run() {
 
 void LibraryScanner::slotStartScan() {
     qDebug() << "LibraryScanner::slotStartScan";
+
+    // Recursively scan each directory in the directories table.
+    QStringList dirs = m_directoryDao.getDirs();
+    // If there are no directories then we have nothing to do. Cleanup and
+    // finish the scan immediately.
+    if (dirs.isEmpty()) {
+        m_state = IDLE;
+        m_stateMutex.unlock();
+        return;
+    }
+
     QSet<QString> trackLocations = m_trackDao.getTrackLocations();
     QHash<QString, int> directoryHashes = m_libraryHashDao.getDirectoryHashes();
     QRegExp extensionFilter =
@@ -183,9 +180,6 @@ void LibraryScanner::slotStartScan() {
     m_scannerGlobal = ScannerGlobalPointer(
             new ScannerGlobal(trackLocations, directoryHashes, extensionFilter,
                               coverExtensionFilter, directoryBlacklist));
-    
-    // from now, we are locked by m_scannerGlobal
-    m_scanRequestMutex.unlock();
 
     m_scannerGlobal->startTimer();
 
@@ -227,16 +221,6 @@ void LibraryScanner::slotStartScan() {
     // (must be called before calling addTracksAdd) and begins a transaction.
     m_trackDao.addTracksPrepare();
 
-    // Recursivly scan each directory in the directories table.
-    QStringList dirs = m_directoryDao.getDirs();
-
-    // If there are no directories then we have nothing to do. Cleanup and
-    // finish the scan immediately.
-    if (dirs.isEmpty()) {
-        slotFinishScan();
-        return;
-    }
-
     // Queue up recursive scan tasks for every directory. When all tasks are
     // done, TaskWatcher will signal slotFinishScan.
     TaskWatcher* pWatcher = &m_scannerGlobal->getTaskWatcher();
@@ -249,13 +233,16 @@ void LibraryScanner::slotStartScan() {
         // scanning so that relies on having an open bookmark for the containing
         // directory.
         MDir dir(dirPath);
-
         queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
                                                  dir.dir(),
                                                  dir.token()));
     }
+
+    m_state = SCANNING;
+    m_stateMutex.unlock();
 }
 
+// is called when all tasks are done (threads are finished)
 void LibraryScanner::slotFinishScan() {
     qDebug() << "LibraryScanner::slotFinishScan";
     if (m_scannerGlobal.isNull()) {
@@ -352,37 +339,73 @@ void LibraryScanner::slotFinishScan() {
            verifiedTracks.size(),
            m_scannerGlobal->numAddedTracks());
 
-    emit(scanFinished());
     m_scannerGlobal.clear();
+    m_state = IDLE;
+    // now we may accept new scan commands
+
+    emit(scanFinished());
 }
 
 void LibraryScanner::scan() {
-    if (m_scanRequestMutex.tryLock()) {
-        if (m_scannerGlobal) {
-            qDebug() << "Scan already in progress.";
-            m_scanRequestMutex.unlock();
+    if (m_stateMutex.tryLock()) {
+        if (m_state != IDLE) {
+            qDebug() << "LibraryScanner: Scan already in progress.";
+            m_stateMutex.unlock();
             return;
         }
+        m_state = STARTING;
         emit(startScan());
         // mutex is unlocked in slotStartScan after setting m_scannerGlobal
     } else {
-        qDebug() << "Scan request already emitted.";
+        qDebug() << "LibraryScanner: mutex locked, state =" << m_state;
     }
 }
 
+// this is called after pressing the cancel button in the scanner
+// progress dialog
 void LibraryScanner::slotCancel() {
-    // we need to make a local copy because slotCancel is called
-    // from the GUI thread during the destructor
-    // but m_scannerGlobal may be cleared in the LibraryScanner thread
+    // Wait until there is no scan starting.
+    // All pending scan start request are canceled
+    // as well until the scanner is idle again.
+    QMutexLocker lock(&m_stateMutex);
+    cancel();
+}
+
+void LibraryScanner::cancelAndQuit() {
+    // Wait until there is no scan starting.
+    // hold the lock until the event cue is terminated
+    // to guarantee there is no new scan started at the very end
+    QMutexLocker lock(&m_stateMutex);
+    cancel();
+    // Quit the event loop gracefully and hold the mutex until all
+    // pendig signals are processed
+    quit();
+    wait();
+}
+
+// be sure m_stateMutex is locked
+void LibraryScanner::cancel() {
+    m_state = CANCELING;
+
+    // we need to make a local copy because cancel is called
+    // from any thread  but m_scannerGlobal may be cleared
+    // in the LibraryScanner thread in the meanwhile
     ScannerGlobalPointer scanner = m_scannerGlobal;
     if (scanner) {
         scanner->cancel();
     }
+
+    // Wait for the thread pool to empty. This is important because ScannerTasks
+    // have pointers to the LibraryScanner and can cause a segfault if they run
+    // after the LibraryScanner has been destroyed.
+    m_pool.waitForDone();
 }
 
-void LibraryScanner::taskDone(bool success) {
-    //qDebug() << "LibraryScanner::taskDone" << success;
-    ScopedTimer timer("LibraryScanner::taskDone");
+
+
+void LibraryScanner::slotTaskDone(bool success) {
+    //qDebug() << "LibraryScanner::slotTaskDone" << success;
+    ScopedTimer timer("LibraryScanner::slotTaskDone");
     if (!success && m_scannerGlobal) {
         m_scannerGlobal->setScanFinishedCleanly(false);
     }
@@ -396,19 +419,20 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
     }
     m_scannerGlobal->getTaskWatcher().watchTask(pTask, SIGNAL(taskDone(bool)));
     connect(pTask, SIGNAL(taskDone(bool)),
-            this, SLOT(taskDone(bool)));
+            this, SLOT(slotTaskDone(bool)));
     connect(pTask, SIGNAL(queueTask(ScannerTask*)),
             this, SLOT(queueTask(ScannerTask*)));
     connect(pTask, SIGNAL(directoryHashedAndScanned(QString, bool, int)),
-            this, SLOT(directoryHashedAndScanned(QString, bool, int)));
+            this, SLOT(slotDirectoryHashedAndScanned(QString, bool, int)));
     connect(pTask, SIGNAL(directoryUnchanged(QString)),
-            this, SLOT(directoryUnchanged(QString)));
+            this, SLOT(slotDirectoryUnchanged(QString)));
     connect(pTask, SIGNAL(trackExists(QString)),
-            this, SLOT(trackExists(QString)));
-    connect(pTask, SIGNAL(addNewTrack(TrackPointer)),
-            this, SLOT(addNewTrack(TrackPointer)));
+            this, SLOT(slotTrackExists(QString)));
+    connect(pTask, SIGNAL(AddNewTrack(TrackPointer)),
+            this, SLOT(slotAddNewTrack(TrackPointer)));
 
     // Progress signals.
+    // Pass directly to the main thread
     connect(pTask, SIGNAL(progressLoading(QString)),
             this, SIGNAL(progressLoading(QString)));
     connect(pTask, SIGNAL(progressHashing(QString)),
@@ -417,10 +441,10 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
     m_pool.start(pTask);
 }
 
-void LibraryScanner::directoryHashedAndScanned(const QString& directoryPath,
+void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
                                                bool newDirectory, int hash) {
-    ScopedTimer timer("LibraryScanner::directoryHashedAndScanned");
-    //qDebug() << "LibraryScanner::directoryHashedAndScanned" << directoryPath
+    ScopedTimer timer("LibraryScanner::slotDirectoryHashedAndScanned");
+    //qDebug() << "LibraryScanner::sloDirectoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;
 
     // For statistics tracking -- if we hashed a directory then we scanned it
@@ -437,25 +461,25 @@ void LibraryScanner::directoryHashedAndScanned(const QString& directoryPath,
     emit(progressHashing(directoryPath));
 }
 
-void LibraryScanner::directoryUnchanged(const QString& directoryPath) {
-    ScopedTimer timer("LibraryScanner::directoryUnchanged");
-    //qDebug() << "LibraryScanner::directoryUnchanged" << directoryPath;
+void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
+    ScopedTimer timer("LibraryScanner::slotDirectoryUnchanged");
+    //qDebug() << "LibraryScanner::slotDirectoryUnchanged" << directoryPath;
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedDirectory(directoryPath);
     }
     emit(progressHashing(directoryPath));
 }
 
-void LibraryScanner::trackExists(const QString& trackPath) {
-    //qDebug() << "LibraryScanner::trackExists" << trackPath;
-    ScopedTimer timer("LibraryScanner::trackExists");
+void LibraryScanner::slotTrackExists(const QString& trackPath) {
+    //qDebug() << "LibraryScanner::slotTrackExists" << trackPath;
+    ScopedTimer timer("LibraryScanner::slotTrackExists");
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedTrack(trackPath);
     }
 }
 
-void LibraryScanner::addNewTrack(TrackPointer pTrack) {
-    //qDebug() << "LibraryScanner::addNewTrack" << pTrack;
+void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
+    //qDebug() << "LibraryScanner::slotAddNewTrack" << pTrack;
     ScopedTimer timer("LibraryScanner::addNewTrack");
     // For statistics tracking.
     if (m_scannerGlobal) {
