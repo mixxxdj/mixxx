@@ -3,6 +3,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QDrag>
+#include <QShortcut>
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
@@ -110,6 +111,11 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
+
+    QShortcut *setFocusShortcut = new QShortcut(
+        QKeySequence(tr("ESC", "Focus")), this);
+    connect(setFocusShortcut, SIGNAL(activated()),
+            this, SLOT(setFocus()));
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -181,8 +187,8 @@ void WTrackTableView::slotGuiTick50ms(double) {
         // Show the currently selected track in the large cover art view. Doing
         // this in selectionChanged slows down scrolling performance so we wait
         // until the user has stopped interacting first.
-        const QModelIndexList indices = selectionModel()->selectedRows();
         if (m_selectionChangedSinceLastGuiTick) {
+            const QModelIndexList indices = selectionModel()->selectedRows();
             if (indices.size() > 0 && indices.last().isValid()) {
                 TrackModel* trackModel = getTrackModel();
                 if (trackModel) {
@@ -1053,14 +1059,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     //qDebug() << "destIndex.row() is" << destIndex.row();
 
     // Drag and drop within this widget (track reordering)
-    if (event->source() == this) {
-        // For an invalid destination (eg. dropping a track beyond
-        // the end of the playlist), place the track(s) at the end
-        // of the playlist.
-        if (destIndex.row() == -1) {
-            int destRow = model()->rowCount() - 1;
-            destIndex = model()->index(destRow, 0);
-        }
+    if (event->source() == this && modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
         // Note the above code hides an ambiguous case when a
         // playlist is empty. For that reason, we can't factor that
         // code out to be common for both internal reordering
@@ -1087,68 +1086,75 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         // ends up making the logic simpler and the behavior totally predictable,
         // which lets us do nice things like "restore" the selection model.
 
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+        // The model indices are sorted so that we remove the tracks from the table
+        // in ascending order. This is necessary because if track A is above track B in
+        // the table, and you remove track A, the model index for track B will change.
+        // Sorting the indices first means we don't have to worry about this.
+        //qSort(m_selectedIndices);
+        //qSort(m_selectedIndices.begin(), m_selectedIndices.end(), qGreater<QModelIndex>());
+        qSort(selectedRows);
+        int maxRow = 0;
+        int minRow = 0;
+        if (!selectedRows.isEmpty()) {
+            maxRow = selectedRows.last();
+            minRow = selectedRows.first();
+        }
 
-            // The model indices are sorted so that we remove the tracks from the table
-            // in ascending order. This is necessary because if track A is above track B in
-            // the table, and you remove track A, the model index for track B will change.
-            // Sorting the indices first means we don't have to worry about this.
-            //qSort(m_selectedIndices);
-            //qSort(m_selectedIndices.begin(), m_selectedIndices.end(), qGreater<QModelIndex>());
-            qSort(selectedRows);
-            int maxRow = 0;
-            int minRow = 0;
-            if (!selectedRows.isEmpty()) {
-                maxRow = selectedRows.last();
-                minRow = selectedRows.first();
-            }
-            int selectedRowCount = selectedRows.count();
-            int firstRowToSelect = destIndex.row();
+        // Destination row, if destIndex is invalid we set it to last row + 1
+        int destRow = destIndex.row() < 0 ? model()->rowCount() : destIndex.row();
 
+        int selectedRowCount = selectedRows.count();
+        int selectionRestoreStartRow = destRow;
+
+        // Adjust first row of new selection
+        if (destRow >= minRow && destRow <= maxRow) {
             // If you drag a contiguous selection of multiple tracks and drop
             // them somewhere inside that same selection, do nothing.
-            if (destIndex.row() >= minRow && destIndex.row() <= maxRow) {
-                return;
-            }
-
-            if (destIndex.row() < minRow) {
-                // If we're moving the tracks _up_, then reverse the order of the row selection
-                // to make the algorithm below work without added complexity.
-                qSort(selectedRows.begin(), selectedRows.end(), qGreater<int>());
-            }
-
-            if (destIndex.row() > maxRow) {
-                // If we're moving the tracks _down_,
-                // Move the row we're going to start making a new selection at:
-                firstRowToSelect = firstRowToSelect - selectedRowCount;
-            }
-
-            // For each row that needs to be moved...
-            while (!selectedRows.isEmpty()) {
-                int movedRow = selectedRows.takeFirst(); //Remember it's row index
-                // Move it
-                trackModel->moveTrack(model()->index(movedRow, 0), destIndex);
-
-                // Move the row indices for rows that got bumped up
-                // into the void we left, or down because of the new spot
-                // we're taking.
-                for (int i = 0; i < selectedRows.count(); i++) {
-                    if ((selectedRows[i] > movedRow) &&
-                        (destIndex.row() > selectedRows[i])) {
-                        selectedRows[i] = selectedRows[i] - 1;
-                    } else if ((selectedRows[i] < movedRow) &&
-                                (destIndex.row() < selectedRows[i])) {
-                        selectedRows[i] = selectedRows[i] + 1;
-                    }
+            return;
+        } else {
+            if (destRow < minRow) {
+                // If we're moving the tracks _up_,
+                // then reverse the order of the row selection
+                // to make the algorithm below work as it is
+                qSort(selectedRows.begin(),
+                      selectedRows.end(),
+                      qGreater<int>());
+            } else {
+               if (destRow > maxRow) {
+                   // If we're moving the tracks _down_,
+                   // adjust the first row to reselect
+                   selectionRestoreStartRow = 
+                        selectionRestoreStartRow - selectedRowCount;
                 }
             }
+        }
 
-            // Highlight the moved rows again (restoring the selection)
-            //QModelIndex newSelectedIndex = destIndex;
-            for (int i = 0; i < selectedRowCount; i++) {
-                this->selectionModel()->select(model()->index(firstRowToSelect + i, 0),
-                                                QItemSelectionModel::Select | QItemSelectionModel::Rows);
+        // For each row that needs to be moved...
+        while (!selectedRows.isEmpty()) {
+            int movedRow = selectedRows.takeFirst(); // Remember it's row index
+            // Move it
+            trackModel->moveTrack(model()->index(movedRow, 0), destIndex);
+
+            // Move the row indices for rows that got bumped up
+            // into the void we left, or down because of the new spot
+            // we're taking.
+            for (int i = 0; i < selectedRows.count(); i++) {
+                if ((selectedRows[i] > movedRow) && (
+                    (destRow > selectedRows[i]) )) {
+                    selectedRows[i] = selectedRows[i] - 1;
+                } else if ((selectedRows[i] < movedRow) &&
+                            (destRow < selectedRows[i])) {
+                    selectedRows[i] = selectedRows[i] + 1;
+                }
             }
+        }
+
+
+        // Highlight the moved rows again (restoring the selection)
+        //QModelIndex newSelectedIndex = destIndex;
+        for (int i = 0; i < selectedRowCount; i++) {
+            this->selectionModel()->select(model()->index(selectionRestoreStartRow + i, 0),
+                                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
         }
     } else { // Drag and drop inside Mixxx is only for few rows, bulks happen here
         // Reset the selected tracks (if you had any tracks highlighted, it

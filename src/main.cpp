@@ -34,6 +34,7 @@
 #include "errordialoghandler.h"
 #include "util/cmdlineargs.h"
 #include "util/version.h"
+#include "util/console.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -47,35 +48,6 @@ extern "C" {
 #ifdef Q_OS_LINUX
 #include <X11/Xlib.h>
 #endif
-
-#ifdef __WINDOWS__
-#ifdef DEBUGCONSOLE
-#include <io.h> // Debug Console
-#include <windows.h>
-
-void InitDebugConsole() { // Open a Debug Console so we can printf
-    int fd;
-    FILE *fp;
-
-    FreeConsole();
-    if (AllocConsole()) {
-        SetConsoleTitleA("Mixxx Debug Messages");
-
-        fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
-        fp = _fdopen(fd, "w");
-
-        *stdout = *fp;
-        setvbuf(stdout, NULL, _IONBF, 0);
-
-        fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
-        fp = _fdopen(fd, "w");
-
-        *stderr = *fp;
-        setvbuf(stderr, NULL, _IONBF, 0);
-    }
-}
-#endif // DEBUGCONSOLE
-#endif // __WINDOWS__
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
 
@@ -123,14 +95,14 @@ void MessageHandler(QtMsgType type,
         //FIXME: cerr << doesn't get printed until after mixxx quits (???)
         for (int i = 9; i >= 0; --i) {
             if (i == 0) {
-                logFileName = QString("%1/mixxx.log").arg(logLocation);
+                logFileName = QDir(logLocation).filePath("mixxx.log");
             } else {
-                logFileName = QString("%1/mixxx.log.%2").arg(logLocation).arg(i);
+                logFileName = QDir(logLocation).filePath(QString("mixxx.log.%1").arg(i));
             }
             QFileInfo logbackup(logFileName);
             if (logbackup.exists()) {
                 QString olderlogname =
-                        QString("%1/mixxx.log.%2").arg(logLocation).arg(i + 1);
+                        QDir(logLocation).filePath(QString("mixxx.log.%1").arg(i + 1));
                 // This should only happen with number 10
                 if (QFileInfo(olderlogname).exists()) {
                     QFile::remove(olderlogname);
@@ -199,6 +171,7 @@ void MessageHandler(QtMsgType type,
 
 int main(int argc, char * argv[])
 {
+    Console console;
 
 #ifdef Q_OS_LINUX
     XInitThreads();
@@ -233,7 +206,7 @@ int main(int argc, char * argv[])
                             Each must be one of the following file types:\n\
                             ", stdout);
 
-        QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
+        QString fileExtensions(SoundSourceProxy::getSupportedFileNamePatterns().join(" "));
         QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
         fputs(fileExtensionsBA.constData(), stdout);
         fputs("\n\n", stdout);
@@ -276,14 +249,6 @@ int main(int argc, char * argv[])
         return(0);
     }
 
-    //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
-
-#ifdef __WINDOWS__
-  #ifdef DEBUGCONSOLE
-    InitDebugConsole();
-  #endif
-#endif
-
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     qInstallMsgHandler(MessageHandler);
 #else
@@ -303,13 +268,13 @@ int main(int argc, char * argv[])
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 #endif
 
-    //Enumerate and load SoundSource plugins
-    SoundSourceProxy::loadPlugins();
-
 #ifdef __FFMPEGFILE__
      av_register_all();
      avcodec_register_all();
 #endif
+
+     //Enumerate and load SoundSource plugins
+     SoundSourceProxy::loadPlugins();
 
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;

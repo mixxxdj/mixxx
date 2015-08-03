@@ -249,8 +249,7 @@ void SampleUtil::copyWithGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT
 
 // static
 void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT pSrc,
-        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
-        int iNumSamples) {
+        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain, int iNumSamples) {
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;
@@ -285,13 +284,24 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
 // static
 void SampleUtil::convertS16ToFloat32(CSAMPLE* _RESTRICT pDest, const SAMPLE* _RESTRICT pSrc,
         int iNumSamples) {
-    // -32768 is a valid low sample, whereas 32767 is the highest valid sample.
-    // Note that this means that although some sample values convert to -1.0,
-    // none will convert to +1.0.
-    const CSAMPLE kConversionFactor = 0x8000;
+    // SAMPLE_MIN = -32768 is a valid low sample, whereas SAMPLE_MAX = 32767
+    // is the highest valid sample. Note that this means that although some
+    // sample values convert to -1.0, none will convert to +1.0.
+    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
+    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
     // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
+    }
+}
+
+//static
+void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
+        unsigned int iNumSamples) {
+    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
+    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = SAMPLE(pSrc[i] * kConversionFactor);
     }
 }
 
@@ -377,12 +387,12 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
 }
 
 // static
-void SampleUtil::doubleMonoToDualMono(SAMPLE* pBuffer, int numFrames) {
+void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, int numFrames) {
     // backward loop
     int i = numFrames;
     // Unvectorizable Loop
     while (0 < i--) {
-        CSAMPLE s = pBuffer[i];
+        const CSAMPLE s = pBuffer[i];
         pBuffer[i * 2] = s;
         pBuffer[i * 2 + 1] = s;
     }
@@ -394,7 +404,7 @@ void SampleUtil::copyMonoToDualMono(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RE
     // forward loop
     // note: LOOP VECTORIZED
     for (int i = 0; i < numFrames; ++i) {
-        CSAMPLE s = pSrc[i];
+        const CSAMPLE s = pSrc[i];
         pDest[i * 2] = s;
         pDest[i * 2 + 1] = s;
     }
