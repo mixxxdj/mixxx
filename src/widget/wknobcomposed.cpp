@@ -9,8 +9,8 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dCurrentAngle(140.0),
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0),
-          m_dRotationOffsetX(0),
-          m_dRotationOffsetY(0) {
+          m_dKnobCenterXOffset(0),
+          m_dKnobCenterYOffset(0) {
 }
 
 WKnobComposed::~WKnobComposed() {
@@ -41,12 +41,12 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
         m_dMaxAngle = context.selectDouble(node, "MaxAngle");
     }
 
-    if (context.hasNode(node, "RotationOffsetX")) {
-        m_dRotationOffsetX = context.selectDouble(node, "RotationOffsetX");
+    if (context.hasNode(node, "KnobCenterXOffset")) {
+        m_dKnobCenterXOffset = context.selectDouble(node, "KnobCenterXOffset");
     }
 
-    if (context.hasNode(node, "RotationOffsetY")) {
-        m_dRotationOffsetY = context.selectDouble(node, "RotationOffsetY");
+    if (context.hasNode(node, "KnobCenterYOffset")) {
+        m_dKnobCenterYOffset = context.selectDouble(node, "KnobCenterYOffset");
     }
 }
 
@@ -101,8 +101,8 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
 
     QTransform transform;
     if (!m_pKnob.isNull() && !m_pKnob->isNull()) {
-        qreal tx = m_dRotationOffsetX + width() / 2.0;
-        qreal ty = m_dRotationOffsetY + height() / 2.0;
+        qreal tx = m_dKnobCenterXOffset + width() / 2.0;
+        qreal ty = m_dKnobCenterYOffset + height() / 2.0;
         transform.translate(-tx, -ty);
         p.translate(tx, ty);
 
