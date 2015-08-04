@@ -111,7 +111,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">1</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">1</SetVariable>
@@ -120,7 +120,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">2</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">1</SetVariable>
@@ -129,7 +129,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">3</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">1</SetVariable>
@@ -138,7 +138,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">4</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">1</SetVariable>
@@ -147,7 +147,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">5</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">1</SetVariable>
@@ -156,7 +156,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">6</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">1</SetVariable>
@@ -165,7 +165,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">7</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">1</SetVariable>
@@ -174,7 +174,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectParameter">8</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">1</SetVariable>
@@ -191,13 +191,13 @@
               <Template src="skin:knob_with_label.xml">
                 <SetVariable name="control">super1</SetVariable>
                 <SetVariable name="label">Super</SetVariable>
-                <SetVariable name="color">blue</SetVariable>
+                <SetVariable name="color">yellow</SetVariable>
               </Template>
 
               <Template src="skin:knob_with_label.xml">
                 <SetVariable name="control">mix</SetVariable>
                 <SetVariable name="label">Mix</SetVariable>
-                <SetVariable name="color">red</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -221,7 +221,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="EffectParameter">1</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">2</SetVariable>
@@ -230,7 +230,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="EffectParameter">2</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">2</SetVariable>
@@ -239,7 +239,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="EffectParameter">3</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">2</SetVariable>
@@ -248,7 +248,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="EffectParameter">4</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">2</SetVariable>
@@ -257,7 +257,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="EffectParameter">5</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">2</SetVariable>
@@ -266,7 +266,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="EffectParameter">6</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">2</SetVariable>
@@ -275,7 +275,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="EffectParameter">7</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">2</SetVariable>
@@ -284,7 +284,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">2</SetVariable>
                 <SetVariable name="EffectParameter">8</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">2</SetVariable>
@@ -312,7 +312,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="EffectParameter">1</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">3</SetVariable>
@@ -321,7 +321,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="EffectParameter">2</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">3</SetVariable>
@@ -330,7 +330,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="EffectParameter">3</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">3</SetVariable>
@@ -339,7 +339,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="EffectParameter">4</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">3</SetVariable>
@@ -348,7 +348,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="EffectParameter">5</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">3</SetVariable>
@@ -357,7 +357,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="EffectParameter">6</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">3</SetVariable>
@@ -366,7 +366,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="EffectParameter">7</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">3</SetVariable>
@@ -375,7 +375,7 @@
               <Template src="skin:effect_parameter_knob.xml">
                 <SetVariable name="Effect">3</SetVariable>
                 <SetVariable name="EffectParameter">8</SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">light_blue</SetVariable>
               </Template>
               <Template src="skin:effect_button_parameter.xml">
                 <SetVariable name="Effect">3</SetVariable>

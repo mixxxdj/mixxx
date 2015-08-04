@@ -13,7 +13,7 @@
       <Template src="skin:knob_with_button.xml">
         <SetVariable name="TooltipId">pregain</SetVariable>
         <SetVariable name="control">pregain</SetVariable>
-        <SetVariable name="color">yellow</SetVariable>
+        <SetVariable name="color">light_blue</SetVariable>
         <SetVariable name="button_TooltipId">mute</SetVariable>
         <SetVariable name="button_control">mute</SetVariable>
         <SetVariable name="label">Gain</SetVariable>
@@ -21,7 +21,7 @@
 
       <Template src="skin:equalizer_rack_parameter.xml">
         <SetVariable name="parameter">4</SetVariable>
-        <SetVariable name="color">green</SetVariable>
+        <SetVariable name="color">yellow</SetVariable>
       </Template>
 
       <Template src="skin:equalizer_rack_parameter.xml">
@@ -52,7 +52,7 @@
       <Template src="skin:knob_with_button.xml">
         <SetVariable name="TooltipId">pitch_adjust</SetVariable>
         <SetVariable name="control">pitch_adjust</SetVariable>
-        <SetVariable name="color">red</SetVariable>
+        <SetVariable name="color">light_blue</SetVariable>
         <SetVariable name="button_TooltipId">keylock</SetVariable>
         <SetVariable name="button_control">keylock</SetVariable>
         <SetVariable name="label">Key</SetVariable>
