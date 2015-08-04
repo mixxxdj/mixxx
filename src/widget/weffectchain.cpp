@@ -38,7 +38,7 @@ void WEffectChain::setEffectChainSlot(EffectChainSlotPointer pEffectChainSlot) {
 }
 
 void WEffectChain::chainUpdated() {
-    QString name = tr("Empty Chain");
+    QString name = tr("None");
     QString description = tr("No effect chain loaded.");
     if (m_pEffectChainSlot) {
         EffectChainPointer pChain = m_pEffectChainSlot->getEffectChain();
