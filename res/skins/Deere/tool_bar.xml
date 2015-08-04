@@ -165,7 +165,7 @@
             <SetVariable name="TooltipId">headMix</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">headMix</SetVariable>
-            <SetVariable name="color">white</SetVariable>
+            <SetVariable name="color">light_blue</SetVariable>
             <SetVariable name="label">Head Mix</SetVariable>
           </Template>
 
@@ -173,7 +173,7 @@
             <SetVariable name="TooltipId">headphone_gain</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">headGain</SetVariable>
-            <SetVariable name="color">white</SetVariable>
+            <SetVariable name="color">yellow</SetVariable>
             <SetVariable name="label">Head Gain</SetVariable>
           </Template>
         </Children>
@@ -207,7 +207,7 @@
             <SetVariable name="TooltipId">balance</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">balance</SetVariable>
-            <SetVariable name="color">white</SetVariable>
+            <SetVariable name="color">light_blue</SetVariable>
             <SetVariable name="label">Balance</SetVariable>
           </Template>
 

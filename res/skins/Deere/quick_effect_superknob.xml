@@ -5,6 +5,7 @@
   Variables:
     QuickEffect: the quick effect rack
     group: the group
+    color: the notch color. red, green, yellow, blue or light_blue
 -->
 <Template>
   <SetVariable name="QuickEffectRackGroup">[QuickEffectRack<Variable name="QuickEffect"/>]</SetVariable>
@@ -16,7 +17,7 @@
       <Template src="skin:knob.xml">
         <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
         <SetVariable name="control">super1</SetVariable>
-        <SetVariable name="color">blue</SetVariable>
+        <SetVariable name="color"><Variable name="color"/></SetVariable>
       </Template>
       <WidgetGroup>
         <Layout>horizontal</Layout>
