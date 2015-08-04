@@ -1,0 +1,36 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The auxiliary channel controls.
+  Variables:
+    i: The auxiliary channel number (1-indexed)
+-->
+
+<Template>
+  <WidgetGroup>
+    <ObjectName>AuxiliaryContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <Template src="skin:vumeter.xml">
+        <SetVariable name="group">[Auxiliary<Variable name="i"/>]</SetVariable>
+        <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
+        <SetVariable name="control">VuMeter</SetVariable>
+      </Template>
+
+      <Template src="skin:knob_with_button.xml">
+        <SetVariable name="TooltipId">pregain</SetVariable>
+        <SetVariable name="group">[Auxiliary<Variable name="i"/>]</SetVariable>
+        <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="color">red</SetVariable>
+        <SetVariable name="button_TooltipId">mute</SetVariable>
+        <SetVariable name="button_control">mute</SetVariable>
+        <SetVariable name="label">Gain</SetVariable>
+      </Template>
+    </Children>
+    <Connection>
+      <ConfigKey>[Auxiliary<Variable name="i"/>],enabled</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -6,6 +6,7 @@
     group: The group for the controls.
 -->
 <Template>
+  <!--Default grid Hotcue 1-4 -->
   <WidgetGroup>
     <ObjectName>HotcueGrid</ObjectName>
     <Layout>vertical</Layout>
@@ -17,24 +18,80 @@
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">1</SetVariable>
           </Template>
-
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">2</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">3</SetVariable>
           </Template>
-
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">4</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
     </Children>
+    <Connection>
+      <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform>
+        <Not/>
+      </Transform>
+    </Connection>
+  </WidgetGroup>
+
+  <!--Extended grid Hotcue 1-8 -->
+  <WidgetGroup>
+    <ObjectName>HotcueGridExtended</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>HotcueGridExtendedRow1</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">1</SetVariable>
+          </Template>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">2</SetVariable>
+          </Template>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">3</SetVariable>
+          </Template>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>HotcueGridExtendedRow2</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">5</SetVariable>
+          </Template>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">6</SetVariable>
+          </Template>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">7</SetVariable>
+          </Template>
+          <Template src="skin:hotcue_button.xml">
+            <SetVariable name="hotcue">8</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

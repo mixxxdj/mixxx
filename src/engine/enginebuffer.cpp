@@ -191,9 +191,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
 
-    m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
+    m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
-    m_pKeylock->set(false);
 
     m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
     connect(m_pEject, SIGNAL(valueChanged(double)),
