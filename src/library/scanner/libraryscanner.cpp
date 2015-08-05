@@ -428,7 +428,7 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
             this, SLOT(slotDirectoryUnchanged(QString)));
     connect(pTask, SIGNAL(trackExists(QString)),
             this, SLOT(slotTrackExists(QString)));
-    connect(pTask, SIGNAL(AddNewTrack(TrackPointer)),
+    connect(pTask, SIGNAL(addNewTrack(TrackPointer)),
             this, SLOT(slotAddNewTrack(TrackPointer)));
 
     // Progress signals.
