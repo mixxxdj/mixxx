@@ -167,7 +167,9 @@ void WTrackTableView::enableCachedOnly() {
     m_lastUserActionNanos = Time::elapsed();
 }
 
-void WTrackTableView::slotScrollValueChanged(int) {
+void WTrackTableView::slotScrollValueChanged(int value) {
+    getTrackModel()->setPosition(value); // remebering position of scroll bar
+    // fixing bug #1450391
     enableCachedOnly();
 }
 
@@ -284,8 +286,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     setSortingEnabled(false);
     setHorizontalHeader(tempHeader);
-
-    setModel(model);
+    setModel(model); // trouble while executing setModel function
     setHorizontalHeader(header);
     header->setMovable(true);
     header->setClickable(true);
@@ -371,7 +372,11 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // haven't been able to get it to stop us from using a model as a drag
     // target though, so my hax above may not be completely unjustified.
 
+    //qDebug() << "GetTrackModel() position " << getTrackModel()->getPosition();
+    this->setVScrollBarPosState(getTrackModel()->getPosition());
     setVisible(true);
+
+    //qDebug() << "WTrackTableView::loadTrackModel ends.";
 }
 
 void WTrackTableView::createActions() {

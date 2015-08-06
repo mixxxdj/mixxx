@@ -5,6 +5,7 @@
 #include <QLinkedList>
 #include <QItemDelegate>
 #include <QtSql>
+#include <cmath>
 
 #include "trackinfoobject.h"
 #include "library/dao/settingsdao.h"
@@ -21,7 +22,8 @@ class TrackModel {
             : m_db(db),
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
-              m_eDefaultSortOrder(Qt::AscendingOrder) {
+              m_eDefaultSortOrder(Qt::AscendingOrder),
+              position(0){
     }
     virtual ~TrackModel() {}
 
@@ -144,7 +146,20 @@ class TrackModel {
     virtual void select() {
     }
 
+    virtual int getPosition(){
+      return position;
+    }
+
+    virtual void setPosition(int newPosition){
+      if (newPosition <= 100 && newPosition >= 0 && abs(this->position-newPosition) < 10){
+          this->position=newPosition;
+        }
+    }
+
   private:
+    // we use it to remember scroll position
+    int position;
+
     QSqlDatabase m_db;
     QString m_settingsNamespace;
     QList<int> m_emptyColumns;
