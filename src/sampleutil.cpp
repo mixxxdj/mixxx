@@ -296,26 +296,27 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* _RESTRICT pDest, const SAMPLE* _RE
 }
 
 // static
-bool SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+int SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
         const CSAMPLE* pBuffer, int iNumSamples) {
     CSAMPLE fAbsL = CSAMPLE_ZERO;
     CSAMPLE fAbsR = CSAMPLE_ZERO;
-    CSAMPLE clipped = 0;
+    CSAMPLE clippedL = 0;
+    CSAMPLE clippedR = 0;
 
     // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         CSAMPLE absl = fabs(pBuffer[i * 2]);
         fAbsL += absl;
-        clipped += absl > CSAMPLE_PEAK ? 1 : 0;
+        clippedL += absl > CSAMPLE_PEAK ? 1 : 0;
         CSAMPLE absr = fabs(pBuffer[i * 2 + 1]);
         fAbsR += absr;
         // Replacing the code with a bool clipped will prevent vetorizing
-        clipped += absr > CSAMPLE_PEAK ? 1 : 0;
+        clippedR += absr > CSAMPLE_PEAK ? 1 : 0;
     }
 
     *pfAbsL = fAbsL;
     *pfAbsR = fAbsR;
-    return (clipped != 0);
+    return (((clippedR != 0) << 1) | (clippedL != 0));
 }
 
 // static
