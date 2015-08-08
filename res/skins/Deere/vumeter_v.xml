@@ -4,7 +4,6 @@
     A VU meter.
   Variables:
     group: The group for the controls.
-    control: The control to connect to.
     side: The stereo channel to monitor: L or R
 -->
 <Template>
