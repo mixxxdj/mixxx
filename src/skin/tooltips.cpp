@@ -115,6 +115,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Microphone Volume Meter")
             << tr("Shows the current microphone volume.");
 
+    add("microphone_PeakIndicator")
+            << tr("Microphone Peak Indicator")
+            << tr("Indicates when the signal on the microphone is clipping,")
+            << clippingHelp;
+
     add("sampler_VuMeter")
             << tr("Sampler Volume Meter")
             << tr("Shows the current sampler volume.");
