@@ -442,10 +442,10 @@ HerculesRMX.Deck.prototype.cueSelectHandler = function(value) {
       var filterStatus = engine.getValue(this.group, "pfl");
       if(filterStatus) {
          engine.setValue(this.group, "pfl", 0);
-         this.Buttons.CueSelect.setLed(LedState.on);
+         this.Buttons.CueSelect.setLed(LedState.off);
       } else {
          engine.setValue(this.group, "pfl", 1);
-         this.Buttons.CueSelect.setLed(LedState.off);
+         this.Buttons.CueSelect.setLed(LedState.on);
       }
    }
 };
