@@ -806,9 +806,11 @@ WWidget, WLabel {
 
 #MasterVumeter {
   qproperty-layoutSpacing: 2;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
-#vumeter_v {
+#vumeter_v, #vumeter_h {
   qproperty-layoutSpacing: 3;
 }
 
