@@ -5,7 +5,9 @@
   Variables:
     group: The group for the controls.
     control: The control to connect to.
-    side: The stereo channel to monitor: L or R
+    side: The stereo channel to monitor: L or R.
+    tooltip_meter: The tooltip id for the vu-meter.
+    tooltip_clip: The tooltip id for the clip indicator.
 -->
 <Template>
   <WidgetGroup>
@@ -13,7 +15,7 @@
       <Layout>horizontal</Layout>
       <Children>
           <VuMeter>
-            <TooltipId>channel_VuMeter</TooltipId>
+            <TooltipId><Variable name="tooltip_meter"/></TooltipId>
             <Size>9me,3me</Size>
             <MaximumSize>80,8</MaximumSize>
             <PathVu scalemode="STRETCH">vumeter.svg</PathVu>
@@ -28,7 +30,7 @@
           </VuMeter>
           <StatusLight>
             <ObjectName>PeakIndicator</ObjectName>
-            <TooltipId>PeakIndicator</TooltipId>
+            <TooltipId><Variable name="tooltip_clip"/></TooltipId>
             <Size>3min,3me</Size>
             <MaximumSize>8,8</MaximumSize>
             <PathStatusLight scalemode="STRETCH">vumeter_clip.svg</PathStatusLight>
