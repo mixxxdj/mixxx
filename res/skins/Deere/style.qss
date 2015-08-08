@@ -804,6 +804,10 @@ WWidget, WLabel {
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 
+#MasterVumeter {
+  qproperty-layoutSpacing: 2;
+}
+
 #vumeter_v {
   qproperty-layoutSpacing: 3;
 }
