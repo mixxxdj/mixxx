@@ -124,6 +124,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Indicates when the signal on the sampler is clipping,")
             << clippingHelp;
 
+    add("preview_VuMeter")
+            << tr("Preview Deck Volume Meter")
+            << tr("Indicates when the signal on the Preview Deck is clipping,")
+            << clippingHelp;
+
     add("master_VuMeterL")
             << tr("Master Channel L Volume Meter")
             << tr("Shows the current master volume for the left channel.");

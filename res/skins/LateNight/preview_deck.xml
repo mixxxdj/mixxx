@@ -152,7 +152,7 @@
                   </StatusLight>
 
                   <VuMeter>
-                    <TooltipId>channel_VuMeter</TooltipId>
+                    <TooltipId>preview_VuMeter</TooltipId>
                     <PathVu>btn_volume_display_previewdeck_over.png</PathVu>
                     <PathBack>btn_volume_display_previewdeck.png</PathBack>
                     <Horizontal>false</Horizontal>
