@@ -131,6 +131,10 @@ void Tooltips::addStandardTooltips() {
 
     add("preview_VuMeter")
             << tr("Preview Deck Volume Meter")
+            << tr("Shows the current Preview Deck volume.");
+
+    add("preview_PeakIndicator")
+            << tr("Preview Deck Peak Indicator")
             << tr("Indicates when the signal on the Preview Deck is clipping,")
             << clippingHelp;
 
