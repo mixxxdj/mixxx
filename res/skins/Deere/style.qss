@@ -109,7 +109,7 @@
 
 /* library table */
 QTableView {
-  color: #A9A9A9;
+  color: #d2d2d2;
   background-color: #1F1F1F;
   alternate-background-color: #1A1A1A;
   selection-background-color: #006596;
@@ -160,7 +160,7 @@ QPushButton#LibraryPreviewButton:checked {
 
 /* library header row */
 QHeaderView {
-  color: #7C7C7C;
+  color: #d2d2d2;
   background: #1A1A1A;
   border-bottom: 1px solid #141414;
 }
@@ -202,7 +202,7 @@ WSearchLineEdit {
   padding: 2px;
   border: 1px solid #1A1A1A;
   background-color: #4B4B4B;
-  color: #D6D6D6;
+  color: #d2d2d2;
 }
 
 WSearchLineEdit:focus {
@@ -224,7 +224,7 @@ WSearchLineEdit:focus {
 
 #PreviewDeckTextRow WLabel {
   padding: 2px;
-  color: #A9A9A9;
+  color: #d2d2d2;
   font-size: 12px/14px;
   text-transform: none;
 }
@@ -246,7 +246,7 @@ QTreeView {
 
 /* sidebar, as well as root items for playlists, crates, and history */
 QTextBrowser, QTreeView {
-  color: #A9A9A9;
+  color: #d2d2d2;
   background-color: #1F1F1F;
   selection-background-color: #006596;
   selection-color: #D6D6D6;
@@ -321,13 +321,13 @@ WLibrary QSpinBox {
 
 WLibrary QSpinBox:editable {
   background: transparent;
-  color:#A9A9A9;
+  color:#d2d2d2;
 }
 
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
 WLibrary QLabel, WLibrary QRadioButton {
   /* same as QTreeview */
-  color: #A9A9A9;
+  color: #d2d2d2;
   margin: 0px 10px 0px 0px;
 }
 
@@ -352,7 +352,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
   padding: 4px;
-  color: #A3A3A3;
+  color: #D2D2D2;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                     stop: 0 #4B4B4B,
                                     stop: 1 #4B4B4B);
@@ -368,7 +368,7 @@ WLibrary QRadioButton::indicator:unchecked {
   /* buttons in "disabled" (not click-able) state. They are nearly invisible
      by default QT palette, so style accordingly */
   padding: 4px;
-  color: #494949; /* Default #A3A3A3 -90L HSL*/
+  color: #808080; /* Default #A3A3A3 -90L HSL*/
   background-color: qlineargradient(spread:pad,
                                     x1:0, y1:0, x2:1, y2:0,
                                     stop:0 rgba(95, 95, 95, 127),
@@ -385,7 +385,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgRecording > QPushButton:hover,
 #DlgAnalysis > QPushButton:hover {
   padding: 4px;
-  color: #B7B7B7;
+  color: #D2D2D2;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                     stop: 0 #5F5F5F,
                                     stop: 1 #5F5F5F);
@@ -461,7 +461,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #SkinSettings > #h2 {
   font: 12pt/14pt ;
   text-align: left;
-  color: #A9A9A9;
+  color: #d2d2d2;
   background-color: none;
   margin: 0.2em;
   border-top: none;
@@ -752,7 +752,7 @@ WWidget, QLabel {
 
 WWidget, WLabel {
   /* All labels should default to a grey that is readable on black. */
-  color: #888888;
+  color: #D2D2D2;
 }
 
 /* Track text, etc. should be in the deck color. */
@@ -926,7 +926,7 @@ WWidgetGroup {
  *******************************************************************************/
 
 WPushButton {
-    color: #A3A3A3;
+    color: #D2D2D2;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                       stop: 0 #4B4B4B,
                                       stop: 1 #4B4B4B);
@@ -936,7 +936,7 @@ WPushButton {
 }
 
 WPushButton:hover {
-    color: #B7B7B7;
+    color: #D2D2D2;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                       stop: 0 #5F5F5F,
                                       stop: 1 #5F5F5F);
@@ -945,6 +945,7 @@ WPushButton:hover {
 
 /*"Pressed" state*/
 WPushButton[value="1"] {
+    /*color: #FDFDFD;*/
     color: #FDFDFD;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                       stop: 0 #006596,
@@ -987,7 +988,7 @@ WPushButton[value="2"]:hover {
   0 -- left
 */
 #OrientationButton[value="1"] {
-    color: #A3A3A3;
+    color: #D2D2D2;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                       stop: 0 #4B4B4B,
                                       stop: 1 #4B4B4B);
@@ -997,7 +998,7 @@ WPushButton[value="2"]:hover {
 }
 
 #OrientationButton:hover {
-    color: #B7B7B7;
+    color: #D2D2D2;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                       stop: 0 #5F5F5F,
                                       stop: 1 #5F5F5F);
@@ -1041,7 +1042,7 @@ WPushButton[value="2"]:hover {
    do not want an active or active:hover color like with the other buttons.
 */
 #SampleDeckToggle[value="1"], #LibraryToggle[value="1"], #EffectRackToggle[value="1"] {
-    color: #A3A3A3;
+    color: #D2D2D2;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                       stop: 0 #4B4B4B,
                                       stop: 1 #4B4B4B);
@@ -1051,7 +1052,7 @@ WPushButton[value="2"]:hover {
 }
 
 #SampleDeckToggle[value="1"]:hover, #LibraryToggle[value="1"]:hover, #EffectRackToggle[value="1"]:hover {
-    color: #B7B7B7;
+    color: #D2D2D2;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
                                       stop: 0 #5F5F5F,
                                       stop: 1 #5F5F5F);
