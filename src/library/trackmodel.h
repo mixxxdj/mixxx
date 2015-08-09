@@ -159,7 +159,7 @@ class TrackModel {
       // check of new value can help to prevent such behaviour
       // better to find why event is emitted
       if (newPosition <= 100 && newPosition >= 0 && abs(position-newPosition) < positionChangeLimit){
-          this->position=newPosition;
+          position=newPosition;
         }
     }
 
