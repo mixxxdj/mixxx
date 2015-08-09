@@ -501,10 +501,6 @@ WWidget, QLabel {
   text-transform: uppercase;
 }
 
-WSliderComposed {
-  background-color: rgba(200, 200, 200, 128);
-}
-
 /* Start spacing for Deck overview row (small waveform, option grid) */
 #OptionGrid {
   background-color: #333333;
