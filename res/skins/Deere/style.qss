@@ -22,9 +22,20 @@
  *******************************************************************************/
 /* These definitions put a faint border around all the widgets. We have to be
    tricky with top/bottom-ness to get things right. */
+#DeckControls {
+  border-color: #222;
+  border-style: solid;
+  border-left-width: 3px;
+  border-right-width: 3px;
+  padding-bottom: 5px;
+}
 
-#Mixer {
-  border: 1px solid #222;
+#Crossfader {
+  border-color: #222;
+  border-style: solid;
+  border-left-width: 3px;
+  border-right-width: 3px;
+  border-bottom-width: 3px;
 }
 
 #DeckTextRow {
@@ -718,6 +729,10 @@ WWidget, QLabel {
   qproperty-layoutAlignment: 'AlignTop';
 }
 
+#CrossfaderAutoDjActive {
+  background-color: #001726;
+}
+
 #MasterControls {
   qproperty-layoutSpacing: 0;
 }
@@ -761,7 +776,7 @@ WWidget, WLabel {
 }
 
 #DeckMixer1 {
-  background-color: #001726;
+  background-color: #333333;
 }
 
 /* Track text, etc. should be in the deck color. */
@@ -770,7 +785,7 @@ WWidget, WLabel {
 }
 
 #DeckMixer2 {
-  background-color: #261400;
+  background-color: #333333;
 }
 
 #Deck3 WLabel {
@@ -778,7 +793,7 @@ WWidget, WLabel {
 }
 
 #DeckMixer3 {
-  background-color: #261526;
+  background-color: #333333;
 }
 
 #Deck4 WLabel {
@@ -786,7 +801,7 @@ WWidget, WLabel {
 }
 
 #DeckMixer4 {
-  background-color: #24260A;
+  background-color: #333333;
 }
 
 #DeckMixer1_Column2, #DeckMixer2_Column2, #DeckMixer3_Column2,
