@@ -289,9 +289,9 @@ void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
     qDebug() << "Marking unverified directories as deleted.";
     m_libraryHashDao.markUnverifiedDirectoriesAsDeleted();
 
-    // For making the scanner slow
-   qDebug() << "Burn CPU";
-   for (int i = 0;i < 1000000000; i++) asm("nop");
+    // For making the scanner slow, during debugging
+    //qDebug() << "Burn CPU";
+    //for (int i = 0;i < 1000000000; i++) asm("nop");
 
 
 
