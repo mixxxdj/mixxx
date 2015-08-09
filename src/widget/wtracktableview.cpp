@@ -373,7 +373,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     //qDebug() << "GetTrackModel() position " << getTrackModel()->getPosition();
-    this->setVScrollBarPosState(getTrackModel()->getPosition());
+    setVScrollBarPosState(getTrackModel()->getPosition());
     setVisible(true);
 
     //qDebug() << "WTrackTableView::loadTrackModel ends.";

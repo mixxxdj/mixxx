@@ -5,7 +5,7 @@
 #include <QLinkedList>
 #include <QItemDelegate>
 #include <QtSql>
-#include <cmath>
+#include "util/math.h"
 
 #include "trackinfoobject.h"
 #include "library/dao/settingsdao.h"
@@ -16,6 +16,7 @@ class TrackModel {
   public:
     static const int kHeaderWidthRole = Qt::UserRole + 0;
     static const int kHeaderNameRole = Qt::UserRole + 1;
+    static const int positionChangeLimit = 10; // varuable that avoids to too fast scroll
 
     TrackModel(QSqlDatabase db,
                const char* settingsNamespace)
@@ -23,7 +24,7 @@ class TrackModel {
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
               m_eDefaultSortOrder(Qt::AscendingOrder),
-              position(0){
+              position(0) {
     }
     virtual ~TrackModel() {}
 
@@ -151,7 +152,13 @@ class TrackModel {
     }
 
     virtual void setPosition(int newPosition){
-      if (newPosition <= 100 && newPosition >= 0 && abs(this->position-newPosition) < 10){
+      // in bug 1450391 we ve got situation
+      // when during changing data model
+      // scrollPositionChanged event is emitted
+      // and scrollBar moves to 15 or 16 from 30-40
+      // check of new value can help to prevent such behaviour
+      // better to find why event is emitted
+      if (newPosition <= 100 && newPosition >= 0 && abs(position-newPosition) < positionChangeLimit){
           this->position=newPosition;
         }
     }

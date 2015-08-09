@@ -35,6 +35,9 @@ class WTrackTableView : public WLibraryTableView {
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
 
+
+    //void setVScrollBarPosState(int position);
+
     enum BPMScale {
         DOUBLE,
         HALVE,
