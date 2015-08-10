@@ -24,7 +24,7 @@ class TrackModel {
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
               m_eDefaultSortOrder(Qt::AscendingOrder),
-              position(0) {
+              m_position(0) {
     }
     virtual ~TrackModel() {}
 
@@ -148,7 +148,7 @@ class TrackModel {
     }
 
     virtual int getPosition(){
-      return position;
+      return m_position;
     }
 
     virtual void setPosition(int newPosition){
@@ -158,14 +158,14 @@ class TrackModel {
       // and scrollBar moves to 15 or 16 from 30-40
       // check of new value can help to prevent such behaviour
       // better to find why event is emitted
-      if (newPosition <= 100 && newPosition >= 0 && abs(position-newPosition) < positionChangeLimit){
-          position=newPosition;
+      if (newPosition <= 100 && newPosition >= 0 && abs(m_position-newPosition) < positionChangeLimit){
+          m_position=newPosition;
         }
     }
 
   private:
     // we use it to remember scroll position
-    int position;
+    int m_position;
 
     QSqlDatabase m_db;
     QString m_settingsNamespace;
