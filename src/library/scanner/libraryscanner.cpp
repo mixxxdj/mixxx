@@ -369,6 +369,7 @@ void LibraryScanner::slotCancel() {
     // as well until the scanner is idle again.
     QMutexLocker lock(&m_stateMutex);
     cancel();
+    setScannerState(IDLE);
 }
 
 void LibraryScanner::cancelAndQuit() {
@@ -496,5 +497,21 @@ void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
 }
 
 void LibraryScanner::setScannerState(ScannerState newState) {
+    switch (newState) {
+    case IDLE:
+        DEBUG_ASSERT(m_state == CANCELING && m_state == SCANNING);
+        break;
+    case STARTING:
+        DEBUG_ASSERT(m_state == IDLE);
+        break;
+    case SCANNING:
+        DEBUG_ASSERT(m_state == STARTING);
+        break;
+    case CANCELING:
+        // Canceling is always allowed
+        break;
+    default:
+        DEBUG_ASSERT(false);
+    }
     m_state = newState;
 }
