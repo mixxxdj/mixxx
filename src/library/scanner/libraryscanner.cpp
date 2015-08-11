@@ -162,7 +162,7 @@ void LibraryScanner::slotStartScan() {
     // If there are no directories then we have nothing to do. Cleanup and
     // finish the scan immediately.
     if (dirs.isEmpty()) {
-        m_state = IDLE;
+        setScannerState(IDLE);
         m_stateMutex.unlock();
         return;
     }
@@ -238,7 +238,7 @@ void LibraryScanner::slotStartScan() {
                                                  dir.token()));
     }
 
-    m_state = SCANNING;
+    setScannerState(SCANNING);
     m_stateMutex.unlock();
 }
 
@@ -340,7 +340,7 @@ void LibraryScanner::slotFinishScan() {
            m_scannerGlobal->numAddedTracks());
 
     m_scannerGlobal.clear();
-    m_state = IDLE;
+    setScannerState(IDLE);
     // now we may accept new scan commands
 
     emit(scanFinished());
@@ -353,7 +353,7 @@ void LibraryScanner::scan() {
             m_stateMutex.unlock();
             return;
         }
-        m_state = STARTING;
+        setScannerState(STARTING);
         emit(startScan());
         // mutex is unlocked in slotStartScan after setting m_scannerGlobal
     } else {
@@ -385,7 +385,7 @@ void LibraryScanner::cancelAndQuit() {
 
 // be sure m_stateMutex is locked
 void LibraryScanner::cancel() {
-    m_state = CANCELING;
+    setScannerState(CANCELING);
 
     // we need to make a local copy because cancel is called
     // from any thread  but m_scannerGlobal may be cleared
@@ -493,4 +493,8 @@ void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
     } else {
         qWarning() << "Track ("+pTrack->getLocation()+") could not be added";
     }
+}
+
+void LibraryScanner::setScannerState(ScannerState newState) {
+    m_state = newState;
 }

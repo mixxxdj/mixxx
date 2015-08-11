@@ -92,9 +92,6 @@ class LibraryScanner : public QThread {
     void slotAddNewTrack(TrackPointer pTrack);
 
   private:
-    void cancelAndQuit();
-    void cancel();
-
     enum ScannerState {
         IDLE,
         STARTING,
@@ -102,6 +99,9 @@ class LibraryScanner : public QThread {
         CANCELING,
     };
 
+    void cancelAndQuit();
+    void cancel();
+    void setScannerState(LibraryScanner::ScannerState newState);
 
     // The library trackcollection. Do not touch this from the library scanner
     // thread.
