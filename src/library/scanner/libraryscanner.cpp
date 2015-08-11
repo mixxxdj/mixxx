@@ -163,7 +163,6 @@ void LibraryScanner::slotStartScan() {
     // finish the scan immediately.
     if (dirs.isEmpty()) {
         setScannerState(IDLE);
-        m_stateMutex.unlock();
         return;
     }
 
@@ -239,7 +238,6 @@ void LibraryScanner::slotStartScan() {
     }
 
     setScannerState(SCANNING);
-    m_stateMutex.unlock();
 }
 
 // is called when all tasks are done (threads are finished)
@@ -347,17 +345,8 @@ void LibraryScanner::slotFinishScan() {
 }
 
 void LibraryScanner::scan() {
-    if (m_stateMutex.tryLock()) {
-        if (m_state != IDLE) {
-            qDebug() << "LibraryScanner: Scan already in progress.";
-            m_stateMutex.unlock();
-            return;
-        }
-        setScannerState(STARTING);
+    if (setScannerState(STARTING)) {
         emit(startScan());
-        // mutex is unlocked in slotStartScan after setting m_scannerGlobal
-    } else {
-        qDebug() << "LibraryScanner: mutex locked, state =" << m_state;
     }
 }
 
@@ -367,27 +356,24 @@ void LibraryScanner::slotCancel() {
     // Wait until there is no scan starting.
     // All pending scan start request are canceled
     // as well until the scanner is idle again.
-    QMutexLocker lock(&m_stateMutex);
+    setScannerState(CANCELING);
     cancel();
     setScannerState(IDLE);
 }
 
 void LibraryScanner::cancelAndQuit() {
-    // Wait until there is no scan starting.
-    // hold the lock until the event cue is terminated
-    // to guarantee there is no new scan started at the very end
-    QMutexLocker lock(&m_stateMutex);
+    setScannerState(CANCELING);
     cancel();
-    // Quit the event loop gracefully and hold the mutex until all
+    // Quit the event loop gracefully and stay in CANCELING state until all
     // pendig signals are processed
     quit();
     wait();
+    setScannerState(IDLE);
 }
 
-// be sure m_stateMutex is locked
+// be sure m_stateMutex is locked and we are in CANCELING state
 void LibraryScanner::cancel() {
-    setScannerState(CANCELING);
-
+    DEBUG_ASSERT(m_state == CANCELING);
     // we need to make a local copy because cancel is called
     // from any thread  but m_scannerGlobal may be cleared
     // in the LibraryScanner thread in the meanwhile
@@ -496,22 +482,57 @@ void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
     }
 }
 
-void LibraryScanner::setScannerState(ScannerState newState) {
+bool LibraryScanner::setScannerState(ScannerState newState) {
+    // Allowed State transitions:
+    // IDLE -> STARTING
+    // STARTING -> IDLE
+    // STARTING -> SCANNING
+    // SCANNING -> IDLE
+    // CANCELING -> IDLE
+    // every state can change to CANCELING
     switch (newState) {
     case IDLE:
-        DEBUG_ASSERT(m_state == CANCELING && m_state == SCANNING);
+        if (m_state == CANCELING || m_state == STARTING) {
+            // Transition protected by the mutex is over now
+            m_state = IDLE;
+            m_stateMutex.unlock();
+            return true;
+        } else if (m_state == SCANNING) {
+            // Normal scanner end, nothing to do
+        } else {
+            DEBUG_ASSERT(false);
+            return false;
+        }
         break;
     case STARTING:
-        DEBUG_ASSERT(m_state == IDLE);
+        // we need to lock the mutex during the STARTING state
+        // to prevent loosing cancel commands or start the scanner
+        // twice
+        if (m_stateMutex.tryLock()) {
+            if (m_state != IDLE) {
+                qDebug() << "LibraryScanner: Scan already in progress.";
+                m_stateMutex.unlock();
+                return false;
+            }
+        } else {
+            qDebug() << "LibraryScanner: mutex locked, state =" << m_state;
+        }
         break;
     case SCANNING:
         DEBUG_ASSERT(m_state == STARTING);
-        break;
+        // Transition protected by the mutex is over now
+        m_state = SCANNING;
+        m_stateMutex.unlock();
+        return true;
     case CANCELING:
-        // Canceling is always allowed
+        // canceling is always possible, but wait
+        // until there is no scan starting.
+        m_stateMutex.lock();
         break;
     default:
         DEBUG_ASSERT(false);
+        return false;
     }
     m_state = newState;
+    return true;
 }

@@ -101,7 +101,7 @@ class LibraryScanner : public QThread {
 
     void cancelAndQuit();
     void cancel();
-    void setScannerState(LibraryScanner::ScannerState newState);
+    bool setScannerState(LibraryScanner::ScannerState newState);
 
     // The library trackcollection. Do not touch this from the library scanner
     // thread.
