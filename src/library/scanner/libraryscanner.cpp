@@ -162,7 +162,7 @@ void LibraryScanner::slotStartScan() {
     // If there are no directories then we have nothing to do. Cleanup and
     // finish the scan immediately.
     if (dirs.isEmpty()) {
-        setScannerState(IDLE);
+        changeScannerState(IDLE);
         return;
     }
 
@@ -237,7 +237,7 @@ void LibraryScanner::slotStartScan() {
                                                  dir.token()));
     }
 
-    setScannerState(SCANNING);
+    changeScannerState(SCANNING);
 }
 
 // is called when all tasks are done (threads are finished)
@@ -338,14 +338,14 @@ void LibraryScanner::slotFinishScan() {
            m_scannerGlobal->numAddedTracks());
 
     m_scannerGlobal.clear();
-    setScannerState(IDLE);
+    changeScannerState(IDLE);
     // now we may accept new scan commands
 
     emit(scanFinished());
 }
 
 void LibraryScanner::scan() {
-    if (setScannerState(STARTING)) {
+    if (changeScannerState(STARTING)) {
         emit(startScan());
     }
 }
@@ -356,19 +356,19 @@ void LibraryScanner::slotCancel() {
     // Wait until there is no scan starting.
     // All pending scan start request are canceled
     // as well until the scanner is idle again.
-    setScannerState(CANCELING);
+    changeScannerState(CANCELING);
     cancel();
-    setScannerState(IDLE);
+    changeScannerState(IDLE);
 }
 
 void LibraryScanner::cancelAndQuit() {
-    setScannerState(CANCELING);
+    changeScannerState(CANCELING);
     cancel();
     // Quit the event loop gracefully and stay in CANCELING state until all
     // pendig signals are processed
     quit();
     wait();
-    setScannerState(IDLE);
+    changeScannerState(IDLE);
 }
 
 // be sure m_stateMutex is locked and we are in CANCELING state
@@ -482,7 +482,7 @@ void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
     }
 }
 
-bool LibraryScanner::setScannerState(ScannerState newState) {
+bool LibraryScanner::changeScannerState(ScannerState newState) {
     // Allowed State transitions:
     // IDLE -> STARTING
     // STARTING -> IDLE
