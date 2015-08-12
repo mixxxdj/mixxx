@@ -58,7 +58,6 @@ class EngineVuMeter : public EngineObject {
     ControlPotmeter* m_ctrlPeakIndicator;
     ControlPotmeter* m_ctrlPeakIndicatorL;
     ControlPotmeter* m_ctrlPeakIndicatorR;
-    int m_peakDuration;
     int m_peakDurationL;
     int m_peakDurationR;
 
