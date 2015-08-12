@@ -1101,6 +1101,59 @@ void MixxxMainWindow::initActions()
         buildWhatsThis(openText, player2LoadStatusText));
     connect(m_pFileLoadSongPlayer2, SIGNAL(triggered()),
             this, SLOT(slotFileLoadSongPlayer2()));
+    
+    QString player3LoadStatusText = loadTrackStatusText.arg(QString::number(3));
+    m_pFileLoadSongPlayer3 = new QAction(loadTrackText.arg(QString::number(3)), this);
+    m_pFileLoadSongPlayer3->setShortcutContext(Qt::ApplicationShortcut);
+    m_pFileLoadSongPlayer3->setStatusTip(player3LoadStatusText);
+    m_pFileLoadSongPlayer3->setWhatsThis(
+        buildWhatsThis(openText, player3LoadStatusText));
+    connect(m_pFileLoadSongPlayer3, SIGNAL(triggered()),
+            this, SLOT(slotFileLoadSongPlayer3()));
+    
+    QString player4LoadStatusText = loadTrackStatusText.arg(QString::number(4));
+    m_pFileLoadSongPlayer4 = new QAction(loadTrackText.arg(QString::number(4)), this);
+    m_pFileLoadSongPlayer4->setShortcutContext(Qt::ApplicationShortcut);
+    m_pFileLoadSongPlayer4->setStatusTip(player4LoadStatusText);
+    m_pFileLoadSongPlayer4->setWhatsThis(
+        buildWhatsThis(openText, player4LoadStatusText));
+    connect(m_pFileLoadSongPlayer4, SIGNAL(triggered()),
+            this, SLOT(slotFileLoadSongPlayer4()));
+    
+    QString rescanTitle = tr("&Rescan Library");
+    QString rescanText = tr("Rescans library folders for changes to tracks.");
+    m_pLibraryRescan = new QAction(rescanTitle, this);
+    m_pLibraryRescan->setStatusTip(rescanText);
+    m_pLibraryRescan->setWhatsThis(buildWhatsThis(rescanTitle, rescanText));
+    m_pLibraryRescan->setCheckable(false);
+    connect(m_pLibraryRescan, SIGNAL(triggered()),
+            this, SLOT(slotScanLibrary()));
+    
+    QString createPlaylistTitle = tr("Create &New Playlist");
+    QString createPlaylistText = tr("Create a new playlist");
+    m_pPlaylistsNew = new QAction(createPlaylistTitle, this);
+    m_pPlaylistsNew->setShortcut(
+            QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                                "FileMenu_NewPlaylist"),
+                                                      tr("Ctrl+n"))));
+    m_pPlaylistsNew->setShortcutContext(Qt::ApplicationShortcut);
+    m_pPlaylistsNew->setStatusTip(createPlaylistText);
+    m_pPlaylistsNew->setWhatsThis(buildWhatsThis(createPlaylistTitle, createPlaylistText));
+    connect(m_pPlaylistsNew, SIGNAL(triggered()),
+            m_pLibrary, SLOT(slotCreatePlaylist()));
+    
+    QString createCrateTitle = tr("Create New &Crate");
+    QString createCrateText = tr("Create a new crate");
+    m_pCratesNew = new QAction(createCrateTitle, this);
+    m_pCratesNew->setShortcut(
+            QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                                "FileMenu_NewCrate"),
+                                                      tr("Ctrl+Shift+N"))));
+    m_pCratesNew->setShortcutContext(Qt::ApplicationShortcut);
+    m_pCratesNew->setStatusTip(createCrateText);
+    m_pCratesNew->setWhatsThis(buildWhatsThis(createCrateTitle, createCrateText));
+    connect(m_pCratesNew, SIGNAL(triggered()),
+            m_pLibrary, SLOT(slotCreateCrate()));
 
     QString quitTitle = tr("&Exit");
     QString quitText = tr("Quits Mixxx");
@@ -1112,41 +1165,6 @@ void MixxxMainWindow::initActions()
     m_pFileQuit->setStatusTip(quitText);
     m_pFileQuit->setWhatsThis(buildWhatsThis(quitTitle, quitText));
     connect(m_pFileQuit, SIGNAL(triggered()), this, SLOT(slotFileQuit()));
-
-    QString rescanTitle = tr("&Rescan Library");
-    QString rescanText = tr("Rescans library folders for changes to tracks.");
-    m_pLibraryRescan = new QAction(rescanTitle, this);
-    m_pLibraryRescan->setStatusTip(rescanText);
-    m_pLibraryRescan->setWhatsThis(buildWhatsThis(rescanTitle, rescanText));
-    m_pLibraryRescan->setCheckable(false);
-    connect(m_pLibraryRescan, SIGNAL(triggered()),
-            this, SLOT(slotScanLibrary()));
-
-    QString createPlaylistTitle = tr("Create &New Playlist");
-    QString createPlaylistText = tr("Create a new playlist");
-    m_pPlaylistsNew = new QAction(createPlaylistTitle, this);
-    m_pPlaylistsNew->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "LibraryMenu_NewPlaylist"),
-                                                  tr("Ctrl+n"))));
-    m_pPlaylistsNew->setShortcutContext(Qt::ApplicationShortcut);
-    m_pPlaylistsNew->setStatusTip(createPlaylistText);
-    m_pPlaylistsNew->setWhatsThis(buildWhatsThis(createPlaylistTitle, createPlaylistText));
-    connect(m_pPlaylistsNew, SIGNAL(triggered()),
-            m_pLibrary, SLOT(slotCreatePlaylist()));
-
-    QString createCrateTitle = tr("Create New &Crate");
-    QString createCrateText = tr("Create a new crate");
-    m_pCratesNew = new QAction(createCrateTitle, this);
-    m_pCratesNew->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "LibraryMenu_NewCrate"),
-                                                  tr("Ctrl+Shift+N"))));
-    m_pCratesNew->setShortcutContext(Qt::ApplicationShortcut);
-    m_pCratesNew->setStatusTip(createCrateText);
-    m_pCratesNew->setWhatsThis(buildWhatsThis(createCrateTitle, createCrateText));
-    connect(m_pCratesNew, SIGNAL(triggered()),
-            m_pLibrary, SLOT(slotCreateCrate()));
 
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
@@ -1568,7 +1586,6 @@ void MixxxMainWindow::initMenuBar() {
     // MENUBAR
     m_pFileMenu = new QMenu(tr("&File"), menuBar());
     m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
-    m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
     m_pViewMenu = new QMenu(tr("&View"), menuBar());
     m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
     m_pDeveloperMenu = new QMenu(tr("&Developer"), menuBar());
@@ -1577,6 +1594,12 @@ void MixxxMainWindow::initMenuBar() {
     // menuBar entry fileMenu
     m_pFileMenu->addAction(m_pFileLoadSongPlayer1);
     m_pFileMenu->addAction(m_pFileLoadSongPlayer2);
+    m_pFileMenu->addAction(m_pFileLoadSongPlayer3);
+    m_pFileMenu->addAction(m_pFileLoadSongPlayer4);
+    m_pFileMenu->addSeparator();
+    m_pFileMenu->addAction(m_pLibraryRescan);
+    m_pFileMenu->addAction(m_pPlaylistsNew);
+    m_pFileMenu->addAction(m_pCratesNew);
     m_pFileMenu->addSeparator();
     m_pFileMenu->addAction(m_pFileQuit);
 
@@ -1600,11 +1623,6 @@ void MixxxMainWindow::initMenuBar() {
     m_pOptionsMenu->addAction(m_pOptionsKeyboard);
     m_pOptionsMenu->addSeparator();
     m_pOptionsMenu->addAction(m_pOptionsPreferences);
-
-    m_pLibraryMenu->addAction(m_pLibraryRescan);
-    m_pLibraryMenu->addSeparator();
-    m_pLibraryMenu->addAction(m_pPlaylistsNew);
-    m_pLibraryMenu->addAction(m_pCratesNew);
 
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
@@ -1637,7 +1655,6 @@ void MixxxMainWindow::initMenuBar() {
     m_pHelpMenu->addAction(m_pHelpAboutApp);
 
     menuBar()->addMenu(m_pFileMenu);
-    menuBar()->addMenu(m_pLibraryMenu);
     menuBar()->addMenu(m_pViewMenu);
     menuBar()->addMenu(m_pOptionsMenu);
 
@@ -1695,6 +1712,14 @@ void MixxxMainWindow::slotFileLoadSongPlayer1() {
 
 void MixxxMainWindow::slotFileLoadSongPlayer2() {
     slotFileLoadSongPlayer(2);
+}
+
+void MixxxMainWindow::slotFileLoadSongPlayer3() {
+    slotFileLoadSongPlayer(3);
+}
+
+void MixxxMainWindow::slotFileLoadSongPlayer4() {
+    slotFileLoadSongPlayer(4);
 }
 
 void MixxxMainWindow::slotFileQuit()
