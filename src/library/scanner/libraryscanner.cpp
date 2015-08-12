@@ -156,6 +156,7 @@ void LibraryScanner::run() {
 
 void LibraryScanner::slotStartScan() {
     qDebug() << "LibraryScanner::slotStartScan";
+    DEBUG_ASSERT(m_state == STARTING);
 
     // Recursively scan each directory in the directories table.
     QStringList dirs = m_directoryDao.getDirs();
@@ -373,7 +374,10 @@ void LibraryScanner::cancelAndQuit() {
 
 // be sure m_stateMutex is locked and we are in CANCELING state
 void LibraryScanner::cancel() {
+    // The m_stateMutex is locked
     DEBUG_ASSERT(m_state == CANCELING);
+
+
     // we need to make a local copy because cancel is called
     // from any thread  but m_scannerGlobal may be cleared
     // in the LibraryScanner thread in the meanwhile
@@ -488,22 +492,25 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
     // STARTING -> IDLE
     // STARTING -> SCANNING
     // SCANNING -> IDLE
-    // CANCELING -> IDLE
     // every state can change to CANCELING
+    // CANCELING -> IDLE
     switch (newState) {
     case IDLE:
-        if (m_state == CANCELING || m_state == STARTING) {
-            // Transition protected by the mutex is over now
-            m_state = IDLE;
-            m_stateMutex.unlock();
-            return true;
-        } else if (m_state == SCANNING) {
-            // Normal scanner end, nothing to do
+        if (m_stateMutex.tryLock()) {
+            // we are not locked due CANCELING or STARTING
+            // this happens when the scan is finished normally
+            DEBUG_ASSERT(m_state == SCANNING);
         } else {
-            DEBUG_ASSERT(false);
-            return false;
+            // the calling code guarantees that the IDLE state
+            // is not set after the m_stateMutex is locked but before
+            // m_state is set.
+            ScannerState oldState = m_state;
+            DEBUG_ASSERT(oldState == CANCELING || oldState == STARTING);
+            // Transition protected by the mutex is over now
         }
-        break;
+        m_state = IDLE;
+        m_stateMutex.unlock();
+        return true;
     case STARTING:
         // we need to lock the mutex during the STARTING state
         // to prevent loosing cancel commands or start the scanner
@@ -514,10 +521,12 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
                 m_stateMutex.unlock();
                 return false;
             }
+            m_state = newState;
+            return true;
         } else {
             qDebug() << "LibraryScanner: mutex locked, state =" << m_state;
+            return false;
         }
-        break;
     case SCANNING:
         DEBUG_ASSERT(m_state == STARTING);
         // Transition protected by the mutex is over now
@@ -528,11 +537,10 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         // canceling is always possible, but wait
         // until there is no scan starting.
         m_stateMutex.lock();
-        break;
+        m_state = newState;
+        return true;
     default:
         DEBUG_ASSERT(false);
         return false;
     }
-    m_state = newState;
-    return true;
 }

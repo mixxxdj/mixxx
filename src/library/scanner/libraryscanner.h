@@ -126,7 +126,8 @@ class LibraryScanner : public QThread {
     ScannerGlobalPointer m_scannerGlobal;
 
     QMutex m_stateMutex;
-    ScannerState m_state;
+    // this is accessed main and LibraryScanner thread
+    volatile ScannerState m_state;
 };
 
 #endif
