@@ -43,6 +43,13 @@
 // A group of utilities for working with samples.
 class SampleUtil {
   public:
+    enum CLIPPING {
+        NO_CLIPPING = 0,
+        CLIPPING_LEFT = 1,
+        CLIPPING_RIGHT = 2,
+        CLIPPING_BOTH = 3,
+    };
+
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
     static CSAMPLE* alloc(int size);
@@ -168,10 +175,8 @@ class SampleUtil {
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
     // absolute values of l in pfAbsL, and the sum of the absolute values of r
     // in pfAbsR.
-    // returns >0 in case of clipping (> +-1)
-    // The returned int is a bitmask: if the first bit is set the L
-    // channel is clipping, if the second bit is set, the R channel does.
-    static int sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+    // The return value tells whether there is clipping in pBuffer or not.
+    static CLIPPING sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
             const CSAMPLE* pBuffer, int iNumSamples);
 
     // Copies every sample in pSrc to pDest, limiting the values in pDest

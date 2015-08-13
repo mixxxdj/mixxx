@@ -296,7 +296,7 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* _RESTRICT pDest, const SAMPLE* _RE
 }
 
 // static
-int SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+SampleUtil::CLIPPING SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
         const CSAMPLE* pBuffer, int iNumSamples) {
     CSAMPLE fAbsL = CSAMPLE_ZERO;
     CSAMPLE fAbsR = CSAMPLE_ZERO;
@@ -316,7 +316,11 @@ int SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
 
     *pfAbsL = fAbsL;
     *pfAbsR = fAbsR;
-    return (((clippedR != 0) << 1) | (clippedL != 0));
+
+    if (clippedL && clippedR) return CLIPPING_BOTH;
+    if (clippedL) return CLIPPING_LEFT;
+    if (clippedR) return CLIPPING_RIGHT;
+    return NO_CLIPPING;
 }
 
 // static

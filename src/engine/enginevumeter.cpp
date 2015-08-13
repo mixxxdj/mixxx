@@ -59,7 +59,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     int sampleRate = (int)m_pSampleRate->get();
 
-    int clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
+    SampleUtil::CLIPPING clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
@@ -91,7 +91,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
         m_fRMSvolumeSumR = 0;
     }
 
-    if (clipped & 1) {
+    if (clipped == SampleUtil::CLIPPING_LEFT || clipped == SampleUtil::CLIPPING_BOTH) {
         m_ctrlPeakIndicatorL->set(1.);
         m_peakDurationL = PEAK_DURATION * sampleRate / iBufferSize / 2000;
     } else if (m_peakDurationL <= 0) {
@@ -100,7 +100,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
         --m_peakDurationL;
     }
 
-    if (clipped & 2) {
+    if (clipped == SampleUtil::CLIPPING_RIGHT || clipped == SampleUtil::CLIPPING_BOTH) {
         m_ctrlPeakIndicatorR->set(1.);
         m_peakDurationR = PEAK_DURATION * sampleRate / iBufferSize / 2000;
     } else if (m_peakDurationR <= 0) {
