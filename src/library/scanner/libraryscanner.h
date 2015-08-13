@@ -97,6 +97,7 @@ class LibraryScanner : public QThread {
         STARTING,
         SCANNING,
         CANCELING,
+        FINISHED
     };
 
     void cancelAndQuit();
