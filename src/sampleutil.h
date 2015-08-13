@@ -43,7 +43,7 @@
 // A group of utilities for working with samples.
 class SampleUtil {
   public:
-    enum CLIPPING {
+    enum CLIP_STATUS {
         NO_CLIPPING = 0,
         CLIPPING_LEFT = 1,
         CLIPPING_RIGHT = 2,
@@ -176,7 +176,7 @@ class SampleUtil {
     // absolute values of l in pfAbsL, and the sum of the absolute values of r
     // in pfAbsR.
     // The return value tells whether there is clipping in pBuffer or not.
-    static CLIPPING sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+    static CLIP_STATUS sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
             const CSAMPLE* pBuffer, int iNumSamples);
 
     // Copies every sample in pSrc to pDest, limiting the values in pDest

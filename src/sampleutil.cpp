@@ -296,7 +296,7 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* _RESTRICT pDest, const SAMPLE* _RE
 }
 
 // static
-SampleUtil::CLIPPING SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
         const CSAMPLE* pBuffer, int iNumSamples) {
     CSAMPLE fAbsL = CSAMPLE_ZERO;
     CSAMPLE fAbsR = CSAMPLE_ZERO;
