@@ -47,7 +47,6 @@ class SampleUtil {
         NO_CLIPPING = 0,
         CLIPPING_LEFT = 1,
         CLIPPING_RIGHT = 2,
-        CLIPPING_BOTH = 3,
     };
 
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer

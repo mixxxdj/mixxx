@@ -316,11 +316,7 @@ SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* p
 
     *pfAbsL = fAbsL;
     *pfAbsR = fAbsR;
-
-    if (clippedL && clippedR) return CLIPPING_BOTH;
-    if (clippedL) return CLIPPING_LEFT;
-    if (clippedR) return CLIPPING_RIGHT;
-    return NO_CLIPPING;
+    return static_cast<CLIP_STATUS>((clippedL>0) | ((clippedR>0)<<1));
 }
 
 // static
