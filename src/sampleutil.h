@@ -43,6 +43,8 @@
 // A group of utilities for working with samples.
 class SampleUtil {
   public:
+    // If more audio channels are added in the future, this can be used
+    // as bitflags, e.g CLIPPING_CH3 = 4
     enum CLIP_STATUS {
         NO_CLIPPING = 0,
         CLIPPING_LEFT = 1,
