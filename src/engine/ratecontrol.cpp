@@ -40,7 +40,8 @@ RateControl::RateControl(QString group,
       m_dTempRateChange(0.0),
       m_dRateTemp(0.0),
       m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
-      m_dRateTempRampbackChange(0.0) {
+      m_dRateTempRampbackChange(0.0),
+      m_reverseChanged(false) {
     m_pScratchController = new PositionScratchController(group);
 
     m_pRateDir = new ControlObject(ConfigKey(group, "rate_dir"));

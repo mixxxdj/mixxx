@@ -24,8 +24,28 @@
 VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
         : QThread(mixxxMainWindow),
           m_bDoRendering(true),
+          m_glw(NULL),
+#if defined(__APPLE__)
+#elif defined(__WINDOWS__)
+#else
+          glXGetVideoSyncSGI(0),
+          glXWaitVideoSyncSGI(0),
+          glXSwapIntervalSGI(0),
+          glXSwapIntervalEXT(0),
+          glXGetSyncValuesOML(0),
+          glXGetMscRateOML(0),
+          glXSwapBuffersMscOML(0),
+          glXWaitForMscOML(0),
+          glXWaitForSbcOML(0),
+          glXSwapIntervalMESA(0),
+          m_counter(0),
+          m_target_msc(0),
+          m_dpy(NULL),
+          m_drawable({}),
+#endif
           m_vSyncTypeChanged(false),
           m_usSyncIntervalTime(33333),
+          m_usWaitToSwap(0),
           m_vSyncMode(ST_TIMER),
           m_syncOk(false),
           m_droppedFrames(0),
