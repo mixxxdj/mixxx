@@ -56,10 +56,11 @@ class AnalyserQueue : public QThread {
 
     QList<Analyser*> m_aq;
 
-    bool isLoadedTrackWaiting(TrackPointer tio);
+    bool isLoadedTrackWaiting(TrackPointer analysingTrack);
     TrackPointer dequeueNextBlocking();
     bool doAnalysis(TrackPointer tio, const Mixxx::SoundSourcePointer& pSoundSource);
     void emitUpdateProgress(TrackPointer tio, int progress);
+    void emptyCheck();
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;

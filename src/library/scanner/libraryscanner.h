@@ -109,6 +109,8 @@ class LibraryScanner : public QThread {
     void cancelAndQuit();
     void cancel();
     bool changeScannerState(LibraryScanner::ScannerState newState);
+    void cleanUpScan(const QStringList& verifiedTracks,
+            const QStringList& verifiedDirectories);
 
     // The library trackcollection. Do not touch this from the library scanner
     // thread.

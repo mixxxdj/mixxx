@@ -21,8 +21,8 @@
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
-      <Pressed><Variable name="state_0_pressed"/></Pressed>
-      <Unpressed><Variable name="state_0_pressed"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT"><Variable name="state_0_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"><Variable name="state_0_unpressed"/></Unpressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="left_connection_control"/></ConfigKey>

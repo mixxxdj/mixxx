@@ -297,7 +297,10 @@ xml.append("""<?xml version='1.0' encoding='utf-8'?>
     <info>
         <name>Allen&amp;Heath Xone K2</name>
         <author>Owen Williams</author>
-        <description>Set Xone:K2 latching mode to "Switching Matrix" -- mode 2.<br/> (See product manual for details)</description>
+        <description>For this mapping to work:
+- Set Xone:K2 midi channel to 16;
+- Set Xone:K2 Latching Layers state to "Switch Matrix" (state 2).
+(See product manual for details.)</description>
     </info>
     <controller id="XONE:K2">
         <scriptfiles>

@@ -85,8 +85,8 @@ class ScannerGlobal {
         return m_scanFinishedCleanly;
     }
 
-    void setScanFinishedCleanly(bool scanFinishedCleanly) {
-        m_scanFinishedCleanly = scanFinishedCleanly;
+    void clearScanFinishedCleanly() {
+        m_scanFinishedCleanly = false;
     }
 
     void addVerifiedDirectory(const QString& directory) {
