@@ -516,14 +516,6 @@ void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
 }
 
 bool LibraryScanner::changeScannerState(ScannerState newState) {
-    // Allowed State transitions:
-    // IDLE -> STARTING
-    // STARTING -> IDLE
-    // STARTING -> SCANNING
-    // SCANNING -> FINISHED
-    // FINISHED -> IDLE
-    // every state can change to CANCELING
-    // CANCELING -> IDLE
     switch (newState) {
     case IDLE:
         // we are leaving STARTING  or CANCELING state

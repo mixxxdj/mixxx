@@ -108,7 +108,17 @@ class LibraryScanner : public QThread {
 
     void cancelAndQuit();
     void cancel();
+
+    // Allowed State transitions:
+    // IDLE -> STARTING
+    // STARTING -> IDLE
+    // STARTING -> SCANNING
+    // SCANNING -> FINISHED
+    // FINISHED -> IDLE
+    // every state can change to CANCELING
+    // CANCELING -> IDLE
     bool changeScannerState(LibraryScanner::ScannerState newState);
+
     void cleanUpScan(const QStringList& verifiedTracks,
             const QStringList& verifiedDirectories);
 
