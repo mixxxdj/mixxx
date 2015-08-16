@@ -251,6 +251,81 @@ void LibraryScanner::slotStartScan() {
     }
 }
 
+void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
+        const QStringList& verifiedDirectories) {
+    // At the end of a scan, mark all tracks and directories that weren't
+    // "verified" as "deleted" (as long as the scan wasn't canceled half way
+    // through). This condition is important because our rescanning algorithm
+    // starts by marking all tracks and dirs as unverified, so a canceled scan
+    // might leave half of your library as unverified. Don't want to mark those
+    // tracks/dirs as deleted in that case) :)
+
+    // Start a transaction for all the library hashing (moved file
+    // detection) stuff.
+    ScopedTransaction transaction(m_database);
+
+    qDebug() << "Marking tracks in changed directories as verified";
+    m_trackDao.markTrackLocationsAsVerified(verifiedTracks);
+
+    qDebug() << "Marking unchanged directories and tracks as verified";
+    m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false,
+            true);
+    m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
+
+    // After verifying tracks and directories via recursive scanning of the
+    // library directories the only unverified tracks will be files that are
+    // outside of the library directories and files that have been
+    // moved/deleted/renamed.
+    qDebug() << "Checking remaining unverified tracks.";
+    if (!m_trackDao.verifyRemainingTracks(
+            m_scannerGlobal->shouldCancelPointer())) {
+        // canceled
+        return;
+    }
+
+    qDebug() << "Marking unverified tracks as deleted.";
+    m_trackDao.markUnverifiedTracksAsDeleted();
+
+    qDebug() << "Marking unverified directories as deleted.";
+    m_libraryHashDao.markUnverifiedDirectoriesAsDeleted();
+
+    // For making the scanner slow, during debugging
+    //qDebug() << "Burn CPU";
+    //for (int i = 0;i < 1000000000; i++) asm("nop");
+
+
+
+    // Check to see if the "deleted" tracks showed up in another location,
+    // and if so, do some magic to update all our tables.
+    qDebug() << "Detecting moved files.";
+    QSet<int> tracksMovedSetOld;
+    QSet<int> tracksMovedSetNew;
+    if (!m_trackDao.detectMovedFiles(&tracksMovedSetOld,
+            &tracksMovedSetNew,
+            m_scannerGlobal->shouldCancelPointer())) {
+        // canceled
+        return;
+    }
+
+    // Remove the hashes for any directories that have been marked as
+    // deleted to clean up. We need to do this otherwise we can skip over
+    // songs if you move a set of songs from directory A to B, then back to
+    // A.
+    m_libraryHashDao.removeDeletedDirectoryHashes();
+
+    transaction.commit();
+
+    qDebug() << "Detecting cover art for unscanned files.";
+    QSet<int> coverArtTracksChanged;
+    m_trackDao.detectCoverArtForUnknownTracks(
+            m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
+
+    // Update BaseTrackCache via signals connected to the main TrackDAO.
+    emit(tracksMoved(tracksMovedSetOld, tracksMovedSetNew));
+    emit(tracksChanged(coverArtTracksChanged));
+}
+
+// is called when all tasks are done (threads are finished)
 void LibraryScanner::slotFinishScan() {
     qDebug() << "LibraryScanner::slotFinishScan";
     if (m_scannerGlobal.isNull()) {
@@ -274,62 +349,11 @@ void LibraryScanner::slotFinishScan() {
     QStringList verifiedTracks = m_scannerGlobal->verifiedTracks();
     QStringList verifiedDirectories = m_scannerGlobal->verifiedDirectories();
 
-    // At the end of a scan, mark all tracks and directories that weren't
-    // "verified" as "deleted" (as long as the scan wasn't canceled half way
-    // through). This condition is important because our rescanning algorithm
-    // starts by marking all tracks and dirs as unverified, so a canceled scan
-    // might leave half of your library as unverified. Don't want to mark those
-    // tracks/dirs as deleted in that case) :)
-    if (bScanFinishedCleanly) {
-        QSet<int> tracksMovedSetOld;
-        QSet<int> tracksMovedSetNew;
-        QSet<int> coverArtTracksChanged;
+    if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
+        cleanUpScan(verifiedTracks, verifiedDirectories);
+    }
 
-        // Start a transaction for all the library hashing (moved file
-        // detection) stuff.
-        ScopedTransaction transaction(m_database);
-
-        qDebug() << "Marking tracks in changed directories as verified";
-        m_trackDao.markTrackLocationsAsVerified(verifiedTracks);
-
-        qDebug() << "Marking unchanged directories and tracks as verified";
-        m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false, true);
-        m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
-
-        // After verifying tracks and directories via recursive scanning of the
-        // library directories the only unverified tracks will be files that are
-        // outside of the library directories and files that have been
-        // moved/deleted/renamed.
-        qDebug() << "Checking remaining unverified tracks.";
-        m_trackDao.verifyRemainingTracks();
-
-        qDebug() << "Marking unverified tracks as deleted.";
-        m_trackDao.markUnverifiedTracksAsDeleted();
-
-        qDebug() << "Marking unverified directories as deleted.";
-        m_libraryHashDao.markUnverifiedDirectoriesAsDeleted();
-
-        // Check to see if the "deleted" tracks showed up in another location,
-        // and if so, do some magic to update all our tables.
-        qDebug() << "Detecting moved files.";
-        m_trackDao.detectMovedFiles(&tracksMovedSetOld, &tracksMovedSetNew);
-
-        // Remove the hashes for any directories that have been marked as
-        // deleted to clean up. We need to do this otherwise we can skip over
-        // songs if you move a set of songs from directory A to B, then back to
-        // A.
-        m_libraryHashDao.removeDeletedDirectoryHashes();
-
-        transaction.commit();
-
-        qDebug() << "Detecting cover art for unscanned files.";
-        m_trackDao.detectCoverArtForUnknownTracks(
-            m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
-
-        // Update BaseTrackCache via signals connected to the main TrackDAO.
-        emit(tracksMoved(tracksMovedSetOld, tracksMovedSetNew));
-        emit(tracksChanged(coverArtTracksChanged));
-
+    if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
         qDebug() << "Scan finished cleanly";
     } else {
         qDebug() << "Scan cancelled";
@@ -369,7 +393,7 @@ void LibraryScanner::taskDone(bool success) {
     //qDebug() << "LibraryScanner::taskDone" << success;
     ScopedTimer timer("LibraryScanner::taskDone");
     if (!success && m_scannerGlobal) {
-        m_scannerGlobal->setScanFinishedCleanly(false);
+        m_scannerGlobal->clearScanFinishedCleanly();
     }
 }
 

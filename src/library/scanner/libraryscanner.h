@@ -91,6 +91,9 @@ class LibraryScanner : public QThread {
     void addNewTrack(TrackPointer pTrack);
 
   private:
+    void cleanUpScan(const QStringList& verifiedTracks,
+            const QStringList& verifiedDirectories);
+
     // The library trackcollection. Do not touch this from the library scanner
     // thread.
     TrackCollection* m_pCollection;
