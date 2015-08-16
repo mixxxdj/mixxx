@@ -35,17 +35,19 @@
 // TODO(rryan) make configurable
 const int kScannerThreadPoolSize = 1;
 
-LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collection)
+LibraryScanner::LibraryScanner(QWidget* pParentWidget,
+                               TrackCollection* collection,
+                               ConfigObject<ConfigValue>* pConfig)
               : m_pCollection(collection),
                 m_libraryHashDao(m_database),
                 m_cueDao(m_database),
                 m_playlistDao(m_database),
                 m_crateDao(m_database),
                 m_directoryDao(m_database),
-                m_analysisDao(m_database, collection->getConfig()),
+                m_analysisDao(m_database, pConfig),
                 m_trackDao(m_database, m_cueDao, m_playlistDao,
                            m_crateDao, m_analysisDao, m_libraryHashDao,
-                           collection->getConfig()),
+                           pConfig),
                 m_state(IDLE) {
     // Don't initialize m_database here, we need to do it in run() so the DB
     // conn is in the right thread.
@@ -70,14 +72,16 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collecti
     // scan is finished, because we might have modified the database directly
     // when we detected moved files, and the TIOs corresponding to the moved
     // files would then have the wrong track location.
-    connect(this, SIGNAL(scanFinished()),
-            &(collection->getTrackDAO()), SLOT(clearCache()));
-    connect(this, SIGNAL(trackAdded(TrackPointer)),
-            &(collection->getTrackDAO()), SLOT(databaseTrackAdded(TrackPointer)));
-    connect(this, SIGNAL(tracksMoved(QSet<int>, QSet<int>)),
-            &(collection->getTrackDAO()), SLOT(databaseTracksMoved(QSet<int>, QSet<int>)));
-    connect(this, SIGNAL(tracksChanged(QSet<int>)),
-            &(collection->getTrackDAO()), SLOT(databaseTracksChanged(QSet<int>)));
+    if (collection) { // false only during test
+        connect(this, SIGNAL(scanFinished()),
+                &(collection->getTrackDAO()), SLOT(clearCache()));
+        connect(this, SIGNAL(trackAdded(TrackPointer)),
+                &(collection->getTrackDAO()), SLOT(databaseTrackAdded(TrackPointer)));
+        connect(this, SIGNAL(tracksMoved(QSet<int>, QSet<int>)),
+                &(collection->getTrackDAO()), SLOT(databaseTracksMoved(QSet<int>, QSet<int>)));
+        connect(this, SIGNAL(tracksChanged(QSet<int>)),
+                &(collection->getTrackDAO()), SLOT(databaseTracksChanged(QSet<int>)));
+    }
 
     // Parented to pParentWidget so we don't need to delete it.
     LibraryScannerDlg* pProgress = new LibraryScannerDlg(pParentWidget);
@@ -121,32 +125,33 @@ LibraryScanner::~LibraryScanner() {
 
 void LibraryScanner::run() {
     Trace trace("LibraryScanner");
-
-    if (!m_database.isValid()) {
-        m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(), "LIBRARY_SCANNER");
-    }
-
-    if (!m_database.isOpen()) {
-        // Open the database connection in this thread.
-        if (!m_database.open()) {
-            qDebug() << "Failed to open database from library scanner thread." << m_database.lastError();
-            return;
+    if (m_pCollection) { // false only during tests
+        if (!m_database.isValid()) {
+            m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(), "LIBRARY_SCANNER");
         }
+
+        if (!m_database.isOpen()) {
+            // Open the database connection in this thread.
+            if (!m_database.open()) {
+                qDebug() << "Failed to open database from library scanner thread." << m_database.lastError();
+                return;
+            }
+        }
+
+        m_libraryHashDao.setDatabase(m_database);
+        m_cueDao.setDatabase(m_database);
+        m_trackDao.setDatabase(m_database);
+        m_playlistDao.setDatabase(m_database);
+        m_analysisDao.setDatabase(m_database);
+        m_directoryDao.setDatabase(m_database);
+
+        m_libraryHashDao.initialize();
+        m_cueDao.initialize();
+        m_trackDao.initialize();
+        m_playlistDao.initialize();
+        m_analysisDao.initialize();
+        m_directoryDao.initialize();
     }
-
-    m_libraryHashDao.setDatabase(m_database);
-    m_cueDao.setDatabase(m_database);
-    m_trackDao.setDatabase(m_database);
-    m_playlistDao.setDatabase(m_database);
-    m_analysisDao.setDatabase(m_database);
-    m_directoryDao.setDatabase(m_database);
-
-    m_libraryHashDao.initialize();
-    m_cueDao.initialize();
-    m_trackDao.initialize();
-    m_playlistDao.initialize();
-    m_analysisDao.initialize();
-    m_directoryDao.initialize();
 
     // Start the event loop.
     qDebug() << "LibraryScanner event loop starting.";

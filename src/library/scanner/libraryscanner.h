@@ -42,18 +42,24 @@
 #include "library/scanner/scannertask.h"
 #include "util/sandbox.h"
 #include "trackinfoobject.h"
+#include <gtest/gtest.h>
 
 class TrackCollection;
 
 class LibraryScanner : public QThread {
+    FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);
     Q_OBJECT
   public:
-    LibraryScanner(QWidget* pParent, TrackCollection* collection);
+    LibraryScanner(QWidget* pParent,
+                   TrackCollection* collection,
+                   ConfigObject<ConfigValue>* pConfig);
     virtual ~LibraryScanner();
 
     // Call from any thread to start a scan. Does nothing if a scan is already
     // in progress.
     void scan();
+
+
 
   public slots:
     // Call from any thread to cancel the scan.
