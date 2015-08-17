@@ -1,8 +1,10 @@
 #include "effects/native/filtereffect.h"
 #include "util/math.h"
 
-static const double kMinCorner = 0.0003; // 13 Hz @ 44100
+static const double kMinCorner = 0.0018; // 13 Hz @ 44100
 static const double kMaxCorner = 0.5; // 22050 Hz @ 44100
+static const double k2MaxCorner = 0.27; // 11907 Hz @ 44100
+
 
 // static
 QString FilterEffect::getId() {
@@ -57,7 +59,7 @@ EffectManifest FilterEffect::getManifest() {
     hpf->setNeutralPointOnScale(0.0);
     hpf->setDefault(kMinCorner);
     hpf->setMinimum(kMinCorner);
-    hpf->setMaximum(kMaxCorner);
+    hpf->setMaximum(k2MaxCorner);
 
     return manifest;
 }

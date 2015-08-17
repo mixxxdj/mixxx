@@ -34,7 +34,7 @@ EffectManifest AutoPanEffect::getManifest() {
     periodUnit->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
     periodUnit->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     periodUnit->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    periodUnit->setDefault(0);
+    periodUnit->setDefault(1);
     periodUnit->setMinimum(0);
     periodUnit->setMaximum(1);
     
@@ -64,7 +64,7 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     smoothing->setMinimum(0.0);
     smoothing->setMaximum(0.5);  // there are two steps per period so max is half
-    smoothing->setDefault(0.0);
+    smoothing->setDefault(0.3);
     
     // Width : applied on the channel with gain reducing.
     EffectManifestParameter* width = manifest.addParameter();

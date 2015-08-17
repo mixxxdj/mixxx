@@ -32,7 +32,7 @@ EffectManifest FlangerEffect::getManifest() {
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefault(0.0);
+    depth->setDefault(0.75);
     depth->setMinimum(0.0);
     depth->setMaximum(1.0);
 
@@ -43,8 +43,8 @@ EffectManifest FlangerEffect::getManifest() {
     delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    delay->setDefault(50.0);
-    delay->setMinimum(50.0);
+    delay->setDefault(7500.0);
+    delay->setMinimum(10.0);
     delay->setMaximum(10000.0);
 
     EffectManifestParameter* period = manifest.addParameter();
@@ -54,8 +54,8 @@ EffectManifest FlangerEffect::getManifest() {
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period->setDefault(50000.0);
-    period->setMinimum(50000.0);
+    period->setDefault(1500000.0);
+    period->setMinimum(20000.0);
     period->setMaximum(2000000.0);
 
     return manifest;
