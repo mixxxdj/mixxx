@@ -82,6 +82,8 @@ class MixxxMainWindow : public QMainWindow {
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
+    void launchProgress(int progress);
+
   public slots:
 
     //void slotQuitFullScreen();

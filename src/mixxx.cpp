@@ -172,8 +172,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
 
     initializeFonts(); // long
 
-    m_pLaunchImage->progress(2);
-    pApp->processEvents();
+    launchProgress(2);
 
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt();
@@ -198,8 +197,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     // Sets up the default EffectChains and EffectRacks (long)
     m_pEffectsManager->setupDefaults();
 
-    m_pLaunchImage->progress(8);
-    pApp->processEvents();
+    launchProgress(8);
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
 #ifdef __SHOUTCAST__
@@ -212,8 +210,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     // (long)
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
-    m_pLaunchImage->progress(11);
-    pApp->processEvents();
+    launchProgress(11);
     // TODO(rryan): Fold microphone and aux creation into a manager
     // (e.g. PlayerManager, though they aren't players).
 
@@ -307,8 +304,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
 
-    m_pLaunchImage->progress(30);
-    pApp->processEvents();
+    launchProgress(30);
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
@@ -333,8 +329,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
-    m_pLaunchImage->progress(35);
-    pApp->processEvents();
+    launchProgress(35);
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
@@ -382,15 +377,13 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(m_pConfig);
 
-    m_pLaunchImage->progress(47);
-    pApp->processEvents();
+    launchProgress(47);
 
     WaveformWidgetFactory::create(); // long
     WaveformWidgetFactory::instance()->startVSync(this);
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
-    m_pLaunchImage->progress(52);
-    pApp->processEvents();
+    launchProgress(52);
 
     connect(this, SIGNAL(newSkinLoaded()),
             this, SLOT(onNewSkinLoaded()));
@@ -404,8 +397,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
-    m_pLaunchImage->progress(60);
-    pApp->processEvents();
+    launchProgress(60);
 
     initializeKeyboard();
     initActions();
@@ -417,12 +409,10 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     pContextWidget->hide();
     SharedGLContext::setWidget(pContextWidget);
 
-    m_pLaunchImage->progress(63);
-    pApp->processEvents();
+    launchProgress(63);
 
     QWidget* oldWidget = m_pWidgetParent;
 
-    setUpdatesEnabled(false);
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this, m_pKeyboard,
@@ -436,14 +426,12 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
 
         m_pWidgetParent = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
-    } else {
-        // this has to be after the OpenGL widgets are created or depending on a
-        // million different variables the first waveform may be horribly
-        // corrupted. See bug 521509 -- bkgood ?? -- vrince
-        setCentralWidget(m_pWidgetParent);
-        // The old central widget is automatically disposed.
     }
-    setUpdatesEnabled(true);
+
+    // Fake a 100 % progress here.
+    // At a later place it will newer shown up, since it is
+    // immediately replaced by the real widget.
+    launchProgress(100);
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -533,6 +521,12 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     connect(&PlayerInfo::instance(),
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotUpdateWindowTitle(TrackPointer)));
+
+    // this has to be after the OpenGL widgets are created or depending on a
+    // million different variables the first waveform may be horribly
+    // corrupted. See bug 521509 -- bkgood ?? -- vrince
+    setCentralWidget(m_pWidgetParent);
+    // The old central widget is automatically disposed.
 }
 
 void MixxxMainWindow::finalize() {
@@ -2353,3 +2347,10 @@ bool MixxxMainWindow::confirmExit() {
 
     return true;
 }
+
+void MixxxMainWindow::launchProgress(int progress) {
+    m_pLaunchImage->progress(progress);
+    qApp->processEvents();
+}
+
+
