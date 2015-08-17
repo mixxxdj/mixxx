@@ -400,9 +400,8 @@ void LibraryScanner::cancelAndQuit() {
     changeScannerState(IDLE);
 }
 
-// be sure m_stateMutex is locked and we are in CANCELING state
+// be sure we hold the m_stateSema and we are in CANCELING state
 void LibraryScanner::cancel() {
-    // The m_stateMutex is locked
     DEBUG_ASSERT(m_state == CANCELING);
 
 
@@ -524,7 +523,7 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         m_stateSema.release();
         return true;
     case STARTING:
-        // we need to lock the mutex during the STARTING state
+        // we need to hold the m_stateSema during the STARTING state
         // to prevent loosing cancel commands or start the scanner
         // twice
         if (m_stateSema.tryAcquire()) {
@@ -536,12 +535,12 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
             m_state = STARTING;
             return true;
         } else {
-            qDebug() << "LibraryScanner: mutex locked, state =" << m_state;
+            qDebug() << "LibraryScanner: can't acquire semaphore, state =" << m_state;
             return false;
         }
     case SCANNING:
         DEBUG_ASSERT(m_state == STARTING);
-        // Transition protected by the mutex is over now
+        // Transition protected by the semaphore is over now
         // Allow canceling
         m_state = SCANNING;
         m_stateSema.release();
@@ -554,8 +553,8 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         m_state = CANCELING;
         return true;
     case FINISHED:
-        // we must not lock the mutex here, because
-        // the mutex is already locked in case we
+        // we must not acquire the semaphore here, because
+        // it is already acquired in case we
         // are canceling.
         // There is no race condition, since the state
         // is set to IDLE after canceling as well
