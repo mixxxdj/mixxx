@@ -546,6 +546,7 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         m_stateSema.release();
         return true;
     case CANCELING:
+        DEBUG_ASSERT(m_state != CANCELING);
         // canceling is always possible, but wait
         // until there is no scan starting.
         // It must be unlocked by changeScannerState(IDLE);
