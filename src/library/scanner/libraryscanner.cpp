@@ -72,7 +72,7 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget,
     // scan is finished, because we might have modified the database directly
     // when we detected moved files, and the TIOs corresponding to the moved
     // files would then have the wrong track location.
-    if (collection) { // false only during test
+    if (collection != NULL) { // false only during test
         connect(this, SIGNAL(scanFinished()),
                 &(collection->getTrackDAO()), SLOT(clearCache()));
         connect(this, SIGNAL(trackAdded(TrackPointer)),
@@ -125,7 +125,7 @@ LibraryScanner::~LibraryScanner() {
 
 void LibraryScanner::run() {
     Trace trace("LibraryScanner");
-    if (m_pCollection) { // false only during tests
+    if (m_pCollection != NULL) { // false only during tests
         if (!m_database.isValid()) {
             m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(), "LIBRARY_SCANNER");
         }
@@ -549,6 +549,7 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
     case CANCELING:
         // canceling is always possible, but wait
         // until there is no scan starting.
+        // It must be unlocked by changeScannerState(IDLE);
         m_stateMutex.lock();
         m_state = CANCELING;
         return true;
