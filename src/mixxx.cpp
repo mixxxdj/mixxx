@@ -385,7 +385,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     m_pLaunchImage->progress(47);
     pApp->processEvents();
 
-     WaveformWidgetFactory::create(); // long
+    WaveformWidgetFactory::create(); // long
     WaveformWidgetFactory::instance()->startVSync(this);
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
@@ -432,7 +432,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
                                                            m_pVCManager,
                                                            m_pEffectsManager))) {
         reportCriticalErrorAndQuit(
-            "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
+                "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
         m_pWidgetParent = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
@@ -457,7 +457,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     // user chose always starts in fullscreen mode, then turn on fullscreen
     // mode.
     bool fullscreenPref = m_pConfig->getValueString(
-        ConfigKey("[Config]", "StartInFullscreen"), "0").toInt();
+            ConfigKey("[Config]", "StartInFullscreen"), "0").toInt();
     if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
@@ -469,17 +469,17 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Scan the library for new files and directories
     bool rescan = m_pConfig->getValueString(
-        ConfigKey("[Library]","RescanOnStartup")).toInt();
+            ConfigKey("[Library]","RescanOnStartup")).toInt();
     // rescan the library if we get a new plugin
     QSet<QString> prev_plugins = QSet<QString>::fromList(
-        m_pConfig->getValueString(
-            ConfigKey("[Library]", "SupportedFileExtensions")).split(
-                ",", QString::SkipEmptyParts));
+            m_pConfig->getValueString(
+                    ConfigKey("[Library]", "SupportedFileExtensions")).split(
+                    ",", QString::SkipEmptyParts));
     QSet<QString> curr_plugins = QSet<QString>::fromList(
         SoundSourceProxy::supportedFileExtensions());
     rescan = rescan || (prev_plugins != curr_plugins);
     m_pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
-        QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
+            QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
 
     // Scan the library directory. Initialize this after the skinloader has
     // loaded a skin, see Bug #1047435
