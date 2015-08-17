@@ -29,7 +29,7 @@
 #include <QRegExp>
 #include <QFileInfo>
 #include <QLinkedList>
-#include <QMutex>
+#include <QSemaphore>
 
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -147,7 +147,7 @@ class LibraryScanner : public QThread {
     // The mutex guards the state transitions queued to the
     // Qt even Queue in the way, that you cannot start a
     // new scan while the old one is canceled
-    QMutex m_stateMutex;
+    QSemaphore m_stateSema;
     // this is accessed main and LibraryScanner thread
     volatile ScannerState m_state;
 };

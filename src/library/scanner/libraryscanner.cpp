@@ -48,6 +48,7 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget,
                 m_trackDao(m_database, m_cueDao, m_playlistDao,
                            m_crateDao, m_analysisDao, m_libraryHashDao,
                            pConfig),
+                m_stateSema(1), // only one transaction is possible at a time
                 m_state(IDLE) {
     // Don't initialize m_database here, we need to do it in run() so the DB
     // conn is in the right thread.
@@ -520,16 +521,16 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         // we are leaving STARTING  or CANCELING state
         // m_state is already IDLE if a scan was canceled
         m_state = IDLE;
-        m_stateMutex.unlock();
+        m_stateSema.release();
         return true;
     case STARTING:
         // we need to lock the mutex during the STARTING state
         // to prevent loosing cancel commands or start the scanner
         // twice
-        if (m_stateMutex.tryLock()) {
+        if (m_stateSema.tryAcquire()) {
             if (m_state != IDLE) {
                 qDebug() << "LibraryScanner: Scan already in progress.";
-                m_stateMutex.unlock();
+                m_stateSema.release();
                 return false;
             }
             m_state = STARTING;
@@ -543,13 +544,13 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         // Transition protected by the mutex is over now
         // Allow canceling
         m_state = SCANNING;
-        m_stateMutex.unlock();
+        m_stateSema.release();
         return true;
     case CANCELING:
         // canceling is always possible, but wait
         // until there is no scan starting.
         // It must be unlocked by changeScannerState(IDLE);
-        m_stateMutex.lock();
+        m_stateSema.acquire();
         m_state = CANCELING;
         return true;
     case FINISHED:
