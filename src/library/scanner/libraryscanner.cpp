@@ -171,6 +171,7 @@ void LibraryScanner::slotStartScan() {
         changeScannerState(IDLE);
         return;
     }
+    changeScannerState(SCANNING);
 
     QSet<QString> trackLocations = m_trackDao.getTrackLocations();
     QHash<QString, int> directoryHashes = m_libraryHashDao.getDirectoryHashes();
@@ -242,8 +243,6 @@ void LibraryScanner::slotStartScan() {
                                                  dir.dir(),
                                                  dir.token()));
     }
-
-    changeScannerState(SCANNING);
 }
 
 void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
