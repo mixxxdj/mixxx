@@ -591,15 +591,31 @@ WWidget, QLabel {
 /* Start spacing for toolbar */
 #ToolBar {
   padding: 0px 4px 0px 4px;
+  qproperty-layoutSpacing: 5;
   background-color: #111111;
 }
+
 #NotificationsContainer {
   qproperty-layoutSpacing: 4;
+}
+
+#MasterControls, #HeadphoneControls {
+    qproperty-layoutSpacing: 10;
+    margin-bottom: 1px;
+    margin-top: 1px;
+}
+
+#HeadphoneControls {
+    margin-right: 30px;
 }
 /* End spacing for toolbar */
 
 #Time {
   font: bold 12px;
+}
+
+#KnobLabelH, #HeadSplit {
+  font: bold 10px;
 }
 
 /* All widget groups that are children of #DeckRows should AlignTop. */
