@@ -92,7 +92,7 @@ script.deckFromGroup = function (group) {
 }
 
 /* -------- ------------------------------------------------------
-     script.bulkBindControlConnections
+     script.bindConnections
    Purpose: Binds multiple controls at once. See an example in Pioneer-DDJ-SB-scripts.js
    Input:   The group whose controls are to be bound and an object
             (controlstToFunctions) where the properties' names are
@@ -100,7 +100,7 @@ script.deckFromGroup = function (group) {
             controls will be bound to.
    Output:  none
    -------- ------------------------------------------------------ */
-script.bulkBindControlConnections = function (group, controlsToFunctions, remove) {
+script.bindConnections = function (group, controlsToFunctions, remove) {
     var control;
     remove = (remove === undefined) ? false : remove;
 

@@ -146,7 +146,7 @@ PioneerDDJSB.bindFXControlConnections = function (effectUnitGroup, isUnbinding) 
         'group_[Channel3]_enable': 'PioneerDDJSB.fxLeds',
         'group_[Channel4]_enable': 'PioneerDDJSB.fxLeds'
     };
-    script.bulkBindControlConnections(effectUnitGroup, controlsToFunctions, isUnbinding);
+    script.bindConnections(effectUnitGroup, controlsToFunctions, isUnbinding);
 };
 
 PioneerDDJSB.bindDeckControlConnections = function (channelGroup, isUnbinding) {
@@ -187,7 +187,7 @@ PioneerDDJSB.bindDeckControlConnections = function (channelGroup, isUnbinding) {
         controlsToFunctions['beatlooproll_' + PioneerDDJSB.looprollIntervals[index] + '_activate'] = 'PioneerDDJSB.beatlooprollLeds';
     }
 
-    script.bulkBindControlConnections(channelGroup, controlsToFunctions, isUnbinding);
+    script.bindConnections(channelGroup, controlsToFunctions, isUnbinding);
 };
 
 PioneerDDJSB.bindNonDeckControlConnections = function (isUnbinding) {
