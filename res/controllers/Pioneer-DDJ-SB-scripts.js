@@ -71,6 +71,11 @@ PioneerDDJSB.init = function (id) {
 
     PioneerDDJSB.shiftPressed = false;
 
+    PioneerDDJSB.chFaderStart = [
+        null,
+        null
+    ];
+
     PioneerDDJSB.fxButtonPressed = [
         [false, false, false],
         [false, false, false]
@@ -352,6 +357,25 @@ PioneerDDJSB.deckFaderMSB = function (channel, control, value, status, group) {
 
 PioneerDDJSB.deckFaderLSB = function (channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].deckFader << 7) + value;
+    if (PioneerDDJSB.shiftPressed &&
+        engine.getValue(PioneerDDJSB.deckSwitchTable[group], 'volume') === 0 &&
+        fullValue !== 0 &&
+        engine.getValue(PioneerDDJSB.deckSwitchTable[group], 'play') === 0
+    ) {
+        PioneerDDJSB.chFaderStart[channel] = engine.getValue(PioneerDDJSB.deckSwitchTable[group], 'playposition');
+        engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'play', 1);
+    }
+    else if (
+        PioneerDDJSB.shiftPressed &&
+        engine.getValue(PioneerDDJSB.deckSwitchTable[group], 'volume') !== 0 &&
+        fullValue === 0 &&
+        engine.getValue(PioneerDDJSB.deckSwitchTable[group], 'play') === 1 &&
+        PioneerDDJSB.chFaderStart[channel] !== null
+    ) {
+        engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'play', 0);
+        engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'playposition', PioneerDDJSB.chFaderStart[channel]);
+        PioneerDDJSB.chFaderStart[channel] = null;
+    }
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'volume', fullValue / 0x3FFF);
 };
 
@@ -379,6 +403,9 @@ PioneerDDJSB.filterKnobLSB = function (channel, control, value, status, group) {
 
 PioneerDDJSB.shiftButton = function (channel, control, value, status, group) {
     PioneerDDJSB.shiftPressed = (value == 0x7F);
+    for (index in PioneerDDJSB.chFaderStart) {
+        PioneerDDJSB.chFaderStart[index] = null;
+    }
 };
 
 PioneerDDJSB.playButton = function (channel, control, value, status, group) {
