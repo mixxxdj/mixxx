@@ -132,8 +132,9 @@ void TrackDAO::finish() {
     // crash prevention: if mixxx crashes, played information will be maintained
     qDebug() << "Clearing played information for this session";
     QSqlQuery query(m_database);
-    if (!query.exec("UPDATE library SET played=0")) {
-        LOG_FAILED_QUERY(query)
+    if (!query.exec("UPDATE library SET played=0 where played>0")) {
+	// Note: whithout where, this call updates every row which takes long
+	LOG_FAILED_QUERY(query)
                 << "Error clearing played value";
     }
 
@@ -1621,14 +1622,16 @@ void TrackDAO::markTrackLocationsAsDeleted(const QString& directory) {
     }
 }
 
-// Look for moved files. Look for files that have been marked as "deleted on disk"
-// and see if another "file" with the same name and filesize exists in the track_locations
-// table. That means the file has moved instead of being deleted outright, and so
-// we can salvage your existing metadata that you have in your DB (like cue points, etc.).
-void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTracksMovedSetNew) {
-    //This function should not start a transaction on it's own!
-    //When it's called from libraryscanner.cpp, there already is a transaction
-    //started!
+// Look for moved files. Look for files that have been marked as
+// "deleted on disk" and see if another "file" with the same name and
+// files size exists in the track_locations table. That means the file has
+// moved instead of being deleted outright, and so we can salvage your
+// existing metadata that you have in your DB (like cue points, etc.).
+bool TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld,
+        QSet<int>* pTracksMovedSetNew, volatile const bool* pCancel) {
+    // This function should not start a transaction on it's own!
+    // When it's called from libraryscanner.cpp, there already is a transaction
+    // started!
     QSqlQuery query(m_database);
     QSqlQuery query2(m_database);
     QSqlQuery query3(m_database);
@@ -1658,8 +1661,11 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
     const int filenameColumn = queryRecord.indexOf("filename");
     const int durationColumn = queryRecord.indexOf("duration");
 
-    //For each track that's been "deleted" on disk...
+    // For each track that's been "deleted" on disk...
     while (query.next()) {
+        if (*pCancel) {
+            return false;
+        }
         newTrackLocationId = -1; //Reset this var
         oldTrackLocationId = query.value(idColumn).toInt();
         filename = query.value(filenameColumn).toString();
@@ -1749,6 +1755,7 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
             }
         }
     }
+    return true;
 }
 
 void TrackDAO::clearCache() {
@@ -1802,7 +1809,7 @@ void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
     }
 }
 
-void TrackDAO::verifyRemainingTracks() {
+bool TrackDAO::verifyRemainingTracks(volatile const bool* pCancel) {
     // This function is called from the LibraryScanner Thread, which also has a
     // transaction running, so we do NOT NEED to use one here
     QSqlQuery query(m_database);
@@ -1818,7 +1825,7 @@ void TrackDAO::verifyRemainingTracks() {
                   "WHERE needs_verification = 1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return;
+        return false;
     }
 
     query2.prepare("UPDATE track_locations "
@@ -1835,7 +1842,11 @@ void TrackDAO::verifyRemainingTracks() {
             LOG_FAILED_QUERY(query2);
         }
         emit(progressVerifyTracksOutside(trackLocation));
+        if (*pCancel) {
+            return false;
+        }
     }
+    return true;
 }
 
 namespace {

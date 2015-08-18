@@ -20,24 +20,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">4</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">4</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">4</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -48,24 +53,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">8</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-          <Template src="skin:left_1state_button.xml">
+          <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">8</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
           <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">8</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -76,24 +86,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">16</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">16</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">16</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -104,24 +119,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">32</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-          <Template src="skin:left_1state_button.xml">
+          <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">32</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
           <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">32</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -132,24 +152,29 @@
         <Children>
           <Template src="skin:beatjump_button.xml">
             <SetVariable name="control_length">64</SetVariable>
-            <SetVariable name="text_length">&lt;|</SetVariable>
+            <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
             <SetVariable name="direction">backward</SetVariable>
           </Template>
 
-          <Template src="skin:left_1state_button.xml">
+          <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">64</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
             <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+            <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
           </Template>
 
           <Template src="skin:beatjump_button.xml">
             <SetVariable name="control_length">64</SetVariable>
-            <SetVariable name="text_length">|&gt;</SetVariable>
+            <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
             <SetVariable name="direction">forward</SetVariable>
           </Template>
         </Children>
@@ -160,24 +185,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.03125</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-         <Template src="skin:left_1state_button.xml">
+         <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">1/32</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
          <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.03125</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -188,24 +218,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.0625</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-         <Template src="skin:left_1state_button.xml">
+         <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">1/16</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
          <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.0625</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -216,24 +251,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.125</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">1/8</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.125</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -244,24 +284,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.25</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">1/4</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.25</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -272,24 +317,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.5</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">1/2</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">0.5</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -300,24 +350,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">1</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">1</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">1</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -328,24 +383,29 @@
          <Children>
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">2</SetVariable>
-             <SetVariable name="text_length">&lt;|</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_backward_48px.svg</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
-           <Template src="skin:left_1state_button.xml">
+           <Template src="skin:left_right_1state_button.xml">
              <SetVariable name="ObjectName">BeatJumpNext</SetVariable>
-             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
              <SetVariable name="state_0_text">2</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[BeatJump],next</SetVariable>
+             <SetVariable name="right_connection_control">[BeatJump],prev</SetVariable>
            </Template>
 
            <Template src="skin:beatjump_button.xml">
              <SetVariable name="control_length">2</SetVariable>
-             <SetVariable name="text_length">|&gt;</SetVariable>
+             <SetVariable name="text_length"></SetVariable>
+             <SetVariable name="state_0_pressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
+             <SetVariable name="state_0_unpressed">icon/ic_beatjump_forward_48px.svg</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>

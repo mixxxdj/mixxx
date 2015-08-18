@@ -10,7 +10,9 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_iMaskXOffset(0),
           m_iMaskYOffset(0),
           m_dMinAngle(-230.0),
-          m_dMaxAngle(50.0) {
+          m_dMaxAngle(50.0),
+          m_dKnobCenterXOffset(0),
+          m_dKnobCenterYOffset(0) {
 }
 
 WKnobComposed::~WKnobComposed() {
@@ -59,6 +61,14 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
 
     if (context.hasNode(node, "MaxAngle")) {
         m_dMaxAngle = context.selectDouble(node, "MaxAngle");
+    }
+
+    if (context.hasNode(node, "KnobCenterXOffset")) {
+        m_dKnobCenterXOffset = context.selectDouble(node, "KnobCenterXOffset");
+    }
+
+    if (context.hasNode(node, "KnobCenterYOffset")) {
+        m_dKnobCenterYOffset = context.selectDouble(node, "KnobCenterYOffset");
     }
 }
 
@@ -144,8 +154,8 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
 
     QTransform transform;
     if (!m_pKnob.isNull() && !m_pKnob->isNull()) {
-        qreal tx = width() / 2.0;
-        qreal ty = height() / 2.0;
+        qreal tx = m_dKnobCenterXOffset + width() / 2.0;
+        qreal ty = m_dKnobCenterYOffset + height() / 2.0;
         transform.translate(-tx, -ty);
         p.translate(tx, ty);
 

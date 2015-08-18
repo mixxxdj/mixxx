@@ -6,12 +6,101 @@
 <Template>
   <WidgetGroup>
     <ObjectName>MainDeckContainer</ObjectName>
-    <Layout>horizontal</Layout>
+    <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>
-      <Template src="skin:left_gutter.xml"/>
-      <Template src="skin:mixer.xml"/>
-      <Template src="skin:right_gutter.xml"/>
+
+      <!-- Is displayed if the stacked waveforms option is activated in the skin settings -->
+      <WidgetGroup>
+        <ObjectName>StackedWaveformsContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <!-- In 2-deck mode, we show 2 waveforms -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:deck_visual_row.xml">
+                <SetVariable name="i">1</SetVariable>
+                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+                <!-- Traditional Blue -->
+                <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+              </Template>
+              <Template src="skin:deck_visual_row.xml">
+                <SetVariable name="i">2</SetVariable>
+                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+                <!-- Violet -->
+                <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+              </Template>
+            </Children>
+              <Connection>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
+          <!-- In 4-deck mode, we show 4 waveforms in the 3-2-1-4 order just like the mixer columns-->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:deck_visual_row.xml">
+                <SetVariable name="i">3</SetVariable>
+                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+                <!-- Traditional Orange -->
+                <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+              </Template>
+              <Template src="skin:deck_visual_row.xml">
+                <SetVariable name="i">1</SetVariable>
+                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+                <!-- Traditional Blue -->
+                <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+              </Template>
+              <Template src="skin:deck_visual_row.xml">
+                <SetVariable name="i">2</SetVariable>
+                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+                <!-- Violet -->
+                <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+              </Template>
+              <Template src="skin:deck_visual_row.xml">
+                <SetVariable name="i">4</SetVariable>
+                <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+                <!-- Lime -->
+                <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+                <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+              </Template>
+            </Children>
+              <Connection>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:left_gutter.xml"/>
+          <Template src="skin:mixer.xml"/>
+          <Template src="skin:right_gutter.xml"/>
+        </Children>
+      </WidgetGroup>
     </Children>
     <Connection>
       <ConfigKey>[Master],maximize_library</ConfigKey>
