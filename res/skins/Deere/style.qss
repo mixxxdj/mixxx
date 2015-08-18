@@ -598,6 +598,10 @@ WWidget, QLabel {
 }
 /* End spacing for toolbar */
 
+#Time {
+  font: bold 12px;
+}
+
 /* All widget groups that are children of #DeckRows should AlignTop. */
 #DeckRows > WWidgetGroup {
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
