@@ -223,19 +223,28 @@
 
       <WidgetGroup>
         <ObjectName>MasterVumeter</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
+        <Size>-1me,22min</Size>
+        <MaximumSize>110,-1</MaximumSize>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:vumeter.xml">
-            <SetVariable name="TooltipId">master_VuMeterL</SetVariable>
-            <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">VuMeterL</SetVariable>
-          </Template>
-          <Template src="skin:vumeter.xml">
-            <SetVariable name="TooltipId">master_VuMeterR</SetVariable>
-            <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">VuMeterR</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <MaximumSize>110,22</MaximumSize>
+            <Children>
+              <Template src="skin:vumeter_h.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="tooltip_meter">master_VuMeterL</SetVariable>
+                <SetVariable name="tooltip_clip">master_PeakIndicatorL</SetVariable>
+              </Template>
+              <Template src="skin:vumeter_h.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="tooltip_meter">master_VuMeterR</SetVariable>
+                <SetVariable name="tooltip_clip">master_PeakIndicatorR</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
 

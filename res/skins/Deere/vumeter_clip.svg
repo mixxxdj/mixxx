@@ -8,11 +8,11 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   width="100"
+   width="3"
    height="3"
    id="svg2"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="vumeter.svg">
+   sodipodi:docname="vumeter_clip.svg">
   <metadata
      id="metadata19">
     <rdf:RDF>
@@ -34,8 +34,8 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="763"
-     inkscape:window-height="480"
+     inkscape:window-width="1366"
+     inkscape:window-height="702"
      id="namedview17"
      showgrid="false"
      fit-margin-top="0"
@@ -43,11 +43,11 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:zoom="4.57"
-     inkscape:cx="50"
-     inkscape:cy="0.5"
+     inkscape:cx="42.030718"
+     inkscape:cy="1.3752735"
      inkscape:window-x="0"
      inkscape:window-y="27"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <defs
      id="defs4">
@@ -55,7 +55,7 @@
        id="vumeterGrad"
        x1="0"
        y1="0"
-       x2="17.320508"
+       x2="17.320507"
        y2="0"
        gradientTransform="scale(5.7735027,0.17320508)"
        gradientUnits="userSpaceOnUse">
@@ -78,10 +78,10 @@
     </linearGradient>
   </defs>
   <rect
-     width="100"
+     width="3"
      height="3"
      id="rect15"
      x="0"
      y="0"
-     style="fill:url(#vumeterGrad)" />
+     style="fill:#ff0000;fill-opacity:1" />
 </svg>

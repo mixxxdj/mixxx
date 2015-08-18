@@ -10,6 +10,32 @@
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
+      <WidgetGroup>
+        <Size>22min,-1me</Size>
+        <MaximumSize>-1,91</MaximumSize>
+        <ObjectName>channel_VuMeter_Group</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <MaximumSize>22,91</MaximumSize>
+            <Children>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
+                <SetVariable name="tooltip_clip">channel_PeakIndicatorL</SetVariable>
+              </Template>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
+                <SetVariable name="tooltip_clip">channel_PeakIndicatorR</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
       <Template src="skin:left_2state_button.xml">
         <SetVariable name="TooltipId">pfl</SetVariable>
         <SetVariable name="ObjectName">DeckPFLButton</SetVariable>

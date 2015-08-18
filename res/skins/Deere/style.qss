@@ -793,6 +793,31 @@ WWidget, WLabel {
   background-color: #24260A;
 }
 
+#DeckMixer1_Column2, #DeckMixer2_Column2, #DeckMixer3_Column2,
+#DeckMixer4_Column2 {
+  qproperty-layoutSpacing: 7;
+  padding: 5;
+}
+
+#channel_VuMeter_Group {
+  qproperty-layoutSpacing: 2;
+  qproperty-layoutAlignment: 'AlignHCenter';
+}
+
+#MasterVumeter {
+  qproperty-layoutSpacing: 2;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#vumeter_v, #vumeter_h {
+  qproperty-layoutSpacing: 3;
+}
+
+WVuMeter, #PeakIndicator {
+  background-color: #222222;
+}
+
 /* Starrating for tracks loaded in decks */
 WStarRating {
   margin            : 5px 5px 0px 0px;
@@ -1070,10 +1095,6 @@ WWidget {
 
 WSliderComposed {
   background-color: orange;
-}
-
-WVuMeter {
-  background-color: pink;
 }
 
 WPushButton[value="1"] {
