@@ -1076,6 +1076,11 @@ WPushButton[value="2"]:hover {
    The button unfolds/folds widgets. We display different icons per state, but
    do not want an active or active:hover color like with the other buttons.
 */
+#ShowHideToggle {
+  qproperty-layoutAlignment: 'AlignTop';
+  padding-top: 3px;
+}
+
 #SampleDeckToggle[value="1"], #LibraryToggle[value="1"], #EffectRackToggle[value="1"] {
     color: #D2D2D2;
     background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
