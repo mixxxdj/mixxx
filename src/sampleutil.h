@@ -4,10 +4,12 @@
 #ifndef SAMPLEUTIL_H
 #define SAMPLEUTIL_H
 
-#include "util/types.h"
-
 #include <algorithm>
 #include <cstring> // memset
+
+#include <QFlags>
+
+#include "util/types.h"
 
 // MSVC does this
 // __declspec(align(16))
@@ -45,11 +47,12 @@ class SampleUtil {
   public:
     // If more audio channels are added in the future, this can be used
     // as bitflags, e.g CLIPPING_CH3 = 4
-    enum CLIP_STATUS {
+    enum CLIP_FLAG {
         NO_CLIPPING = 0,
         CLIPPING_LEFT = 1,
         CLIPPING_RIGHT = 2,
     };
+    Q_DECLARE_FLAGS(CLIP_STATUS, CLIP_FLAG);
 
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
@@ -257,5 +260,7 @@ class SampleUtil {
     // etc.)
 #include "sampleutil_autogen.h"
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(SampleUtil::CLIP_STATUS);
 
 #endif /* SAMPLEUTIL_H */
