@@ -124,18 +124,6 @@
                             <Template src="skin:toolbar_big_library.xml"/>
                         </Children>
                     </WidgetGroup>
-					<!--
-                    <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children>
-                            <SingletonContainer>
-                                <ObjectName>LibrarySingleton</ObjectName>
-                            </SingletonContainer>
-                            <Template src="skin:toolbar_big_library.xml"/>
-                        </Children>
-                    </WidgetGroup>
-					-->
                 </Children>
             </WidgetStack>
         </Children>
