@@ -74,14 +74,14 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget,
     // when we detected moved files, and the TIOs corresponding to the moved
     // files would then have the wrong track location.
     if (collection != NULL) { // false only during test
-        connect(this, SIGNAL(scanFinished()),
-                &(collection->getTrackDAO()), SLOT(clearCache()));
+        TrackDAO* dao = &(collection->getTrackDAO());
+        connect(this, SIGNAL(scanFinished()), dao, SLOT(clearCache()));
         connect(this, SIGNAL(trackAdded(TrackPointer)),
-                &(collection->getTrackDAO()), SLOT(databaseTrackAdded(TrackPointer)));
+                dao, SLOT(databaseTrackAdded(TrackPointer)));
         connect(this, SIGNAL(tracksMoved(QSet<int>, QSet<int>)),
-                &(collection->getTrackDAO()), SLOT(databaseTracksMoved(QSet<int>, QSet<int>)));
+                dao, SLOT(databaseTracksMoved(QSet<int>, QSet<int>)));
         connect(this, SIGNAL(tracksChanged(QSet<int>)),
-                &(collection->getTrackDAO()), SLOT(databaseTracksChanged(QSet<int>)));
+                dao, SLOT(databaseTracksChanged(QSet<int>)));
     }
 
     // Parented to pParentWidget so we don't need to delete it.
