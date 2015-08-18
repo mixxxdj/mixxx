@@ -77,8 +77,8 @@ class ScannerGlobal {
         return &m_shouldCancel;
     }
 
-    void setShouldCancel(bool shouldCancel) {
-        m_shouldCancel = shouldCancel;
+    void cancel() {
+        m_shouldCancel = true;
     }
 
     inline bool scanFinishedCleanly() const {
