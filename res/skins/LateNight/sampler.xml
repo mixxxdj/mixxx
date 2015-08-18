@@ -199,23 +199,28 @@
 	                           <SizePolicy>me,min</SizePolicy>
 	                           <ObjectName>SamplerSyncButton</ObjectName>
 	                           <Children>
-	                               <PushButton>
-			                           <TooltipId>beatsync_beatsync_tempo</TooltipId>
-			                           <NumberStates>1</NumberStates>
-			                           <State>
-			                               <Number>0</Number>
-			                               <Pressed>btn_sync_sampler_overdown.png</Pressed>
-			                               <Unpressed>btn_sync_sampler.png</Unpressed>
-			                           </State>
-			                           <Connection>
-			                               <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync</ConfigKey>
-			                               <ButtonState>LeftButton</ButtonState>
-			                           </Connection>
-			                           <Connection>
-			                               <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync_tempo</ConfigKey>
-			                               <ButtonState>RightButton</ButtonState>
-			                           </Connection>
-			                       </PushButton>
+					   <PushButton>
+						   <Size>52,17</Size>
+						   <ObjectName>SyncToggleButton</ObjectName>
+						   <TooltipId>sync_enabled</TooltipId>
+						   <NumberStates>2</NumberStates>
+						   <State>
+							   <Number>0</Number>
+							   <Text>SYNC</Text>
+						   </State>
+						   <State>
+							   <Number>1</Number>
+							   <Text>SYNC</Text>
+						   </State>
+						   <Connection>
+							   <ConfigKey>[Sampler<Variable name="samplernum" />],sync_enabled</ConfigKey>
+							   <ButtonState>LeftButton</ButtonState>
+						   </Connection>
+						   <Connection>
+							   <ConfigKey>[Sampler<Variable name="samplernum" />],beatsync</ConfigKey>
+							   <ButtonState>RightButton</ButtonState>
+						   </Connection>
+					   </PushButton>
 	                           </Children>
 	                       </WidgetGroup>
 	                       <WidgetGroup>
