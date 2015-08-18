@@ -9,7 +9,7 @@
                 <ObjectName>RateContainer<Variable name="channum" /></ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
-                <MinimumSize>60,-1</MinimumSize>
+                <MinimumSize>75,-1</MinimumSize>
                 <Children>
                    <WidgetGroup>
                        <ObjectName>RateAdjust</ObjectName>
