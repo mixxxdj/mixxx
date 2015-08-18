@@ -839,6 +839,24 @@
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB.shiftButton</key>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.shiftButton</key>
+                <status>0x91</status>
+                <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Playlist]</group>
                 <key>PioneerDDJSB.shiftedRotarySelector</key>
                 <status>0xB6</status>

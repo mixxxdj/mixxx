@@ -69,6 +69,8 @@ PioneerDDJSB.init = function (id) {
         'group_[Channel4]_enable': 0x04
     };
 
+    PioneerDDJSB.shiftPressed = false;
+
     PioneerDDJSB.fxButtonPressed = [
         [false, false, false],
         [false, false, false]
@@ -359,13 +361,25 @@ PioneerDDJSB.filterKnobMSB = function (channel, control, value, status, group) {
 
 PioneerDDJSB.filterKnobLSB = function (channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].filterKnob << 7) + value;
-    engine.setValue('[QuickEffectRack1_' + PioneerDDJSB.deckSwitchTable[group] + ']', 'super1', fullValue / 0x3FFF);
+    if (PioneerDDJSB.shiftPressed) {
+        engine.setValue(
+            PioneerDDJSB.deckSwitchTable[group],
+            'pregain',
+            script.absoluteNonLin(fullValue, 0.0, 1.0, 4.0, 0, 0x3FFF)
+        );
+    } else {
+        engine.setValue('[QuickEffectRack1_' + PioneerDDJSB.deckSwitchTable[group] + ']', 'super1', fullValue / 0x3FFF);
+    }
 };
 
 
 ///////////////////////////////////////////////////////////////
 //           SINGLE MESSAGE MIDI INPUT HANDLERS              //
 ///////////////////////////////////////////////////////////////
+
+PioneerDDJSB.shiftButton = function (channel, control, value, status, group) {
+    PioneerDDJSB.shiftPressed = (value == 0x7F);
+};
 
 PioneerDDJSB.playButton = function (channel, control, value, status, group) {
     if (value) {
