@@ -228,7 +228,7 @@ WSearchLineEdit:focus {
 /* library preview deck */
 #PreviewDeckContainer {
   margin: 4px 0px 0px 0px;
-  background-color: #1F1F1F;
+  background-color: #333333;
   border: 1px solid #1A1A1A;
   qproperty-layoutSpacing: 2;
 }
