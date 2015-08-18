@@ -59,7 +59,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     int sampleRate = (int)m_pSampleRate->get();
 
-    int clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
+    SampleUtil::CLIP_STATUS clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
@@ -91,16 +91,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
         m_fRMSvolumeSumR = 0;
     }
 
-    if (clipped) {
-        m_ctrlPeakIndicator->set(1.);
-        m_peakDuration = PEAK_DURATION * sampleRate / iBufferSize / 2000;
-    } else if (m_peakDuration <= 0) {
-        m_ctrlPeakIndicator->set(0.);
-    } else {
-        --m_peakDuration;
-    }
-
-    if (clipped & 1) {
+    if (clipped & SampleUtil::CLIPPING_LEFT) {
         m_ctrlPeakIndicatorL->set(1.);
         m_peakDurationL = PEAK_DURATION * sampleRate / iBufferSize / 2000;
     } else if (m_peakDurationL <= 0) {
@@ -109,7 +100,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
         --m_peakDurationL;
     }
 
-    if (clipped & 2) {
+    if (clipped & SampleUtil::CLIPPING_RIGHT) {
         m_ctrlPeakIndicatorR->set(1.);
         m_peakDurationR = PEAK_DURATION * sampleRate / iBufferSize / 2000;
     } else if (m_peakDurationR <= 0) {
@@ -117,6 +108,8 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
     } else {
         --m_peakDurationR;
     }
+
+    m_ctrlPeakIndicator->set(m_ctrlPeakIndicatorR->get() || m_ctrlPeakIndicatorL->get());
 }
 
 void EngineVuMeter::collectFeatures(GroupFeatureState* pGroupFeatures) const {
@@ -149,7 +142,6 @@ void EngineVuMeter::reset() {
     m_fRMSvolumeSumL = 0;
     m_fRMSvolumeR = 0;
     m_fRMSvolumeSumR = 0;
-    m_peakDuration = 0;
     m_peakDurationL = 0;
     m_peakDurationR = 0;
 }
