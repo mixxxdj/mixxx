@@ -1081,6 +1081,18 @@ WPushButton[value="2"]:hover {
   border: none;
 }
 
+#DeckCue {
+  font: bold 12px;
+}
+
+#DeckSync {
+  font: bold 10px;
+}
+
+#BeatJumpNext, #BeatLoopButton, #LoopMoveNext, #HotcueButton {
+  font: bold 9px;
+}
+
 /*******************************************************************************
  ** End Buttons  ***************************************************************
  *******************************************************************************/
