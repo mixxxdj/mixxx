@@ -148,7 +148,7 @@
           </PushButton>
 
           <PushButton>
-            <TooltipId>toggle_expanded_library</TooltipId>
+            <TooltipId>maximize_library</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>

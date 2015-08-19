@@ -34,5 +34,6 @@
       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
       <ButtonState>RightButton</ButtonState>
     </Connection>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
   </PushButton>
 </Template>

@@ -75,6 +75,8 @@
         <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
         <SetVariable name="group"><Variable name="group"/></SetVariable>
         <SetVariable name="control">VuMeter</SetVariable>
+        <SetVariable name="tooltip_meter">sampler_VuMeter</SetVariable>
+        <SetVariable name="tooltip_clip">sampler_PeakIndicator</SetVariable>
       </Template>
     </Children>
   </WidgetGroup>
