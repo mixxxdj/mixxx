@@ -28,7 +28,7 @@ class ControlIndicator : public ControlObject {
     void slotBlinkValueChanged();
 
   private:
-    void toggle(double duartion);
+    void toggle(double duration);
     // set() is private, use setBlinkValue instead
     // it must be called from the GUI thread only to a void
     // race condition by toggle()
