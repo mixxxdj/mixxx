@@ -961,7 +961,7 @@ class Optimize(Feature):
     LEVEL_NATIVE = 'native'
     LEVEL_LEGACY = 'legacy'
 
-    LEVEL_DEFAULT = LEVEL_PORTABLE
+    LEVEL_DEFAULT = LEVEL_NATIVE
 
     def description(self):
         return "Optimization and Tuning"
