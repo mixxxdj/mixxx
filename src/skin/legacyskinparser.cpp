@@ -125,6 +125,18 @@ ControlObject* LegacySkinParser::controlFromConfigNode(QDomElement element,
     return controlFromConfigKey(key, bPersist, created);
 }
 
+LegacySkinParser::LegacySkinParser()
+        : m_pConfig(NULL),
+          m_pKeyboard(NULL),
+          m_pPlayerManager(NULL),
+          m_pControllerManager(NULL),
+          m_pLibrary(NULL),
+          m_pVCManager(NULL),
+          m_pEffectsManager(NULL),
+          m_pParent(NULL),
+          m_pContext(NULL) {
+}
+
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    MixxxKeyboard* pKeyboard,
                                    PlayerManager* pPlayerManager,

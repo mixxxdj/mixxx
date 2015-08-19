@@ -170,7 +170,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     QString resourcePath = m_pConfig->getResourcePath();
     initializeTranslations(pApp);
 
-    initializeFonts(); // long
+    initializeFonts(); // takes a long time
 
     launchProgress(2);
 
@@ -379,7 +379,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(47);
 
-    WaveformWidgetFactory::create(); // long
+    WaveformWidgetFactory::create(); // takes a long time
     WaveformWidgetFactory::instance()->startVSync(this);
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
@@ -533,7 +533,7 @@ void MixxxMainWindow::finalize() {
     // TODO(rryan): Get rid of QTime here.
     QTime qTime;
     qTime.start();
-    Timer t("MixxxMainWindow::~MixxxMainWindow");
+    Timer t("MixxxMainWindow::~finalize");
     t.start();
 
     setCentralWidget(NULL);

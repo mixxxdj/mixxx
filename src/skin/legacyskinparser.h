@@ -27,6 +27,7 @@ class LaunchImage;
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
+    LegacySkinParser();
     LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,

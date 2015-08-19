@@ -82,6 +82,8 @@ class MixxxMainWindow : public QMainWindow {
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
+    // progresses the launch image progress bar
+    // this must be called from the GUi thread only
     void launchProgress(int progress);
 
   public slots:
