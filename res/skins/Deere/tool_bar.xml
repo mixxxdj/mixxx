@@ -157,7 +157,7 @@
       <Template src="skin:spacer_h.xml"></Template>
 
       <WidgetGroup>
-        <ObjectName>MasterControls</ObjectName>
+        <ObjectName>HeadphoneControls</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
@@ -176,18 +176,11 @@
             <SetVariable name="color">red</SetVariable>
             <SetVariable name="label">Head Gain</SetVariable>
           </Template>
-        </Children>
-      </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>HeadphoneControls</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
-        <Layout>horizontal</Layout>
-        <Children>
           <PushButton>
             <TooltipId>headSplit</TooltipId>
             <ObjectName>HeadSplit</ObjectName>
-            <Size>50f,20f</Size>
+            <Size>55f,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
@@ -202,7 +195,14 @@
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
             </Connection>
           </PushButton>
+        </Children>
+      </WidgetGroup>
 
+      <WidgetGroup>
+        <ObjectName>MasterControls</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
           <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="TooltipId">balance</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
