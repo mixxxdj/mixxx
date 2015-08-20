@@ -742,7 +742,9 @@ WWidget, QLabel {
 #KnobLabel, #EffectKnobLabel, #EffectButtonLabel {
   background-color: none;
   border: none;
-  qproperty-alignment: 'AlignCenter | AlignVCenter';
+  qproperty-alignment: 'AlignHCenter';
+  font: 9px;
+  margin-top: -3px;
 }
 
 #Mixer {
@@ -828,10 +830,15 @@ WWidget, WLabel {
 #DeckMixer4_Column2 {
   qproperty-layoutSpacing: 7;
   padding: 5;
+  qproperty-layoutAlignment: 'AlignHCenter';
+}
+
+#4DecksMixerCol2Container {
+  padding-left: 14px;
 }
 
 #channel_VuMeter_Group {
-  qproperty-layoutSpacing: 2;
+  qproperty-layoutSpacing: 3;
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 
