@@ -104,7 +104,7 @@
                 <SetVariable name="control">duckStrength</SetVariable>
                 <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
                 <SetVariable name="TooltipId"></SetVariable>
-                <SetVariable name="color">white</SetVariable>
+                <SetVariable name="color">blue</SetVariable>
                 <SetVariable name="label">Strength</SetVariable>
               </Template>
 

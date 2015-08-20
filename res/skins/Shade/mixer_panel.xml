@@ -570,8 +570,8 @@
 								QLabel {
 									font: bold 9px sans-serif;
 									font-family: "Open Sans";
-									background-color: transparent; 
-									color: #191F24; 
+									background-color: transparent;
+									color: #191F24;
 									text-align:center;
 								}
 							</Style>
@@ -579,7 +579,7 @@
 							<CustomFormat>hh:mm</CustomFormat>
 							<ShowSeconds>false</ShowSeconds>
 						</Time>
-						
+
 						<StatusLight>
 							<Pos>113,27</Pos>
 							<TooltipId>audio_latency_usage</TooltipId>
@@ -591,7 +591,7 @@
 								<ConfigKey>[Master],audio_latency_overload</ConfigKey>
 							</Connection>
 						</StatusLight>
-        				
+
 						<VuMeter>
 				            <Pos>113,28</Pos>
 				            <Style>
@@ -612,7 +612,7 @@
 								<ConfigKey>[Master],audio_latency_usage</ConfigKey>
 							</Connection>
 						</VuMeter>
-						
+
 
 
 						<!--
@@ -890,7 +890,7 @@
 						**********************************************
 						-->
 						<StatusLight>
-							<TooltipId>PeakIndicator</TooltipId>
+							<TooltipId>channel_PeakIndicator</TooltipId>
 							<Style></Style>
 							<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 							<PathBack>btn_clipping1.png</PathBack>
@@ -900,7 +900,7 @@
 							</Connection>
 						</StatusLight>
 						<StatusLight>
-							<TooltipId>PeakIndicator</TooltipId>
+							<TooltipId>channel_PeakIndicator</TooltipId>
 							<Style></Style>
 							<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 							<PathBack>btn_clipping2.png</PathBack>
@@ -910,13 +910,23 @@
 							</Connection>
 						</StatusLight>
 						<StatusLight>
-							<TooltipId>master_PeakIndicator</TooltipId>
+							<TooltipId>master_PeakIndicatorL</TooltipId>
 							<Style></Style>
 							<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
 							<PathBack>btn_clipping_master.png</PathBack>
 							<Pos>122,93</Pos>
 							<Connection>
-								<ConfigKey>[Master],PeakIndicator</ConfigKey>
+								<ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+							</Connection>
+						</StatusLight>
+                        <StatusLight>
+							<TooltipId>master_PeakIndicatorR</TooltipId>
+							<Style></Style>
+							<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
+							<PathBack>btn_clipping_master.png</PathBack>
+							<Pos>128,93</Pos>
+							<Connection>
+								<ConfigKey>[Master],PeakIndicatorR</ConfigKey>
 							</Connection>
 						</StatusLight>
 					</Children>

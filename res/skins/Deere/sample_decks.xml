@@ -27,10 +27,16 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <Template src="skin:hide_show_button.xml">
-                    <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
-                  </Template>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <ObjectName>ShowHideToggle</ObjectName>
+                    <Children>
+                      <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                        <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
                   <Template src="skin:sampler_simple.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
@@ -134,10 +140,16 @@
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:hide_show_button.xml">
-                    <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
-                  </Template>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <ObjectName>ShowHideToggle</ObjectName>
+                    <Children>
+                      <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                        <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
                   <Template src="skin:sampler.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
