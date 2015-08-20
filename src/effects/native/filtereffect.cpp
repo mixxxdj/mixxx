@@ -37,17 +37,6 @@ EffectManifest FilterEffect::getManifest() {
     lpf->setMinimum(kMinCorner);
     lpf->setMaximum(kMaxCorner);
 
-    EffectManifestParameter* q = manifest.addParameter();
-    q->setId("q");
-    q->setName(QObject::tr("Q"));
-    q->setDescription(QObject::tr("Resonance of the filters, default = Flat top"));
-    q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    q->setDefault(0.707106781); // 0.707106781 = Butterworth
-    q->setMinimum(0.4);
-    q->setMaximum(4.0);
-
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
@@ -60,7 +49,18 @@ EffectManifest FilterEffect::getManifest() {
     hpf->setDefault(kMinCorner);
     hpf->setMinimum(kMinCorner);
     hpf->setMaximum(k2MaxCorner);
-
+    
+    EffectManifestParameter* q = manifest.addParameter();
+    q->setId("q");
+    q->setName(QObject::tr("Q"));
+    q->setDescription(QObject::tr("Resonance of the filters, default = Flat top"));
+    q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
+    q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
+    q->setDefault(0.707106781); // 0.707106781 = Butterworth
+    q->setMinimum(0.4);
+    q->setMaximum(4.0);
+    
     return manifest;
 }
 

@@ -37,17 +37,6 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     lpf->setMinimum(kMinCorner);
     lpf->setMaximum(kMaxCorner);
 
-    EffectManifestParameter* q = manifest.addParameter();
-    q->setId("resonance");
-    q->setName(QObject::tr("Resonance"));
-    q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
-    q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    q->setDefault(2.2);
-    q->setMinimum(0.0);
-    q->setMaximum(3.5);
-
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
@@ -60,6 +49,17 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     hpf->setDefault(kMinCorner);
     hpf->setMinimum(kMinCorner);
     hpf->setMaximum(k2MaxCorner);
+    
+    EffectManifestParameter* q = manifest.addParameter();
+    q->setId("resonance");
+    q->setName(QObject::tr("Resonance"));
+    q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
+    q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
+    q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
+    q->setDefault(2.2);
+    q->setMinimum(0.0);
+    q->setMaximum(3.5);
 
     return manifest;
 }

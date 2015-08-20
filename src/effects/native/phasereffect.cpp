@@ -19,17 +19,6 @@ EffectManifest PhaserEffect::getManifest() {
     manifest.setDescription(QObject::tr(
                 "A more complex sound effect obtained by mixing the input signal" 
                 "with a copy passed through a series of all-pass filters."));
-    
-    EffectManifestParameter* stereo = manifest.addParameter();
-    stereo->setId("stereo");
-    stereo->setName(QObject::tr("Stereo"));
-    stereo->setDescription(QObject::tr("Enables/disables stereo"));
-    stereo->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-    stereo->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    stereo->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    stereo->setDefault(0);
-    stereo->setMinimum(0);
-    stereo->setMaximum(1);
 
     EffectManifestParameter* stages = manifest.addParameter();
     stages->setId("stages");
@@ -38,6 +27,7 @@ EffectManifest PhaserEffect::getManifest() {
     stages->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     stages->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     stages->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    stages->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_RIGHT);
     stages->setDefault(1.0);
     stages->setMinimum(1.0);
     stages->setMaximum(6.0);
@@ -49,6 +39,7 @@ EffectManifest PhaserEffect::getManifest() {
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    frequency->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT_RIGHT);
     frequency->setDefault(0.5);
     frequency->setMinimum(0.0);
     frequency->setMaximum(5.0);
@@ -82,9 +73,20 @@ EffectManifest PhaserEffect::getManifest() {
     range->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     range->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     range->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    range->setDefault(0.5);
+    range->setDefault(0.65);
     range->setMinimum(0.05);
     range->setMaximum(0.95);
+    
+    EffectManifestParameter* stereo = manifest.addParameter();
+    stereo->setId("stereo");
+    stereo->setName(QObject::tr("Stereo"));
+    stereo->setDescription(QObject::tr("Enables/disables stereo"));
+    stereo->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    stereo->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    stereo->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    stereo->setDefault(1);
+    stereo->setMinimum(0);
+    stereo->setMaximum(1);
 
     return manifest;
 }

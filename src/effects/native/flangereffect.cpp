@@ -32,6 +32,7 @@ EffectManifest FlangerEffect::getManifest() {
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT_RIGHT);
     depth->setDefault(0.75);
     depth->setMinimum(0.0);
     depth->setMaximum(1.0);

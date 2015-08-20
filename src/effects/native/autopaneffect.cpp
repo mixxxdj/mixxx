@@ -26,18 +26,6 @@ EffectManifest AutoPanEffect::getManifest() {
             "A delay, inversed on each side, is added to increase the "
             "spatial move and the period can be synced with the BPM."));
     
-    // Period unit
-    EffectManifestParameter* periodUnit = manifest.addParameter();
-    periodUnit->setId("periodUnit");
-    periodUnit->setName(QObject::tr("Sync"));
-    periodUnit->setDescription("Synchronizes the period with the BPM if it can be retrieved");
-    periodUnit->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-    periodUnit->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    periodUnit->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    periodUnit->setDefault(1);
-    periodUnit->setMinimum(0);
-    periodUnit->setMaximum(1);
-    
     // Period
     // The maximum is at 128 + 1 ollowing 128 as max value and 
     // enabling us to pause time when the parameter is above
@@ -49,6 +37,7 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    period->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
     period->setMinimum(0.0625);     // 1 / 16
     period->setMaximum(129.0);      // 128 + 1
     period->setDefault(8.0);
@@ -64,7 +53,7 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     smoothing->setMinimum(0.0);
     smoothing->setMaximum(0.5);  // there are two steps per period so max is half
-    smoothing->setDefault(0.3);
+    smoothing->setDefault(0.4);
     
     // Width : applied on the channel with gain reducing.
     EffectManifestParameter* width = manifest.addParameter();
@@ -77,6 +66,18 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setMinimum(0.0);
     width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
     width->setDefault(0.00);
+    
+    // Period unit
+    EffectManifestParameter* periodUnit = manifest.addParameter();
+    periodUnit->setId("periodUnit");
+    periodUnit->setName(QObject::tr("Sync"));
+    periodUnit->setDescription("Synchronizes the period with the BPM if it can be retrieved");
+    periodUnit->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    periodUnit->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    periodUnit->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    periodUnit->setDefault(1);
+    periodUnit->setMinimum(0);
+    periodUnit->setMaximum(1);
     
     return manifest;
 }
