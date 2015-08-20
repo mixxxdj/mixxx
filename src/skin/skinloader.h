@@ -13,6 +13,7 @@ class ControllerManager;
 class Library;
 class VinylControlManager;
 class EffectsManager;
+class LaunchImage;
 
 class SkinLoader {
   public:
@@ -26,6 +27,8 @@ class SkinLoader {
                              Library* pLibrary,
                              VinylControlManager* pVCMan,
                              EffectsManager* pEffectsManager);
+
+    LaunchImage* loadLaunchImage(QWidget* pParent);
 
     QString getSkinPath();
     QList<QDir> getSkinSearchPaths();
