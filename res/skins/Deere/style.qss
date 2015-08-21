@@ -739,12 +739,32 @@ WWidget, QLabel {
 #EffectButton {
 }
 
-#KnobLabel, #EffectKnobLabel, #EffectButtonLabel {
+#EffectButtonParameter {
+  margin-top: 3px;
+}
+
+#KnobLabel {
   background-color: none;
   border: none;
   qproperty-alignment: 'AlignHCenter';
   font: 9px;
   margin-top: -3px;
+}
+
+#EffectKnobLabel {
+  background-color: none;
+  border: none;
+  qproperty-alignment: 'AlignHCenter | AlignTop';
+  font: 8px;
+  margin-top: -2px;
+}
+
+#EffectButtonLabel {
+  background-color: none;
+  border: none;
+  qproperty-alignment: 'AlignHCenter';
+  font: 8px;
+  margin-top: 1px;
 }
 
 #Mixer {
