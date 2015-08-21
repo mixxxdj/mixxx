@@ -51,7 +51,6 @@ class SoundDevice {
     inline const QString& getHostAPI() const {
         return m_hostAPI;
     }
-    void setHostAPI(QString api);
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
     virtual Result open(bool isClkRefDevice, int syncBuffers) = 0;

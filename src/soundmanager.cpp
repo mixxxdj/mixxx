@@ -243,8 +243,9 @@ void SoundManager::queryDevices() {
     const PaDeviceInfo* deviceInfo;
     for (int i = 0; i < iNumDevices; i++) {
         deviceInfo = Pa_GetDeviceInfo(i);
-        if (!deviceInfo)
+        if (!deviceInfo) {
             continue;
+        }
         /* deviceInfo fields for quick reference:
             int     structVersion
             const char *    name
@@ -257,7 +258,8 @@ void SoundManager::queryDevices() {
             PaTime  defaultHighOutputLatency
             double  defaultSampleRate
          */
-        SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
+        SoundDevicePortAudio* currentDevice = new SoundDevicePortAudio(
+                m_pConfig, this, deviceInfo, i);
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {

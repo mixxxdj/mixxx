@@ -48,10 +48,6 @@ int SoundDevice::getNumOutputChannels() const {
     return m_iNumOutputChannels;
 }
 
-void SoundDevice::setHostAPI(QString api) {
-    m_hostAPI = api;
-}
-
 void SoundDevice::setSampleRate(double sampleRate) {
     if (sampleRate <= 0.0) {
         // this is the default value used elsewhere in this file
