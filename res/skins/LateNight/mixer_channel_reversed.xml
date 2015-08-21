@@ -17,7 +17,7 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
                 <Size>18,0</Size>
                 <Children>
                     <StatusLight>
-                        <TooltipId>PeakIndicator</TooltipId>
+                        <TooltipId>channel_PeakIndicator</TooltipId>
                         <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
                         <PathBack>btn_clipping1.png</PathBack>
                         <Connection>

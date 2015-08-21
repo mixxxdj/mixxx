@@ -77,16 +77,16 @@ class ScannerGlobal {
         return &m_shouldCancel;
     }
 
-    void setShouldCancel(bool shouldCancel) {
-        m_shouldCancel = shouldCancel;
+    void cancel() {
+        m_shouldCancel = true;
     }
 
     inline bool scanFinishedCleanly() const {
         return m_scanFinishedCleanly;
     }
 
-    void setScanFinishedCleanly(bool scanFinishedCleanly) {
-        m_scanFinishedCleanly = scanFinishedCleanly;
+    void clearScanFinishedCleanly() {
+        m_scanFinishedCleanly = false;
     }
 
     void addVerifiedDirectory(const QString& directory) {

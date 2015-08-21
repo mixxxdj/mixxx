@@ -107,7 +107,7 @@
 															<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 															<PathBack>btn_clipping1.png</PathBack>
 															<Connection>
-																<ConfigKey>[Master],PeakIndicator</ConfigKey>
+																<ConfigKey>[Master],PeakIndicatorL</ConfigKey>
 															</Connection>
 														</StatusLight>
 														<VuMeter>
@@ -135,7 +135,7 @@
 															<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 															<PathBack>btn_clipping1.png</PathBack>
 															<Connection>
-																<ConfigKey>[Master],PeakIndicator</ConfigKey>
+																<ConfigKey>[Master],PeakIndicatorR</ConfigKey>
 															</Connection>
 														</StatusLight>
 														<VuMeter>
@@ -288,7 +288,7 @@
 										<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 										<PathBack>btn_clipping1.png</PathBack>
 										<Connection>
-											<ConfigKey>[Master],PeakIndicator</ConfigKey>
+											<ConfigKey>[Master],PeakIndicatorL</ConfigKey>
 										</Connection>
 									</StatusLight>
 									<VuMeter>
@@ -316,7 +316,7 @@
 										<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 										<PathBack>btn_clipping1.png</PathBack>
 										<Connection>
-											<ConfigKey>[Master],PeakIndicator</ConfigKey>
+											<ConfigKey>[Master],PeakIndicatorR</ConfigKey>
 										</Connection>
 									</StatusLight>
 									<VuMeter>

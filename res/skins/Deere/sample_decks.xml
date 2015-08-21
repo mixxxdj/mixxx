@@ -18,105 +18,231 @@
         <Children>
 
           <!-- Collapsed SampleDecks -->
-          <WidgetGroup>
-            <ObjectName>SampleDecksCollapsed</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
+          <WidgetStack currentpage="[Deere],sampler_bank_current" persist="true">
+            <NextControl>[Deere],sampler_bank_next</NextControl>
+            <PrevControl>[Deere],sampler_bank_prev</PrevControl>
             <Children>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                <SetVariable name="control">[Samplers],show_samplers</SetVariable>
-              </Template>
-              <Template src="skin:sampler_simple.xml">
-                <SetVariable name="i">1</SetVariable>
-              </Template>
-              <Template src="skin:sampler_simple.xml">
-                <SetVariable name="i">2</SetVariable>
-              </Template>
-              <Template src="skin:sampler_simple.xml">
-                <SetVariable name="i">3</SetVariable>
-              </Template>
-              <Template src="skin:sampler_simple.xml">
-                <SetVariable name="i">4</SetVariable>
-              </Template>
-              <Template src="skin:sampler_simple.xml">
-                <SetVariable name="i">5</SetVariable>
-              </Template>
-              <Template src="skin:sampler_simple.xml">
-                <SetVariable name="i">6</SetVariable>
-              </Template>
-              <Template src="skin:sampler_simple.xml">
-                <SetVariable name="i">7</SetVariable>
-              </Template>
-              <Template src="skin:sampler_simple.xml">
-                <SetVariable name="i">8</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-
-          <!-- Expanded SampleDecks -->
-          <WidgetGroup trigger="[Samplers],show_samplers">
-            <ObjectName>SampleDecksExpanded</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">SampleDeckToggle</SetVariable>
-                <SetVariable name="control">[Samplers],show_samplers</SetVariable>
-              </Template>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="i">1</SetVariable>
-              </Template>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="i">2</SetVariable>
-              </Template>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="i">3</SetVariable>
-              </Template>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="i">4</SetVariable>
-              </Template>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="i">5</SetVariable>
-              </Template>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="i">6</SetVariable>
-              </Template>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="i">7</SetVariable>
-              </Template>
-              <Template src="skin:sampler.xml">
-                <SetVariable name="i">8</SetVariable>
-              </Template>
-
-              <WidgetGroup>
-                <Layout>vertical</Layout>
+              <WidgetGroup trigger="[Deere],sampler_bank_1">
+                <ObjectName>SampleDecksCollapsed</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <Template src="skin:left_1state_button.xml">
-                    <SetVariable name="ObjectName">SamplerBankLoad</SetVariable>
-                    <SetVariable name="MinimumSize">40,20</SetVariable>
-                    <SetVariable name="MaximumSize">40,20</SetVariable>
-                    <SetVariable name="SizePolicy">f,f</SetVariable>
-                    <SetVariable name="state_0_text">Load</SetVariable>
-                    <SetVariable name="state_0_pressed"></SetVariable>
-                    <SetVariable name="state_0_unpressed"></SetVariable>
-                    <SetVariable name="left_connection_control">[Sampler],LoadSamplerBank</SetVariable>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <ObjectName>ShowHideToggle</ObjectName>
+                    <Children>
+                      <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                        <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">1</SetVariable>
                   </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">2</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">3</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">4</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_bank_controls.xml"/>
+                </Children>
+              </WidgetGroup>
 
-                  <Template src="skin:left_1state_button.xml">
-                    <SetVariable name="ObjectName">SamplerBankSave</SetVariable>
-                    <SetVariable name="MinimumSize">40,20</SetVariable>
-                    <SetVariable name="MaximumSize">40,20</SetVariable>
-                    <SetVariable name="SizePolicy">f,f</SetVariable>
-                    <SetVariable name="state_0_text">Save</SetVariable>
-                    <SetVariable name="state_0_pressed"></SetVariable>
-                    <SetVariable name="state_0_unpressed"></SetVariable>
-                    <SetVariable name="left_connection_control">[Sampler],SaveSamplerBank</SetVariable>
+              <WidgetGroup trigger="[Deere],sampler_bank_2">
+                <ObjectName>SampleDecksCollapsed</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Template src="skin:hide_show_button.xml">
+                    <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
                   </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">5</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">6</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">7</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">8</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_bank_controls.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup trigger="[Deere],sampler_bank_3">
+                <ObjectName>SampleDecksCollapsed</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Template src="skin:hide_show_button.xml">
+                    <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">9</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">10</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">11</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">12</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_bank_controls.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup trigger="[Deere],sampler_bank_4">
+                <ObjectName>SampleDecksCollapsed</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Template src="skin:hide_show_button.xml">
+                    <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">13</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">14</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">15</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_simple.xml">
+                    <SetVariable name="i">16</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_bank_controls.xml"/>
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup>
+          </WidgetStack>
+
+          <!-- Expanded SampleDecks -->
+          <WidgetStack trigger="[Samplers],show_samplers" currentpage="[Deere],sampler_bank_current" persist="true">
+            <NextControl>[Deere],sampler_bank_next</NextControl>
+            <PrevControl>[Deere],sampler_bank_prev</PrevControl>
+            <Children>
+              <WidgetGroup trigger="[Deere],sampler_bank_1">
+                <ObjectName>SampleDecksExpanded</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <ObjectName>ShowHideToggle</ObjectName>
+                    <Children>
+                      <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                        <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">1</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">2</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">3</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">4</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_bank_controls.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup trigger="[Deere],sampler_bank_2">
+                <ObjectName>SampleDecksExpanded</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:hide_show_button.xml">
+                    <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">5</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">6</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">7</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">8</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_bank_controls.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup trigger="[Deere],sampler_bank_3">
+                <ObjectName>SampleDecksExpanded</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:hide_show_button.xml">
+                    <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">9</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">10</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">11</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">12</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_bank_controls.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup trigger="[Deere],sampler_bank_4">
+                <ObjectName>SampleDecksExpanded</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:hide_show_button.xml">
+                    <SetVariable name="object_name">SampleDeckToggle</SetVariable>
+                    <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">13</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">14</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">15</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="i">16</SetVariable>
+                  </Template>
+                  <Template src="skin:sampler_bank_controls.xml"/>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetStack>
+
         </Children>
       </WidgetStack>
     </Children>

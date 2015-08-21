@@ -150,8 +150,9 @@ class TrackDAO : public QObject, public virtual DAO {
     void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);
-    void detectMovedFiles(QSet<int>* tracksMovedSetNew, QSet<int>* tracksMovedSetOld);
-    void verifyRemainingTracks();
+    bool detectMovedFiles(QSet<int>* pTracksMovedSetOld,
+            QSet<int>* pTracksMovedSetNew, volatile const bool* pCancel);
+    bool verifyRemainingTracks(volatile const bool* pCancel);
     void detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                                         QSet<int>* pTracksChanged);
 
