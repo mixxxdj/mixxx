@@ -20,18 +20,6 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>EffectUnitNameContainer</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,max</SizePolicy>
-            <Children>
-              <EffectChainName>
-                <EffectRack><Variable name="EffectRack"/></EffectRack>
-                <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
-              </EffectChainName>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
             <ObjectName>EffectUnitNextPrevContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,max</SizePolicy>
@@ -91,15 +79,32 @@
                 <SetVariable name="left_connection_control"><Variable name="group"/>,next_chain</SetVariable>
               </Template>
 
-              <Template src="skin:small_knob.xml">
-                <SetVariable name="control">super1</SetVariable>
-                <SetVariable name="label">Super</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <ObjectName>EffectUnitNameContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,max</SizePolicy>
+                <Children>
+                  <EffectChainName>
+                    <EffectRack><Variable name="EffectRack"/></EffectRack>
+                    <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+                  </EffectChainName>
+                </Children>
+              </WidgetGroup>
 
-              <Template src="skin:small_knob.xml">
-                <SetVariable name="control">mix</SetVariable>
-                <SetVariable name="label">Mix</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <ObjectName>EffectUnitMainKnobsContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:small_knob_horizontal.xml">
+                    <SetVariable name="control">super1</SetVariable>
+                    <SetVariable name="label">Super</SetVariable>
+                  </Template>
+                  <Template src="skin:small_knob_horizontal.xml">
+                    <SetVariable name="control">mix</SetVariable>
+                    <SetVariable name="label">Mix</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>

@@ -751,6 +751,18 @@ WWidget, QLabel {
   margin-top: -3px;
 }
 
+#SmallKnobLabel {
+  background-color: none;
+  border: none;
+  qproperty-alignment: 'AlignLeft';
+  font: 9px;
+  margin-left: 1px;
+}
+
+#EffectUnitMainKnobsContainer {
+    qproperty-layoutSpacing: 7;
+}
+
 #EffectKnobLabel {
   background-color: none;
   border: none;
