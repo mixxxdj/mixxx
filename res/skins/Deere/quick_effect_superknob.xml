@@ -12,20 +12,15 @@
   <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>]</SetVariable>
   <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <Children>
-      <Template src="skin:knob.xml">
-        <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
-        <SetVariable name="control">super1</SetVariable>
-        <SetVariable name="color"><Variable name="color"/></SetVariable>
-      </Template>
       <WidgetGroup>
-        <Layout>horizontal</Layout>
+        <Size>15f,21f</Size>
         <Children>
           <EffectPushButton>
             <TooltipId><Variable name="TooltipId"/></TooltipId>
-            <Size>10f,10f</Size>
-            <ObjectName>KillButton</ObjectName>
+            <Size>15f,15f</Size>
+            <ObjectName>MixerButton</ObjectName>
             <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
             <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
             <Effect>1</Effect>
@@ -48,9 +43,18 @@
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </EffectPushButton>
-
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
+            <SetVariable name="control">super1</SetVariable>
+            <SetVariable name="color"><Variable name="color"/></SetVariable>
+          </Template>
           <EffectName>
-            <Size>30f,10f</Size>
+            <Size>40f,10f</Size>
             <ObjectName>KnobLabel</ObjectName>
             <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
             <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>

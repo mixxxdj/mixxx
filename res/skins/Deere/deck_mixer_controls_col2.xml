@@ -8,15 +8,15 @@
   <WidgetGroup>
     <ObjectName>DeckMixer<Variable name="i"/>_Column2</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>min,min</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
       <WidgetGroup>
         <Size>22min,-1me</Size>
         <MaximumSize>-1,91</MaximumSize>
-        <ObjectName>channel_VuMeter_Group</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
+            <ObjectName>channel_VuMeter_Group</ObjectName>
             <Layout>horizontal</Layout>
             <MaximumSize>22,91</MaximumSize>
             <Children>
