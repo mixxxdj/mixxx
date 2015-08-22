@@ -457,6 +457,56 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
+
+/* Scroll bars */
+QScrollBar:horizontal {
+  border: 1px solid #585858;
+  min-width: 12px;
+  height: 15px;
+  background: #1A1A1A;
+  border-radius: 3px;
+  padding: 1px;
+}
+QScrollBar:vertical {
+  border: 1px solid #585858;
+  min-height: 12px;
+  width: 15px;
+  background: #1A1A1A;
+  border-radius: 3px;
+  padding: 1px;
+}
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar::add-page, QScrollBar::sub-page {
+  min-width: 15px;
+  min-height: 15px;
+  border: 2px;
+  background-color: #1A1A1A;
+  border-radius: 3px;
+}
+QScrollBar::handle:horizontal {
+  min-width: 25px;
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #085172, stop:1 #042E41);
+  border-radius: 3px;
+  border: 1px solid #085172;
+}
+QScrollBar::handle:vertical {
+  min-height: 25px;
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #085172, stop:1 #042E41);
+  border-radius: 3px;
+  border: 1px solid #085172;
+}
+/* Turn off buttons */
+QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
+  width: 0px;
+  height: 0px;
+  border: 0px solid white;
+}
+QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
+  width: 0px;
+  height: 0px;
+  border: 0px solid white;
+}
+
 /*******************************************************************************
  ** END LIBRARY *****************************************************************
  *******************************************************************************/
