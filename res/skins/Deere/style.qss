@@ -754,9 +754,12 @@ WWidget, QLabel {
 #SmallKnobLabel {
   background-color: none;
   border: none;
-  qproperty-alignment: 'AlignLeft';
+  qproperty-alignment: 'AlignHCenter';
   font: 9px;
-  margin-left: 1px;
+  margin-top: -2px;
+}
+
+#EffectUnitNameRow {
 }
 
 #EffectUnitMainKnobsContainer {
