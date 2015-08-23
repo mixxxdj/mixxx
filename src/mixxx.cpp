@@ -152,8 +152,10 @@ MixxxMainWindow::~MixxxMainWindow() {
 }
 
 void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
-    // We use QSet<int> in signals in the library.
-    qRegisterMetaType<QSet<int> >("QSet<int>");
+    // Register custom data types for signal processing
+    qRegisterMetaType<TrackId>("TrackId");
+    qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
+    qRegisterMetaType<TrackPointer>("TrackPointer");
 
     ScopedTimer t("MixxxMainWindow::MixxxMainWindow");
     m_runtime_timer.start();
@@ -280,10 +282,6 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     if (!QDir(args.getSettingsPath()).exists()) {
         QDir().mkpath(args.getSettingsPath());
     }
-
-    // Register TrackPointer as a metatype since we use it in signals/slots
-    // regularly.
-    qRegisterMetaType<TrackPointer>("TrackPointer");
 
     m_pGuiTick = new GuiTick();
 
