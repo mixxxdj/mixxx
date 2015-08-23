@@ -73,8 +73,11 @@ class MixxxMainWindow : public QMainWindow {
 
     // initializes all QActions of the application
     void initActions();
-    // initMenuBar creates the menu_bar and inserts the menuitems
+    // creates the menu_bar and inserts the file Menu
     void initMenuBar();
+    // creates the menu_bar and inserts the file Menu
+    // after it was inited
+    void populateMenuBar();
 
     void setToolTipsCfg(int tt);
     inline int getToolTipsCgf() { return m_toolTipsCfg; }
