@@ -25,6 +25,7 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
+#include "sounddevicenetwork.h"
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
 #include "soundmanagerutil.h"
