@@ -62,6 +62,7 @@ public:
         VINYLCONTROL,
         MICROPHONE,
         AUXILIARY,
+        SIDECHAIN,
         INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
