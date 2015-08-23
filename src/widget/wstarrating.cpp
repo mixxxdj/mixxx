@@ -129,9 +129,9 @@ bool WStarRating::event(QEvent* pEvent) {
 
 void WStarRating::fillDebugTooltip(QStringList* debug) {
     WBaseWidget::fillDebugTooltip(debug);
-    int currentRating = 0;
+    QString currentRating = "-";
     if (m_pCurrentTrack) {
-        currentRating = m_pCurrentTrack->getRating();
+        currentRating.setNum(m_pCurrentTrack->getRating());
     }
     *debug << QString("Rating: \"%1/%2\"").arg(currentRating).arg(
             m_starRating.maxStarCount());
