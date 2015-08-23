@@ -7,6 +7,8 @@
 #include <QObject>
 #include <QMutex>
 
+#include "track/trackid.h"
+
 class CueDAO;
 class TrackInfoObject;
 
@@ -24,45 +26,46 @@ class Cue : public QObject {
 
     virtual ~Cue();
 
-    bool isDirty();
-    int getId();
-    int getTrackId();
+    bool isDirty() const;
+    int getId() const;
+    TrackId getTrackId() const;
 
-    CueType getType();
+    CueType getType() const;
     void setType(CueType type);
 
-    int getPosition();
+    int getPosition() const;
     void setPosition(int position);
 
-    int getLength();
+    int getLength() const;
     void setLength(int length);
 
-    int getHotCue();
+    int getHotCue() const;
     void setHotCue(int hotCue);
 
-    const QString getLabel();
+    QString getLabel() const;
     void setLabel(const QString label);
 
   signals:
     void updated();
 
   private:
-    Cue(int trackId);
-    Cue(int id, int trackId, CueType type, int position, int length,
+    explicit Cue(TrackId trackId);
+    Cue(int id, TrackId trackId, CueType type, int position, int length,
         int hotCue, QString label);
     void setDirty(bool dirty);
     void setId(int id);
-    void setTrackId(int trackId);
+    void setTrackId(TrackId trackId);
+
+    mutable QMutex m_mutex;
 
     bool m_bDirty;
     int m_iId;
-    int m_iTrackId;
+    TrackId m_trackId;
     CueType m_type;
     int m_iPosition;
     int m_iLength;
     int m_iHotCue;
     QString m_label;
-    QMutex m_mutex;
 
     friend class TrackInfoObject;
     friend class CueDAO;

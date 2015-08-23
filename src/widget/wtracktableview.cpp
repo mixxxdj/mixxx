@@ -1268,7 +1268,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     }
 
     QModelIndexList indices = selectionModel()->selectedRows();
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
 
     TrackModel* trackModel = getTrackModel();
     if (!trackModel) {
@@ -1278,11 +1278,11 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            int iTrackId = pTrack->getId();
-            if (iTrackId == -1) {
+            TrackId trackId(pTrack->getId());
+            if (!trackId.isValid()) {
                 continue;
             }
-            trackIds.append(iTrackId);
+            trackIds.append(trackId);
         }
     }
 
@@ -1346,15 +1346,15 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     }
 
     QModelIndexList indices = selectionModel()->selectedRows();
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (!pTrack) {
             continue;
         }
-        int iTrackId = pTrack->getId();
-        if (iTrackId != -1) {
-            trackIds.append(iTrackId);
+        TrackId trackId(pTrack->getId());
+        if (trackId.isValid()) {
+            trackIds.append(trackId);
         }
     }
    if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
@@ -1408,15 +1408,15 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
     }
 
     QModelIndexList indices = selectionModel()->selectedRows();
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (!pTrack) {
             continue;
         }
-        int iTrackId = pTrack->getId();
-        if (iTrackId != -1) {
-            trackIds.append(iTrackId);
+        TrackId trackId(pTrack->getId());
+        if (trackId.isValid()) {
+            trackIds.append(trackId);
         }
     }
     if (iCrateId == -1) { // i.e. a new crate is suppose to be created
@@ -1471,10 +1471,9 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 
     // Save the selection
     QModelIndexList selection = selectionModel()->selectedRows();
-    QSet<int> trackIds;
-    foreach (QModelIndex index, selection) {
-        int trackId = trackModel->getTrackId(index);
-        trackIds.insert(trackId);
+    QSet<TrackId> trackIds;
+    for (const auto& index: selection) {
+        trackIds.insert(trackModel->getTrackId(index));
     }
 
     sortByColumn(headerSection);
@@ -1490,7 +1489,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     currentSelection->reset(); // remove current selection
 
     QMap<int,int> selectedRows;
-    foreach (int trackId, trackIds) {
+    for (auto  const& trackId: trackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
         // code is broken for playlists because it assumes each trackid is in
