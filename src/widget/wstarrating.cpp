@@ -6,7 +6,8 @@
 #include "widget/wstarrating.h"
 
 WStarRating::WStarRating(QString group, QWidget* pParent)
-        : WBaseWidget(pParent),
+        : QWidget(pParent),
+          WBaseWidget(this),
           m_starRating(0,5),
           m_pGroup(group),
           m_focused(false) {
@@ -19,6 +20,7 @@ void WStarRating::setup(QDomNode node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);
     setMouseTracking(true);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
 QSize WStarRating::sizeHint() const {
@@ -26,14 +28,6 @@ QSize WStarRating::sizeHint() const {
     option.initFrom(this);
     QSize widgetSize = style()->sizeFromContents(QStyle::CT_PushButton, &option,
                                                  m_starRating.sizeHint(), this);
-
-    m_contentRect.setRect(
-        (widgetSize.width() - m_starRating.sizeHint().width()) / 2,
-        (widgetSize.height() - m_starRating.sizeHint().height()) / 2,
-        m_starRating.sizeHint().width(),
-        m_starRating.sizeHint().height()
-    );
-
     return widgetSize;
 }
 
@@ -76,7 +70,12 @@ void WStarRating::paintEvent(QPaintEvent *) {
     painter.setBrush(option.palette.text());
     painter.drawPrimitive(QStyle::PE_Widget, option);
 
-    m_starRating.paint(&painter, m_contentRect);
+    QRect contentRect = style()->subElementRect(QStyle::SE_FrameContents, &option, this);
+    if (contentRect.isNull()) {
+        contentRect = rect();
+    }
+
+    m_starRating.paint(&painter, contentRect);
 }
 
 void WStarRating::mouseMoveEvent(QMouseEvent *event) {
@@ -117,4 +116,21 @@ void WStarRating::mouseReleaseEvent(QMouseEvent*) {
         return;
 
     m_pCurrentTrack->setRating(m_starRating.starCount());
+}
+
+bool WStarRating::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QWidget::event(pEvent);
+}
+
+void WStarRating::fillDebugTooltip(QStringList* debug) {
+    WBaseWidget::fillDebugTooltip(debug);
+    int currentRating = 0; 
+    if (m_pCurrentTrack) {
+        currentRating = m_pCurrentTrack->getRating();
+    }
+    *debug << QString("Rating: \"%1/%2\"").arg(currentRating).arg(
+            m_starRating.maxStarCount());
 }
