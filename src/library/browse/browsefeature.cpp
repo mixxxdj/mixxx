@@ -68,8 +68,12 @@ BrowseFeature::BrowseFeature(QObject* parent,
     QFileInfoList drives = QDir::drives();
     // show drive letters
     foreach (QFileInfo drive, drives) {
+        QString cp = drive.filePath();
+        if (cp.endsWith("/")) {
+            cp.chop(1); 
+        }
         TreeItem* driveLetter = new TreeItem(
-            drive.canonicalPath(),  //  displays C:
+            cp,  // Displays C:
             drive.filePath(),  // Displays C:/
             this ,
             devices_link);
@@ -301,9 +305,13 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
         QFileInfoList drives = QDir::drives();
         // show drive letters
         foreach (QFileInfo drive, drives) {
+            QString cp = drive.filePath();
+            if (cp.endsWith("/")) {
+                cp.chop(1); 
+            }
             TreeItem* driveLetter = new TreeItem(
-                drive.canonicalPath(), // displays C:
-                drive.filePath(), //Displays C:/
+                cp, // Displays C:
+                drive.filePath(), // Displays C:/
                 this,
                 item);
             folders << driveLetter;
