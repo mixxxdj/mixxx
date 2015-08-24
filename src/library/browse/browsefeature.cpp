@@ -68,15 +68,21 @@ BrowseFeature::BrowseFeature(QObject* parent,
     QFileInfoList drives = QDir::drives();
     // show drive letters
     foreach (QFileInfo drive, drives) {
-        // Using drive.filePath() instead of drive.canonicalPath() as it
-        // delay the startup too much if there is a network share mounted
+        // Using drive.filePath() to get path to display instead of drive.canonicalPath()
+        // as it delay the startup too much if there is a network share mounted
         // (drive letter assigned) but unavailable
-        QString cp = drive.filePath();
-        if (cp.endsWith("/")) {
-            cp.chop(1); 
+        // We avoid using canonicalPath() here because it makes an
+        // unneeded system call to the underlying filesystem which
+        // can be very long if the said filesystem is an unavailable
+        // network share. drive.filePath() doesn't make any filesystem call
+        // in this case because drive is an absolute path as it is taken from
+        // QDir::drives(). See Qt's QDir code, especially qdir.cpp
+        QString display_path = drive.filePath();
+        if (display_path.endsWith("/")) {
+            display_path.chop(1); 
         }
         TreeItem* driveLetter = new TreeItem(
-            cp,  // Displays C:
+            display_path,  // Displays C:
             drive.filePath(),  // Displays C:/
             this ,
             devices_link);
@@ -311,12 +317,17 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             // Using drive.filePath() instead of drive.canonicalPath() as it
             // freezes interface too much if there is a network share mounted
             // (drive letter assigned) but unavailable
-            QString cp = drive.filePath();
-            if (cp.endsWith("/")) {
-                cp.chop(1); 
+            //
+            // drive.canonicalPath() make a system call to the underlying filesystem
+            // introducing delay if it is unreadable.
+            // drive.filePath() doesn't make any access to the filesystem and consequently
+            // shorten the delay
+            QString display_path = drive.filePath();
+            if (display_path.endsWith("/")) {
+                display_path.chop(1); 
             }
             TreeItem* driveLetter = new TreeItem(
-                cp, // Displays C:
+                display_path, // Displays C:
                 drive.filePath(), // Displays C:/
                 this,
                 item);
