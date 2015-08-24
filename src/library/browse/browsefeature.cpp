@@ -68,6 +68,9 @@ BrowseFeature::BrowseFeature(QObject* parent,
     QFileInfoList drives = QDir::drives();
     // show drive letters
     foreach (QFileInfo drive, drives) {
+        // Using drive.filePath() instead of drive.canonicalPath() as it
+        // delay the startup too much if there is a network share mounted
+        // (drive letter assigned) but unavailable
         QString cp = drive.filePath();
         if (cp.endsWith("/")) {
             cp.chop(1); 
@@ -305,6 +308,9 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
         QFileInfoList drives = QDir::drives();
         // show drive letters
         foreach (QFileInfo drive, drives) {
+            // Using drive.filePath() instead of drive.canonicalPath() as it
+            // freezes interface too much if there is a network share mounted
+            // (drive letter assigned) but unavailable
             QString cp = drive.filePath();
             if (cp.endsWith("/")) {
                 cp.chop(1); 
