@@ -39,8 +39,8 @@ TrackInfoObject::TrackInfoObject(
 
     m_iDuration = 0;
     m_iBitrate = 0;
-    m_iTimesPlayed = 0;
-    m_fReplayGain = 0.;
+    m_fReplayGain = 0.0f;
+    m_bHeaderParsed = false;
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
@@ -617,46 +617,65 @@ void TrackInfoObject::setTrackNumber(const QString& s) {
     }
 }
 
+void TrackInfoObject::setPlayed(bool played) {
+    QMutexLocker lock(&m_qMutex);
+    PlayCounter playCounter(m_playCounter);
+    playCounter.setPlayed(played);
+    if (m_playCounter != playCounter) {
+        m_playCounter = playCounter;
+        setDirty(true);
+    }
+}
+
+bool TrackInfoObject::isPlayed() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_playCounter.isPlayed();
+}
+
+void TrackInfoObject::setTimesPlayed(int timesPlayed) {
+    QMutexLocker lock(&m_qMutex);
+    PlayCounter playCounter(m_playCounter);
+    playCounter.setTimesPlayed(timesPlayed);
+    if (m_playCounter != playCounter) {
+        m_playCounter = playCounter;
+        setDirty(true);
+    }
+}
+
+void TrackInfoObject::resetTimesPlayed() {
+    QMutexLocker lock(&m_qMutex);
+    PlayCounter playCounter(m_playCounter);
+    playCounter.resetTimesPlayed();
+    if (m_playCounter != playCounter) {
+        m_playCounter = playCounter;
+        setDirty(true);
+    }
+}
+
 int TrackInfoObject::getTimesPlayed() const {
     QMutexLocker lock(&m_qMutex);
-    return m_iTimesPlayed;
+    return m_playCounter.getTimesPlayed();
 }
 
-void TrackInfoObject::setTimesPlayed(int t) {
+void TrackInfoObject::setPlayedAndUpdatePlayCount(bool bPlayed) {
     QMutexLocker lock(&m_qMutex);
-    if (t != m_iTimesPlayed) {
-        m_iTimesPlayed = t;
+    PlayCounter playCounter(m_playCounter);
+    playCounter.updatePlayed(bPlayed);
+    if (m_playCounter != playCounter) {
+        m_playCounter = playCounter;
         setDirty(true);
     }
 }
 
-void TrackInfoObject::incTimesPlayed() {
-    setPlayedAndUpdatePlaycount(true);
+PlayCounter TrackInfoObject::getPlayCounter() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_playCounter;
 }
 
-bool TrackInfoObject::getPlayed() const {
+void TrackInfoObject::setPlayCounter(const PlayCounter& playCounter) {
     QMutexLocker lock(&m_qMutex);
-    bool bPlayed = m_bPlayed;
-    return bPlayed;
-}
-
-void TrackInfoObject::setPlayedAndUpdatePlaycount(bool bPlayed) {
-    QMutexLocker lock(&m_qMutex);
-    if (bPlayed) {
-        ++m_iTimesPlayed;
-        setDirty(true);
-    }
-    else if (m_bPlayed && !bPlayed) {
-        m_iTimesPlayed = math_max(0, m_iTimesPlayed - 1);
-        setDirty(true);
-    }
-    m_bPlayed = bPlayed;
-}
-
-void TrackInfoObject::setPlayed(bool bPlayed) {
-    QMutexLocker lock(&m_qMutex);
-    if (bPlayed != m_bPlayed) {
-        m_bPlayed = bPlayed;
+    if (m_playCounter != playCounter) {
+        m_playCounter = playCounter;
         setDirty(true);
     }
 }

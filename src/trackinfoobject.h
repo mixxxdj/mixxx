@@ -15,6 +15,7 @@
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/trackid.h"
+#include "track/playcounter.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
@@ -198,18 +199,24 @@ class TrackInfoObject : public QObject {
     QString getTrackNumber() const;
     // Set Track Number
     void setTrackNumber(const QString&);
-    // Return number of times the track has been played
+
+    PlayCounter getPlayCounter() const;
+    void setPlayCounter(const PlayCounter& playCounter);
+
+    // Set played status without affecting the play count
+    void setPlayed(bool bPlayed = true);
+    // Returns true if the  track has been played during this session
+    bool isPlayed() const;
+
+    // Returns the number of times the track has been played
     int getTimesPlayed() const;
     // Set number of times the track has been played
-    void setTimesPlayed(int t);
-    // Increment times played with one
-    void incTimesPlayed();
-    // Returns true if track has been played this instance
-    bool getPlayed() const;
-    // Set played status and increment or decrement playcount.
-    void setPlayedAndUpdatePlaycount(bool);
-    // Set played status without affecting the playcount
-    void setPlayed(bool bPlayed);
+    void setTimesPlayed(int timesPlayed);
+    // Resets the play count back to 0
+    void resetTimesPlayed();
+
+    // Set played status and increment or decrement play count
+    void setPlayedAndUpdatePlayCount(bool bPlayed = true);
 
     // Returns rating
     int getRating() const;
@@ -378,18 +385,16 @@ class TrackInfoObject : public QObject {
     int m_Rating;
     // Bitrate, number of kilobits per second of audio in the track
     int m_iBitrate;
-    // Number of times the track has been played
-    int m_iTimesPlayed;
     // Replay Gain volume
     float m_fReplayGain;
-    // Has this track been played this sessions?
-    bool m_bPlayed;
     // True if header was parsed
     bool m_bHeaderParsed;
     // Cue point in samples or something
     float m_fCuePoint;
     // Date the track was added to the library
     QDateTime m_dateAdded;
+
+    PlayCounter m_playCounter;
 
     Keys m_keys;
 
