@@ -23,14 +23,25 @@
 // not add any additional state (= member variables). Inheritance is
 // only needed for type-safety.
 class DbId {
+private:
+    // Alias for the corresponding native type. This typedef
+    // should actually not be needed by users of this class,
+    // but it keeps the implementation of this class flexible
+    // if we ever gonna need to change it from 'int' to 'long'
+    // or any other type.
+    typedef int value_type;
+
 public:
     DbId()
         : m_value(kInvalidValue) {
         DEBUG_ASSERT(!isValid());
     }
-    explicit DbId(QVariant variant)
-        : m_value(valueOf(std::move(variant))) {
+    explicit DbId(value_type value)
+        : m_value(value) {
         DEBUG_ASSERT(isValid() || (kInvalidValue == m_value));
+    }
+    explicit DbId(QVariant variant)
+        : DbId(valueOf(std::move(variant))) {
     }
 
     bool isValid() const {
@@ -92,13 +103,6 @@ public:
     }
 
 private:
-    // Alias for the corresponding native type. This typedef
-    // should actually not be needed by users of this class,
-    // but it keeps the implementation of this class flexible
-    // if we ever gonna need to change it from 'int' to 'long'
-    // or any other type.
-    typedef int value_type;
-
     static const value_type kInvalidValue = -1;
 
     static const QVariant::Type kVariantType;
