@@ -7,7 +7,7 @@ ControlEffectKnob::ControlEffectKnob(ConfigKey key, double dMinValue, double dMa
         : ControlPotmeter(key, dMinValue, dMaxValue) {
 }
 
-void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
+void ControlEffectKnob::setBehavior(EffectManifestParameter::ControlHint type,
                                      double dMinValue, double dMaxValue) {
     if (m_pControl == NULL) {
         return;

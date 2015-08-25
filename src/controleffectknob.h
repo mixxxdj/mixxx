@@ -9,7 +9,7 @@ class ControlEffectKnob : public ControlPotmeter {
   public:
     ControlEffectKnob(ConfigKey key, double dMinValue = 0.0, double dMaxValue = 1.0);
 
-    void setBehaviour(EffectManifestParameter::ControlHint type,
+    void setBehavior(EffectManifestParameter::ControlHint type,
             double dMinValue, double dMaxValue);
 };
 
