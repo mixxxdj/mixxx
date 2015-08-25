@@ -255,6 +255,13 @@ double ControlDoublePrivate::getMidiParameter() const {
     return value;
 }
 
+double ControlDoublePrivate::neutralParameter() {
+    if (!m_pBehavior.isNull()) {
+        return m_pBehavior->neutralParameter();
+    }
+    return 0.0;
+}
+
 bool ControlDoublePrivate::connectValueChangeRequest(const QObject* receiver,
         const char* method, Qt::ConnectionType type) {
     // confirmation is only required if connect was successful

@@ -30,6 +30,10 @@ void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dPar
     pControl->set(parameterToValue(dNorm), NULL);
 }
 
+double ControlNumericBehavior::neutralParameter() {
+    return 0.0;
+}
+
 ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
                                                  bool allowOutOfBounds)
         : m_dMinValue(dMinValue),

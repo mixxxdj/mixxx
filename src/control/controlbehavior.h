@@ -21,6 +21,8 @@ class ControlNumericBehavior {
     virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
+
+    virtual double neutralParameter();
 };
 
 class ControlPotmeterBehavior : public ControlNumericBehavior {
