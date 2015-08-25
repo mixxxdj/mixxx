@@ -80,6 +80,7 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
     virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
+    virtual double neutralParameter();
 
   protected:
     // a knob position between 0 and 1 where the gain is 1 (0dB)
