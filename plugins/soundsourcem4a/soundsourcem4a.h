@@ -38,6 +38,8 @@ private:
 
     MP4FileHandle m_hFile;
     MP4TrackId m_trackId;
+    MP4Duration m_framesPerSampleBlock;
+    SINT m_numberOfPrefetchSampleBlocks;
     MP4SampleId m_maxSampleBlockId;
     MP4SampleId m_curSampleBlockId;
 

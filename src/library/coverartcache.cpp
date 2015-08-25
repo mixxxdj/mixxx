@@ -7,9 +7,42 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 
-// Large cover art wastes space in our cache when we typicaly won't show them at
-// their full size. If no width is specified, this is the maximum width cap.
-const int kMaxCoverWidth = 300;
+
+namespace {
+    QString pixmapCacheKey(quint16 hash, int width) {
+        if (width == 0) {
+            return QString("CoverArtCache_%1").arg(QString::number(hash));
+        } else {
+            return QString("CoverArtCache_%1_%2")
+                    .arg(QString::number(hash)).arg(width);
+        }
+    }
+
+    // Large cover art wastes space in our cache when we typically won't show them at
+    // their full size. If no width is specified, this is the maximum width cap.
+    const int kMaxCoverSize = 300;
+
+    // The transformation mode when scaling images
+    const Qt::TransformationMode kTransformationMode = Qt::SmoothTransformation;
+
+    // Resizes the image (preserving aspect ratio) if the size of width or height
+    // exceeds maxEdgeSize.
+    inline QImage limitImageSize(const QImage& image, int maxEdgeSize) {
+        if ((image.width() > maxEdgeSize) || (image.height() > maxEdgeSize)) {
+            return image.scaled(
+                    maxEdgeSize, maxEdgeSize,
+                    Qt::KeepAspectRatio,
+                    kTransformationMode);
+        } else {
+            return image;
+        }
+    }
+
+    // Resizes the image (preserving aspect ratio) to width.
+    inline QImage resizeImageWidth(const QImage& image, int width) {
+        return image.scaledToWidth(width, kTransformationMode);
+    }
+} // anonymous namespace
 
 const bool sDebug = false;
 
@@ -60,8 +93,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     // column). It's very important to keep the cropped covers in cache because
     // it avoids having to rescale+crop it ALWAYS (which brings a lot of
     // performance issues).
-    QString cacheKey = CoverArtUtils::pixmapCacheKey(requestInfo.hash,
-                                                     desiredWidth);
+    QString cacheKey = pixmapCacheKey(requestInfo.hash, desiredWidth);
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
@@ -119,11 +151,9 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     // Adjust the cover size according to the request or downsize the image for
     // efficiency.
     if (res.desiredWidth > 0) {
-        res.cover.image = CoverArtUtils::resizeImage(res.cover.image,
-                                                     res.desiredWidth);
+        res.cover.image = resizeImageWidth(res.cover.image, res.desiredWidth);
     } else {
-        res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image,
-                                                          kMaxCoverWidth);
+        res.cover.image = limitImageSize(res.cover.image, kMaxCoverSize);
     }
 
     return res;
@@ -139,8 +169,7 @@ void CoverArtCache::coverLoaded() {
         qDebug() << "CoverArtCache::coverLoaded" << res.cover;
     }
 
-    QString cacheKey = CoverArtUtils::pixmapCacheKey(res.cover.info.hash,
-                                                     res.desiredWidth);
+    QString cacheKey = pixmapCacheKey(res.cover.info.hash, res.desiredWidth);
     QPixmap pixmap;
     if (!QPixmapCache::find(cacheKey, &pixmap) && !res.cover.image.isNull()) {
         pixmap.convertFromImage(res.cover.image);

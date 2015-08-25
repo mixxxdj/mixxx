@@ -553,6 +553,8 @@ void DlgPrefControls::slotSetScheme(int) {
 }
 
 void DlgPrefControls::slotSetSkin(int) {
+    ComboBoxSkinconf->repaint(); // without it the combobox sticks to the old value until
+                                 // the new Skin is fully loaded
     m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), ComboBoxSkinconf->currentText());
     m_mixxx->rebootMixxxView();
     checkSkinResolution(ComboBoxSkinconf->currentText())

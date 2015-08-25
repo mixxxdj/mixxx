@@ -639,6 +639,7 @@ class MixxxCore(Feature):
                    "engine/readaheadmanager.cpp",
                    "engine/enginetalkoverducking.cpp",
                    "cachingreader.cpp",
+                   "cachingreaderchunk.cpp",
                    "cachingreaderworker.cpp",
 
                    "analyserrg.cpp",
@@ -764,6 +765,7 @@ class MixxxCore(Feature):
                    "library/proxytrackmodel.cpp",
                    "library/coverart.cpp",
                    "library/coverartcache.cpp",
+                   "library/coverartutils.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
@@ -899,6 +901,7 @@ class MixxxCore(Feature):
                    "skin/skincontext.cpp",
                    "skin/svgparser.cpp",
                    "skin/pixmapsource.cpp",
+                   "skin/launchimage.cpp",
 
                    "sampleutil.cpp",
                    "samplebuffer.cpp",
