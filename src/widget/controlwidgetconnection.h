@@ -22,6 +22,9 @@ class ControlWidgetConnection : public QObject {
 
     double getControlParameter() const;
     double getControlParameterForValue(double value) const;
+    inline double neutralParameter() const {
+        return m_pControl ? m_pControl->neutralParameter() : 0.0;
+    }
 
     const ConfigKey& getKey() const {
         return m_pControl->getKey();

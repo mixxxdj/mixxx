@@ -60,6 +60,10 @@ class ControlObjectSlave : public QObject {
         return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
     }
 
+    inline double neutralParameter() const {
+        return m_pControl ? m_pControl->neutralParameter() : 0.0;
+    }
+
   public slots:
     // Set the control to a new value. Non-blocking.
     inline void slotSet(double v) {
