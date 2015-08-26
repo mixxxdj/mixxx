@@ -503,7 +503,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
-            QList<int> ids = m_playlistDao.getTrackIds(playlistId);
+            QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
             emit(analyzeTracks(ids));
         }
     }
@@ -595,7 +595,10 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
 
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
-    int trackId = pTrack.isNull() ? -1 : pTrack->getId();
+    TrackId trackId;
+    if (!pTrack.isNull()) {
+        trackId = pTrack->getId();
+    }
     m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);
 
     TreeItem* rootItem = m_childModel.getItem(QModelIndex());

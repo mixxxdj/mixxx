@@ -957,6 +957,7 @@ class MixxxCore(Feature):
                    "util/tapfilter.cpp",
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
+                   "util/dbid.cpp",
 
                    '#res/mixxx.qrc'
                    ]

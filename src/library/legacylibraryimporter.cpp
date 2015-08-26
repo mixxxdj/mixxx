@@ -21,7 +21,7 @@
 
 struct LegacyPlaylist {
     QString name;
-    QList<int> indexes;
+    QList<TrackId> indexes;
 };
 
 void doNothing(TrackInfoObject*) {
@@ -54,7 +54,7 @@ void LegacyLibraryImporter::import() {
 
     qDebug() << "Starting upgrade from 1.7 library...";
 
-    QHash<int, QString> playlistHashTable; // Maps track indices onto track locations
+    QHash<TrackId, QString> playlistHashTable; // Maps track indices onto track locations
     QList<LegacyPlaylist> legacyPlaylists; // <= 1.7 playlists
 
     if (doc.setContent(&file, false, errorMsg, errorLine, errorColumn)) {
@@ -74,10 +74,10 @@ void LegacyLibraryImporter::import() {
             QDomElement listNode = playlist.firstChildElement("List").toElement();
             QDomNodeList trackIDs = listNode.elementsByTagName("Id");
             for (int j = 0; j < trackIDs.size(); j++) {
-                int id = trackIDs.at(j).toElement().text().toInt();
-                if (!playlistHashTable.contains(id))
-                    playlistHashTable.insert(id, "");
-                legPlaylist.indexes.push_back(id); // Save this track id.
+                TrackId trackId(trackIDs.at(j).toElement().text().toInt());
+                if (!playlistHashTable.contains(trackId))
+                    playlistHashTable.insert(trackId, "");
+                legPlaylist.indexes.push_back(trackId); // Save this track id.
             }
             // Save this playlist in our list.
             legacyPlaylists.push_back(legPlaylist);
@@ -129,9 +129,10 @@ void LegacyLibraryImporter::import() {
                 // Check if this track is used in a playlist anywhere. If it is, save the
                 // track location. (The "id" of a track in 1.8 is a database index, so it's totally
                 // different. Using the track location is the best way for us to identify the song.)
-                int id = trackInfo17.getId();
-                if (playlistHashTable.contains(id))
-                    playlistHashTable[id] = trackInfo17.getLocation();
+                TrackId trackId(pTrack->getId());
+                if (playlistHashTable.contains(trackId)) {
+                    playlistHashTable[trackId] = pTrack->getLocation();
+                }
             }
         }
 
@@ -148,23 +149,23 @@ void LegacyLibraryImporter::import() {
             int playlistId = m_playlistDao.createPlaylist(current.name);
 
             // For each track ID in the XML...
-            QList<int> trackIDs = current.indexes;
-            for (int i = 0; i < trackIDs.size(); i++)
+            QList<TrackId> trackIds = current.indexes;
+            for (int i = 0; i < trackIds.size(); i++)
             {
                 QString trackLocation;
-                int id = trackIDs[i];
+                TrackId trackId(trackIds[i]);
                 //qDebug() << "track ID:" << id;
 
                 // Try to resolve the (XML's) track ID to a track location.
-                if (playlistHashTable.contains(id)) {
-                    trackLocation = playlistHashTable[id];
+                if (playlistHashTable.contains(trackId)) {
+                    trackLocation = playlistHashTable[trackId];
                     //qDebug() << "Resolved to:" << trackLocation;
                 }
 
                 // Get the database's track ID (NOT the XML's track ID!)
-                int dbTrackId = m_trackDao.getTrackId(trackLocation);
+                TrackId dbTrackId(m_trackDao.getTrackId(trackLocation));
 
-                if (dbTrackId >= 0) {
+                if (dbTrackId.isValid()) {
                     // Add it to the database's playlist.
                     // TODO(XXX): Care if the append succeeded.
                     m_playlistDao.appendTrackToPlaylist(dbTrackId, playlistId);

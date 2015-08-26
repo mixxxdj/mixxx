@@ -88,7 +88,7 @@ int DirectoryDAO::removeDirectory(const QString& dir) {
 }
 
 
-QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
+QSet<TrackId> DirectoryDAO::relocateDirectory(const QString& oldFolder,
                                           const QString& newFolder) {
     // TODO(rryan): This method could use error reporting. It can fail in
     // mysterious ways for example if a track in the oldFolder also has a zombie
@@ -103,7 +103,7 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate directory"
                                 << oldFolder << "to" << newFolder;
-        return QSet<int>();
+        return QSet<TrackId>();
     }
 
     FieldEscaper escaper(m_database);
@@ -122,14 +122,14 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
                   .arg(startsWithOldFolder));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
-        return QSet<int>();
+        return QSet<TrackId>();
     }
 
-    QSet<int> ids;
+    QSet<TrackId> trackIds;
     QList<int> loc_ids;
     QStringList old_locs;
     while (query.next()) {
-        ids.insert(query.value(0).toInt());
+        trackIds.insert(TrackId(query.value(0)));
         loc_ids.append(query.value(1).toInt());
         old_locs.append(query.value(2).toString());
     }
@@ -144,13 +144,13 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
         query.bindValue("id", loc_ids.at(i));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
-            return QSet<int>();
+            return QSet<TrackId>();
         }
     }
 
-    qDebug() << "Relocated tracks:" << ids.size();
+    qDebug() << "Relocated tracks:" << trackIds.size();
     transaction.commit();
-    return ids;
+    return trackIds;
 }
 
 QStringList DirectoryDAO::getDirs() {

@@ -142,7 +142,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
         return false;
     }
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
         m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
@@ -153,9 +153,9 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
     qDebug() << "CrateFeature::dropAcceptChild adding tracks"
             << trackIds.size() << " to crate "<< crateId;
     // remove tracks that could not be added
-    for (int trackId = 0; trackId < trackIds.size(); ++trackId) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
+    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); ++trackIdIndex) {
+        if (!trackIds.at(trackIdIndex).isValid()) {
+            trackIds.removeAt(trackIdIndex--);
         }
     }
     m_crateDao.addTracksToCrate(crateId, &trackIds);
@@ -589,7 +589,7 @@ void CrateFeature::slotAnalyzeCrate() {
     if (m_lastRightClickedIndex.isValid()) {
         int crateId = crateIdFromIndex(m_lastRightClickedIndex);
         if (crateId >= 0) {
-            QList<int> ids = m_crateDao.getTrackIds(crateId);
+            QList<TrackId> ids = m_crateDao.getTrackIds(crateId);
             emit(analyzeTracks(ids));
         }
     }
@@ -712,7 +712,7 @@ QString CrateFeature::getRootViewHtml() const {
 
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
-    int trackId = pTrack.isNull() ? -1 : pTrack->getId();
+    TrackId trackId(pTrack.isNull() ? TrackId() : pTrack->getId());
     m_crateDao.getCratesTrackIsIn(trackId, &m_cratesSelectedTrackIsIn);
 
     TreeItem* rootItem = m_childModel.getItem(QModelIndex());

@@ -34,6 +34,8 @@
 #include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
+#include "track/trackid.h"
+#include "util/sandbox.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
@@ -214,7 +216,7 @@ class TrackInfoObject : public QObject {
     // Set played status without affecting the playcount
     void setPlayed(bool bPlayed);
 
-    int getId() const;
+    TrackId getId() const;
 
     // Returns rating
     int getRating() const;
@@ -320,7 +322,7 @@ class TrackInfoObject : public QObject {
 
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
-    void setId(int iId);
+    void setId(TrackId id);
 
     // Whether the track should delete itself when its reference count drops to
     // zero. Used for cleaning up after shutdown.
@@ -384,7 +386,7 @@ class TrackInfoObject : public QObject {
     // True if header was parsed
     bool m_bHeaderParsed;
     // Id. Unique ID of track
-    int m_iId;
+    TrackId m_id;
     // Cue point in samples or something
     float m_fCuePoint;
     // Date the track was added to the library

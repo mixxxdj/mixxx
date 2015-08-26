@@ -11,7 +11,7 @@
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
-#include "metadata/audiotagger.h"
+#include "metadata/trackmetadatataglib.h"
 #include "util/dnd.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
@@ -119,13 +119,13 @@ QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const {
     return data(index2).toString();
 }
 
-int BrowseTableModel::getTrackId(const QModelIndex& index) const {
+TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
     Q_UNUSED(index);
     // We can't implement this as it stands.
-    return -1;
+    return TrackId();
 }
 
-const QLinkedList<int> BrowseTableModel::getTrackRows(int trackId) const {
+const QLinkedList<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     Q_UNUSED(trackId);
     // We can't implement this as it stands.
     return QLinkedList<int>();
@@ -194,7 +194,7 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
         return;
     }
 
-    QList<int> deleted_ids;
+    QList<TrackId> deleted_ids;
     bool any_deleted = false;
     TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
 
@@ -382,9 +382,8 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     }
 
     QStandardItem* item = itemFromIndex(index);
-    QString track_location = getTrackLocation(index);
-    AudioTagger tagger(track_location, m_current_directory.token());
-    if (OK == tagger.save(trackMetadata)) {
+    QString track_location(getTrackLocation(index));
+    if (OK == writeTrackMetadataIntoFile(trackMetadata, track_location)) {
         // Modify underlying interalPointer object
         item->setText(value.toString());
         item->setToolTip(item->text());

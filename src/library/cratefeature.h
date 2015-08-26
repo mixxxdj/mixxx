@@ -42,7 +42,7 @@ class CrateFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
 
   signals:
-    void analyzeTracks(QList<int>);
+    void analyzeTracks(QList<TrackId>);
 
   public slots:
     void activate();

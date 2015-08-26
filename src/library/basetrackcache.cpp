@@ -72,11 +72,15 @@ QString BaseTrackCache::columnSortForFieldIndex(int index) const {
     return m_columnCache.columnSortForFieldIndex(index);
 }
 
-void BaseTrackCache::slotTracksAdded(QSet<int> trackIds) {
+void BaseTrackCache::slotTracksAdded(QSet<TrackId> trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksAdded" << trackIds.size();
     }
-    updateTracksInIndex(trackIds);
+    QSet<TrackId> updateTrackIds;
+    for (const auto& trackId: trackIds) {
+        updateTrackIds.insert(trackId);
+    }
+    updateTracksInIndex(updateTrackIds);
 }
 
 void BaseTrackCache::slotDbTrackAdded(TrackPointer pTrack) {
@@ -86,32 +90,32 @@ void BaseTrackCache::slotDbTrackAdded(TrackPointer pTrack) {
     updateIndexWithTrackpointer(pTrack);
 }
 
-void BaseTrackCache::slotTracksRemoved(QSet<int> trackIds) {
+void BaseTrackCache::slotTracksRemoved(QSet<TrackId> trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksRemoved" << trackIds.size();
     }
-    foreach (int trackId, trackIds) {
+    for (const auto& trackId : trackIds) {
         m_trackInfo.remove(trackId);
     }
 }
 
-void BaseTrackCache::slotTrackDirty(int trackId) {
+void BaseTrackCache::slotTrackDirty(TrackId trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackDirty" << trackId;
     }
     m_dirtyTracks.insert(trackId);
 }
 
-void BaseTrackCache::slotTrackChanged(int trackId) {
+void BaseTrackCache::slotTrackChanged(TrackId trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackChanged" << trackId;
     }
-    QSet<int> trackIds;
+    QSet<TrackId> trackIds;
     trackIds.insert(trackId);
     emit(tracksChanged(trackIds));
 }
 
-void BaseTrackCache::slotTrackClean(int trackId) {
+void BaseTrackCache::slotTrackClean(TrackId trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;
     }
@@ -119,15 +123,15 @@ void BaseTrackCache::slotTrackClean(int trackId) {
     updateTrackInIndex(trackId);
 }
 
-bool BaseTrackCache::isCached(int trackId) const {
+bool BaseTrackCache::isCached(TrackId trackId) const {
     return m_trackInfo.contains(trackId);
 }
 
-void BaseTrackCache::ensureCached(int trackId) {
+void BaseTrackCache::ensureCached(TrackId trackId) {
     updateTrackInIndex(trackId);
 }
 
-void BaseTrackCache::ensureCached(QSet<int> trackIds) {
+void BaseTrackCache::ensureCached(QSet<TrackId> trackIds) {
     updateTracksInIndex(trackIds);
 }
 
@@ -135,7 +139,7 @@ void BaseTrackCache::setSearchColumns(const QStringList& columns) {
     m_searchColumns = columns;
 }
 
-TrackPointer BaseTrackCache::lookupCachedTrack(int trackId) const {
+TrackPointer BaseTrackCache::lookupCachedTrack(TrackId trackId) const {
     // Only get the track from the TrackDAO if it's in the cache and marked as
     // dirty.
     if (m_bIsCaching && m_dirtyTracks.contains(trackId)) {
@@ -155,12 +159,11 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
 
     int numColumns = columnCount();
 
-    int id = pTrack->getId();
-
-    if (id > 0) {
+    TrackId trackId(pTrack->getId());
+    if (trackId.isValid()) {
         // m_trackInfo[id] will insert a QVector<QVariant> into the
         // m_trackInfo HashTable with the key "id"
-        QVector<QVariant>& record = m_trackInfo[id];
+        QVector<QVariant>& record = m_trackInfo[trackId];
         // prealocate memory for all columns at once
         record.resize(numColumns);
         for (int i = 0; i < numColumns; ++i) {
@@ -193,11 +196,11 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
     int idColumn = query.record().indexOf(m_idColumn);
 
     while (query.next()) {
-        int id = query.value(idColumn).toInt();
+        TrackId trackId(query.value(idColumn));
 
         //m_trackInfo[id] will insert a QVector<QVariant> into the
         //m_trackInfo HashTable with the key "id"
-        QVector<QVariant>& record = m_trackInfo[id];
+        QVector<QVariant>& record = m_trackInfo[trackId];
         record.resize(numColumns);
 
         for (int i = 0; i < numColumns; ++i) {
@@ -233,20 +236,20 @@ void BaseTrackCache::buildIndex() {
     m_bIndexBuilt = true;
 }
 
-void BaseTrackCache::updateTrackInIndex(int trackId) {
-    QSet<int> trackIds;
+void BaseTrackCache::updateTrackInIndex(TrackId trackId) {
+    QSet<TrackId> trackIds;
     trackIds.insert(trackId);
     updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
+void BaseTrackCache::updateTracksInIndex(QSet<TrackId> trackIds) {
     if (trackIds.size() == 0) {
         return;
     }
 
     QStringList idStrings;
-    foreach (int trackId, trackIds) {
-        idStrings << QVariant(trackId).toString();
+    for (const auto& trackId: trackIds) {
+        idStrings << trackId.toString();
     }
 
     QString queryString = QString("SELECT %1 FROM %2 WHERE %3 in (%4)")
@@ -330,7 +333,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     }
 }
 
-QVariant BaseTrackCache::data(int trackId, int column) const {
+QVariant BaseTrackCache::data(TrackId trackId, int column) const {
     QVariant result;
 
     if (!m_bIndexBuilt) {
@@ -351,7 +354,7 @@ QVariant BaseTrackCache::data(int trackId, int column) const {
     // metadata. Currently the upper-levels will not delegate row-specific
     // columns to this method, but there should still be a check here I think.
     if (!result.isValid()) {
-        QHash<int, QVector<QVariant> >::const_iterator it =
+        QHash<TrackId, QVector<QVariant> >::const_iterator it =
                 m_trackInfo.find(trackId);
         if (it != m_trackInfo.end()) {
             const QVector<QVariant>& fields = it.value();
@@ -361,13 +364,13 @@ QVariant BaseTrackCache::data(int trackId, int column) const {
     return result;
 }
 
-void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
+void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
                                    QString searchQuery,
                                    QString extraFilter,
                                    QString orderByClause,
                                    const int sortColumn,
                                    Qt::SortOrder sortOrder,
-                                   QHash<int, int>* trackToIndex) {
+                                   QHash<TrackId, int>* trackToIndex) {
     // Skip processing if there are no tracks to filter or sort.
     if (trackIds.size() == 0) {
         return;
@@ -385,9 +388,9 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     QStringList idStrings;
     // TODO(rryan) consider making this the data passed in and a separate
     // QVector for output
-    QSet<int> dirtyTracks;
-    foreach (int trackId, trackIds) {
-        idStrings << QVariant(trackId).toString();
+    QSet<TrackId> dirtyTracks;
+    for (const auto& trackId: trackIds) {
+        idStrings << trackId.toString();
         if (m_dirtyTracks.contains(trackId)) {
             dirtyTracks.insert(trackId);
         }
@@ -433,9 +436,9 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     }
 
     while (query.next()) {
-        int id = query.value(idColumn).toInt();
-        (*trackToIndex)[id] = m_trackOrder.size();
-        m_trackOrder.push_back(id);
+        TrackId trackId(query.value(idColumn));
+        (*trackToIndex)[trackId] = m_trackOrder.size();
+        m_trackOrder.push_back(trackId);
     }
 
     // At this point, the original set of tracks have been divided into two
@@ -451,7 +454,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
         return;
     }
 
-    foreach (int trackId, dirtyTracks) {
+    for (TrackId trackId: dirtyTracks) {
         // Only get the track if it is in the cache.
         TrackPointer pTrack = lookupCachedTrack(trackId);
 
@@ -531,7 +534,7 @@ std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query, QString ext
 int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
                                            const int sortColumn,
                                            Qt::SortOrder sortOrder,
-                                           const QVector<int> trackIds) const {
+                                           const QVector<TrackId> trackIds) const {
     QVariant trackValue;
     getTrackValueForColumn(pTrack, sortColumn, trackValue);
 
@@ -547,7 +550,7 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
     // returns 0.
     while (min <= max) {
         int mid = min + (max - min) / 2;
-        int otherTrackId = trackIds[mid];
+        TrackId otherTrackId(trackIds[mid]);
 
         // This should not happen, but it's a recoverable error so we should only log it.
         if (!m_trackInfo.contains(otherTrackId)) {
