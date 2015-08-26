@@ -90,6 +90,14 @@ public:
         m_key = key;
     }
 
+    // URL (used in promo track)
+    inline const QString& getUrl() const {
+        return m_url;
+    }
+    inline void setUrl(QString url) {
+        m_url = url;
+    }
+
     // #channels
     inline int getChannels() const {
         return m_channels;
@@ -208,6 +216,7 @@ private:
     QString m_composer;
     QString m_grouping;
     QString m_key;
+    QString m_url;
 
     // The following members need to be initialized
     // explicitly in the constructor! Otherwise their
