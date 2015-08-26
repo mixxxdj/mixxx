@@ -121,6 +121,8 @@ public:
     inline void setDuration(int duration) {
         m_duration = duration;
     }
+    // Returns the duration as a string: H:MM:SS
+    static QString formatDuration(int duration);
 
     // beats / minute
     static const double kBpmUndefined;
