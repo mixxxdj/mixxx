@@ -203,4 +203,25 @@ TrackMetadata::TrackMetadata()
       m_sampleRate(0) {
 }
 
+bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
+    return (lhs.getArtist() == rhs.getArtist()) &&
+            (lhs.getTitle() == rhs.getTitle()) &&
+            (lhs.getAlbum() == rhs.getAlbum()) &&
+            (lhs.getAlbumArtist() == rhs.getAlbumArtist()) &&
+            (lhs.getGenre() == rhs.getGenre()) &&
+            (lhs.getComment() == rhs.getComment()) &&
+            (lhs.getYear() == rhs.getYear()) &&
+            (lhs.getTrackNumber() == rhs.getTrackNumber()) &&
+            (lhs.getComposer() == rhs.getComposer()) &&
+            (lhs.getGrouping() == rhs.getGrouping()) &&
+            (lhs.getKey() == rhs.getKey()) &&
+            (lhs.getUrl() == rhs.getUrl()) &&
+            (lhs.getChannels() == rhs.getChannels()) &&
+            (lhs.getSampleRate() == rhs.getSampleRate()) &&
+            (lhs.getBitrate() == rhs.getBitrate()) &&
+            (lhs.getDuration() == rhs.getDuration()) &&
+            (lhs.getBpm() == rhs.getBpm()) &&
+            (lhs.getReplayGain() == rhs.getReplayGain());
+}
+
 } //namespace Mixxx
