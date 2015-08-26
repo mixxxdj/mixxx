@@ -72,6 +72,35 @@ void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
     if (copyCount > 0) {
         (void)m_pOutputFifo->write(buffer, copyCount);
     }
+    m_streamFramesWritten += frames;
+}
+
+void EngineNetworkStream::writeSilence(int frames) {
+    int writeAvailable = m_pOutputFifo->writeAvailable();
+    int writeRequired = frames * m_numOutputChannels;
+    if (writeAvailable < writeRequired) {
+        // Flush outdated frames to free space for writing
+        int readRequired = writeRequired - writeAvailable;
+        qDebug() << "EngineNetworkStream::writeSilence flushed" << readRequired
+                 << "samples";
+        m_pOutputFifo->flushReadData(readRequired);
+        writeAvailable = m_pOutputFifo->writeAvailable();
+    }
+    int clearCount = math_min(writeAvailable, writeRequired);
+    if (clearCount > 0) {
+        CSAMPLE* dataPtr1;
+        ring_buffer_size_t size1;
+        CSAMPLE* dataPtr2;
+        ring_buffer_size_t size2;
+        (void)m_pOutputFifo->aquireWriteRegions(clearCount,
+                &dataPtr1, &size1, &dataPtr2, &size2);
+        SampleUtil::clear(dataPtr1,size1);
+        if (size2 > 0) {
+            SampleUtil::clear(dataPtr2,size2);
+        }
+        m_pOutputFifo->releaseWriteRegions(clearCount);
+    }
+    m_streamFramesWritten += frames;
 }
 
 void EngineNetworkStream::read(CSAMPLE* buffer, int frames) {

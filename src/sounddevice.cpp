@@ -68,7 +68,7 @@ void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
 }
 
 SoundDeviceError SoundDevice::addOutput(const AudioOutputBuffer &out) {
-    //Check if the output channels are already used
+    // Check if the output channels are already used
     foreach (AudioOutputBuffer myOut, m_audioOutputs) {
         if (out.channelsClash(myOut)) {
             return SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL;

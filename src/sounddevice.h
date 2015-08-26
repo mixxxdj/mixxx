@@ -37,6 +37,8 @@ enum SoundDeviceError {
     SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL,
 };
 
+const QString kNetworkDeviceInternalName = "Network stream";
+
 class SoundDevice {
   public:
     SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm);

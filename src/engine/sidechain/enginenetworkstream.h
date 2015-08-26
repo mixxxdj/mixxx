@@ -19,6 +19,7 @@ class EngineNetworkStream {
 
     void write(const CSAMPLE* buffer, int frames);
     void read(CSAMPLE* buffer, int frames);
+    void writeSilence(int frames);
 
     qint64 getStreamTimeMs();
     qint64 getStreamTimeFrames();

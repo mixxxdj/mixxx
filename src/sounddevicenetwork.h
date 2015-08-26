@@ -47,7 +47,6 @@ class SoundDeviceNetwork : public SoundDevice {
     static volatile int m_underflowHappend;
     qint64 m_nsInAudioCb;
     int m_framesSinceAudioLatencyUsageUpdate;
-    int m_syncBuffers;
 };
 
 #endif // SOUNDDEVICENETWORK_H

@@ -29,6 +29,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
                                        SoundManager *sm,
                                        unsigned int devIndex)
         : SoundDevice(config, sm),
+          m_pNetworkStream(NULL),
           m_outputFifo(NULL),
           m_inputFifo(NULL),
           m_outputDrift(false),
@@ -36,14 +37,13 @@ SoundDeviceNetwork::SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
           m_bSetThreadPriority(false),
           m_underflowUpdateCount(0),
           m_nsInAudioCb(0),
-          m_framesSinceAudioLatencyUsageUpdate(0),
-          m_syncBuffers(2) {
+          m_framesSinceAudioLatencyUsageUpdate(0) {
     (void)devIndex;
 
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_dSampleRate = 44100.0;
-    m_strInternalName = "Network stream";
+    m_strInternalName = kNetworkDeviceInternalName;
     m_strDisplayName = QObject::tr("Network stream");
     m_iNumInputChannels = 0;
     m_iNumOutputChannels = 2;
@@ -63,6 +63,7 @@ SoundDeviceNetwork::~SoundDeviceNetwork() {
 }
 
 Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
+    Q_UNUSED(syncBuffers);
     qDebug() << "SoundDeviceNetwork::open()" << getInternalName();
 
     // Sample rate
@@ -76,19 +77,11 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
     qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:"
              << bufferMSec << "ms";
 
-    m_syncBuffers = syncBuffers;
-
     // Create the callback function pointer.
     if (isClkRefDevice) {
         // Network device as clock Reference is not yet supported
         DEBUG_ASSERT(false);
-    } else if (m_syncBuffers == 2) { // "Default (long delay)"
-        // Using a callback from a Network device not yet supported
-        DEBUG_ASSERT(false);
-    } else if (m_syncBuffers == 1) { // "Disabled (short delay)"
-        // Can't work in with the network device
-        DEBUG_ASSERT(false);
-    } else if (m_syncBuffers == 0) { // "Experimental (no delay)"
+    } else {
         // Feet the network device buffer directly from the
         // clock reference device callback
         // This is what should work best.
@@ -141,63 +134,60 @@ void SoundDeviceNetwork::readProcess() {
     if (!m_inputFifo || !m_pNetworkStream) return;
 
     int inChunkSize = m_framesPerBuffer * m_iNumInputChannels;
-    if (m_syncBuffers == 0) { // "Experimental (no delay)"
-        // Polling mode
-        int readAvailable = m_pNetworkStream->getReadExpected()
-                * m_iNumInputChannels;
-        int writeAvailable = m_inputFifo->writeAvailable();
-        int copyCount = qMin(writeAvailable, readAvailable);
-        if (copyCount > 0) {
-            CSAMPLE* dataPtr1;
-            ring_buffer_size_t size1;
-            CSAMPLE* dataPtr2;
-            ring_buffer_size_t size2;
-            (void)m_inputFifo->aquireWriteRegions(copyCount,
-                    &dataPtr1, &size1, &dataPtr2, &size2);
-            // Fetch fresh samples and write to the the input buffer
-            m_pNetworkStream->read(dataPtr1,
-                    size1 / m_iNumInputChannels);
-            CSAMPLE* lastFrame = &dataPtr1[size1 - m_iNumInputChannels];
-            if (size2 > 0) {
-                m_pNetworkStream->read(dataPtr2,
-                        size2 / m_iNumInputChannels);
-                lastFrame = &dataPtr2[size2 - m_iNumInputChannels];
-            }
-            m_inputFifo->releaseWriteRegions(copyCount);
+    int readAvailable = m_pNetworkStream->getReadExpected()
+            * m_iNumInputChannels;
+    int writeAvailable = m_inputFifo->writeAvailable();
+    int copyCount = qMin(writeAvailable, readAvailable);
+    if (copyCount > 0) {
+        CSAMPLE* dataPtr1;
+        ring_buffer_size_t size1;
+        CSAMPLE* dataPtr2;
+        ring_buffer_size_t size2;
+        (void)m_inputFifo->aquireWriteRegions(copyCount,
+                &dataPtr1, &size1, &dataPtr2, &size2);
+        // Fetch fresh samples and write to the the input buffer
+        m_pNetworkStream->read(dataPtr1,
+                size1 / m_iNumInputChannels);
+        CSAMPLE* lastFrame = &dataPtr1[size1 - m_iNumInputChannels];
+        if (size2 > 0) {
+            m_pNetworkStream->read(dataPtr2,
+                    size2 / m_iNumInputChannels);
+            lastFrame = &dataPtr2[size2 - m_iNumInputChannels];
+        }
+        m_inputFifo->releaseWriteRegions(copyCount);
 
-            if (readAvailable > writeAvailable + inChunkSize / 2) {
-                // we are not able to consume all frames
-                if (m_inputDrift) {
-                    // Skip one frame
-                    //qDebug() << "SoundDevicePortAudio::readProcess() skip one frame"
-                    //        << (float)writeAvailable / inChunkSize << (float)readAvailable / inChunkSize;
-                    m_pNetworkStream->read(dataPtr1, 1);
-                } else {
-                    m_inputDrift = true;
-                }
-            } else if (readAvailable < inChunkSize / 2) {
-                // We should read at least inChunkSize
-                if (m_inputDrift) {
-                    // duplicate one frame
-                    //qDebug() << "SoundDevicePortAudio::readProcess() duplicate one frame"
-                    //        << (float)writeAvailable / inChunkSize << (float)readAvailable / inChunkSize;
-                    (void) m_inputFifo->aquireWriteRegions(
-                            m_iNumInputChannels, &dataPtr1, &size1,
-                            &dataPtr2, &size2);
-                    if (size1) {
-                        SampleUtil::copy(dataPtr1, lastFrame, size1);
-                        m_inputFifo->releaseWriteRegions(size1);
-                    }
-                } else {
-                    m_inputDrift = true;
+        if (readAvailable > writeAvailable + inChunkSize / 2) {
+            // we are not able to consume all frames
+            if (m_inputDrift) {
+                // Skip one frame
+                //qDebug() << "SoundDevicePortAudio::readProcess() skip one frame"
+                //        << (float)writeAvailable / inChunkSize << (float)readAvailable / inChunkSize;
+                m_pNetworkStream->read(dataPtr1, 1);
+            } else {
+                m_inputDrift = true;
+            }
+        } else if (readAvailable < inChunkSize / 2) {
+            // We should read at least inChunkSize
+            if (m_inputDrift) {
+                // duplicate one frame
+                //qDebug() << "SoundDevicePortAudio::readProcess() duplicate one frame"
+                //        << (float)writeAvailable / inChunkSize << (float)readAvailable / inChunkSize;
+                (void) m_inputFifo->aquireWriteRegions(
+                        m_iNumInputChannels, &dataPtr1, &size1,
+                        &dataPtr2, &size2);
+                if (size1) {
+                    SampleUtil::copy(dataPtr1, lastFrame, size1);
+                    m_inputFifo->releaseWriteRegions(size1);
                 }
             } else {
-                m_inputDrift = false;
+                m_inputDrift = true;
             }
+        } else {
+            m_inputDrift = false;
         }
     }
 
-    int readAvailable = m_inputFifo->readAvailable();
+    readAvailable = m_inputFifo->readAvailable();
     int readCount = inChunkSize;
     if (inChunkSize > readAvailable) {
         readCount = readAvailable;
@@ -243,6 +233,7 @@ void SoundDeviceNetwork::writeProcess() {
         m_underflowHappend = 1;
         //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
     }
+    //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize;
     if (writeCount) {
         CSAMPLE* dataPtr1;
         ring_buffer_size_t size1;
@@ -262,60 +253,53 @@ void SoundDeviceNetwork::writeProcess() {
         }
         m_outputFifo->releaseWriteRegions(writeCount);
     }
-
-    if (m_syncBuffers == 0) { // "Experimental (no delay)"
-        // Polling
-        int writeAvailable = m_pNetworkStream->getWriteExpected()
-                * m_iNumOutputChannels;
-        int readAvailable = m_outputFifo->readAvailable();
-        int copyCount = qMin(readAvailable, writeAvailable);
-        //qDebug() << "SoundDevicePortAudio::writeProcess()" << toRead << writeAvailable;
-        if (copyCount > 0) {
-            CSAMPLE* dataPtr1;
-            ring_buffer_size_t size1;
-            CSAMPLE* dataPtr2;
-            ring_buffer_size_t size2;
-            m_outputFifo->aquireReadRegions(copyCount,
-                    &dataPtr1, &size1, &dataPtr2, &size2);
-            if (writeAvailable >= outChunkSize * 2) {
-                // Underflow
-                //qDebug() << "SoundDevicePortAudio::writeProcess() Buffer empty";
-                // fill buffer by duplicating frames until we are synced
-                for (int i = 0; i < writeAvailable - copyCount;
-                        i += m_iNumOutputChannels) {
-                    m_pNetworkStream->write(dataPtr1, 1);
-                }
-                m_underflowHappend = 1;
-            } else if (writeAvailable > readAvailable + outChunkSize / 2) {
-                // try to keep PAs buffer filled up to 0.5 chunks
-                if (m_outputDrift) {
-                    // duplicate one frame
-                    //qDebug() << "SoundDevicePortAudio::writeProcess() duplicate one frame"
-                    //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                    m_pNetworkStream->write(dataPtr1, 1);
-                } else {
-                    //qDebug() << "SoundDevicePortAudio::writeProcess() OK" << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                    m_outputDrift = true;
-                }
-            } else if (writeAvailable < outChunkSize / 2) {
-                // We are not able to store all new frames
-                if (m_outputDrift) {
-                    //qDebug() << "SoundDevicePortAudio::writeProcess() skip one frame"
-                    //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                    ++copyCount;
-                } else {
-                    m_outputDrift = true;
-                }
+    writeAvailable = m_pNetworkStream->getWriteExpected()
+            * m_iNumOutputChannels;
+    int readAvailable = m_outputFifo->readAvailable();
+    int copyCount = qMin(readAvailable, writeAvailable);
+    //qDebug() << "SoundDevicePortAudio::writeProcess()" << toRead << writeAvailable;
+    if (copyCount > 0) {
+        CSAMPLE* dataPtr1;
+        ring_buffer_size_t size1;
+        CSAMPLE* dataPtr2;
+        ring_buffer_size_t size2;
+        m_outputFifo->aquireReadRegions(copyCount,
+                &dataPtr1, &size1, &dataPtr2, &size2);
+        if (writeAvailable >= outChunkSize * 2) {
+            // Underflow
+            //qDebug() << "SoundDeviceNetwork::writeProcess() Buffer empty";
+            // catch up by filling buffer until we are synced
+            m_pNetworkStream->writeSilence(writeAvailable - copyCount);
+            m_underflowHappend = 1;
+        } else if (writeAvailable > readAvailable + outChunkSize / 2) {
+            // try to keep PAs buffer filled up to 0.5 chunks
+            if (m_outputDrift) {
+                // duplicate one frame
+                //qDebug() << "SoundDeviceNetwork::writeProcess() duplicate one frame"
+                //         << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
+                m_pNetworkStream->write(dataPtr1, 1);
             } else {
-                m_outputDrift = false;
+                m_outputDrift = true;
             }
-            m_pNetworkStream->write(dataPtr1,
-                    size1 / m_iNumOutputChannels);
-            if (size2 > 0) {
-                m_pNetworkStream->write(dataPtr2,
-                        size2 / m_iNumOutputChannels);
+        } else if (writeAvailable < outChunkSize / 2) {
+            // We are not able to store all new frames
+            if (m_outputDrift) {
+                //qDebug() << "SoundDeviceNetwork::writeProcess() skip one frame"
+                 //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
+                ++copyCount;
+            } else {
+                m_outputDrift = true;
             }
-            m_outputFifo->releaseReadRegions(copyCount);
+        } else {
+            m_outputDrift = false;
         }
+
+        m_pNetworkStream->write(dataPtr1,
+                size1 / m_iNumOutputChannels);
+        if (size2 > 0) {
+            m_pNetworkStream->write(dataPtr2,
+                    size2 / m_iNumOutputChannels);
+        }
+        m_outputFifo->releaseReadRegions(copyCount);
     }
 }
