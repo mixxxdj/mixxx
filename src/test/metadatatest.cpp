@@ -35,6 +35,11 @@ class MetadataTest : public testing::Test {
         return actualResult;
     }
 
+    void normalizeBpm(double expectedResult) {
+        const double actualResult = Mixxx::TrackMetadata::normalizeBpm(expectedResult);
+        EXPECT_EQ(expectedResult, actualResult);
+    }
+
     double parseReplayGain(QString inputValue, bool expectedResult, float expectedValue) {
         //qDebug() << "parseReplayGain" << inputValue << expectedResult << expectedValue;
 
@@ -49,6 +54,11 @@ class MetadataTest : public testing::Test {
 //        }
 
         return actualResult;
+    }
+
+    void normalizeReplayGain(double expectedResult) {
+        const double actualResult = Mixxx::TrackMetadata::normalizeReplayGain(expectedResult);
+        EXPECT_EQ(expectedResult, actualResult);
     }
 };
 
@@ -80,6 +90,18 @@ TEST_F(MetadataTest, ParseBpmInvalid) {
     parseBpm("0 dBA", false, Mixxx::TrackMetadata::kBpmUndefined);
 }
 
+TEST_F(MetadataTest, NormalizeBpm) {
+    normalizeBpm(Mixxx::TrackMetadata::kBpmUndefined);
+    normalizeBpm(Mixxx::TrackMetadata::kBpmMin);
+    normalizeBpm(Mixxx::TrackMetadata::kBpmMin - 1.0);
+    normalizeBpm(Mixxx::TrackMetadata::kBpmMin + 1.0);
+    normalizeBpm(-Mixxx::TrackMetadata::kBpmMin);
+    normalizeBpm(Mixxx::TrackMetadata::kBpmMax);
+    normalizeBpm(Mixxx::TrackMetadata::kBpmMax - 1.0);
+    normalizeBpm(Mixxx::TrackMetadata::kBpmMax + 1.0);
+    normalizeBpm(-Mixxx::TrackMetadata::kBpmMax);
+}
+
 TEST_F(MetadataTest, ParseReplayGainDbValidRange) {
     for (int replayGainDb = -100; 100 >= replayGainDb; ++replayGainDb) {
         const QString inputValues[] = {
@@ -109,6 +131,14 @@ TEST_F(MetadataTest, ParseReplayGainDbInvalid) {
     parseReplayGain("", false, Mixxx::TrackMetadata::kReplayGainUndefined);
     parseReplayGain("abcde", false, Mixxx::TrackMetadata::kReplayGainUndefined);
     parseReplayGain("0 dBA", false, Mixxx::TrackMetadata::kReplayGainUndefined);
+}
+
+TEST_F(MetadataTest, NormalizeReplayGain) {
+    normalizeReplayGain(Mixxx::TrackMetadata::kReplayGainUndefined);
+    normalizeReplayGain(Mixxx::TrackMetadata::kReplayGainMin);
+    normalizeReplayGain(-Mixxx::TrackMetadata::kReplayGainMin);
+    normalizeReplayGain(Mixxx::TrackMetadata::kReplayGain0dB);
+    normalizeReplayGain(-Mixxx::TrackMetadata::kReplayGain0dB);
 }
 
 TEST_F(MetadataTest, ID3v2Year) {
