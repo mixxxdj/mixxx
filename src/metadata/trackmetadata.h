@@ -176,12 +176,14 @@ public:
     static double parseBpm(const QString& sBpm, bool* pValid = 0);
     static QString formatBpm(double bpm);
     static QString formatBpm(int bpm);
+    static double normalizeBpm(double bpm);
 
     // Parse and format replay gain metadata according to the
     // ReplayGain 1.0 specification.
     // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_1.0_specification
     static double parseReplayGain(QString sReplayGain, bool* pValid = 0);
     static QString formatReplayGain(double replayGain);
+    static double normalizeReplayGain(double replayGain);
 
     // Parse an format date/time values according to ISO 8601
     inline static QDate parseDate(QString str) {

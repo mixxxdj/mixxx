@@ -68,6 +68,14 @@ QString TrackMetadata::formatBpm(int bpm) {
     }
 }
 
+double TrackMetadata::normalizeBpm(double bpm) {
+    if (isBpmValid(bpm)) {
+        return parseBpm(formatBpm(bpm));
+    } else {
+        return bpm;
+    }
+}
+
 namespace {
 
 const QString kReplayGainUnit("dB");
@@ -129,6 +137,14 @@ QString TrackMetadata::formatReplayGain(double replayGain) {
         return QString::number(ratio2db(replayGain)) + kReplayGainSuffix;
     } else {
         return QString();
+    }
+}
+
+double TrackMetadata::normalizeReplayGain(double replayGain) {
+    if (isReplayGainValid(replayGain)) {
+        return parseReplayGain(formatReplayGain(replayGain));
+    } else {
+        return replayGain;
     }
 }
 
