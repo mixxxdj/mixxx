@@ -23,7 +23,7 @@
 // not add any additional state (= member variables). Inheritance is
 // only needed for type-safety.
 class DbId {
-private:
+protected:
     // Alias for the corresponding native type. This typedef
     // should actually not be needed by users of this class,
     // but it keeps the implementation of this class flexible
