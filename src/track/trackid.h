@@ -7,7 +7,7 @@
 
 class TrackId: public DbId {
 public:
-#if defined(_MSC_VER) && (_MSC_VER < 1500)
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
     // NOTE(uklotzde): Inheriting constructors are supported since VS2015.
     // Use a default constructor and a single-argument constructor with
     // perfect forwarding instead.
