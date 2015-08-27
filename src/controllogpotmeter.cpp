@@ -17,14 +17,14 @@
 
 #include "controllogpotmeter.h"
 
-ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue, double minDB)
-    : ControlPotmeter(key, 0, dMaxValue) {
+ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue, double dNeutralValue, double minDB)
+    : ControlPotmeter(key, 0, dMaxValue, dNeutralValue) {
     // Override ControlPotmeters default value of 0.5
     setDefaultValue(1.0);
     set(1.0);
 
     if (m_pControl) {
         m_pControl->setBehavior(
-                new ControlLogPotmeterBehavior(0, dMaxValue, minDB));
+                new ControlLogPotmeterBehavior(0, dMaxValue, dNeutralValue, minDB));
     }
 }

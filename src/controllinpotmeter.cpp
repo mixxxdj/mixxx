@@ -3,11 +3,11 @@
 ControlLinPotmeter::ControlLinPotmeter(ConfigKey key,
                                        double dMinValue, double dMaxValue,
                                        double dStep, double dSmallStep,
-                                       bool allowOutOfBounds)
-        : ControlPotmeter(key, dMinValue, dMaxValue, allowOutOfBounds) {
+                                       double dNeutralValue, bool allowOutOfBounds)
+        : ControlPotmeter(key, dMinValue, dMaxValue, dNeutralValue, allowOutOfBounds) {
     if (m_pControl) {
         m_pControl->setBehavior(
-            new ControlLinPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds));
+            new ControlLinPotmeterBehavior(dMinValue, dMaxValue, dNeutralValue, allowOutOfBounds));
     }
     if (dStep) {
         setStepCount((dMaxValue - dMinValue) / dStep);
