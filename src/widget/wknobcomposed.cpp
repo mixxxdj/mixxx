@@ -9,12 +9,12 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
           m_dCurrentAngle(140.0),
           m_dNeutralParameter(0.0),
-          m_iMaskXOffset(0.0),
-          m_iMaskYOffset(0.0),
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0),
           m_dKnobCenterXOffset(0),
-          m_dKnobCenterYOffset(0) {
+          m_dKnobCenterYOffset(0),
+          m_iMaskXOffset(0.0),
+          m_iMaskYOffset(0.0), {
 }
 
 WKnobComposed::~WKnobComposed() {
