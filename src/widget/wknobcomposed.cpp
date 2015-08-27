@@ -14,7 +14,7 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dKnobCenterXOffset(0),
           m_dKnobCenterYOffset(0),
           m_iMaskXOffset(0.0),
-          m_iMaskYOffset(0.0), {
+          m_iMaskYOffset(0.0) {
 }
 
 WKnobComposed::~WKnobComposed() {
