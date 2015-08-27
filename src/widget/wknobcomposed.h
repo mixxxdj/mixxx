@@ -42,8 +42,8 @@ class WKnobComposed : public WWidget {
     PaintablePointer m_pKnob;
     PaintablePointer m_pPixmapBack;
     PaintablePointer m_pRing;
-    int m_iMaskXOffset;
-    int m_iMaskYOffset;
+    double m_iMaskXOffset;
+    double m_iMaskYOffset;
     KnobEventHandler<WKnobComposed> m_handler;
     double m_dMinAngle;
     double m_dMaxAngle;
