@@ -13,6 +13,8 @@ class SoundSourcePluginLibrary;
 
 typedef QSharedPointer<SoundSourcePluginLibrary> SoundSourcePluginLibraryPointer;
 
+typedef QSharedPointer<SoundSourceProvider> SoundSourceProviderPointer;
+
 // Wrapper class for a dynamic library that implements the SoundSource plugin API
 class SoundSourcePluginLibrary {
 public:
