@@ -15,8 +15,8 @@ class EngineNetworkStream;
 class SoundDeviceNetwork : public SoundDevice {
   public:
     SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
-                         SoundManager *sm,
-                         unsigned int devIndex);
+                       SoundManager *sm,
+                       QSharedPointer<EngineNetworkStream> pNetworkStream);
     virtual ~SoundDeviceNetwork();
 
     virtual Result open(bool isClkRefDevice, int syncBuffers);
@@ -30,7 +30,7 @@ class SoundDeviceNetwork : public SoundDevice {
     }
 
   private:
-    EngineNetworkStream* m_pNetworkStream;
+    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     FIFO<CSAMPLE>* m_outputFifo;
     FIFO<CSAMPLE>* m_inputFifo;
     bool m_outputDrift;

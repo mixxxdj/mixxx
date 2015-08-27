@@ -33,6 +33,7 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "sampleutil.h"
 #include "util/cmdlineargs.h"
+#include "engine/sidechain/enginenetworkstream.h"
 
 #ifdef __PORTAUDIO__
 typedef PaError (*SetJackClientName)(const char *name);
@@ -63,6 +64,9 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
     m_samplerates.push_back(44100);
     m_samplerates.push_back(48000);
     m_samplerates.push_back(96000);
+
+    m_pNetworkStream = QSharedPointer<EngineNetworkStream>(
+            new EngineNetworkStream(2, 0));
 
     queryDevices(); // initializes PortAudio so SMConfig:loadDefaults can do
                     // its thing if it needs to
@@ -280,7 +284,7 @@ void SoundManager::queryDevicesPortaudio() {
 
 void SoundManager::queryDevicesMixxx() {
     SoundDeviceNetwork* currentDevice = new SoundDeviceNetwork(
-            m_pConfig, this, 0);
+            m_pConfig, this, m_pNetworkStream);
     m_devices.push_back(currentDevice);
 }
 

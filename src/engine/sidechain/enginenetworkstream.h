@@ -6,12 +6,11 @@
 
 class EngineNetworkStream {
   public:
-    EngineNetworkStream(double sampleRate,
-            int numOutputChannels,
+    EngineNetworkStream(int numOutputChannels,
             int numInputChannels);
     virtual ~EngineNetworkStream();
 
-    void startStream();
+    void startStream(double sampleRate);
     void stopStream();
 
     int getWriteExpected();
@@ -23,6 +22,14 @@ class EngineNetworkStream {
 
     qint64 getStreamTimeMs();
     qint64 getStreamTimeFrames();
+
+    int getNumOutputChannels() {
+        return m_numOutputChannels;
+    }
+
+    int getNumInputChannels() {
+        return m_numInputChannels;
+    }
 
     static qint64 getNetworkTimeMs();
 

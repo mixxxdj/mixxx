@@ -25,7 +25,7 @@
 #include "util/debug.h"
 #include "sampleutil.h"
 
-SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
+SoundDevice::SoundDevice(ConfigObject<ConfigValue>* config, SoundManager* sm)
         : m_pConfig(config),
           m_pSoundManager(sm),
           m_strInternalName("Unknown Soundcard"),

@@ -13,14 +13,13 @@
 
 unsigned int kBufferFrames = 32768; // 743 ms @ 44100 Hz
 
-EngineNetworkStream::EngineNetworkStream(double sampleRate,
-                                         int numOutputChannels,
+EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
                                          int numInputChannels)
     : m_pOutputFifo(NULL),
       m_pInputFifo(NULL),
       m_numOutputChannels(numOutputChannels),
       m_numInputChannels(numInputChannels),
-      m_sampleRate(sampleRate),
+      m_sampleRate(0),
       m_streamStartTimeMs(-1),
       m_streamFramesWritten(0),
       m_streamFramesRead(0) {
@@ -40,7 +39,8 @@ EngineNetworkStream::~EngineNetworkStream() {
     delete m_pInputFifo;
 }
 
-void EngineNetworkStream::startStream() {
+void EngineNetworkStream::startStream(double sampleRate) {
+    m_sampleRate = sampleRate;
     m_streamStartTimeMs = getNetworkTimeMs();
     m_streamFramesWritten = 0;
 }
