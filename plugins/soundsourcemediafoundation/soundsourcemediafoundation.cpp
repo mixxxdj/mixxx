@@ -74,6 +74,8 @@ template<class T> static void safeRelease(T **ppT) {
 
 } // anonymous namespace
 
+namespace Mixxx {
+
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
         : SoundSourcePlugin(url, "m4a"),
           m_hrCoInitialize(E_FAIL),
@@ -106,7 +108,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
     close();
 }
 
-Result SoundSourceMediaFoundation::tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) {
+Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     if (SUCCEEDED(m_hrCoInitialize)) {
         qWarning() << "Cannot reopen MediaFoundation file" << getUrlString();
         return ERR;
@@ -425,7 +427,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
  If anything in here fails, just bail. I'm not going to decode HRESULTS.
  -- Bill
  */
-bool SoundSourceMediaFoundation::configureAudioStream(const Mixxx::AudioSourceConfig& audioSrcCfg) {
+bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& audioSrcCfg) {
     HRESULT hr(S_OK);
 
     // deselect all streams, we only want the first
@@ -596,15 +598,17 @@ QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() con
     return supportedFileExtensions;
 }
 
-Mixxx::SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
-    return Mixxx::exportSoundSourcePlugin(new SoundSourceMediaFoundation(url));
+SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
+    return exportSoundSourcePlugin(new SoundSourceMediaFoundation(url));
 }
+
+} // namespace Mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderMediaFoundation is stateless and a single instance
     // can safely be shared
-    static SoundSourceProviderMediaFoundation singleton;
+    static Mixxx::SoundSourceProviderMediaFoundation singleton;
     return &singleton;
 }
 

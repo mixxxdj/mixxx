@@ -13,7 +13,10 @@
  8 - Mixxx 1.13.0 New SoundSource Plugin API
  */
 
-//As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
+#include <QtGlobal>
+
+// Q_OS_WIN from <QtGlobal> should be defined when compiling on any
+// Windows platform
 #ifdef Q_OS_WIN
 #define MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT __declspec(dllexport)
 #else
