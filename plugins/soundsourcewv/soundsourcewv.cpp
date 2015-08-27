@@ -93,20 +93,15 @@ SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
 
 } // namespace Mixxx
 
-namespace {
-
-void deleteSoundSourceProviderSingleton(Mixxx::SoundSourceProvider*) {
-    // The statically allocated instance must not be deleted!
-}
-
-} // anonymous namespace
-
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
+Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderWV is stateless and a single instance
     // can safely be shared
     static Mixxx::SoundSourceProviderWV singleton;
-    return Mixxx::SoundSourceProviderPointer(
-            &singleton,
-            deleteSoundSourceProviderSingleton);
+    return &singleton;
+}
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+    // The statically allocated instance must not be deleted!
 }

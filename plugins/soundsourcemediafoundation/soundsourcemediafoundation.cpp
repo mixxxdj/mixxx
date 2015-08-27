@@ -600,20 +600,15 @@ Mixxx::SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(con
     return Mixxx::exportSoundSourcePlugin(new SoundSourceMediaFoundation(url));
 }
 
-namespace {
-
-void deleteSoundSourceProviderSingleton(Mixxx::SoundSourceProvider*) {
-    // The statically allocated instance must not be deleted!
-}
-
-} // anonymous namespace
-
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
+Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
     // SoundSourceProviderMediaFoundation is stateless and a single instance
     // can safely be shared
     static SoundSourceProviderMediaFoundation singleton;
-    return Mixxx::SoundSourceProviderPointer(
-            &singleton,
-            deleteSoundSourceProviderSingleton);
+    return &singleton;
+}
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*) {
+    // The statically allocated instance must not be deleted!
 }
