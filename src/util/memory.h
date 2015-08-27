@@ -52,6 +52,8 @@
    #elif defined(__GNUC__)
       // std::make_unique was added in gcc 4.9
       #define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+      // Compiling with -std=c++11 sets __cplusplus=201103L and disables
+      // std::make_unique() from C++14! We need to take this into account.
       #if GCC_VERSION >= 40900 && __cplusplus > 201103L
          #define COMPILER_SUPPORTS_MAKE_UNIQUE
       #endif
