@@ -3,10 +3,12 @@
 #include <QTransform>
 
 #include "widget/wknobcomposed.h"
+#include "widget/controlwidgetconnection.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
           m_dCurrentAngle(140.0),
+          m_dNeutralParameter(0.0),
           m_iMaskXOffset(0),
           m_iMaskYOffset(0),
           m_dMinAngle(-230.0),
@@ -104,6 +106,16 @@ void WKnobComposed::setPixmapRing(PixmapSource source,
     }
 }
 
+void WKnobComposed::addConnection(ControlParameterWidgetConnection* pConnection) {
+    m_connections.append(pConnection);
+    if (m_connections.size() == 1) {
+        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+        if (defaultConnection) {
+            m_dNeutralParameter = defaultConnection->neutralParameter();
+        }
+    }
+}
+
 void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dValue);
     // dParameter is in the range [0, 1].
@@ -134,17 +146,18 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     // no-op detection.
     m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
 
+    // Qt measures angles in degrees from 3 o'clock counterclockwise.
+    // In Mixxx we measure angles also in degrees but from 12 o'clock clockwise.
+    // So: QtAngle = 90 - MixxxAngle
     if (m_pRing) {
         QPainterPath path;
         int w = width();
         int h = height();
         path.moveTo(w/2.0 + m_iMaskXOffset, h/2.0 + m_iMaskYOffset);
         double d = sqrt(pow(w+abs(m_iMaskXOffset),2) + pow(h+abs(m_iMaskYOffset),2));
-        if (m_bCentered) {
-            path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d),90,-m_dCurrentAngle);
-        } else {
-            path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d),-m_dMinAngle+90,m_dMinAngle-m_dCurrentAngle);
-        }
+        double neutralAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * m_dNeutralParameter;
+        path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d), 90 - neutralAngle, neutralAngle - m_dCurrentAngle);
+
         path.closeSubpath();
         p.save();
         p.setClipPath(path);

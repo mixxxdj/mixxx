@@ -40,7 +40,7 @@ class WBaseWidget {
 
     void addLeftConnection(ControlParameterWidgetConnection* pConnection);
     void addRightConnection(ControlParameterWidgetConnection* pConnection);
-    void addConnection(ControlParameterWidgetConnection* pConnection);
+    virtual void addConnection(ControlParameterWidgetConnection* pConnection);
 
     void addPropertyConnection(ControlWidgetPropertyConnection* pConnection);
 
