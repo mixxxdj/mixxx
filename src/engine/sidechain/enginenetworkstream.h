@@ -4,6 +4,8 @@
 #include "util/types.h"
 #include "util/fifo.h"
 
+class SideChainWorker;
+
 class EngineNetworkStream {
   public:
     EngineNetworkStream(int numOutputChannels,
@@ -33,6 +35,10 @@ class EngineNetworkStream {
 
     static qint64 getNetworkTimeMs();
 
+    void addWorker(QSharedPointer<SideChainWorker> pWorker) {
+        m_pWorker = pWorker;
+    }
+
   private:
     FIFO<CSAMPLE>* m_pOutputFifo;
     FIFO<CSAMPLE>* m_pInputFifo;
@@ -42,6 +48,7 @@ class EngineNetworkStream {
     qint64 m_streamStartTimeMs;
     qint64 m_streamFramesWritten;
     qint64 m_streamFramesRead;
+    QSharedPointer<SideChainWorker> m_pWorker;
 };
 
 #endif /* ENGINENETWORKSTREAM_H_ */

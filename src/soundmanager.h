@@ -110,6 +110,10 @@ class SoundManager : public QObject {
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
+    QSharedPointer<EngineNetworkStream> getNetworkStream() const {
+        return m_pNetworkStream;
+    }
+
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up

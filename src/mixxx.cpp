@@ -200,16 +200,16 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(8);
 
-    m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
-#ifdef __SHOUTCAST__
-    m_pShoutcastManager = new ShoutcastManager(m_pConfig, m_pEngine);
-#endif
-
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime
     // after the players are added to the engine (as is done currently) -- bkgood
     // (long)
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
+
+    m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
+#ifdef __SHOUTCAST__
+    m_pShoutcastManager = new ShoutcastManager(m_pConfig, m_pSoundManager);
+#endif
 
     launchProgress(11);
     // TODO(rryan): Fold microphone and aux creation into a manager
