@@ -48,10 +48,6 @@ int SoundDevice::getNumOutputChannels() const {
     return m_iNumOutputChannels;
 }
 
-void SoundDevice::setHostAPI(QString api) {
-    m_hostAPI = api;
-}
-
 void SoundDevice::setSampleRate(double sampleRate) {
     if (sampleRate <= 0.0) {
         // this is the default value used elsewhere in this file
@@ -72,7 +68,7 @@ void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
 }
 
 SoundDeviceError SoundDevice::addOutput(const AudioOutputBuffer &out) {
-    //Check if the output channels are already used
+    // Check if the output channels are already used
     foreach (AudioOutputBuffer myOut, m_audioOutputs) {
         if (out.channelsClash(myOut)) {
             return SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL;

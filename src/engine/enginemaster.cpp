@@ -54,6 +54,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            bool bRampingGain)
         : m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_bRampingGain(bRampingGain),
+          m_ppSidechain(&m_pMaster),
           m_masterGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
           m_headphoneGainOld(1.0),
@@ -153,7 +154,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     }
 
     // Starts a thread for recording and shoutcast
-    m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
+    m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPushButton(
@@ -179,6 +180,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pMasterTalkoverMix = new ControlObject(ConfigKey(group, "talkover_mix"),
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
+    m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "sidechainEnabled"));
 
 
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
@@ -195,7 +197,7 @@ EngineMaster::~EngineMaster() {
     delete m_pHeadGain;
     delete m_pTalkoverDucking;
     delete m_pVumeter;
-    delete m_pSideChain;
+    delete m_pEngineSideChain;
     delete m_pMasterDelay;
     delete m_pHeadDelay;
 
@@ -243,6 +245,10 @@ const CSAMPLE* EngineMaster::getMasterBuffer() const {
 
 const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
     return m_pHead;
+}
+
+const CSAMPLE* EngineMaster::getSidechainBuffer() const {
+    return *m_ppSidechain;
 }
 
 void EngineMaster::processChannels(int iBufferSize) {
@@ -513,22 +519,22 @@ void EngineMaster::process(const int iBufferSize) {
 
         // Submit master samples to the side chain to do shoutcasting, recording,
         // etc. (cpu intensive non-realtime tasks)
-        CSAMPLE* pSidechain = m_pMaster;
-        if (m_pSideChain != NULL) {
+        m_ppSidechain = &m_pMaster;
+        if (m_pEngineSideChain != NULL) {
             if (m_pMasterTalkoverMix->toBool()) {
-                // Add Talkover to Sidechain output, re-use the talkover buffer
+                // Add Master and Talkover to Sidechain output, re-use the talkover buffer
                 SampleUtil::addWithGain(m_pTalkover,
                         m_pMaster, 1.0,
                         iBufferSize);
-                pSidechain = m_pTalkover;
+                m_ppSidechain = &m_pTalkover;
             }
-            m_pSideChain->writeSamples(pSidechain, iBufferSize);
+            m_pEngineSideChain->writeSamples(*m_ppSidechain, iBufferSize);
         }
 
         // Update VU meter (it does not return anything). Needs to be here so that
         // master balance and talkover is reflected in the VU meter.
         if (m_pVumeter != NULL) {
-            m_pVumeter->process(pSidechain, iBufferSize);
+            m_pVumeter->process(*m_ppSidechain, iBufferSize);
         }
 
         // Add master to headphone with appropriate gain
@@ -675,6 +681,9 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
     case AudioOutput::DECK:
         return getDeckBuffer(output.getIndex());
         break;
+    case AudioOutput::SIDECHAIN:
+        return getSidechainBuffer();
+        break;
     default:
         return NULL;
     }
@@ -695,6 +704,9 @@ void EngineMaster::onOutputConnected(AudioOutput output) {
         case AudioOutput::DECK:
             // We don't track enabled decks.
             break;
+        case AudioOutput::SIDECHAIN:
+            // We don't track enabled sidechain.
+            break;
         default:
             break;
     }
@@ -707,13 +719,16 @@ void EngineMaster::onOutputDisconnected(AudioOutput output) {
             // and recording/broadcasting as well
             break;
         case AudioOutput::HEADPHONES:
-            m_pHeadphoneEnabled->set(1.0);
+            m_pHeadphoneEnabled->set(0.0);
             break;
         case AudioOutput::BUS:
             m_bBusOutputConnected[output.getIndex()] = false;
             break;
         case AudioOutput::DECK:
             // We don't track enabled decks.
+            break;
+        case AudioOutput::SIDECHAIN:
+            // We don't track enabled sidechain.
             break;
         default:
             break;

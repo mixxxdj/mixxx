@@ -66,8 +66,10 @@ class SoundManager : public QObject {
     // Closes all the devices and empties the list of devices we have.
     void clearDeviceList();
 
-    // Creates a list of sound devices that PortAudio sees.
+    // Creates a list of sound devices
     void queryDevices();
+    void queryDevicesPortaudio();
+    void queryDevicesMixxx();
 
     // Opens all the devices chosen by the user in the preferences dialog, and
     // establishes the proper connections between them and the mixing engine.
