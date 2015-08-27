@@ -28,6 +28,8 @@ class IMFSourceReader;
 class IMFMediaType;
 class IMFMediaSource;
 
+namespace Mixxx {
+
 class SoundSourceMediaFoundation : public Mixxx::SoundSourcePlugin {
 public:
     explicit SoundSourceMediaFoundation(QUrl url);
@@ -63,14 +65,16 @@ private:
     bool m_seeking;
 };
 
-class SoundSourceProviderMediaFoundation: public Mixxx::SoundSourceProvider {
+class SoundSourceProviderMediaFoundation: public SoundSourceProvider {
 public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;
 
-    Mixxx::SoundSourcePointer newSoundSource(const QUrl& url) override;
+    SoundSourcePointer newSoundSource(const QUrl& url) override;
 };
+
+} // namespace Mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
