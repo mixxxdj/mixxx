@@ -118,10 +118,10 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 m_textFilterMatcher.cap(2), &tokens).trimmed();
 
             if (!argument.isEmpty()) {
-                std::unique_ptr<QueryNode> pNode(std::make_unique<TextFilterNode>(
-                    m_database, m_fieldToSqlColumns[field], argument));
+                std::unique_ptr<QueryNode> pNode(new TextFilterNode(
+                        m_database, m_fieldToSqlColumns[field], argument));
                 if (negate) {
-                    pNode = std::make_unique<NotNode>(std::move(pNode));
+                    pNode.reset(new NotNode(std::move(pNode)));
                 }
                 pQuery->addNode(std::move(pNode));
             }
@@ -132,11 +132,10 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 m_numericFilterMatcher.cap(2), &tokens).trimmed();
 
             if (!argument.isEmpty()) {
-                std::unique_ptr<QueryNode> pNode(
-                        std::make_unique<NumericFilterNode>(
-                                m_fieldToSqlColumns[field], argument));
+                std::unique_ptr<QueryNode> pNode(new NumericFilterNode(
+                        m_fieldToSqlColumns[field], argument));
                 if (negate) {
-                    pNode = std::make_unique<NotNode>(std::move(pNode));
+                    pNode.reset(new NotNode(std::move(pNode)));
                 }
                 pQuery->addNode(std::move(pNode));
             }
@@ -152,19 +151,19 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                     mixxx::track::io::key::ChromaticKey key =
                             KeyUtils::guessKeyFromText(argument);
                     if (key == mixxx::track::io::key::INVALID) {
-                        pNode = std::make_unique<TextFilterNode>(
-                                m_database, m_fieldToSqlColumns[field], argument);
+                        pNode.reset(new TextFilterNode(
+                                m_database, m_fieldToSqlColumns[field], argument));
                     } else {
-                        pNode = std::make_unique<KeyFilterNode>(key, fuzzy);
+                        pNode.reset(new KeyFilterNode(key, fuzzy));
                     }
                 } else if (field == "duration") {
-                    pNode = std::make_unique<DurationFilterNode>(
-                            m_fieldToSqlColumns[field], argument);
+                    pNode.reset(new DurationFilterNode(
+                            m_fieldToSqlColumns[field], argument));
                 }
             }
             if (pNode) {
                 if (negate) {
-                    pNode = std::make_unique<NotNode>(std::move(pNode));
+                    pNode.reset(new NotNode(std::move(pNode)));
                 }
                 pQuery->addNode(std::move(pNode));
             }
@@ -177,11 +176,10 @@ void SearchQueryParser::parseTokens(QStringList tokens,
 
             // Don't trigger on a lone minus sign.
             if (!token.isEmpty()) {
-                std::unique_ptr<QueryNode> pNode(
-                        std::make_unique<TextFilterNode>(
-                                m_database, searchColumns, token));
+                std::unique_ptr<QueryNode> pNode(new TextFilterNode(
+                        m_database, searchColumns, token));
                 if (negate) {
-                    pNode = std::make_unique<NotNode>(std::move(pNode));
+                    pNode.reset(new NotNode(std::move(pNode)));
                 }
                 pQuery->addNode(std::move(pNode));
             }
@@ -192,16 +190,17 @@ void SearchQueryParser::parseTokens(QStringList tokens,
 std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
                                          const QStringList& searchColumns,
                                          const QString& extraFilter) const {
-    auto pQuery(std::make_unique<AndNode>());
+    std::unique_ptr<AndNode> pAndNode(new AndNode());
 
     if (!extraFilter.isEmpty()) {
-        pQuery->addNode(std::make_unique<SqlNode>(extraFilter));
+        std::unique_ptr<QueryNode> filterNode(new SqlNode(extraFilter));
+        pAndNode->addNode(std::move(filterNode));
     }
 
     if (!query.isEmpty()) {
         QStringList tokens = query.split(" ");
-        parseTokens(tokens, searchColumns, pQuery.get());
+        parseTokens(tokens, searchColumns, pAndNode.get());
     }
 
-    return std::move(pQuery);
+    return pAndNode;
 }
