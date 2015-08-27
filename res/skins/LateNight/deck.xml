@@ -94,7 +94,7 @@
                               <ObjectName>TextColor<Variable name="channum" /></ObjectName>
                               <Style>QLabel { qproperty-alignment: 'AlignCenter';
                                   font: bold 13px/16px Lucida Grande, Lucida Sans
-                                  Unicode, Arial, Verdana, sans-serif;
+                                  Unicode, Segoe UI, Arial, Verdana, sans-serif;
                                   background-color: transparent; padding: 0px; margin: 0px;}
                               </Style>
                               <Group>[Channel<Variable name="channum"/>]</Group>
@@ -108,13 +108,13 @@
                            widget group and put the bpm pushbutton on top of the display. -->
                            <WidgetGroup>
                                <ObjectName>BpmContainer</ObjectName>
-                               <Size>60,16</Size>
+                               <Size>60,22</Size>
                                <Children>
                                    <NumberBpm>
                                       <ObjectName>BpmTextColor<Variable name="channum" /></ObjectName>
                                       <TooltipId>visual_bpm</TooltipId>
                                       <Pos>0,0</Pos>
-                                      <Size>60,16</Size>
+                                      <Size>60,22</Size>
                                       <Channel>
                                           <Variable name="channum" />
                                       </Channel>
@@ -135,7 +135,7 @@
                                         <Text></Text>
                                       </State>
                                       <Pos>0,0</Pos>
-                                      <Size>60,16</Size>
+                                      <Size>60,22</Size>
                                       <Connection>
                                           <ConfigKey>[Channel<Variable name="channum" />],bpm_tap</ConfigKey>
                                           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>

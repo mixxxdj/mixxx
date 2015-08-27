@@ -83,7 +83,7 @@
     				<SizePolicy>min,min</SizePolicy>
     				<Children>
               <VuMeter>
-                <TooltipId><Variable name="TooltipId"/></TooltipId>
+                <TooltipId>microphone_VuMeter</TooltipId>
                 <MinimumSize>64,4</MinimumSize>
                 <MaximumSize>64,4</MaximumSize>
                 <PathVu>vumeter_latency_over.png</PathVu>

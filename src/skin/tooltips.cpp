@@ -69,9 +69,19 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     QString clippingHelp = tr("(too loud for the hardware and is being distorted).");
-    add("PeakIndicator")
-            << tr("Peak Indicator")
+    add("channel_PeakIndicator")
+            << tr("Channel Peak Indicator")
             << tr("Indicates when the signal on the channel is clipping,")
+            << clippingHelp;
+
+    add("channel_PeakIndicatorL")
+            << tr("Channel L Peak Indicator")
+            << tr("Indicates when the left signal on the channel is clipping,")
+            << clippingHelp;
+
+    add("channel_PeakIndicatorR")
+            << tr("Channel R Peak Indicator")
+            << tr("Indicates when the right signal on the channel is clipping,")
             << clippingHelp;
 
     add("master_PeakIndicator")
@@ -79,20 +89,61 @@ void Tooltips::addStandardTooltips() {
             << tr("Indicates when the signal on the master output is clipping,")
             << clippingHelp;
 
+    add("master_PeakIndicatorL")
+            << tr("Master L Peak Indicator")
+            << tr("Indicates when the left signal on the master output is clipping,")
+            << clippingHelp;
+
+    add("master_PeakIndicatorR")
+            << tr("Master R Peak Indicator")
+            << tr("Indicates when the right signal on the master output is clipping,")
+            << clippingHelp;
+
     add("channel_VuMeter")
             << tr("Channel Volume Meter")
             << tr("Shows the current channel volume.");
+
+    add("channel_VuMeterL")
+            << tr("Channel L Volume Meter")
+            << tr("Shows the current channel volume for the left channel.");
+
+    add("channel_VuMeterR")
+            << tr("Channel R Volume Meter")
+            << tr("Shows the current channel volume for the right channel.");
 
     add("microphone_VuMeter")
             << tr("Microphone Volume Meter")
             << tr("Shows the current microphone volume.");
 
+    add("microphone_PeakIndicator")
+            << tr("Microphone Peak Indicator")
+            << tr("Indicates when the signal on the microphone is clipping,")
+            << clippingHelp;
+
+    add("sampler_VuMeter")
+            << tr("Sampler Volume Meter")
+            << tr("Shows the current sampler volume.");
+
+    add("sampler_PeakIndicator")
+            << tr("Sampler Peak Indicator")
+            << tr("Indicates when the signal on the sampler is clipping,")
+            << clippingHelp;
+
+    add("preview_VuMeter")
+            << tr("Preview Deck Volume Meter")
+            << tr("Shows the current Preview Deck volume.");
+
+    add("preview_PeakIndicator")
+            << tr("Preview Deck Peak Indicator")
+            << tr("Indicates when the signal on the Preview Deck is clipping,")
+            << clippingHelp;
+
     add("master_VuMeterL")
-            << tr("Master Channel Volume Meter")
+            << tr("Master Channel L Volume Meter")
             << tr("Shows the current master volume for the left channel.");
 
     add("master_VuMeterR")
-            << tr("Master Channel Volume Meter")
+            << tr("Master Channel R Volume Meter")
             << tr("Shows the current master volume for the right channel.");
 
     add("channel_volume")
