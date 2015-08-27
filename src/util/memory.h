@@ -33,7 +33,7 @@
 
 // If user hasn't specified COMPILER_SUPPORTS_MAKE_UNIQUE then try to figure out
 // based on compiler version if std::make_unique is provided.
-#if defined(COMPILER_SUPPORTS_MAKE_UNIQUE)
+#if !defined(COMPILER_SUPPORTS_MAKE_UNIQUE)
    #if defined(_MSC_VER)
       // std::make_unique was added in MSVC 12.0
       #if _MSC_VER >= 1800 // MSVC 12.0 (Visual Studio 2013)
@@ -52,13 +52,13 @@
    #elif defined(__GNUC__)
       // std::make_unique was added in gcc 4.9
       #define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-      #if GCC_VERSION >= 40900
+      #if GCC_VERSION >= 40900 && __cplusplus > 201103L
          #define COMPILER_SUPPORTS_MAKE_UNIQUE
       #endif
    #endif
 #endif
 
-#if COMPILER_SUPPORTS_MAKE_UNIQUE
+#if defined(COMPILER_SUPPORTS_MAKE_UNIQUE)
 
 // If the compiler supports std::make_unique, then pull in <memory> to get it.
 #include <memory>
