@@ -83,11 +83,8 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
     virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
-    virtual double neutralParameter();
 
   protected:
-    // a knob position between 0 and 1 where the gain is 1 (0dB)
-    double m_neutralParameter;
     // the Start value of the pure db scale it cranked to -Infinity by the
     // linear part of the AudioTaperPot
     double m_minDB;

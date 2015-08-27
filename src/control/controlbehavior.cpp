@@ -154,12 +154,11 @@ ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
 ControlAudioTaperPotBehavior::ControlAudioTaperPotBehavior(
                              double minDB, double maxDB,
                              double neutralParameter)
-        : ControlPotmeterBehavior(0.0, db2ratio(maxDB), false),
-          m_neutralParameter(neutralParameter),
+        : ControlPotmeterBehavior(0.0, db2ratio(maxDB), neutralParameter, false),
           m_minDB(minDB),
           m_maxDB(maxDB),
           m_offset(db2ratio(m_minDB)) {
-    m_midiCorrection = ceil(m_neutralParameter * 127) - (m_neutralParameter * 127);
+    m_midiCorrection = ceil(m_dNeutralParameter * 127) - (m_dNeutralParameter * 127);
 }
 
 ControlAudioTaperPotBehavior::~ControlAudioTaperPotBehavior() {
@@ -172,19 +171,19 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
     } else if (dValue < 1.0) {
         // db + linear overlay to reach
         // m_minDB = 0
-        // 0 dB = m_neutralParameter
+        // 0 dB = m_dNeutralParameter
         double overlay = m_offset * (1 - dValue);
         if (m_minDB) {
-            dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
+            dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_dNeutralParameter * -1;
         } else {
-            dParam = dValue * m_neutralParameter;
+            dParam = dValue * m_dNeutralParameter;
         }
     } else if (dValue == 1.0) {
-        dParam = m_neutralParameter;
+        dParam = m_dNeutralParameter;
     } else if (dValue < m_dMaxValue) {
         // m_maxDB = 1
-        // 0 dB = m_neutralParameter
-        dParam = (ratio2db(dValue) / m_maxDB * (1 - m_neutralParameter)) + m_neutralParameter;
+        // 0 dB = m_dNeutralParameter
+        dParam = (ratio2db(dValue) / m_maxDB * (1 - m_dNeutralParameter)) + m_dNeutralParameter;
     }
     //qDebug() << "ControlAudioTaperPotBehavior::valueToParameter" << "value =" << dValue << "dParam =" << dParam;
     return dParam;
@@ -194,22 +193,22 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
     double dValue = 1;
     if (dParam <= 0.0) {
         dValue = 0;
-    } else if (dParam < m_neutralParameter) {
+    } else if (dParam < m_dNeutralParameter) {
         // db + linear overlay to reach
         // m_minDB = 0
-        // 0 dB = m_neutralParameter;
+        // 0 dB = m_dNeutralParameter;
         if (m_minDB) {
-            double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
+            double db = (dParam * m_minDB / (m_dNeutralParameter * -1)) + m_minDB;
             dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;
         } else {
-            dValue = dParam / m_neutralParameter;
+            dValue = dParam / m_dNeutralParameter;
         }
-    } else if (dParam == m_neutralParameter) {
+    } else if (dParam == m_dNeutralParameter) {
         dValue = 1.0;
     } else if (dParam <= 1.0) {
         // m_maxDB = 1
         // 0 dB = m_neutralParame;
-        dValue = db2ratio((dParam - m_neutralParameter) * m_maxDB / (1 - m_neutralParameter));
+        dValue = db2ratio((dParam - m_dNeutralParameter) * m_maxDB / (1 - m_dNeutralParameter));
     }
     //qDebug() << "ControlAudioTaperPotBehavior::parameterToValue" << "dValue =" << dValue << "dParam =" << dParam;
     return dValue;
@@ -217,15 +216,15 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
 
 double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) {
     double dParam;
-    if (m_neutralParameter && m_neutralParameter != 1.0) {
+    if (m_dNeutralParameter && m_dNeutralParameter != 1.0) {
         double neutralTest = (midiValue - m_midiCorrection) / 127.0;
-        if (neutralTest < m_neutralParameter) {
+        if (neutralTest < m_dNeutralParameter) {
             dParam = midiValue /
-                    (127.0 + m_midiCorrection / m_neutralParameter);
+                    (127.0 + m_midiCorrection / m_dNeutralParameter);
         } else {
             // m_midicorrection is allways < 1, so NaN check required
-            dParam = (midiValue - m_midiCorrection / m_neutralParameter) /
-                    (127.0 - m_midiCorrection / m_neutralParameter);
+            dParam = (midiValue - m_midiCorrection / m_dNeutralParameter) /
+                    (127.0 - m_midiCorrection / m_dNeutralParameter);
         }
     } else {
         dParam = midiValue / 127.0;
@@ -236,15 +235,15 @@ double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) {
 double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
     // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
     // center. The industry convention is that 64 is center.
-    // We fake things a little bit here to hit the m_neutralParameter
+    // We fake things a little bit here to hit the m_dNeutralParameter
     // always on a full Midi integer
     double dParam = valueToParameter(dValue);
     double dMidiParam = dParam * 127.0;
-    if (m_neutralParameter && m_neutralParameter != 1.0) {
-        if (dParam < m_neutralParameter) {
-            dMidiParam += m_midiCorrection * dParam / m_neutralParameter;
+    if (m_dNeutralParameter && m_dNeutralParameter != 1.0) {
+        if (dParam < m_dNeutralParameter) {
+            dMidiParam += m_midiCorrection * dParam / m_dNeutralParameter;
         } else {
-            dMidiParam += m_midiCorrection * (1 - dParam) / m_neutralParameter;
+            dMidiParam += m_midiCorrection * (1 - dParam) / m_dNeutralParameter;
         }
     }
     return dMidiParam;
@@ -256,11 +255,6 @@ void ControlAudioTaperPotBehavior::setValueFromMidiParameter(MidiOpCode o, doubl
     double dParam = midiValueToParameter(dMidiParam);
     pControl->set(parameterToValue(dParam), NULL);
 }
-
-double ControlAudioTaperPotBehavior::neutralParameter() {
-    return m_neutralParameter;
-}
-
 
 double ControlTTRotaryBehavior::valueToParameter(double dValue) {
     return (dValue * 200.0 + 64) / 127.0;
