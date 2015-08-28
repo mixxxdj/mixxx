@@ -449,36 +449,42 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = m_pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to set major type";
+        safeRelease(&m_pAudioType);
         return false;
     }
 
     hr = m_pAudioType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_Float);
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to set subtype";
+        safeRelease(&m_pAudioType);
         return false;
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, true);
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to set samples independent";
+        safeRelease(&m_pAudioType);
         return false;
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_FIXED_SIZE_SAMPLES, true);
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to set fixed size samples";
+        safeRelease(&m_pAudioType);
         return false;
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_SAMPLE_SIZE, kLeftoverSize);
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to set sample size";
+        safeRelease(&m_pAudioType);
         return false;
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to set sample rate";
+        safeRelease(&m_pAudioType);
         return false;
     }
 
@@ -486,6 +492,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample);
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to set bits per sample";
+        safeRelease(&m_pAudioType);
         return false;
     }
 
@@ -498,6 +505,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, numChannels);
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to set number of channels";
+        safeRelease(&m_pAudioType);
         return false;
     }
     setChannelCount(numChannels);
@@ -513,13 +521,14 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
             frames2samples(sizeof(m_leftoverBuffer[0])));
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to set block alignment";
+        safeRelease(&m_pAudioType);
         return false;
     }
 
     // Set this type on the source reader. The source reader will
     // load the necessary decoder.
-    hr = m_pReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM,
-    NULL, m_pAudioType);
+    hr = m_pReader->SetCurrentMediaType(
+            MF_SOURCE_READER_FIRST_AUDIO_STREAM, NULL, m_pAudioType);
 
     // the reader has the media type now, free our reference so we can use our
     // pointer for other purposes. Do this before checking for failure so we
