@@ -45,6 +45,7 @@ private:
     Result tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) override;
 
     bool configureAudioStream(const Mixxx::AudioSourceConfig& audioSrcCfg);
+    bool readProperties();
 
     void copyFrames(CSAMPLE *dest, SINT *destFrames, const CSAMPLE *src,
             SINT srcFrames);
@@ -52,7 +53,6 @@ private:
     HRESULT m_hrCoInitialize;
     HRESULT m_hrMFStartup;
     IMFSourceReader *m_pReader;
-    IMFMediaType *m_pAudioType;
     wchar_t *m_wcFilename;
     SINT m_nextFrame;
     CSAMPLE *m_leftoverBuffer;
