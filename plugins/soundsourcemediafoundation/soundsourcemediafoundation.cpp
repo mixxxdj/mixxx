@@ -35,6 +35,7 @@ const bool sDebug = false;
 const SINT kSampleRate = 44100;
 const SINT kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF AAC
 const SINT kBitsPerSample = 16; // for bitrate calculation decoder likes to give
+const SINT kDefaultChannelCount = 2; // if no hint is specified
 
 /**
  * Convert a 100ns Media Foundation value to a number of seconds.
@@ -488,22 +489,18 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         return false;
     }
 
+    UINT32 numChannels;
     if (isValidChannelCount(audioSrcCfg.channelCountHint)) {
-        hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, audioSrcCfg.channelCountHint);
-        if (FAILED(hr)) {
-            qWarning() << "SSMF: failed to set number of channels";
-            return false;
-        }
-        setChannelCount(audioSrcCfg.channelCountHint);
+        numChannels = audioSrcCfg.channelCountHint;
     } else {
-        UINT32 numChannels = 0;
-        hr = m_pAudioType->GetUINT32(MF_MT_AUDIO_NUM_CHANNELS, &numChannels);
-        if (FAILED(hr) || (0 >= numChannels)) {
-            qWarning() << "SSMF: failed to get number of channels";
-            return false;
-        }
-        setChannelCount(numChannels);
+        numChannels = kDefaultChannelCount;
     }
+    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, numChannels);
+    if (FAILED(hr)) {
+        qWarning() << "SSMF: failed to set number of channels";
+        return false;
+    }
+    setChannelCount(numChannels);
 
     // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
     // presentation descriptors, one of which MFSourceReader is not.
