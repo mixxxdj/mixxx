@@ -97,11 +97,6 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
     // -bkgood
     // AudioSource properties
     setFrameRate(kSampleRate);
-
-    // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
-    // presentation descriptors, one of which MFSourceReader is not.
-    // Therefore, we calculate it ourselves, assuming 16 bits per sample
-    setBitrate((frames2samples(getFrameRate()) * kBitsPerSample) / 1000);
 }
 
 SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
@@ -509,6 +504,11 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
         }
         setChannelCount(numChannels);
     }
+
+    // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
+    // presentation descriptors, one of which MFSourceReader is not.
+    // Therefore, we calculate it ourselves, assuming 16 bits per sample
+    setBitrate((frames2samples(getFrameRate()) * kBitsPerSample) / 1000);
 
     // "...the block alignment is equal to the number of audio channels
     // multiplied by the number of bytes per audio sample."
