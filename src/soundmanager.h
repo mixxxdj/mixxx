@@ -34,6 +34,7 @@ class AudioInput;
 class AudioSource;
 class AudioDestination;
 class ControlObject;
+class EngineNetworkStream;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
@@ -109,6 +110,10 @@ class SoundManager : public QObject {
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
+    QSharedPointer<EngineNetworkStream> getNetworkStream() const {
+        return m_pNetworkStream;
+    }
+
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
@@ -134,6 +139,8 @@ class SoundManager : public QObject {
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
+
+    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
 };
 
 #endif

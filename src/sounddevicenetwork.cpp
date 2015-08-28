@@ -17,19 +17,14 @@
 #include "util/denormalsarezero.h"
 #include "engine/sidechain/enginenetworkstream.h"
 
-// Buffer for drift correction 1 full, 1 for r/w, 1 empty
-static const int kDriftReserve = 1;
-// Buffer for drift correction 1 full, 1 for r/w, 1 empty
-static const int kFifoSize = 2 * kDriftReserve + 1;
-
 // static
 volatile int SoundDeviceNetwork::m_underflowHappend = 0;
 
 SoundDeviceNetwork::SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
                                        SoundManager *sm,
-                                       unsigned int devIndex)
+                                       QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),
-          m_pNetworkStream(NULL),
+          m_pNetworkStream(pNetworkStream),
           m_outputFifo(NULL),
           m_inputFifo(NULL),
           m_outputDrift(false),
@@ -38,15 +33,13 @@ SoundDeviceNetwork::SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
           m_underflowUpdateCount(0),
           m_nsInAudioCb(0),
           m_framesSinceAudioLatencyUsageUpdate(0) {
-    (void)devIndex;
-
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_dSampleRate = 44100.0;
     m_strInternalName = kNetworkDeviceInternalName;
     m_strDisplayName = QObject::tr("Network stream");
-    m_iNumInputChannels = 0;
-    m_iNumOutputChannels = 2;
+    m_iNumInputChannels = pNetworkStream->getNumInputChannels();
+    m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
 
     m_pMasterAudioLatencyOverloadCount = new ControlObjectSlave("[Master]",
             "audio_latency_overload_count");
@@ -96,21 +89,14 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
         }
     }
 
-    m_pNetworkStream = new EngineNetworkStream(m_dSampleRate,
-            m_iNumOutputChannels, m_iNumInputChannels);
-
-    m_pNetworkStream->startStream();
+    m_pNetworkStream->startStream(m_dSampleRate);
 
     return OK;
 }
 
 Result SoundDeviceNetwork::close() {
     //qDebug() << "SoundDeviceNetwork::close()" << getInternalName();
-    if (m_pNetworkStream) {
-        m_pNetworkStream->stopStream();
-        delete m_pNetworkStream;
-        m_pNetworkStream = NULL;
-    }
+    m_pNetworkStream->stopStream();
     if (m_outputFifo) {
         delete m_outputFifo;
         m_outputFifo = NULL;
@@ -118,9 +104,6 @@ Result SoundDeviceNetwork::close() {
     if (m_inputFifo) {
         delete m_inputFifo;
         m_inputFifo = NULL;
-    }
-    if (m_pNetworkStream) {
-        delete m_pNetworkStream;
     }
     m_bSetThreadPriority = false;
     return OK;

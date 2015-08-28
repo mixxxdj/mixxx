@@ -4,14 +4,15 @@
 #include "util/types.h"
 #include "util/fifo.h"
 
+class SideChainWorker;
+
 class EngineNetworkStream {
   public:
-    EngineNetworkStream(double sampleRate,
-            int numOutputChannels,
+    EngineNetworkStream(int numOutputChannels,
             int numInputChannels);
     virtual ~EngineNetworkStream();
 
-    void startStream();
+    void startStream(double sampleRate);
     void stopStream();
 
     int getWriteExpected();
@@ -24,7 +25,19 @@ class EngineNetworkStream {
     qint64 getStreamTimeMs();
     qint64 getStreamTimeFrames();
 
+    int getNumOutputChannels() {
+        return m_numOutputChannels;
+    }
+
+    int getNumInputChannels() {
+        return m_numInputChannels;
+    }
+
     static qint64 getNetworkTimeMs();
+
+    void addWorker(QSharedPointer<SideChainWorker> pWorker) {
+        m_pWorker = pWorker;
+    }
 
   private:
     FIFO<CSAMPLE>* m_pOutputFifo;
@@ -35,6 +48,7 @@ class EngineNetworkStream {
     qint64 m_streamStartTimeMs;
     qint64 m_streamFramesWritten;
     qint64 m_streamFramesRead;
+    QSharedPointer<SideChainWorker> m_pWorker;
 };
 
 #endif /* ENGINENETWORKSTREAM_H_ */
