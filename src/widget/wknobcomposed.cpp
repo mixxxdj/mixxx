@@ -102,13 +102,7 @@ void WKnobComposed::setPixmapRing(PixmapSource source,
 }
 
 void WKnobComposed::addConnection(ControlParameterWidgetConnection* pConnection) {
-    m_connections.append(pConnection);
-    if (m_connections.size() == 1) {
-        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
-        if (defaultConnection) {
-            m_dNeutralParameter = defaultConnection->neutralParameter();
-        }
-    }
+    WBaseWidget::addConnection(pConnection);
 }
 
 void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) {
@@ -135,6 +129,11 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
 
     if (m_pPixmapBack) {
         m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
+    }
+
+    ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+    if (defaultConnection) {
+        m_dNeutralParameter = defaultConnection->neutralParameter();
     }
 
     // We update m_dCurrentAngle since onConnectedControlChanged uses it for
