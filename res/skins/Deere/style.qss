@@ -125,7 +125,6 @@ QTableView {
   alternate-background-color: #1A1A1A;
   selection-background-color: #006596;
   selection-color: #D6D6D6;
-  qproperty-alternatingRowColors: 1;
   border: 1px solid #1A1A1A;
   gridline-color: red;
 }
@@ -134,6 +133,11 @@ QTableView {
 QTableView::indicator {
   width: 12px;
   height: 12px;
+}
+
+QTableView::item:selected {
+  color: #1A1A1A;
+  background-color: #D6D6D6;
 }
 
 QTableView::indicator:checked {
@@ -276,6 +280,11 @@ QTreeView::branch:closed:has-children:has-siblings {
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings {
   border-image: none; image: url(skin:/image/style_branch_open.png);
+}
+
+QTreeView::item:selected {
+  color: #1A1A1A;
+  background-color: #D6D6D6;
 }
 
 /* QSplitter between LibrarySidebar and Library */
@@ -446,6 +455,56 @@ WLibrary QRadioButton::indicator:unchecked {
   border: 0px solid #006596;
   border-radius: 2px;
   outline: none;
+}
+
+
+/* Scroll bars */
+QScrollBar:horizontal {
+  border: 1px solid #585858;
+  min-width: 12px;
+  height: 15px;
+  background: #1A1A1A;
+  border-radius: 3px;
+  padding: 1px;
+}
+QScrollBar:vertical {
+  border: 1px solid #585858;
+  min-height: 12px;
+  width: 15px;
+  background: #1A1A1A;
+  border-radius: 3px;
+  padding: 1px;
+}
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar::add-page, QScrollBar::sub-page {
+  min-width: 15px;
+  min-height: 15px;
+  border: 2px;
+  background-color: #1A1A1A;
+  border-radius: 3px;
+}
+QScrollBar::handle:horizontal {
+  min-width: 25px;
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #085172, stop:1 #042E41);
+  border-radius: 3px;
+  border: 1px solid #085172;
+}
+QScrollBar::handle:vertical {
+  min-height: 25px;
+  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #085172, stop:1 #042E41);
+  border-radius: 3px;
+  border: 1px solid #085172;
+}
+/* Turn off buttons */
+QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
+  width: 0px;
+  height: 0px;
+  border: 0px solid white;
+}
+QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
+  width: 0px;
+  height: 0px;
+  border: 0px solid white;
 }
 
 /*******************************************************************************
@@ -739,10 +798,47 @@ WWidget, QLabel {
 #EffectButton {
 }
 
-#KnobLabel, #EffectKnobLabel, #EffectButtonLabel {
+#EffectButtonParameter {
+  margin-top: 3px;
+}
+
+#KnobLabel {
   background-color: none;
   border: none;
-  qproperty-alignment: 'AlignCenter | AlignVCenter';
+  qproperty-alignment: 'AlignHCenter';
+  font: 9px;
+  margin-top: -3px;
+}
+
+#SmallKnobLabel {
+  background-color: none;
+  border: none;
+  qproperty-alignment: 'AlignHCenter';
+  font: 9px;
+  margin-top: -2px;
+}
+
+#EffectUnitNameRow {
+}
+
+#EffectUnitMainKnobsContainer {
+    qproperty-layoutSpacing: 7;
+}
+
+#EffectKnobLabel {
+  background-color: none;
+  border: none;
+  qproperty-alignment: 'AlignHCenter | AlignTop';
+  font: 8px;
+  margin-top: -2px;
+}
+
+#EffectButtonLabel {
+  background-color: none;
+  border: none;
+  qproperty-alignment: 'AlignHCenter';
+  font: 8px;
+  margin-top: 1px;
 }
 
 #Mixer {
@@ -828,10 +924,15 @@ WWidget, WLabel {
 #DeckMixer4_Column2 {
   qproperty-layoutSpacing: 7;
   padding: 5;
+  qproperty-layoutAlignment: 'AlignHCenter';
+}
+
+#4DecksMixerCol2Container {
+  padding-left: 14px;
 }
 
 #channel_VuMeter_Group {
-  qproperty-layoutSpacing: 2;
+  qproperty-layoutSpacing: 3;
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 
