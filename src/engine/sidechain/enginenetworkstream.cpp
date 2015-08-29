@@ -144,3 +144,7 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
     return (qint64)(mtv.tv_sec) * 1000000 + mtv.tv_usec;
 #endif
 }
+
+void EngineNetworkStream::addWorker(QSharedPointer<SideChainWorker> pWorker) {
+    m_pWorker = pWorker;
+}

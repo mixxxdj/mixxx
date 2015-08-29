@@ -3,8 +3,7 @@
 
 #include "util/types.h"
 #include "util/fifo.h"
-
-class SideChainWorker;
+#include "engine/sidechain/sidechainworker.h"
 
 class EngineNetworkStream {
   public:
@@ -35,9 +34,7 @@ class EngineNetworkStream {
 
     static qint64 getNetworkTimeUs();
 
-    void addWorker(QSharedPointer<SideChainWorker> pWorker) {
-        m_pWorker = pWorker;
-    }
+    void addWorker(QSharedPointer<SideChainWorker> pWorker);
 
   private:
     FIFO<CSAMPLE>* m_pOutputFifo;
