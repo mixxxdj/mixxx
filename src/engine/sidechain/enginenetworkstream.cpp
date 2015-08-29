@@ -10,15 +10,15 @@
 
 #include "sampleutil.h"
 
-unsigned int kBufferFrames = 32768; // 743 ms @ 44100 Hz
-unsigned int kNetworkLatencyFrames = 8192; // 743 ms @ 44100 Hz
+const int kBufferFrames = 32768; // 743 ms @ 44100 Hz
+const int kNetworkLatencyFrames = 8192; // 743 ms @ 44100 Hz
 // Related chunk sizes:
 // Mp3 frames = 1152 samples
 // Ogg frames = 64 to 8192 samples.
-// In Mixxx 1.11 we use a dynamic network latency set by 10 decoder-frames
-// Which results in case of ogg in a dynamic latency from 1.4 ms to to 1800 ms
+// In Mixxx 1.11 we transmit every decoder-frames at once,
+// Which results in case of ogg in a dynamic latency from 0.14 ms to to 180 ms
 // Now we have switched to a fixed latency of 8192 frames (stereo samples) =
-// which is 185 @ 44100 ms and twice the maximum of the may mixxx audio buffer
+// which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
 
 EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
                                          int numInputChannels)
@@ -115,7 +115,7 @@ void EngineNetworkStream::writeSilence(int frames) {
 void EngineNetworkStream::scheduleWorker() {
     if (m_pOutputFifo->readAvailable()
             >= m_numOutputChannels * kNetworkLatencyFrames) {
-//        m_worker->outputAvailabe();
+        m_pWorker->outputAvailabe(m_pOutputFifo);
     }
 }
 

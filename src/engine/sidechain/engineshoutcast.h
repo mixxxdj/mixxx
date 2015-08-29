@@ -24,6 +24,7 @@
 #include <QVector>
 #include <QThread>
 #include <QMutex>
+#include <QSemaphore>
 
 #include "configobject.h"
 #include "controlobject.h"
@@ -33,21 +34,13 @@
 #include "engine/sidechain/sidechainworker.h"
 #include "errordialoghandler.h"
 #include "trackinfoobject.h"
+#include "util/fifo.h"
 
 #define SHOUTCAST_DISCONNECTED 0
 #define SHOUTCAST_CONNECTING 1
 #define SHOUTCAST_CONNECTED 2
 
 class Encoder;
-
-// This one is used as cache object
-struct shoutcastCacheObject {
-    quint64 time;
-    unsigned char *header;
-    unsigned char *body;
-    int headerLen;
-    int bodyLen;
-};
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
@@ -56,7 +49,7 @@ typedef struct shout shout_t;
 struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
-class EngineShoutcast : public QObject, public EncoderCallback, public SideChainWorker {
+class EngineShoutcast : public QThread, public EncoderCallback, public SideChainWorker {
     Q_OBJECT
   public:
     EngineShoutcast(ConfigObject<ConfigValue>* _config);
@@ -78,13 +71,15 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     bool serverConnect();
     bool serverDisconnect();
     bool isConnected();
+
+    virtual void outputAvailabe(FIFO<CSAMPLE>* pOutputFifo);
+
+    virtual void run();
+
   public slots:
     /** Update the libshout struct with info from Mixxx's shoutcast preferences.*/
     void updateFromPreferences();
-    //    static void wrapper2writePage();
-    //private slots:
-    //    void writePage(unsigned char *header, unsigned char *body,
-    //                   int headerLen, int bodyLen, int count);
+
   private:
     int getActiveTracks();
     // Check if the metadata has changed since the previous check.  We also
@@ -135,11 +130,8 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     bool m_ogg_dynamic_update;
     QVector<struct shoutcastCacheObject  *> m_pShoutcastCache;
     bool m_bThreadQuit;
-    QThread m_SThread;
-    QMutex m_SMutex;
-
-  private slots:
-    void shoutcastThread();
+    QSemaphore m_readSema;
+    FIFO<CSAMPLE>* m_pOutputFifo;
 };
 
 #endif

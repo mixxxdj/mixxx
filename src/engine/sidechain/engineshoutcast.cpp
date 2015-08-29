@@ -62,7 +62,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_protocol_is_icecast1(false),
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
-          m_ogg_dynamic_update(false) {
+          m_ogg_dynamic_update(false),
+          m_bThreadQuit(false) {
 
 #ifndef __WINDOWS__
     // Ignore SIGPIPE signals that we get when the remote streaming server
@@ -92,11 +93,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
         errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
         return;
     }
-
-    m_bThreadQuit = false;
-    this->moveToThread(&m_SThread);
-    connect(&m_SThread, SIGNAL(started()), this, SLOT(shoutcastThread()));
-    connect(this, SIGNAL(finished()), &m_SThread, SLOT(deleteLater()));
 }
 
 EngineShoutcast::~EngineShoutcast() {
@@ -105,18 +101,6 @@ EngineShoutcast::~EngineShoutcast() {
     if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
-    }
-
-    // Make sure everything is send from cache
-    // before we stop
-    while (1) {
-      m_SMutex.lock();
-      if (m_pShoutcastCache.size() == 0) {
-         m_SMutex.unlock();
-         break;
-      }
-      m_SMutex.unlock();
-      sleep(1);
     }
 
     delete m_pUpdateShoutcastFromPrefs;
@@ -133,31 +117,12 @@ EngineShoutcast::~EngineShoutcast() {
     }
     shout_shutdown();
 
-    m_SThread.quit();
+    wait(); // until the thread ends.
 }
 
 bool EngineShoutcast::serverDisconnect() {
     m_bThreadQuit = true;
-
-    if (m_encoder) {
-        m_encoder->flush();
-        delete m_encoder;
-        m_encoder = NULL;
-    }
-
-    // Make sure everything is send from cache
-    // before we stop
-    while (1) {
-      m_SMutex.lock();
-      if (m_pShoutcastCache.size() == 0) {
-         m_SMutex.unlock();
-         break;
-      }
-      m_SMutex.unlock();
-      sleep(1);
-    }
-
-    m_SThread.quit();
+    wait();
 
     m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
 
@@ -480,7 +445,7 @@ bool EngineShoutcast::serverConnect() {
         m_pShoutcastStatus->set(SHOUTCAST_CONNECTED);
 
         m_bThreadQuit = false;
-        m_SThread.start();
+        start();
 
         return true;
     }
@@ -496,45 +461,6 @@ bool EngineShoutcast::serverConnect() {
 
 void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
-    struct shoutcastCacheObject *l_SCacheObj = (struct shoutcastCacheObject *) malloc(sizeof(struct shoutcastCacheObject));
-
-    if (l_SCacheObj == NULL)
-    {
-       qDebug() << "EngineShoutcast::write: Can't allocate memory!";
-       return;
-    }
-
-    memset(l_SCacheObj, 0x00, sizeof(struct shoutcastCacheObject));
-    l_SCacheObj->header = (unsigned char *)malloc(headerLen);
-
-    if (l_SCacheObj->header == NULL) {
-       qDebug() << "EngineShoutcast::write: Can't allocate memory!";
-       free(l_SCacheObj);
-       return;
-    }
-
-    l_SCacheObj->body = (unsigned char *)malloc(bodyLen);
-
-    if (l_SCacheObj->body == NULL) {
-       qDebug() << "EngineShoutcast::write: Can't allocate memory!";
-       free(l_SCacheObj->header);
-       free(l_SCacheObj);
-       return;
-    }
-
-    memcpy(l_SCacheObj->header, header, headerLen);
-    memcpy(l_SCacheObj->body, body, bodyLen);
-
-    l_SCacheObj->headerLen = headerLen;
-    l_SCacheObj->bodyLen = bodyLen;
-
-    m_SMutex.lock();
-    m_pShoutcastCache.append(l_SCacheObj);
-    m_SMutex.unlock();
-}
-
-void EngineShoutcast::serverWrite(unsigned char *header, unsigned char *body,
-                            int headerLen, int bodyLen) {
     int ret;
 
     if (!m_pShout)
@@ -543,6 +469,7 @@ void EngineShoutcast::serverWrite(unsigned char *header, unsigned char *body,
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         // Send header if there is one
         if (headerLen > 0) {
+            // We are already synced by EngineNetworkstream
             ret = shout_send(m_pShout, header, headerLen);
             if (ret != SHOUTERR_SUCCESS) {
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
@@ -565,7 +492,8 @@ void EngineShoutcast::serverWrite(unsigned char *header, unsigned char *body,
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
             if (m_iShoutFailures > 3) {
                 if(!serverConnect())
-                    errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                    errorDialog(tr("Lost connection to streaming server"),
+                                tr("Please check your connection to the Internet and verify that your username and password are correct."));
             }
             else{
                 m_iShoutFailures++;
@@ -585,8 +513,11 @@ void EngineShoutcast::serverWrite(unsigned char *header, unsigned char *body,
 }
 
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
-    //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
-    bool prefEnabled = (m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt() == 1);
+    qDebug() << "EngineShoutcast::process";
+    // Check to see if Shoutcast is enabled, and pass the samples off to be
+    // broadcast if necessary.
+    bool prefEnabled = (m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY, "enabled")).toInt() == 1);
 
     if (!prefEnabled) {
         if (isConnected()) {
@@ -627,6 +558,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     // If we are connected, encode the samples.
     if (iBufferSize > 0 && m_encoder) {
         m_encoder->encodeBuffer(pBuffer, iBufferSize);
+        // the encoded frames are received by the write() callback.
     }
 
     // Check if track metadata has changed and if so, update.
@@ -787,61 +719,40 @@ void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
     ErrorDialogHandler::instance()->requestErrorDialog(props);
 }
 
-void EngineShoutcast::shoutcastThread() {
-    struct shoutcastCacheObject *l_SCacheObj = NULL;
-    unsigned int m_lCacheSize = 0;
+// Is called from the Mixxx engine thread
+void EngineShoutcast::outputAvailabe(FIFO<CSAMPLE>* pOutputFifo) {
+    m_pOutputFifo = pOutputFifo;
+    m_readSema.release();
+}
 
-    // We IDLE until the cache has filled a bit
-    while (1)
-    {
-       sleep(5);
-       m_SMutex.lock();
-       m_lCacheSize = m_pShoutcastCache.size();
-       if (m_lCacheSize > 10) {
-          m_SMutex.unlock();
-          break;
-       }
-       m_SMutex.unlock();
-    }
-
-    while (1)
-    {
-        shout_sync(m_pShout);
-        m_SMutex.lock();
-        // Ok this shouldn't happen cache is empty and we have nothing to send.
-        // wait for next to come.
-        if (m_bThreadQuit == false && m_pShoutcastCache.size() == 0) {
-            qDebug() << "EngineShoutcast::shoutcastThread: Encoding not fast enough. Cache is empty!";
-            qDebug() << "EngineShoutcast::shoutcastThread: This means your stream will break";
-            m_SMutex.unlock();
-            sleep(5);
-            continue;
-        } else if (m_pShoutcastCache.size() > 0) {
-            // Take first cache object and remove it
-            l_SCacheObj = m_pShoutcastCache.first();
-            m_pShoutcastCache.remove(0);
-            m_lCacheSize = m_pShoutcastCache.size();
-        } else {
-            // We don't have anything to send anymore
-            l_SCacheObj = NULL;
-            m_lCacheSize = 0;
+void EngineShoutcast::run() {
+    unsigned static id = 0;
+    QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
+    qDebug() << "starting thread";
+    for(;;) {
+        m_readSema.acquire();
+        if (m_bThreadQuit) {
+            if (m_encoder) {
+                m_encoder->flush();
+                delete m_encoder;
+                m_encoder = NULL;
+            }
+            return;
         }
-        m_SMutex.unlock();
-
-        if (l_SCacheObj != NULL) {
-            // I don't know if emiting Signal is more QT style but doing it like this now.
-            serverWrite(l_SCacheObj->header,
-                        l_SCacheObj->body,
-                        l_SCacheObj->headerLen,
-                        l_SCacheObj->bodyLen);
-
-            free(l_SCacheObj->header);
-            free(l_SCacheObj->body);
-            free(l_SCacheObj);
-        }
-
-        if (m_bThreadQuit == true && m_lCacheSize == 0) {
-          break;
+        int readAvailable = m_pOutputFifo->readAvailable();
+        if (readAvailable) {
+            CSAMPLE* dataPtr1;
+            ring_buffer_size_t size1;
+            CSAMPLE* dataPtr2;
+            ring_buffer_size_t size2;
+            // We use size1 and size2, so we can ignore the return value
+            (void)m_pOutputFifo->aquireReadRegions(readAvailable, &dataPtr1, &size1,
+                    &dataPtr2, &size2);
+            process(dataPtr1, size1);
+            if (size2 > 0) {
+                process(dataPtr1, size2);
+            }
+            m_pOutputFifo->releaseReadRegions(readAvailable);
         }
     }
 }
