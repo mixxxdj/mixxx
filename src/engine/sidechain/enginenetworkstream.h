@@ -37,6 +37,8 @@ class EngineNetworkStream {
     void addWorker(QSharedPointer<SideChainWorker> pWorker);
 
   private:
+    void scheduleWorker();
+
     FIFO<CSAMPLE>* m_pOutputFifo;
     FIFO<CSAMPLE>* m_pInputFifo;
     int m_numOutputChannels;
