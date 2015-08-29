@@ -520,16 +520,23 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   margin-left: 4px;
 }
 
-#SkinSettings > #h1 {
-  font: 14pt/16pt ;
+#SkinSettingsTop {
+  background-color: rgba(17.3%, 17.3%, 17.3%, 100%);
+  margin: 5px;
+  margin-top: 6px;
+  margin-right: 4px;
+}
+
+#SkinSettingsTop > #h1 {
+  font: 16px/18px;
   text-align: left;
   text-transform: uppercase;
-  padding: 0em 0.2em 0em 0.2em;
-  background: #222222;
+  padding: 0;
+  background: none;
 }
 
 #SkinSettings > #h2 {
-  font: 12pt/14pt ;
+  font: 14px/16px;
   text-align: left;
   color: #d2d2d2;
   background-color: none;
@@ -539,14 +546,14 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
 }
 
 #SkinSettings > #h3 {
-  font: 10pt/12pt ;
+  font: 12px/14px;
   background-color: none;
   text-align: left;
   margin: 0.5em 0.5em 0.5em 0.5em;
 }
 
 #SkinSettings WPushButton {
-  font: 10pt/12pt ;
+  font: 12px/14px;
   background-color: none;
   text-transform: none;
   border: none;
@@ -555,6 +562,19 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
 #SkinSettings WPushButton:hover {
   background: #222222;
 }
+
+#SkinSettingsTop #SidebarShowHideSkinSettingsButton {
+  background-color: #0a0a0a;
+  border-radius: 2px;
+  border: 1px solid #ddd;
+}
+
+#SkinSettingsTop #SidebarShowHideSkinSettingsButton:hover {
+  background-color: #333;
+  border-radius: 2px;
+  border: 1px solid #ddd;
+}
+
 
 /*******************************************************************************
  ** END SKIN SETTINGS **********************************************************
