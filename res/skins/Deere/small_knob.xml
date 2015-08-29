@@ -8,19 +8,26 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
+    <Size>27f,30f</Size>
     <Children>
-      <KnobComposed>
-        <Size>20f,20f</Size>
-        <Knob>knob_small.svg</Knob>
-        <MinAngle>-230</MinAngle>
-        <MaxAngle>50</MaxAngle>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
-        </Connection>
-      </KnobComposed>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Size>27f,20f</Size>
+        <Children>
+          <KnobComposed>
+            <Size>20f,20f</Size>
+            <Knob>knob_small.svg</Knob>
+            <MinAngle>-230</MinAngle>
+            <MaxAngle>50</MaxAngle>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
+            </Connection>
+          </KnobComposed>
+        </Children>
+      </WidgetGroup>
       <Label>
-        <Size>15f,10f</Size>
-        <ObjectName>KnobLabel</ObjectName>
+        <Size>27f,10f</Size>
+        <ObjectName>SmallKnobLabel</ObjectName>
         <Text><Variable name="label"/></Text>
       </Label>
     </Children>
