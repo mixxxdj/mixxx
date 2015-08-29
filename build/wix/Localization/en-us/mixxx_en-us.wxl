@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" Codepage="1252" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+   <String Id="Language">1033</String>         <!-- Supported language and codepage codes can be found here: http://www.tramontana.co.hu/wix/lesson2.php#2.4 -->
+ 
+   <!-- Programm informations -->
+   <String Id="ApplicationName">Mixxx</String>
+   <String Id="ManufacturerName">Mixxx</String>
+   <String Id="ManufacturerFullName">The Mixxx Development Team</String>
+   <String Id="ProductDescription">Free Digital DJ'ing software</String>
+   <String Id="Comments">Installs Mixxx</String>
+ 
+   <!-- localized EULA -->
+   <String Id="LicenseRtf" Overridable="yes">Eula-en.rtf</String>
+ 
+   <!-- Error messages -->
+   <String Id="OS2Old">This product requires at least Windows Vista / Server 2008.</String>
+   <String Id="NewerInstalled">The same or a newer version of this product is already installed.</String>
+   <String Id="x64VersionRequired">You need to install the 64-bit version of this product on 64-bit Windows.</String>
+   <String Id="x86VersionRequired">You need to install the 32-bit version of this product on 32-bit Windows.</String>
+ 
+   <!-- Features translations --> 
+   <String Id="FeatureCompleteDescription">The complete package.</String>
+   <String Id="FeatureMainProgramTitle">Main program</String>
+   <String Id="FeatureMainProgramDescription">The main version including all dependencies.</String>
+   <String Id="FeatureManualTitle">Mixxx Manual</String>
+   <String Id="FeatureManualDescription">The Mixxx Manual in PDF</String>
+ 
+</WixLocalization>
