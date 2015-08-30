@@ -124,10 +124,10 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
         double shortest_distance = 0;
         int nearest_playpos = -1;
 
-        QList<Cue*> cuePoints = m_pCurrentTrack->getCuePoints();
-        QListIterator<Cue*> it(cuePoints);
+        const QList<CuePointer> cuePoints(m_pCurrentTrack->getCuePoints());
+        QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
-            Cue* pCue = it.next();
+            CuePointer pCue(it.next());
             if (pCue->getType() != Cue::CUE || pCue->getHotCue() == -1) {
                 continue;
             }

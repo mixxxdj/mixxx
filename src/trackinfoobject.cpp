@@ -827,47 +827,44 @@ void TrackInfoObject::slotCueUpdated() {
     emit(cuesUpdated());
 }
 
-Cue* TrackInfoObject::addCue() {
+CuePointer TrackInfoObject::addCue() {
     //qDebug() << "TrackInfoObject::addCue()";
     QMutexLocker lock(&m_qMutex);
-    Cue* cue = new Cue(m_id);
-    connect(cue, SIGNAL(updated()),
+    CuePointer pCue(new Cue(m_trackRef.getId()));
+    connect(pCue.data(), SIGNAL(updated()),
             this, SLOT(slotCueUpdated()));
-    m_cuePoints.push_back(cue);
+    m_cuePoints.push_back(pCue);
     setDirty(true);
     lock.unlock();
     emit(cuesUpdated());
-    return cue;
+    return pCue;
 }
 
-void TrackInfoObject::removeCue(Cue* cue) {
+void TrackInfoObject::removeCue(const CuePointer& pCue) {
     QMutexLocker lock(&m_qMutex);
-    disconnect(cue, 0, this, 0);
-    // TODO(XXX): Delete the cue point.
-    m_cuePoints.removeOne(cue);
+    disconnect(pCue.data(), 0, this, 0);
+    m_cuePoints.removeOne(pCue);
     setDirty(true);
     lock.unlock();
     emit(cuesUpdated());
 }
 
-const QList<Cue*>& TrackInfoObject::getCuePoints() {
+QList<CuePointer> TrackInfoObject::getCuePoints() const {
     QMutexLocker lock(&m_qMutex);
     return m_cuePoints;
 }
 
-void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
+void TrackInfoObject::setCuePoints(const QList<CuePointer>& cuePoints) {
     //qDebug() << "setCuePoints" << cuePoints.length();
     QMutexLocker lock(&m_qMutex);
-    QListIterator<Cue*> it(m_cuePoints);
-    while (it.hasNext()) {
-        Cue* cue = it.next();
-        disconnect(cue, 0, this, 0);
+    // disconnect existing cue points
+    for (const auto& pCue: m_cuePoints) {
+        disconnect(pCue.data(), 0, this, 0);
     }
     m_cuePoints = cuePoints;
-    it = QListIterator<Cue*>(m_cuePoints);
-    while (it.hasNext()) {
-        Cue* cue = it.next();
-        connect(cue, SIGNAL(updated()),
+    // connect new cue points
+    for (const auto& pCue: m_cuePoints) {
+        connect(pCue.data(), SIGNAL(updated()),
                 this, SLOT(slotCueUpdated()));
     }
     setDirty(true);

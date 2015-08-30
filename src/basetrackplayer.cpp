@@ -128,11 +128,11 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
         int loopEnd = m_pLoopOutPoint->get();
         if (loopStart != -1 && loopEnd != -1 &&
             even(loopStart) && even(loopEnd) && loopStart <= loopEnd) {
-            Cue* pLoopCue = NULL;
-            QList<Cue*> cuePoints = m_pLoadedTrack->getCuePoints();
-            QListIterator<Cue*> it(cuePoints);
+            CuePointer pLoopCue;
+            QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
+            QListIterator<CuePointer> it(cuePoints);
             while (it.hasNext()) {
-                Cue* pCue = it.next();
+                CuePointer pCue(it.next());
                 if (pCue->getType() == Cue::LOOP) {
                     pLoopCue = pCue;
                 }
@@ -241,10 +241,10 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject) {
     m_pLoopInPoint->set(-1);
     m_pLoopOutPoint->set(-1);
 
-    const QList<Cue*> trackCues = pTrackInfoObject->getCuePoints();
-    QListIterator<Cue*> it(trackCues);
+    const QList<CuePointer> trackCues(pTrackInfoObject->getCuePoints());
+    QListIterator<CuePointer> it(trackCues);
     while (it.hasNext()) {
-        Cue* pCue = it.next();
+        CuePointer pCue(it.next());
         if (pCue->getType() == Cue::LOOP) {
             int loopStart = pCue->getPosition();
             int loopEnd = loopStart + pCue->getLength();
