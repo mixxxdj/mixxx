@@ -36,7 +36,7 @@ SoundSourceProviderPointer SoundSourceProviderRegistry::registerEntry(const Entr
 }
 
 void SoundSourceProviderRegistry::finishRegistration() {
-    const QStringList supportedFileExtensions(getSupportedFileExtensions());
+    const QStringList supportedFileExtensions(getRegisteredFileExtensions());
     const QString fileExtensionsRegex(
             RegexUtils::fileExtensionsRegex(supportedFileExtensions));
     QRegExp(fileExtensionsRegex, Qt::CaseInsensitive).swap(
@@ -44,7 +44,7 @@ void SoundSourceProviderRegistry::finishRegistration() {
 }
 
 QStringList SoundSourceProviderRegistry::getSupportedFileNamePatterns() const {
-    const QStringList supportedFileExtensions(getSupportedFileExtensions());
+    const QStringList supportedFileExtensions(getRegisteredFileExtensions());
     // Turn the list into a "*.mp3 *.wav *.etc" style string
     QStringList supportedFileNamePatterns;
     foreach (const QString& supportedFileExtension, supportedFileExtensions) {

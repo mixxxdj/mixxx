@@ -172,7 +172,7 @@ void SoundSourceProxy::loadPlugins() {
     s_soundSourceProviders.finishRegistration();
 
     const QStringList supportedFileExtensions(
-            s_soundSourceProviders.getSupportedFileExtensions());
+            s_soundSourceProviders.getRegisteredFileExtensions());
     foreach (const QString &supportedFileExtension, supportedFileExtensions) {
         const Mixxx::SoundSourceProviderPointer pProvider(
                 s_soundSourceProviders.getProviderForFileExtension(supportedFileExtension));
@@ -187,11 +187,6 @@ void SoundSourceProxy::loadPlugins() {
                     << "is" << pProvider->getName();
         }
     }
-}
-
-// static
-QStringList SoundSourceProxy::getSupportedFileExtensions() {
-    return s_soundSourceProviders.getSupportedFileExtensions();
 }
 
 // static

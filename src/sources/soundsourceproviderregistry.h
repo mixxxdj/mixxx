@@ -30,7 +30,7 @@ public:
         return m_entries.value(fileExtension).pPluginLibrary;
     }
 
-    QStringList getSupportedFileExtensions() const {
+    QStringList getRegisteredFileExtensions() const {
         return m_entries.keys();
     }
 
