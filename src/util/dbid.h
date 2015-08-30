@@ -3,6 +3,7 @@
 
 
 #include <ostream>
+#include <utility>
 
 #include <QString>
 #include <QVariant>
