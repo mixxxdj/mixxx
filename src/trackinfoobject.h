@@ -21,8 +21,6 @@
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
-class Cue;
-
 class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
@@ -230,10 +228,10 @@ class TrackInfoObject : public QObject {
     float getCuePoint();
 
     // Calls for managing the track's cue points
-    Cue* addCue();
-    void removeCue(Cue* cue);
-    const QList<Cue*>& getCuePoints();
-    void setCuePoints(QList<Cue*> cuePoints);
+    CuePointer addCue();
+    void removeCue(const CuePointer& pCue);
+    QList<CuePointer> getCuePoints() const;
+    void setCuePoints(const QList<CuePointer>& cuePoints);
 
     bool isDirty();
 
@@ -377,7 +375,7 @@ class TrackInfoObject : public QObject {
     bool m_bBpmLocked;
 
     // The list of cue points for the track
-    QList<Cue*> m_cuePoints;
+    QList<CuePointer> m_cuePoints;
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;

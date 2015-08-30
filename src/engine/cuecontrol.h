@@ -16,7 +16,6 @@
 
 class ControlObject;
 class ControlPushButton;
-class Cue;
 class ControlIndicator;
 
 class HotcueControl : public QObject {
@@ -26,8 +25,8 @@ class HotcueControl : public QObject {
     virtual ~HotcueControl();
 
     inline int getHotcueNumber() { return m_iHotcueNumber; }
-    inline Cue* getCue() { return m_pCue; }
-    inline void setCue(Cue* pCue) { m_pCue = pCue; }
+    inline CuePointer getCue() { return m_pCue; }
+    inline void setCue(CuePointer pCue) { m_pCue = pCue; }
     inline ControlObject* getPosition() { return m_hotcuePosition; }
     inline ControlObject* getEnabled() { return m_hotcueEnabled; }
 
@@ -63,7 +62,7 @@ class HotcueControl : public QObject {
 
     QString m_group;
     int m_iHotcueNumber;
-    Cue* m_pCue;
+    CuePointer m_pCue;
 
     // Hotcue state controls
     ControlObject* m_hotcuePosition;
@@ -124,7 +123,7 @@ class CueControl : public EngineControl {
   private:
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
-    void attachCue(Cue* pCue, int hotcueNumber);
+    void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
     void saveCuePoint(double cuePoint);
 
