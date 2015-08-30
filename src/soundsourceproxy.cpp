@@ -122,20 +122,15 @@ QList<QDir> getSoundSourcePluginDirectories() {
 
 }
 
-//Constructor
-SoundSourceProxy::SoundSourceProxy(QString qFilename,
-        SecurityTokenPointer pToken)
-        : m_pSecurityToken(openSecurityToken(qFilename, pToken))
-                , m_pSoundSource(initialize(qFilename)) {
-}
-
-//Other constructor
-SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
-        : m_pTrack(pTrack)
-                , m_pSecurityToken(
-                openSecurityToken(pTrack->getLocation(),
-                        pTrack->getSecurityToken()))
-                        , m_pSoundSource(initialize(pTrack->getLocation())) {
+SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
+    : m_filePath(pTrack->getCanonicalLocation()),
+      m_url(QUrl::fromLocalFile(m_filePath)),
+      m_pTrack(pTrack),
+      m_pSecurityToken(
+              openSecurityToken(
+                      pTrack->getLocation(),
+                      pTrack->getSecurityToken())),
+      m_pSoundSource(initialize(pTrack->getLocation())) {
 }
 
 Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {

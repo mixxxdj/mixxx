@@ -22,8 +22,16 @@ public:
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
-    explicit SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken = SecurityTokenPointer());
-    explicit SoundSourceProxy(TrackPointer pTrack);
+    explicit SoundSourceProxy(
+            const TrackPointer& pTrack);
+
+    const QString& getFilePath() const {
+        return m_filePath;
+    }
+
+    const QUrl& getUrl() const {
+        return m_url;
+    }
 
     QString getType() const {
         if (m_pSoundSource) {
@@ -70,6 +78,9 @@ private:
 
     static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
 
+    const QString m_filePath;
+    const QUrl m_url;
+
     const TrackPointer m_pTrack;
     const SecurityTokenPointer m_pSecurityToken;
 
@@ -80,4 +91,4 @@ private:
     Mixxx::AudioSourcePointer m_pAudioSource;
 };
 
-#endif
+#endif // SOUNDSOURCEPROXY_H
