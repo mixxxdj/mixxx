@@ -75,7 +75,18 @@
 
       <!-- Define icons (ID should not be longer than 18 chars and must end with ".exe") -->
       <Icon Id="Icon.exe" SourceFile="$(var.baseBuildDir)\res\images\ic_mixxx.ico" />             
-             
+      
+      <!-- Set properties for add/remove programs -->
+      <Property Id="ARPPRODUCTICON" Value="Icon.exe" />
+      <Property Id="ARPHELPLINK" Value="$(var.InfoURL)" />
+      <Property Id="ARPNOREPAIR" Value="yes" Secure="yes" />      <!-- Remove repair -->
+      <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" />      <!-- Remove modify -->
+      
+      <!-- Upgrade logic -->
+      <!-- AllowSameVersionUpgrades -> Always upgrade, never allow two versions to be installed next to each other -->
+      <!-- AllowSameVersionUpgrades causes ICE61 which must be ignored -->
+      <MajorUpgrade DowngradeErrorMessage="!(loc.NewerInstalled)" AllowSameVersionUpgrades="yes" />
+      
       <!-- TODO(SBL): License agreement text: we will need to make it localized -->
       <WixVariable Id="WixUILicenseRtf" Value="Localization\en-us\LICENSE_en-us.rtf" />             
              
@@ -177,36 +188,28 @@
     -->
  
     <!-- Features define which parts of the application can be installed in a custom installation -->      
-    <Feature Id='Complete'
-             Title="!(loc.ApplicationName)"
-             Description="!(loc.FeatureCompleteDescription)"
-             Level="1"
-             Display="expand"
+
+    <!-- A feature block for the main (GUI) program and all its dependencies -->
+    <Feature Id="MainProgram"
+             Title="!(loc.FeatureMainProgramTitle)"
+             Description="!(loc.FeatureMainProgramDescription)"
+             AllowAdvertise='no'
+             Absent='disallow'
+             InstallDefault='local'
+             Level="1">
+      <ComponentRef Id='mixxx.exe_comp' />
+      <ComponentRef Id='ProgramMenuDir' />
+    </Feature>
+    <!-- A feature block for the PDF manual -->
+    <Feature Id="Manual"
+             Title="!(loc.FeatureManualTitle)"
+             Description="!(loc.FeatureManualDescription)"
              AllowAdvertise='no'
              InstallDefault='local'
-             TypicalDefault='install'
-             ConfigurableDirectory="INSTALLDIR">
-      <!-- A feature block for the main (GUI) program and all its dependencies -->
-      <Feature Id="MainProgram"
-               Title="!(loc.FeatureMainProgramTitle)"
-               Description="!(loc.FeatureMainProgramDescription)"
-               AllowAdvertise='no'
-               Absent='disallow'
-               InstallDefault='local'
-               Level="1">
-        <ComponentRef Id='mixxx.exe_comp' />
-        <ComponentRef Id='ProgramMenuDir' />
-      </Feature>
-      <Feature Id="Manual"
-               Title="!(loc.FeatureManualTitle)"
-               Description="!(loc.FeatureManualDescription)"
-               AllowAdvertise='no'
-               InstallDefault='local'
-               Level="1">
-        <ComponentRef Id='manual_comp' />
-      </Feature>      
+             Level="1">
+      <ComponentRef Id='manual_comp' />
+    </Feature>      
 
-    </Feature>
     
     <!-- Define the installer UI -->
     <UIRef Id="WixUI_FeatureTree" />
