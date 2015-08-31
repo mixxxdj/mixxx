@@ -26,17 +26,6 @@
 #include "library/coverartutils.h"
 #include "util/assert.h"
 
-TrackInfoObject::TrackInfoObject(const QString& file,
-                                 SecurityTokenPointer pToken,
-                                 bool parseHeader, bool parseCoverArt)
-        : m_qMutex(QMutex::Recursive),
-          m_fileInfo(file),
-          m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
-                  m_fileInfo, true) : pToken),
-          m_analyserProgress(-1) {
-    initialize(parseHeader, parseCoverArt);
-}
-
 TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
                                  SecurityTokenPointer pToken,
                                  bool parseHeader, bool parseCoverArt)
@@ -130,11 +119,6 @@ TrackPointer TrackInfoObject::newDummy(
                     std::move(fileInfo),
                     SecurityTokenPointer()),
             &QObject::deleteLater);
-}
-
-TrackInfoObject::~TrackInfoObject() {
-    // qDebug() << "~TrackInfoObject"
-    //          << this << m_id << getInfo();
 }
 
 // static

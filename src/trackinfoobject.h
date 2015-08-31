@@ -34,19 +34,13 @@ class TrackInfoObject : public QObject {
     Q_OBJECT
 
   public:
-    // Initialize a new track with the filename.
-    TrackInfoObject(const QString& file="",
-                    SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true,
-                    bool parseCoverArt=false);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(const QFileInfo& fileInfo,
+    explicit TrackInfoObject(const QFileInfo& fileInfo = QFileInfo(),
                     SecurityTokenPointer pToken=SecurityTokenPointer(),
                     bool parseHeader=true,
                     bool parseCoverArt=false);
     // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode &);
-    virtual ~TrackInfoObject();
 
     // Creates a new empty dummy instance for fake tracks.
     static TrackPointer newDummy(
