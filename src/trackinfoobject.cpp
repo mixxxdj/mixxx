@@ -208,66 +208,85 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
     pTrackMetadata->setKey(getKeyText());
 }
 
-void TrackInfoObject::parse(bool parseCoverArt) {
-    // Log parsing of header information in developer mode. This is useful for
-    // tracking down corrupt files.
-    const QString canonicalLocation(getCanonicalLocation());
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        qDebug() << "TrackInfoObject::parse()" << canonicalLocation;
-    }
+void TrackInfoObject::parseTrackMetadata(
+        const SoundSourceProxy& proxy,
+        bool parseCoverArt,
+        bool reloadFromFile) {
+    DEBUG_ASSERT(this == proxy.getTrack().data());
 
-    SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
-    if (!proxy.getType().isEmpty()) {
-        setType(proxy.getType());
-
-        // Parse the information stored in the sound file.
-        Mixxx::TrackMetadata trackMetadata;
-        QImage coverArt;
-        // If parsing of the cover art image should be omitted the
-        // 2nd output parameter must be set to NULL.
-        QImage* pCoverArt = parseCoverArt ? &coverArt : NULL;
-        if (proxy.parseTrackMetadataAndCoverArt(&trackMetadata, pCoverArt) == OK) {
-            // If Artist, Title and Type fields are not blank, modify them.
-            // Otherwise, keep their current values.
-            // TODO(rryan): Should we re-visit this decision?
-            if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
-                Mixxx::TrackMetadata fileNameMetadata;
-                parseMetadataFromFileName(fileNameMetadata, getFilename());
-                if (trackMetadata.getArtist().isEmpty()) {
-                    trackMetadata.setArtist(fileNameMetadata.getArtist());
-                }
-                if (trackMetadata.getTitle().isEmpty()) {
-                    trackMetadata.setTitle(fileNameMetadata.getTitle());
-                }
-            }
-
-            if (pCoverArt && !pCoverArt->isNull()) {
-                QMutexLocker lock(&m_qMutex);
-                m_coverArt.image = *pCoverArt;
-                m_coverArt.info.hash = CoverArtUtils::calculateHash(
-                    m_coverArt.image);
-                m_coverArt.info.coverLocation = QString();
-                m_coverArt.info.type = CoverInfo::METADATA;
-                m_coverArt.info.source = CoverInfo::GUESSED;
-            }
-
-            setHeaderParsed(true);
-        } else {
-            qDebug() << "TrackInfoObject::parse() error at file"
-                     << canonicalLocation;
-
-            // Add basic information derived from the filename
-            parseMetadataFromFileName(trackMetadata, getFilename());
-
-            setHeaderParsed(false);
-        }
-        // Dump the metadata extracted from the file into the track.
-        setMetadata(trackMetadata);
-    } else {
-        qDebug() << "TrackInfoObject::parse() error at file"
-                 << canonicalLocation;
+    if (proxy.getFilePath().isEmpty()) {
+        qWarning() << "Failed to parse track metadata from file"
+                << getLocation()
+                << ": File is inaccessible or missing";
         setHeaderParsed(false);
+        return;
     }
+
+    const QString canonicalLocation(getCanonicalLocation());
+    DEBUG_ASSERT_AND_HANDLE(proxy.getFilePath() == canonicalLocation) {
+            qWarning() << "Failed to parse track metadata from file"
+                    << getLocation()
+                    << ": Mismatching file paths"
+                    << proxy.getFilePath()
+                    << "<>"
+                    << canonicalLocation;
+        setHeaderParsed(false);
+        return;
+    }
+
+    if (proxy.getType().isEmpty()) {
+        qWarning() << "Failed to parse track metadata from file"
+                << getLocation()
+                << ": Unsupported file type";
+        setHeaderParsed(false);
+        return;
+    }
+    setType(proxy.getType());
+
+    bool parsedFromFile = getHeaderParsed();
+    if (parsedFromFile && !reloadFromFile) {
+        return; // do not reload from file
+    }
+    Mixxx::TrackMetadata trackMetadata;
+    // Use the existing trackMetadata as default values. Otherwise
+    // existing values in the library will be overwritten with
+    // empty values if the corresponding file tags are missing.
+    // Depending on the file type some kind of tags might even
+    // not be supported at all and those would get lost!
+    getMetadata(&trackMetadata);
+    QImage coverArt;
+    // If parsing of the cover art image should be omitted the
+    // 2nd output parameter must be set to nullptr. Cover art
+    // is not reloaded from file once the metadata has been parsed!
+    QImage* pCoverArt = (parseCoverArt && !parsedFromFile) ? &coverArt : nullptr;
+    // Parse the tags stored in the audio file.
+    if (proxy.parseTrackMetadataAndCoverArt(&trackMetadata, pCoverArt) == OK) {
+        parsedFromFile = true;
+    } else {
+        qWarning() << "Failed to parse tags from audio file"
+                 << canonicalLocation;
+    }
+
+    // If Artist or title fields are blank try to parse them
+    // from the file name.
+    // TODO(rryan): Should we re-visit this decision?
+    if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
+        parseMetadataFromFileName(trackMetadata, m_fileInfo.fileName());
+    }
+
+    // Dump the trackMetadata extracted from the file back into the track.
+    setMetadata(trackMetadata);
+    if (pCoverArt && !pCoverArt->isNull()) {
+        CoverArt coverArt;
+        coverArt.image = *pCoverArt;
+        coverArt.info.hash = CoverArtUtils::calculateHash(
+                coverArt.image);
+        coverArt.info.coverLocation = QString();
+        coverArt.info.type = CoverInfo::METADATA;
+        coverArt.info.source = CoverInfo::GUESSED;
+        setCoverArt(coverArt);
+    }
+    setHeaderParsed(parsedFromFile);
 }
 
 QString TrackInfoObject::getDurationStr() const {

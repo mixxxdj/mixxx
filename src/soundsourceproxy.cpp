@@ -123,13 +123,13 @@ QList<QDir> getSoundSourcePluginDirectories() {
 }
 
 SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
-    : m_filePath(pTrack->getCanonicalLocation()),
-      m_url(QUrl::fromLocalFile(m_filePath)),
-      m_pTrack(pTrack),
+    : m_pTrack(pTrack),
       m_pSecurityToken(
               openSecurityToken(
                       pTrack->getLocation(),
                       pTrack->getSecurityToken())),
+      m_filePath(pTrack->getCanonicalLocation()),
+      m_url(QUrl::fromLocalFile(m_filePath)),
       m_pSoundSource(initialize(pTrack->getLocation())) {
 }
 

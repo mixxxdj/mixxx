@@ -35,8 +35,8 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
             QDir(trackLocation), true);
         TrackPointer pTrack(TrackInfoObject::newTemporaryForFile(trackLocation, securityToken));
         SoundSourceProxy proxy(pTrack);
-        QImage img = proxy.parseCoverArt();
-
+        QImage img;
+        EXPECT_EQ(OK, proxy.parseTrackMetadataAndCoverArt(nullptr, &img));
         EXPECT_FALSE(img.isNull());
         EXPECT_EQ(img, res.cover.image);
     }

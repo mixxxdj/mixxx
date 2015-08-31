@@ -8,7 +8,6 @@
 #include <QMutex>
 #include <QObject>
 #include <QSharedPointer>
-#include <QWeakPointer>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
@@ -19,7 +18,7 @@
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
-class Cue;
+class SoundSourceProxy;
 
 class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
@@ -315,6 +314,12 @@ class TrackInfoObject : public QObject {
 
     void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
     void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
+
+    friend class SoundSourceProxy;
+    void parseTrackMetadata(
+            const SoundSourceProxy& proxy,
+            bool parseCoverArt,
+            bool reloadFromFile);
 
     // Set whether the TIO is dirty not. This should never be called except by
     // TIO local methods or the TrackDAO.
