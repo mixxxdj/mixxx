@@ -24,5 +24,7 @@
    <String Id="FeatureMainProgramDescription">The main version including all dependencies.</String>
    <String Id="FeatureManualTitle">Mixxx Manual</String>
    <String Id="FeatureManualDescription">The Mixxx Manual in PDF</String>
+   <String Id="FeatureTranslationsTitle">Translations</String>
+   <String Id="FeatureTranslationsDescription">Resource files containing Mixxx translations</String>
  
 </WixLocalization>

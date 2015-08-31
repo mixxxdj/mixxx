@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="fontsDir">
+            <Component Id="OpenSans_Light.ttf" Guid="*">
+                <File Id="OpenSans_Light.ttf" KeyPath="yes" Source="$(var.fontsVar)\OpenSans-Light.ttf" />
+            </Component>
+            <Component Id="OpenSans_Regular.ttf" Guid="*">
+                <File Id="OpenSans_Regular.ttf" KeyPath="yes" Source="$(var.fontsVar)\OpenSans-Regular.ttf" />
+            </Component>
+            <Component Id="OpenSans.LICENSE.txt" Guid="*">
+                <File Id="OpenSans.LICENSE.txt" KeyPath="yes" Source="$(var.fontsVar)\OpenSans.LICENSE.txt" />
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="fontsComp">
+            <ComponentRef Id="OpenSans_Light.ttf" />
+            <ComponentRef Id="OpenSans_Regular.ttf" />
+            <ComponentRef Id="OpenSans.LICENSE.txt" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

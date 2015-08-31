@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="imageformatsDir">
+            <Component Id="qgif4.dll" Guid="*">
+                <File Id="qgif4.dll" KeyPath="yes" Source="$(var.imageformatsVar)\qgif4.dll" />
+            </Component>
+            <Component Id="qico4.dll" Guid="*">
+                <File Id="qico4.dll" KeyPath="yes" Source="$(var.imageformatsVar)\qico4.dll" />
+            </Component>
+            <Component Id="qjpeg4.dll" Guid="*">
+                <File Id="qjpeg4.dll" KeyPath="yes" Source="$(var.imageformatsVar)\qjpeg4.dll" />
+            </Component>
+            <Component Id="qmng4.dll" Guid="*">
+                <File Id="qmng4.dll" KeyPath="yes" Source="$(var.imageformatsVar)\qmng4.dll" />
+            </Component>
+            <Component Id="qsvg4.dll" Guid="*">
+                <File Id="qsvg4.dll" KeyPath="yes" Source="$(var.imageformatsVar)\qsvg4.dll" />
+            </Component>
+            <Component Id="qtga4.dll" Guid="*">
+                <File Id="qtga4.dll" KeyPath="yes" Source="$(var.imageformatsVar)\qtga4.dll" />
+            </Component>
+            <Component Id="qtiff4.dll" Guid="*">
+                <File Id="qtiff4.dll" KeyPath="yes" Source="$(var.imageformatsVar)\qtiff4.dll" />
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="imageformatsComp">
+            <ComponentRef Id="qgif4.dll" />
+            <ComponentRef Id="qico4.dll" />
+            <ComponentRef Id="qjpeg4.dll" />
+            <ComponentRef Id="qmng4.dll" />
+            <ComponentRef Id="qsvg4.dll" />
+            <ComponentRef Id="qtga4.dll" />
+            <ComponentRef Id="qtiff4.dll" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>
