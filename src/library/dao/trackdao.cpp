@@ -372,7 +372,7 @@ void TrackDAO::bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack) {
     m_pQueryTrackLocationInsert->bindValue(":location", pTrack->getLocation());
     m_pQueryTrackLocationInsert->bindValue(":directory", pTrack->getDirectory());
     m_pQueryTrackLocationInsert->bindValue(":filename", pTrack->getFilename());
-    m_pQueryTrackLocationInsert->bindValue(":filesize", pTrack->getLength());
+    m_pQueryTrackLocationInsert->bindValue(":filesize", pTrack->getFileSize());
     // Should this check pTrack->exists()?
     m_pQueryTrackLocationInsert->bindValue(":fs_deleted", 0);
     m_pQueryTrackLocationInsert->bindValue(":needs_verification", 0);

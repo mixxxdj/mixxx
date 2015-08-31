@@ -36,7 +36,7 @@ void WTrackText::slotTrackUnloaded(TrackPointer track) {
 
 void WTrackText::updateLabel(TrackInfoObject*) {
     if (m_pCurrentTrack) {
-        setText(m_pCurrentTrack->getInfo());
+        setText(m_pCurrentTrack->getArtistTitleInfo());
     }
 }
 
