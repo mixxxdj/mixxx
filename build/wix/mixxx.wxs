@@ -401,6 +401,8 @@
     <!-- Define the installer UI -->
     <UIRef Id="WixUI_FeatureTree" />
     <UIRef Id="WixUI_ErrorProgressText" />
+    <WixVariable Id="WixUIBannerBmp" Value="images\banner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="images\dialog.bmp" />
 
   </Product>
 </Wix>
