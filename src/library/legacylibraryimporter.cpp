@@ -10,22 +10,28 @@
 
 #include <QDomDocument>
 #include <QDomNodeList>
-#include <QDomNode>
 #include <QDir>
 #include <QFile>
 #include <QtDebug>
-#include "trackinfoobject.h" // needed for importing 1.7.x library
-#include "util/xml.h" // needed for importing 1.7.x library
+
 #include "legacylibraryimporter.h"
+#include "util/xml.h" // needed for importing 1.7.x library
 #include "upgrade.h"
+
+namespace {
 
 struct LegacyPlaylist {
     QString name;
     QList<TrackId> indexes;
 };
 
-void doNothing(TrackInfoObject*) {
+QFileInfo parseFileInfo(const QDomNode &nodeHeader) {
+    QDir filePathDir(XmlParse::selectNodeQString(nodeHeader, "Filepath"));
+    QString fileName(XmlParse::selectNodeQString(nodeHeader, "Filename"));
+    return QFileInfo(filePathDir, fileName);
 }
+
+} // anonymous namespace
 
 LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao,
                                              PlaylistDAO& playlistDao) : QObject(),
@@ -83,47 +89,39 @@ void LegacyLibraryImporter::import() {
             legacyPlaylists.push_back(legPlaylist);
         }
 
-        QDomNodeList trackList = doc.elementsByTagName("Track");
-        QDomNode track;
+        QDomNodeList trackNodeList = doc.elementsByTagName("Track");
+        QDomNode trackNode;
 
-        for (int i = 0; i < trackList.size(); i++) {
+        for (int i = 0; i < trackNodeList.size(); i++) {
             // blah, can't figure out how to use an iterator with QDomNodeList
-            track = trackList.at(i);
-            TrackInfoObject trackInfo17(track);
+            trackNode = trackNodeList.at(i);
+            QFileInfo fileInfo(parseFileInfo(trackNode));
+
             // Only add the track to the DB if the file exists on disk,
             // because Mixxx <= 1.7 had no logic to deal with detecting deleted
             // files.
+            if (fileInfo.exists()) {
+                TrackPointer pTrack(TrackInfoObject::newTemporaryForFile(fileInfo));
 
-            if (trackInfo17.exists()) {
-                // Create a TrackInfoObject by directly parsing
-                // the actual MP3/OGG/whatever because 1.7 didn't parse
+                // Parse the actual MP3/OGG/whatever because 1.7 didn't parse
                 // genre and album tags (so the imported TIO doesn't have
                 // those fields).
-                emit(progress("Upgrading Mixxx 1.7 Library: " + trackInfo17.getTitle()));
+                pTrack->parse(false);
 
-                // Read the metadata we couldn't support in <1.8 from file.
-                QFileInfo fileInfo(trackInfo17.getLocation());
-                // Ensure we have the absolute file path stored
-                trackInfo17.setLocation(fileInfo.absoluteFilePath());
-                TrackInfoObject trackInfoNew(trackInfo17.getLocation());
-                trackInfo17.setGenre(trackInfoNew.getGenre());
-                trackInfo17.setAlbum(trackInfoNew.getAlbum());
-                trackInfo17.setYear(trackInfoNew.getYear());
-                trackInfo17.setType(trackInfoNew.getType());
-                trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
-                trackInfo17.setKeys(trackInfoNew.getKeys());
-                trackInfo17.setHeaderParsed(true);
+                // Import values from the Mixxx 1.7 library and overwrite the
+                // values that have just been parsed from the file.
+                importTrack(pTrack.data(), trackNode);
+
+                emit(progress("Upgrading Mixxx 1.7 Library: " + pTrack->getTitle()));
 
                 // Import the track's saved cue point if it is non-zero.
-                float fCuePoint = trackInfo17.getCuePoint();
+                float fCuePoint = pTrack->getCuePoint();
                 if (fCuePoint != 0.0f) {
-                    Cue* pCue = trackInfo17.addCue();
+                    Cue* pCue = pTrack->addCue();
                     pCue->setType(Cue::CUE);
                     pCue->setPosition(fCuePoint);
                 }
 
-                // Provide a no-op deleter b/c this Track is on the stack.
-                TrackPointer pTrack(&trackInfo17, &doNothing);
                 m_trackDao.saveTrack(pTrack);
 
                 // Check if this track is used in a playlist anywhere. If it is, save the
@@ -190,7 +188,27 @@ void LegacyLibraryImporter::import() {
     file.close();
 }
 
+void LegacyLibraryImporter::importTrack(TrackInfoObject* pTrack, const QDomNode &nodeHeader) {
+    // It is safe to directly access the members of pTrack,
+    // because it has just been created and there are no
+    // references to it yet!
 
-LegacyLibraryImporter::~LegacyLibraryImporter()
-{
+    // TODO(uklotzde): The following setters will soon be replaced
+    // by directly accessing the TrackMetadata member of the track.
+    pTrack->setTitle(XmlParse::selectNodeQString(nodeHeader, "Title"));
+    pTrack->setArtist(XmlParse::selectNodeQString(nodeHeader, "Artist"));
+    pTrack->setComment(XmlParse::selectNodeQString(nodeHeader, "Comment"));
+    pTrack->setDuration(XmlParse::selectNodeQString(nodeHeader, "Duration").toInt());
+    pTrack->setSampleRate(XmlParse::selectNodeQString(nodeHeader, "SampleRate").toInt());
+    pTrack->setChannels(XmlParse::selectNodeQString(nodeHeader, "Channels").toInt());
+    pTrack->setBitrate(XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt());
+    pTrack->setReplayGain(XmlParse::selectNodeQString(nodeHeader, "replaygain").toDouble());
+
+    // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
+    // ignore those. Tracks will get a new ID from the database.
+    //m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
+
+    pTrack->m_sType = XmlParse::selectNodeQString(nodeHeader, "Type");
+    pTrack->m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
+    pTrack->m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
 }

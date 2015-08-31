@@ -644,15 +644,11 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
 }
 
 TrackId TrackDAO::addTrack(const QFileInfo& fileInfo, bool unremove) {
-    TrackId trackId;
-    TrackInfoObject * pTrack = new TrackInfoObject(fileInfo);
-    if (pTrack) {
-        // Add the song to the database.
-        addTrack(pTrack, unremove);
-        trackId = pTrack->getId();
-        delete pTrack;
-    }
-    return trackId;
+    TrackPointer pTrack(TrackInfoObject::newTemporaryForFile(fileInfo));
+    pTrack->parse(false);
+    // Add the song to the database.
+    addTrack(pTrack.data(), unremove);
+    return pTrack->getId();
 }
 
 void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
@@ -745,13 +741,13 @@ QList<TrackId> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
         int addIndex = query.value(addIndexColumn).toInt();
         QString filePath = query.value(locationColumn).toString();
         const QFileInfo& fileInfo = fileInfoList.at(addIndex);
-        TrackInfoObject* pTrack = new TrackInfoObject(fileInfo);
-        addTracksAdd(pTrack, unremove);
+        TrackPointer pTrack(TrackInfoObject::newTemporaryForFile(fileInfo));
+        pTrack->parse(false);
+        addTracksAdd(pTrack.data(), unremove);
         TrackId trackId = pTrack->getId();
         if (trackId.isValid()) {
             trackIds.append(trackId);
         }
-        delete pTrack;
     }
 
     // Now that we have imported any tracks that were not already in the
@@ -1259,10 +1255,8 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     QString location = queryRecord.value(0).toString();
 
     TrackPointer pTrack = TrackPointer(
-            new TrackInfoObject(location, SecurityTokenPointer(),
-                                false),
+            new TrackInfoObject(trackId, location, SecurityTokenPointer()),
             TrackInfoObject::onTrackReferenceExpired);
-    pTrack->setId(trackId);
 
     // TIO already stats the file to see if it exists, what its length is,
     // etc. So don't bother setting it.
@@ -2008,8 +2002,8 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
     // TrackPointer. We explicitly do not process cover art while creating the
     // TrackInfoObject since we want to do it asynchronously (see below).
     if (pTrack.isNull()) {
-        pTrack = TrackPointer(new TrackInfoObject(
-                trackLocation, SecurityTokenPointer(), true, false));
+        pTrack = TrackInfoObject::newTemporaryForFile(trackLocation);
+        pTrack->parse(false);
     }
 
     // If the track wasn't in the library already then it has not yet been

@@ -1,6 +1,3 @@
-#include <QDomNode>
-#include <QDomDocument>
-#include <QDomElement>
 #include <QFileInfo>
 #include <QDirIterator>
 #include <QFile>
@@ -26,87 +23,32 @@
 #include "library/coverartutils.h"
 #include "util/assert.h"
 
-TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
-                                 SecurityTokenPointer pToken,
-                                 bool parseHeader, bool parseCoverArt)
+
+TrackInfoObject::TrackInfoObject(
+        TrackId trackId,
+        QFileInfo fileInfo,
+        const SecurityTokenPointer& pToken)
         : m_qMutex(QMutex::Recursive),
-          m_fileInfo(fileInfo),
-          m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
-                  m_fileInfo, true) : pToken),
-          m_analyserProgress(-1) {
-    initialize(parseHeader, parseCoverArt);
-}
-
-TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
-        : m_qMutex(QMutex::Recursive),
-          m_analyserProgress(-1) {
-    QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-    QString location = QDir(XmlParse::selectNodeQString(nodeHeader, "Filepath")).filePath(filename);
-    m_fileInfo = QFileInfo(location);
-    m_pSecurityToken = Sandbox::openSecurityToken(m_fileInfo, true);
-
-    // We don't call initialize() here because it would end up calling parse()
-    // on the file. Plus those initializations weren't done before, so it might
-    // cause subtle bugs. This constructor is only used for legacy importing so
-    // I'm not going to do it. rryan 6/2010
-
-    m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
-    m_sArtist = XmlParse::selectNodeQString(nodeHeader, "Artist");
-    m_sType = XmlParse::selectNodeQString(nodeHeader, "Type");
-    m_sComment = XmlParse::selectNodeQString(nodeHeader, "Comment");
-    m_iDuration = XmlParse::selectNodeQString(nodeHeader, "Duration").toInt();
-    m_iSampleRate = XmlParse::selectNodeQString(nodeHeader, "SampleRate").toInt();
-    m_iChannels = XmlParse::selectNodeQString(nodeHeader, "Channels").toInt();
-    m_iBitrate = XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt();
-    m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
-    m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
-    m_bHeaderParsed = false;
-    m_bBpmLock = false;
-    m_Rating = 0;
-
-    // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
-    // ignore those. Tracks will get a new ID from the database.
-    //m_id = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
-    m_id = TrackId();
-
-    m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
-    m_bPlayed = false;
-    m_bDeleteOnReferenceExpiration = false;
-    m_bDirty = false;
-    m_bLocationChanged = false;
-}
-
-void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
-    m_bDeleteOnReferenceExpiration = false;
-    m_bDirty = false;
-    m_bLocationChanged = false;
-
-    m_sArtist = "";
-    m_sTitle = "";
-    m_sType= "";
-    m_sComment = "";
-    m_sYear = "";
-    m_sURL = "";
+          m_id(std::move(trackId)),
+          m_fileInfo(std::move(fileInfo)),
+          m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(m_fileInfo, true) : pToken),
+          m_bDeleteOnReferenceExpiration(false),
+          m_bDirty(false),
+          m_bLocationChanged(false) {
+    // TODO(uklotzde): Use direct initialization for all POD members
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
     m_bPlayed = false;
-    m_fReplayGain = 0.;
+    m_fReplayGain = 0.0f;
     m_bHeaderParsed = false;
-    m_id = TrackId();
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
     m_bBpmLock = false;
-    m_sGrouping = "";
-    m_sAlbumArtist = "";
-
-    // parse() parses the metadata from file. This is not a quick operation!
-    if (parseHeader) {
-        parse(parseCoverArt);
-    }
+    m_analyserProgress = -1;
 }
 
 //static
@@ -119,6 +61,24 @@ TrackPointer TrackInfoObject::newDummy(
                     std::move(fileInfo),
                     SecurityTokenPointer()),
             &QObject::deleteLater);
+}
+
+//static
+TrackPointer TrackInfoObject::newTemporaryForFile(
+        QFileInfo fileInfo,
+        const SecurityTokenPointer& pSecurityToken) {
+    DEBUG_ASSERT(!fileInfo.fileName().isEmpty());
+    return TrackPointer(
+            new TrackInfoObject(
+                    TrackId(),
+                    std::move(fileInfo),
+                    pSecurityToken),
+            &QObject::deleteLater);
+}
+
+TrackPointer TrackInfoObject::newTemporaryForSameFile() const {
+    QMutexLocker lock(&m_qMutex);
+    return newTemporaryForFile(m_fileInfo, m_pSecurityToken);
 }
 
 // static

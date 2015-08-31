@@ -3,7 +3,6 @@
 
 #include <QAtomicInt>
 #include <QDateTime>
-#include <QDomNode>
 #include <QFileInfo>
 #include <QList>
 #include <QMutex>
@@ -34,18 +33,20 @@ class TrackInfoObject : public QObject {
     Q_OBJECT
 
   public:
-    // Initialize track with a QFileInfo class
-    explicit TrackInfoObject(const QFileInfo& fileInfo = QFileInfo(),
-                    SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true,
-                    bool parseCoverArt=false);
-    // Creates a new track given information from the xml file.
-    TrackInfoObject(const QDomNode &);
+    TrackInfoObject(const TrackInfoObject&) = delete;
+    TrackInfoObject(TrackInfoObject&&) = delete;
 
     // Creates a new empty dummy instance for fake tracks.
     static TrackPointer newDummy(
             TrackId trackId = TrackId(),
             QFileInfo fileInfo = QFileInfo());
+    // Creates a new temporary instance for a file that is not
+    // stored in the database.
+    static TrackPointer newTemporaryForFile(
+            QFileInfo fileInfo,
+            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
+    // Creates a new temporary instance for the same file
+    TrackPointer newTemporaryForSameFile() const;
 
     // Parse file metadata. If no file metadata is present, attempts to extract
     // artist and title information from the filename.
@@ -293,8 +294,10 @@ class TrackInfoObject : public QObject {
     void slotBeatsUpdated();
 
   private:
-    // Common initialization function between all TIO constructors.
-    void initialize(bool parseHeader, bool parseCoverArt);
+    TrackInfoObject(
+            TrackId trackId,
+            QFileInfo fileInfo,
+            const SecurityTokenPointer& pToken);
 
     void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
     void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
