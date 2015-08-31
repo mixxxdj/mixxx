@@ -30,7 +30,7 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     const double bpm = 60.0;
     const int kFrameSize = 2;
     const double expectedBeatLength = (60.0 * sampleRate / bpm) * kFrameSize;
-    TrackPointer pTrack = TrackPointer(new TrackInfoObject());
+    TrackPointer pTrack = TrackInfoObject::newDummy();
     pTrack->setSampleRate(sampleRate);
 
     BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0);

@@ -137,6 +137,18 @@ void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
     }
 }
 
+//static
+TrackPointer TrackInfoObject::newDummy(
+        TrackId trackId,
+        QFileInfo fileInfo) {
+    return TrackPointer(
+            new TrackInfoObject(
+                    std::move(trackId),
+                    std::move(fileInfo),
+                    SecurityTokenPointer()),
+            &QObject::deleteLater);
+}
+
 TrackInfoObject::~TrackInfoObject() {
     // qDebug() << "~TrackInfoObject"
     //          << this << m_id << getInfo();

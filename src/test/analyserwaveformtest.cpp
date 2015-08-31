@@ -17,7 +17,7 @@ class AnalyserWaveformTest: public MixxxTest {
   protected:
     virtual void SetUp() {
         aw = new AnalyserWaveform(config());
-        tio = TrackPointer(new TrackInfoObject("foo"));
+        tio = TrackInfoObject::newDummy();
         tio->setSampleRate(44100);
 
         bigbuf = new CSAMPLE[BIGBUF_SIZE];

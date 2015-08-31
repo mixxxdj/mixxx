@@ -66,6 +66,11 @@ class TrackInfoObject : public QObject {
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
+    // Creates a new empty dummy instance for fake tracks.
+    static TrackPointer newDummy(
+            TrackId trackId = TrackId(),
+            QFileInfo fileInfo = QFileInfo());
+
     // Parse file metadata. If no file metadata is present, attempts to extract
     // artist and title information from the filename.
     void parse(bool parseCoverArt);
@@ -415,7 +420,6 @@ class TrackInfoObject : public QObject {
     CoverArt m_coverArt;
 
     friend class TrackDAO;
-    friend class AutoDJProcessorTest;
 };
 
 #endif
