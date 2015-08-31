@@ -169,6 +169,95 @@
             </File>
           </Component>
 
+          <!-- Main DLL files -->
+          <Component Id="chromaprint.dll" Guid="*">
+              <File Id="chromaprint.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\chromaprint.dll" />
+          </Component>
+          <Component Id="libfftw_3.3.dll" Guid="*">
+              <File Id="libfftw_3.3.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\libfftw-3.3.dll" />
+          </Component>
+          <Component Id="libFLAC.dll" Guid="*">
+              <File Id="libFLAC.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\libFLAC.dll" />
+          </Component>
+          <Component Id="libHSS1394.dll" Guid="*">
+              <File Id="libHSS1394.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\libHSS1394.dll" />
+          </Component>
+          <Component Id="libogg.dll" Guid="*">
+              <File Id="libogg.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\libogg.dll" />
+          </Component>
+          <Component Id="libprotobuf_lite.dll" Guid="*">
+              <File Id="libprotobuf_lite.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\libprotobuf-lite.dll" />
+          </Component>
+          <Component Id="libshout.dll" Guid="*">
+              <File Id="libshout.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\libshout.dll" />
+          </Component>
+          <Component Id="libsndfile.dll" Guid="*">
+              <File Id="libsndfile.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\libsndfile.dll" />
+          </Component>
+          <Component Id="libvorbis.dll" Guid="*">
+              <File Id="libvorbis.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\libvorbis.dll" />
+          </Component>
+          <Component Id="libvorbisfile.dll" Guid="*">
+              <File Id="libvorbisfile.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\libvorbisfile.dll" />
+          </Component>
+          <Component Id="portaudio.dll" Guid="*">
+              <File Id="portaudio.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\portaudio.dll" />
+          </Component>
+          <Component Id="portmidi.dll" Guid="*">
+              <File Id="portmidi.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\portmidi.dll" />
+          </Component>
+          <Component Id="PortTime.dll" Guid="*">
+              <File Id="PortTime.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\PortTime.dll" />
+          </Component>
+          <Component Id="pthreadVC2.dll" Guid="*">
+              <File Id="pthreadVC2.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\pthreadVC2.dll" />
+          </Component>
+          <Component Id="QtCore4.dll" Guid="*">
+              <File Id="QtCore4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtCore4.dll" />
+          </Component>
+          <Component Id="QtGui4.dll" Guid="*">
+              <File Id="QtGui4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtGui4.dll" />
+          </Component>
+          <Component Id="QtNetwork4.dll" Guid="*">
+              <File Id="QtNetwork4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtNetwork4.dll" />
+          </Component>
+          <Component Id="QtOpenGL4.dll" Guid="*">
+              <File Id="QtOpenGL4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtOpenGL4.dll" />
+          </Component>
+          <Component Id="QtScript4.dll" Guid="*">
+              <File Id="QtScript4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtScript4.dll" />
+          </Component>
+          <Component Id="QtScriptTools4.dll" Guid="*">
+              <File Id="QtScriptTools4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtScriptTools4.dll" />
+          </Component>
+          <Component Id="QtSql4.dll" Guid="*">
+              <File Id="QtSql4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtSql4.dll" />
+          </Component>
+          <Component Id="QtSvg4.dll" Guid="*">
+              <File Id="QtSvg4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtSvg4.dll" />
+          </Component>
+          <Component Id="QtTest4.dll" Guid="*">
+              <File Id="QtTest4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtTest4.dll" />
+          </Component>
+          <Component Id="QtXml4.dll" Guid="*">
+              <File Id="QtXml4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtXml4.dll" />
+          </Component>
+          <Component Id="QtXmlPatterns4.dll" Guid="*">
+              <File Id="QtXmlPatterns4.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\QtXmlPatterns4.dll" />
+          </Component>
+          <Component Id="rubberband.dll" Guid="*">
+              <File Id="rubberband.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\rubberband.dll" />
+          </Component>
+          <Component Id="sqlite3.dll" Guid="*">
+              <File Id="sqlite3.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\sqlite3.dll" />
+          </Component>
+          <Component Id="tag.dll" Guid="*">
+              <File Id="tag.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\tag.dll" />
+          </Component>
+          <Component Id="zlibwapi.dll" Guid="*">
+              <File Id="zlibwapi.dll" KeyPath="yes" Source="$(var.baseBuildDir)\dist$(var.arch)\zlibwapi.dll" />
+          </Component>
+          
           <Component Id="LICENSE_comp" Guid="*" Win64="$(var.Win64)">
             <File Source="$(var.baseBuildDir)\LICENSE" Id="LicenceFile" KeyPath="yes" />
           </Component>
@@ -231,7 +320,39 @@
        End of directory structure
        ====================================================================================
     -->
- 
+    <ComponentGroup Id="mainDLLCompGroup">
+        <ComponentRef Id="chromaprint.dll" />
+        <ComponentRef Id="libfftw_3.3.dll" />
+        <ComponentRef Id="libFLAC.dll" />
+        <ComponentRef Id="libHSS1394.dll" />
+        <ComponentRef Id="libogg.dll" />
+        <ComponentRef Id="libprotobuf_lite.dll" />
+        <ComponentRef Id="libshout.dll" />
+        <ComponentRef Id="libsndfile.dll" />
+        <ComponentRef Id="libvorbis.dll" />
+        <ComponentRef Id="libvorbisfile.dll" />
+        <ComponentRef Id="portaudio.dll" />
+        <ComponentRef Id="portmidi.dll" />
+        <ComponentRef Id="PortTime.dll" />
+        <ComponentRef Id="pthreadVC2.dll" />
+        <ComponentRef Id="QtCore4.dll" />
+        <ComponentRef Id="QtGui4.dll" />
+        <ComponentRef Id="QtNetwork4.dll" />
+        <ComponentRef Id="QtOpenGL4.dll" />
+        <ComponentRef Id="QtScript4.dll" />
+        <ComponentRef Id="QtScriptTools4.dll" />
+        <ComponentRef Id="QtSql4.dll" />
+        <ComponentRef Id="QtSvg4.dll" />
+        <ComponentRef Id="QtTest4.dll" />
+        <ComponentRef Id="QtXml4.dll" />
+        <ComponentRef Id="QtXmlPatterns4.dll" />
+        <ComponentRef Id="rubberband.dll" />
+        <ComponentRef Id="sqlite3.dll" />
+        <ComponentRef Id="tag.dll" />
+        <ComponentRef Id="zlibwapi.dll" />
+    </ComponentGroup>
+
+    
     <!-- Features define which parts of the application can be installed in a custom installation -->      
 
     <!-- A feature block for the main (GUI) program and all its dependencies -->
@@ -245,6 +366,7 @@
              ConfigurableDirectory="INSTALLDIR">
       <ComponentRef Id='mixxx.exe_comp' />
       <ComponentRef Id='ProgramMenuDir' />
+      <ComponentGroupRef Id='mainDLLCompGroup' />
       <ComponentRef Id='LICENSE_comp' />
       <ComponentRef Id='COPYING_comp' />
       <ComponentRef Id='README_comp' />
