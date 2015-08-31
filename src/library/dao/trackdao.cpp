@@ -645,7 +645,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
 
 TrackPointer TrackDAO::addTrack(const QFileInfo& fileInfo, bool unremove) {
     TrackPointer pTrack(TrackInfoObject::newManagedForFile(fileInfo));
-    SoundSourceProxy(pTrack).parseTrackMetadata();
+    SoundSourceProxy(pTrack).loadTrackMetadata();
     // Add the song to the database.
     addTrack(pTrack.data(), unremove);
     return pTrack;
@@ -742,7 +742,7 @@ QList<TrackId> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
         QString filePath = query.value(locationColumn).toString();
         const QFileInfo& fileInfo = fileInfoList.at(addIndex);
         TrackPointer pTrack(TrackInfoObject::newTemporaryForFile(fileInfo));
-        SoundSourceProxy(pTrack).parseTrackMetadata();
+        SoundSourceProxy(pTrack).loadTrackMetadata();
         addTracksAdd(pTrack.data(), unremove);
         TrackId trackId = pTrack->getId();
         if (trackId.isValid()) {
@@ -1323,7 +1323,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // If the header hasn't been parsed, parse it but only after we set the
     // track clean and hooked it up to the track cache, because this will
     // dirty it.
-    SoundSourceProxy(pTrack).parseTrackMetadata();
+    SoundSourceProxy(pTrack).loadTrackMetadata();
 
     return pTrack;
 }
@@ -1998,7 +1998,7 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
     // TrackInfoObject since we want to do it asynchronously (see below).
     if (pTrack.isNull()) {
         pTrack = TrackInfoObject::newTemporaryForFile(trackLocation);
-        SoundSourceProxy(pTrack).parseTrackMetadata();
+        SoundSourceProxy(pTrack).loadTrackMetadata();
     }
 
     // If the track wasn't in the library already then it has not yet been

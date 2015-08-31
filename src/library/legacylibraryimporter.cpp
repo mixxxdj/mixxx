@@ -107,7 +107,7 @@ void LegacyLibraryImporter::import() {
                 // Parse the actual MP3/OGG/whatever because 1.7 didn't parse
                 // genre and album tags (so the imported TIO doesn't have
                 // those fields).
-                SoundSourceProxy(pTrack).parseTrackMetadata();
+                SoundSourceProxy(pTrack).loadTrackMetadata();
 
                 // Import values from the Mixxx 1.7 library and overwrite the
                 // values that have just been parsed from the file.

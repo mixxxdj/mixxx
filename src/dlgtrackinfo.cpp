@@ -476,7 +476,7 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
 void DlgTrackInfo::reloadTrackMetadata() {
     if (m_pLoadedTrack) {
         TrackPointer pTrack(m_pLoadedTrack->newTemporaryForSameFile());
-        SoundSourceProxy(pTrack).parseTrackMetadata();
+        SoundSourceProxy(pTrack).loadTrackMetadata();
         populateFields(pTrack);
     }
 }
