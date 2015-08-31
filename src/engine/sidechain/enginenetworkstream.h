@@ -3,8 +3,7 @@
 
 #include "util/types.h"
 #include "util/fifo.h"
-
-class SideChainWorker;
+#include "engine/sidechain/sidechainworker.h"
 
 class EngineNetworkStream {
   public:
@@ -22,7 +21,7 @@ class EngineNetworkStream {
     void read(CSAMPLE* buffer, int frames);
     void writeSilence(int frames);
 
-    qint64 getStreamTimeMs();
+    qint64 getStreamTimeUs();
     qint64 getStreamTimeFrames();
 
     int getNumOutputChannels() {
@@ -33,19 +32,19 @@ class EngineNetworkStream {
         return m_numInputChannels;
     }
 
-    static qint64 getNetworkTimeMs();
+    static qint64 getNetworkTimeUs();
 
-    void addWorker(QSharedPointer<SideChainWorker> pWorker) {
-        m_pWorker = pWorker;
-    }
+    void addWorker(QSharedPointer<SideChainWorker> pWorker);
 
   private:
+    void scheduleWorker();
+
     FIFO<CSAMPLE>* m_pOutputFifo;
     FIFO<CSAMPLE>* m_pInputFifo;
     int m_numOutputChannels;
     int m_numInputChannels;
     double m_sampleRate;
-    qint64 m_streamStartTimeMs;
+    qint64 m_streamStartTimeUs;
     qint64 m_streamFramesWritten;
     qint64 m_streamFramesRead;
     QSharedPointer<SideChainWorker> m_pWorker;
