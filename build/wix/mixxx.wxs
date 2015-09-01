@@ -124,11 +124,15 @@
           <![CDATA[VersionNT64]]>
        </Condition>
     <?endif?>
+    
+    <!-- Commenting this out to allow installing 32bits Mixxx on a 64bits system
     <?if $(var.Platform) = x86 ?>
        <Condition Message="!(loc.x64VersionRequired)">
           <![CDATA[NOT VersionNT64]]>
        </Condition>
     <?endif?>
+    -->
+    
     <!-- 
        Launch conditions end
     -->
