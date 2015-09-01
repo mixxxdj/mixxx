@@ -63,7 +63,7 @@ TrackInfoObject::TrackInfoObject(
 
     m_iDuration = 0;
     m_iBitrate = 0;
-    m_fReplayGain = 0.0f;
+    m_replayGain = 0.0;
     m_bHeaderParsed = false;
     m_iSampleRate = 0;
     m_iChannels = 0;
@@ -354,34 +354,6 @@ bool TrackInfoObject::exists() const {
     return QFile::exists(m_fileInfo.absoluteFilePath());
 }
 
-float TrackInfoObject::getReplayGain() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fReplayGain;
-}
-
-void TrackInfoObject::setReplayGain(float f) {
-    QMutexLocker lock(&m_qMutex);
-    //qDebug() << "Reported ReplayGain value: " << m_fReplayGain;
-    if (m_fReplayGain != f) {
-        m_fReplayGain = f;
-        setDirty(true);
-    }
-    lock.unlock();
-    emit(ReplayGainUpdated(f));
-}
-
-double TrackInfoObject::getBpm() const {
-    QMutexLocker lock(&m_qMutex);
-    if (m_pBeats) {
-        // getBpm() returns -1 when invalid.
-        double bpm = m_pBeats->getBpm();
-        if (bpm >= 0.0) {
-            return bpm;
-        }
-    }
-    return 0.0;
-}
-
 double TrackInfoObject::setBpm(double bpm) {
     if (bpm < 0.0) {
         // Ignore invalid BPM values
@@ -416,6 +388,18 @@ double TrackInfoObject::setBpm(double bpm) {
     }
 
     return bpm;
+}
+
+double TrackInfoObject::getBpm() const {
+    QMutexLocker lock(&m_qMutex);
+    if (m_pBeats) {
+        // getBpm() returns -1 when invalid.
+        double bpm = m_pBeats->getBpm();
+        if (bpm >= 0.0) {
+            return bpm;
+        }
+    }
+    return 0.0;
 }
 
 QString TrackInfoObject::getBpmText() const {
@@ -472,6 +456,22 @@ void TrackInfoObject::slotBeatsUpdated() {
     lock.unlock();
     emit(bpmUpdated(bpm));
     emit(beatsUpdated());
+}
+
+double TrackInfoObject::setReplayGain(double replayGain) {
+    QMutexLocker lock(&m_qMutex);
+    if (m_replayGain != replayGain) {
+        m_replayGain = replayGain;
+        setDirty(true);
+    }
+    lock.unlock();
+    emit(ReplayGainUpdated(replayGain));
+    return replayGain;
+}
+
+double TrackInfoObject::getReplayGain() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_replayGain;
 }
 
 bool TrackInfoObject::getHeaderParsed()  const {

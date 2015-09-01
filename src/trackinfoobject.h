@@ -148,9 +148,9 @@ class TrackInfoObject : public QObject {
     bool isBpmLocked() const;
 
     // Set ReplayGain
-    void setReplayGain(float);
+    double setReplayGain(double replayGain);
     // Returns ReplayGain
-    float getReplayGain() const;
+    double getReplayGain() const;
 
     void setHeaderParsed(bool parsed = true);
     bool getHeaderParsed() const;
@@ -299,7 +299,7 @@ class TrackInfoObject : public QObject {
     void beatsUpdated();
     void keyUpdated(double key);
     void keysUpdated();
-    void ReplayGainUpdated(double replaygain);
+    void ReplayGainUpdated(double replayGain);
     void cuesUpdated();
     void changed(TrackInfoObject* pTrack);
     void dirty(TrackInfoObject* pTrack);
@@ -392,7 +392,7 @@ class TrackInfoObject : public QObject {
     // Bitrate, number of kilobits per second of audio in the track
     int m_iBitrate;
     // Replay Gain volume
-    float m_fReplayGain;
+    double m_replayGain;
     // True if header was parsed
     bool m_bHeaderParsed;
     // Cue point in samples or something
