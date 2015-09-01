@@ -259,14 +259,17 @@ class TrackInfoObject : public QObject {
     // Set the track's Beats
     void setBeats(BeatsPointer beats);
 
-    void setKeys(Keys keys);
-    const Keys& getKeys() const;
+    void resetKeys() {
+        setKeys(Keys());
+    }
+    void setKeys(const Keys& keys);
+    Keys getKeys() const;
     double getNumericKey() const;
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
     void setKey(mixxx::track::io::key::ChromaticKey key,
                 mixxx::track::io::key::Source source);
-    void setKeyText(QString key,
+    void setKeyText(const QString& keyText,
                     mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
     void setCoverInfo(const CoverInfo& cover);
@@ -326,6 +329,7 @@ class TrackInfoObject : public QObject {
     void setDirty(bool bDirty);
 
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
+    void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
 
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO

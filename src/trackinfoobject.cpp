@@ -20,6 +20,31 @@
 #include "util/xml.h"
 
 
+
+namespace {
+
+SecurityTokenPointer openSecurityToken(
+        const QFileInfo& fileInfo,
+        const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer()) {
+    if (pSecurityToken.isNull()) {
+        return Sandbox::openSecurityToken(fileInfo, true);
+    } else {
+        return pSecurityToken;
+    }
+}
+
+QString getGlobalKeyText(const Keys& keys) {
+    const mixxx::track::io::key::ChromaticKey key(keys.getGlobalKey());
+    if (key != mixxx::track::io::key::INVALID) {
+        return KeyUtils::keyToString(key);
+    } else {
+        // Fall back on text global name.
+        return keys.getGlobalKeyText();
+    }
+}
+
+} // anonymous namespace
+
 TrackInfoObject::TrackInfoObject(
         const QFileInfo& fileInfo,
         const SecurityTokenPointer& pToken,
@@ -939,72 +964,61 @@ void TrackInfoObject::setRating (int rating) {
     }
 }
 
-void TrackInfoObject::setKeys(Keys keys) {
+void TrackInfoObject::setKeys(const Keys& keys) {
     QMutexLocker lock(&m_qMutex);
-    setDirty(true);
+    setKeysAndUnlock(&lock, keys);
+}
+
+void TrackInfoObject::setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys) {
     m_keys = keys;
-    // Might be INVALID. We don't care.
+    // New key might be INVALID. We don't care.
     mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
-    lock.unlock();
+    setDirty(true);
+    pLock->unlock();
     emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
     emit(keysUpdated());
 }
 
-const Keys& TrackInfoObject::getKeys() const {
+Keys TrackInfoObject::getKeys() const {
     QMutexLocker lock(&m_qMutex);
     return m_keys;
 }
 
 mixxx::track::io::key::ChromaticKey TrackInfoObject::getKey() const {
     QMutexLocker lock(&m_qMutex);
-    if (!m_keys.isValid()) {
+    if (m_keys.isValid()) {
+        return m_keys.getGlobalKey();
+    } else {
         return mixxx::track::io::key::INVALID;
     }
-    return m_keys.getGlobalKey();
 }
 
 void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
                              mixxx::track::io::key::Source source) {
-    QMutexLocker lock(&m_qMutex);
-    bool dirty = false;
     if (key == mixxx::track::io::key::INVALID) {
-        m_keys = Keys();
-        dirty = true;
-    } else if (m_keys.getGlobalKey() != key) {
-        m_keys = KeyFactory::makeBasicKeys(key, source);
+        resetKeys();
+        return;
     }
 
-    if (dirty) {
-        setDirty(true);
+    Keys keys(KeyFactory::makeBasicKeys(key, source));
+    QMutexLocker lock(&m_qMutex);
+    if (m_keys.getGlobalKey() != key) {
+        setKeysAndUnlock(&lock, keys);
     }
-
-    // Might be INVALID. We don't care.
-    mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
-    lock.unlock();
-    emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
-    emit(keysUpdated());
 }
 
-void TrackInfoObject::setKeyText(QString key,
+void TrackInfoObject::setKeyText(const QString& keyText,
                                  mixxx::track::io::key::Source source) {
+    Keys keys(KeyFactory::makeBasicKeysFromText(keyText, source));
+    const mixxx::track::io::key::ChromaticKey key(keys.getGlobalKey());
+    if (key == mixxx::track::io::key::INVALID) {
+        resetKeys();
+        return;
+    }
+
     QMutexLocker lock(&m_qMutex);
-
-    Keys newKeys = KeyFactory::makeBasicKeysFromText(key, source);
-
-    // We treat this as dirtying if it is parsed to a different key or if we
-    // fail to parse the key, if the text value is different from the current
-    // text value.
-    bool dirty = newKeys.getGlobalKey() != m_keys.getGlobalKey() ||
-            (newKeys.getGlobalKey() == mixxx::track::io::key::INVALID &&
-             newKeys.getGlobalKeyText() != m_keys.getGlobalKeyText());
-    if (dirty) {
-        m_keys = newKeys;
-        setDirty(true);
-        // Might be INVALID. We don't care.
-        mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
-        lock.unlock();
-        emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
-        emit(keysUpdated());
+    if (m_keys.getGlobalKey() != key) {
+        setKeysAndUnlock(&lock, keys);
     }
 }
 
