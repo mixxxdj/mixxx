@@ -75,7 +75,7 @@
         						<WidgetGroup>
         						    <SizePolicy>max,min</SizePolicy>
         							<Layout>horizontal</Layout>
-                                                                <MaximumSize>400,400</MaximumSize>
+									<MaximumSize>400,400</MaximumSize>
         							<Children>
         							   <WidgetGroup>
         							        <SizePolicy>max,min</SizePolicy>
@@ -93,6 +93,77 @@
         							   <Template src="skin:mixer_channel.xml">
         									<SetVariable name="channum">1</SetVariable>
         							   </Template>
+									   <WidgetGroup>
+											<ObjectName>MasterVuMeter2ch</ObjectName>
+											<Layout>horizontal</Layout>
+											<SizePolicy>max,me</SizePolicy>
+											<Children>
+												<WidgetGroup>
+													<Layout>vertical</Layout>
+													<Children>
+														<StatusLight>
+															<TooltipId>master_PeakIndicator</TooltipId>
+															<Style></Style>
+															<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
+															<PathBack>btn_clipping1.png</PathBack>
+															<Connection>
+																<ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+															</Connection>
+														</StatusLight>
+														<VuMeter>
+															<TooltipId>master_VuMeterL</TooltipId>
+															<Style></Style>
+															<PathVu>btn_volume_display1_over.png</PathVu>
+															<PathBack>btn_volume_display1.png</PathBack>
+															<Horizontal>false</Horizontal>
+															<PeakHoldSize>5</PeakHoldSize>
+															<PeakHoldTime>500</PeakHoldTime>
+															<PeakFallTime>50</PeakFallTime>
+															<PeakFallStep>2</PeakFallStep>
+															<Connection>
+																<ConfigKey>[Master],VuMeterL</ConfigKey>
+															</Connection>
+														</VuMeter>
+													</Children>
+												</WidgetGroup>
+												<WidgetGroup>
+													<Layout>vertical</Layout>
+													<Children>
+														<StatusLight>
+															<TooltipId>master_PeakIndicator</TooltipId>
+															<Style></Style>
+															<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
+															<PathBack>btn_clipping1.png</PathBack>
+															<Connection>
+																<ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+															</Connection>
+														</StatusLight>
+														<VuMeter>
+															<TooltipId>master_VuMeterR</TooltipId>
+															<Style></Style>
+															<PathVu>btn_volume_display1_over.png</PathVu>
+															<PathBack>btn_volume_display1.png</PathBack>
+															<Horizontal>false</Horizontal>
+															<PeakHoldSize>5</PeakHoldSize>
+															<PeakHoldTime>500</PeakHoldTime>
+															<PeakFallTime>50</PeakFallTime>
+															<PeakFallStep>2</PeakFallStep>
+															<Connection>
+																<ConfigKey>[Master],VuMeterR</ConfigKey>
+															</Connection>
+														</VuMeter>
+													</Children>
+												</WidgetGroup>
+											</Children>
+											<Connection>
+												<ConfigKey>[Master],show_4decks</ConfigKey>
+												<BindProperty>visible</BindProperty>
+												<Transform>
+													<Invert/>
+													<Not/>
+												</Transform>
+											</Connection>
+										</WidgetGroup>
         							   <Template src="skin:mixer_channel_reversed.xml">
         									<SetVariable name="channum">2</SetVariable>
         							   </Template>
@@ -111,6 +182,22 @@
                                        </WidgetGroup>
         							</Children>
         						</WidgetGroup>
+								<WidgetGroup>
+									<ObjectName>Crossfader</ObjectName>
+									<Layout>horizontal</Layout>
+									<SizePolicy>me,min</SizePolicy>
+									<Children>
+										<SliderComposed>
+											<TooltipId>crossfader</TooltipId>
+											<Handle>knob_crossfader.png</Handle>
+											<Slider>slider_crossfader.png</Slider>
+											<Horizontal>true</Horizontal>
+											<Connection>
+												<ConfigKey>[Master],crossfader</ConfigKey>
+											</Connection>
+										</SliderComposed>
+									</Children>
+								</WidgetGroup>
         					</Children>
         				  </WidgetGroup>
         				  <WidgetGroup>
@@ -122,31 +209,6 @@
                             </Children>
                           </WidgetGroup>
                       </Children>
-                    </WidgetGroup>
-                    <WidgetGroup>
-                        <ObjectName>CrossFadeContainer</ObjectName>
-                        <BackPath>background_tile.png</BackPath>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>me,max</SizePolicy>
-                        <MinimumSize>150,50</MinimumSize>
-                        <Children>
-                            <WidgetGroup>
-                                <ObjectName>Crossfader</ObjectName>
-                                <Layout>horizontal</Layout>
-                                <SizePolicy>me,min</SizePolicy>
-                                <Children>
-                                    <SliderComposed>
-                                        <TooltipId>crossfader</TooltipId>
-                                        <Handle>knob_crossfader.png</Handle>
-                                        <Slider>slider_crossfader.png</Slider>
-                                        <Horizontal>true</Horizontal>
-                                        <Connection>
-                                            <ConfigKey>[Master],crossfader</ConfigKey>
-                                        </Connection>
-                                    </SliderComposed>
-                                </Children>
-                            </WidgetGroup>
-                        </Children>
                     </WidgetGroup>
 				</Children>
 			</WidgetGroup>
@@ -210,71 +272,75 @@
                                 </WidgetGroup>
                             </Children>
                         </WidgetGroup>
-                        <WidgetGroup>
-                            <ObjectName>MasterControls</ObjectName>
-                            <Layout>horizontal</Layout>
-                            <SizePolicy>max,me</SizePolicy>
-                            <Children>
-                                <WidgetGroup>
-                                    <Layout>vertical</Layout>
-                                    <Children>
-                                        <StatusLight>
-                                            <TooltipId>master_PeakIndicator</TooltipId>
-                                            <Style></Style>
-                                            <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-                                            <PathBack>btn_clipping1.png</PathBack>
-                                            <Connection>
-                                                <ConfigKey>[Master],PeakIndicator</ConfigKey>
-                                            </Connection>
-                                        </StatusLight>
-                                        <VuMeter>
-                                            <TooltipId>master_VuMeterL</TooltipId>
-                                            <Style></Style>
-                                            <PathVu>btn_volume_display1_over.png</PathVu>
-                                            <PathBack>btn_volume_display1.png</PathBack>
-                                            <Horizontal>false</Horizontal>
-                                            <PeakHoldSize>5</PeakHoldSize>
-                                            <PeakHoldTime>500</PeakHoldTime>
-                                            <PeakFallTime>50</PeakFallTime>
-                                            <PeakFallStep>2</PeakFallStep>
-                                            <Connection>
-                                                <ConfigKey>[Master],VuMeterL</ConfigKey>
-                                            </Connection>
-                                        </VuMeter>
-                                    </Children>
-                                </WidgetGroup>
-                                <WidgetGroup>
-                                    <Layout>vertical</Layout>
-                                    <Children>
-                                        <StatusLight>
-                                            <TooltipId>master_PeakIndicator</TooltipId>
-                                            <Style></Style>
-                                            <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-                                            <PathBack>btn_clipping1.png</PathBack>
-                                            <Connection>
-                                                <ConfigKey>[Master],PeakIndicator</ConfigKey>
-                                            </Connection>
-                                        </StatusLight>
-                                        <VuMeter>
-                                            <TooltipId>master_VuMeterR</TooltipId>
-                                            <Style></Style>
-                                            <PathVu>btn_volume_display1_over.png</PathVu>
-                                            <PathBack>btn_volume_display1.png</PathBack>
-                                            <Horizontal>false</Horizontal>
-                                            <PeakHoldSize>5</PeakHoldSize>
-                                            <PeakHoldTime>500</PeakHoldTime>
-                                            <PeakFallTime>50</PeakFallTime>
-                                            <PeakFallStep>2</PeakFallStep>
-                                            <Connection>
-                                                <ConfigKey>[Master],VuMeterR</ConfigKey>
-                                            </Connection>
-                                        </VuMeter>
-                                    </Children>
-                                </WidgetGroup>
-                            </Children>
-                        </WidgetGroup>
                       </Children>
                     </WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>MasterVuMeter4ch</ObjectName>
+						<Layout>horizontal</Layout>
+						<SizePolicy>min,me</SizePolicy>
+						<Children>
+							<WidgetGroup>
+								<Layout>vertical</Layout>
+								<Children>
+									<StatusLight>
+										<TooltipId>master_PeakIndicator</TooltipId>
+										<Style></Style>
+										<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
+										<PathBack>btn_clipping1.png</PathBack>
+										<Connection>
+											<ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+										</Connection>
+									</StatusLight>
+									<VuMeter>
+										<TooltipId>master_VuMeterL</TooltipId>
+										<Style></Style>
+										<PathVu>btn_volume_display1_over.png</PathVu>
+										<PathBack>btn_volume_display1.png</PathBack>
+										<Horizontal>false</Horizontal>
+										<PeakHoldSize>5</PeakHoldSize>
+										<PeakHoldTime>500</PeakHoldTime>
+										<PeakFallTime>50</PeakFallTime>
+										<PeakFallStep>2</PeakFallStep>
+										<Connection>
+											<ConfigKey>[Master],VuMeterL</ConfigKey>
+										</Connection>
+									</VuMeter>
+								</Children>
+							</WidgetGroup>
+							<WidgetGroup>
+								<Layout>vertical</Layout>
+								<Children>
+									<StatusLight>
+										<TooltipId>master_PeakIndicator</TooltipId>
+										<Style></Style>
+										<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
+										<PathBack>btn_clipping1.png</PathBack>
+										<Connection>
+											<ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+										</Connection>
+									</StatusLight>
+									<VuMeter>
+										<TooltipId>master_VuMeterR</TooltipId>
+										<Style></Style>
+										<PathVu>btn_volume_display1_over.png</PathVu>
+										<PathBack>btn_volume_display1.png</PathBack>
+										<Horizontal>false</Horizontal>
+										<PeakHoldSize>5</PeakHoldSize>
+										<PeakHoldTime>500</PeakHoldTime>
+										<PeakFallTime>50</PeakFallTime>
+										<PeakFallStep>2</PeakFallStep>
+										<Connection>
+											<ConfigKey>[Master],VuMeterR</ConfigKey>
+										</Connection>
+									</VuMeter>
+								</Children>
+							</WidgetGroup>
+						</Children>
+						<Connection>
+							<ConfigKey>[Master],show_4decks</ConfigKey>
+							<BindProperty>visible</BindProperty>
+						</Connection>
+					</WidgetGroup>
                     <WidgetGroup>
                         <ObjectName>AlignRightBottom</ObjectName>
                         <Layout>horizontal</Layout>

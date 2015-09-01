@@ -95,14 +95,14 @@ void MessageHandler(QtMsgType type,
         //FIXME: cerr << doesn't get printed until after mixxx quits (???)
         for (int i = 9; i >= 0; --i) {
             if (i == 0) {
-                logFileName = QString("%1/mixxx.log").arg(logLocation);
+                logFileName = QDir(logLocation).filePath("mixxx.log");
             } else {
-                logFileName = QString("%1/mixxx.log.%2").arg(logLocation).arg(i);
+                logFileName = QDir(logLocation).filePath(QString("mixxx.log.%1").arg(i));
             }
             QFileInfo logbackup(logFileName);
             if (logbackup.exists()) {
                 QString olderlogname =
-                        QString("%1/mixxx.log.%2").arg(logLocation).arg(i + 1);
+                        QDir(logLocation).filePath(QString("mixxx.log.%1").arg(i + 1));
                 // This should only happen with number 10
                 if (QFileInfo(olderlogname).exists()) {
                     QFile::remove(olderlogname);
@@ -206,7 +206,7 @@ int main(int argc, char * argv[])
                             Each must be one of the following file types:\n\
                             ", stdout);
 
-        QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
+        QString fileExtensions(SoundSourceProxy::getSupportedFileNamePatterns().join(" "));
         QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
         fputs(fileExtensionsBA.constData(), stdout);
         fputs("\n\n", stdout);
@@ -268,13 +268,13 @@ int main(int argc, char * argv[])
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 #endif
 
-    //Enumerate and load SoundSource plugins
-    SoundSourceProxy::loadPlugins();
-
 #ifdef __FFMPEGFILE__
      av_register_all();
      avcodec_register_all();
 #endif
+
+     //Enumerate and load SoundSource plugins
+     SoundSourceProxy::loadPlugins();
 
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
@@ -313,6 +313,8 @@ int main(int argc, char * argv[])
 
         qDebug() << "Running Mixxx";
         result = a.exec();
+    } else {
+        mixxx->finalize();
     }
 
     delete mixxx;

@@ -28,13 +28,14 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QWeakPointer>
-#include <taglib/tfile.h>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
 #include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
+#include "track/trackid.h"
+#include "util/sandbox.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
@@ -43,6 +44,10 @@ class Cue;
 class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
+
+namespace Mixxx {
+    class TrackMetadata;
+}
 
 class TrackInfoObject : public QObject {
     Q_OBJECT
@@ -211,7 +216,7 @@ class TrackInfoObject : public QObject {
     // Set played status without affecting the playcount
     void setPlayed(bool bPlayed);
 
-    int getId() const;
+    TrackId getId() const;
 
     // Returns rating
     int getRating() const;
@@ -308,11 +313,8 @@ class TrackInfoObject : public QObject {
     // Common initialization function between all TIO constructors.
     void initialize(bool parseHeader, bool parseCoverArt);
 
-    // Methods for parsing information from knowing only the file name.  It
-    // assumes that the filename is written like: "artist - trackname.xxx"
-    void parseFilename();
-    void parseArtist();
-    void parseTitle();
+    void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
+    void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
 
     // Set whether the TIO is dirty not. This should never be called except by
     // TIO local methods or the TrackDAO.
@@ -320,7 +322,7 @@ class TrackInfoObject : public QObject {
 
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
-    void setId(int iId);
+    void setId(TrackId id);
 
     // Whether the track should delete itself when its reference count drops to
     // zero. Used for cleaning up after shutdown.
@@ -384,7 +386,7 @@ class TrackInfoObject : public QObject {
     // True if header was parsed
     bool m_bHeaderParsed;
     // Id. Unique ID of track
-    int m_iId;
+    TrackId m_id;
     // Cue point in samples or something
     float m_fCuePoint;
     // Date the track was added to the library

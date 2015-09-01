@@ -7,24 +7,18 @@
     group: The group for the microphone.
 -->
 <Template>
-  <PushButton>
-    <Size>40f,20f</Size>
-    <NumberStates>2</NumberStates>
-    <State>
-      <Number>0</Number>
-      <Text><Variable name="talk_text"/></Text>
-    </State>
-    <State>
-      <Number>1</Number>
-      <Text><Variable name="talk_text"/></Text>
-    </State>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,talkover</ConfigKey>
-      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
-  </PushButton>
+  <Template src="skin:left_2state_button.xml">
+    <SetVariable name="TooltipId"><Variable name="TooltipId"/></SetVariable>
+    <SetVariable name="ObjectName">MicrophoneTalkoverButton</SetVariable>
+    <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
+    <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
+    <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+    <SetVariable name="state_0_text"><Variable name="talk_text"/></SetVariable>
+    <SetVariable name="state_0_pressed"></SetVariable>
+    <SetVariable name="state_0_unpressed"></SetVariable>
+    <SetVariable name="state_1_text"><Variable name="talk_text"/></SetVariable>
+    <SetVariable name="state_1_pressed"></SetVariable>
+    <SetVariable name="state_1_unpressed"></SetVariable>
+    <SetVariable name="left_connection_control"><Variable name="group"/>,talkover</SetVariable>
+  </Template>
 </Template>

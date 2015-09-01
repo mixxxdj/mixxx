@@ -29,7 +29,7 @@ AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
     m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
-        m_database.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
+        m_database.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
         m_database.setUserName("mixxx");
         m_database.setPassword("mixxx");
 
@@ -114,11 +114,11 @@ bool AnalyserWaveform::loadStored(TrackPointer tio) const {
     ConstWaveformPointer pLoadedTrackWaveform;
     ConstWaveformPointer pLoadedTrackWaveformSummary;
 
-    int trackId = tio->getId();
+    TrackId trackId = tio->getId();
     bool missingWaveform = pTrackWaveform.isNull();
     bool missingWavesummary = pTrackWaveformSummary.isNull();
 
-    if (trackId != -1 && (missingWaveform || missingWavesummary)) {
+    if (trackId.isValid() && (missingWaveform || missingWavesummary)) {
         QList<AnalysisDao::AnalysisInfo> analyses =
                 m_analysisDao->getAnalysesForTrack(trackId);
 

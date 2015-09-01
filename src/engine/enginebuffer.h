@@ -124,6 +124,7 @@ class EngineBuffer : public EngineObject {
 
     // Return the current rate (not thread-safe)
     double getSpeed();
+    bool getScratching();
     // Returns current bpm value (not thread-safe)
     double getBpm();
     // Returns the BPM of the loaded track around the current position (not thread-safe)
@@ -235,7 +236,7 @@ class EngineBuffer : public EngineObject {
     void processSyncRequests();
     void processSeek();
 
-    double updateIndicatorsAndModifyPlay(double v);
+    bool updateIndicatorsAndModifyPlay(bool newPlay);
     void verifyPlay();
 
     // Holds the name of the control group

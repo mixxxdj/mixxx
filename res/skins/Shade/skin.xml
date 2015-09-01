@@ -130,6 +130,28 @@
 	<MinimumSize>1024,500</MinimumSize>
 	<SizePolicy>me,me</SizePolicy>
 	<Layout>vertical</Layout>
+    <LaunchImageStyle>
+    	LaunchImage { background-color: #202020; }
+        QLabel {
+        	image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+          	padding:0;
+            margin:0;
+            border:none;
+            min-width: 208px;
+            min-height: 48px;
+    	    max-width: 208px;
+            max-height: 48px;
+        }
+        QProgressBar {
+        	background-color: #202020;
+            border:none;
+            min-width: 208px;
+            min-height: 3px;
+            max-width: 208px;
+            max-height: 3px;
+        }
+        QProgressBar::chunk { background-color: #ec4522; }
+    </LaunchImageStyle>
 
 	<Children>
 		<WidgetGroup>
@@ -622,7 +644,7 @@
 													**********************************************
 													-->
 													<StatusLight>
-														<TooltipId>PeakIndicator</TooltipId>
+														<TooltipId>preview_PeakIndicator</TooltipId>
 														<Style></Style>
 														<PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
 														<PathBack>btn_clipping_previewdeck.png</PathBack>

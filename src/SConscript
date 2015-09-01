@@ -201,10 +201,13 @@ docs_files += Glob('#./README')
 docs_files += Glob('#./Mixxx-Manual.pdf')
 
 #.desktop file for KDE/GNOME menu
-dotdesktop_files = Glob('#src/mixxx.desktop')
+dotdesktop_files = Glob('#res/linux/mixxx.desktop')
 
 #.appdata.xml file for KDE/GNOME AppStream iniative
-dotappstream_files = Glob('#src/mixxx.appdata.xml')
+dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
+
+#udev rule file for HID controllers
+hidudev_files = Glob('#res/linux/mixxx-usb-hid.rules')
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
@@ -304,6 +307,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
                 icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
                 promotracks = env.Install(os.path.join(unix_share_path, 'mixxx', 'promo'), promotracks_files)
+                hidudev = env.Install('/etc/udev/rules.d', hidudev_files)
 
                 #Makes each of those Install builders get fired off when you run "scons install" :)
                 env.Alias('install', binary)
@@ -319,6 +323,8 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', icon)
                 env.Alias('install', promotracks)
                 env.Alias('install', vamp_plugin)
+                if os.access('/etc/udev/rules.d', os.W_OK):
+                        env.Alias('install', hidudev)
 
                 #Delete the old Mixxx installation (because SCONS won't overwrite it)
                 #if 'install' in COMMAND_LINE_TARGETS:
