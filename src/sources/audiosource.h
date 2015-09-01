@@ -220,6 +220,7 @@ public:
 
 protected:
     explicit AudioSource(const QUrl& url);
+    explicit AudioSource(const AudioSource& other) = default;
 
     inline static bool isValidChannelCount(SINT channelCount) {
         return kChannelCountZero < channelCount;
