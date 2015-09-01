@@ -38,7 +38,7 @@ class TrackInfoObject : public QObject {
 
     // Creates a new empty dummy instance for fake tracks.
     static TrackPointer newDummy(
-            TrackId trackId = TrackId(),
+            TrackId id = TrackId(),
             QFileInfo fileInfo = QFileInfo());
     // Creates a new temporary instance for a file that is not
     // stored in the database.
@@ -47,6 +47,20 @@ class TrackInfoObject : public QObject {
             const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
     // Creates a new temporary instance for the same file
     TrackPointer newTemporaryForSameFile() const;
+
+    // Creates a new managed instance for a track stored in the database
+    // that has an id.
+    // TODO(uklotzde): Will be replaced soon by caching
+    static TrackPointer newManagedFromDB(
+            TrackId id,
+            QFileInfo fileInfo,
+            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
+    // Creates a new managed instance for a file that is not (and maybe won't be)
+    // stored in the database without an id.
+    // TODO(uklotzde): Will be replaced soon by caching
+    static TrackPointer newManagedForFile(
+            QFileInfo fileInfo,
+            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
 
     // Parse file metadata. If no file metadata is present, attempts to extract
     // artist and title information from the filename.
@@ -295,7 +309,7 @@ class TrackInfoObject : public QObject {
 
   private:
     TrackInfoObject(
-            TrackId trackId,
+            TrackId id,
             QFileInfo fileInfo,
             const SecurityTokenPointer& pToken);
 

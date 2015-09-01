@@ -117,7 +117,7 @@ class TrackDAO : public QObject, public virtual DAO {
     // Returns a set of all track locations in the library.
     QSet<QString> getTrackLocations();
     QString getTrackLocation(TrackId trackId);
-    TrackId addTrack(const QFileInfo& fileInfo, bool unremove);
+    TrackPointer addTrack(const QFileInfo& fileInfo, bool unremove);
     void addTracksPrepare();
     bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
     void addTracksFinish(bool rollback=false);

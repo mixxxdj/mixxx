@@ -643,12 +643,12 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
     return true;
 }
 
-TrackId TrackDAO::addTrack(const QFileInfo& fileInfo, bool unremove) {
-    TrackPointer pTrack(TrackInfoObject::newTemporaryForFile(fileInfo));
+TrackPointer TrackDAO::addTrack(const QFileInfo& fileInfo, bool unremove) {
+    TrackPointer pTrack(TrackInfoObject::newManagedForFile(fileInfo));
     pTrack->parse(false);
     // Add the song to the database.
     addTrack(pTrack.data(), unremove);
-    return pTrack->getId();
+    return pTrack;
 }
 
 void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
@@ -1254,9 +1254,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // Location is the first column.
     QString location = queryRecord.value(0).toString();
 
-    TrackPointer pTrack = TrackPointer(
-            new TrackInfoObject(trackId, location, SecurityTokenPointer()),
-            TrackInfoObject::onTrackReferenceExpired);
+    TrackPointer pTrack = TrackInfoObject::newManagedFromDB(trackId, location);
 
     // TIO already stats the file to see if it exists, what its length is,
     // etc. So don't bother setting it.
@@ -1986,16 +1984,15 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
                                      bool processCoverArt,
                                      bool* pAlreadyInLibrary) {
     TrackId trackId(getTrackId(trackLocation));
-    bool track_already_in_library = trackId.isValid();
-
-    // Add Track to library -- unremove if it was previously removed.
-    if (!trackId.isValid()) {
-        trackId = addTrack(trackLocation, true);
-    }
+    bool trackAlreadyInLibrary = trackId.isValid();
 
     TrackPointer pTrack;
     if (trackId.isValid()) {
         pTrack = getTrack(trackId);
+    } else {
+        // Add Track to library -- unremove if it was previously removed.
+        pTrack = addTrack(trackLocation, true);
+        trackId = pTrack->getId();
     }
 
     // addTrack or getTrack may fail. If they did, create a transient
@@ -2009,15 +2006,15 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
     // If the track wasn't in the library already then it has not yet been
     // checked for cover art. If processCoverArt is true then we should request
     // cover processing via CoverArtCache asynchronously.
-    if (processCoverArt && pTrack && !track_already_in_library) {
+    if (processCoverArt && pTrack && !trackAlreadyInLibrary) {
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache != NULL) {
             pCache->requestGuessCover(pTrack);
         }
     }
 
-    if (pAlreadyInLibrary != NULL) {
-        *pAlreadyInLibrary = track_already_in_library;
+    if (pAlreadyInLibrary != nullptr) {
+        *pAlreadyInLibrary = trackAlreadyInLibrary;
     }
 
     return pTrack;
