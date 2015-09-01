@@ -1,3 +1,6 @@
+#include <QApplication>
+#include <QDesktopServices>
+
 #include "soundsourceproxy.h"
 
 #ifdef __MAD__
@@ -23,10 +26,7 @@
 
 #include "util/cmdlineargs.h"
 
-#include <QApplication>
-#include <QDesktopServices>
-
-//Static memory allocation
+//static
 Mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
 
 namespace {
@@ -265,13 +265,72 @@ SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
       m_pSoundSource(initialize(pTrack->getLocation())) {
 }
 
+namespace {
+
+// Keeps the TIO alive while accessing the audio data
+// of the track. The TIO must not be deleted while
+// accessing the corresponding file to avoid file
+// corruption when writing metadata while the file
+// is still in use.
+class AudioSourceProxy: public Mixxx::AudioSource {
+public:
+    AudioSourceProxy(const AudioSourceProxy&) = delete;
+    AudioSourceProxy(AudioSourceProxy&&) = delete;
+
+    static Mixxx::AudioSourcePointer create(
+            const TrackPointer& pTrack,
+            const Mixxx::AudioSourcePointer& pAudioSource) {
+        DEBUG_ASSERT(!pTrack.isNull());
+        DEBUG_ASSERT(!pAudioSource.isNull());
+        return Mixxx::AudioSourcePointer(
+                new AudioSourceProxy(pTrack, pAudioSource));
+    }
+
+    AudioSourceProxy(
+            const TrackPointer& pTrack,
+            const Mixxx::AudioSourcePointer& pAudioSource)
+        : Mixxx::AudioSource(*pAudioSource),
+          m_pTrack(std::move(pTrack)),
+          m_pAudioSource(std::move(pAudioSource)) {
+    }
+
+    SINT seekSampleFrame(SINT frameIndex) override {
+        return m_pAudioSource->seekSampleFrame(
+                frameIndex);
+    }
+
+    SINT readSampleFrames(
+            SINT numberOfFrames,
+            CSAMPLE* sampleBuffer) override {
+        return m_pAudioSource->readSampleFrames(
+                numberOfFrames,
+                sampleBuffer);
+    }
+
+    SINT readSampleFramesStereo(
+            SINT numberOfFrames,
+            CSAMPLE* sampleBuffer,
+            SINT sampleBufferSize) override {
+        return m_pAudioSource->readSampleFramesStereo(
+                numberOfFrames,
+                sampleBuffer,
+                sampleBufferSize);
+    }
+
+private:
+    const TrackPointer m_pTrack;
+    const Mixxx::AudioSourcePointer m_pAudioSource;
+};
+
+} // anonymous namespace
+
 Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {
-    if (m_pAudioSource) {
+    if (!m_pAudioSource.isNull()) {
         qDebug() << "AudioSource is already open";
         return m_pAudioSource;
     }
 
-    if (!m_pSoundSource) {
+    if (m_pSoundSource.isNull()) {
         qDebug() << "No SoundSource available";
         return m_pAudioSource;
     }
@@ -304,15 +363,17 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSo
         }
     }
 
-    m_pAudioSource = m_pSoundSource;
+    m_pAudioSource =  AudioSourceProxy::create(m_pTrack, m_pSoundSource);
 
     return m_pAudioSource;
 }
 
 void SoundSourceProxy::closeAudioSource() {
-    if (m_pAudioSource) {
-        DEBUG_ASSERT(m_pSoundSource);
+    if (!m_pAudioSource.isNull()) {
+        DEBUG_ASSERT(!m_pSoundSource.isNull());
         m_pSoundSource->close();
         m_pAudioSource.clear();
+        qDebug() << "Closed AudioSource for file"
+                << getFilePath();
     }
 }

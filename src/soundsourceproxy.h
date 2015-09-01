@@ -5,7 +5,8 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
-// Creates sound sources for filenames or tracks
+// Creates sound sources for plain files or tracks. Only intended to be used
+// in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
     static void loadPlugins(); // not thread-safe
@@ -48,10 +49,10 @@ public:
     // metadata and cover art will be reloaded from the file regardless
     // if it has already been parsed before or not.
     void loadTrackMetadata(bool reloadFromFile = false) const {
-        return m_pTrack->parseTrackMetadata(*this, false, reloadFromFile);
+        m_pTrack->parseTrackMetadata(*this, false, reloadFromFile);
     }
     void loadTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
-        return m_pTrack->parseTrackMetadata(*this, true, reloadFromFile);
+        m_pTrack->parseTrackMetadata(*this, true, reloadFromFile);
     }
 
     // Low-level function for parsing track metadata and cover art
@@ -86,10 +87,14 @@ private:
     const QString m_filePath;
     const QUrl m_url;
 
+    // This pointer must stay in this class together with
+    // the corresponding track pointer. Don't pass it around!!
     const Mixxx::SoundSourcePointer m_pSoundSource;
 
-    // Just an alias that keeps track of opening and closing
-    // the corresponding SoundSource.
+    // Keeps track of opening and closing the corresponding
+    // SoundSource. This pointer can safely be passed around,
+    // because internally it contains a reference to the TIO
+    // that keeps it alive.
     Mixxx::AudioSourcePointer m_pAudioSource;
 };
 
