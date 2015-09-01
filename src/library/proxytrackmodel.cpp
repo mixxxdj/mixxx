@@ -23,12 +23,12 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 ProxyTrackModel::~ProxyTrackModel() {
 }
 
-int ProxyTrackModel::getTrackId(const QModelIndex& index) const {
+TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
-    return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : -1;
+    return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : TrackId();
 }
 
-const QLinkedList<int> ProxyTrackModel::getTrackRows(int trackId) const {
+const QLinkedList<int> ProxyTrackModel::getTrackRows(TrackId trackId) const {
     return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : QLinkedList<int>();
 }
 

@@ -151,7 +151,7 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
 
     // SoundTouch can read up to 2 chunks ahead. Always keep 2 chunks ahead in
     // cache.
-    int length_to_cache = 2 * CachingReaderWorker::kSamplesPerChunk;
+    int length_to_cache = 2 * CachingReaderChunk::kSamples;
 
     current_position.length = length_to_cache;
     current_position.sample = in_reverse ?
