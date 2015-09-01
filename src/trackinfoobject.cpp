@@ -15,7 +15,6 @@
 #include "track/keyutils.h"
 #include "util/compatibility.h"
 #include "util/cmdlineargs.h"
-#include "util/time.h"
 #include "util/math.h"
 #include "util/assert.h"
 #include "util/xml.h"
@@ -263,14 +262,6 @@ void TrackInfoObject::parseTrackMetadata(
     setHeaderParsed(parsedFromFile);
 }
 
-QString TrackInfoObject::getDurationStr() const {
-    QMutexLocker lock(&m_qMutex);
-    int iDuration = m_iDuration;
-    lock.unlock();
-
-    return Time::formatSeconds(iDuration, false);
-}
-
 QString TrackInfoObject::getLocation() const {
     // Copying QFileInfo is thread-safe due to "implicit sharing"
     // (copy-on write). But operating on a single instance of QFileInfo
@@ -490,17 +481,21 @@ void TrackInfoObject::setDateAdded(const QDateTime& dateAdded) {
     m_dateAdded = dateAdded;
 }
 
-int TrackInfoObject::getDuration()  const {
+void TrackInfoObject::setDuration(int iDuration) {
+    QMutexLocker lock(&m_qMutex);
+    if (m_iDuration != iDuration) {
+        m_iDuration = iDuration;
+        setDirty(true);
+    }
+}
+
+int TrackInfoObject::getDuration() const {
     QMutexLocker lock(&m_qMutex);
     return m_iDuration;
 }
 
-void TrackInfoObject::setDuration(int i) {
-    QMutexLocker lock(&m_qMutex);
-    if (m_iDuration != i) {
-        m_iDuration = i;
-        setDirty(true);
-    }
+QString TrackInfoObject::getDurationText() const {
+    return Mixxx::TrackMetadata::formatDuration(getDuration());
 }
 
 QString TrackInfoObject::getTitle() const {

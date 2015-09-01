@@ -74,7 +74,7 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
-    Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
+    Q_PROPERTY(QString durationFormatted READ getDurationText STORED false)
 
     TrackId getId() const;
 
@@ -133,7 +133,7 @@ class TrackInfoObject : public QObject {
     // Returns the duration in seconds
     int getDuration() const;
     // Returns the duration as a string: H:MM:SS
-    QString getDurationStr() const;
+    QString getDurationText() const;
 
     // Set BPM
     double setBpm(double);
