@@ -1,0 +1,7 @@
+controllers
+fonts
+imageformats
+keyboard
+plugins
+skins
+translations
