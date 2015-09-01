@@ -14,7 +14,7 @@ SoundSourceProviderPointer SoundSourceProviderRegistry::registerProvider(
 SoundSourceProviderPointer SoundSourceProviderRegistry::registerPluginLibrary(
         const SoundSourcePluginLibraryPointer& pPluginLibrary) {
     Entry entry;
-    entry.pProvider = pPluginLibrary->getSoundSourceProvider();
+    entry.pProvider = pPluginLibrary->createSoundSourceProvider();
     entry.pPluginLibrary = pPluginLibrary;
     return registerEntry(entry);
 }

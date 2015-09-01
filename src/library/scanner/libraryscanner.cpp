@@ -78,10 +78,10 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget,
         connect(this, SIGNAL(scanFinished()), dao, SLOT(clearCache()));
         connect(this, SIGNAL(trackAdded(TrackPointer)),
                 dao, SLOT(databaseTrackAdded(TrackPointer)));
-        connect(this, SIGNAL(tracksMoved(QSet<int>, QSet<int>)),
-                dao, SLOT(databaseTracksMoved(QSet<int>, QSet<int>)));
-        connect(this, SIGNAL(tracksChanged(QSet<int>)),
-                dao, SLOT(databaseTracksChanged(QSet<int>)));
+        connect(this, SIGNAL(tracksMoved(QSet<TrackId>, QSet<TrackId>)),
+                dao, SLOT(databaseTracksMoved(QSet<TrackId>, QSet<TrackId>)));
+        connect(this, SIGNAL(tracksChanged(QSet<TrackId>)),
+                dao, SLOT(databaseTracksChanged(QSet<TrackId>)));
     }
 
     // Parented to pParentWidget so we don't need to delete it.
@@ -291,8 +291,8 @@ void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
     // Check to see if the "deleted" tracks showed up in another location,
     // and if so, do some magic to update all our tables.
     qDebug() << "Detecting moved files.";
-    QSet<int> tracksMovedSetOld;
-    QSet<int> tracksMovedSetNew;
+    QSet<TrackId> tracksMovedSetOld;
+    QSet<TrackId> tracksMovedSetNew;
     if (!m_trackDao.detectMovedFiles(&tracksMovedSetOld,
             &tracksMovedSetNew,
             m_scannerGlobal->shouldCancelPointer())) {
@@ -309,7 +309,7 @@ void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
     transaction.commit();
 
     qDebug() << "Detecting cover art for unscanned files.";
-    QSet<int> coverArtTracksChanged;
+    QSet<TrackId> coverArtTracksChanged;
     m_trackDao.detectCoverArtForUnknownTracks(
             m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
 

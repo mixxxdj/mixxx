@@ -137,7 +137,7 @@ bool EngineRecord::metaDataHasChanged()
         return false;
 
     if (m_pCurrentTrack) {
-        if ((pTrack->getId() == -1) || (m_pCurrentTrack->getId() == -1)) {
+        if (!pTrack->getId().isValid() || !m_pCurrentTrack->getId().isValid()) {
             if ((pTrack->getArtist() == m_pCurrentTrack->getArtist()) &&
                 (pTrack->getTitle() == m_pCurrentTrack->getArtist())) {
                 return false;

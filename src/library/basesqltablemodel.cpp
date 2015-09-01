@@ -38,7 +38,6 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
           m_trackDAO(pTrackCollection->getTrackDAO()),
           m_database(pTrackCollection->getDatabase()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
-          m_iPreviewDeckTrackId(-1),
           m_bInitialized(false),
           m_currentSearch(""),
           m_trackSourceSortColumn(kIdColumn),
@@ -235,13 +234,13 @@ void BaseSqlTableModel::select() {
     //}
 
     QVector<RowInfo> rowInfo;
-    QSet<int> trackIds;
+    QSet<TrackId> trackIds;
     while (query.next()) {
-        int id = query.value(kIdColumn).toInt();
-        trackIds.insert(id);
+        TrackId trackId(query.value(kIdColumn));
+        trackIds.insert(trackId);
 
         RowInfo thisRowInfo;
-        thisRowInfo.trackId = id;
+        thisRowInfo.trackId = trackId;
         // save rows where this currently track id is located
         thisRowInfo.order = rowInfo.size();
         // Get all the table columns and store them in the hash for this
@@ -325,8 +324,8 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_tableColumnsJoined = tableColumns.join(",");
 
     if (m_trackSource) {
-        disconnect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<int>)),
-                   this, SLOT(tracksChanged(QSet<int>)));
+        disconnect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
+                   this, SLOT(tracksChanged(QSet<TrackId>)));
     }
     m_trackSource = trackSource;
     if (m_trackSource) {
@@ -337,8 +336,8 @@ void BaseSqlTableModel::setTable(const QString& tableName,
         // TODO: A better fix is to have cache and trackpointers defer saving
         // and deleting, so those operations only take place at the top of
         // the call stack.
-        connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<int>)),
-                this, SLOT(tracksChanged(QSet<int>)), Qt::QueuedConnection);
+        connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
+                this, SLOT(tracksChanged(QSet<TrackId>)), Qt::QueuedConnection);
     }
 
     // Build a map from the column names to their indices, used by fieldIndex()
@@ -677,7 +676,7 @@ bool BaseSqlTableModel::setData(
     }
 
     const RowInfo& rowInfo = m_rowInfo[row];
-    int trackId = rowInfo.trackId;
+    TrackId trackId(rowInfo.trackId);
 
     // You can't set something in the table columns because we have no way of
     // persisting it.
@@ -754,8 +753,8 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
     return defaultFlags;
 }
 
-const QLinkedList<int> BaseSqlTableModel::getTrackRows(int trackId) const {
-    QHash<int, QLinkedList<int> >::const_iterator it =
+const QLinkedList<int> BaseSqlTableModel::getTrackRows(TrackId trackId) const {
+    QHash<TrackId, QLinkedList<int> >::const_iterator it =
             m_trackIdToRows.constFind(trackId);
     if (it != m_trackIdToRows.constEnd()) {
         return it.value();
@@ -763,11 +762,12 @@ const QLinkedList<int> BaseSqlTableModel::getTrackRows(int trackId) const {
     return QLinkedList<int>();
 }
 
-int BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
-    if (!index.isValid()) {
-        return -1;
+TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
+    if (index.isValid()) {
+        return TrackId(index.sibling(index.row(), fieldIndex(m_idColumn)).data());
+    } else {
+        return TrackId();
     }
-    return index.sibling(index.row(), fieldIndex(m_idColumn)).data().toInt();
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
@@ -787,27 +787,27 @@ void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
-        if (m_iPreviewDeckTrackId > -1) {
+        if (m_previewDeckTrackId.isValid()) {
             const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_iPreviewDeckTrackId);
-            m_iPreviewDeckTrackId = -1;
+            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
+            m_previewDeckTrackId = TrackId(); // invalidate
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
                 emit(dataChanged(left, right));
             }
         }
-        m_iPreviewDeckTrackId = pTrack ? pTrack->getId() : -1;
+        m_previewDeckTrackId = pTrack ? pTrack->getId() : TrackId();
     }
 }
 
-void BaseSqlTableModel::tracksChanged(QSet<int> trackIds) {
+void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackIds.size();
     }
 
     const int numColumns = columnCount();
-    foreach (int trackId, trackIds) {
+    for (const auto& trackId : trackIds) {
         QLinkedList<int> rows = getTrackRows(trackId);
         foreach (int row, rows) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
@@ -885,7 +885,7 @@ QVariant BaseSqlTableModel::getBaseValue(
     // TODO(rryan) check range on column
 
     const RowInfo& rowInfo = m_rowInfo[row];
-    int trackId = rowInfo.trackId;
+    TrackId trackId(rowInfo.trackId);
 
     // If the row info has the row-specific column, return that.
     if (column < m_tableColumns.size()) {
@@ -895,7 +895,7 @@ QVariant BaseSqlTableModel::getBaseValue(
             if (role == Qt::ToolTipRole) {
                 return "";
             }
-            return m_iPreviewDeckTrackId == trackId;
+            return m_previewDeckTrackId == trackId;
         }
 
         const QVector<QVariant>& columns = rowInfo.metadata;
@@ -974,9 +974,9 @@ void BaseSqlTableModel::refreshCell(int row, int column) {
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     foreach (QModelIndex index, indices) {
-        int trackId = getTrackId(index);
+        TrackId trackId(getTrackId(index));
         trackIds.append(trackId);
     }
 

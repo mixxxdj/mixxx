@@ -276,7 +276,7 @@ void WSpinny::slotTrackCoverArtUpdated() {
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache != NULL) {
             // TODO(rryan): Don't use track id.
-            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId());
+            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId().toInt());
         }
     }
 }
@@ -288,7 +288,7 @@ void WSpinny::slotCoverFound(const QObject* pRequestor, int requestReference,
     Q_UNUSED(fromCache);
 
     if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getId() == requestReference) {
+            m_loadedTrack->getId().toInt() == requestReference) {
         qDebug() << "WSpinny::slotCoverFound" << pRequestor << info
                  << pixmap.size();
         m_loadedCover = pixmap;
