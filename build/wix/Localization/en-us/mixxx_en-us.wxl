@@ -21,6 +21,8 @@
    <!-- Features translations --> 
    <String Id="FeatureCompleteDescription">The complete package.</String>
    <String Id="FeatureMainProgramTitle">Main program</String>
+   <String Id="FeatureDesktopShortcutTitle">Desktop Shortcut</String>
+   <String Id="FeatureDesktopShortcutDescription">Add a shortcut for Mixxx on your desktop</String>
    <String Id="FeatureMainProgramDescription">The main version including all dependencies.</String>
    <String Id="FeatureManualTitle">Mixxx Manual</String>
    <String Id="FeatureManualDescription">The Mixxx Manual in PDF</String>

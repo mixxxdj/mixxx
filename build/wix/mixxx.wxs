@@ -168,9 +168,8 @@
             <File Source="$(var.baseBuildDir)\dist$(var.arch)\mixxx.exe" Id="mixxxExe" KeyPath="yes" DefaultLanguage="1033">
               <Shortcut Id="startmenuShortCut" Directory="ProgramMenuDir" Name="!(loc.ApplicationName)"
                         WorkingDirectory='INSTALLDIR' Advertise="yes" Icon="Icon.exe" />
-              <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="!(loc.ApplicationName)"
-                        WorkingDirectory='INSTALLDIR' Advertise="yes" Icon="Icon.exe" />
             </File>
+            <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\mixxx.exe" Value="[!mixxxExe]" Type="string" />
           </Component>
 
           <!-- Main DLL files -->
@@ -317,7 +316,22 @@
       </Directory>
 
       <!-- The desktop folder, for desktop shortcut -->
-      <Directory Id="DesktopFolder" Name="Desktop" />
+      <Directory Id="DesktopFolder" Name="Desktop">
+        <Component Id="DesktopShortcutComp" Guid="*">
+          <Shortcut Id="desktopShortcut"
+                    Name="!(loc.ApplicationName)"
+                    Target="[!mixxxExe]"
+                    WorkingDirectory="INSTALLDIR"/>
+            <RemoveFolder Id="DesktopFolder" On="uninstall"/>
+            <RegistryValue
+                Root="HKCU"
+                Key="Software/!(loc.ApplicationName)"
+                Name="installed"
+                Type="integer"
+                Value="1"
+                KeyPath="yes"/>
+        </Component>
+      </Directory>
     </Directory>
 
     <!--
@@ -367,6 +381,7 @@
              Absent='disallow'
              InstallDefault='local'
              Level="1"
+             Display="expand"
              ConfigurableDirectory="INSTALLDIR">
       <ComponentRef Id='mixxx.exe_comp' />
       <ComponentRef Id='ProgramMenuDir' />
@@ -380,6 +395,14 @@
       <ComponentGroupRef Id='keyboardComp' />
       <ComponentGroupRef Id='controllersComp' />
       <ComponentGroupRef Id='skinsComp' />
+      <Feature Id="DesktopShortcutFeature"
+               Title="!(loc.FeatureDesktopShortcutTitle)"
+               Description="!(loc.FeatureDesktopShortcutDescription)"
+               AllowAdvertise='no'
+               InstallDefault='local'
+               Level="1">
+        <ComponentRef Id="DesktopShortcutComp" />
+      </Feature>
     </Feature>
 
     <!-- A feature block for translations -->
