@@ -278,7 +278,7 @@
           <Component Id="manual_comp" Guid="*" Win64="$(var.Win64)">
             <File Source="$(var.baseBuildDir)\Mixxx-Manual.pdf" Name='Mixxx-Manual.pdf' Id="manual_pdf" KeyPath="yes">
               <Shortcut Id="startmenuManualShortCut" Directory="ProgramMenuDir" Name="!(loc.FeatureManualTitle)"
-                        WorkingDirectory='INSTALLDIR' Advertise="yes" />
+                        WorkingDirectory='INSTALLDIR' Advertise="yes" Icon="Manual.ico" />
             </File>
           </Component>
           
