@@ -110,7 +110,7 @@
         Note: Under a Product element, a condition becomes a LaunchCondition entry. 
     -->
     <Condition Message="!(loc.OS2Old)">
-       <![CDATA[Installed OR (VersionNT >= 600)]]>
+       <![CDATA[Installed OR (VersionNT >= 501)]]>
     </Condition>
  
     <!-- 
