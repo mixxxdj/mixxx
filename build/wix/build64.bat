@@ -5,6 +5,7 @@ for /F %%d IN (subdirs.txt) DO (
   "%WIX%"\bin\candle.exe -nologo -dPlatform=x64 -d%%dVar=..\..\dist64\%%d -arch x64 %%d.wxs
 )
 
+"%WIX%"\bin\candle.exe -nologo -dPlatform=x64 -arch x64 warningDlg.wxs
 "%WIX%"\bin\candle.exe -nologo -dPlatform=x64 -arch x64 mixxx.wxs
 
 "%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:en-us -loc Localization\en-us\mixxx_en-us.wxl -out mixxx-64.msi *.wixobj

@@ -144,6 +144,17 @@
     <Media Id="1" Cabinet="mixxx.cab" EmbedCab="yes" DiskPrompt='Mixxx install source #1' />
     <Property Id='DiskPrompt' Value="!(loc.ApplicationName) $(var.VersionNumber) Installation [1]" />
 
+    <?if $(var.Platform) = x86 ?>
+      <!-- A property to contain warning message if installing 32bits mix on a 64bits OS -->
+      <Property Id="MyWarningText" Value="{}" />
+
+      <SetProperty Id="MyWarningText"
+                   After="AppSearch"
+                   Value="!(loc.x86VersionWarning)">
+         <![CDATA[VersionNT64]]>
+      </SetProperty>
+    <?endif?>
+
     <!-- Outermost folder (kind of virtual). Fixed entry. -->
     <Directory Id="TARGETDIR" Name="SourceDir">
 
@@ -431,5 +442,23 @@
     <WixVariable Id="WixUIBannerBmp" Value="images\banner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="images\dialog.bmp" />
 
+<UI Id="MyWixUI_FeatureTree">
+  <UIRef Id="WixUI_FeatureTree" />
+  <UIRef Id="WixUI_ErrorProgressText" />
+
+  <?if $(var.Platform) = x86 ?>
+
+    <DialogRef Id="WarningDlg" />
+
+    <Publish Dialog="WarningDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg">1</Publish>
+    <Publish Dialog="WarningDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
+  
+    <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="WarningDlg">NOT MyWarningText = "{}"</Publish>
+    <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg">MyWarningText = "{}"</Publish>
+    
+    <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WarningDlg">NOT MyWarningText = "{}"</Publish>
+  <?endif ?>
+</UI>    
+    
   </Product>
 </Wix>

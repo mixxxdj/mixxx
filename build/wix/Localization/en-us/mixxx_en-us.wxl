@@ -17,6 +17,10 @@
    <String Id="NewerInstalled">The same or a newer version of this product is already installed.</String>
    <String Id="x64VersionRequired">You need to install the 64-bit version of this product on 64-bit Windows.</String>
    <String Id="x86VersionRequired">You need to install the 32-bit version of this product on 32-bit Windows.</String>
+   <String Id="x86VersionWarning">You are installing a 32 bits Mixxx on a 64 bits operating system.&#13;&#10;We recommand using a 64 bits Mixxx for increased performance.&#13;&#10;You can download 64 bits installation package from http://mixxx.org/download/</String>
+ 
+   <!-- Custom Warning Dialog -->
+   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Warning</String>
  
    <!-- Features translations --> 
    <String Id="FeatureCompleteDescription">The complete package.</String>
