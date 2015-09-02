@@ -28,7 +28,12 @@ class MixxxClock : public MockableClock {
 class MidiClock {
   public:
     // The number of midi ticks per quarter note (1 beat in 4/4 time).
-    static const int kPulsesPerQuarter = 24;
+    static constexpr int kPulsesPerQuarter = 24;
+    // Minimum allowable calculated bpm.  The bpm can still be reported as 0.0
+    // if there is no incoming data or if there is a problem with the
+    // calculation.
+    static constexpr double kMinMidiBpm = 10.0;
+    static constexpr double kMaxMidiBpm = 300.0;
 
   private:
     // Some of the tests use the ring buffer size, so keep those test in sync
@@ -87,7 +92,8 @@ class MidiClock {
     }
 
   private:
-    // Calculate the bpm based on the
+    // Calculate the bpm based on the tick times and counts.  Returns values
+    // between the min and max allowable bpm, or 0.0 for error conditions.
     static double calcBpm(
             qint64 early_tick, qint64 late_tick, int tick_count);
 

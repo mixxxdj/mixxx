@@ -19,7 +19,6 @@
 MidiController::MidiController()
         : Controller(), m_midiClock(&m_mixxxClock) {
     setDeviceCategory(tr("MIDI Controller"));
-    qDebug() << "MIDI CONTROLLER CONSTRUCTOR";
     m_pClockBpm.reset(new ControlObjectSlave("[MidiClock]", "bpm"));
     m_pClockLastBeat.reset(
             new ControlObjectSlave("[MidiClock]", "last_beat_time"));
@@ -334,7 +333,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         m_fourteen_bit_queued_mappings.clear();
     }
 
-    qDebug() << "MIDI Options" << QString::number(mapping.options.all, 2).rightJustified(16,'0');
+    //qDebug() << "MIDI Options" << QString::number(mapping.options.all, 2).rightJustified(16,'0');
 
     if (mapping_is_14bit) {
         bool found = false;

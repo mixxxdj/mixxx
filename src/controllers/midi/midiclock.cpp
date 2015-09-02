@@ -38,6 +38,7 @@ void MidiClock::tick() {
     }
 
     // Ringbuffer filling.
+    // TODO(owen): We should have a ringbuffer convenience class.
     const qint64 lastTickTime = m_pClock->now();
     m_iTickRingBuffer[m_iRingBufferPos] = lastTickTime;
     m_iRingBufferPos = (m_iRingBufferPos + 1) % kRingBufferSize;
@@ -65,13 +66,11 @@ void MidiClock::tick() {
 }
 
 // static
-double MidiClock::calcBpm(
-        qint64 early_tick, qint64 late_tick, int tick_count) {
+double MidiClock::calcBpm(qint64 early_tick, qint64 late_tick, int tick_count) {
     // Get the elapsed time between the latest tick and the earliest tick
     // and divide by the number of ticks in the buffer to get bpm.
 
-    // If we have too few samples, we can't calculate a bpm, so return the
-    // last-known value.
+    // If we have too few samples, we can't calculate a bpm, so return 0.0.
     DEBUG_ASSERT_AND_HANDLE(tick_count >= 2) {
         qWarning() << "MidiClock::calcBpm called with too few ticks";
         return 0.0;
@@ -79,17 +78,19 @@ double MidiClock::calcBpm(
 
     DEBUG_ASSERT_AND_HANDLE(late_tick >= early_tick) {
         qWarning() << "MidiClock asked to calculate beat percentage but "
-                   << "late_tick < early_tick:"
-                   << late_tick << early_tick;
+                   << "late_tick < early_tick:" << late_tick << early_tick;
         return 0.0;
     }
 
-    const double elapsed_mins =
-            static_cast<double>(late_tick - early_tick) / (60.0 * 1e9);
+    const double elapsed_mins = static_cast<double>(late_tick - early_tick)
+            / (60.0 * 1e9);
 
     // We subtract one since two time values denote a single span of time --
     // so a filled value of 3 indicates 2 tick periods, etc.
-    return static_cast<double>(tick_count - 1) / kPulsesPerQuarter / elapsed_mins;
+    const double bpm = static_cast<double>(tick_count - 1) / kPulsesPerQuarter
+                 / elapsed_mins;
+
+    return math_clamp(bpm, kMinMidiBpm, kMaxMidiBpm);
 }
 
 // static
@@ -97,15 +98,14 @@ double MidiClock::beatPercentage(const qint64 last_beat, const qint64 now,
                                  const double bpm) {
     DEBUG_ASSERT_AND_HANDLE(now >= last_beat) {
         qWarning() << "MidiClock asked to calculate beat percentage but "
-                << "now < last_beat:"
-                << now << last_beat;
+                   << "now < last_beat:" << now << last_beat;
         return 0.0;
     }
     // Get seconds per beat.
     const double beat_length = 60.0 / bpm;
     // seconds / secondsperbeat = percentage of beat.
-    const double beat_percent =
-            static_cast<double>(now - last_beat) / 1e9 / beat_length;
+    const double beat_percent = static_cast<double>(now - last_beat) / 1e9
+                                / beat_length;
     // Ensure values are < 1.0.
     return beat_percent - floor(beat_percent);
 }

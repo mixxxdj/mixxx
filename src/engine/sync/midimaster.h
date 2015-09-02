@@ -1,3 +1,7 @@
+// MidiMasterClock provides a sync master from external midi clock input.
+// It reads control objects set by midicontroller.cpp, which uses midiclock.cpp.
+// It does not provide midi clock output.
+
 #ifndef MIDIMASTER_H
 #define MIDIMASTER_H
 
