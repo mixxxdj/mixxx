@@ -14,7 +14,7 @@
 #define MIDICONTROLLER_H
 
 #include "controllers/controller.h"
-#include "controllers/midi/midiclock.h"
+#include "controllers/midi/midisourceclock.h"
 #include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/midi/midimessage.h"
@@ -106,7 +106,7 @@ class MidiController : public Controller {
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
     MixxxClock m_mixxxClock;
-    MidiClock m_midiClock;
+    MidiSourceClock m_midiSourceClock;
     QScopedPointer<ControlObjectSlave> m_pClockBpm;
     QScopedPointer<ControlObjectSlave> m_pClockLastBeat;
     QScopedPointer<ControlObjectSlave> m_pClockRunning;

@@ -6,12 +6,12 @@
 #include "engine/sync/midimaster.h"
 
 static const char* kInternalClockGroup = "[InternalClock]";
-static const char* kMidiMasterClockGroup = "[MidiClock]";
+static const char* kMidiMasterClockGroup = "[MidiSourceClock]";
 
 BaseSyncableListener::BaseSyncableListener(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
           m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
-          m_pMidiClock(new MidiMasterClock(kMidiMasterClockGroup, this)),
+          m_pMidiSourceClock(new MidiMasterClock(kMidiMasterClockGroup, this)),
           m_pMasterSyncable(NULL) {
     qRegisterMetaType<SyncMode>("SyncMode");
     m_pInternalClock->setMasterBpm(124.0);
@@ -34,11 +34,11 @@ void BaseSyncableListener::addSyncableDeck(Syncable* pSyncable) {
 
 void BaseSyncableListener::onCallbackStart(int sampleRate, int bufferSize) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
-    m_pMidiClock->onCallbackStart(sampleRate, bufferSize);
+    m_pMidiSourceClock->onCallbackStart(sampleRate, bufferSize);
 }
 
 void BaseSyncableListener::onCallbackEnd(int sampleRate, int bufferSize) {
-    m_pMidiClock->onCallbackEnd(sampleRate, bufferSize);
+    m_pMidiSourceClock->onCallbackEnd(sampleRate, bufferSize);
     m_pInternalClock->onCallbackEnd(sampleRate, bufferSize);
 }
 

@@ -3,7 +3,7 @@
 #include "engine/sync/midimaster.h"
 
 #include "engine/sync/enginesync.h"
-#include "controllers/midi/midiclock.h"
+#include "controllers/midi/midisourceclock.h"
 #include "controllinpotmeter.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
@@ -14,13 +14,13 @@ MidiMasterClock::MidiMasterClock(const char* pGroup, SyncableListener* pEngineSy
         : m_group(pGroup),
           m_pEngineSync(pEngineSync),
           m_mode(SYNC_NONE) {
-    m_pMidiClockBpm.reset(new ControlObject(ConfigKey(pGroup, "bpm")));
-    m_pMidiClockLastBeatTime.reset(
+    m_pMidiSourceClockBpm.reset(new ControlObject(ConfigKey(pGroup, "bpm")));
+    m_pMidiSourceClockLastBeatTime.reset(
             new ControlObject(ConfigKey(pGroup, "last_beat_time")));
-    m_pMidiClockBeatDistance.reset(
+    m_pMidiSourceClockBeatDistance.reset(
             new ControlObject(ConfigKey(pGroup, "beat_distance")));
 
-    m_pMidiClockRunning.reset(
+    m_pMidiSourceClockRunning.reset(
             new ControlPushButton(ConfigKey(pGroup, "play")));
 
     m_pSyncMasterEnabled.reset(
@@ -30,7 +30,7 @@ MidiMasterClock::MidiMasterClock(const char* pGroup, SyncableListener* pEngineSy
             this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
             Qt::DirectConnection);
 
-    m_pMidiClockSyncAdjust.reset(
+    m_pMidiSourceClockSyncAdjust.reset(
             new ControlLinPotmeter(ConfigKey(pGroup, "sync_adjust"), -.5, .5,
                                    0.1, 0.01, /*allow oob*/ true));
 }
@@ -50,7 +50,7 @@ void MidiMasterClock::notifyOnlyPlayingSyncable() {
 }
 
 void MidiMasterClock::requestSyncPhase() {
-    // TODO: maybe tell midiclock to reset which tick is the beat tick??
+    // TODO: maybe tell MidiSourceClock to reset which tick is the beat tick??
     // but really, it's a read-only clock.
 }
 
@@ -70,10 +70,10 @@ void MidiMasterClock::slotSyncMasterEnabledChangeRequest(double state) {
 }
 
 double MidiMasterClock::getBeatDistance() const {
-    qint64 last_beat = static_cast<qint64>(m_pMidiClockLastBeatTime->get());
-    double raw_percent = MidiClock::beatPercentage(last_beat, Time::elapsed(),
-                                                   m_pMidiClockBpm->get());
-    raw_percent += m_pMidiClockSyncAdjust->get();
+    qint64 last_beat = static_cast<qint64>(m_pMidiSourceClockLastBeatTime->get());
+    double raw_percent = MidiSourceClock::beatPercentage(last_beat, Time::elapsed(),
+                                                   m_pMidiSourceClockBpm->get());
+    raw_percent += m_pMidiSourceClockSyncAdjust->get();
     // Fix beat loop-around.
     return raw_percent - floor(raw_percent);
 }
@@ -84,7 +84,7 @@ void MidiMasterClock::setMasterBeatDistance(double beatDistance) {
 }
 
 double MidiMasterClock::getBaseBpm() const {
-    return m_pMidiClockBpm->get();
+    return m_pMidiSourceClockBpm->get();
 }
 
 void MidiMasterClock::setMasterBaseBpm(double bpm) {
@@ -93,7 +93,7 @@ void MidiMasterClock::setMasterBaseBpm(double bpm) {
 }
 
 double MidiMasterClock::getBpm() const {
-    return m_pMidiClockBpm->get();
+    return m_pMidiSourceClockBpm->get();
 }
 
 void MidiMasterClock::setMasterBpm(double bpm) {
@@ -125,7 +125,7 @@ void MidiMasterClock::onCallbackEnd(int sampleRate, int bufferSize) {
     Q_UNUSED(sampleRate)
     Q_UNUSED(bufferSize)
     double beat_distance = getBeatDistance();
-    m_pMidiClockBeatDistance->set(beat_distance);
+    m_pMidiSourceClockBeatDistance->set(beat_distance);
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
 }
 

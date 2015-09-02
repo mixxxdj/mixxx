@@ -29,7 +29,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
         return "";
     }
     void assertIsMaster(QString group) {
-        if (group == m_sInternalClockGroup || group == m_sMidiClockGroup) {
+        if (group == m_sInternalClockGroup || group == m_sMidiSourceClockGroup) {
             ASSERT_EQ(1,
                       ControlObject::getControl(ConfigKey(group,
                                                           "sync_master"))->get());
@@ -55,7 +55,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
     }
 
     void assertSyncOff(QString group) {
-        if (group == m_sInternalClockGroup || group == m_sMidiClockGroup) {
+        if (group == m_sInternalClockGroup || group == m_sMidiSourceClockGroup) {
             ASSERT_EQ(0,
                       ControlObject::getControl(ConfigKey(group,
                                                           "sync_master"))->get());
@@ -247,15 +247,15 @@ TEST_F(EngineSyncTest, InternalMasterSetSlaveSliderMoves) {
     EXPECT_FLOAT_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 }
 
-TEST_F(EngineSyncTest, MidiClockMasterSetSlaveSliderMoves) {
+TEST_F(EngineSyncTest, MidiSourceClockMasterSetSlaveSliderMoves) {
     // TODO: refactor this with the test above -- but we have to be careful to
     // reset state between passes.
     // If midi clock is master, and we turn on a slave, the slider should move.
     QScopedPointer<ControlObjectThread> pButtonMasterSyncMidi(getControlObjectThread(
-            ConfigKey(m_sMidiClockGroup, "sync_master")));
+            ConfigKey(m_sMidiSourceClockGroup, "sync_master")));
     pButtonMasterSyncMidi->slotSet(1);
     QScopedPointer<ControlObjectThread> pMasterSyncSlider(getControlObjectThread(
-            ConfigKey(m_sMidiClockGroup, "bpm")));
+            ConfigKey(m_sMidiSourceClockGroup, "bpm")));
     pMasterSyncSlider->set(100.0);
 
     // Set the file bpm of channel 1 to 160bpm.
@@ -844,15 +844,15 @@ TEST_F(EngineSyncTest, EnableOneDeckSliderUpdates) {
 TEST_F(EngineSyncTest, EnableMidiSliderUpdates) {
     // If we enable midi to be master, the internal slider should immediately update.
     QScopedPointer<ControlObjectThread> pButtonMidiSyncMaster(getControlObjectThread(
-            ConfigKey(m_sMidiClockGroup, "sync_master")));
-    ControlObject::getControl(ConfigKey(m_sMidiClockGroup, "bpm"))->set(132.0);
+            ConfigKey(m_sMidiSourceClockGroup, "sync_master")));
+    ControlObject::getControl(ConfigKey(m_sMidiSourceClockGroup, "bpm"))->set(132.0);
 
     // Set midi to sync master.
     pButtonMidiSyncMaster->slotSet(1.0);
     ProcessBuffer();
 
     // Midi should still be master.
-    assertIsMaster(m_sMidiClockGroup);
+    assertIsMaster(m_sMidiSourceClockGroup);
 
     // Internal clock rate should be set.
     EXPECT_FLOAT_EQ(132.0,
@@ -1468,10 +1468,10 @@ TEST_F(EngineSyncTest, MasterBpmNeverZero) {
 TEST_F(EngineSyncTest, MidiRateChangeMovesSlider) {
     // If the midi rate changes, the rate sliders should change on followers.
     QScopedPointer<ControlObjectThread> pButtonMasterSyncMidi(getControlObjectThread(
-            ConfigKey(m_sMidiClockGroup, "sync_master")));
+            ConfigKey(m_sMidiSourceClockGroup, "sync_master")));
     pButtonMasterSyncMidi->slotSet(1);
     QScopedPointer<ControlObjectThread> pMidiSlider(getControlObjectThread(
-            ConfigKey(m_sMidiClockGroup, "bpm")));
+            ConfigKey(m_sMidiSourceClockGroup, "bpm")));
     pMidiSlider->set(100.0);
 
     QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(

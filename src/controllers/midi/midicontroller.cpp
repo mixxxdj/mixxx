@@ -17,12 +17,12 @@
 #include "util/math.h"
 
 MidiController::MidiController()
-        : Controller(), m_midiClock(&m_mixxxClock) {
+        : Controller(), m_midiSourceClock(&m_mixxxClock) {
     setDeviceCategory(tr("MIDI Controller"));
-    m_pClockBpm.reset(new ControlObjectSlave("[MidiClock]", "bpm"));
+    m_pClockBpm.reset(new ControlObjectSlave("[MidiSourceClock]", "bpm"));
     m_pClockLastBeat.reset(
-            new ControlObjectSlave("[MidiClock]", "last_beat_time"));
-    m_pClockRunning.reset(new ControlObjectSlave("[MidiClock]", "play"));
+            new ControlObjectSlave("[MidiSourceClock]", "last_beat_time"));
+    m_pClockRunning.reset(new ControlObjectSlave("[MidiSourceClock]", "play"));
 }
 
 MidiController::~MidiController() {
@@ -259,12 +259,12 @@ void MidiController::receive(unsigned char status, unsigned char control,
         qDebug() << formatMidiMessage(status, control, value, channel, opCode);
     }
 
-    // If midiclock handles the message, record the updated values and
+    // If MidiSourceClock handles the message, record the updated values and
     // no further action is needed.
-    if (m_midiClock.handleMessage(status)) {
-        m_pClockBpm->set(m_midiClock.bpm());
-        m_pClockLastBeat->set(m_midiClock.lastBeatTime());
-        m_pClockRunning->set(static_cast<double>(m_midiClock.running()));
+    if (m_midiSourceClock.handleMessage(status)) {
+        m_pClockBpm->set(m_midiSourceClock.bpm());
+        m_pClockLastBeat->set(m_midiSourceClock.lastBeatTime());
+        m_pClockRunning->set(static_cast<double>(m_midiSourceClock.running()));
         return;
     }
 

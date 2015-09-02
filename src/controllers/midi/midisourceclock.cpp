@@ -1,8 +1,8 @@
-#include "controllers/midi/midiclock.h"
 #include "controllers/midi/midimessage.h"
+#include "controllers/midi/midisourceclock.h"
 #include "util/math.h"
 
-bool MidiClock::handleMessage(unsigned char status) {
+bool MidiSourceClock::handleMessage(unsigned char status) {
     switch (status) {
     case MIDI_START:
         start();
@@ -18,22 +18,22 @@ bool MidiClock::handleMessage(unsigned char status) {
     }
 }
 
-void MidiClock::start() {
+void MidiSourceClock::start() {
     m_bRunning = true;
     m_iFilled = 0;
     m_iRingBufferPos = 0;
 }
 
-void MidiClock::stop() {
+void MidiSourceClock::stop() {
     m_bRunning = false;
 }
 
-void MidiClock::tick() {
+void MidiSourceClock::tick() {
     // Update the ring buffer and calculate new bpm.  Update the last beat time
     // if we are on a beat.
 
     if (!m_bRunning) {
-        qDebug() << "MidiClock: Got clock tick but not started, starting now.";
+        qDebug() << "MidiSourceClock: Got clock tick but not started, starting now.";
         start();
     }
 
@@ -66,18 +66,19 @@ void MidiClock::tick() {
 }
 
 // static
-double MidiClock::calcBpm(qint64 early_tick, qint64 late_tick, int tick_count) {
+double MidiSourceClock::calcBpm(qint64 early_tick, qint64 late_tick,
+                                int tick_count) {
     // Get the elapsed time between the latest tick and the earliest tick
     // and divide by the number of ticks in the buffer to get bpm.
 
     // If we have too few samples, we can't calculate a bpm, so return 0.0.
     DEBUG_ASSERT_AND_HANDLE(tick_count >= 2) {
-        qWarning() << "MidiClock::calcBpm called with too few ticks";
+        qWarning() << "MidiSourceClock::calcBpm called with too few ticks";
         return 0.0;
     }
 
     DEBUG_ASSERT_AND_HANDLE(late_tick >= early_tick) {
-        qWarning() << "MidiClock asked to calculate beat percentage but "
+        qWarning() << "MidiSourceClock asked to calculate beat percentage but "
                    << "late_tick < early_tick:" << late_tick << early_tick;
         return 0.0;
     }
@@ -88,16 +89,16 @@ double MidiClock::calcBpm(qint64 early_tick, qint64 late_tick, int tick_count) {
     // We subtract one since two time values denote a single span of time --
     // so a filled value of 3 indicates 2 tick periods, etc.
     const double bpm = static_cast<double>(tick_count - 1) / kPulsesPerQuarter
-                 / elapsed_mins;
+                       / elapsed_mins;
 
     return math_clamp(bpm, kMinMidiBpm, kMaxMidiBpm);
 }
 
 // static
-double MidiClock::beatPercentage(const qint64 last_beat, const qint64 now,
-                                 const double bpm) {
+double MidiSourceClock::beatPercentage(const qint64 last_beat, const qint64 now,
+                                       const double bpm) {
     DEBUG_ASSERT_AND_HANDLE(now >= last_beat) {
-        qWarning() << "MidiClock asked to calculate beat percentage but "
+        qWarning() << "MidiSourceClock asked to calculate beat percentage but "
                    << "now < last_beat:" << now << last_beat;
         return 0.0;
     }
@@ -110,7 +111,7 @@ double MidiClock::beatPercentage(const qint64 last_beat, const qint64 now,
     return beat_percent - floor(beat_percent);
 }
 
-double MidiClock::beatPercentage() const {
+double MidiSourceClock::beatPercentage() const {
     return beatPercentage(m_iLastBeatTime, m_pClock->now(), m_dBpm);
 }
 

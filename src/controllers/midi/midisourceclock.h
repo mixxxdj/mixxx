@@ -1,5 +1,5 @@
-#ifndef MIDICLOCK_H
-#define MIDICLOCK_H
+#ifndef MIDISOURCECLOCK_H
+#define MIDISOURCECLOCK_H
 
 #include <QList>
 
@@ -19,13 +19,13 @@ class MixxxClock : public MockableClock {
     }
 };
 
-// MidiClock is not thread-safe, but is thread compatible using ControlObjects.
-// The MIDI thread will make calls into MidiClock and then update two Control
+// MidiSourceClock is not thread-safe, but is thread compatible using ControlObjects.
+// The MIDI thread will make calls into MidiSourceClock and then update two Control
 // Objects with the current reported BPM and last beat time.  The engine thread
 // can use those values to call a static function to calculate beat percentage
 // at any time in the future.  Time values are in nanoseconds for compatibility
 // with Time::elapsed().
-class MidiClock {
+class MidiSourceClock {
   public:
     // The number of midi ticks per quarter note (1 beat in 4/4 time).
     static constexpr int kPulsesPerQuarter = 24;
@@ -42,17 +42,17 @@ class MidiClock {
 
   public:
     // Injectable clock for testing.  Does not take ownership of the clock.
-    MidiClock(MockableClock* clock) : m_pClock(clock) { }
+    MidiSourceClock(MockableClock* clock) : m_pClock(clock) { }
 
     // Handle an incoming midi status.  Return true if handled.
     bool handleMessage(unsigned char status);
 
-    // Signals MIDI Start Sequence.  The MidiClock will reset its beat
+    // Signals MIDI Start Sequence.  The MidiSourceClock will reset its beat
     // percentage to 0, but the bpm value will be seeded with the last recorded
     // value.
     void start();
 
-    // Signals MIDI Stop Sequence.  The MidiClock will stop updating its beat
+    // Signals MIDI Stop Sequence.  The MidiSourceClock will stop updating its beat
     // precentage.  Subsequent calls to beatPercentage will return valid results
     // based on the last recorded beat time and last reported bpm.
     void stop();
@@ -78,7 +78,7 @@ class MidiClock {
     static double beatPercentage(const qint64 last_beat, const qint64 now,
                                  const double bpm);
 
-    // Convenience function for callers that have access to the MidiClock
+    // Convenience function for callers that have access to the MidiSourceClock
     // object.  Returns the instantaneous beat percentage.  This should only be
     // called from the same thread that makes calls to tick().
     double beatPercentage() const;
@@ -111,4 +111,4 @@ class MidiClock {
 };
 
 
-#endif  // MIDICLOCK_H
+#endif  // MIDISOURCECLOCK_H

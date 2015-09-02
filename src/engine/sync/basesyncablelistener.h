@@ -90,7 +90,7 @@ class BaseSyncableListener : public SyncableListener {
     // The InternalClock syncable.
     InternalClock* m_pInternalClock;
     // Midi master clock.
-    MidiMasterClock* m_pMidiClock;
+    MidiMasterClock* m_pMidiSourceClock;
     // The current Syncable that is the master.
     Syncable* m_pMasterSyncable;
     // The list of all Syncables registered with BaseSyncableListener via

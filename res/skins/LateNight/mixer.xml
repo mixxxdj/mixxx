@@ -38,7 +38,7 @@
                                       </State>
                                       <Pos>4,4</Pos>
                                       <Connection>
-                                          <ConfigKey>[MidiClock],sync_master</ConfigKey>
+                                          <ConfigKey>[MidiSourceClock],sync_master</ConfigKey>
                                           <ButtonState>LeftButton</ButtonState>
                                       </Connection>
                                   </PushButton>
@@ -54,7 +54,7 @@
                                       <Channel>1</Channel>
                                       <NumberOfDigits>2</NumberOfDigits>
                                       <Connection>
-                                          <ConfigKey>[MidiClock],bpm</ConfigKey>
+                                          <ConfigKey>[MidiSourceClock],bpm</ConfigKey>
                                       </Connection>
                                   </NumberBpm>
                               </Children>

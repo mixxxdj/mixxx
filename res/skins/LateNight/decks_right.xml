@@ -71,7 +71,7 @@
                                       </State>
                                       <Pos>4,4</Pos>
                                       <Connection>
-                                          <ConfigKey>[MidiClock],sync_master</ConfigKey>
+                                          <ConfigKey>[MidiSourceClock],sync_master</ConfigKey>
                                           <ButtonState>LeftButton</ButtonState>
                                       </Connection>
                                   </PushButton>
@@ -87,7 +87,7 @@
                                       <Channel>1</Channel>
                                       <NumberOfDigits>2</NumberOfDigits>
                                       <Connection>
-                                          <ConfigKey>[MidiClock],bpm</ConfigKey>
+                                          <ConfigKey>[MidiSourceClock],bpm</ConfigKey>
                                       </Connection>
                                   </NumberBpm>
                               </Children>
@@ -105,14 +105,14 @@
                                     <Text>RUN</Text>
                                 </State>
                                 <Connection>
-                                    <ConfigKey>[MidiClock],play</ConfigKey>
+                                    <ConfigKey>[MidiSourceClock],play</ConfigKey>
                                     <ButtonState>NoButton</ButtonState>
                                 </Connection>
                             </PushButton>
                             <Template src="skin:knob_sized.xml">
                              <SetVariable name="width">24</SetVariable>
                              <SetVariable name="height">20</SetVariable>
-                             <SetVariable name="group">[MidiClock]</SetVariable>
+                             <SetVariable name="group">[MidiSourceClock]</SetVariable>
                              <SetVariable name="control">sync_adjust</SetVariable>
                              <SetVariable name="label">offset</SetVariable>
                             </Template>

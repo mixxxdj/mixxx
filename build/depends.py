@@ -672,7 +672,7 @@ class MixxxCore(Feature):
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midienumerator.cpp",
                    "controllers/midi/midioutputhandler.cpp",
-                   "controllers/midi/midiclock.cpp",
+                   "controllers/midi/midisourceclock.cpp",
                    "controllers/softtakeover.cpp",
 
                    "main.cpp",

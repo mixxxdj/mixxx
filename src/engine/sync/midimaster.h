@@ -1,5 +1,5 @@
 // MidiMasterClock provides a sync master from external midi clock input.
-// It reads control objects set by midicontroller.cpp, which uses midiclock.cpp.
+// It reads control objects set by midicontroller.cpp, which uses MidiSourceClock.cpp.
 // It does not provide midi clock output.
 
 #ifndef MIDIMASTER_H
@@ -64,14 +64,14 @@ class MidiMasterClock : public QObject, public Clock, public Syncable {
     SyncableListener* m_pEngineSync;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
 
-    QScopedPointer<ControlObject> m_pMidiClockBpm;
-    QScopedPointer<ControlObject> m_pMidiClockLastBeatTime;
-    QScopedPointer<ControlObject> m_pMidiClockBeatDistance;
+    QScopedPointer<ControlObject> m_pMidiSourceClockBpm;
+    QScopedPointer<ControlObject> m_pMidiSourceClockLastBeatTime;
+    QScopedPointer<ControlObject> m_pMidiSourceClockBeatDistance;
     // Indicates if the midi clock is active or stopped.
-    QScopedPointer<ControlPushButton> m_pMidiClockRunning;
+    QScopedPointer<ControlPushButton> m_pMidiSourceClockRunning;
     // Since there may be differences in latency between other midi devices and
     // Mixxx, allow for manual adjustment of the beat percentage value.
-    QScopedPointer<ControlLinPotmeter> m_pMidiClockSyncAdjust;
+    QScopedPointer<ControlLinPotmeter> m_pMidiSourceClockSyncAdjust;
 
     SyncMode m_mode;
     double m_dOldBpm;
