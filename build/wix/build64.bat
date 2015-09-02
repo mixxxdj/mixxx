@@ -1,5 +1,8 @@
 @echo off
 
+del *.wixobj
+del *.wixpdb
+
 for /F %%d IN (subdirs.txt) DO (
   "%WIX%"\bin\heat.exe dir ..\..\dist64\%%d -nologo -sfrag -suid -ag -srd -cg %%dComp -dr %%dDir -out %%d.wxs -sw5150 -var var.%%dVar  
   "%WIX%"\bin\candle.exe -nologo -dPlatform=x64 -d%%dVar=..\..\dist64\%%d -arch x64 %%d.wxs
