@@ -8,7 +8,15 @@ for /F %%d IN (subdirs.txt) DO (
   "%WIX%"\bin\candle.exe -nologo -dPlatform=x86 -d%%dVar=..\..\dist32\%%d -arch x86 %%d.wxs
 )
 
+SET promo=no
+
+IF EXIST ..\..\dist32\promo (
+  SET promo=yes
+  "%WIX%"\bin\heat.exe dir ..\..\dist32\promo -nologo -sfrag -suid -ag -srd -cg promoComp -dr promoDir -out promo.wxs -sw5150 -var var.promoVar  
+  "%WIX%"\bin\candle.exe -nologo -dPlatform=x86 -dpromoVar=..\..\dist32\promo -arch x86 promo.wxs
+)
+
 "%WIX%"\bin\candle.exe -nologo -dPlatform=x86 -arch x86 warningDlg.wxs
-"%WIX%"\bin\candle.exe -nologo -dPlatform=x86 -arch x86 mixxx.wxs
+"%WIX%"\bin\candle.exe -nologo -dPlatform=x86 -dPromo=%promo% -arch x86 mixxx.wxs
 
 "%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:en-us -loc Localization\en-us\mixxx_en-us.wxl -out mixxx-32.msi *.wixobj
