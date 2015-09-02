@@ -8,13 +8,42 @@
     <ObjectName>SkinSettings</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
-    <MinimumSize>200,-1</MinimumSize>
+    <MinimumSize>180,-1</MinimumSize>
     <MaximumSize>300,-1</MaximumSize>
     <Children>
-      <Label>
-        <ObjectName>h1</ObjectName>
-        <Text>Skin Settings</Text>
-      </Label>
+      <WidgetGroup>
+        <ObjectName>SkinSettingsTop</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <MinimumSize>-1,36</MinimumSize>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Label>
+            <ObjectName>h1</ObjectName>
+            <Text>Skin Settings</Text>
+          </Label>
+          <WidgetGroup>
+            <ObjectName>SkinSettingsTop</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children/>
+          </WidgetGroup>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="Tooltip">Show/hide skin settings</SetVariable>
+            <SetVariable name="ObjectName">SidebarShowHideSkinSettingsButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
 
       <!-- Global Skin Settings -->
       <Label>
@@ -33,12 +62,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show Mixer</Text>
+              <Text>&#9744; Show Mixer</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show Mixer</Text>
+              <Text>&#9745; Show Mixer</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -54,12 +83,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show Crossfader</Text>
+              <Text>&#9744; Show Crossfader</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show Crossfader</Text>
+              <Text>&#9745; Show Crossfader</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -76,12 +105,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show Microphone</Text>
+              <Text>&#9744; Show Microphone</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show Microphone</Text>
+              <Text>&#9745; Show Microphone</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -95,12 +124,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show Preview Deck</Text>
+              <Text>&#9744; Show Preview Deck</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show Preview Deck</Text>
+              <Text>&#9745; Show Preview Deck</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -114,12 +143,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show 4 Decks</Text>
+              <Text>&#9744; Show 4 Decks</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show 4 Decks</Text>
+              <Text>&#9745; Show 4 Decks</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -134,12 +163,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show Cover Art in Library</Text>
+              <Text>&#9744; Show Cover Art in Library</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show Cover Art in Library</Text>
+              <Text>&#9745; Show Cover Art in Library</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -153,12 +182,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Maximize Library</Text>
+              <Text>&#9744; Maximize Library</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Maximize Library</Text>
+              <Text>&#9745; Maximize Library</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -185,17 +214,17 @@
             <NumberStates>3</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show Cover Art</Text>
+              <Text>&#9744; Show Cover Art</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show Cover Art &#9679; &#9675;</Text>
+              <Text>&#9745; Show Cover Art &#9679; &#9675;</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>2</Number>
-              <Text>&#10003; Show Cover Art &#9675; &#9679;</Text>
+              <Text>&#9745; Show Cover Art &#9675; &#9679;</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -208,12 +237,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show Star Rating</Text>
+              <Text>&#9744; Show Star Rating</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show Star Rating</Text>
+              <Text>&#9745; Show Star Rating</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -226,12 +255,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show More Hotcues</Text>
+              <Text>&#9744; Show More Hotcues</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show More Hotcues</Text>
+              <Text>&#9745; Show More Hotcues</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -244,12 +273,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Hide Artist/Track Info (AM-Mode)</Text>
+              <Text>&#9744; Conceal Artist/Track Info</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Hide Artist/Track Info (AM-Mode)</Text>
+              <Text>&#9745; Conceal Artist/Track Info</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -262,12 +291,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Hide BPM Info</Text>
+              <Text>&#9744; Conceal BPM Info</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Hide BPM Info</Text>
+              <Text>&#9745; Conceal BPM Info</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -281,12 +310,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show Stacked Waveforms</Text>
+              <Text>&#9744; Show Stacked Waveforms</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show Stacked Waveforms</Text>
+              <Text>&#9745; Show Stacked Waveforms</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -312,12 +341,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show Advanced Mode</Text>
+              <Text>&#9744; Show Advanced Mode</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show Advanced Mode</Text>
+              <Text>&#9745; Show Advanced Mode</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -343,12 +372,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>   Show Advanced Mode</Text>
+              <Text>&#9744; Show Advanced Mode</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#10003; Show Advanced Mode</Text>
+              <Text>&#9745; Show Advanced Mode</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
