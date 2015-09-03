@@ -74,6 +74,8 @@ class EngineShoutcast : public QThread, public EncoderCallback, public SideChain
 
     virtual void outputAvailabe(FIFO<CSAMPLE>* pOutputFifo);
 
+    virtual bool threadWaiting();
+
     virtual void run();
 
   public slots:
@@ -130,6 +132,7 @@ class EngineShoutcast : public QThread, public EncoderCallback, public SideChain
     bool m_ogg_dynamic_update;
     QVector<struct shoutcastCacheObject  *> m_pShoutcastCache;
     bool m_bThreadQuit;
+    QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;
 };

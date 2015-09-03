@@ -65,15 +65,11 @@ int EngineNetworkStream::getReadExpected() {
 }
 
 void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
+    if (!m_pWorker->threadWaiting()) return;
     int writeAvailable = m_pOutputFifo->writeAvailable();
     int writeRequired = frames * m_numOutputChannels;
     if (writeAvailable < writeRequired) {
-        // Flush outdated frames to free space for writing
-        int readRequired = writeRequired - writeAvailable;
-        qDebug() << "EngineNetworkStream::write flushed" << readRequired
-                 << "samples";
-        m_pOutputFifo->flushReadData(readRequired);
-        writeAvailable = m_pOutputFifo->writeAvailable();
+        qDebug() << "EngineNetworkStream::write() buffer full";
     }
     int copyCount = math_min(writeAvailable, writeRequired);
     if (copyCount > 0) {
