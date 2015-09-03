@@ -65,6 +65,7 @@ int EngineNetworkStream::getReadExpected() {
 }
 
 void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
+    m_streamFramesWritten += frames;
     //qDebug() << "EngineNetworkStream::write()" << frames;
     if (!m_pWorker->threadWaiting()) return;
     int writeAvailable = m_pOutputFifo->writeAvailable();
@@ -76,11 +77,11 @@ void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
     if (copyCount > 0) {
         (void)m_pOutputFifo->write(buffer, copyCount);
     }
-    m_streamFramesWritten += frames;
     scheduleWorker();
 }
 
 void EngineNetworkStream::writeSilence(int frames) {
+    m_streamFramesWritten += frames;
     //qDebug() << "EngineNetworkStream::writeSilence()" << frames;
     if (!m_pWorker->threadWaiting()) return;
     int writeAvailable = m_pOutputFifo->writeAvailable();
@@ -102,7 +103,6 @@ void EngineNetworkStream::writeSilence(int frames) {
         }
         m_pOutputFifo->releaseWriteRegions(clearCount);
     }
-    m_streamFramesWritten += frames;
     scheduleWorker();
 }
 

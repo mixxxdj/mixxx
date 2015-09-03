@@ -268,7 +268,7 @@ void SoundDeviceNetwork::writeProcess() {
             // We are not able to store all new frames
             if (m_outputDrift) {
                 //qDebug() << "SoundDeviceNetwork::writeProcess() skip one frame"
-                 //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
+                //         << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
                 ++copyCount;
             } else {
                 m_outputDrift = true;
