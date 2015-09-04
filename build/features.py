@@ -24,17 +24,14 @@ class OpenGLES(Feature):
 		return int(build.flags['opengles'])
 	
 	def sources(self, build):
-		directoryPath = 'waveforms/renderers/'
-		openglPrefix = 'gles' if int(build['opengles']) else 'gl'
+		pathPrefix = 'waveforms/renderers/gles'
 		sources = [
-			'%s%swaveformrenderersimplesignal.cpp' % (directoryPath, openglPrefix), 
-			'%s%swaveformrendererrgb.cpp' % (directoryPath, openglPrefix), 
-			'%s%swaveformrendererfilteredsignal.cpp' % (directoryPath, openglPrefix),
-			 '%s%sslwaveformrenderersignal.cpp' % (directoryPath, openglPrefix),
-			 '%s%svsynctestrenderer.cpp' % (directoryPath, openglPrefix)
+			'%swaveformrenderersimplesignal.cpp' % (pathPrefix), 
+			'%swaveformrendererrgb.cpp' % (pathPrefix), 
+			'%swaveformrendererfilteredsignal.cpp' % (pathPrefix), 
+			 '%sslwaveformrenderersignal.cpp' % (pathPrefix), 
+			 '%svsynctestrenderer.cpp' % (pathPrefix), 
 		]
-
-		print sources[0]
 
 		return sources
 
