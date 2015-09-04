@@ -6,6 +6,34 @@ from mixxx import Feature
 import SCons.Script as SCons
 import depends
 
+class OpenGLES(Feature):
+	def description(self):
+		return "OpenGL-ES >= 2.0 support [Experimental]"
+
+	def enabled(self, build):
+		return int(build.flags['opengles'])
+
+	def add_options(self, build, vars):
+		vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
+
+	def configure(self, build, conf):
+		if not self.enabled(build):
+			return
+	
+	def sources(self, build):
+		directoryPath = 'waveforms/renderers/'
+		openglPrefix = int(build['opengles']) ? 'gles' : 'gl'
+		sources = [
+			'%s%swaveformrenderersimplesignal.cpp' % (directoryPath, openglPrefix), 
+			'%s%swaveformrendererrgb.cpp' % (directoryPath, openglPrefix), 
+			'%s%swaveformrendererfilteredsignal.cpp' % (directoryPath, openglPrefix),
+			 '%s%sslwaveformrenderersignal.cpp' % (directoryPath, openglPrefix),
+			 '%s%svsynctestrenderer.cpp' % (directoryPath, openglPrefix)
+		]
+
+		print sources[0]
+
+		return sources
 
 class HSS1394(Feature):
     def description(self):
