@@ -14,15 +14,18 @@ class OpenGLES(Feature):
 		return int(build.flags['opengles'])
 
 	def add_options(self, build, vars):
-		vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
+		is_default = 1 if build.platform_is_linux else 0
+		vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 1)
 
 	def configure(self, build, conf):
 		if not self.enabled(build):
 			return
+
+		return int(build.flags['opengles'])
 	
 	def sources(self, build):
 		directoryPath = 'waveforms/renderers/'
-		openglPrefix = int(build['opengles']) ? 'gles' : 'gl'
+		openglPrefix = 'gles' if int(build['opengles']) else 'gl'
 		sources = [
 			'%s%swaveformrenderersimplesignal.cpp' % (directoryPath, openglPrefix), 
 			'%s%swaveformrendererrgb.cpp' % (directoryPath, openglPrefix), 
