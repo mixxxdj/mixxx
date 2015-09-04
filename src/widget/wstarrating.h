@@ -33,7 +33,7 @@ class WStarRating : public QWidget, public WBaseWidget {
     void mouseReleaseEvent(QMouseEvent *event);
     void leaveEvent(QEvent *);
     virtual bool event(QEvent* pEvent);
-    void fillDebugTooltip(QStringList* debug);
+    virtual void fillDebugTooltip(QStringList* debug); // /override/
 
     StarRating m_starRating;
     QString m_pGroup;
