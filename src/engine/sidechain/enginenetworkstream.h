@@ -48,6 +48,7 @@ class EngineNetworkStream {
     qint64 m_streamFramesWritten;
     qint64 m_streamFramesRead;
     QSharedPointer<SideChainWorker> m_pWorker;
+    int m_writeOverflowCount;
 };
 
 #endif /* ENGINENETWORKSTREAM_H_ */

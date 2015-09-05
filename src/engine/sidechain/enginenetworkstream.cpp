@@ -10,15 +10,18 @@
 
 #include "sampleutil.h"
 
-const int kBufferFrames = 32768; // 743 ms @ 44100 Hz
-const int kNetworkLatencyFrames = 8192; // 743 ms @ 44100 Hz
+const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Related chunk sizes:
 // Mp3 frames = 1152 samples
 // Ogg frames = 64 to 8192 samples.
 // In Mixxx 1.11 we transmit every decoder-frames at once,
-// Which results in case of ogg in a dynamic latency from 0.14 ms to to 180 ms
+// Which results in case of ogg in a dynamic latency from 0.14 ms to to 185 ms
 // Now we have switched to a fixed latency of 8192 frames (stereo samples) =
 // which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
+const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
+// normally * 2 is sufficient.
+// We allow to buffer two extra chunks for a CPU overload case, when
+// the shoutcast thread is not scheduled in time.
 
 EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
                                          int numInputChannels)
@@ -29,7 +32,8 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
       m_sampleRate(0),
       m_streamStartTimeUs(-1),
       m_streamFramesWritten(0),
-      m_streamFramesRead(0) {
+      m_streamFramesRead(0),
+      m_writeOverflowCount(0) {
     if (numOutputChannels) {
         m_pOutputFifo = new FIFO<CSAMPLE>(numOutputChannels * kBufferFrames);
     }
@@ -65,25 +69,40 @@ int EngineNetworkStream::getReadExpected() {
 }
 
 void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
-    m_streamFramesWritten += frames;
+
     //qDebug() << "EngineNetworkStream::write()" << frames;
-    if (!m_pWorker->threadWaiting()) return;
+    if (!m_pWorker->threadWaiting()) {
+        // no thread waiting, so we can advance the stream without
+        // buffering
+        m_streamFramesWritten += frames;
+        return;
+    }
     int writeAvailable = m_pOutputFifo->writeAvailable();
     int writeRequired = frames * m_numOutputChannels;
     if (writeAvailable < writeRequired) {
-        qDebug() << "EngineNetworkStream::write() buffer full";
+        qDebug() << "EngineNetworkStream::write() buffer full, loosing samples";
+        m_writeOverflowCount++;
     }
     int copyCount = math_min(writeAvailable, writeRequired);
     if (copyCount > 0) {
         (void)m_pOutputFifo->write(buffer, copyCount);
+        // we advance the frame only by the samples we have actually copied
+        // This means in case of buffer full (where we loose some frames)
+        // we do not get out of sync, and the syncing code tries to catch up the
+        // stream by writing silence, once the buffer is free.
+        m_streamFramesWritten += copyCount / m_numOutputChannels;
     }
     scheduleWorker();
 }
 
 void EngineNetworkStream::writeSilence(int frames) {
-    m_streamFramesWritten += frames;
     //qDebug() << "EngineNetworkStream::writeSilence()" << frames;
-    if (!m_pWorker->threadWaiting()) return;
+    if (!m_pWorker->threadWaiting()) {
+        // no thread waiting, so we can advance the stream without
+        // buffering
+        m_streamFramesWritten += frames;
+        return;
+    }
     int writeAvailable = m_pOutputFifo->writeAvailable();
     int writeRequired = frames * m_numOutputChannels;
     if (writeAvailable < writeRequired) {
@@ -102,6 +121,9 @@ void EngineNetworkStream::writeSilence(int frames) {
             SampleUtil::clear(dataPtr2,size2);
         }
         m_pOutputFifo->releaseWriteRegions(clearCount);
+
+        // we advance the frame only by the samples we have actually cleared
+        m_streamFramesWritten += clearCount / m_numOutputChannels;
     }
     scheduleWorker();
 }
