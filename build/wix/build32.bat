@@ -20,6 +20,10 @@ IF EXIST ..\..\dist32\promo (
   "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x86 -dpromoVar=..\..\dist32\promo -arch x86 -out subdirs\promo.wixobj subdirs\promo.wxs
 )
 
+REM Harvest main DLL from install dir
+"%WIX%"\bin\heat.exe dir ..\..\dist32 -nologo -sfrag -suid -ag -srd -cg mainDLLCompGroup -dr INSTALLDIR -out subdirs\mainDLL.wxs -sw5150 -var var.SourceDir -t only-dll.xslt
+"%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x86 -dSourceDir=..\..\dist32 -arch x86 -out subdirs\mainDLL.wixobj subdirs\mainDLL.wxs
+
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x86 -arch x86 warningDlg.wxs
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x86 -dPromo=%promo% -arch x86 mixxx.wxs
 
