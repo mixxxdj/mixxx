@@ -101,7 +101,7 @@
 
       <!-- Determine the install location after the install path has been validated by the installer -->
       <Custom Action="SetARPINSTALLLOCATION" After="InstallValidate" />
-      <Custom Action="InstallVCRedist" After="InstallValidate">NOT VCREDISTINSTALLED</Custom>
+      <Custom Action="InstallVCRedist" After="InstallValidate">NOT VCREDISTINSTALLED AND NOT Installed AND NOT REMOVE</Custom>
     </InstallExecuteSequence>
 
     <!-- Set up ARPINSTALLLOCATION property (http://blogs.technet.com/b/alexshev/archive/2008/02/09/from-msi-to-wix-part-2.aspx) -->
