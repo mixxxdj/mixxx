@@ -34,11 +34,13 @@
   <?if $(var.Platform) = x64 ?>
     <?define Win64 = "yes" ?>
     <?define arch = "64" ?>
+    <?define notarch = "32" ?>
     <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
     <?define baseBuildDir = "..\.." ?>
   <?else ?>
     <?define Win64 = "no" ?>
     <?define arch = "32" ?>
+    <?define notarch = "64" ?>
     <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
     <?define baseBuildDir = "..\.." ?>
   <?endif ?>
@@ -97,6 +99,15 @@
     
     <!-- References the VCRedist package -->
     <Binary Id="VCRedist" SourceFile="$(var.WINLIBPATH)\vcredist_$(var.Platform).exe" />
+
+    <!-- This will search if mixxx is already installed in another bitWidth -->
+    <Property Id="OTHERBITWIDTHINSTALLED">
+      <RegistrySearch Id="BitWidthInstalledSearch"
+                      Root="HKLM"
+                      Key="SOFTWARE\Wow6432Node\!(loc.ApplicationName)"
+                      Name="installed$(var.notarch)"
+                      Type="raw" />
+    </Property>
     
     <!-- This is the main installer sequence run when the product is actually installed -->
     <InstallExecuteSequence>
@@ -118,11 +129,14 @@
     <!-- 
       Launch conditions
 
-      1. Check minimum OS version 
+      1. Check minimum OS version (501  = Windows XP)
          If not, the installation is aborted.
          By doing the (Installed OR ...) property means that this condition will only be evaluated if the app is being installed and not on uninstall or changing
 
         Note: Under a Product element, a condition becomes a LaunchCondition entry. 
+        
+        When time will come to remove XP support, simply change 501 to 600 for vista or 601 for seven
+        https://msdn.microsoft.com/en-us/library/aa370556%28v=vs.85%29.aspx
     -->
     <Condition Message="!(loc.OS2Old)">
        <![CDATA[Installed OR (VersionNT >= 501)]]>
@@ -145,6 +159,16 @@
        </Condition>
     <?endif?>
     -->
+
+    <?if $(var.Platform) = x86 ?>
+    <Condition Message="!(loc.bitWidthMismatch32)">
+      NOT OTHERBITWIDTHINSTALLED
+    </Condition>
+    <?else?>
+    <Condition Message="!(loc.bitWidthMismatch64)">
+      NOT OTHERBITWIDTHINSTALLED
+    </Condition>
+    <?endif?>
 
     <!-- 
        Launch conditions end
@@ -195,7 +219,7 @@
 
         <!-- All folders from here on are relative to their parent. -->
 
-        <Directory Id="INSTALLDIR" Name="!(loc.ApplicationName)" FileSource="$(var.baseBuildDir)\dist$(var.arch)\">
+        <Directory Id="INSTALLDIR" Name="!(loc.ApplicationName)" FileSource="$(var.SourceDir)\">
 
           <!-- Define components, the building blocks of MSIs. -->
           <!-- Rule: A component should only contain items that belong together so strongly that they always need to be installed or removed together. -->
@@ -209,7 +233,15 @@
                         WorkingDirectory='INSTALLDIR' Advertise="yes" Icon="Icon.exe" />
             </File>
             <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\mixxx.exe" Value="[!mixxxExe]" Type="string" />
+          </Component>
+          <Component Id="mixxxRegistry" Guid="*" Win64="$(var.Win64)">
+            <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Type="string" Value='' KeyPath="yes" />
             <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Name="installed" Type="integer" Value="1" />
+            <?if $(var.Platform) = x64 ?>
+            <RegistryValue Root="HKLM" Key="SOFTWARE\Wow6432Node\!(loc.ApplicationName)" Name="installed$(var.arch)" Type="integer" Value="1" />
+            <?else?>
+            <RegistryValue Root="HKLM" Key="SOFTWARE\!(loc.ApplicationName)" Name="installed$(var.arch)" Type="integer" Value="1" />
+            <?endif?>
           </Component>
 
           <Component Id="LICENSE_comp" Guid="*" Win64="$(var.Win64)">
@@ -266,7 +298,7 @@
         <Directory Id="ProgramMenuDir" Name="!(loc.ApplicationName)">
           <Component Id="ProgramMenuDir" Guid="*">
             <RemoveFolder Id='ProgramMenuDir' On='uninstall' />
-            <RegistryValue Root='HKCU' Key='Software\!(loc.ApplicationName)\!(loc.ApplicationName)' Type='string' Value='' KeyPath='yes' />
+            <RegistryValue Root='HKCU' Key='Software\!(loc.ApplicationName)' Type='string' Name="installed" Value='1' KeyPath='yes' />
           </Component>
         </Directory>
       </Directory>
@@ -281,8 +313,8 @@
             <RemoveFolder Id="DesktopFolder" On="uninstall"/>
             <RegistryValue
                 Root="HKCU"
-                Key="Software/!(loc.ApplicationName)"
-                Name="installed"
+                Key="Software\!(loc.ApplicationName)"
+                Name="DesktopShortcut"
                 Type="integer"
                 Value="1"
                 KeyPath="yes"/>
@@ -308,6 +340,7 @@
              Display="expand"
              ConfigurableDirectory="INSTALLDIR">
       <ComponentRef Id='mixxx.exe_comp' />
+      <ComponentRef Id='mixxxRegistry' />
       <ComponentRef Id='ProgramMenuDir' />
       <ComponentGroupRef Id='mainDLLCompGroup' />
       <ComponentRef Id='LICENSE_comp' />

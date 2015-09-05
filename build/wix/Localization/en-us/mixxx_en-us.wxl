@@ -19,6 +19,8 @@
    <String Id="x86VersionRequired">You need to install the 32-bit version of this product on 32-bit Windows.</String>
    <String Id="x86VersionWarning">You are installing a 32 bits Mixxx on a 64 bits operating system.&#13;&#10;We recommand using a 64 bits Mixxx for increased performance.&#13;&#10;You can download 64 bits installation package from http://mixxx.org/download/</String>
    <String Id="XPWarning">You are installing Mixxx on an outdated operating system. Some functions may not work well. We recommand you to update your operating system.</String>
+   <String Id="bitWidthMismatch32">You are trying to install a 32 bits Mixxx, but there is already a 64 bits Mixxx installed. Please remove it before installing this one or download the correct bitwidth installer to upgrade</String>
+   <String Id="bitWidthMismatch64">You are trying to install a 64 bits Mixxx, but there is already a 32 bits Mixxx installed. Please remove it before installing this one or download the correct bitwidth installer to upgrade</String>
  
    <!-- Custom Warning Dialog -->
    <String Id="WarningDlgTitle">{\WixUI_Font_Title}Warning</String>
