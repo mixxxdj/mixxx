@@ -85,17 +85,30 @@
     <!-- AllowSameVersionUpgrades causes ICE61 which must be ignored -->
     <MajorUpgrade DowngradeErrorMessage="!(loc.NewerInstalled)" AllowSameVersionUpgrades="yes" />
 
+    <Property Id="VCREDISTINSTALLED">
+      <RegistrySearch Id="VCRedistInstalledSearch"
+                      Root="HKLM"
+                      Key="SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\$(var.Platform)"
+                      Name="Installed"
+                      Type="raw" />
+    </Property>
+    
+    <!-- References the VCRedist package -->
+    <Binary Id="VCRedist" SourceFile="$(var.WINLIBPATH)\vcredist_$(var.Platform).exe" />
+    
     <!-- This is the main installer sequence run when the product is actually installed -->
     <InstallExecuteSequence>
 
       <!-- Determine the install location after the install path has been validated by the installer -->
-      <Custom Action="SetARPINSTALLLOCATION" After="InstallValidate"></Custom>
- 
+      <Custom Action="SetARPINSTALLLOCATION" After="InstallValidate" />
+      <Custom Action="InstallVCRedist" After="InstallValidate">NOT VCREDISTINSTALLED</Custom>
     </InstallExecuteSequence>
 
     <!-- Set up ARPINSTALLLOCATION property (http://blogs.technet.com/b/alexshev/archive/2008/02/09/from-msi-to-wix-part-2.aspx) -->
     <CustomAction Id="SetARPINSTALLLOCATION" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
 
+    <!-- Install VCRedist -->
+    <CustomAction Id='InstallVCRedist' BinaryKey='VCRedist' ExeCommand='/quiet /install' Return='check' />
 
     <!-- TODO(SBL): License agreement text: we will need to make it localized -->
     <WixVariable Id="WixUILicenseRtf" Value="Localization\en-us\LICENSE_en-us.rtf" />             
