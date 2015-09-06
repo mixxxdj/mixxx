@@ -12,7 +12,7 @@ ShoutcastManager::ShoutcastManager(ConfigObject<ConfigValue>* pConfig,
     QSharedPointer<EngineNetworkStream> pNetworkStream =
             pSoundManager->getNetworkStream();
     if (!pNetworkStream.isNull()) {
-        m_pShoutcast = QSharedPointer<SideChainWorker>(
+        m_pShoutcast = QSharedPointer<EngineShoutcast>(
                 new EngineShoutcast(pConfig));
         pNetworkStream->addWorker(m_pShoutcast);
     }

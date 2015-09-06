@@ -51,10 +51,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_pConfig(_config),
           m_encoder(NULL),
           m_pShoutcastNeedUpdateFromPrefs(NULL),
-          m_pUpdateShoutcastFromPrefs(NULL),
           m_pMasterSamplerate(new ControlObjectSlave("[Master]", "samplerate")),
           m_pShoutcastStatus(new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status"))),
-          m_bQuit(false),
           m_custom_metadata(false),
           m_firstCall(false),
           m_format_is_mp3(false),
@@ -76,36 +74,27 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
     m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
             ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
-    m_pUpdateShoutcastFromPrefs = new ControlObjectSlave(
-            m_pShoutcastNeedUpdateFromPrefs->getKey());
 
     // Initialize libshout
     shout_init();
 
     if (!(m_pShout = shout_new())) {
         errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_t"));
-        return;
     }
 
     if (!(m_pShoutMetaData = shout_metadata_new())) {
         errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_metadata_t"));
-        return;
     }
+
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
-        return;
     }
 }
 
 EngineShoutcast::~EngineShoutcast() {
     m_bThreadQuit = true;
+    wait(); // until the thread ends.
 
-    if (m_encoder) {
-        m_encoder->flush();
-        delete m_encoder;
-    }
-
-    delete m_pUpdateShoutcastFromPrefs;
     delete m_pShoutcastNeedUpdateFromPrefs;
     delete m_pShoutcastStatus;
     delete m_pMasterSamplerate;
@@ -118,21 +107,12 @@ EngineShoutcast::~EngineShoutcast() {
         shout_free(m_pShout);
     }
     shout_shutdown();
-
-    wait(); // until the thread ends.
 }
 
 bool EngineShoutcast::serverDisconnect() {
     m_bThreadQuit = true;
     wait();
-
-    m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
-
-    if (m_pShout) {
-        shout_close(m_pShout);
-        return true;
-    }
-    return false; //if no connection has been established, nothing can be disconnected
+    return false; // if no connection has been established, nothing can be disconnected
 }
 
 bool EngineShoutcast::isConnected() {
@@ -154,7 +134,7 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
-    m_pUpdateShoutcastFromPrefs->set(0.0);
+    m_pShoutcastNeedUpdateFromPrefs->set(0.0);
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
@@ -376,6 +356,10 @@ void EngineShoutcast::updateFromPreferences() {
 }
 
 bool EngineShoutcast::serverConnect() {
+    start();
+}
+
+bool EngineShoutcast::processConnect() {
     // set to busy in case another thread calls one of the other
     // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
@@ -397,11 +381,11 @@ bool EngineShoutcast::serverConnect() {
      * Make sure that we call updateFromPreferences allways
      */
     if (m_encoder == NULL) {
-            updateFromPreferences();
+        updateFromPreferences();
     }
 
     const int iMaxTries = 3;
-    while (!m_bQuit && m_iShoutFailures < iMaxTries) {
+    while (m_iShoutFailures < iMaxTries) {
         if (m_pShout)
             shout_close(m_pShout);
 
@@ -423,13 +407,6 @@ bool EngineShoutcast::serverConnect() {
             shout_close(m_pShout);
         }
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
-        return false;
-    }
-    if (m_bQuit) {
-        if (m_pShout) {
-            shout_close(m_pShout);
-        }
         m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
     }
@@ -459,6 +436,21 @@ bool EngineShoutcast::serverConnect() {
     }
     m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
     return false;
+}
+
+void EngineShoutcast::processDisconnect() {
+    if (isConnected()) {
+        // We are conneced but shoutcast is disabled. Disconnect.
+        shout_close(m_pShout);
+        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
+        infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
+    }
+
+    if (m_encoder) {
+        m_encoder->flush();
+        delete m_encoder;
+        m_encoder = NULL;
+    }
 }
 
 void EngineShoutcast::write(unsigned char *header, unsigned char *body,
@@ -517,31 +509,14 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     qDebug() << "EngineShoutcast::process";
-    // Check to see if Shoutcast is enabled, and pass the samples off to be
-    // broadcast if necessary.
-    bool prefEnabled = (m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "enabled")).toInt() == 1);
-
-    if (!prefEnabled) {
-        if (isConnected()) {
-            // We are conneced but shoutcast is disabled. Disconnect.
-            serverDisconnect();
-            infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
-        }
-        return;
-    }
 
     // If we are here then the user wants to be connected (shoutcast is enabled
     // in the preferences).
 
-    bool connected = isConnected();
-
     // If we aren't connected or the user has changed their preferences,
     // disconnect, update from prefs, and reconnect.
-    if (!connected || m_pUpdateShoutcastFromPrefs->get() > 0.0) {
-        if (connected) {
-            serverDisconnect();
-        }
+    if (m_pShoutcastNeedUpdateFromPrefs->toBool()) {
+        processDisconnect();
 
         // Initialize/update the encoder and libshout setup.
         updateFromPreferences();
@@ -737,6 +712,8 @@ void EngineShoutcast::run() {
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
 
+    processConnect();
+
     DEBUG_ASSERT(m_pOutputFifo);
     if (m_pOutputFifo->readAvailable()) {
         m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
@@ -744,13 +721,13 @@ void EngineShoutcast::run() {
     m_threadWaiting = true;
     for(;;) {
         m_readSema.acquire();
-        if (m_bThreadQuit) {
+        // Check to see if Shoutcast is enabled, and pass the samples off to be
+        // broadcast if necessary.
+        bool prefEnabled = (m_pConfig->getValueString(
+                ConfigKey(SHOUTCAST_PREF_KEY, "enabled")).toInt() == 1);
+        if (m_bThreadQuit || !prefEnabled) {
             m_threadWaiting = false;
-            if (m_encoder) {
-                m_encoder->flush();
-                delete m_encoder;
-                m_encoder = NULL;
-            }
+            processDisconnect();
             return;
         }
         int readAvailable = m_pOutputFifo->readAvailable();
@@ -774,3 +751,4 @@ void EngineShoutcast::run() {
 bool EngineShoutcast::threadWaiting() {
     return m_threadWaiting;
 }
+
