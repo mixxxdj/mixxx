@@ -13,6 +13,9 @@ class SideChainWorker {
     virtual void outputAvailabe(FIFO<CSAMPLE>* pOutputFifo) {
         Q_UNUSED(pOutputFifo);
     };
+    virtual bool threadWaiting() {
+        return false;
+    }
 };
 
 #endif /* SIDECHAINWORKER_H */

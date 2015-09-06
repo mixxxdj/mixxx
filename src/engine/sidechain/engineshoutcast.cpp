@@ -63,7 +63,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
-          m_bThreadQuit(false) {
+          m_bThreadQuit(false),
+          m_threadWaiting(false) {
 
 #ifndef __WINDOWS__
     // Ignore SIGPIPE signals that we get when the remote streaming server
@@ -729,9 +730,12 @@ void EngineShoutcast::run() {
     unsigned static id = 0;
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "starting thread";
+    m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
+    m_threadWaiting = true;
     for(;;) {
         m_readSema.acquire();
         if (m_bThreadQuit) {
+            m_threadWaiting = false;
             if (m_encoder) {
                 m_encoder->flush();
                 delete m_encoder;
@@ -755,4 +759,8 @@ void EngineShoutcast::run() {
             m_pOutputFifo->releaseReadRegions(readAvailable);
         }
     }
+}
+
+bool EngineShoutcast::threadWaiting() {
+    return m_threadWaiting;
 }
