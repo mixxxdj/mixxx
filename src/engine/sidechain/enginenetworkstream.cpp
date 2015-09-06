@@ -131,7 +131,7 @@ void EngineNetworkStream::writeSilence(int frames) {
 void EngineNetworkStream::scheduleWorker() {
     if (m_pOutputFifo->readAvailable()
             >= m_numOutputChannels * kNetworkLatencyFrames) {
-        m_pWorker->outputAvailabe(m_pOutputFifo);
+        m_pWorker->outputAvailabe();
     }
 }
 
@@ -180,4 +180,5 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
 
 void EngineNetworkStream::addWorker(QSharedPointer<SideChainWorker> pWorker) {
     m_pWorker = pWorker;
+    m_pWorker->setOutputFifo(m_pOutputFifo);
 }

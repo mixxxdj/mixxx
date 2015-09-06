@@ -72,7 +72,8 @@ class EngineShoutcast : public QThread, public EncoderCallback, public SideChain
     bool serverDisconnect();
     bool isConnected();
 
-    virtual void outputAvailabe(FIFO<CSAMPLE>* pOutputFifo);
+    virtual void outputAvailabe();
+    virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo);
 
     virtual bool threadWaiting();
 

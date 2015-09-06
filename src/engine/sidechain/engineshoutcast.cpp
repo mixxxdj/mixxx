@@ -719,9 +719,13 @@ void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
 }
 
 // Is called from the Mixxx engine thread
-void EngineShoutcast::outputAvailabe(FIFO<CSAMPLE>* pOutputFifo) {
-    m_pOutputFifo = pOutputFifo;
+void EngineShoutcast::outputAvailabe() {
     m_readSema.release();
+}
+
+// Is called from the Mixxx engine thread
+void EngineShoutcast::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
+    m_pOutputFifo = pOutputFifo;
 }
 
 void EngineShoutcast::run() {
@@ -729,17 +733,7 @@ void EngineShoutcast::run() {
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
 
-    while(1) {
-        if(m_pOutputFifo != NULL && m_pOutputFifo->readAvailable()) {
-            qDebug() << "EngineShoutcast::run: Got output FIFO:" << m_pOutputFifo->readAvailable();
-            break;
-
-        } else {
-            qDebug() << "EngineShoutcast::run: Waiting for output FIFO";
-        }
-        usleep(1000);
-    }
-
+    DEBUG_ASSERT(m_pOutputFifo);
     if (m_pOutputFifo->readAvailable()) {
         m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
     }
