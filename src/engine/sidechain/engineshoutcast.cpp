@@ -166,7 +166,8 @@ void EngineShoutcast::updateFromPreferences() {
     // Convert a bunch of QStrings to QByteArrays so we can get regular C char*
     // strings to pass to libshout.
 
-    QString codec = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"));
+    QString codec = m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"));
     QByteArray baCodec = codec.toLatin1();
     m_pTextCodec = QTextCodec::codecForName(baCodec);
     if (!m_pTextCodec) {
@@ -418,15 +419,17 @@ bool EngineShoutcast::serverConnect() {
         sleep(1);
     }
     if (m_iShoutFailures == iMaxTries) {
-        if (m_pShout)
+        if (m_pShout) {
             shout_close(m_pShout);
+        }
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
         m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
     }
     if (m_bQuit) {
-        if (m_pShout)
+        if (m_pShout) {
             shout_close(m_pShout);
+        }
         m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
     }
