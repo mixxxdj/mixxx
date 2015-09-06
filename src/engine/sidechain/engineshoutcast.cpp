@@ -64,7 +64,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
           m_bThreadQuit(false),
-          m_threadWaiting(false) {
+          m_threadWaiting(false),
+          m_pOutputFifo(NULL) {
 
 #ifndef __WINDOWS__
     // Ignore SIGPIPE signals that we get when the remote streaming server
@@ -391,16 +392,13 @@ bool EngineShoutcast::serverConnect() {
     //If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
 
-    /*Check if m_encoder is initalized
-     * Encoder is initalized in updateFromPreferences which is called always before serverConnect()
-     * If m_encoder is NULL, then we propably want to use MP3 streaming, however, lame could not be found
-     * It does not make sense to connect
+    /**
+     * Make sure that we call updateFromPreferences allways
      */
     if (m_encoder == NULL) {
-        m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
-        return false;
+            updateFromPreferences();
     }
+
     const int iMaxTries = 3;
     while (!m_bQuit && m_iShoutFailures < iMaxTries) {
         if (m_pShout)
@@ -729,8 +727,22 @@ void EngineShoutcast::outputAvailabe(FIFO<CSAMPLE>* pOutputFifo) {
 void EngineShoutcast::run() {
     unsigned static id = 0;
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
-    qDebug() << "starting thread";
-    m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
+    qDebug() << "EngineShoutcast::run: starting thread";
+
+    while(1) {
+        if(m_pOutputFifo != NULL && m_pOutputFifo->readAvailable()) {
+            qDebug() << "EngineShoutcast::run: Got output FIFO:" << m_pOutputFifo->readAvailable();
+            break;
+
+        } else {
+            qDebug() << "EngineShoutcast::run: Waiting for output FIFO";
+        }
+        usleep(1000);
+    }
+
+    if (m_pOutputFifo->readAvailable()) {
+        m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
+    }
     m_threadWaiting = true;
     for(;;) {
         m_readSema.acquire();

@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include "configobject.h"
+#include "engine/sidechain/engineshoutcast.h"
 
 class SoundManager;
 
@@ -27,6 +28,7 @@ class ShoutcastManager : public QObject {
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
+    EngineShoutcast *m_pShoutcast;
 };
 
 

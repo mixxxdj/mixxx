@@ -1,7 +1,6 @@
 
 #include "shoutcast/shoutcastmanager.h"
 #include "shoutcast/defs_shoutcast.h"
-#include "engine/sidechain/engineshoutcast.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/enginemaster.h"
@@ -13,8 +12,9 @@ ShoutcastManager::ShoutcastManager(ConfigObject<ConfigValue>* pConfig,
     QSharedPointer<EngineNetworkStream> pNetworkStream =
             pSoundManager->getNetworkStream();
     if (!pNetworkStream.isNull()) {
+        m_pShoutcast = new EngineShoutcast(pConfig);
         QSharedPointer<SideChainWorker> pWorker(
-                new EngineShoutcast(pConfig));
+                m_pShoutcast);
         pNetworkStream->addWorker(pWorker);
     }
 }
@@ -27,6 +27,15 @@ ShoutcastManager::~ShoutcastManager() {
 void ShoutcastManager::setEnabled(bool value) {
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "enabled"),
                    ConfigValue(value));
+
+    /**
+     *  Should this be started somewhere else?
+     */
+    if (value == true) {
+        m_pShoutcast->serverConnect();
+    } else {
+        m_pShoutcast->serverDisconnect();
+    }
 }
 
 bool ShoutcastManager::isEnabled() {
