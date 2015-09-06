@@ -473,8 +473,9 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             if (ret != SHOUTERR_SUCCESS) {
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
                 if (m_iShoutFailures > 3) {
-                    if(!serverConnect())
+                    if(!serverConnect()) {
                         errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                    }
                 }
                 else{
                     m_iShoutFailures++;

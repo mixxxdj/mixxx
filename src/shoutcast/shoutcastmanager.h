@@ -28,7 +28,7 @@ class ShoutcastManager : public QObject {
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
-    EngineShoutcast *m_pShoutcast;
+    QSharedPointer<SideChainWorker> m_pShoutcast;
 };
 
 
