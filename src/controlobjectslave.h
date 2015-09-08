@@ -95,9 +95,16 @@ class ControlObjectSlave : public QObject {
     void valueChanged(double);
 
   protected slots:
-    // Receives the value from the master control and re-emits either
-    // valueChanged(double) or valueChangedByThis(double) based on pSetter.
-    inline void slotValueChanged(double v, QObject* pSetter) {
+    // Receives the value from the master control by a unique direct connection
+    void slotValueChangedDirect(double v, QObject* pSetter) {
+        if (pSetter != this) {
+            // This is base implementation of this function without scaling
+            emit(valueChanged(v));
+        }
+    }
+
+    // Receives the value from the master control by a unique auto connection
+    void slotValueChangedAuto(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
             emit(valueChanged(v));
