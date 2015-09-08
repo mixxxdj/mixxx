@@ -106,8 +106,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
 
-    m_pCOTGuiTick = new ControlObjectSlave("[Master]", "guiTick50ms");
-    m_pCOTGuiTick->connectValueChanged(this, SLOT(slotGuiTick50ms(double)));
+    m_pCOTGuiTick = new ControlObjectSlave("[Master]", "guiTick50ms", this);
+    m_pCOTGuiTick->connectValueChanged(SLOT(slotGuiTick50ms(double)));
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
@@ -154,7 +154,6 @@ WTrackTableView::~WTrackTableView() {
     delete m_pFileBrowserAct;
     delete m_pResetPlayedAct;
     delete m_pSamplerMenu;
-    delete m_pCOTGuiTick;
 }
 
 void WTrackTableView::enableCachedOnly() {

@@ -281,8 +281,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pScale->clear();
     m_bScalerChanged = true;
 
-    m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
-    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
+    m_pPassthroughEnabled = new ControlObjectSlave(group, "passthrough", this);
+    m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
     //m_iRampIter = 0;
