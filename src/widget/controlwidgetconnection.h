@@ -16,7 +16,7 @@ class ControlWidgetConnection : public QObject {
   public:
     // Takes ownership of pControl and pTransformer.
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                            ControlObjectSlave* pControl,
+                            const ConfigKey& key,
                             ValueTransformer* pTransformer);
     virtual ~ControlWidgetConnection();
 
@@ -36,7 +36,7 @@ class ControlWidgetConnection : public QObject {
     void setControlParameter(double v);
 
     WBaseWidget* m_pWidget;
-    QScopedPointer<ControlObjectSlave> m_pControl;
+    ControlObjectSlave* m_pControl;
 
   private:
     QScopedPointer<ValueTransformer> m_pValueTransformer;
@@ -92,7 +92,7 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     }
 
     ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
-                                     ControlObjectSlave* pControl,
+                                     const ConfigKey& key,
                                      ValueTransformer* pTransformer,
                                      DirectionOption directionOption,
                                      EmitOption emitOption);
@@ -125,7 +125,7 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
     Q_OBJECT
   public:
     ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
-                                    ControlObjectSlave* pControl,
+                                    const ConfigKey& key,
                                     ValueTransformer* pTransformer,
                                     const QString& property);
     virtual ~ControlWidgetPropertyConnection();

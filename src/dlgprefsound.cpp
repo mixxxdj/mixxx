@@ -125,7 +125,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     masterMixComboBox->setCurrentIndex(m_pMasterEnabled->get() ? 1 : 0);
     connect(masterMixComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(masterMixChanged(int)));
-    m_pMasterEnabled->connectValueChanged(this, SLOT(masterEnabledChanged(double)));
+    m_pMasterEnabled->connectValueChanged(SLOT(masterEnabledChanged(double)));
 
     m_pMasterMonoMixdown = new ControlObjectSlave("[Master]", "mono_mixdown", this);
     masterOutputModeComboBox->addItem(tr("Stereo"));
@@ -133,7 +133,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     masterOutputModeComboBox->setCurrentIndex(m_pMasterMonoMixdown->get() ? 1 : 0);
     connect(masterOutputModeComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(masterOutputModeComboBoxChanged(int)));
-    m_pMasterMonoMixdown->connectValueChanged(this, SLOT(masterMonoMixdownChanged(double)));
+    m_pMasterMonoMixdown->connectValueChanged(SLOT(masterMonoMixdownChanged(double)));
 
     m_pMasterTalkoverMix = new ControlObjectSlave("[Master]", "talkover_mix", this);
     micMixComboBox->addItem(tr("Master output"));
@@ -141,7 +141,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     micMixComboBox->setCurrentIndex((int)m_pMasterTalkoverMix->get());
     connect(micMixComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(talkoverMixComboBoxChanged(int)));
-    m_pMasterTalkoverMix->connectValueChanged(this, SLOT(talkoverMixChanged(double)));
+    m_pMasterTalkoverMix->connectValueChanged(SLOT(talkoverMixChanged(double)));
 
 
     m_pKeylockEngine =
