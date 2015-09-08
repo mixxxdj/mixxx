@@ -960,8 +960,7 @@ void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS,
                                      ConfigKey key, const char* slot) {
     if (!*pCOS) {
         *pCOS = new ControlObjectSlave(key, this);
-        (*pCOS)->connectValueChanged(
-            this, slot, Qt::DirectConnection);
+        (*pCOS)->connectValueChanged(slot);
     }
 }
 
