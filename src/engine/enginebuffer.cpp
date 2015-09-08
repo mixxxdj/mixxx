@@ -200,8 +200,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
 
     m_pKeylockEngine = new ControlObjectSlave("[Master]", "keylock_engine", this);
-    m_pKeylockEngine->connectValueChanged(this,
-                                          SLOT(slotKeylockEngineChanged(double)),
+    m_pKeylockEngine->connectValueChanged(SLOT(slotKeylockEngineChanged(double)),
                                           Qt::DirectConnection);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
