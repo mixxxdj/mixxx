@@ -33,12 +33,12 @@ WCoverArtLabel::~WCoverArtLabel() {
     delete m_pDlgFullSize;
 }
 
-void WCoverArtLabel::setCoverArt(TrackPointer pTrack, const CoverInfo& info, QPixmap px) {
+void WCoverArtLabel::setCoverArt(const TrackRef& trackRef, const CoverInfo& info, QPixmap px) {
     qDebug() << "WCoverArtLabel::setCoverArt" << info << px.size();
-    m_pCoverMenu->setCoverArt(pTrack, info);
+    m_pCoverMenu->setCoverArt(trackRef, info);
 
+    m_trackRef = trackRef;
     m_coverInfo = info;
-    m_pTrack = pTrack;
 
     if (px.isNull()) {
         setPixmap(m_defaultCover);
