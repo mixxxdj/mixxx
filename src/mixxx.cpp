@@ -117,8 +117,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     logBuildDetails();
     initializeWindow();
 
-    m_pFileMenu = new QMenu(tr("&File"), menuBar());
-    menuBar()->addMenu(m_pFileMenu);
+    initMenuBar();
 
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
@@ -401,7 +400,7 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
 
     initializeKeyboard();
     initActions();
-    initMenuBar();
+    populateMenuBar(); // already inited in the constructor
 
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
@@ -1626,6 +1625,13 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 }
 
 void MixxxMainWindow::initMenuBar() {
+    m_pFileMenu = new QMenu(tr("&File"), menuBar());
+    menuBar()->addMenu(m_pFileMenu);
+}
+
+void MixxxMainWindow::populateMenuBar() {
+    // be sure initMenuBar is called first
+
     // MENUBAR
     m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
     m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
@@ -1870,6 +1876,7 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle)
             setMenuBar(new QMenuBar(this));
             menuBar()->setNativeMenuBar(false);
             initMenuBar();
+            populateMenuBar();
         }
 #endif
     } else {
@@ -1878,6 +1885,7 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle)
             setMenuBar(new QMenuBar(this));
             menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
             initMenuBar();
+            populateMenuBar();
         }
         //move(m_winpos);
 #endif

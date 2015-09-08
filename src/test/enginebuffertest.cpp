@@ -340,7 +340,7 @@ TEST_F(EngineBufferE2ETest, SeekTest) {
                               kProcessBufferSize, "SeekTest");
 }
 
-TEST_F(EngineBufferE2ETest, SoundTouchRevereTest) {
+TEST_F(EngineBufferE2ETest, SoundTouchReverseTest) {
     // This test must not crash when changing to reverse while pitch is tweaked
     // Testing bug #1458263
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
@@ -354,7 +354,7 @@ TEST_F(EngineBufferE2ETest, SoundTouchRevereTest) {
     // on the uses library version
 }
 
-TEST_F(EngineBufferE2ETest, RubberbandRevereTest) {
+TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
     // This test must not crash when changing to reverse while pitch is tweaked
     // Testing bug #1458263
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
