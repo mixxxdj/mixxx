@@ -43,12 +43,19 @@
 #include "library/coverartutils.h"
 #include "util/assert.h"
 
+
+TrackInfoObject::TrackInfoObject()
+        : m_qMutex(QMutex::Recursive),
+          m_analyserProgress(-1) {
+    initialize(false, false);
+}
+
 TrackInfoObject::TrackInfoObject(const QString& file,
                                  SecurityTokenPointer pToken,
                                  bool parseHeader, bool parseCoverArt)
-        : m_fileInfo(file),
+        : m_trackRef(file),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
-                  m_fileInfo, true) : pToken),
+                  m_trackRef.createFileInfo(), true) : pToken),
           m_qMutex(QMutex::Recursive),
           m_analyserProgress(-1) {
     initialize(parseHeader, parseCoverArt);
@@ -57,9 +64,9 @@ TrackInfoObject::TrackInfoObject(const QString& file,
 TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
                                  SecurityTokenPointer pToken,
                                  bool parseHeader, bool parseCoverArt)
-        : m_fileInfo(fileInfo),
+        : m_trackRef(fileInfo),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
-                  m_fileInfo, true) : pToken),
+                  m_trackRef.createFileInfo(), true) : pToken),
           m_qMutex(QMutex::Recursive),
           m_analyserProgress(-1) {
     initialize(parseHeader, parseCoverArt);
@@ -70,8 +77,8 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
           m_analyserProgress(-1) {
     QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     QString location = QDir(XmlParse::selectNodeQString(nodeHeader, "Filepath")).filePath(filename);
-    m_fileInfo = QFileInfo(location);
-    m_pSecurityToken = Sandbox::openSecurityToken(m_fileInfo, true);
+    m_trackRef = TrackRef(QFileInfo(location));
+    m_pSecurityToken = Sandbox::openSecurityToken(m_trackRef.createFileInfo(), true);
 
     // We don't call initialize() here because it would end up calling parse()
     // on the file. Plus those initializations weren't done before, so it might
@@ -94,8 +101,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
     // ignore those. Tracks will get a new ID from the database.
-    //m_id = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
-    m_id = TrackId();
+    //m_trackRef.setId(TrackId(XmlParse::selectNodeQString(nodeHeader, "Id").toInt()));
 
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
     m_bPlayed = false;
@@ -121,7 +127,6 @@ void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
     m_bPlayed = false;
     m_fReplayGain = 0.;
     m_bHeaderParsed = false;
-    m_id = TrackId();
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
@@ -138,8 +143,6 @@ void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
 }
 
 TrackInfoObject::~TrackInfoObject() {
-    // qDebug() << "~TrackInfoObject"
-    //          << this << m_id << getInfo();
 }
 
 // static
@@ -244,7 +247,7 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
 void TrackInfoObject::parse(bool parseCoverArt) {
     // Log parsing of header information in developer mode. This is useful for
     // tracking down corrupt files.
-    const QString& canonicalLocation = m_fileInfo.canonicalFilePath();
+    const QString& canonicalLocation = m_trackRef.getCanonicalLocation();
     if (CmdlineArgs::Instance().getDeveloper()) {
         qDebug() << "TrackInfoObject::parse()" << canonicalLocation;
     }
@@ -265,7 +268,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
             // TODO(rryan): Should we re-visit this decision?
             if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
                 Mixxx::TrackMetadata fileNameMetadata;
-                parseMetadataFromFileName(fileNameMetadata, m_fileInfo.fileName());
+                parseMetadataFromFileName(fileNameMetadata, TrackRef::toFileName(m_trackRef.createFileInfo()));
                 if (trackMetadata.getArtist().isEmpty()) {
                     trackMetadata.setArtist(fileNameMetadata.getArtist());
                 }
@@ -290,7 +293,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
                      << canonicalLocation;
 
             // Add basic information derived from the filename
-            parseMetadataFromFileName(trackMetadata, m_fileInfo.fileName());
+            parseMetadataFromFileName(trackMetadata, TrackRef::toFileName(m_trackRef.createFileInfo()));
 
             setHeaderParsed(false);
         }
@@ -313,51 +316,15 @@ QString TrackInfoObject::getDurationStr() const {
 
 void TrackInfoObject::setLocation(const QString& location) {
     QMutexLocker lock(&m_qMutex);
-    QFileInfo newFileInfo(location);
-    if (newFileInfo != m_fileInfo) {
-        m_fileInfo = newFileInfo;
+    if (m_trackRef.getLocation() != location) {
+        m_trackRef = TrackRef(location, m_trackRef.getId());
         m_bLocationChanged = true;
         setDirty(true);
     }
 }
 
-QString TrackInfoObject::getLocation() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.absoluteFilePath();
-}
-
-QString TrackInfoObject::getCanonicalLocation() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.canonicalFilePath();
-}
-
-QFileInfo TrackInfoObject::getFileInfo() const {
-    // No need for locking since we are passing a copy by value. Qt doesn't say
-    // that QFileInfo is thread-safe but its copy constructor just copies the
-    // d_ptr.
-    return m_fileInfo;
-}
-
 SecurityTokenPointer TrackInfoObject::getSecurityToken() {
     return m_pSecurityToken;
-}
-
-QString TrackInfoObject::getDirectory() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.absolutePath();
-}
-
-QString TrackInfoObject::getFilename() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.fileName();
-}
-
-bool TrackInfoObject::exists() const {
-    QMutexLocker lock(&m_qMutex);
-    // return here a fresh calculated value to be sure
-    // the file is not deleted or gone with an USB-Stick
-    // because it will probably stop the Auto-DJ
-    return QFile::exists(m_fileInfo.absoluteFilePath());
 }
 
 float TrackInfoObject::getReplayGain() const {
@@ -500,16 +467,6 @@ QDateTime TrackInfoObject::getDateAdded() const {
 void TrackInfoObject::setDateAdded(const QDateTime& dateAdded) {
     QMutexLocker lock(&m_qMutex);
     m_dateAdded = dateAdded;
-}
-
-QDateTime TrackInfoObject::getFileModifiedTime() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.lastModified();
-}
-
-QDateTime TrackInfoObject::getFileCreationTime() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.created();
 }
 
 int TrackInfoObject::getDuration()  const {
@@ -747,11 +704,6 @@ int TrackInfoObject::getChannels() const {
     return m_iChannels;
 }
 
-int TrackInfoObject::getLength() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.size();
-}
-
 int TrackInfoObject::getBitrate() const {
     QMutexLocker lock(&m_qMutex);
     return m_iBitrate;
@@ -769,16 +721,16 @@ void TrackInfoObject::setBitrate(int i) {
     }
 }
 
-TrackId TrackInfoObject::getId() const {
+TrackRef TrackInfoObject::getTrackRef() const {
     QMutexLocker lock(&m_qMutex);
-    return m_id;
+    return m_trackRef;
 }
 
 void TrackInfoObject::setId(TrackId trackId) {
     QMutexLocker lock(&m_qMutex);
     // changing the Id does not make the track dirty because the Id is always
     // generated by the Database itself
-    m_id = trackId;
+    m_trackRef.setId(trackId);
 }
 
 
@@ -865,7 +817,7 @@ void TrackInfoObject::slotCueUpdated() {
 Cue* TrackInfoObject::addCue() {
     //qDebug() << "TrackInfoObject::addCue()";
     QMutexLocker lock(&m_qMutex);
-    Cue* cue = new Cue(m_id);
+    Cue* cue = new Cue(m_trackRef.getId());
     connect(cue, SIGNAL(updated()),
             this, SLOT(slotCueUpdated()));
     m_cuePoints.push_back(cue);
@@ -916,7 +868,7 @@ void TrackInfoObject::setDirty(bool bDirty) {
     bool change = m_bDirty != bDirty;
     m_bDirty = bDirty;
     lock.unlock();
-    // qDebug() << "Track" << m_id << getInfo() << (change? "changed" : "unchanged")
+    // qDebug() << "Track" << m_trackRef << getInfo() << (change? "changed" : "unchanged")
     //          << "set" << (bDirty ? "dirty" : "clean");
     if (change) {
         if (m_bDirty) {
@@ -929,8 +881,6 @@ void TrackInfoObject::setDirty(bool bDirty) {
     if (bDirty) {
         emit(changed(this));
     }
-
-    //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(QString::number(m_id), m_fileInfo.absoluteFilePath(), m_bDirty ? "dirty" : "clean");
 }
 
 bool TrackInfoObject::isDirty() {
