@@ -341,10 +341,10 @@ class MixxxBuild(object):
                     print "Automatically selected OS X SDK:", sdk_path
 
                     common_flags = ['-isysroot', sdk_path,
-                                    '-mmacosx-version-min=%s' % min_sdk_version]
+                                    '-mmacosx-version-min=%s' % min_sdk_version,
+                                    '-stdlib=%s' % osx_stdlib]
                     link_flags = [
                         '-Wl,-syslibroot,' + sdk_path,
-                        '-stdlib=%s' % osx_stdlib
                     ]
                     self.env.Append(CCFLAGS=common_flags)
                     self.env.Append(LINKFLAGS=common_flags + link_flags)
