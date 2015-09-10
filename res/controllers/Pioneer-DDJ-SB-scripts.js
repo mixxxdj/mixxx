@@ -83,8 +83,8 @@ PioneerDDJSB.init = function (id) {
 
     // used for soft takeover workaround
     PioneerDDJSB.fxParamsActiveValues = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0]
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0]
     ];
 
     PioneerDDJSB.scratchMode = [false, false, false, false];
@@ -879,6 +879,7 @@ PioneerDDJSB.rotarySelectorShiftedClick = function (channel, control, value, sta
 ///////////////////////////////////////////////////////////////
 
 PioneerDDJSB.fxKnobMSB = [0, 0];
+PioneerDDJSB.fxKnobShiftedMSB = [0, 0];
 
 PioneerDDJSB.fxButton = function (channel, control, value, status) {
     var deck = channel - 4,
@@ -891,6 +892,19 @@ PioneerDDJSB.fxButton = function (channel, control, value, status) {
 
     } else {
         engine.trigger('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'group_[Headphone]_enable');
+    }
+};
+
+PioneerDDJSB.fxKnobShiftedMSB = function (channel, control, value, status) {
+    PioneerDDJSB.fxKnobShiftedMSB[channel - 4] = value;
+};
+
+PioneerDDJSB.fxKnobShiftedLSB = function (channel, control, value, status) {
+    var deck = channel - 4,
+        fullValue = (PioneerDDJSB.fxKnobShiftedMSB[deck] << 7) + value;
+
+    if (PioneerDDJSB.softTakeoverEmulation(deck, 4, PioneerDDJSB.fxKnobShiftedMSB[deck])) {
+        engine.setValue('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'super1', fullValue / 0x3FFF);
     }
 };
 
