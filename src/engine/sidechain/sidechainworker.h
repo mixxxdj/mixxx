@@ -10,7 +10,9 @@ class SideChainWorker {
     virtual ~SideChainWorker() { }
     virtual void process(const CSAMPLE* pBuffer, const int iBufferSize) = 0;
     virtual void shutdown() = 0;
-    virtual void outputAvailabe(FIFO<CSAMPLE>* pOutputFifo) {
+    virtual void outputAvailabe() {
+    };
+    virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
         Q_UNUSED(pOutputFifo);
     };
     virtual bool threadWaiting() {

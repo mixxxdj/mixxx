@@ -26,6 +26,7 @@
 #include "util/defs.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
+#include "engine/sidechain/enginenetworkstream.h"
 
 class SoundDevice;
 class EngineMaster;
@@ -34,7 +35,6 @@ class AudioInput;
 class AudioSource;
 class AudioDestination;
 class ControlObject;
-class EngineNetworkStream;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"

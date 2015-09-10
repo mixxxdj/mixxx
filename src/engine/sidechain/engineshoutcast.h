@@ -60,7 +60,6 @@ class EngineShoutcast : public QThread, public EncoderCallback, public SideChain
     void process(const CSAMPLE* pBuffer, const int iBufferSize);
 
     void shutdown() {
-        m_bQuit = true;
     }
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
@@ -72,17 +71,19 @@ class EngineShoutcast : public QThread, public EncoderCallback, public SideChain
     bool serverDisconnect();
     bool isConnected();
 
-    virtual void outputAvailabe(FIFO<CSAMPLE>* pOutputFifo);
+    virtual void outputAvailabe();
+    virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo);
 
     virtual bool threadWaiting();
 
     virtual void run();
 
-  public slots:
-    /** Update the libshout struct with info from Mixxx's shoutcast preferences.*/
-    void updateFromPreferences();
-
   private:
+    bool processConnect();
+    void processDisconnect();
+
+    // Update the libshout struct with info from Mixxx's shoutcast preferences.
+    void updateFromPreferences();
     int getActiveTracks();
     // Check if the metadata has changed since the previous check.  We also
     // check when was the last check performed to avoid using too much CPU and
@@ -110,10 +111,8 @@ class EngineShoutcast : public QThread, public EncoderCallback, public SideChain
     ConfigObject<ConfigValue>* m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
-    ControlObjectSlave* m_pUpdateShoutcastFromPrefs;
     ControlObjectSlave* m_pMasterSamplerate;
     ControlObject* m_pShoutcastStatus;
-    volatile bool m_bQuit;
     // static metadata according to prefereneces
     bool m_custom_metadata;
     QString m_customArtist;

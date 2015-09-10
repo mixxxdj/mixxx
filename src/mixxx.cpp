@@ -1378,9 +1378,10 @@ void MixxxMainWindow::initActions()
     QString shoutcastText = tr("Stream your mixes to a shoutcast or icecast server");
     m_pOptionsShoutcast = new QAction(shoutcastTitle, this);
     m_pOptionsShoutcast->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "OptionsMenu_EnableLiveBroadcasting"),
-                                                  tr("Ctrl+L"))));
+            QKeySequence(m_pKbdConfig->getValueString(
+                    ConfigKey("[KeyboardShortcuts]",
+                              "OptionsMenu_EnableLiveBroadcasting"),
+                    tr("Ctrl+L"))));
     m_pOptionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsShoutcast->setCheckable(true);
     m_pOptionsShoutcast->setChecked(m_pShoutcastManager->isEnabled());
