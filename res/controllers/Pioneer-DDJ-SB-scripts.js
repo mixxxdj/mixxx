@@ -63,10 +63,10 @@ PioneerDDJSB.init = function (id) {
 
     PioneerDDJSB.fxControls = {
         'group_[Channel1]_enable': 0x00,
-        'group_[Channel2]_enable': 0x01,
-        'group_[Headphone]_enable': 0x02,
-        'group_[Channel3]_enable': 0x03,
-        'group_[Channel4]_enable': 0x04
+        'group_[Channel3]_enable': 0x00,
+        'group_[Headphone]_enable': 0x01,
+        'group_[Channel2]_enable': 0x02,
+        'group_[Channel4]_enable': 0x02
     };
 
     PioneerDDJSB.shiftPressed = false;
@@ -138,17 +138,6 @@ PioneerDDJSB.bindSamplerControlConnections = function (samplerGroup, isUnbinding
     engine.connectControl(samplerGroup, 'duration', 'PioneerDDJSB.samplerLeds', isUnbinding);
 };
 
-PioneerDDJSB.bindFXControlConnections = function (effectUnitGroup, isUnbinding) {
-    var controlsToFunctions = {
-        'group_[Headphone]_enable': 'PioneerDDJSB.fxLeds',
-        'group_[Channel1]_enable': 'PioneerDDJSB.fxLeds',
-        'group_[Channel2]_enable': 'PioneerDDJSB.fxLeds',
-        'group_[Channel3]_enable': 'PioneerDDJSB.fxLeds',
-        'group_[Channel4]_enable': 'PioneerDDJSB.fxLeds'
-    };
-    script.bindConnections(effectUnitGroup, controlsToFunctions, isUnbinding);
-};
-
 PioneerDDJSB.bindDeckControlConnections = function (channelGroup, isUnbinding) {
     var i,
         index,
@@ -188,6 +177,13 @@ PioneerDDJSB.bindDeckControlConnections = function (channelGroup, isUnbinding) {
     }
 
     script.bindConnections(channelGroup, controlsToFunctions, isUnbinding);
+
+    for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
+        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_' + channelGroup + '_enable', 'PioneerDDJSB.fxLeds', isUnbinding);
+        if (!isUnbinding) {
+            engine.trigger('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_' + channelGroup + '_enable');
+        }
+    }
 };
 
 PioneerDDJSB.bindNonDeckControlConnections = function (isUnbinding) {
@@ -199,7 +195,7 @@ PioneerDDJSB.bindNonDeckControlConnections = function (isUnbinding) {
     }
 
     for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
-        PioneerDDJSB.bindFXControlConnections('[EffectRack1_EffectUnit' + fxUnitIndex + ']', isUnbinding);
+        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_[Headphone]_enable', 'PioneerDDJSB.fxLeds', isUnbinding);
     }
 };
 
@@ -213,7 +209,7 @@ PioneerDDJSB.bindAllControlConnections = function (isUnbinding) {
     }
 
     for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
-        PioneerDDJSB.bindFXControlConnections('[EffectRack1_EffectUnit' + fxUnitIndex + ']', isUnbinding);
+        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_[Headphone]_enable', 'PioneerDDJSB.fxLeds', isUnbinding);
     }
 
     for (channelIndex = 1; channelIndex <= 2; channelIndex++) {
@@ -629,12 +625,8 @@ PioneerDDJSB.fxLeds = function (value, group, control) {
     var deck = PioneerDDJSB.fxGroups[group],
         ledNumber = PioneerDDJSB.fxControls[control];
 
-    if (ledNumber < 3) {
-        PioneerDDJSB.fxLedControl(deck, ledNumber, false, value);
-        PioneerDDJSB.fxLedControl(deck, ledNumber, true, value);
-    } else {
-        PioneerDDJSB.padLedControl(deck, PioneerDDJSB.ledGroups.manualLoop, true, ledNumber - 1, true, value);
-    }
+    PioneerDDJSB.fxLedControl(deck, ledNumber, false, value);
+    PioneerDDJSB.fxLedControl(deck, ledNumber, true, value);
 };
 
 PioneerDDJSB.headphoneCueLed = function (value, group, control) {
@@ -881,17 +873,30 @@ PioneerDDJSB.rotarySelectorShiftedClick = function (channel, control, value, sta
 PioneerDDJSB.fxKnobMSB = [0, 0];
 PioneerDDJSB.fxKnobShiftedMSB = [0, 0];
 
-PioneerDDJSB.fxButton = function (channel, control, value, status) {
+PioneerDDJSB.fxButton = function (channel, control, value, status, group) {
     var deck = channel - 4,
-        button = control - 0x47;
+        button = control - 0x47,
+        channel = PioneerDDJSB.deckSwitchTable['[Channel' + (button === 0 ? 1 : 2) + ']'];
 
     PioneerDDJSB.fxButtonPressed[deck][button] = (value === 0x7F);
 
-    if (button < 2) {
-        engine.trigger('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'group_[Channel' + (button + 1) + ']_enable');
-
+    if (button === 1) {
+        engine.trigger(group, 'group_[Headphone]_enable');
     } else {
-        engine.trigger('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'group_[Headphone]_enable');
+        engine.trigger(group, 'group_' + channel + '_enable');
+    }
+};
+
+PioneerDDJSB.fxButtonShifted = function (channel, control, value, status, group) {
+    var button = control - 0x63,
+        channel = PioneerDDJSB.deckSwitchTable['[Channel' + (button === 0 ? 1 : 2) + ']'];
+
+    if (value) {
+        if (button === 1) {
+            script.toggleControl(group, 'group_[Headphone]_enable');
+        } else {
+            script.toggleControl(group, 'group_' + channel + '_enable');
+        }
     }
 };
 

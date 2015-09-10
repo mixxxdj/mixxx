@@ -192,42 +192,6 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel4]_enable</key>
-                <status>0x97</status>
-                <midino>0x6B</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel4]_enable</key>
-                <status>0x98</status>
-                <midino>0x6B</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel3]_enable</key>
-                <status>0x97</status>
-                <midino>0x6A</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel3]_enable</key>
-                <status>0x98</status>
-                <midino>0x6A</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
                 <key>next_chain</key>
                 <status>0x97</status>
                 <midino>0x69</midino>
@@ -255,11 +219,11 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Headphone]_enable</key>
+                <key>PioneerDDJSB.fxButtonShifted</key>
                 <status>0x94</status>
                 <midino>0x65</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -282,20 +246,20 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Headphone]_enable</key>
+                <key>PioneerDDJSB.fxButtonShifted</key>
                 <status>0x95</status>
                 <midino>0x65</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel2]_enable</key>
+                <key>PioneerDDJSB.fxButtonShifted</key>
                 <status>0x94</status>
                 <midino>0x64</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -318,20 +282,20 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel2]_enable</key>
+                <key>PioneerDDJSB.fxButtonShifted</key>
                 <status>0x95</status>
                 <midino>0x64</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel1]_enable</key>
+                <key>PioneerDDJSB.fxButtonShifted</key>
                 <status>0x94</status>
                 <midino>0x63</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -345,11 +309,11 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel1]_enable</key>
+                <key>PioneerDDJSB.fxButtonShifted</key>
                 <status>0x95</status>
                 <midino>0x63</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -893,21 +857,21 @@
                 </options>
             </control>
             <control>
-                <group>[PreviewDeck1]</group>
-                <key>LoadSelectedTrackAndPlay</key>
-                <status>0x96</status>
-                <midino>0x41</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <group>[Playlist]</group>
                 <key>PioneerDDJSB.rotarySelectorClick</key>
                 <status>0x96</status>
                 <midino>0x41</midino>
                 <options>
                     <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[PreviewDeck1]</group>
+                <key>LoadSelectedTrackAndPlay</key>
+                <status>0x96</status>
+                <midino>0x41</midino>
+                <options>
+                    <normal/>
                 </options>
             </control>
             <control>
