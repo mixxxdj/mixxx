@@ -13,28 +13,22 @@
 #include "widget/wnumberrate.h"
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "util/math.h"
 
 WNumberRate::WNumberRate(const char * group, QWidget * parent)
         : WNumber(parent) {
-    m_pRateRangeControl = new ControlObjectThread(group, "rateRange");
-    connect(m_pRateRangeControl, SIGNAL(valueChanged(double)),
-            this, SLOT(setValue(double)));
-    m_pRateDirControl = new ControlObjectThread(group, "rate_dir");
-    connect(m_pRateDirControl, SIGNAL(valueChanged(double)),
-            this, SLOT(setValue(double)));
-    m_pRateControl = new ControlObjectThread(group, "rate");
-    connect(m_pRateControl, SIGNAL(valueChanged(double)),
-            this, SLOT(setValue(double)));
+    m_pRateRangeControl = new ControlObjectSlave(group, "rateRange", this);
+    m_pRateRangeControl->connectValueChanged(SLOT(setValue(double)));
+    m_pRateDirControl = new ControlObjectSlave(group, "rate_dir", this);
+    m_pRateDirControl->connectValueChanged(SLOT(setValue(double)));
+    m_pRateControl = new ControlObjectSlave(group, "rate", this);
+    m_pRateControl->connectValueChanged(SLOT(setValue(double)));
     // Initialize the widget.
     setValue(0);
 }
 
 WNumberRate::~WNumberRate() {
-    delete m_pRateControl;
-    delete m_pRateDirControl;
-    delete m_pRateRangeControl;
 }
 
 void WNumberRate::setValue(double) {
