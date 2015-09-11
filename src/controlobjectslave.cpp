@@ -69,7 +69,7 @@ bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
                                                          Qt::UniqueConnection));
             } else {
                 connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                        this, SLOT(slotValueChangedDirect(double, QObject*)),
+                        this, SLOT(slotValueChangedAuto(double, QObject*)),
                         static_cast<Qt::ConnectionType>(Qt::AutoConnection |
                                                         Qt::UniqueConnection));
             }
