@@ -36,6 +36,10 @@ class ControlWidgetConnection : public QObject {
     void setControlParameter(double v);
 
     WBaseWidget* m_pWidget;
+
+    // This ControlObjectSlaves is created as parent to this and deleted by
+    // the Qt object tree. This helps that they are deleted by the creating
+    // thread, which is required to avoid segfaults.
     ControlObjectSlave* m_pControl;
 
   private:

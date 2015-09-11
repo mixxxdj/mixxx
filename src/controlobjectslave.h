@@ -8,11 +8,13 @@
 #include "control/control.h"
 #include "configobject.h"
 
-// This class is the successor of ControlObjectThread. It should be used for new
-// code. It is better named and may save some CPU time because it is connected
-// only on demand. There are many ControlObjectThread instances where the changed
-// signal is not needed. This change will save the set() caller for doing
-// unnecessary checks for possible connections.
+// This class is the successor of ControlObjectThread. It should be used for
+// new code to avoid unnecessary locking during send if no slot is connected.
+// Do not (re-)connect slots during runtime, since this locks the mutex in
+// QMetaObject::activate().
+// Be sure that the ControlObjectSlave is created and deleted from the same
+// thread, otherwise a pending signal may lead to a segfault (Bug #1406124).
+// Parent it to the the creating object to achieve this.
 class ControlObjectSlave : public QObject {
     Q_OBJECT
   public:

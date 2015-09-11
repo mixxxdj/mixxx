@@ -122,6 +122,9 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
     QScopedPointer<ControlObject> m_pSyncBeatDistance;
 
+    // These ControlObjectSlaves are created as parent to this and deleted by
+    // the Qt object tree. This helps that they are deleted by the creating
+    // thread, which is required to avoid segfaults.
     ControlObjectSlave* m_pPlayButton;
     ControlObjectSlave* m_pBpm;
     ControlObjectSlave* m_pLocalBpm;
