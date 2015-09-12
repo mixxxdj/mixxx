@@ -122,17 +122,20 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
     QScopedPointer<ControlObject> m_pSyncBeatDistance;
 
-    QScopedPointer<ControlObjectSlave> m_pPlayButton;
-    QScopedPointer<ControlObjectSlave> m_pBpm;
-    QScopedPointer<ControlObjectSlave> m_pLocalBpm;
-    QScopedPointer<ControlObjectSlave> m_pFileBpm;
-    QScopedPointer<ControlObjectSlave> m_pRateSlider;
-    QScopedPointer<ControlObjectSlave> m_pRateDirection;
-    QScopedPointer<ControlObjectSlave> m_pRateRange;
-    QScopedPointer<ControlObjectSlave> m_pVCEnabled;
-    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
-    QScopedPointer<ControlObjectSlave> m_pEjectButton;
-    QScopedPointer<ControlObjectSlave> m_pSyncPhaseButton;
+    // These ControlObjectSlaves are created as parent to this and deleted by
+    // the Qt object tree. This helps that they are deleted by the creating
+    // thread, which is required to avoid segfaults.
+    ControlObjectSlave* m_pPlayButton;
+    ControlObjectSlave* m_pBpm;
+    ControlObjectSlave* m_pLocalBpm;
+    ControlObjectSlave* m_pFileBpm;
+    ControlObjectSlave* m_pRateSlider;
+    ControlObjectSlave* m_pRateDirection;
+    ControlObjectSlave* m_pRateRange;
+    ControlObjectSlave* m_pVCEnabled;
+    ControlObjectSlave* m_pPassthroughEnabled;
+    ControlObjectSlave* m_pEjectButton;
+    ControlObjectSlave* m_pSyncPhaseButton;
 };
 
 
