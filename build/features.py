@@ -1010,7 +1010,10 @@ class Optimize(Feature):
             if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
-                build.env.Append(CCFLAGS='/arch:SSE2')
+                # SSE and SSE2 are core instructions on x64 
+                # and consequently raise a warning message from compiler with this flag on x64.
+                if not build.machine_is_64bit:
+                    build.env.Append(CCFLAGS='/arch:SSE2')
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
             elif optimize_level == Optimize.LEVEL_NATIVE:
                 self.status = "native: tuned for this CPU (%s)" % build.machine
