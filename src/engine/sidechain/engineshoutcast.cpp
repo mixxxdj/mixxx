@@ -435,6 +435,9 @@ bool EngineShoutcast::processConnect() {
         qDebug() << "***********Connected to streaming server...";
         m_pShoutcastStatus->set(SICECHAINWORKER_STATE_CONNECTED);
 
+        // Signal user also that we are connected
+        infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
+
         m_bThreadQuit = false;
         start();
 
