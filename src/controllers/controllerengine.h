@@ -21,7 +21,7 @@
 
 // Forward declaration(s)
 class Controller;
-class ControlObjectThread;
+class ControlObjectSlave;
 class ControllerEngine;
 
 // ControllerEngineConnection class for closure-compatible engine.connectControl
@@ -160,7 +160,7 @@ class ControllerEngine : public QObject {
     bool checkException();
     QScriptEngine *m_pEngine;
 
-    ControlObjectThread* getControlObjectThread(QString group, QString name);
+    ControlObjectSlave* getControlObjectSlave(QString group, QString name);
 
     // Scratching functions & variables
     void scratchProcess(int timerId);
@@ -174,7 +174,7 @@ class ControllerEngine : public QObject {
     QMultiHash<ConfigKey, ControllerEngineConnection> m_connectedControls;
     QList<QString> m_scriptFunctionPrefixes;
     QMap<QString,QStringList> m_scriptErrors;
-    QHash<ConfigKey, ControlObjectThread*> m_controlCache;
+    QHash<ConfigKey, ControlObjectSlave*> m_controlCache;
     struct TimerInfo {
         QScriptValue callback;
         QScriptValue context;
