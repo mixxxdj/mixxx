@@ -12,6 +12,10 @@ RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
         : ScannerTask(pScanner, scannerGlobal),
           m_dir(dir),
           m_pToken(pToken) {
+    // Avoid revisiting this directory again during this scan. Using
+    // the canonical path here is necessary to detect cyclic symbolic
+    // links and exclude them from further scanning!
+    m_scannerGlobal->setDirectoryScanned(m_dir.canonicalPath());
 }
 
 void RecursiveScanDirectoryTask::run() {
@@ -70,12 +74,8 @@ void RecursiveScanDirectoryTask::run() {
                 // Skip directories that have already been scanned
                 continue;
             }
-            // Add unvisited directories to our list of directories to scan...
+            // Add unvisited directories to our list of directories to scan.
             dirsToScan.append(currentDir);
-            // ...and avoid revisiting it again during this scan. Using the
-            // canonical path here is necessary to detect cyclic symbolic
-            // links and exclude them from further scanning!
-            m_scannerGlobal->setDirectoryScanned(canonicalDirPath);
             // Skip the iTunes Album Art Folder since it is probably a waste of
             // time.
         }
