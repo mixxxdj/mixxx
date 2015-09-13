@@ -357,6 +357,7 @@ void EngineShoutcast::updateFromPreferences() {
 
 bool EngineShoutcast::serverConnect() {
     start();
+    return true;
 }
 
 bool EngineShoutcast::processConnect() {
