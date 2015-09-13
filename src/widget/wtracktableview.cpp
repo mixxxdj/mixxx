@@ -13,7 +13,7 @@
 #include "library/trackcollection.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "widget/wtracktableview.h"
 #include "dlgtrackinfo.h"
 #include "soundsourceproxy.h"
@@ -65,12 +65,12 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_BpmMapper, SIGNAL(mapped(int)),
             this, SLOT(slotScaleBpm(int)));
 
-    m_pNumSamplers = new ControlObjectThread(
-            "[Master]", "num_samplers");
-    m_pNumDecks = new ControlObjectThread(
-            "[Master]", "num_decks");
-    m_pNumPreviewDecks = new ControlObjectThread(
-            "[Master]", "num_preview_decks");
+    m_pNumSamplers = new ControlObjectSlave(
+            "[Master]", "num_samplers", this);
+    m_pNumDecks = new ControlObjectSlave(
+            "[Master]", "num_decks", this);
+    m_pNumPreviewDecks = new ControlObjectSlave(
+            "[Master]", "num_preview_decks", this);
 
     m_pMenu = new QMenu(this);
 
@@ -106,8 +106,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
 
-    m_pCOTGuiTick = new ControlObjectSlave("[Master]", "guiTick50ms");
-    m_pCOTGuiTick->connectValueChanged(this, SLOT(slotGuiTick50ms(double)));
+    m_pCOTGuiTick = new ControlObjectSlave("[Master]", "guiTick50ms", this);
+    m_pCOTGuiTick->connectValueChanged(SLOT(slotGuiTick50ms(double)));
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
@@ -139,10 +139,6 @@ WTrackTableView::~WTrackTableView() {
     delete m_pMenu;
     delete m_pPlaylistMenu;
     delete m_pCrateMenu;
-    //delete m_pRenamePlaylistAct;
-    delete m_pNumSamplers;
-    delete m_pNumDecks;
-    delete m_pNumPreviewDecks;
     delete m_pBpmLockAction;
     delete m_pBpmUnlockAction;
     delete m_pBpmDoubleAction;
@@ -154,7 +150,6 @@ WTrackTableView::~WTrackTableView() {
     delete m_pFileBrowserAct;
     delete m_pResetPlayedAct;
     delete m_pSamplerMenu;
-    delete m_pCOTGuiTick;
 }
 
 void WTrackTableView::enableCachedOnly() {

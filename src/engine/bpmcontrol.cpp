@@ -32,15 +32,19 @@ BpmControl::BpmControl(QString group,
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(group) {
     m_pPlayButton = new ControlObjectSlave(group, "play", this);
-    m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)), Qt::DirectConnection);
+    m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)),
+            Qt::DirectConnection);
     m_pReverseButton = new ControlObjectSlave(group, "reverse", this);
     m_pRateSlider = new ControlObjectSlave(group, "rate", this);
-    m_pRateSlider->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
+    m_pRateSlider->connectValueChanged(SLOT(slotAdjustRateSlider()),
+            Qt::DirectConnection);
     m_pQuantize = ControlObject::getControl(group, "quantize");
     m_pRateRange = new ControlObjectSlave(group, "rateRange", this);
-    m_pRateRange->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
+    m_pRateRange->connectValueChanged(SLOT(slotAdjustRateSlider()),
+            Qt::DirectConnection);
     m_pRateDir = new ControlObjectSlave(group, "rate_dir", this);
-    m_pRateDir->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
+    m_pRateDir->connectValueChanged(SLOT(slotAdjustRateSlider()),
+            Qt::DirectConnection);
 
     m_pPrevBeat.reset(new ControlObjectSlave(group, "beat_prev"));
     m_pNextBeat.reset(new ControlObjectSlave(group, "beat_next"));
@@ -125,14 +129,6 @@ BpmControl::BpmControl(QString group,
 }
 
 BpmControl::~BpmControl() {
-    delete m_pPlayButton;
-    delete m_pRateSlider;
-    delete m_pRateRange;
-    delete m_pRateDir;
-    delete m_pLoopEnabled;
-    delete m_pLoopStartPosition;
-    delete m_pLoopEndPosition;
-    delete m_pVCEnabled;
     delete m_pFileBpm;
     delete m_pLocalBpm;
     delete m_pEngineBpm;
@@ -144,7 +140,6 @@ BpmControl::~BpmControl() {
     delete m_pBeatsTranslateMatchAlignment;
     delete m_pTranslateBeatsEarlier;
     delete m_pTranslateBeatsLater;
-    delete m_pThisBeatDistance;
     delete m_pAdjustBeatsFaster;
     delete m_pAdjustBeatsSlower;
 }
