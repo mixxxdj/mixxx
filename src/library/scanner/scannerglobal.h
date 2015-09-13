@@ -53,6 +53,16 @@ class ScannerGlobal {
         return m_supportedExtensionsMatcher;
     }
 
+    inline bool isDirectoryScanned(const QString& canonicalPath) const {
+        QMutexLocker locker(&m_directoriesScannedMutex);
+        return m_directoriesScanned.contains(canonicalPath);
+    }
+
+    inline void setDirectoryScanned(const QString& canonicalPath) {
+        QMutexLocker locker(&m_directoriesScannedMutex);
+        m_directoriesScanned.insert(canonicalPath);
+    }
+
     // TODO(rryan) test whether tasks should create their own QRegExp.
     inline bool isAudioFileSupported(const QString& fileName) const {
         QMutexLocker locker(&m_supportedExtensionsMatcherMutex);
@@ -140,6 +150,12 @@ class ScannerGlobal {
 
     mutable QMutex m_supportedCoverExtensionsMatcherMutex;
     QRegExp m_supportedCoverExtensionsMatcher;
+
+    // This set will grow during a scan by successively
+    // inserting the canonical paths of directories that
+    // have already been scanned.
+    mutable QMutex m_directoriesScannedMutex;
+    QSet<QString> m_directoriesScanned;
 
     // Typically there are 1 to 2 entries in the blacklist so a O(n) search in a
     // QList may have better constant factors than a O(1) QSet check. However,

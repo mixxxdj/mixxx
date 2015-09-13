@@ -59,12 +59,25 @@ void RecursiveScanDirectoryTask::run() {
                 possibleCovers.append(currentFileInfo);
             }
         } else {
-            // File is a directory. Add it to our list of directories to scan.
+            // File is a directory
+            if (m_scannerGlobal->directoryBlacklisted(currentFile)) {
+                // Skip blacklisted directories
+                continue;
+            }
+            const QDir currentDir(currentFile);
+            const QString canonicalDirPath(currentDir.canonicalPath());
+            if (m_scannerGlobal->isDirectoryScanned(canonicalDirPath)) {
+                // Skip directories that have already been scanned
+                continue;
+            }
+            // Add unvisited directories to our list of directories to scan...
+            dirsToScan.append(currentDir);
+            // ...and avoid revisiting it again during this scan. Using the
+            // canonical path here is necessary to detect cyclic symbolic
+            // links and exclude them from further scanning!
+            m_scannerGlobal->setDirectoryScanned(canonicalDirPath);
             // Skip the iTunes Album Art Folder since it is probably a waste of
             // time.
-            if (!m_scannerGlobal->directoryBlacklisted(currentFile)) {
-                dirsToScan.append(QDir(currentFile));
-            }
         }
     }
 
