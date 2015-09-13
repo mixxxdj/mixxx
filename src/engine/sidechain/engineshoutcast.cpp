@@ -521,7 +521,6 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 }
 
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
-    qDebug() << "EngineShoutcast::process";
 
     setState(SIDECHAINWORKER_STATE_BUSY);
     // If we are here then the user wants to be connected (shoutcast is enabled
