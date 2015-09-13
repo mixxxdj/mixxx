@@ -730,13 +730,16 @@ void EngineShoutcast::run() {
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
 
+    setState(SIDECHAINWORKER_STATE_BUSY);
     processConnect();
 
+    setState(SIDECHAINWORKER_STATE_WAITING);
     DEBUG_ASSERT(m_pOutputFifo);
     if (m_pOutputFifo->readAvailable()) {
         m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
     }
     m_threadWaiting = true;
+    setState(SIDECHAINWORKER_STATE_READY);
     for(;;) {
         m_readSema.acquire();
         // Check to see if Shoutcast is enabled, and pass the samples off to be
