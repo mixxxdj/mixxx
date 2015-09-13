@@ -59,15 +59,9 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     // Reset device for native painting
     painter->beginNativePainting();
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    float allGain(1.0);
-    getGains(&allGain, NULL, NULL, NULL);
-
-    float maxAll[2];
-
-//  Removed Unsupported OpenGL functions
+    //  Removed Unsupported OpenGL functions, so that Mixxx can run on OpenGL-ES systems -- amvanbaren 9/2015
+    //  TODO(XXX) Rewrite OpenGL code in glwaveformrenderersimplesignal.cpp to support
+    //  the new OpenGL syntax or use Qt instead
 
     painter->endNativePainting();
 }

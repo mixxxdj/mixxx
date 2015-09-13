@@ -63,7 +63,9 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     const float kHeightScaleFactor = 255.0 / sqrtf(255 * 255 * 3);
 
-//  Removed Unsupported OpenGL functions
+    //  Removed Unsupported OpenGL functions, so that Mixxx can run on OpenGL-ES systems -- amvanbaren 9/2015
+    //  TODO(XXX) Rewrite OpenGL code in glwaveformrendererrgb.cpp to support
+    //  the new OpenGL syntax or use Qt instead
 
     painter->endNativePainting();
 }

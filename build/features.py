@@ -11,26 +11,23 @@ class OpenGLES(Feature):
 		return "OpenGL-ES >= 2.0 support [Experimental]"
 
 	def enabled(self, build):
+		build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
 		return int(build.flags['opengles'])
 
 	def add_options(self, build, vars):
-		is_default = 1 if build.platform_is_linux else 0
-		vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 1)
+		vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
 
 	def configure(self, build, conf):
 		if not self.enabled(build):
-			return
-
-		return int(build.flags['opengles'])
+          		return
 	
 	def sources(self, build):
-		pathPrefix = 'waveforms/renderers/gles'
 		sources = [
-			'%swaveformrenderersimplesignal.cpp' % (pathPrefix), 
-			'%swaveformrendererrgb.cpp' % (pathPrefix), 
-			'%swaveformrendererfilteredsignal.cpp' % (pathPrefix), 
-			 '%sslwaveformrenderersignal.cpp' % (pathPrefix), 
-			 '%svsynctestrenderer.cpp' % (pathPrefix), 
+			'waveform/renderers/gleswaveformrenderersimplesignal.cpp', 
+			'waveform/renderers/gleswaveformrendererrgb.cpp', 
+			'waveform/renderers/gleswaveformrendererfilteredsignal.cpp', 
+			 'waveform/renderers/glesslwaveformrenderersignal.cpp', 
+			 'waveform/renderers/glesvsynctestrenderer.cpp', 
 		]
 
 		return sources

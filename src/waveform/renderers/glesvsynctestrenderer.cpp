@@ -72,8 +72,9 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-//    Removed Unsupported OpenGL functions
-
+    //  Removed Unsupported OpenGL functions, so that Mixxx can run on OpenGL-ES systems -- amvanbaren 9/2015
+    //  TODO(XXX) Rewrite OpenGL code in glvsynctestrenderer.cpp to support
+    //  the new OpenGL syntax or use Qt instead
 
     //t12 = timer.restart(); // 22,426
     painter->endNativePainting();

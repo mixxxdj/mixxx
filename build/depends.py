@@ -958,11 +958,11 @@ class MixxxCore(Feature):
                    ]
 
 	if not int(build.flags['opengles']):
-		sources.append('waveforms/renderers/glwaveformrenderersimplesignal.cpp')
-		sources.append('waveforms/renderers/glwaveformrendererrgb.cpp')
-		sources.append('waveforms/renderers/glwaveformrendererfilteredsignal.cpp')
-		sources.append('waveforms/renderers/glslwaveformrenderersignal.cpp')
-		sources.append('waveforms/renderers/glvsynctestrenderer.cpp')
+		sources.append('waveform/renderers/glwaveformrenderersimplesignal.cpp')
+		sources.append('waveform/renderers/glwaveformrendererrgb.cpp')
+		sources.append('waveform/renderers/glwaveformrendererfilteredsignal.cpp')
+		sources.append('waveform/renderers/glslwaveformrenderersignal.cpp')
+		sources.append('waveform/renderers/glvsynctestrenderer.cpp')
 
         proto_args = {
             'PROTOCPROTOPATH': ['src'],

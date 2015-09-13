@@ -70,7 +70,9 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     float maxHigh[2];
     float meanIndex;
 
-//  Removed Unsupported OpenGL functions
+    //  Removed Unsupported OpenGL functions, so that Mixxx can run on OpenGL-ES systems -- amvanbaren 9/2015
+    //  TODO(XXX) Rewrite OpenGL code in glwaveformrendererfilteredsignal.cpp to support
+    //  the new OpenGL syntax or use Qt instead
 
     painter->endNativePainting();
 }

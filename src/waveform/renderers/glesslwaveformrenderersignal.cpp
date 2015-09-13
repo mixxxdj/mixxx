@@ -143,7 +143,9 @@ void GLSLWaveformRendererSignal::createGeometry() {
     if (m_unitQuadListId != -1)
         return;
 
-//  Removed Unsupported OpenGL functions
+    //  Removed Unsupported OpenGL functions, so that Mixxx can run on OpenGL-ES systems -- amvanbaren 9/2015
+    //  TODO(XXX) Rewrite OpenGL code in glslwaveformrenderersignal.cpp to support
+    //  the new OpenGL syntax or use Qt instead
 }
 
 void GLSLWaveformRendererSignal::createFrameBuffers()
@@ -253,7 +255,9 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     //paint into frame buffer
     {
 
-//  Removed Unsupported OpenGL functions
+        //  Removed Unsupported OpenGL functions, so that Mixxx can run on OpenGL-ES systems -- amvanbaren 9/2015
+        //  TODO(XXX) Rewrite OpenGL code in glslwaveformrenderersignal.cpp to support
+        //  the new OpenGL syntax or use Qt instead
 
         m_frameShaderProgram->bind();
 
@@ -298,13 +302,17 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //glCallList(m_unitQuadListId);
 
-//      Removed Unsupported OpenGL functions
+        //  Removed Unsupported OpenGL functions, so that Mixxx can run on OpenGL-ES systems -- amvanbaren 9/2015
+        //  TODO(XXX) Rewrite OpenGL code in glslwaveformrenderersignal.cpp to support
+        //  the new OpenGL syntax or use Qt instead
 
         m_framebuffer->release();
 
         m_frameShaderProgram->release();
 
-//      Removed Unsupported OpenGL functions
+        //  Removed Unsupported OpenGL functions, so that Mixxx can run on OpenGL-ES systems -- amvanbaren 9/2015
+        //  TODO(XXX) Rewrite OpenGL code in glslwaveformrenderersignal.cpp to support
+        //  the new OpenGL syntax or use Qt instead
 
         if (m_bDumpPng) {
             m_framebuffer->toImage().save("m_framebuffer.png");
@@ -312,7 +320,9 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         }
     }
 
-//  Removed Unsupported OpenGL functions
+    //  Removed Unsupported OpenGL functions, so that Mixxx can run on OpenGL-ES systems -- amvanbaren 9/2015
+    //  TODO(XXX) Rewrite OpenGL code in glslwaveformrenderersignal.cpp to support
+    //  the new OpenGL syntax or use Qt instead
 
     painter->endNativePainting();
 }
