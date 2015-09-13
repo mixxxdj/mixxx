@@ -71,7 +71,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
     signal(SIGPIPE, SIG_IGN);
 #endif
 
-    m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
+    m_pShoutcastStatus->set(SIDECHAINWORKER_STATE_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
             ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
 
@@ -370,7 +370,7 @@ bool EngineShoutcast::processConnect() {
     // set to busy in case another thread calls one of the other
     // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
-    m_pShoutcastStatus->set(SHOUTCAST_CONNECTING);
+    m_pShoutcastStatus->set(SICECHAINWORKER_STATE_CONNECTING);
     // reset the number of failures to zero
     m_iShoutFailures = 0;
     // set to a high number to automatically update the metadata
@@ -417,7 +417,7 @@ bool EngineShoutcast::processConnect() {
         }
         setState(SIDECHAINWORKER_STATE_ERROR);
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
+        m_pShoutcastStatus->set(SIDECHAINWORKER_STATE_DISCONNECTED);
         return false;
     }
 
@@ -433,7 +433,7 @@ bool EngineShoutcast::processConnect() {
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         setState(SIDECHAINWORKER_STATE_READY);
         qDebug() << "***********Connected to streaming server...";
-        m_pShoutcastStatus->set(SHOUTCAST_CONNECTED);
+        m_pShoutcastStatus->set(SICECHAINWORKER_STATE_CONNECTED);
 
         m_bThreadQuit = false;
         start();
@@ -447,7 +447,7 @@ bool EngineShoutcast::processConnect() {
         shout_close(m_pShout);
         //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
-    m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
+    m_pShoutcastStatus->set(SIDECHAINWORKER_STATE_DISCONNECTED);
     return false;
 }
 
@@ -455,7 +455,7 @@ void EngineShoutcast::processDisconnect() {
     if (isConnected()) {
         // We are conneced but shoutcast is disabled. Disconnect.
         shout_close(m_pShout);
-        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
+        m_pShoutcastStatus->set(SIDECHAINWORKER_STATE_DISCONNECTED);
         infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
     }
 

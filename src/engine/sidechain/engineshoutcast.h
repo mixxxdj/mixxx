@@ -36,10 +36,6 @@
 #include "trackinfoobject.h"
 #include "util/fifo.h"
 
-#define SHOUTCAST_DISCONNECTED 0
-#define SHOUTCAST_CONNECTING 1
-#define SHOUTCAST_CONNECTED 2
-
 class Encoder;
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
