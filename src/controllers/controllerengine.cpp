@@ -776,14 +776,14 @@ void ControllerEngine::trigger(QString group, QString name) {
     }
 }
 
-/**-------- ------------------------------------------------------
-   Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a script function
-   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
-                script function name, true if you want to disconnect
-   Output:  true if successful
-   -------- ------------------------------------------------------ */
-QScriptValue ControllerEngine::connectControl(QString group, QString name,
-                                              QScriptValue callback, bool disconnect) {
+
+// Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a
+//          script function
+// Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
+//          script function name, true if you want to disconnect
+// Output:  true if successful
+QScriptValue ControllerEngine::connectControl(
+        QString group, QString name, QScriptValue callback, bool disconnect) {
     ConfigKey key(group, name);
     ControlObjectSlave* cos = getControlObjectSlave(group, name);
     QScriptValue function;
@@ -811,19 +811,20 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
 
         function = m_pEngine->evaluate(callback.toString());
         if (checkException() || !function.isFunction()) {
-            qWarning() << "Could not evaluate callback function:" << callback.toString();
+            qWarning() << "Could not evaluate callback function:"
+                       << callback.toString();
             return QScriptValue(false);
-        } else if (m_connectedControls.contains(key, cb)) {
+        } else {
             // Do not allow multiple connections to named functions
-
-            // Return a wrapper to the conn
             QHash<ConfigKey, ControllerEngineConnection>::iterator i =
-                m_connectedControls.find(key);
-
-            ControllerEngineConnection conn = i.value();
-            return m_pEngine->newQObject(
-                new ControllerEngineConnectionScriptValue(conn),
-                QScriptEngine::ScriptOwnership);
+                    m_connectedControls.find(key);
+            if (i != m_connectedControls.end()) {
+                // Return a wrapper to the conn
+                ControllerEngineConnection conn = i.value();
+                return m_pEngine->newQObject(
+                        new ControllerEngineConnectionScriptValue(conn),
+                        QScriptEngine::ScriptOwnership);
+            }
         }
     } else if (callback.isFunction()) {
         function = callback;
