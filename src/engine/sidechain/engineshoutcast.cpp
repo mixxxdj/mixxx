@@ -75,6 +75,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
             ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
 
+    setState(SIDECHAINWORKER_STATE_INIT);
+
     // Initialize libshout
     shout_init();
 
@@ -112,6 +114,7 @@ EngineShoutcast::~EngineShoutcast() {
 bool EngineShoutcast::serverDisconnect() {
     m_bThreadQuit = true;
     wait();
+    setState(SIDECHAINWORKER_STATE_DISCONNECTED);
     return false; // if no connection has been established, nothing can be disconnected
 }
 
@@ -134,6 +137,7 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
+    setState(SIDECHAINWORKER_STATE_BUSY);
     m_pShoutcastNeedUpdateFromPrefs->set(0.0);
 
     m_format_is_mp3 = false;
@@ -353,10 +357,12 @@ void EngineShoutcast::updateFromPreferences() {
         delete m_encoder;
         m_encoder = NULL;
     }
+    setState(SIDECHAINWORKER_STATE_READY);
 }
 
 bool EngineShoutcast::serverConnect() {
     start();
+    setState(SICECHAINWORKER_STATE_CONNECTING);
     return true;
 }
 
@@ -391,8 +397,10 @@ bool EngineShoutcast::processConnect() {
             shout_close(m_pShout);
 
         m_iShoutStatus = shout_open(m_pShout);
-        if (m_iShoutStatus == SHOUTERR_SUCCESS)
+        if (m_iShoutStatus == SHOUTERR_SUCCESS) {
             m_iShoutStatus = SHOUTERR_CONNECTED;
+            setState(SICECHAINWORKER_STATE_CONNECTED);
+        }
 
         if ((m_iShoutStatus == SHOUTERR_BUSY) ||
             (m_iShoutStatus == SHOUTERR_CONNECTED) ||
@@ -407,6 +415,7 @@ bool EngineShoutcast::processConnect() {
         if (m_pShout) {
             shout_close(m_pShout);
         }
+        setState(SIDECHAINWORKER_STATE_ERROR);
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
         m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
@@ -415,12 +424,14 @@ bool EngineShoutcast::processConnect() {
     m_iShoutFailures = 0;
     int timeout = 0;
     while (m_iShoutStatus == SHOUTERR_BUSY && timeout < TIMEOUT) {
+        setState(SIDECHAINWORKER_STATE_WAITING);
         qDebug() << "Connection pending. Sleeping...";
         sleep(1);
         m_iShoutStatus = shout_get_connected(m_pShout);
         ++ timeout;
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
+        setState(SIDECHAINWORKER_STATE_READY);
         qDebug() << "***********Connected to streaming server...";
         m_pShoutcastStatus->set(SHOUTCAST_CONNECTED);
 
@@ -429,6 +440,7 @@ bool EngineShoutcast::processConnect() {
 
         return true;
     }
+    setState(SIDECHAINWORKER_STATE_ERROR);
     //otherwise disable shoutcast in preferences
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
     if (m_pShout) {
@@ -511,6 +523,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     qDebug() << "EngineShoutcast::process";
 
+    setState(SIDECHAINWORKER_STATE_BUSY);
     // If we are here then the user wants to be connected (shoutcast is enabled
     // in the preferences).
 
@@ -544,6 +557,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     if (metaDataHasChanged()) {
         updateMetaData();
     }
+    setState(SIDECHAINWORKER_STATE_READY);
 }
 
 bool EngineShoutcast::metaDataHasChanged() {
@@ -684,6 +698,8 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
+    setState(SIDECHAINWORKER_STATE_ERROR);
+    setErrorMessage(detailedError);
 }
 
 void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
@@ -696,6 +712,7 @@ void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
+    setErrorMessage(detailedInfo);
 }
 
 // Is called from the Mixxx engine thread
