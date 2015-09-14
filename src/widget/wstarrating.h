@@ -9,9 +9,9 @@
 #include "trackinfoobject.h"
 
 #include "library/starrating.h"
-#include "widget/wbasewidget.h"
+#include "widget/wwidget.h"
 
-class WStarRating : public QWidget, public WBaseWidget {
+class WStarRating : public WWidget {
     Q_OBJECT
   public:
     WStarRating(QString group, QWidget* pParent);
@@ -32,7 +32,6 @@ class WStarRating : public QWidget, public WBaseWidget {
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void leaveEvent(QEvent *);
-    virtual bool event(QEvent* pEvent);
     virtual void fillDebugTooltip(QStringList* debug); // /override/
 
     StarRating m_starRating;

@@ -6,8 +6,7 @@
 #include "widget/wstarrating.h"
 
 WStarRating::WStarRating(QString group, QWidget* pParent)
-        : QWidget(pParent),
-          WBaseWidget(this),
+        : WWidget(pParent),
           m_starRating(0,5),
           m_pGroup(group),
           m_focused(false) {
@@ -118,13 +117,6 @@ void WStarRating::mouseReleaseEvent(QMouseEvent*) {
         return;
 
     m_pCurrentTrack->setRating(m_starRating.starCount());
-}
-
-bool WStarRating::event(QEvent* pEvent) {
-    if (pEvent->type() == QEvent::ToolTip) {
-        updateTooltip();
-    }
-    return QWidget::event(pEvent);
 }
 
 void WStarRating::fillDebugTooltip(QStringList* debug) {
