@@ -65,19 +65,18 @@ void RecursiveScanDirectoryTask::run() {
         } else {
             // File is a directory
             if (m_scannerGlobal->directoryBlacklisted(currentFile)) {
-                // Skip blacklisted directories
+                // Skip blacklisted directories like the iTunes Album
+                // Art Folder since it is probably a waste of time.
                 continue;
             }
             const QDir currentDir(currentFile);
             const QString canonicalDirPath(currentDir.canonicalPath());
             if (m_scannerGlobal->isDirectoryScanned(canonicalDirPath)) {
-                // Skip directories that have already been scanned
+                // Skip directories that have already been scanned.
                 continue;
             }
             // Add unvisited directories to our list of directories to scan.
             dirsToScan.append(currentDir);
-            // Skip the iTunes Album Art Folder since it is probably a waste of
-            // time.
         }
     }
 
