@@ -125,6 +125,6 @@ void WStarRating::fillDebugTooltip(QStringList* debug) {
     if (m_pCurrentTrack) {
         currentRating.setNum(m_pCurrentTrack->getRating());
     }
-    *debug << QString("Rating: \"%1/%2\"").arg(currentRating).arg(
-            m_starRating.maxStarCount());
+    *debug << QString("Rating: \"%1/%2 (%3)\"").arg(currentRating).arg(
+            m_starRating.maxStarCount()).arg(m_starRating.starCount());
 }
