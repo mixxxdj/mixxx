@@ -118,7 +118,8 @@ binary-arch: build install
 #	dh_installinfo
 	dh_installman mixxx.1
 	dh_link
-	dh_strip
+# We don't want our binaries stripped.
+#	dh_strip
 	dh_compress -Xpdf
 	dh_fixperms
 #	dh_perl
