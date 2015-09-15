@@ -72,10 +72,8 @@ void RecursiveScanDirectoryTask::run() {
             const QDir currentDir(currentFile);
             const QString canonicalDirPath(currentDir.canonicalPath());
             if (m_scannerGlobal->isDirectoryScanned(canonicalDirPath)) {
-                // Skip directories that have already been scanned.
                 continue;
             }
-            // Add unvisited directories to our list of directories to scan.
             dirsToScan.append(currentDir);
         }
     }
