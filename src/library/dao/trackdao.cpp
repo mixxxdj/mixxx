@@ -369,10 +369,12 @@ void TrackDAO::slotTrackChanged(TrackInfoObject* pTrack) {
 // addTracksAdd, which is the only function that calls this
 void TrackDAO::bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack) {
     // gets called only in addTracksAdd
-    m_pQueryTrackLocationInsert->bindValue(":location", pTrack->getLocation());
-    m_pQueryTrackLocationInsert->bindValue(":directory", pTrack->getDirectory());
-    m_pQueryTrackLocationInsert->bindValue(":filename", pTrack->getFilename());
-    m_pQueryTrackLocationInsert->bindValue(":filesize", pTrack->getLength());
+    const TrackRef trackRef(pTrack->getTrackRef());
+    const QFileInfo fileInfo(trackRef.createFileInfo());
+    m_pQueryTrackLocationInsert->bindValue(":location", trackRef.getLocation());
+    m_pQueryTrackLocationInsert->bindValue(":directory", TrackRef::toDirectory(fileInfo));
+    m_pQueryTrackLocationInsert->bindValue(":filename", TrackRef::toFileName(fileInfo));
+    m_pQueryTrackLocationInsert->bindValue(":filesize", TrackRef::toFileSize(fileInfo));
     // Should this check pTrack->exists()?
     m_pQueryTrackLocationInsert->bindValue(":fs_deleted", 0);
     m_pQueryTrackLocationInsert->bindValue(":needs_verification", 0);
@@ -578,7 +580,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         if (!m_pQueryLibrarySelect->exec()) {
              LOG_FAILED_QUERY(*m_pQueryLibrarySelect)
                      << "Failed to query existing track: "
-                     << pTrack->getFilename();
+                     << pTrack->getTrackRef();
         } else {
             bool mixxx_deleted = false;
             if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
@@ -598,7 +600,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
                 if (!m_pQueryLibraryUpdate->exec()) {
                     LOG_FAILED_QUERY(*m_pQueryLibraryUpdate)
                             << "Failed to unremove existing track: "
-                            << pTrack->getFilename();
+                            << pTrack->getTrackRef();
                 }
             }
             // Regardless of whether we unremoved this track or not -- it's
@@ -630,7 +632,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
             // but marked deleted? Skip this track.
             LOG_FAILED_QUERY(*m_pQueryLibraryInsert)
                     << "Failed to INSERT new track into library:"
-                    << pTrack->getFilename();
+                    << pTrack->getTrackRef();
             return false;
         }
         trackId = TrackId(m_pQueryLibraryInsert->lastInsertId());
@@ -664,7 +666,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     }
 
     // Check that track is a supported extension.
-    if (!SoundSourceProxy::isFileSupported(pTrack->getFileInfo())) {
+    if (!SoundSourceProxy::isFileSupported(pTrack->getTrackRef().createFileInfo())) {
         // TODO(XXX) provide some kind of error code on a per-track basis.
         return;
     }

@@ -577,7 +577,8 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
             m_pAutoDJTableModel->index(0, 0));
 
         if (nextTrack) {
-            if (nextTrack->exists()) {
+            const TrackRef trackRef(nextTrack->getTrackRef());
+            if(trackRef.createFileInfo().exists()) {
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist.

@@ -94,7 +94,10 @@ void LegacyLibraryImporter::import() {
             // because Mixxx <= 1.7 had no logic to deal with detecting deleted
             // files.
 
-            if (trackInfo17.exists()) {
+            const TrackRef trackRef(trackInfo17.getTrackRef());
+            const QFileInfo fileInfo(trackRef.createFileInfo());
+
+            if (fileInfo.exists()) {
                 // Create a TrackInfoObject by directly parsing
                 // the actual MP3/OGG/whatever because 1.7 didn't parse
                 // genre and album tags (so the imported TIO doesn't have
@@ -102,10 +105,7 @@ void LegacyLibraryImporter::import() {
                 emit(progress("Upgrading Mixxx 1.7 Library: " + trackInfo17.getTitle()));
 
                 // Read the metadata we couldn't support in <1.8 from file.
-                QFileInfo fileInfo(trackInfo17.getLocation());
-                // Ensure we have the absolute file path stored
-                trackInfo17.setLocation(fileInfo.absoluteFilePath());
-                TrackInfoObject trackInfoNew(trackInfo17.getLocation());
+                TrackInfoObject trackInfoNew(fileInfo);
                 trackInfo17.setGenre(trackInfoNew.getGenre());
                 trackInfo17.setAlbum(trackInfoNew.getAlbum());
                 trackInfo17.setYear(trackInfoNew.getYear());
@@ -131,7 +131,7 @@ void LegacyLibraryImporter::import() {
                 // different. Using the track location is the best way for us to identify the song.)
                 TrackId trackId(pTrack->getId());
                 if (playlistHashTable.contains(trackId)) {
-                    playlistHashTable[trackId] = pTrack->getLocation();
+                    playlistHashTable[trackId] = trackRef.getLocation();
                 }
             }
         }

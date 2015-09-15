@@ -99,36 +99,19 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
 
 
-    // Returns absolute path to the file, including the filename.
+
+    TrackRef getTrackRef() const;
+
+    // Some convenience functions for backward compatibility
+    // that return TrackRef properties.
+    TrackId getId() const {
+        return getTrackRef().getId();
+    }
     QString getLocation() const {
         return getTrackRef().getLocation();
     }
-    QString getCanonicalLocation() const {
-        return getTrackRef().getCanonicalLocation();
-    }
-    QFileInfo getFileInfo() const {
-        return getTrackRef().createFileInfo();
-    }
 
     SecurityTokenPointer getSecurityToken();
-
-    // Returns the absolute path to the directory containing the file
-    QString getDirectory() const {
-        return TrackRef::toDirectory(getFileInfo());
-    }
-    // Returns the filename of the file.
-    QString getFilename() const {
-        return TrackRef::toFileName(getFileInfo());
-    }
-    // Returns the length of the file in bytes
-    int getLength() const {
-        return TrackRef::toFileSize(getFileInfo());
-    }
-    // Returns whether the file exists on disk or not. Updated as of the time
-    // the TrackInfoObject is created, or when setLocation() is called.
-    bool exists() const {
-        return getFileInfo().exists();
-    }
 
     // Returns ReplayGain
     float getReplayGain() const;
@@ -173,18 +156,6 @@ class TrackInfoObject : public QObject {
 
     QDateTime getDateAdded() const;
     void setDateAdded(const QDateTime& dateAdded);
-
-    // Returns file modified datetime. Limited by the accuracy of what Qt
-    // QFileInfo gives us.
-    QDateTime getFileModifiedTime() const {
-        return TrackRef::toFileLastModifiedAt(getFileInfo());
-    }
-
-    // Returns file creation datetime. Limited by the accuracy of what Qt
-    // QFileInfo gives us.
-    QDateTime getFileCreationTime() const {
-        return TrackRef::toFileCreatedAt(getFileInfo());
-    }
 
     // Getter/Setter methods for metadata
     // Return title
@@ -235,12 +206,6 @@ class TrackInfoObject : public QObject {
     void setPlayedAndUpdatePlaycount(bool);
     // Set played status without affecting the playcount
     void setPlayed(bool bPlayed);
-
-    TrackRef getTrackRef() const;
-
-    TrackId getId() const {
-        return getTrackRef().getId();
-    }
 
     // Returns rating
     int getRating() const;

@@ -146,15 +146,17 @@ void BrowseThread::populateModel() {
             return populateModel();
         }
 
-        QString filepath = fileIt.next();
-        TrackInfoObject tio(filepath, thisPath.token());
+        TrackInfoObject tio(fileIt.next(), thisPath.token());
+        const TrackRef trackRef(tio.getTrackRef());
+        const QFileInfo fileInfo(trackRef.createFileInfo());
+
         QList<QStandardItem*> row_data;
 
         QStandardItem* item = new QStandardItem("0");
         item->setData("0", Qt::UserRole);
         row_data.insert(COLUMN_PREVIEW, item);
 
-        item = new QStandardItem(tio.getFilename());
+        item = new QStandardItem(TrackRef::toFileName(fileInfo));
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_FILENAME, item);
@@ -238,18 +240,18 @@ void BrowseThread::populateModel() {
         item->setData(tio.getBitrate(), Qt::UserRole);
         row_data.insert(COLUMN_BITRATE, item);
 
-        item = new QStandardItem(filepath);
+        item = new QStandardItem(trackRef.getLocation());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_LOCATION, item);
 
-        QDateTime modifiedTime = tio.getFileModifiedTime().toLocalTime();
+        QDateTime modifiedTime = TrackRef::toFileLastModifiedAt(fileInfo).toLocalTime();
         item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
         item->setToolTip(item->text());
         item->setData(modifiedTime, Qt::UserRole);
         row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
-        QDateTime creationTime = tio.getFileCreationTime().toLocalTime();
+        QDateTime creationTime = TrackRef::toFileCreatedAt(fileInfo).toLocalTime();
         item = new QStandardItem(creationTime.toString(Qt::DefaultLocaleShortDate));
         item->setToolTip(item->text());
         item->setData(creationTime, Qt::UserRole);
@@ -262,7 +264,7 @@ void BrowseThread::populateModel() {
         if (row % 10 == 0) {
             // this is a blocking operation
             emit(rowsAppended(rows, thisModelObserver));
-            qDebug() << "Append " << rows.count() << " from " << filepath;
+            qDebug() << "Append " << rows.count() << " from " << trackRef.getLocation();
             rows.clear();
         }
         // Sleep additionally for 10ms which prevents us from GUI freezes

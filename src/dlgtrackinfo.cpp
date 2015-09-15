@@ -243,11 +243,13 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
     }
 
     QDir dir;
-    QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
+    const TrackRef trackRef(m_pLoadedTrack->getTrackRef());
+    const QFileInfo fileInfo(trackRef.createFileInfo());
+    QStringList splittedPath = TrackRef::toDirectory(fileInfo).split("/");
     do {
         dir = QDir(splittedPath.join("/"));
         splittedPath.removeLast();
-    } while (!dir.exists() && splittedPath.size());
+    } while (!dir.exists() && !splittedPath.isEmpty());
 
     // This function does not work for a non-existent directory!
     // so it is essential that in the worst case it try opening
