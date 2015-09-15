@@ -53,14 +53,15 @@ class ScannerGlobal {
         return m_supportedExtensionsMatcher;
     }
 
-    inline bool isDirectoryScanned(const QString& canonicalPath) const {
+    inline bool testAndMarkDirectoryScanned(const QDir& dir) {
+        const QString canonicalPath(dir.canonicalPath());
         QMutexLocker locker(&m_directoriesScannedMutex);
-        return m_directoriesScanned.contains(canonicalPath);
-    }
-
-    inline void setDirectoryScanned(const QString& canonicalPath) {
-        QMutexLocker locker(&m_directoriesScannedMutex);
-        m_directoriesScanned.insert(canonicalPath);
+        if (m_directoriesScanned.contains(canonicalPath)) {
+            return true;
+        } else {
+            m_directoriesScanned.insert(canonicalPath);
+            return false;
+        }
     }
 
     // TODO(rryan) test whether tasks should create their own QRegExp.

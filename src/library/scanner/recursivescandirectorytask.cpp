@@ -12,10 +12,6 @@ RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
         : ScannerTask(pScanner, scannerGlobal),
           m_dir(dir),
           m_pToken(pToken) {
-    // Avoid revisiting this directory again during this scan. Using
-    // the canonical path here is necessary to detect cyclic symbolic
-    // links and exclude them from further scanning!
-    m_scannerGlobal->setDirectoryScanned(m_dir.canonicalPath());
 }
 
 void RecursiveScanDirectoryTask::run() {
@@ -70,11 +66,12 @@ void RecursiveScanDirectoryTask::run() {
                 continue;
             }
             const QDir currentDir(currentFile);
-            const QString canonicalDirPath(currentDir.canonicalPath());
-            if (m_scannerGlobal->isDirectoryScanned(canonicalDirPath)) {
-                continue;
+            // Atomically test and mark the directory as scanned to avoid
+            // that the same directory is scanned multiple times by different
+            // tasks.
+            if (m_scannerGlobal->testAndMarkDirectoryScanned(currentDir)) {
+                dirsToScan.append(currentDir);
             }
-            dirsToScan.append(currentDir);
         }
     }
 
