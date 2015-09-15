@@ -107,13 +107,11 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_bPlayed = false;
     m_bDeleteOnReferenceExpiration = false;
     m_bDirty = false;
-    m_bLocationChanged = false;
 }
 
 void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
     m_bDeleteOnReferenceExpiration = false;
     m_bDirty = false;
-    m_bLocationChanged = false;
 
     m_sArtist = "";
     m_sTitle = "";
@@ -312,15 +310,6 @@ QString TrackInfoObject::getDurationStr() const {
     lock.unlock();
 
     return Time::formatSeconds(iDuration, false);
-}
-
-void TrackInfoObject::setLocation(const QString& location) {
-    QMutexLocker lock(&m_qMutex);
-    if (m_trackRef.getLocation() != location) {
-        m_trackRef = TrackRef(location, m_trackRef.getId());
-        m_bLocationChanged = true;
-        setDirty(true);
-    }
 }
 
 SecurityTokenPointer TrackInfoObject::getSecurityToken() {
@@ -886,11 +875,6 @@ void TrackInfoObject::setDirty(bool bDirty) {
 bool TrackInfoObject::isDirty() {
     QMutexLocker lock(&m_qMutex);
     return m_bDirty;
-}
-
-bool TrackInfoObject::locationChanged() {
-    QMutexLocker lock(&m_qMutex);
-    return m_bLocationChanged;
 }
 
 int TrackInfoObject::getRating() const {

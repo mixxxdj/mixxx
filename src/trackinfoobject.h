@@ -79,7 +79,7 @@ class TrackInfoObject : public QObject {
     QString getDurationStr() const;
 
     // Accessors for various stats of the file on disk. These are auto-populated
-    // when the TIO is constructed, or when setLocation() is called.
+    // when the TIO is constructed.
 
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
@@ -97,7 +97,6 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
-
 
 
     TrackRef getTrackRef() const;
@@ -239,12 +238,6 @@ class TrackInfoObject : public QObject {
 
     bool isDirty();
 
-    // Returns true if the track location has changed
-    bool locationChanged();
-
-    // Set the track's full file path
-    void setLocation(const QString& location);
-
     // Get the track's Beats list
     BeatsPointer getBeats() const;
 
@@ -320,9 +313,6 @@ class TrackInfoObject : public QObject {
     // Flag that indicates whether or not the TIO has changed. This is used by
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;
-
-    // Special flag for telling if the track location was changed.
-    bool m_bLocationChanged;
 
     // The track's reference
     TrackRef m_trackRef;
