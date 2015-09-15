@@ -88,6 +88,7 @@ void WStarRating::mouseMoveEvent(QMouseEvent *event) {
 
     if (star != m_starRating.starCount() && star != -1) {
         m_starRating.setStarCount(star);
+        updateTooltip();
         update();
     }
 }
@@ -120,7 +121,7 @@ void WStarRating::mouseReleaseEvent(QMouseEvent*) {
 }
 
 void WStarRating::fillDebugTooltip(QStringList* debug) {
-    WBaseWidget::fillDebugTooltip(debug);
+    WWidget::fillDebugTooltip(debug);
     QString currentRating = "-";
     if (m_pCurrentTrack) {
         currentRating.setNum(m_pCurrentTrack->getRating());
