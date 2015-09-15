@@ -119,14 +119,14 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     ReaderStatusUpdate status;
     status.status = TRACK_NOT_LOADED;
 
-    QString filename = pTrack->getLocation();
-    if (filename.isEmpty() || !pTrack->exists()) {
+    const TrackRef trackRef(pTrack->getTrackRef());
+    if (trackRef.getLocation().isEmpty() || !trackRef.createFileInfo().exists()) {
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""
-                 << filename << "\", unlocked reader lock";
+                 << trackRef.getLocation() << "\", unlocked reader lock";
         m_pReaderStatusFIFO->writeBlocking(&status, 1);
         emit(trackLoadFailed(
-            pTrack, QString("The file '%1' could not be found.").arg(filename)));
+            pTrack, QString("The file '%1' could not be found.").arg(trackRef.getLocation())));
         return;
     }
 
@@ -137,10 +137,10 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         m_maxReadableFrameIndex = Mixxx::AudioSource::getMinFrameIndex();
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""
-                 << filename << "\", file invalid, unlocked reader lock";
+                 << trackRef.getLocation() << "\", file invalid, unlocked reader lock";
         m_pReaderStatusFIFO->writeBlocking(&status, 1);
         emit(trackLoadFailed(
-            pTrack, QString("The file '%1' could not be loaded.").arg(filename)));
+            pTrack, QString("The file '%1' could not be loaded.").arg(trackRef.getLocation())));
         return;
     }
 

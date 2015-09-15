@@ -287,13 +287,14 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             if (trackId.isValid()) {
                 // Get Track Information
                 TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(trackId);
-                if(addedTrack->exists()) {
+                const TrackRef trackRef(addedTrack->getTrackRef());
+                if(trackRef.createFileInfo().exists()) {
                     playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
                     m_pAutoDJView->onShow();
                     return;
                 } else {
                     qDebug() << "Track does not exist: "<< addedTrack->getInfo()
-                             << " " << addedTrack->getDirectory();
+                             << " " << trackRef.getLocation();
                 }
             }
             failedRetrieveAttempts += 1;
@@ -305,7 +306,8 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             TrackId trackId(m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId));
             if (trackId.isValid()) {
                 TrackPointer addedTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
-                if(addedTrack->exists()) {
+                const TrackRef trackRef(addedTrack->getTrackRef());
+                if(trackRef.createFileInfo().exists()) {
                     if(!addedTrack->getPlayed()) {
                         playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
                         m_pAutoDJView->onShow();
@@ -313,7 +315,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                     }
                 } else {
                     qDebug() << "Track does not exist:"<< addedTrack->getInfo()
-                             << addedTrack->getDirectory();
+                             << trackRef;
                 }
             }
             failedRetrieveAttempts += 1;

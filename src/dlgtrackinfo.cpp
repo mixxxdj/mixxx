@@ -170,9 +170,10 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmThreeFourth->setEnabled(enableBpmEditing);
 
     m_loadedCoverInfo = pTrack->getCoverInfo();
-    int reference = pTrack->getId().toInt();
-    m_loadedCoverInfo.trackLocation = pTrack->getLocation();
-    m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCoverInfo, QPixmap());
+    const TrackRef trackRef(pTrack->getTrackRef());
+    int reference = trackRef.getId().toInt();
+    m_loadedCoverInfo.trackLocation = trackRef.getLocation();
+    m_pWCoverArtLabel->setCoverArt(trackRef, m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         pCache->requestCover(m_loadedCoverInfo, this, reference);
@@ -206,7 +207,7 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
             m_pLoadedTrack->getId().toInt() == requestReference) {
         qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
                  << pixmap.size();
-        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCoverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack->getTrackRef(), m_loadedCoverInfo, pixmap);
     }
 }
 
@@ -242,11 +243,13 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
     }
 
     QDir dir;
-    QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
+    const TrackRef trackRef(m_pLoadedTrack->getTrackRef());
+    const QFileInfo fileInfo(trackRef.createFileInfo());
+    QStringList splittedPath = TrackRef::toDirectory(fileInfo).split("/");
     do {
         dir = QDir(splittedPath.join("/"));
         splittedPath.removeLast();
-    } while (!dir.exists() && splittedPath.size());
+    } while (!dir.exists() && !splittedPath.isEmpty());
 
     // This function does not work for a non-existent directory!
     // so it is essential that in the worst case it try opening
@@ -440,7 +443,7 @@ void DlgTrackInfo::clear() {
     cueTable->setRowCount(0);
 
     m_loadedCoverInfo = CoverInfo();
-    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(TrackRef(), m_loadedCoverInfo, QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {

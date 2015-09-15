@@ -34,7 +34,7 @@
 #include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
-#include "track/trackid.h"
+#include "track/trackref.h"
 #include "util/sandbox.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
@@ -52,18 +52,19 @@ namespace Mixxx {
 class TrackInfoObject : public QObject {
     Q_OBJECT
   public:
+    TrackInfoObject();
     // Initialize a new track with the filename.
-    TrackInfoObject(const QString& file="",
+    explicit TrackInfoObject(const QString& file,
                     SecurityTokenPointer pToken=SecurityTokenPointer(),
                     bool parseHeader=true,
                     bool parseCoverArt=false);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(const QFileInfo& fileInfo,
+    explicit TrackInfoObject(const QFileInfo& fileInfo,
                     SecurityTokenPointer pToken=SecurityTokenPointer(),
                     bool parseHeader=true,
                     bool parseCoverArt=false);
     // Creates a new track given information from the xml file.
-    TrackInfoObject(const QDomNode &);
+    explicit TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
     // Parse file metadata. If no file metadata is present, attempts to extract
@@ -78,7 +79,7 @@ class TrackInfoObject : public QObject {
     QString getDurationStr() const;
 
     // Accessors for various stats of the file on disk. These are auto-populated
-    // when the TIO is constructed, or when setLocation() is called.
+    // when the TIO is constructed.
 
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
@@ -98,21 +99,18 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
 
 
-    // Returns absolute path to the file, including the filename.
-    QString getLocation() const;
-    QString getCanonicalLocation() const;
-    QFileInfo getFileInfo() const;
-    SecurityTokenPointer getSecurityToken();
+    TrackRef getTrackRef() const;
 
-    // Returns the absolute path to the directory containing the file
-    QString getDirectory() const;
-    // Returns the filename of the file.
-    QString getFilename() const;
-    // Returns the length of the file in bytes
-    int getLength() const;
-    // Returns whether the file exists on disk or not. Updated as of the time
-    // the TrackInfoObject is created, or when setLocation() is called.
-    bool exists() const;
+    // Some convenience functions for backward compatibility
+    // that return TrackRef properties.
+    TrackId getId() const {
+        return getTrackRef().getId();
+    }
+    QString getLocation() const {
+        return getTrackRef().getLocation();
+    }
+
+    SecurityTokenPointer getSecurityToken();
 
     // Returns ReplayGain
     float getReplayGain() const;
@@ -157,14 +155,6 @@ class TrackInfoObject : public QObject {
 
     QDateTime getDateAdded() const;
     void setDateAdded(const QDateTime& dateAdded);
-
-    // Returns file modified datetime. Limited by the accuracy of what Qt
-    // QFileInfo gives us.
-    QDateTime getFileModifiedTime() const;
-
-    // Returns file creation datetime. Limited by the accuracy of what Qt
-    // QFileInfo gives us.
-    QDateTime getFileCreationTime() const;
 
     // Getter/Setter methods for metadata
     // Return title
@@ -216,8 +206,6 @@ class TrackInfoObject : public QObject {
     // Set played status without affecting the playcount
     void setPlayed(bool bPlayed);
 
-    TrackId getId() const;
-
     // Returns rating
     int getRating() const;
     // Sets rating
@@ -249,12 +237,6 @@ class TrackInfoObject : public QObject {
     void setCuePoints(QList<Cue*> cuePoints);
 
     bool isDirty();
-
-    // Returns true if the track location has changed
-    bool locationChanged();
-
-    // Set the track's full file path
-    void setLocation(const QString& location);
 
     // Get the track's Beats list
     BeatsPointer getBeats() const;
@@ -332,12 +314,10 @@ class TrackInfoObject : public QObject {
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;
 
-    // Special flag for telling if the track location was changed.
-    bool m_bLocationChanged;
+    // The track's reference
+    TrackRef m_trackRef;
 
-    // The file
-    QFileInfo m_fileInfo;
-
+    // The security token for the corresponding file
     SecurityTokenPointer m_pSecurityToken;
 
     // Metadata
@@ -385,8 +365,6 @@ class TrackInfoObject : public QObject {
     bool m_bPlayed;
     // True if header was parsed
     bool m_bHeaderParsed;
-    // Id. Unique ID of track
-    TrackId m_id;
     // Cue point in samples or something
     float m_fCuePoint;
     // Date the track was added to the library

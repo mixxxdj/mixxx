@@ -20,7 +20,7 @@ class WCoverArtMenu : public QMenu {
     WCoverArtMenu(QWidget *parent = 0);
     virtual ~WCoverArtMenu();
 
-    void setCoverArt(TrackPointer pTrack, const CoverInfo& info);
+    void setCoverArt(const TrackRef& trackRef, const CoverInfo& info);
 
   signals:
     void coverArtSelected(const CoverArt& art);
@@ -37,7 +37,7 @@ class WCoverArtMenu : public QMenu {
     QAction* m_pReload;
     QAction* m_pUnset;
 
-    TrackPointer m_pTrack;
+    TrackRef m_trackRef;
     CoverInfo m_coverInfo;
 };
 

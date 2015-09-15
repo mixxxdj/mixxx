@@ -27,14 +27,14 @@ void WCoverArtMenu::createActions() {
     connect(m_pUnset, SIGNAL(triggered()), this, SLOT(slotUnset()));
     addAction(m_pUnset);
 
-    m_pReload = new QAction(tr("Reload from track/folder",
-            "reload cover art from track metadata or folder"), this);
+    m_pReload = new QAction(tr("Reload from file/folder",
+            "reload cover art from file metadata or folder"), this);
     connect(m_pReload, SIGNAL(triggered()), this, SIGNAL(reloadCoverArt()));
     addAction(m_pReload);
 }
 
-void WCoverArtMenu::setCoverArt(TrackPointer pTrack, const CoverInfo& info) {
-    m_pTrack = pTrack;
+void WCoverArtMenu::setCoverArt(const TrackRef& trackRef, const CoverInfo& info) {
+    m_trackRef = trackRef;
     m_coverInfo = info;
 }
 
@@ -43,8 +43,8 @@ void WCoverArtMenu::slotChange() {
     QString initialDir;
 
     QFileInfo track;
-    if (m_pTrack) {
-        track = m_pTrack->getFileInfo();
+    if (m_trackRef.hasLocation()) {
+        track = m_trackRef.createFileInfo();
     } else if (!m_coverInfo.trackLocation.isEmpty()) {
         track = QFileInfo(m_coverInfo.trackLocation);
     }
