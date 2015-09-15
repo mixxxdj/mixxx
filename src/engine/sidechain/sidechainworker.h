@@ -7,7 +7,7 @@
 /*
  * States:
  * Error        Something errornous has happenned and can't go on
- * Unknown      First state before init
+ * New          First state before init
  * Init         Initing state don't feed anything in this state
  * Waiting      Waiting something not ready yet
  * Busy         Is busy doing something can't process anything new
@@ -20,14 +20,14 @@
  * 
  * First state should be SIDECHAINWORKER_STATE_UNKNOWN and
  * if state handling ain't supported by SideChainWorker-class
- * then SIDECHAINWORKER_STATE_UNKNOWN should be treated as
+ * then 'SIDECHAINWORKER_STATE_NEW' should be treated as
  * SIDECHAINWORKER_STATE_READY. Newly written SideChainWorker-class
  * should support state handling at leas this SIDECHAINWORKER_STATE_READY state.
  */
 
 enum SidechaingStates {
     SIDECHAINWORKER_STATE_ERROR = -1,
-    SIDECHAINWORKER_STATE_UNKNOWN,
+    SIDECHAINWORKER_STATE_NEW,
     SIDECHAINWORKER_STATE_INIT,
     SIDECHAINWORKER_STATE_WAITING,
     SIDECHAINWORKER_STATE_BUSY,
@@ -42,7 +42,7 @@ enum SidechaingStates {
 class SideChainWorker {
   public:
     SideChainWorker() :
-    m_iSideChainWorkerState(SIDECHAINWORKER_STATE_UNKNOWN),
+    m_iSideChainWorkerState(SIDECHAINWORKER_STATE_NEW),
     m_sErrorMsg("") { }
     virtual ~SideChainWorker() { }
     virtual void process(const CSAMPLE* pBuffer, const int iBufferSize) = 0;
