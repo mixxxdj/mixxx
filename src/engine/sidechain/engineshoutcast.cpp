@@ -701,7 +701,6 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
     setState(SIDECHAINWORKER_STATE_ERROR);
-    setErrorMessage(detailedError);
 }
 
 void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
@@ -714,7 +713,6 @@ void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
-    setErrorMessage(detailedInfo);
 }
 
 // Is called from the Mixxx engine thread

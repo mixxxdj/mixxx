@@ -42,8 +42,7 @@ enum SidechaingStates {
 class SideChainWorker {
   public:
     SideChainWorker() :
-    m_iSideChainWorkerState(SIDECHAINWORKER_STATE_NEW),
-    m_sErrorMsg("") { }
+    m_iSideChainWorkerState(SIDECHAINWORKER_STATE_NEW) { }
     virtual ~SideChainWorker() { }
     virtual void process(const CSAMPLE* pBuffer, const int iBufferSize) = 0;
     virtual void shutdown() = 0;
@@ -58,19 +57,12 @@ class SideChainWorker {
     virtual int getState() {
         return m_iSideChainWorkerState;
     }
-    virtual QString getErrorMessage() {
-        return m_sErrorMsg;
-    }
 protected:
     virtual void setState(int state) {
         m_iSideChainWorkerState = state;
     }
-    virtual void setErrorMessage(QString msg) {
-        m_sErrorMsg = msg;
-    }
 private:
     int m_iSideChainWorkerState;
-    QString m_sErrorMsg;
 };
 
 #endif /* SIDECHAINWORKER_H */
