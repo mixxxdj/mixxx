@@ -601,6 +601,32 @@ class AsmLib(Feature):
             build.env.Prepend(LIBS='libacof%so' % build.bitwidth)
 
 
+class BuildTime(Feature):
+    def description(self):
+        return "Use __DATE__ and __TIME__"
+
+    def enabled(self, build):
+        build.flags['buildtime'] = util.get_flags(build.env, 'buildtime', 1)
+        if int(build.flags['buildtime']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add(
+            'buildtime', 'Set to 0 to disable build time (__DATE__ and __TIME__) usage.', 1)
+
+    def configure(self, build, conf):
+        # Distributions like openSUSE use tools (e. g. build-compare) to detect
+        # whether a built binary differs from a former build to avoid unneeded
+        # publishing of packages.
+        # If __DATE__ and __TIME__ are used the built binary differs always but
+        # the tools cannot detect the root and publish a new package although
+        # the only change is caused by __DATE__ and __TIME__.
+        # So let distributions disable __DATE__ and __TIME__ via buildtime=0.
+        if not self.enabled(build):
+            build.env.Append(CPPDEFINES='DISABLE_BUILDTIME')
+
+
 class QDebug(Feature):
     def description(self):
         return "Debugging message output"
