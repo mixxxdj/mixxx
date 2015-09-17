@@ -13,20 +13,11 @@
 #include "widget/wwidget.h"
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererAbstract(waveformWidgetRenderer),
-          m_pBeatActive(NULL) {
+        : WaveformRendererAbstract(waveformWidgetRenderer) {
     m_beats.resize(128);
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
-    if (m_pBeatActive)
-        delete m_pBeatActive;
-}
-
-bool WaveformRenderBeat::init() {
-    m_pBeatActive = new ControlObjectThread(
-            m_waveformRenderer->getGroup(), "beat_active");
-    return m_pBeatActive->valid();
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
@@ -60,7 +51,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     //          << "lastDisplayedPosition" << lastDisplayedPosition;
 
     QScopedPointer<BeatIterator> it(trackBeats->findBeats(
-        firstDisplayedPosition * trackSamples, lastDisplayedPosition * trackSamples));
+            firstDisplayedPosition * trackSamples, lastDisplayedPosition * trackSamples));
 
     // if no beat do not waste time saving/restoring painter
     if (!it || !it->hasNext()) {

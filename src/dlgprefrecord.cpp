@@ -22,7 +22,7 @@
 #include "recording/defs_recording.h"
 #include "controlobject.h"
 #include "encoder/encoder.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "util/sandbox.h"
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig)
@@ -37,8 +37,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
     setupUi(this);
 
     // See RECORD_* #defines in defs_recording.h
-    m_pRecordControl = new ControlObjectThread(
-            RECORDING_PREF_KEY, "status");
+    m_pRecordControl = new ControlObjectSlave(
+            RECORDING_PREF_KEY, "status", this);
 
     m_pRadioOgg = new QRadioButton("Ogg Vorbis");
     m_pRadioMp3 = new QRadioButton(ENCODING_MP3);
@@ -117,7 +117,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
 
     slotApply();
     // Make sure a corrupt config file won't cause us to record constantly.
-    m_pRecordControl->slotSet(RECORD_OFF);
+    m_pRecordControl->set(RECORD_OFF);
 
     comboBoxSplitting->addItem(SPLIT_650MB);
     comboBoxSplitting->addItem(SPLIT_700MB);
@@ -210,7 +210,6 @@ void DlgPrefRecord::loadMetaData() {
 }
 
 DlgPrefRecord::~DlgPrefRecord() {
-   delete m_pRecordControl;
 }
 
 void DlgPrefRecord::slotRecordPathChange() {
