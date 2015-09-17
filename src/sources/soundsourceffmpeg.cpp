@@ -476,7 +476,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
         while (l_lLeft > 0) {
             // If Cache is running low read more
-            if ((l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) &&
+            if ((l_SObj != NULL || (l_lPos + 5) > m_SCache.size()) &&
                     l_bEndOfFile == false) {
                 offset = l_SObj->startFrame;
                 // Read 50 frames from current pos. If we hit file end before that
