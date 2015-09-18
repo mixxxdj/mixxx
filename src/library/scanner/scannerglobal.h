@@ -64,6 +64,11 @@ class ScannerGlobal {
         }
     }
 
+    inline void addUnhashedDir(const QString& dirPath) {
+        QMutexLocker locker(&m_directoriesUnhashedMutex);
+        m_directoriesUnhashed.append(dirPath);
+    }
+
     // TODO(rryan) test whether tasks should create their own QRegExp.
     inline bool isAudioFileSupported(const QString& fileName) const {
         QMutexLocker locker(&m_supportedExtensionsMatcherMutex);
@@ -154,9 +159,15 @@ class ScannerGlobal {
 
     // This set will grow during a scan by successively
     // inserting the canonical paths of directories that
-    // have already been scanned.
+    // are about to be scanned.
     mutable QMutex m_directoriesScannedMutex;
     QSet<QString> m_directoriesScanned;
+
+    // This set will collect all locations of new
+    // discovered directories, they are scanned in a
+    // second run to avoid swapping between duplicated tracks
+    mutable QMutex m_directoriesUnhashedMutex;
+    QList<QString> m_directoriesUnhashed;
 
     // Typically there are 1 to 2 entries in the blacklist so a O(n) search in a
     // QList may have better constant factors than a O(1) QSet check. However,

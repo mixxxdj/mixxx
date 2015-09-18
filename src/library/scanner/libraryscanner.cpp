@@ -240,9 +240,11 @@ void LibraryScanner::slotStartScan() {
         // scanning so that relies on having an open bookmark for the containing
         // directory.
         MDir dir(dirPath);
-        queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
-                                                 dir.dir(),
-                                                 dir.token()));
+        if (!m_scannerGlobal->testAndMarkDirectoryScanned(dir.dir())) {
+            queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
+                                                     dir.dir(),
+                                                     dir.token()));
+        }
     }
 }
 

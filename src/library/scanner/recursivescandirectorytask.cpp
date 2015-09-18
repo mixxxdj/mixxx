@@ -66,12 +66,7 @@ void RecursiveScanDirectoryTask::run() {
                 continue;
             }
             const QDir currentDir(currentFile);
-            // Atomically test and mark the directory as scanned to avoid
-            // that the same directory is scanned multiple times by different
-            // tasks.
-            if (m_scannerGlobal->testAndMarkDirectoryScanned(currentDir)) {
-                dirsToScan.append(currentDir);
-            }
+            dirsToScan.append(currentDir);
         }
     }
 
@@ -85,29 +80,37 @@ void RecursiveScanDirectoryTask::run() {
     int prevHash = m_scannerGlobal->directoryHashInDatabase(dirPath);
     bool prevHashExists = prevHash != -1;
 
-    // Compare the hashes, and if they don't match, rescan the files in that
-    // directory!
-    if (prevHash != newHash) {
-        // Rescan that mofo! If importing fails then the scan was cancelled so
-        // we return immediately.
-        if (!filesToImport.isEmpty()) {
-            m_pScanner->queueTask(
-                    new ImportFilesTask(m_pScanner, m_scannerGlobal, dirPath,
-                                        newHash, prevHashExists, filesToImport,
-                                        possibleCovers, m_pToken));
+    if (prevHashExists) {
+        // Compare the hashes, and if they don't match, rescan the files in that
+        // directory!
+        if (prevHash != newHash) {
+            // Rescan that mofo! If importing fails then the scan was cancelled so
+            // we return immediately.
+            if (!filesToImport.isEmpty()) {
+                m_pScanner->queueTask(
+                        new ImportFilesTask(m_pScanner, m_scannerGlobal, dirPath,
+                                            newHash, prevHashExists, filesToImport,
+                                            possibleCovers, m_pToken));
+            } else {
+                emit(directoryHashed(dirPath, !prevHashExists, newHash));
+            }
         } else {
-            emit(directoryHashed(dirPath, !prevHashExists, newHash));
+            emit(directoryUnchanged(dirPath));
         }
     } else {
-        emit(directoryUnchanged(dirPath));
+        m_scannerGlobal->addUnhashedDir(dirPath);
     }
 
     // Process all of the sub-directories.
     foreach (const QDir& nextDir, dirsToScan) {
-        m_pScanner->queueTask(
-                new RecursiveScanDirectoryTask(m_pScanner, m_scannerGlobal,
-                                               nextDir, m_pToken));
+        // Atomically test and mark the directory as scanned to avoid
+        // that the same directory is scanned multiple times by different
+        // tasks.
+        if (!m_scannerGlobal->testAndMarkDirectoryScanned(nextDir)) {
+            m_pScanner->queueTask(
+                    new RecursiveScanDirectoryTask(m_pScanner, m_scannerGlobal,
+                                                   nextDir, m_pToken));
+        }
     }
-
     setSuccess(true);
 }
