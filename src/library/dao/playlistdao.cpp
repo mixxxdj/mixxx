@@ -197,7 +197,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
         if (it.value() == playlistId) {
             it = m_playlistsTrackIsIn.erase(it);
         } else {
-            it++;
+            ++it;
         }
     }
 

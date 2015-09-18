@@ -274,7 +274,7 @@ bool CrateDAO::deleteCrate(const int crateId) {
         if (it.value() == crateId) {
             it = m_cratesTrackIsIn.erase(it);
         } else {
-            it++;
+            ++it;
         }
     }
 
