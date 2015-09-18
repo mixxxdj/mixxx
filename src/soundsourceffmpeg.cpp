@@ -509,7 +509,7 @@ long SoundSourceFFmpeg::seek(long filepos) {
 
     m_iCurrentMixxTs = filepos;
 
-    m_bIsSeeked = TRUE;
+    m_bIsSeeked = true;
 
     return filepos;
 }
@@ -521,7 +521,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
         // Make sure we allways start at begining and cache have some
         // material that we can consume.
         seek(0);
-        m_bIsSeeked = FALSE;
+        m_bIsSeeked = false;
     }
 
     getBytesFromCache((char *)destination, m_iCurrentMixxTs, size);
@@ -530,11 +530,11 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
     //  As this is also Hack
     // If we don't seek like we don't on analyzer.. keep
     // place in mind..
-    if (m_bIsSeeked == FALSE) {
+    if (m_bIsSeeked == false) {
         m_iCurrentMixxTs += size;
     }
 
-    m_bIsSeeked = FALSE;
+    m_bIsSeeked = false;
     return size;
 
 }
