@@ -99,7 +99,7 @@ void RecursiveScanDirectoryTask::run() {
             emit(directoryUnchanged(dirPath));
         }
     } else {
-        m_scannerGlobal->addUnhashedDir(dirPath);
+        m_scannerGlobal->addUnhashedDir(m_dir, m_pToken);
     }
 
     // Process all of the sub-directories.

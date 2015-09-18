@@ -270,18 +270,13 @@ void LibraryScanner::slotFinishHashedScan() {
     connect(pWatcher, SIGNAL(allTasksDone()),
             this, SLOT(slotFinishUnhashedScan()));
 
-    foreach (const QString& dirPath, m_scannerGlobal->unhashedDirs()) {
-        // Acquire a security bookmark for this directory if we are in a
-        // sandbox. For speed we avoid opening security bookmarks when recursive
-        // scanning so that relies on having an open bookmark for the containing
-        // directory.
-        MDir dir(dirPath);
+    foreach (const DirInfo& dirInfo, m_scannerGlobal->unhashedDirs()) {
         // no testAndMarkDirectoryScanned() here, because all unhashedDirs()
         // are already tracked
         queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
-                                                     dir.dir(),
-                                                     dir.token(),
-                                                     true));
+                                                 dirInfo.dir(),
+                                                 dirInfo.token(),
+                                                 true));
     }
 }
 

@@ -12,6 +12,28 @@
 #include "util/task.h"
 #include "util/performancetimer.h"
 
+class DirInfo {
+  public:
+    DirInfo(const QDir& dir,
+            const SecurityTokenPointer& token)
+          : m_dir(dir),
+            m_token(token) {
+    }
+
+    const QDir& dir() const {
+        return m_dir;
+    }
+
+    const SecurityTokenPointer& token() const {
+        return m_token;
+    }
+
+  private:
+    QDir m_dir;
+    SecurityTokenPointer m_token;
+};
+
+
 class ScannerGlobal {
   public:
     ScannerGlobal(const QSet<QString>& trackLocations,
@@ -64,12 +86,15 @@ class ScannerGlobal {
         }
     }
 
-    inline void addUnhashedDir(const QString& dirPath) {
+    inline void addUnhashedDir(const QDir& dir,
+                               const SecurityTokenPointer& token) {
         QMutexLocker locker(&m_directoriesUnhashedMutex);
-        m_directoriesUnhashed.append(dirPath);
+        m_directoriesUnhashed.append(DirInfo(dir, token));
     }
 
-    inline QList<QString>& unhashedDirs() {
+    inline QList<DirInfo>& unhashedDirs() {
+        // no need for locking here, because it is only used
+        // when only one using thread is around.
         return m_directoriesUnhashed;
     }
 
@@ -171,7 +196,7 @@ class ScannerGlobal {
     // discovered directories, they are scanned in a
     // second run to avoid swapping between duplicated tracks
     mutable QMutex m_directoriesUnhashedMutex;
-    QList<QString> m_directoriesUnhashed;
+    QList<DirInfo> m_directoriesUnhashed;
 
     // Typically there are 1 to 2 entries in the blacklist so a O(n) search in a
     // QList may have better constant factors than a O(1) QSet check. However,
