@@ -228,11 +228,16 @@ void LibraryScanner::slotStartScan() {
     // (must be called before calling addTracksAdd) and begins a transaction.
     m_trackDao.addTracksPrepare();
 
-    // Queue up recursive scan tasks for every directory. When all tasks are
-    // done, TaskWatcher will signal slotFinishScan.
+    // First Scan all known directories we have a hash for.
+    // In a second stage, we scan all new directories. This guarantees,
+    // that we discover always the same folder, in case of duplicated folders
+    // by symlinks
+
+    // Queue up recursive scan tasks for every hashed directory. When all tasks
+    // are done, TaskWatcher will signal slotFinishHashedScan.
     TaskWatcher* pWatcher = &m_scannerGlobal->getTaskWatcher();
     connect(pWatcher, SIGNAL(allTasksDone()),
-            this, SLOT(slotFinishScan()));
+            this, SLOT(slotFinishHashedScan()));
 
     foreach (const QString& dirPath, dirs) {
         // Acquire a security bookmark for this directory if we are in a
@@ -243,8 +248,40 @@ void LibraryScanner::slotStartScan() {
         if (!m_scannerGlobal->testAndMarkDirectoryScanned(dir.dir())) {
             queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
                                                      dir.dir(),
-                                                     dir.token()));
+                                                     dir.token(),
+                                                     false));
         }
+    }
+}
+
+// is called when all tasks of the first stage are done (threads are finished)
+void LibraryScanner::slotFinishHashedScan() {
+    if (m_scannerGlobal.isNull() || m_scannerGlobal->unhashedDirs().empty()) {
+        // bypass the second stage
+        slotFinishUnhashedScan();
+    }
+
+    // Queue up recursive scan tasks for every unhashed directory, discovered
+    // in the first stage. When all tasks
+    // are done, TaskWatcher will signal slotFinishUnhashedScan.
+    TaskWatcher* pWatcher = &m_scannerGlobal->getTaskWatcher();
+    disconnect(pWatcher, SIGNAL(allTasksDone()),
+            this, SLOT(slotFinishHashedScan()));
+    connect(pWatcher, SIGNAL(allTasksDone()),
+            this, SLOT(slotFinishUnhashedScan()));
+
+    foreach (const QString& dirPath, m_scannerGlobal->unhashedDirs()) {
+        // Acquire a security bookmark for this directory if we are in a
+        // sandbox. For speed we avoid opening security bookmarks when recursive
+        // scanning so that relies on having an open bookmark for the containing
+        // directory.
+        MDir dir(dirPath);
+        // no testAndMarkDirectoryScanned() here, because all unhashedDirs()
+        // are already tracked
+        queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
+                                                     dir.dir(),
+                                                     dir.token(),
+                                                     true));
     }
 }
 
@@ -322,11 +359,12 @@ void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
     emit(tracksChanged(coverArtTracksChanged));
 }
 
-// is called when all tasks are done (threads are finished)
-void LibraryScanner::slotFinishScan() {
-    qDebug() << "LibraryScanner::slotFinishScan";
-    if (m_scannerGlobal.isNull()) {
-        qWarning() << "No scanner global state exists in LibraryScanner::slotFinishScan";
+
+// is called when all tasks of the second stage are done (threads are finished)
+void LibraryScanner::slotFinishUnhashedScan() {
+    qDebug() << "LibraryScanner::slotFinishUnhashedScan";
+    DEBUG_ASSERT_AND_HANDLE(!m_scannerGlobal.isNull()) {
+        qWarning() << "No scanner global state exists in LibraryScanner::slotFinishUnhashedScan";
         return;
     }
 

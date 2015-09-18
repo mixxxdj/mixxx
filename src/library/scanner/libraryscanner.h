@@ -87,7 +87,8 @@ class LibraryScanner : public QThread {
 
   private slots:
     void slotStartScan();
-    void slotFinishScan();
+    void slotFinishHashedScan();
+    void slotFinishUnhashedScan();
 
     // ScannerTask signal handlers.
     void slotTaskDone(bool success);

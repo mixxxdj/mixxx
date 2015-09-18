@@ -69,6 +69,10 @@ class ScannerGlobal {
         m_directoriesUnhashed.append(dirPath);
     }
 
+    inline QList<QString>& unhashedDirs() {
+        return m_directoriesUnhashed;
+    }
+
     // TODO(rryan) test whether tasks should create their own QRegExp.
     inline bool isAudioFileSupported(const QString& fileName) const {
         QMutexLocker locker(&m_supportedExtensionsMatcherMutex);

@@ -8,10 +8,11 @@
 
 RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
         LibraryScanner* pScanner, const ScannerGlobalPointer scannerGlobal,
-        const QDir& dir, SecurityTokenPointer pToken)
+        const QDir& dir, SecurityTokenPointer pToken, bool scanUnhashed)
         : ScannerTask(pScanner, scannerGlobal),
           m_dir(dir),
-          m_pToken(pToken) {
+          m_pToken(pToken),
+          m_scanUnhashed(scanUnhashed) {
 }
 
 void RecursiveScanDirectoryTask::run() {
@@ -80,7 +81,7 @@ void RecursiveScanDirectoryTask::run() {
     int prevHash = m_scannerGlobal->directoryHashInDatabase(dirPath);
     bool prevHashExists = prevHash != -1;
 
-    if (prevHashExists) {
+    if (prevHashExists || m_scanUnhashed) {
         // Compare the hashes, and if they don't match, rescan the files in that
         // directory!
         if (prevHash != newHash) {
@@ -109,7 +110,7 @@ void RecursiveScanDirectoryTask::run() {
         if (!m_scannerGlobal->testAndMarkDirectoryScanned(nextDir)) {
             m_pScanner->queueTask(
                     new RecursiveScanDirectoryTask(m_pScanner, m_scannerGlobal,
-                                                   nextDir, m_pToken));
+                                                   nextDir, m_pToken, m_scanUnhashed));
         }
     }
     setSuccess(true);
