@@ -59,7 +59,6 @@ class TrackInfoObject : public QObject {
                     bool parseCoverArt = false);
     // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode& nodeHeader);
-    virtual ~TrackInfoObject();
 
     // Parse file metadata. If no file metadata is present, attempts to extract
     // artist and title information from the filename.

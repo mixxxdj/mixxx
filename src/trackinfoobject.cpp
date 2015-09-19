@@ -114,11 +114,6 @@ void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
     }
 }
 
-TrackInfoObject::~TrackInfoObject() {
-    // qDebug() << "~TrackInfoObject"
-    //          << this << m_id << getInfo();
-}
-
 // static
 void TrackInfoObject::onTrackReferenceExpired(TrackInfoObject* pTrack) {
     DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
