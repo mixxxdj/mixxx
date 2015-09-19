@@ -165,10 +165,10 @@ void LibraryScanner::slotStartScan() {
     DEBUG_ASSERT(m_state == STARTING);
 
     // Recursively scan each directory in the directories table.
-    QStringList dirs = m_directoryDao.getDirs();
+    m_libraryRootDirs = m_directoryDao.getDirs();
     // If there are no directories then we have nothing to do. Cleanup and
     // finish the scan immediately.
-    if (dirs.isEmpty()) {
+    if (m_libraryRootDirs.isEmpty()) {
         changeScannerState(IDLE);
         return;
     }
@@ -239,7 +239,7 @@ void LibraryScanner::slotStartScan() {
     connect(pWatcher, SIGNAL(allTasksDone()),
             this, SLOT(slotFinishHashedScan()));
 
-    foreach (const QString& dirPath, dirs) {
+    foreach (const QString& dirPath, m_libraryRootDirs) {
         // Acquire a security bookmark for this directory if we are in a
         // sandbox. For speed we avoid opening security bookmarks when recursive
         // scanning so that relies on having an open bookmark for the containing
@@ -303,10 +303,12 @@ void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
 
     // After verifying tracks and directories via recursive scanning of the
     // library directories the only unverified tracks will be files that are
-    // outside of the library directories and files that have been
-    // moved/deleted/renamed.
+    // outside of the library directories, files that have been
+    // moved/deleted/renamed and are in duplicate directories by symlinks or
+    // non normalized paths.
     qDebug() << "Checking remaining unverified tracks.";
     if (!m_trackDao.verifyRemainingTracks(
+            m_libraryRootDirs,
             m_scannerGlobal->shouldCancelPointer())) {
         // canceled
         return;

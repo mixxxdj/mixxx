@@ -151,6 +151,8 @@ class LibraryScanner : public QThread {
     QSemaphore m_stateSema;
     // this is accessed main and LibraryScanner thread
     volatile ScannerState m_state;
+
+    QStringList m_libraryRootDirs;
 };
 
 #endif

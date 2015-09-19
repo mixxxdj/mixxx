@@ -1825,7 +1825,9 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
     return false;
 }
 
-bool TrackDAO::verifyRemainingTracks(volatile const bool* pCancel) {
+bool TrackDAO::verifyRemainingTracks(
+        const QStringList& libraryRootDirs,
+        volatile const bool* pCancel) {
     // This function is called from the LibraryScanner Thread, which also has a
     // transaction running, so we do NOT NEED to use one here
     QSqlQuery query(m_database);
@@ -1852,7 +1854,24 @@ bool TrackDAO::verifyRemainingTracks(volatile const bool* pCancel) {
     QString trackLocation;
     while (query.next()) {
         trackLocation = query.value(locationColumn).toString();
-        query2.bindValue(":fs_deleted", QFile::exists(trackLocation) ? 0 : 1);
+        int fs_deleted = 0;
+        foreach(const QString dir, libraryRootDirs) {
+            if (trackLocation.startsWith(dir)) {
+                // Track is under the library root,
+                // but was not verified.
+                // This happens if the track was deleted
+                // a symlink duplicate or on a non normalized
+                // path like on non case sensitive file systems.
+                fs_deleted = 1;
+                break;
+            }
+        }
+
+        if (fs_deleted == 0) {
+            fs_deleted = QFile::exists(trackLocation) ? 0 : 1;
+        }
+
+        query2.bindValue(":fs_deleted", fs_deleted);
         query2.bindValue(":location", trackLocation);
         if (!query2.exec()) {
             LOG_FAILED_QUERY(query2);
