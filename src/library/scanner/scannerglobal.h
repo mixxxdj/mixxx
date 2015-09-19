@@ -158,8 +158,8 @@ class ScannerGlobal {
         return m_timer.elapsed();
     }
 
-    int numAddedTracks() const {
-        return m_addedTracks.size();
+    const QStringList& addedTracks() const {
+        return m_addedTracks;
     }
     void trackAdded(const QString& trackLocation) {
         m_addedTracks << trackLocation;

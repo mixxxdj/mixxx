@@ -1627,8 +1627,10 @@ void TrackDAO::markTrackLocationsAsDeleted(const QString& directory) {
 // files size exists in the track_locations table. That means the file has
 // moved instead of being deleted outright, and so we can salvage your
 // existing metadata that you have in your DB (like cue points, etc.).
-bool TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld,
-        QSet<int>* pTracksMovedSetNew, volatile const bool* pCancel) {
+bool TrackDAO::detectMovedTracks(QSet<int>* pTracksMovedSetOld,
+        QSet<int>* pTracksMovedSetNew,
+        const QStringList& addedTracks,
+        volatile const bool* pCancel) {
     // This function should not start a transaction on it's own!
     // When it's called from libraryscanner.cpp, there already is a transaction
     // started!

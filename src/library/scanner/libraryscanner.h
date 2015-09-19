@@ -120,8 +120,7 @@ class LibraryScanner : public QThread {
     // CANCELING -> IDLE
     bool changeScannerState(LibraryScanner::ScannerState newState);
 
-    void cleanUpScan(const QStringList& verifiedTracks,
-            const QStringList& verifiedDirectories);
+    void cleanUpScan();
 
     // The library trackcollection. Do not touch this from the library scanner
     // thread.

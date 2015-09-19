@@ -280,8 +280,7 @@ void LibraryScanner::slotFinishHashedScan() {
     }
 }
 
-void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
-        const QStringList& verifiedDirectories) {
+void LibraryScanner::cleanUpScan() {
     // At the end of a scan, mark all tracks and directories that weren't
     // "verified" as "deleted" (as long as the scan wasn't canceled half way
     // through). This condition is important because our rescanning algorithm
@@ -294,12 +293,15 @@ void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
     ScopedTransaction transaction(m_database);
 
     qDebug() << "Marking tracks in changed directories as verified";
-    m_trackDao.markTrackLocationsAsVerified(verifiedTracks);
+    m_trackDao.markTrackLocationsAsVerified(m_scannerGlobal->verifiedTracks());
 
     qDebug() << "Marking unchanged directories and tracks as verified";
-    m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false,
+    m_libraryHashDao.updateDirectoryStatuses(
+            m_scannerGlobal->verifiedDirectories(),
+            false,
             true);
-    m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
+    m_trackDao.markTracksInDirectoriesAsVerified(
+            m_scannerGlobal->verifiedDirectories());
 
     // After verifying tracks and directories via recursive scanning of the
     // library directories the only unverified tracks will be files that are
@@ -331,6 +333,7 @@ void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
     QSet<int> tracksMovedSetNew;
     if (!m_trackDao.detectMovedFiles(&tracksMovedSetOld,
             &tracksMovedSetNew,
+            m_scannerGlobal->addedTracks(),
             m_scannerGlobal->shouldCancelPointer())) {
         // canceled
         return;
@@ -376,11 +379,8 @@ void LibraryScanner::slotFinishUnhashedScan() {
     m_trackDao.addTracksFinish(!m_scannerGlobal->shouldCancel() &&
                                !bScanFinishedCleanly);
 
-    QStringList verifiedTracks = m_scannerGlobal->verifiedTracks();
-    QStringList verifiedDirectories = m_scannerGlobal->verifiedDirectories();
-
     if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
-        cleanUpScan(verifiedTracks, verifiedDirectories);
+        cleanUpScan();
     }
 
     if (!m_scannerGlobal->shouldCancel() && bScanFinishedCleanly) {
@@ -396,10 +396,10 @@ void LibraryScanner::slotFinishUnhashedScan() {
            "%d tracks verified from changed/added directories. "
            "%d new tracks.",
            m_scannerGlobal->timerElapsed(),
-           verifiedDirectories.size(),
+           m_scannerGlobal->verifiedDirectories().size(),
            m_scannerGlobal->numScannedDirectories(),
-           verifiedTracks.size(),
-           m_scannerGlobal->numAddedTracks());
+           m_scannerGlobal->verifiedTracks().size(),
+           m_scannerGlobal->addedTracks().size());
 
     m_scannerGlobal.clear();
     changeScannerState(FINISHED);
@@ -453,8 +453,6 @@ void LibraryScanner::cancel() {
     // after the LibraryScanner has been destroyed.
     m_pool.waitForDone();
 }
-
-
 
 void LibraryScanner::slotTaskDone(bool success) {
     //qDebug() << "LibraryScanner::slotTaskDone" << success;
