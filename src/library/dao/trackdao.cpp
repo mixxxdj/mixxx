@@ -578,7 +578,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         if (!m_pQueryLibrarySelect->exec()) {
              LOG_FAILED_QUERY(*m_pQueryLibrarySelect)
                      << "Failed to query existing track: "
-                     << pTrack->getFilename();
+                     << pTrack->getLocation();
         } else {
             bool mixxx_deleted = false;
             if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
@@ -598,7 +598,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
                 if (!m_pQueryLibraryUpdate->exec()) {
                     LOG_FAILED_QUERY(*m_pQueryLibraryUpdate)
                             << "Failed to unremove existing track: "
-                            << pTrack->getFilename();
+                            << pTrack->getLocation();
                 }
             }
             // Regardless of whether we unremoved this track or not -- it's
@@ -630,7 +630,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
             // but marked deleted? Skip this track.
             LOG_FAILED_QUERY(*m_pQueryLibraryInsert)
                     << "Failed to INSERT new track into library:"
-                    << pTrack->getFilename();
+                    << pTrack->getLocation();
             return false;
         }
         trackId = TrackId(m_pQueryLibraryInsert->lastInsertId());

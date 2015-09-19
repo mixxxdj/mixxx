@@ -150,7 +150,7 @@ TrackPointer BaseTrackCache::lookupCachedTrack(TrackId trackId) const {
 
 bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
     if (sDebug) {
-        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getFilename();
+        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getLocation();
     }
 
     if (pTrack.isNull()) {

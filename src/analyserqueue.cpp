@@ -218,7 +218,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
             if (frameIndex < pAudioSource->getMaxFrameIndex()) {
                 // EOF not reached -> Maybe a corrupt file?
                 qWarning() << "Failed to read sample data from file:"
-                        << tio->getFilename()
+                        << tio->getLocation()
                         << "@" << frameIndex;
                 if (0 >= framesRead) {
                     // If no frames have been read then abort the analysis.
