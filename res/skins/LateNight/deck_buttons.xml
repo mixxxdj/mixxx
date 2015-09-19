@@ -449,6 +449,9 @@
 							<ConfigKey>[Channel<Variable name="channum" />],cue_gotoandstop</ConfigKey>
 							<ButtonState>RightButton</ButtonState>
 						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="channum" />],cue_indicator</ConfigKey>
+						</Connection>
 					</PushButton>
 					<PushButton>
 						<TooltipId>play_cue_set</TooltipId>
@@ -467,6 +470,9 @@
 						<Connection>
 							<ConfigKey>[Channel<Variable name="channum" />],play</ConfigKey>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="channum" />],play_indicator</ConfigKey>
 						</Connection>
 					</PushButton>
 				</Children>

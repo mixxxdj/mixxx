@@ -7,7 +7,7 @@
 
 #include "wnumber.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 
 class WNumberPos : public WNumber {
     Q_OBJECT
@@ -35,11 +35,11 @@ class WNumberPos : public WNumber {
     double m_dTrackSampleRate;
     // True if remaining content is being shown
     bool m_bRemain;
-    ControlObjectThread* m_pShowTrackTimeRemaining;
+    ControlObjectSlave* m_pShowTrackTimeRemaining;
     // Pointer to control object for position, rate, and track info
-    ControlObjectThread* m_pVisualPlaypos;
-    ControlObjectThread* m_pTrackSamples;
-    ControlObjectThread* m_pTrackSampleRate;
+    ControlObjectSlave* m_pVisualPlaypos;
+    ControlObjectSlave* m_pTrackSamples;
+    ControlObjectSlave* m_pTrackSampleRate;
 };
 
 #endif

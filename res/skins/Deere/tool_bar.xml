@@ -157,7 +157,7 @@
       <Template src="skin:spacer_h.xml"></Template>
 
       <WidgetGroup>
-        <ObjectName>MasterControls</ObjectName>
+        <ObjectName>HeadphoneControls</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
@@ -165,7 +165,7 @@
             <SetVariable name="TooltipId">headMix</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">headMix</SetVariable>
-            <SetVariable name="color">white</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
             <SetVariable name="label">Head Mix</SetVariable>
           </Template>
 
@@ -173,21 +173,14 @@
             <SetVariable name="TooltipId">headphone_gain</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">headGain</SetVariable>
-            <SetVariable name="color">white</SetVariable>
+            <SetVariable name="color">red</SetVariable>
             <SetVariable name="label">Head Gain</SetVariable>
           </Template>
-        </Children>
-      </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>HeadphoneControls</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
-        <Layout>horizontal</Layout>
-        <Children>
           <PushButton>
             <TooltipId>headSplit</TooltipId>
             <ObjectName>HeadSplit</ObjectName>
-            <Size>50f,20f</Size>
+            <Size>55f,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
@@ -202,12 +195,19 @@
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
             </Connection>
           </PushButton>
+        </Children>
+      </WidgetGroup>
 
+      <WidgetGroup>
+        <ObjectName>MasterControls</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
           <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="TooltipId">balance</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">balance</SetVariable>
-            <SetVariable name="color">white</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
             <SetVariable name="label">Balance</SetVariable>
           </Template>
 
@@ -223,19 +223,28 @@
 
       <WidgetGroup>
         <ObjectName>MasterVumeter</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
+        <Size>-1me,22min</Size>
+        <MaximumSize>110,-1</MaximumSize>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:vumeter.xml">
-            <SetVariable name="TooltipId">master_VuMeterL</SetVariable>
-            <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">VuMeterL</SetVariable>
-          </Template>
-          <Template src="skin:vumeter.xml">
-            <SetVariable name="TooltipId">master_VuMeterR</SetVariable>
-            <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">VuMeterR</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <MaximumSize>110,22</MaximumSize>
+            <Children>
+              <Template src="skin:vumeter_h.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="tooltip_meter">master_VuMeterL</SetVariable>
+                <SetVariable name="tooltip_clip">master_PeakIndicatorL</SetVariable>
+              </Template>
+              <Template src="skin:vumeter_h.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="tooltip_meter">master_VuMeterR</SetVariable>
+                <SetVariable name="tooltip_clip">master_PeakIndicatorR</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
 
@@ -259,21 +268,34 @@
         </Children>
       </WidgetGroup>
 
-      <Template src="skin:left_2state_button.xml">
-        <SetVariable name="TooltipId"></SetVariable>
-        <SetVariable name="Tooltip">Show/hide skin settings</SetVariable>
-        <SetVariable name="ObjectName">ShowHideSkinSettingsButton</SetVariable>
-        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-        <SetVariable name="state_0_text"></SetVariable>
-        <SetVariable name="state_0_pressed">icon/ic_menu_48px.svg</SetVariable>
-        <SetVariable name="state_0_unpressed">icon/ic_menu_48px.svg</SetVariable>
-        <SetVariable name="state_1_text"></SetVariable>
-        <SetVariable name="state_1_pressed">icon/ic_menu_48px.svg</SetVariable>
-        <SetVariable name="state_1_unpressed">icon/ic_menu_48px.svg</SetVariable>
-        <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
-      </Template>
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="Tooltip">Show/hide skin settings</SetVariable>
+            <SetVariable name="ObjectName">ShowHideSkinSettingsButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Deere],show_skin_settings</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

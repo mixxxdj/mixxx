@@ -170,7 +170,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (openFile()) {
             Event::start("EngineRecord recording");
             qDebug("Setting record flag to: ON");
-            m_pRecReady->slotSet(RECORD_ON);
+            m_pRecReady->set(RECORD_ON);
             emit(isRecording(true));  // will notify the RecordingManager
 
             // Since we just started recording, timeout and clear the metadata.

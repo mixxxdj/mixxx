@@ -14,6 +14,7 @@
     <BackPath>knob_bg.svg</BackPath>
     <MinAngle>-135</MinAngle>
     <MaxAngle>135</MaxAngle>
+    <KnobCenterYOffset>1.602</KnobCenterYOffset>
     <Connection>
       <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
     </Connection>

@@ -95,10 +95,10 @@ class WOverview : public WWidget {
 
     const QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;
-    ControlObjectThread* m_endOfTrackControl;
+    ControlObjectSlave* m_endOfTrackControl;
     double m_endOfTrack;
-    ControlObjectThread* m_trackSamplesControl;
-    ControlObjectThread* m_playControl;
+    ControlObjectSlave* m_trackSamplesControl;
+    ControlObjectSlave* m_playControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
