@@ -49,23 +49,31 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
         : m_fileInfo(fileInfo),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
-          m_qMutex(QMutex::Recursive),
-          m_analyserProgress(-1) {
+          m_bDeleteOnReferenceExpiration(false),
+          m_qMutex(QMutex::Recursive) {
     initialize(parseHeader, parseCoverArt);
 }
 
-TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
-        : m_qMutex(QMutex::Recursive),
-          m_analyserProgress(-1) {
-    QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-    QString location = QDir(XmlParse::selectNodeQString(nodeHeader, "Filepath")).filePath(filename);
-    m_fileInfo = QFileInfo(location);
-    m_pSecurityToken = Sandbox::openSecurityToken(m_fileInfo, true);
+namespace {
+    QFileInfo parseFileInfo(const QDomNode& nodeHeader) {
+        QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
+        QString location = QDir(XmlParse::selectNodeQString(nodeHeader, "Filepath")).filePath(filename);
+        return QFileInfo(location);
+    }
+} // anonymous namespace
 
-    // We don't call initialize() here because it would end up calling parse()
-    // on the file. Plus those initializations weren't done before, so it might
-    // cause subtle bugs. This constructor is only used for legacy importing so
-    // I'm not going to do it. rryan 6/2010
+TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
+        : m_fileInfo(parseFileInfo(nodeHeader)),
+          m_pSecurityToken(Sandbox::openSecurityToken(m_fileInfo, true)),
+          m_bDeleteOnReferenceExpiration(false),
+          m_qMutex(QMutex::Recursive) {
+    // Don't parse the header in initialize(), because it would end up
+    // calling parse() on the file!
+    initialize(false, false);
+
+    // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
+    // ignore those. Tracks will get a new ID from the database.
+    //m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
 
     m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
     m_sArtist = XmlParse::selectNodeQString(nodeHeader, "Artist");
@@ -77,50 +85,31 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iBitrate = XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt();
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
     m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
-    m_bHeaderParsed = false;
-    m_bBpmLock = false;
-    m_Rating = 0;
-
-    // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
-    // ignore those. Tracks will get a new ID from the database.
-    //m_id = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
-    m_id = TrackId();
 
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
-    m_bPlayed = false;
-    m_bDeleteOnReferenceExpiration = false;
-    m_bDirty = false;
-    m_bLocationChanged = false;
 }
 
 void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
-    m_bDeleteOnReferenceExpiration = false;
+    m_id = TrackId();
+    m_analyserProgress = -1;
+
     m_bDirty = false;
+    m_bPlayed = false;
+    m_bBpmLock = false;
     m_bLocationChanged = false;
 
-    m_sArtist = "";
-    m_sTitle = "";
-    m_sType= "";
-    m_sComment = "";
-    m_sYear = "";
-    m_sURL = "";
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
-    m_bPlayed = false;
     m_fReplayGain = 0.;
-    m_bHeaderParsed = false;
-    m_id = TrackId();
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
-    m_bBpmLock = false;
-    m_sGrouping = "";
-    m_sAlbumArtist = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
+    m_bHeaderParsed = false;
     if (parseHeader) {
         parse(parseCoverArt);
     }
