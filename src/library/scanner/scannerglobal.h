@@ -49,7 +49,6 @@ class ScannerGlobal {
               // Unless marked un-clean, we assume it will finish cleanly.
               m_scanFinishedCleanly(true),
               m_shouldCancel(false),
-              m_numAddedTracks(0),
               m_numScannedDirectories(0) {
     }
 
@@ -160,10 +159,10 @@ class ScannerGlobal {
     }
 
     int numAddedTracks() const {
-        return m_numAddedTracks;
+        return m_addedTracks.size();
     }
-    void trackAdded() {
-        m_numAddedTracks++;
+    void trackAdded(const QString& trackLocation) {
+        m_addedTracks << trackLocation;
     }
 
     int numScannedDirectories() const {
@@ -209,12 +208,14 @@ class ScannerGlobal {
     // The list of tracks verified by the scan.
     QStringList m_verifiedTracks;
 
+    // The list of tracks added by the scan.
+    QStringList m_addedTracks;
+
     volatile bool m_scanFinishedCleanly;
     volatile bool m_shouldCancel;
 
     // Stats tracking.
     PerformanceTimer m_timer;
-    int m_numAddedTracks;
     int m_numScannedDirectories;
 };
 

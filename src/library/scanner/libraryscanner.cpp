@@ -324,8 +324,6 @@ void LibraryScanner::cleanUpScan( const QStringList& verifiedTracks,
     //qDebug() << "Burn CPU";
     //for (int i = 0;i < 1000000000; i++) asm("nop");
 
-
-
     // Check to see if the "deleted" tracks showed up in another location,
     // and if so, do some magic to update all our tables.
     qDebug() << "Detecting moved files.";
@@ -536,9 +534,9 @@ void LibraryScanner::slotTrackExists(const QString& trackPath) {
 void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
     //qDebug() << "LibraryScanner::slotAddNewTrack" << pTrack;
     ScopedTimer timer("LibraryScanner::addNewTrack");
-    // For statistics tracking.
+    // For statistics tracking and to detect moved tracks
     if (m_scannerGlobal) {
-        m_scannerGlobal->trackAdded();
+        m_scannerGlobal->trackAdded(pTrack->getLocation());
     }
     if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
         // Successfully added. Signal the main instance of TrackDAO,
