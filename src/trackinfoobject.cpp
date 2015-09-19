@@ -96,7 +96,6 @@ void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
     m_bDirty = false;
     m_bPlayed = false;
     m_bBpmLock = false;
-    m_bLocationChanged = false;
 
     m_iDuration = 0;
     m_iBitrate = 0;
@@ -289,16 +288,6 @@ QString TrackInfoObject::getDurationStr() const {
     return Time::formatSeconds(iDuration, false);
 }
 
-void TrackInfoObject::setLocation(const QString& location) {
-    QMutexLocker lock(&m_qMutex);
-    QFileInfo newFileInfo(location);
-    if (newFileInfo != m_fileInfo) {
-        m_fileInfo = newFileInfo;
-        m_bLocationChanged = true;
-        setDirty(true);
-    }
-}
-
 QString TrackInfoObject::getLocation() const {
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.absoluteFilePath();
@@ -307,17 +296,6 @@ QString TrackInfoObject::getLocation() const {
 QString TrackInfoObject::getCanonicalLocation() const {
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.canonicalFilePath();
-}
-
-QFileInfo TrackInfoObject::getFileInfo() const {
-    // No need for locking since we are passing a copy by value. Qt doesn't say
-    // that QFileInfo is thread-safe but its copy constructor just copies the
-    // d_ptr.
-    return m_fileInfo;
-}
-
-SecurityTokenPointer TrackInfoObject::getSecurityToken() {
-    return m_pSecurityToken;
 }
 
 QString TrackInfoObject::getDirectory() const {
@@ -914,11 +892,6 @@ void TrackInfoObject::setDirty(bool bDirty) {
 bool TrackInfoObject::isDirty() {
     QMutexLocker lock(&m_qMutex);
     return m_bDirty;
-}
-
-bool TrackInfoObject::locationChanged() {
-    QMutexLocker lock(&m_qMutex);
-    return m_bLocationChanged;
 }
 
 int TrackInfoObject::getRating() const {
