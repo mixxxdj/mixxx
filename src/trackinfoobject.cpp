@@ -298,9 +298,14 @@ QString TrackInfoObject::getDirectory() const {
     return m_fileInfo.absolutePath();
 }
 
-QString TrackInfoObject::getFilename() const {
+QString TrackInfoObject::getFileName() const {
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.fileName();
+}
+
+int TrackInfoObject::getFileSize() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_fileInfo.size();
 }
 
 bool TrackInfoObject::exists() const {
@@ -696,11 +701,6 @@ void TrackInfoObject::setChannels(int iChannels) {
 int TrackInfoObject::getChannels() const {
     QMutexLocker lock(&m_qMutex);
     return m_iChannels;
-}
-
-int TrackInfoObject::getLength() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.size();
 }
 
 int TrackInfoObject::getBitrate() const {

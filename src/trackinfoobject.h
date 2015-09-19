@@ -106,10 +106,10 @@ class TrackInfoObject : public QObject {
     QString getCanonicalLocation() const;
     // Returns the absolute path to the directory containing the file
     QString getDirectory() const;
-    // Returns the filename of the file.
-    QString getFilename() const;
-    // Returns the length of the file in bytes
-    int getLength() const;
+    // Returns the name of the file.
+    QString getFileName() const;
+    // Returns the size of the file in bytes
+    int getFileSize() const;
     // Returns whether the file exists on disk or not. Updated as of the time
     // the TrackInfoObject is created, or when setLocation() is called.
     bool exists() const;
