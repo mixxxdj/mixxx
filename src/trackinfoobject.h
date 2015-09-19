@@ -52,16 +52,11 @@ namespace Mixxx {
 class TrackInfoObject : public QObject {
     Q_OBJECT
   public:
-    // Initialize a new track with the filename.
-    TrackInfoObject(const QString& file="",
-                    SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true,
-                    bool parseCoverArt=false);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(const QFileInfo& fileInfo,
-                    SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true,
-                    bool parseCoverArt=false);
+    explicit TrackInfoObject(const QFileInfo& fileInfo = QFileInfo(),
+                    SecurityTokenPointer pToken = SecurityTokenPointer(),
+                    bool parseHeader = true,
+                    bool parseCoverArt = false);
     // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
