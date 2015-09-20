@@ -11,7 +11,7 @@
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "controlobject.h"
-#include "controlobjectslave.h"
+#include "controlobjectscript.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 // to tell the msvs compiler about `isnan`
@@ -151,8 +151,8 @@ void ControllerEngine::gracefulShutdown() {
         qDebug() << "Aborting scratching on deck" << i.value();
         // Clear scratch2_enable. PlayerManager::groupForDeck is 0-indexed.
         QString group = PlayerManager::groupForDeck(i.value() - 1);
-        ControlObjectSlave* pScratch2Enable =
-                getControlObjectSlave(group, "scratch2_enable");
+        ControlObjectScript* pScratch2Enable =
+                getControlObjectScript(group, "scratch2_enable");
         if (pScratch2Enable != NULL) {
             pScratch2Enable->set(0);
         }
@@ -167,7 +167,7 @@ void ControllerEngine::gracefulShutdown() {
     QList<ConfigKey>::iterator end = keys.end();
     while (it != end) {
         ConfigKey key = *it;
-        ControlObjectSlave* cos = m_controlCache.take(key);
+        ControlObjectScript* cos = m_controlCache.take(key);
         delete cos;
         ++it;
     }
@@ -598,12 +598,12 @@ void ControllerEngine::errorDialogButton(QString key, QMessageBox::StandardButto
     }
 }
 
-ControlObjectSlave* ControllerEngine::getControlObjectSlave(QString group, QString name) {
+ControlObjectScript* ControllerEngine::getControlObjectScript(QString group, QString name) {
     ConfigKey key = ConfigKey(group, name);
-    ControlObjectSlave* cos = m_controlCache.value(key, NULL);
+    ControlObjectScript* cos = m_controlCache.value(key, NULL);
     if (cos == NULL) {
         // create COT
-        cos = new ControlObjectSlave(key, this);
+        cos = new ControlObjectScript(key, this);
         if (cos->valid()) {
             m_controlCache.insert(key, cos);
         } else {
@@ -620,7 +620,7 @@ ControlObjectSlave* ControllerEngine::getControlObjectSlave(QString group, QStri
    Output:  The value
    -------- ------------------------------------------------------ */
 double ControllerEngine::getValue(QString group, QString name) {
-    ControlObjectSlave* cos = getControlObjectSlave(group, name);
+    ControlObjectScript* cos = getControlObjectScript(group, name);
     if (cos == NULL) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
         return 0.0;
@@ -640,7 +640,7 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
         return;
     }
 
-    ControlObjectSlave* cos = getControlObjectSlave(group, name);
+    ControlObjectScript* cos = getControlObjectScript(group, name);
 
     if (cos != NULL) {
         ControlObject* pControl = ControlObject::getControl(cos->getKey());
@@ -657,7 +657,7 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
    Output:  The value
    -------- ------------------------------------------------------ */
 double ControllerEngine::getParameter(QString group, QString name) {
-    ControlObjectSlave* cos = getControlObjectSlave(group, name);
+    ControlObjectScript* cos = getControlObjectScript(group, name);
     if (cos == NULL) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
         return 0.0;
@@ -677,7 +677,7 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
         return;
     }
 
-    ControlObjectSlave* cos = getControlObjectSlave(group, name);
+    ControlObjectScript* cos = getControlObjectScript(group, name);
 
     // TODO(XXX): support soft takeover.
     if (cos != NULL) {
@@ -697,7 +697,7 @@ double ControllerEngine::getParameterForValue(QString group, QString name, doubl
         return 0.0;
     }
 
-    ControlObjectSlave* cos = getControlObjectSlave(group, name);
+    ControlObjectScript* cos = getControlObjectScript(group, name);
 
     if (cos == NULL) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
@@ -713,7 +713,7 @@ double ControllerEngine::getParameterForValue(QString group, QString name, doubl
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::reset(QString group, QString name) {
-    ControlObjectSlave* cos = getControlObjectSlave(group, name);
+    ControlObjectScript* cos = getControlObjectScript(group, name);
     if (cos != NULL) {
         cos->reset();
     }
@@ -725,7 +725,7 @@ void ControllerEngine::reset(QString group, QString name) {
    Output:  -
    -------- ------------------------------------------------------ */
 double ControllerEngine::getDefaultValue(QString group, QString name) {
-    ControlObjectSlave* cos = getControlObjectSlave(group, name);
+    ControlObjectScript* cos = getControlObjectScript(group, name);
 
     if (cos == NULL) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
@@ -741,7 +741,7 @@ double ControllerEngine::getDefaultValue(QString group, QString name) {
    Output:  -
    -------- ------------------------------------------------------ */
 double ControllerEngine::getDefaultParameter(QString group, QString name) {
-    ControlObjectSlave* cos = getControlObjectSlave(group, name);
+    ControlObjectScript* cos = getControlObjectScript(group, name);
 
     if (cos == NULL) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
@@ -766,7 +766,7 @@ void ControllerEngine::log(QString message) {
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::trigger(QString group, QString name) {
-    ControlObjectSlave* cos = getControlObjectSlave(group, name);
+    ControlObjectScript* cos = getControlObjectScript(group, name);
     if (cos != NULL) {
         cos->emitValueChanged();
     }
@@ -781,7 +781,7 @@ void ControllerEngine::trigger(QString group, QString name) {
 QScriptValue ControllerEngine::connectControl(
         QString group, QString name, QScriptValue callback, bool disconnect) {
     ConfigKey key(group, name);
-    ControlObjectSlave* cos = getControlObjectSlave(group, name);
+    ControlObjectScript* cos = getControlObjectScript(group, name);
     QScriptValue function;
 
     if (cos == NULL) {
@@ -886,7 +886,7 @@ QScriptValue ControllerEngine::connectControl(
    Output:  true if successful
    -------- ------------------------------------------------------ */
 void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
-    ControlObjectSlave* cos = getControlObjectSlave(conn.key.group, conn.key.item);
+    ControlObjectScript* cos = getControlObjectScript(conn.key.group, conn.key.item);
 
     if (m_pEngine == NULL) {
         return;
@@ -915,7 +915,7 @@ void ControllerEngineConnectionScriptValue::disconnect() {
    fires off the appropriate script function.
    -------- ------------------------------------------------------ */
 void ControllerEngine::slotValueChanged(double value) {
-    ControlObjectSlave* senderCOS = dynamic_cast<ControlObjectSlave*>(sender());
+    ControlObjectScript* senderCOS = dynamic_cast<ControlObjectScript*>(sender());
     DEBUG_ASSERT_AND_HANDLE(senderCOS != NULL) {
         qWarning() << "ControllerEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
         return;
@@ -1166,15 +1166,15 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
 
 double ControllerEngine::getDeckRate(const QString& group) {
     double rate = 0.0;
-    ControlObjectSlave* pRate = getControlObjectSlave(group, "rate");
+    ControlObjectScript* pRate = getControlObjectScript(group, "rate");
     if (pRate != NULL) {
         rate = pRate->get();
     }
-    ControlObjectSlave* pRateDir = getControlObjectSlave(group, "rate_dir");
+    ControlObjectScript* pRateDir = getControlObjectScript(group, "rate_dir");
     if (pRateDir != NULL) {
         rate *= pRateDir->get();
     }
-    ControlObjectSlave* pRateRange = getControlObjectSlave(group, "rateRange");
+    ControlObjectScript* pRateRange = getControlObjectScript(group, "rateRange");
     if (pRateRange != NULL) {
         rate *= pRateRange->get();
     }
@@ -1183,7 +1183,7 @@ double ControllerEngine::getDeckRate(const QString& group) {
     rate += 1.0;
 
     // See if we're in reverse play
-    ControlObjectSlave* pReverse = getControlObjectSlave(group, "reverse");
+    ControlObjectScript* pReverse = getControlObjectScript(group, "reverse");
     if (pReverse != NULL && pReverse->get() == 1) {
         rate = -rate;
     }
@@ -1191,10 +1191,10 @@ double ControllerEngine::getDeckRate(const QString& group) {
 }
 
 bool ControllerEngine::isDeckPlaying(const QString& group) {
-    ControlObjectSlave* pPlay = getControlObjectSlave(group, "play");
+    ControlObjectScript* pPlay = getControlObjectScript(group, "play");
 
     if (pPlay == NULL) {
-      QString error = QString("Could not getControlObjectSlave()");
+      QString error = QString("Could not getControlObjectScript()");
       scriptErrorDialog(error);
       return false;
     }
@@ -1243,16 +1243,16 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm,
     // Ramp velocity, default to stopped.
     double initVelocity = 0.0;
 
-    ControlObjectSlave* pScratch2Enable =
-            getControlObjectSlave(group, "scratch2_enable");
+    ControlObjectScript* pScratch2Enable =
+            getControlObjectScript(group, "scratch2_enable");
 
     // If ramping is desired, figure out the deck's current speed
     if (ramp) {
         // See if the deck is already being scratched
         if (pScratch2Enable != NULL && pScratch2Enable->get() == 1) {
             // If so, set the filter's initial velocity to the scratch speed
-            ControlObjectSlave* pScratch2 =
-                    getControlObjectSlave(group, "scratch2");
+            ControlObjectScript* pScratch2 =
+                    getControlObjectScript(group, "scratch2");
             if (pScratch2 != NULL) {
                 initVelocity = pScratch2->get();
             }
@@ -1328,7 +1328,7 @@ void ControllerEngine::scratchProcess(int timerId) {
     const double newRate = filter->predictedVelocity();
 
     // Actually do the scratching
-    ControlObjectSlave* pScratch2 = getControlObjectSlave(group, "scratch2");
+    ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
     if (pScratch2 == NULL) {
         return; // abort and maybe it'll work on the next pass
     }
@@ -1350,15 +1350,15 @@ void ControllerEngine::scratchProcess(int timerId) {
         if (m_brakeActive[deck]) {
             // If in brake mode, set scratch2 rate to 0 and turn off the play button.
             pScratch2->slotSet(0.0);
-            ControlObjectSlave* pPlay = getControlObjectSlave(group, "play");
+            ControlObjectScript* pPlay = getControlObjectScript(group, "play");
             if (pPlay != NULL) {
                 pPlay->slotSet(0.0);
             }
         }
 
         // Clear scratch2_enable to end scratching.
-        ControlObjectSlave* pScratch2Enable =
-                getControlObjectSlave(group, "scratch2_enable");
+        ControlObjectScript* pScratch2Enable =
+                getControlObjectScript(group, "scratch2_enable");
         if (pScratch2Enable == NULL) {
             return; // abort and maybe it'll work on the next pass
         }
@@ -1387,7 +1387,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
     // If no ramping is desired, disable scratching immediately
     if (!ramp) {
         // Clear scratch2_enable
-        ControlObjectSlave* pScratch2Enable = getControlObjectSlave(group, "scratch2_enable");
+        ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
         if (pScratch2Enable != NULL) {
             pScratch2Enable->slotSet(0);
         }
@@ -1478,7 +1478,7 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
     m_scratchTimers.remove(timerId);
 
     // enable/disable scratch2 mode
-    ControlObjectSlave* pScratch2Enable = getControlObjectSlave(group, "scratch2_enable");
+    ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
     if (pScratch2Enable != NULL) {
         pScratch2Enable->slotSet(activate ? 1 : 0);
     }
@@ -1495,7 +1495,7 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
         int timerId = startTimer(kScratchTimerMs);
         m_scratchTimers[timerId] = deck;
 
-        ControlObjectSlave* pScratch2 = getControlObjectSlave(group, "scratch2");
+        ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
         if (pScratch2 != NULL) {
             pScratch2->slotSet(rate);
         }
