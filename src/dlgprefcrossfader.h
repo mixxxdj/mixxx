@@ -22,7 +22,7 @@
 
 #include "ui_dlgprefcrossfaderdlg.h"
 #include "configobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
 #define MIXXX_XFADER_STEEPNESS_COEFF 8.0
@@ -60,11 +60,11 @@ class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfader
     /** X-fader values */
     double m_xFaderMode, m_transform, m_cal;
 
-    ControlObjectThread m_COTMode;
-    ControlObjectThread m_COTCurve;
-    ControlObjectThread m_COTCalibration;
-    ControlObjectThread m_COTReverse;
-    ControlObjectThread m_COTCrossfader;
+    ControlObjectSlave m_mode;
+    ControlObjectSlave m_curve;
+    ControlObjectSlave m_calibration;
+    ControlObjectSlave m_reverse;
+    ControlObjectSlave m_crossfader;
 
     bool m_xFaderReverse;
 };

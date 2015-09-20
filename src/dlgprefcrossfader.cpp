@@ -31,11 +31,11 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
           m_transform(0.0),
           m_cal(0.0),
-          m_COTMode(kConfigKey, "xFaderMode"),
-          m_COTCurve(kConfigKey, "xFaderCurve"),
-          m_COTCalibration(kConfigKey, "xFaderCalibration"),
-          m_COTReverse(kConfigKey, "xFaderReverse"),
-          m_COTCrossfader("[Master]", "crossfader"),
+          m_mode(kConfigKey, "xFaderMode"),
+          m_curve(kConfigKey, "xFaderCurve"),
+          m_calibration(kConfigKey, "xFaderCalibration"),
+          m_reverse(kConfigKey, "xFaderReverse"),
+          m_crossfader("[Master]", "crossfader"),
           m_xFaderReverse(false) {
     setupUi(this);
 
@@ -96,13 +96,13 @@ void DlgPrefCrossfader::slotResetToDefaults() {
 
 /** Apply and save any changes made in the dialog */
 void DlgPrefCrossfader::slotApply() {
-    m_COTMode.slotSet(m_xFaderMode);
-    m_COTCurve.slotSet(m_transform);
-    m_COTCalibration.slotSet(m_cal);
+    m_mode.set(m_xFaderMode);
+    m_curve.set(m_transform);
+    m_calibration.set(m_cal);
     if (checkBoxReverse->isChecked() != m_xFaderReverse) {
-        m_COTReverse.slotSet(checkBoxReverse->isChecked());
-        double position = m_COTCrossfader.get();
-        m_COTCrossfader.slotSet(0.0 - position);
+        m_reverse.set(checkBoxReverse->isChecked());
+        double position = m_crossfader.get();
+        m_crossfader.set(0.0 - position);
         m_xFaderReverse = checkBoxReverse->isChecked();
     }
     slotUpdateXFader();
