@@ -50,6 +50,7 @@ void ControlObjectThread::initialize(const ConfigKey& key) {
 }
 
 ControlObjectThread::~ControlObjectThread() {
+    //qDebug() << "ControlObjectThread::~ControlObjectThread()";
 }
 
 bool ControlObjectThread::connectValueChanged(const QObject* receiver,

@@ -44,13 +44,13 @@ class ControllerEngineConnectionScriptValue : public QObject {
     //Q_PROPERTY(QScriptValue function READ function)
   public:
     ControllerEngineConnectionScriptValue(ControllerEngineConnection conn) {
-        this->conn = conn;
+        m_conn = conn;
     }
-    QString readId() const { return this->conn.id; }
+    QString readId() const { return m_conn.id; }
     Q_INVOKABLE void disconnect();
 
   private:
-   ControllerEngineConnection conn;
+    ControllerEngineConnection m_conn;
 };
 
 /* comparison function for ControllerEngineConnection */

@@ -833,9 +833,10 @@ QScriptValue ControllerEngine::connectControl(
         QObject *qobject = callback.toQObject();
         const QMetaObject *qmeta = qobject->metaObject();
 
-        if (!strcmp(qmeta->className(), "ControllerEngineConnectionScriptValue")) {
-            ControllerEngineConnectionScriptValue *proxy =
-                (ControllerEngineConnectionScriptValue *)qobject;
+        if (!strcmp(qmeta->className(),
+                "ControllerEngineConnectionScriptValue")) {
+            ControllerEngineConnectionScriptValue* proxy =
+                    (ControllerEngineConnectionScriptValue*)qobject;
             proxy->disconnect();
         }
     } else {
@@ -910,7 +911,7 @@ void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) 
 }
 
 void ControllerEngineConnectionScriptValue::disconnect() {
-    conn.ce->disconnectControl(conn);
+    m_conn.ce->disconnectControl(m_conn);
 }
 
 /**-------- ------------------------------------------------------
