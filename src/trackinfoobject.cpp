@@ -284,31 +284,65 @@ QString TrackInfoObject::getDurationStr() const {
 }
 
 QString TrackInfoObject::getLocation() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.absoluteFilePath();
 }
 
 QString TrackInfoObject::getCanonicalLocation() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.canonicalFilePath();
 }
 
 QString TrackInfoObject::getDirectory() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.absolutePath();
 }
 
 QString TrackInfoObject::getFileName() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.fileName();
 }
 
 int TrackInfoObject::getFileSize() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
     return m_fileInfo.size();
 }
 
+QDateTime TrackInfoObject::getFileModifiedTime() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
+    QMutexLocker lock(&m_qMutex);
+    return m_fileInfo.lastModified();
+}
+
+QDateTime TrackInfoObject::getFileCreationTime() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
+    QMutexLocker lock(&m_qMutex);
+    return m_fileInfo.created();
+}
+
 bool TrackInfoObject::exists() const {
+    // Copying QFileInfo is thread-safe due to "implicit sharing"
+    // (copy-on write). But operating on a single instance of QFileInfo
+    // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
     // return here a fresh calculated value to be sure
     // the file is not deleted or gone with an USB-Stick
@@ -456,16 +490,6 @@ QDateTime TrackInfoObject::getDateAdded() const {
 void TrackInfoObject::setDateAdded(const QDateTime& dateAdded) {
     QMutexLocker lock(&m_qMutex);
     m_dateAdded = dateAdded;
-}
-
-QDateTime TrackInfoObject::getFileModifiedTime() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.lastModified();
-}
-
-QDateTime TrackInfoObject::getFileCreationTime() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.created();
 }
 
 int TrackInfoObject::getDuration()  const {
