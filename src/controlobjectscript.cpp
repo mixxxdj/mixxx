@@ -3,9 +3,8 @@
 
 #include "controlobjectscript.h"
 
-
-ControlObjectScript::ControlObjectScript(const QString& g, const QString& i, QObject* pParent)
-        : ControlObjectSlave(g, i, pParent) {
+ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
+        : ControlObjectSlave(key, pParent) {
 }
 
 ControlObjectScript::~ControlObjectScript() {

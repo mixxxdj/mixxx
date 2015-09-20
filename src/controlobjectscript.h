@@ -7,7 +7,7 @@
 class ControlObjectScript : public ControlObjectSlave {
     Q_OBJECT
   public:
-    ControlObjectScript(const QString& g, const QString& i, QObject* pParent = NULL);
+    ControlObjectScript(const ConfigKey& key, QObject* pParent = NULL);
     virtual ~ControlObjectScript();
 
   protected slots:
