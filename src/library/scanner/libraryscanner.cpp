@@ -331,7 +331,7 @@ void LibraryScanner::cleanUpScan() {
     qDebug() << "Detecting moved files.";
     QSet<int> tracksMovedSetOld;
     QSet<int> tracksMovedSetNew;
-    if (!m_trackDao.detectMovedFiles(&tracksMovedSetOld,
+    if (!m_trackDao.detectMovedTracks(&tracksMovedSetOld,
             &tracksMovedSetNew,
             m_scannerGlobal->addedTracks(),
             m_scannerGlobal->shouldCancelPointer())) {

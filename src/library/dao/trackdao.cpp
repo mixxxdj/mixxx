@@ -1420,7 +1420,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
 
     QSqlQuery query(m_database);
 
-    //Update everything but "location", since that's what we identify the track by.
+    // Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
                   "title=:title, album=:album, "
@@ -1627,6 +1627,7 @@ void TrackDAO::markTrackLocationsAsDeleted(const QString& directory) {
 // files size exists in the track_locations table. That means the file has
 // moved instead of being deleted outright, and so we can salvage your
 // existing metadata that you have in your DB (like cue points, etc.).
+// returns falls if canceled
 bool TrackDAO::detectMovedTracks(QSet<int>* pTracksMovedSetOld,
         QSet<int>* pTracksMovedSetNew,
         const QStringList& addedTracks,
@@ -1634,6 +1635,15 @@ bool TrackDAO::detectMovedTracks(QSet<int>* pTracksMovedSetOld,
     // This function should not start a transaction on it's own!
     // When it's called from libraryscanner.cpp, there already is a transaction
     // started!
+
+    if (!addedTracks.size()) {
+        // We have no moved track.
+        // We can only guarantee for new tracks that the user has not
+        // edited metadata, which we have to preserve
+        // TODO(xxx) resolve old duplicates
+        return true;
+    }
+
     QSqlQuery deletedTrackQuery(m_database);
     QSqlQuery newTrackQuery(m_database);
     QSqlQuery query(m_database);
@@ -1653,12 +1663,16 @@ bool TrackDAO::detectMovedTracks(QSet<int>* pTracksMovedSetOld,
         LOG_FAILED_QUERY(deletedTrackQuery);
     }
 
+    FieldEscaper escaper(m_database);
+    QStringList escapedAddedTracks = escaper.escapeStrings(addedTracks);
+
     // Querry possible successors
-    newTrackQuery.prepare("SELECT track_locations.id FROM track_locations "
-                   "INNER JOIN library ON track_locations.id=library.location "
-                   "WHERE fs_deleted=0 AND "
-                   "filename=:filename AND "
-                   "duration=:duration");
+    newTrackQuery.prepare(
+            QString("SELECT track_locations.id FROM track_locations "
+                    "INNER JOIN library ON track_locations.id=library.location "
+                    "WHERE location IN (%1) AND "
+                    "filename=:filename AND "
+                    "duration=:duration").arg(escapedAddedTracks.join(",")));
 
     QSqlRecord queryRecord = deletedTrackQuery.record();
     const int idColumn = queryRecord.indexOf("id");
@@ -1670,10 +1684,12 @@ bool TrackDAO::detectMovedTracks(QSet<int>* pTracksMovedSetOld,
         if (*pCancel) {
             return false;
         }
-        newTrackLocationId = -1; //Reset this var
+        newTrackLocationId = -1; // Reset this var
         oldTrackLocationId = deletedTrackQuery.value(idColumn).toInt();
         filename = deletedTrackQuery.value(filenameColumn).toString();
         duration = deletedTrackQuery.value(durationColumn).toInt();
+
+        qDebug() << "TrackDAO::detectMovedTracks looking for a successor of" << filename << duration;
 
         newTrackQuery.bindValue(":filename", filename);
         newTrackQuery.bindValue(":duration", duration);

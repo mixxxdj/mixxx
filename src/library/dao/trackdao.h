@@ -154,6 +154,7 @@ class TrackDAO : public QObject, public virtual DAO {
                           QSet<int>* pTracksMovedSetNew,
                           const QStringList& addedTracks,
                           volatile const bool* pCancel);
+
     bool verifyRemainingTracks(
             const QStringList& libraryRootDirs,
             volatile const bool* pCancel);
