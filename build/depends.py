@@ -498,6 +498,7 @@ class MixxxCore(Feature):
                    "control/controlmodel.cpp",
                    "controlobject.cpp",
                    "controlobjectslave.cpp",
+                   "controlobjectscript.cpp",
                    "controlaudiotaperpot.cpp",
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
