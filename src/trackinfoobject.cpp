@@ -48,10 +48,6 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
                   m_fileInfo, true) : pToken),
           m_bDeleteOnReferenceExpiration(false),
           m_qMutex(QMutex::Recursive) {
-    initialize(parseHeader, parseCoverArt);
-}
-
-void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
     m_id = TrackId();
     m_analyserProgress = -1;
 
@@ -69,7 +65,7 @@ void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
     m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
 
-    // parse() parses the metadata from file. This is not a quick operation!
+    // Parse the metadata from file. This is not a quick operation!
     m_bHeaderParsed = false;
     if (parseHeader) {
         parse(parseCoverArt);

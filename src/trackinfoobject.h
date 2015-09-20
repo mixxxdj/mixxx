@@ -301,9 +301,6 @@ class TrackInfoObject : public QObject {
     void slotBeatsUpdated();
 
   private:
-    // Common initialization function between all TIO constructors.
-    void initialize(bool parseHeader, bool parseCoverArt);
-
     void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
     void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
 
