@@ -14,12 +14,14 @@ class ControlObjectScript : public ControlObjectSlave {
     // Receives the value from the master control by a unique direct connection
     virtual void slotValueChangedDirect(double v, QObject* pSetter) {
         Q_UNUSED(pSetter) // we emit updates also if we are the setter
+        //qDebug() << "ControlObjectScript::slotValueChangedDirect()";
         emit(valueChanged(v));
     }
 
     // Receives the value from the master control by a unique auto connection
     virtual void slotValueChangedAuto(double v, QObject* pSetter) {
         Q_UNUSED(pSetter) // we emit updates also if we are the setter
+        //qDebug() << "ControlObjectScript::slotValueChangedAuto()";
         emit(valueChanged(v));
     }
 };
