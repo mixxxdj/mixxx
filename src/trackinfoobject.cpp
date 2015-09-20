@@ -15,9 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QDomNode>
-#include <QDomDocument>
-#include <QDomElement>
 #include <QFileInfo>
 #include <QDirIterator>
 #include <QFile>
@@ -52,41 +49,6 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
           m_bDeleteOnReferenceExpiration(false),
           m_qMutex(QMutex::Recursive) {
     initialize(parseHeader, parseCoverArt);
-}
-
-namespace {
-    QFileInfo parseFileInfo(const QDomNode& nodeHeader) {
-        QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-        QString location = QDir(XmlParse::selectNodeQString(nodeHeader, "Filepath")).filePath(filename);
-        return QFileInfo(location);
-    }
-} // anonymous namespace
-
-TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
-        : m_fileInfo(parseFileInfo(nodeHeader)),
-          m_pSecurityToken(Sandbox::openSecurityToken(m_fileInfo, true)),
-          m_bDeleteOnReferenceExpiration(false),
-          m_qMutex(QMutex::Recursive) {
-    // Don't parse the header in initialize(), because it would end up
-    // calling parse() on the file!
-    initialize(false, false);
-
-    // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
-    // ignore those. Tracks will get a new ID from the database.
-    //m_iId = XmlParse::selectNodeQString(nodeHeader, "Id").toInt();
-
-    m_sTitle = XmlParse::selectNodeQString(nodeHeader, "Title");
-    m_sArtist = XmlParse::selectNodeQString(nodeHeader, "Artist");
-    m_sType = XmlParse::selectNodeQString(nodeHeader, "Type");
-    m_sComment = XmlParse::selectNodeQString(nodeHeader, "Comment");
-    m_iDuration = XmlParse::selectNodeQString(nodeHeader, "Duration").toInt();
-    m_iSampleRate = XmlParse::selectNodeQString(nodeHeader, "SampleRate").toInt();
-    m_iChannels = XmlParse::selectNodeQString(nodeHeader, "Channels").toInt();
-    m_iBitrate = XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt();
-    m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
-    m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
-
-    m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
 }
 
 void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {

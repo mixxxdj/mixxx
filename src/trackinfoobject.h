@@ -20,7 +20,6 @@
 
 #include <QAtomicInt>
 #include <QDateTime>
-#include <QDomNode>
 #include <QFileInfo>
 #include <QList>
 #include <QMutex>
@@ -57,8 +56,6 @@ class TrackInfoObject : public QObject {
                     SecurityTokenPointer pToken = SecurityTokenPointer(),
                     bool parseHeader = true,
                     bool parseCoverArt = false);
-    // Creates a new track given information from the xml file.
-    TrackInfoObject(const QDomNode& nodeHeader);
 
     // Parse file metadata. If no file metadata is present, attempts to extract
     // artist and title information from the filename.

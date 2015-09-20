@@ -20,7 +20,6 @@
 #include "library/scanner/libraryscanner.h"
 
 #include "soundsourceproxy.h"
-#include "library/legacylibraryimporter.h"
 #include "library/scanner/recursivescandirectorytask.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/queryutil.h"
@@ -189,25 +188,6 @@ void LibraryScanner::slotStartScan() {
     m_scannerGlobal->startTimer();
 
     emit(scanStarted());
-
-    // Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed. If the
-    // upgrade_filename already exists, then do not try to upgrade since we have
-    // already done it.
-    //  Here we need the SETTINGS_PATH from Mixxx V <= 1.7
-    QString upgrade_filename = Upgrade::mixxx17HomePath().append("DBUPGRADED");
-    qDebug() << "upgrade filename is " << upgrade_filename;
-    QFile upgradefile(upgrade_filename);
-    if (!upgradefile.exists()) {
-        QTime t2;
-        t2.start();
-        LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
-        connect(&libImport, SIGNAL(progress(QString)),
-                this, SIGNAL(progressLoading(QString)));
-        ScopedTransaction transaction(m_database);
-        libImport.import();
-        transaction.commit();
-        qDebug("Legacy importer took %d ms", t2.elapsed());
-    }
 
     // First, we're going to mark all the directories that we've previously
     // hashed as needing verification. As we search through the directory tree
