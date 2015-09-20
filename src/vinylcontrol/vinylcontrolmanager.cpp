@@ -6,7 +6,6 @@
 
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "controlobjectthread.h"
 #include "playermanager.h"
 #include "soundmanager.h"
 #include "util/timer.h"
