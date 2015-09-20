@@ -111,7 +111,7 @@ class TrackInfoObject : public QObject {
     // Returns the size of the file in bytes
     int getFileSize() const;
     // Returns whether the file exists on disk or not. Updated as of the time
-    // the TrackInfoObject is created, or when setLocation() is called.
+    // the TrackInfoObject is created.
     bool exists() const;
 
     // Returns ReplayGain
