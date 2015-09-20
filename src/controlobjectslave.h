@@ -91,7 +91,7 @@ class ControlObjectSlave : public QObject {
             // not know the resulting value so it makes sense that we should emit a
             // general valueChanged() signal even though the change originated from
             // us. For this reason, we provide NULL here so that the change is
-            // broadcast as valueChanged() and not valueChangedByThis().
+            // not filtered in valueChanged()
             m_pControl->reset();
         }
     }
