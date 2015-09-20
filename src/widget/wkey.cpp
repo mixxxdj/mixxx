@@ -5,13 +5,11 @@
 WKey::WKey(const char* group, QWidget* pParent)
         : WLabel(pParent),
           m_dOldValue(0),
-          m_preferencesUpdated(ConfigKey("[Preferences]", "updated")),
-          m_engineKeyDistance(ConfigKey(group, "visual_key_distance")) {
+          m_preferencesUpdated("[Preferences]", "updated", this),
+          m_engineKeyDistance(group, "visual_key_distance", this) {
     setValue(m_dOldValue);
-    connect(&m_preferencesUpdated, SIGNAL(valueChanged(double)),
-            this, SLOT(preferencesUpdated(double)));
-    connect(&m_engineKeyDistance, SIGNAL(valueChanged(double)),
-            this, SLOT(setCents()));
+    m_preferencesUpdated.connectValueChanged(SLOT(preferencesUpdated(double)));
+    m_engineKeyDistance.connectValueChanged(SLOT(setCents()));
 }
 
 WKey::~WKey() {
