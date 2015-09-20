@@ -16,14 +16,13 @@ MidiOutputHandler::MidiOutputHandler(MidiController* controller,
                                      const MidiOutputMapping& mapping)
         : m_pController(controller),
           m_mapping(mapping),
-          m_cot(mapping.control),
+          m_cos(mapping.controlKey, this),
           m_lastVal(0) {
-    connect(&m_cot, SIGNAL(valueChanged(double)),
-            this, SLOT(controlChanged(double)));
+    m_cos.connectValueChanged(SLOT(controlChanged(double)));
 }
 
 MidiOutputHandler::~MidiOutputHandler() {
-    ConfigKey cKey = m_cot.getKey();
+    ConfigKey cKey = m_cos.getKey();
     if (m_pController->debugging()) {
         qDebug() << QString("Destroying static MIDI output handler on %1 for %2,%3")
                 .arg(m_pController->getName(), cKey.group, cKey.item);
@@ -31,11 +30,11 @@ MidiOutputHandler::~MidiOutputHandler() {
 }
 
 bool MidiOutputHandler::validate() {
-    return m_cot.valid();
+    return m_cos.valid();
 }
 
 void MidiOutputHandler::update() {
-    controlChanged(m_cot.get());
+    controlChanged(m_cos.get());
 }
 
 void MidiOutputHandler::controlChanged(double value) {
@@ -45,7 +44,7 @@ void MidiOutputHandler::controlChanged(double value) {
     }
 
     // Don't update with out of date messages.
-    value = m_cot.get();
+    value = m_cos.get();
     m_lastVal = value;
 
     unsigned char byte3 = m_mapping.output.off;
