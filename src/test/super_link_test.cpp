@@ -8,6 +8,7 @@
 #include "effects/effect.h"
 #include "mixxxtest.h"
 #include "test/baseeffecttest.h"
+#include "controlobjectslave.h"
 
 class SuperLinkTest : public BaseEffectTest {
   protected:
@@ -59,12 +60,12 @@ class SuperLinkTest : public BaseEffectTest {
 
         QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
 
-        m_pControlValue.reset(new ControlObjectThread(group, itemPrefix));
+        m_pControlValue.reset(new ControlObjectSlave(group, itemPrefix));
 
-        m_pControlLinkType.reset(new ControlObjectThread(group,
+        m_pControlLinkType.reset(new ControlObjectSlave(group,
                 itemPrefix + QString("_link_type")));
 
-        m_pControlLinkInverse.reset(new ControlObjectThread(group,
+        m_pControlLinkInverse.reset(new ControlObjectSlave(group,
                 itemPrefix + QString("_link_inverse")));
     }
 
@@ -73,9 +74,9 @@ class SuperLinkTest : public BaseEffectTest {
     ChannelHandleAndGroup m_headphone;
 
     EffectSlotPointer m_pEffectSlot;
-    QScopedPointer<ControlObjectThread> m_pControlValue;
-    QScopedPointer<ControlObjectThread> m_pControlLinkType;
-    QScopedPointer<ControlObjectThread> m_pControlLinkInverse;
+    QScopedPointer<ControlObjectSlave> m_pControlValue;
+    QScopedPointer<ControlObjectSlave> m_pControlLinkType;
+    QScopedPointer<ControlObjectSlave> m_pControlLinkInverse;
 };
 
 TEST_F(SuperLinkTest, LinkDefault) {
@@ -145,10 +146,10 @@ TEST_F(SuperLinkTest, HalfLinkTakeover) {
     EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
     m_pEffectSlot->loadEffect(pEffect);
     QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
-    m_pControlValue.reset(new ControlObjectThread(group, itemPrefix));
-    m_pControlLinkType.reset(new ControlObjectThread(group,
+    m_pControlValue.reset(new ControlObjectSlave(group, itemPrefix));
+    m_pControlLinkType.reset(new ControlObjectSlave(group,
             itemPrefix + QString("_link_type")));
-    m_pControlLinkInverse.reset(new ControlObjectThread(group,
+    m_pControlLinkInverse.reset(new ControlObjectSlave(group,
             itemPrefix + QString("_link_inverse")));
 
     // OK now the actual test.
