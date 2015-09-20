@@ -8,7 +8,6 @@
 #include <QList>
 
 #include "configobject.h"
-#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 #include "control/controlvalue.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -108,7 +107,6 @@ class EngineControl : public QObject {
     ControlValueAtomic<SampleOfTrack> m_sampleOfTrack;
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pEngineBuffer;
-    ControlObjectThread m_numDecks;
 };
 
 #endif /* ENGINECONTROL_H */
