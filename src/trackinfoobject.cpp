@@ -1,25 +1,6 @@
-/***************************************************************************
-                          trackinfoobject.cpp  -  description
-                             -------------------
-    begin                : 10 02 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include <QFileInfo>
 #include <QDirIterator>
 #include <QFile>
 #include <QMutexLocker>
-#include <QString>
 #include <QtDebug>
 #include <QRegExp>
 
@@ -27,8 +8,8 @@
 
 #include "controlobject.h"
 #include "soundsourceproxy.h"
+#include "library/coverartutils.h"
 #include "metadata/trackmetadata.h"
-#include "util/xml.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
@@ -36,9 +17,9 @@
 #include "util/cmdlineargs.h"
 #include "util/time.h"
 #include "util/math.h"
-#include "waveform/waveform.h"
-#include "library/coverartutils.h"
 #include "util/assert.h"
+#include "util/xml.h"
+
 
 TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
                                  SecurityTokenPointer pToken,
