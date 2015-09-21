@@ -118,6 +118,14 @@ class ControlObjectSlave : public QObject {
         }
     }
 
+    // Receives the value from the master control by a unique Queued connection
+    virtual void slotValueChangedQueued(double v, QObject* pSetter) {
+        if (pSetter != this) {
+            // This is base implementation of this function without scaling
+            emit(valueChanged(v));
+        }
+    }
+
   protected:
     ConfigKey m_key;
     // Pointer to connected control.

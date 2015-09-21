@@ -24,6 +24,13 @@ class ControlObjectScript : public ControlObjectSlave {
         //qDebug() << "ControlObjectScript::slotValueChangedAuto()";
         emit(valueChanged(v));
     }
+
+    // Receives the value from the master control by a unique Queued connection
+    virtual void slotValueChangedQueued(double v, QObject* pSetter) {
+        Q_UNUSED(pSetter) // we emit updates also if we are the setter
+        //qDebug() << "ControlObjectScript::slotValueChangedQueued()";
+        emit(valueChanged(v));
+    }
 };
 
 #endif // CONTROLOBJECTSLAVE_H
