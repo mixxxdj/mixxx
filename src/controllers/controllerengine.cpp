@@ -776,7 +776,6 @@ void ControllerEngine::trigger(QString group, QString name) {
     }
 }
 
-
 // Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a
 //          script function
 // Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
@@ -846,8 +845,6 @@ QScriptValue ControllerEngine::connectControl(
 
     if (function.isFunction()) {
         qDebug() << "Connection:" << group << name;
-        cos->connectValueChanged(SLOT(slotValueChanged(double)),
-                                 Qt::QueuedConnection);
 
         ControllerEngineConnection conn;
         conn.key = key;
@@ -870,10 +867,12 @@ QScriptValue ControllerEngine::connectControl(
             conn.id = uuid.toString();
         }
 
+        cos->connectScriptFunction(conn);
+
         m_connectedControls.insert(key, conn);
         return m_pEngine->newQObject(
-            new ControllerEngineConnectionScriptValue(conn),
-            QScriptEngine::ScriptOwnership);
+                new ControllerEngineConnectionScriptValue(conn),
+                QScriptEngine::ScriptOwnership);
     }
 
     return QScriptValue(false);
@@ -896,8 +895,7 @@ void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) 
         m_connectedControls.remove(conn.key, conn);
         // Only disconnect the signal if there are no other instances of this control using it
         if (!m_connectedControls.contains(conn.key)) {
-            disconnect(cos, SIGNAL(valueChanged(double)),
-                       this, SLOT(slotValueChanged(double)));
+            cos->disconnectScriptFunction(conn);
         }
     } else {
         qWarning() << "Could not Disconnect connection" << conn.id;
@@ -908,50 +906,6 @@ void ControllerEngineConnectionScriptValue::disconnect() {
     m_conn.ce->disconnectControl(m_conn);
 }
 
-/**-------- ------------------------------------------------------
-   Purpose: Receives valueChanged() slots from ControlObjects, and
-   fires off the appropriate script function.
-   -------- ------------------------------------------------------ */
-void ControllerEngine::slotValueChanged(double value) {
-    ControlObjectScript* senderCOS = dynamic_cast<ControlObjectScript*>(sender());
-    DEBUG_ASSERT_AND_HANDLE(senderCOS != NULL) {
-        qWarning() << "ControllerEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
-        return;
-    }
-
-    ConfigKey key = senderCOS->getKey();
-
-    //qDebug() << "[Controller]: SlotValueChanged" << key.group << key.item;
-
-    if (m_connectedControls.contains(key)) {
-        QHash<ConfigKey, ControllerEngineConnection>::iterator iter =
-            m_connectedControls.find(key);
-        QList<ControllerEngineConnection> conns;
-
-        // Create a temporary list to allow callbacks to disconnect
-        // -Phillip Whelan
-        while (iter != m_connectedControls.end() && iter.key() == key) {
-            conns.append(iter.value());
-            ++iter;
-        }
-
-        for (int i = 0; i < conns.size(); ++i) {
-            ControllerEngineConnection conn = conns.at(i);
-            QScriptValueList args;
-
-            args << QScriptValue(value);
-            args << QScriptValue(key.group);
-            args << QScriptValue(key.item);
-            QScriptValue result = conn.function.call(conn.context, args);
-            if (result.isError()) {
-                qWarning()<< "ControllerEngine: Call to callback" << conn.id
-                          << "resulted in an error:" << result.toString();
-            }
-        }
-    } else {
-        qWarning() << "ControllerEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
-    }
-}
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate a script file

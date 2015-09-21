@@ -114,7 +114,6 @@ class ControllerEngine : public QObject {
     virtual void timerEvent(QTimerEvent *event);
 
   public slots:
-    void slotValueChanged(double value);
     // Evaluate a script file
     bool evaluate(QString filepath);
 
