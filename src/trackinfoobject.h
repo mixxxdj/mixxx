@@ -89,8 +89,13 @@ class TrackInfoObject : public QObject {
     QString getFileName() const;
     // Returns the size of the file in bytes
     int getFileSize() const;
-    // Returns whether the file exists on disk or not. Updated as of the time
-    // the TrackInfoObject is created.
+    // Returns file modified datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileModifiedTime() const;
+    // Returns file creation datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileCreationTime() const;
+    // Returns whether the file exists on disk or not.
     bool exists() const;
 
     // Returns ReplayGain
@@ -136,14 +141,6 @@ class TrackInfoObject : public QObject {
 
     QDateTime getDateAdded() const;
     void setDateAdded(const QDateTime& dateAdded);
-
-    // Returns file modified datetime. Limited by the accuracy of what Qt
-    // QFileInfo gives us.
-    QDateTime getFileModifiedTime() const;
-
-    // Returns file creation datetime. Limited by the accuracy of what Qt
-    // QFileInfo gives us.
-    QDateTime getFileCreationTime() const;
 
     // Getter/Setter methods for metadata
     // Return title
