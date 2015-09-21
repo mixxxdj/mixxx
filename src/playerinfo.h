@@ -22,7 +22,7 @@
 #include <QMap>
 #include <QTimerEvent>
 
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "trackinfoobject.h"
 
 class PlayerInfo : public QObject {
@@ -53,10 +53,10 @@ class PlayerInfo : public QObject {
                       m_orientation(group, "orientation") {
             }
 
-            ControlObjectThread m_play;
-            ControlObjectThread m_pregain;
-            ControlObjectThread m_volume;
-            ControlObjectThread m_orientation;
+            ControlObjectSlave m_play;
+            ControlObjectSlave m_pregain;
+            ControlObjectSlave m_volume;
+            ControlObjectSlave m_orientation;
     };
 
     void clearControlCache();
@@ -69,7 +69,7 @@ class PlayerInfo : public QObject {
     virtual ~PlayerInfo();
 
     mutable QMutex m_mutex;
-    ControlObjectThread* m_pCOxfader;
+    ControlObjectSlave* m_pCOxfader;
     // QMap is faster than QHash for small count of elements < 50
     QMap<QString, TrackPointer> m_loadedTrackMap;
     int m_currentlyPlayingDeck;

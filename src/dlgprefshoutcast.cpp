@@ -22,7 +22,7 @@
 #include "defs_urls.h"
 #include "dlgprefshoutcast.h"
 #include "shoutcast/defs_shoutcast.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 
 const char* kDefaultMetadataFormat = "$artist - $title";
 
@@ -31,9 +31,8 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
           m_pConfig(_config) {
     setupUi(this);
 
-    m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
-            SHOUTCAST_PREF_KEY, "update_from_prefs");
-
+    m_pUpdateShoutcastFromPrefs = new ControlObjectSlave(
+            SHOUTCAST_PREF_KEY, "update_from_prefs", this);
     // Enable live broadcasting checkbox
     enableLiveBroadcasting->setChecked((bool)m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
@@ -181,7 +180,6 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
 }
 
 DlgPrefShoutcast::~DlgPrefShoutcast() {
-    delete m_pUpdateShoutcastFromPrefs;
 }
 
 void DlgPrefShoutcast::slotResetToDefaults() {
@@ -259,5 +257,5 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_format"), ConfigValue(metadata_format->text()));
 
     //Tell the EngineShoutcast object to update with these values by toggling this control object.
-    m_pUpdateShoutcastFromPrefs->slotSet(1.0);
+    m_pUpdateShoutcastFromPrefs->set(1.0);
 }

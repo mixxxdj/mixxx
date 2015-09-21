@@ -5,6 +5,7 @@
 
 #include "controlobject.h"
 #include "controlpotmeter.h"
+#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedeck.h"
