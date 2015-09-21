@@ -7,7 +7,8 @@
 
 #include "util/sandbox.h"
 
-// Creates sound sources for filenames or tracks
+// Creates sound sources for plain files or tracks. Only intended to be used
+// in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
     static void loadPlugins(); // not thread-safe
@@ -22,8 +23,20 @@ public:
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
-    explicit SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken = SecurityTokenPointer());
-    explicit SoundSourceProxy(TrackPointer pTrack);
+    explicit SoundSourceProxy(
+            const TrackPointer& pTrack);
+
+    const TrackPointer& getTrack() const {
+        return m_pTrack;
+    }
+
+    const QString& getFilePath() const {
+        return m_filePath;
+    }
+
+    const QUrl& getUrl() const {
+        return m_url;
+    }
 
     QString getType() const {
         if (m_pSoundSource) {
@@ -33,6 +46,21 @@ public:
         }
     }
 
+    // Load track metadata and (optionally) cover art from the file
+    // if it has not already been parsed. With reloadFromFile = true
+    // metadata and cover art will be reloaded from the file regardless
+    // if it has already been parsed before or not.
+    void loadTrackMetadata(bool reloadFromFile = false) const {
+        m_pTrack->parseTrackMetadata(*this, false, reloadFromFile);
+    }
+    void loadTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
+        m_pTrack->parseTrackMetadata(*this, true, reloadFromFile);
+    }
+
+    // Low-level function for parsing track metadata and cover art
+    // embedded in the audio file into the corresponding objects.
+    // The track referenced by this proxy is not modified! Both
+    // parameters are optional and can be set to nullptr/NULL.
     Result parseTrackMetadataAndCoverArt(
             Mixxx::TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override {
@@ -42,20 +70,6 @@ public:
         } else {
             return ERR;
         }
-    }
-
-    // Only for  backward compatibility.
-    // Should be removed when no longer needed.
-    Result parseTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
-        return parseTrackMetadataAndCoverArt(pTrackMetadata, NULL);
-    }
-
-    // Only for  backward compatibility.
-    // Should be removed when no longer needed.
-    QImage parseCoverArt() const {
-        QImage coverArt;
-        const Result result = parseTrackMetadataAndCoverArt(NULL, &coverArt);
-        return (result == OK) ? coverArt : QImage();
     }
 
     // Opening the audio data through the proxy will
@@ -73,11 +87,18 @@ private:
     const TrackPointer m_pTrack;
     const SecurityTokenPointer m_pSecurityToken;
 
+    const QString m_filePath;
+    const QUrl m_url;
+
+    // This pointer must stay in this class together with
+    // the corresponding track pointer. Don't pass it around!!
     const Mixxx::SoundSourcePointer m_pSoundSource;
 
-    // Just an alias that keeps track of opening and closing
-    // the corresponding SoundSource.
+    // Keeps track of opening and closing the corresponding
+    // SoundSource. This pointer can safely be passed around,
+    // because internally it contains a reference to the TIO
+    // that keeps it alive.
     Mixxx::AudioSourcePointer m_pAudioSource;
 };
 
-#endif
+#endif // SOUNDSOURCEPROXY_H

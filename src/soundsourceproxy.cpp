@@ -1,3 +1,6 @@
+#include <QApplication>
+#include <QDesktopServices>
+
 #include "soundsourceproxy.h"
 
 #ifdef __MAD__
@@ -23,10 +26,7 @@
 
 #include "util/cmdlineargs.h"
 
-#include <QApplication>
-#include <QDesktopServices>
-
-//Static memory allocation
+//static
 Mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
 
 namespace {
@@ -120,74 +120,6 @@ QList<QDir> getSoundSourcePluginDirectories() {
     return pluginDirs;
 }
 
-}
-
-//Constructor
-SoundSourceProxy::SoundSourceProxy(QString qFilename,
-        SecurityTokenPointer pToken)
-        : m_pSecurityToken(openSecurityToken(qFilename, pToken))
-                , m_pSoundSource(initialize(qFilename)) {
-}
-
-//Other constructor
-SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
-        : m_pTrack(pTrack)
-                , m_pSecurityToken(
-                openSecurityToken(pTrack->getLocation(),
-                        pTrack->getSecurityToken()))
-                        , m_pSoundSource(initialize(pTrack->getLocation())) {
-}
-
-Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {
-    if (m_pAudioSource) {
-        qDebug() << "AudioSource is already open";
-        return m_pAudioSource;
-    }
-
-    if (!m_pSoundSource) {
-        qDebug() << "No SoundSource available";
-        return m_pAudioSource;
-    }
-
-    if (OK != m_pSoundSource->open(audioSrcCfg)) {
-        qWarning() << "Failed to open SoundSource";
-        return m_pAudioSource;
-    }
-
-    if (!m_pSoundSource->isValid()) {
-        qWarning() << "Invalid file:" << m_pSoundSource->getUrlString()
-                << "channels" << m_pSoundSource->getChannelCount()
-                << "frame rate" << m_pSoundSource->getChannelCount();
-        return m_pAudioSource;
-    }
-    if (m_pSoundSource->isEmpty()) {
-        qWarning() << "Empty file:" << m_pSoundSource->getUrlString();
-        return m_pAudioSource;
-    }
-
-    // Overwrite metadata with actual audio properties
-    if (m_pTrack) {
-        m_pTrack->setChannels(m_pSoundSource->getChannelCount());
-        m_pTrack->setSampleRate(m_pSoundSource->getFrameRate());
-        if (m_pSoundSource->hasDuration()) {
-            m_pTrack->setDuration(m_pSoundSource->getDuration());
-        }
-        if (m_pSoundSource->hasBitrate()) {
-            m_pTrack->setBitrate(m_pSoundSource->getBitrate());
-        }
-    }
-
-    m_pAudioSource = m_pSoundSource;
-
-    return m_pAudioSource;
-}
-
-void SoundSourceProxy::closeAudioSource() {
-    if (m_pAudioSource) {
-        DEBUG_ASSERT(m_pSoundSource);
-        m_pSoundSource->close();
-        m_pAudioSource.clear();
-    }
 }
 
 // static
@@ -334,5 +266,129 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
     } else {
         qWarning() << "Unsupported file type" << qFilename;
         return Mixxx::SoundSourcePointer();
+    }
+}
+
+SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
+    : m_pTrack(pTrack),
+      m_pSecurityToken(
+              openSecurityToken(
+                      pTrack->getLocation(),
+                      pTrack->getSecurityToken())),
+      m_filePath(pTrack->getCanonicalLocation()),
+      m_url(QUrl::fromLocalFile(m_filePath)),
+      m_pSoundSource(initialize(pTrack->getLocation())) {
+}
+
+namespace {
+
+// Keeps the TIO alive while accessing the audio data
+// of the track. The TIO must not be deleted while
+// accessing the corresponding file to avoid file
+// corruption when writing metadata while the file
+// is still in use.
+class AudioSourceProxy: public Mixxx::AudioSource {
+public:
+    AudioSourceProxy(const AudioSourceProxy&) = delete;
+    AudioSourceProxy(AudioSourceProxy&&) = delete;
+
+    static Mixxx::AudioSourcePointer create(
+            const TrackPointer& pTrack,
+            const Mixxx::AudioSourcePointer& pAudioSource) {
+        DEBUG_ASSERT(!pTrack.isNull());
+        DEBUG_ASSERT(!pAudioSource.isNull());
+        return Mixxx::AudioSourcePointer(
+                new AudioSourceProxy(pTrack, pAudioSource));
+    }
+
+    AudioSourceProxy(
+            const TrackPointer& pTrack,
+            const Mixxx::AudioSourcePointer& pAudioSource)
+        : Mixxx::AudioSource(*pAudioSource),
+          m_pTrack(std::move(pTrack)),
+          m_pAudioSource(std::move(pAudioSource)) {
+    }
+
+    SINT seekSampleFrame(SINT frameIndex) override {
+        return m_pAudioSource->seekSampleFrame(
+                frameIndex);
+    }
+
+    SINT readSampleFrames(
+            SINT numberOfFrames,
+            CSAMPLE* sampleBuffer) override {
+        return m_pAudioSource->readSampleFrames(
+                numberOfFrames,
+                sampleBuffer);
+    }
+
+    SINT readSampleFramesStereo(
+            SINT numberOfFrames,
+            CSAMPLE* sampleBuffer,
+            SINT sampleBufferSize) override {
+        return m_pAudioSource->readSampleFramesStereo(
+                numberOfFrames,
+                sampleBuffer,
+                sampleBufferSize);
+    }
+
+private:
+    const TrackPointer m_pTrack;
+    const Mixxx::AudioSourcePointer m_pAudioSource;
+};
+
+} // anonymous namespace
+
+Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {
+    if (!m_pAudioSource.isNull()) {
+        qDebug() << "AudioSource is already open";
+        return m_pAudioSource;
+    }
+
+    if (m_pSoundSource.isNull()) {
+        qDebug() << "No SoundSource available";
+        return m_pAudioSource;
+    }
+
+    if (OK != m_pSoundSource->open(audioSrcCfg)) {
+        qWarning() << "Failed to open SoundSource";
+        return m_pAudioSource;
+    }
+
+    if (!m_pSoundSource->isValid()) {
+        qWarning() << "Invalid file:" << m_pSoundSource->getUrlString()
+                << "channels" << m_pSoundSource->getChannelCount()
+                << "frame rate" << m_pSoundSource->getChannelCount();
+        return m_pAudioSource;
+    }
+    if (m_pSoundSource->isEmpty()) {
+        qWarning() << "Empty file:" << m_pSoundSource->getUrlString();
+        return m_pAudioSource;
+    }
+
+    // Overwrite metadata with actual audio properties
+    if (m_pTrack) {
+        m_pTrack->setChannels(m_pSoundSource->getChannelCount());
+        m_pTrack->setSampleRate(m_pSoundSource->getFrameRate());
+        if (m_pSoundSource->hasDuration()) {
+            m_pTrack->setDuration(m_pSoundSource->getDuration());
+        }
+        if (m_pSoundSource->hasBitrate()) {
+            m_pTrack->setBitrate(m_pSoundSource->getBitrate());
+        }
+    }
+
+    m_pAudioSource =  AudioSourceProxy::create(m_pTrack, m_pSoundSource);
+
+    return m_pAudioSource;
+}
+
+void SoundSourceProxy::closeAudioSource() {
+    if (!m_pAudioSource.isNull()) {
+        DEBUG_ASSERT(!m_pSoundSource.isNull());
+        m_pSoundSource->close();
+        m_pAudioSource.clear();
+        qDebug() << "Closed AudioSource for file"
+                << getFilePath();
     }
 }

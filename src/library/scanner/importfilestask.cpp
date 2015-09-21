@@ -1,5 +1,6 @@
 #include "library/scanner/importfilestask.h"
 
+#include "soundsourceproxy.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/coverartutils.h"
 #include "util/timer.h"
@@ -41,16 +42,22 @@ void ImportFilesTask::run() {
             // directory hash has changed).
             emit(trackExists(filePath));
         } else {
-            // Parse the track including cover art from metadata. This is a new
-            // (never before seen) track so it is safe to parse cover art
-            // without checking if we have cover art that is USER_SELECTED. If
-            // this changes in the future you MUST check that the cover art is
-            // not USER_SELECTED first.
-            TrackPointer pTrack = TrackPointer(
-                new TrackInfoObject(filePath, m_pToken, true, true));
+            // Create a temporary TIO for importing that is not
+            // inserted into the TIO cache until requested. This
+            // pointer goes out of scope after importing has
+            // completed successfully. It will be passed around
+            // through some signals, but is not stored permanently.
+            // Otherwise importing in a separate thread would become
+            // much more complicated.
+            TrackPointer pTrack(TrackInfoObject::newTemporaryForFile(file, m_pToken));
+            SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
 
             // If cover art is not found in the track metadata, populate from
             // possibleCovers.
+            // This is a new (never before seen) track so it is safe
+            // to parse cover art without checking if we have cover art
+            // that is USER_SELECTED. If this changes in the future you
+            // MUST check that the cover art is not USER_SELECTED first.
             if (pTrack->getCoverArt().image.isNull()) {
                 CoverArt art = CoverArtUtils::selectCoverArtForTrack(
                     pTrack.data(), m_possibleCovers);

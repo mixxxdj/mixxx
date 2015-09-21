@@ -29,7 +29,9 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 QImage CoverArtUtils::extractEmbeddedCover(
         const QString& trackLocation,
         SecurityTokenPointer pToken) {
-    SoundSourceProxy proxy(trackLocation, pToken);
+    TrackPointer pTrack(
+            TrackInfoObject::newTemporaryForFile(trackLocation, pToken));
+    SoundSourceProxy proxy(pTrack);
     QImage coverArt;
     if (OK == proxy.parseTrackMetadataAndCoverArt(nullptr, &coverArt)) {
         return coverArt;

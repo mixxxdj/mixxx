@@ -9,7 +9,7 @@ class BeatMapTest : public testing::Test {
   protected:
 
     BeatMapTest()
-            : m_pTrack(new TrackInfoObject(), &QObject::deleteLater),
+            : m_pTrack(TrackInfoObject::newDummy()),
               m_iSampleRate(100),
               m_iFrameSize(2) {
 

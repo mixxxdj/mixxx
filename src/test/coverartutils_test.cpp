@@ -2,6 +2,7 @@
 #include <QStringBuilder>
 #include <QFileInfo>
 
+#include "soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/trackcollection.h"
@@ -95,7 +96,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
     ASSERT_FALSE(QDir().exists(trackdir)); // it must start empty
     ASSERT_TRUE(QDir().mkpath(trackdir));
 
-    TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
+    TrackPointer pTrack(TrackInfoObject::newTemporaryForFile(kTrackLocationTest));
+    SoundSourceProxy(pTrack).loadTrackMetadata();
     QLinkedList<QFileInfo> covers;
     CoverArt res;
     // looking for cover in an empty directory
@@ -105,9 +107,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
     EXPECT_EQ(expected, res);
 
     // Looking for a track with embedded cover.
-    pTrack = TrackPointer(new TrackInfoObject(kTrackLocationTest,
-                                              SecurityTokenPointer(),
-                                              true, true));
+    pTrack = TrackPointer(TrackInfoObject::newTemporaryForFile(kTrackLocationTest));
+    SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
     expected = CoverArt();
     expected.image = pTrack->getCoverArt().image;
     expected.info.type = CoverInfo::METADATA;

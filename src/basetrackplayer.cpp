@@ -6,6 +6,7 @@
 #include "controlobject.h"
 #include "controlpotmeter.h"
 #include "trackinfoobject.h"
+#include "soundsourceproxy.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
@@ -217,15 +218,14 @@ void BaseTrackPlayerImpl::slotUnloadTrack(TrackPointer) {
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 }
 
-void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
-{
+void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject) {
+    DEBUG_ASSERT(m_pLoadedTrack == pTrackInfoObject);
     m_replaygainPending = false;
-    // Read the tags if required
-    if (!m_pLoadedTrack->getHeaderParsed()) {
-        m_pLoadedTrack->parse(false);
-    }
 
-    // m_pLoadedTrack->setPlayedAndUpdatePlaycount(true); // Actually the song is loaded but not played
+    // Reload metadata from file, but only if required
+    SoundSourceProxy(m_pLoadedTrack).loadTrackMetadata();
+
+    // m_pLoadedTrack->setPlayedAndUpdatePlayCount(); // Actually the song is loaded but not played
 
     // Update the BPM and duration values that are stored in ControlObjects
     m_pDuration->set(m_pLoadedTrack->getDuration());

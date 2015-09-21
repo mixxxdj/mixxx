@@ -372,7 +372,7 @@ void TrackDAO::bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack) {
     m_pQueryTrackLocationInsert->bindValue(":location", pTrack->getLocation());
     m_pQueryTrackLocationInsert->bindValue(":directory", pTrack->getDirectory());
     m_pQueryTrackLocationInsert->bindValue(":filename", pTrack->getFilename());
-    m_pQueryTrackLocationInsert->bindValue(":filesize", pTrack->getLength());
+    m_pQueryTrackLocationInsert->bindValue(":filesize", pTrack->getFileSize());
     // Should this check pTrack->exists()?
     m_pQueryTrackLocationInsert->bindValue(":fs_deleted", 0);
     m_pQueryTrackLocationInsert->bindValue(":needs_verification", 0);
@@ -643,16 +643,12 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
     return true;
 }
 
-TrackId TrackDAO::addTrack(const QFileInfo& fileInfo, bool unremove) {
-    TrackId trackId;
-    TrackInfoObject * pTrack = new TrackInfoObject(fileInfo);
-    if (pTrack) {
-        // Add the song to the database.
-        addTrack(pTrack, unremove);
-        trackId = pTrack->getId();
-        delete pTrack;
-    }
-    return trackId;
+TrackPointer TrackDAO::addTrack(const QFileInfo& fileInfo, bool unremove) {
+    TrackPointer pTrack(TrackInfoObject::newManagedForFile(fileInfo));
+    SoundSourceProxy(pTrack).loadTrackMetadata();
+    // Add the song to the database.
+    addTrack(pTrack.data(), unremove);
+    return pTrack;
 }
 
 void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
@@ -745,13 +741,13 @@ QList<TrackId> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
         int addIndex = query.value(addIndexColumn).toInt();
         QString filePath = query.value(locationColumn).toString();
         const QFileInfo& fileInfo = fileInfoList.at(addIndex);
-        TrackInfoObject* pTrack = new TrackInfoObject(fileInfo);
-        addTracksAdd(pTrack, unremove);
+        TrackPointer pTrack(TrackInfoObject::newTemporaryForFile(fileInfo));
+        SoundSourceProxy(pTrack).loadTrackMetadata();
+        addTracksAdd(pTrack.data(), unremove);
         TrackId trackId = pTrack->getId();
         if (trackId.isValid()) {
             trackIds.append(trackId);
         }
-        delete pTrack;
     }
 
     // Now that we have imported any tracks that were not already in the
@@ -1258,11 +1254,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // Location is the first column.
     QString location = queryRecord.value(0).toString();
 
-    TrackPointer pTrack = TrackPointer(
-            new TrackInfoObject(location, SecurityTokenPointer(),
-                                false),
-            TrackInfoObject::onTrackReferenceExpired);
-    pTrack->setId(trackId);
+    TrackPointer pTrack = TrackInfoObject::newManagedFromDB(trackId, location);
 
     // TIO already stats the file to see if it exists, what its length is,
     // etc. So don't bother setting it.
@@ -1331,9 +1323,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // If the header hasn't been parsed, parse it but only after we set the
     // track clean and hooked it up to the track cache, because this will
     // dirty it.
-    if (!pTrack->getHeaderParsed()) {
-         pTrack->parse(false);
-    }
+    SoundSourceProxy(pTrack).loadTrackMetadata();
 
     return pTrack;
 }
@@ -1992,38 +1982,37 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
                                      bool processCoverArt,
                                      bool* pAlreadyInLibrary) {
     TrackId trackId(getTrackId(trackLocation));
-    bool track_already_in_library = trackId.isValid();
-
-    // Add Track to library -- unremove if it was previously removed.
-    if (!trackId.isValid()) {
-        trackId = addTrack(trackLocation, true);
-    }
+    bool trackAlreadyInLibrary = trackId.isValid();
 
     TrackPointer pTrack;
     if (trackId.isValid()) {
         pTrack = getTrack(trackId);
+    } else {
+        // Add Track to library -- unremove if it was previously removed.
+        pTrack = addTrack(trackLocation, true);
+        trackId = pTrack->getId();
     }
 
     // addTrack or getTrack may fail. If they did, create a transient
     // TrackPointer. We explicitly do not process cover art while creating the
     // TrackInfoObject since we want to do it asynchronously (see below).
     if (pTrack.isNull()) {
-        pTrack = TrackPointer(new TrackInfoObject(
-                trackLocation, SecurityTokenPointer(), true, false));
+        pTrack = TrackInfoObject::newTemporaryForFile(trackLocation);
+        SoundSourceProxy(pTrack).loadTrackMetadata();
     }
 
     // If the track wasn't in the library already then it has not yet been
     // checked for cover art. If processCoverArt is true then we should request
     // cover processing via CoverArtCache asynchronously.
-    if (processCoverArt && pTrack && !track_already_in_library) {
+    if (processCoverArt && pTrack && !trackAlreadyInLibrary) {
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache != NULL) {
             pCache->requestGuessCover(pTrack);
         }
     }
 
-    if (pAlreadyInLibrary != NULL) {
-        *pAlreadyInLibrary = track_already_in_library;
+    if (pAlreadyInLibrary != nullptr) {
+        *pAlreadyInLibrary = trackAlreadyInLibrary;
     }
 
     return pTrack;

@@ -1611,7 +1611,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
     // it to the title.
     // TODO(rryan): Does this violate Mac App Store policies?
     if (pTrack) {
-        QString trackInfo = pTrack->getInfo();
+        QString trackInfo = pTrack->getArtistTitleInfo();
         if (!trackInfo.isEmpty()) {
             appTitle = QString("%1 | %2")
                     .arg(trackInfo)

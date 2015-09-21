@@ -80,7 +80,8 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
 
     // Adds track, does not insert duplicates, handles unremoving logic.
-    TrackId trackId(trackDao.addTrack(fileInfo, true));
+    const TrackPointer pTrack(trackDao.addTrack(fileInfo, true));
+    const TrackId trackId(pTrack->getId());
 
     bool success = false;
     if (trackId.isValid()) {
