@@ -103,7 +103,7 @@ class ControlObjectSlave : public QObject {
 
   protected slots:
     // Receives the value from the master control by a unique direct connection
-    virtual void slotValueChangedDirect(double v, QObject* pSetter) {
+    void slotValueChangedDirect(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
             emit(valueChanged(v));
@@ -111,7 +111,7 @@ class ControlObjectSlave : public QObject {
     }
 
     // Receives the value from the master control by a unique auto connection
-    virtual void slotValueChangedAuto(double v, QObject* pSetter) {
+    void slotValueChangedAuto(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
             emit(valueChanged(v));
@@ -119,7 +119,7 @@ class ControlObjectSlave : public QObject {
     }
 
     // Receives the value from the master control by a unique Queued connection
-    virtual void slotValueChangedQueued(double v, QObject* pSetter) {
+    void slotValueChangedQueued(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
             emit(valueChanged(v));
