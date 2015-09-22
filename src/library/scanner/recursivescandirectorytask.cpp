@@ -93,7 +93,7 @@ void RecursiveScanDirectoryTask::run() {
                                             newHash, prevHashExists, filesToImport,
                                             possibleCovers, m_pToken));
             } else {
-                emit(directoryHashed(dirPath, !prevHashExists, newHash));
+                emit(directoryHashedAndScanned(dirPath, !prevHashExists, newHash));
             }
         } else {
             emit(directoryUnchanged(dirPath));

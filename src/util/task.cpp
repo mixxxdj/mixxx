@@ -18,7 +18,7 @@ void TaskWatcher::watchTask(QObject* pTask, const char* doneSignal) {
 
     // Watch pTask for doneSignal. Use a DirectConnection since m_activeTasks is
     // an atomic integer.
-    connect(pTask, doneSignal, this, SLOT(taskDone()), Qt::DirectConnection);
+    connect(pTask, doneSignal, this, SLOT(taskDone()));
 }
 
 void TaskWatcher::taskDone() {
