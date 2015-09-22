@@ -36,7 +36,7 @@ class ControlObjectSlave : public QObject {
             const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
     // Called from update();
-    inline void emitValueChanged() {
+    virtual void emitValueChanged() {
         emit(valueChanged(get()));
     }
 

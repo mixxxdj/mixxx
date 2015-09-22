@@ -893,10 +893,7 @@ void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) 
 
     if (m_connectedControls.contains(conn.key, conn)) {
         m_connectedControls.remove(conn.key, conn);
-        // Only disconnect the signal if there are no other instances of this control using it
-        if (!m_connectedControls.contains(conn.key)) {
-            cos->disconnectScriptFunction(conn);
-        }
+        cos->disconnectScriptFunction(conn);
     } else {
         qWarning() << "Could not Disconnect connection" << conn.id;
     }

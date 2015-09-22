@@ -18,6 +18,10 @@ bool ControlObjectScript::connectScriptFunction(
             this, SLOT(slotValueChanged(double,QObject*)),
             static_cast<Qt::ConnectionType>(Qt::QueuedConnection |
                                             Qt::UniqueConnection));
+    connect(this, SIGNAL(trigger(double, QObject*)),
+            this, SLOT(slotValueChanged(double,QObject*)),
+            static_cast<Qt::ConnectionType>(Qt::QueuedConnection |
+                                            Qt::UniqueConnection));
     return true;
 }
 
