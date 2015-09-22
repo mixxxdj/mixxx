@@ -168,13 +168,20 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
     // will overflow > 200,000 years
 #ifdef __WINDOWS__
     FILETIME ft;
-    int64_t t;
+    qint64 t;
+
+#if defined(NTDDI_WIN8) && NTDDI_VERSION >= NTDDI_WIN8
+    // Windows 8, Windows Server 2012 and later.
+    GetSystemTimePreciseAsFileTime(&ft);
+#else
+    // Windows 2000 and later
     GetSystemTimeAsFileTime(&ft);
+#endif
     return ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
 #else
-    struct timeval mtv;
-    gettimeofday(&mtv, NULL);
-    return (qint64)(mtv.tv_sec) * 1000000 + mtv.tv_usec;
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return ts.tv_sec * 1000000LL + ts.tv_nsec / 1000;
 #endif
 }
 
