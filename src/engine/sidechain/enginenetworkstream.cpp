@@ -5,6 +5,13 @@
 #include <unistd.h>
 #endif
 
+#ifdef __WINDOWS__
+// For GetSystemTimeAsFileTime and GetSystemTimePreciseAsFileTime
+typedef VOID (WINAPI *PgGetSystemTimeFn)(LPFILETIME);
+static PgGetSystemTimeFn s_pfpgGetSystemTimeFn = NULL;
+#endif
+
+
 
 #include "engine/sidechain/enginenetworkstream.h"
 
@@ -40,6 +47,20 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
     if (numInputChannels) {
         m_pInputFifo = new FIFO<CSAMPLE>(numInputChannels * kBufferFrames);
     }
+
+#ifdef __WINDOWS__
+    HMODULE kernel32_dll = LoadLibraryW(L"kernel32.dll");
+    if (kernel32_dll) {
+        s_pfpgGetSystemTimeFn = (PgGetSystemTimeFn)GetProcAddress(
+                kernel32_dll, "GetSystemTimePreciseAsFileTime");
+    }
+    if (s_pfpgGetSystemTimeFn == NULL) {
+        // no GetSystemTimePreciseAsFileTime available, fall
+        // back to GetSystemTimeAsFileTime. This happens before
+        // Windows 8 and Windows Server 2012
+        s_pfpgGetSystemTimeFn = &GetSystemTimeAsFileTime;
+    }
+#endif
 }
 
 EngineNetworkStream::~EngineNetworkStream() {
@@ -169,16 +190,13 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
 #ifdef __WINDOWS__
     FILETIME ft;
     qint64 t;
-
-#if defined(NTDDI_WIN8) && NTDDI_VERSION >= NTDDI_WIN8
-    // Windows 8, Windows Server 2012 and later.
-    GetSystemTimePreciseAsFileTime(&ft);
-#else
-    // Windows 2000 and later
-    GetSystemTimeAsFileTime(&ft);
-#endif
+    DEBUG_ASSERT_AND_HANDLE(s_pfpgGetSystemTimeFn) {
+    	retrun 0;
+    }
+    s_pfpgGetSystemTimeFn(&ft);
     return ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
 #else
+    // CLOCK_MONOTONIC is NTP adjusted
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return ts.tv_sec * 1000000LL + ts.tv_nsec / 1000;
