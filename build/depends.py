@@ -181,7 +181,21 @@ class Qt(Dependence):
         return build.env.Uic5 if qt5 else build.env.Uic4
 
     @staticmethod
-    def find_framework_path(qtdir):
+    def find_framework_libdir(qtdir, qt5):
+        # Try pkg-config on Linux
+        import sys
+        if sys.platform.startswith('linux'):
+            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
+                import subprocess
+                try:
+                    if qt5:
+                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                    else:
+                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "QtCore"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                finally:
+                    if os.path.isdir(core):
+                        return core
+
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d, 'QtCore.framework')
             if os.path.isdir(core):
@@ -244,7 +258,7 @@ class Qt(Dependence):
             if qt5:
                 # Note that -reduce-relocations is enabled by default in Qt5.
                 # So we must build the code with position independent code
-                build.env.Append(CCFLAGS='-fPIE')
+                build.env.Append(CCFLAGS='-fPIC')
 
         elif build.platform_is_bsd:
             build.env.Append(LIBS=qt_modules)
@@ -256,7 +270,7 @@ class Qt(Dependence):
             build.env.Append(
                 LINKFLAGS=' '.join('-framework %s' % m for m in qt_modules)
             )
-            framework_path = Qt.find_framework_path(qtdir)
+            framework_path = Qt.find_framework_libdir(qtdir, qt5)
             if not framework_path:
                 raise Exception(
                     'Could not find frameworks in Qt directory: %s' % qtdir)
@@ -343,9 +357,7 @@ class Qt(Dependence):
                 os.popen('sw_vers').readlines()[1].find('10.4') >= 0)
         if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
             qtdir = build.env['QTDIR']
-            # TODO(XXX) should we use find_framework_path here or keep lib
-            # hardcoded?
-            framework_path = os.path.join(qtdir, 'lib')
+            framework_path = Qt.find_framework_libdir(qtdir, qt5)
             if os.path.isdir(framework_path):
                 build.env.Append(LINKFLAGS="-Wl,-rpath," + framework_path)
                 build.env.Append(LINKFLAGS="-L" + framework_path)

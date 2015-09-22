@@ -147,12 +147,21 @@ class MixxxBuild(object):
             default_qtdir = depends.Qt.DEFAULT_QT4DIRS.get(self.platform, '')
         tools.append('protoc')
 
+        # Try fallback to pkg-config on Linux
+        if not os.path.isdir(default_qtdir) and self.platform == 'linux':
+            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
+                import subprocess
+                try:
+                    default_qtdir = subprocess.Popen(["pkg-config", "--variable=includedir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                finally:
+                    pass
+
         # Ugly hack to check the qtdir argument
         qtdir = Script.ARGUMENTS.get('qtdir',
                                      os.environ.get('QTDIR', default_qtdir))
 
         # Validate the specified qtdir exists
-        if not os.path.exists(qtdir):
+        if not os.path.isdir(qtdir):
             logging.error("QT path does not exist or QT4 is not installed.")
             logging.error(
                 "Please specify your QT path by running 'scons qtdir=[path]'")
