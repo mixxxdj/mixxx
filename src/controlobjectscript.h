@@ -18,6 +18,15 @@ class ControlObjectScript : public ControlObjectSlave {
     bool disconnectScriptFunction(
             const ControllerEngineConnection& conn);
 
+    // Called from update();
+    virtual void emitValueChanged() {
+        emit(trigger(get(), this));
+    }
+
+  signals:
+    // It will connect to the slotValueChanged as well
+    void trigger(double, QObject*);
+
   protected slots:
     // Receives the value from the master control by a unique queued connection
     void slotValueChanged(double v, QObject*);
