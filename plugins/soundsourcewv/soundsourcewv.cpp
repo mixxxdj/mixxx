@@ -52,7 +52,7 @@ void SoundSourceWV::close() {
 
 SINT SoundSourceWV::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
-    if (WavpackSeekSample(m_wpc, frameIndex) == TRUE) {
+    if (WavpackSeekSample(m_wpc, frameIndex) == true) {
         return frameIndex;
     } else {
         qDebug() << "SSWV::seek : could not seek to frame #" << frameIndex;
