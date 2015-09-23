@@ -235,6 +235,7 @@ class MixxxMainWindow : public QMainWindow {
 
     Upgrade* m_pUpgrader;
 
+    QMenuBar* m_pMenuBar;
     // file_menu contains all items of the menubar entry "File"
     QMenu* m_pFileMenu;
     // edit_menu contains all items of the menubar entry "Edit"
