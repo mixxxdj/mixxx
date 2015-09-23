@@ -10,5 +10,8 @@ ScannerTask::ScannerTask(LibraryScanner* pScanner,
 }
 
 ScannerTask::~ScannerTask() {
-    emit(taskDone(m_success));
+    if (!m_success) {
+    	m_scannerGlobal->clearScanFinishedCleanly();
+    }
+    m_scannerGlobal->getTaskWatcher().taskDone();
 }

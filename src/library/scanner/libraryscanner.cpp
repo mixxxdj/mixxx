@@ -236,6 +236,7 @@ void LibraryScanner::slotStartScan() {
     // Queue up recursive scan tasks for every hashed directory. When all tasks
     // are done, TaskWatcher will signal slotFinishHashedScan.
     TaskWatcher* pWatcher = &m_scannerGlobal->getTaskWatcher();
+    pWatcher->watchTask();
     connect(pWatcher, SIGNAL(allTasksDone()),
             this, SLOT(slotFinishHashedScan()));
 
@@ -252,6 +253,7 @@ void LibraryScanner::slotStartScan() {
                                                      false));
         }
     }
+    pWatcher->taskDone();
 }
 
 // is called when all tasks of the first stage are done (threads are finished)
@@ -261,17 +263,21 @@ void LibraryScanner::slotFinishHashedScan() {
         qWarning() << "No scanner global state exists in LibraryScanner::slotFinishHashedScan";
         return;
     }
+
+    TaskWatcher* pWatcher = &m_scannerGlobal->getTaskWatcher();
+    disconnect(pWatcher, SIGNAL(allTasksDone()),
+            this, SLOT(slotFinishHashedScan()));
+
     if (m_scannerGlobal->unhashedDirs().empty()) {
         // bypass the second stage
         slotFinishUnhashedScan();
+        return;
     }
 
     // Queue up recursive scan tasks for every unhashed directory, discovered
     // in the first stage. When all tasks
     // are done, TaskWatcher will signal slotFinishUnhashedScan.
-    TaskWatcher* pWatcher = &m_scannerGlobal->getTaskWatcher();
-    disconnect(pWatcher, SIGNAL(allTasksDone()),
-            this, SLOT(slotFinishHashedScan()));
+    pWatcher->watchTask();
     connect(pWatcher, SIGNAL(allTasksDone()),
             this, SLOT(slotFinishUnhashedScan()));
 
@@ -283,6 +289,7 @@ void LibraryScanner::slotFinishHashedScan() {
                                                  dirInfo.token(),
                                                  true));
     }
+    pWatcher->taskDone();
 }
 
 void LibraryScanner::cleanUpScan() {
@@ -459,23 +466,13 @@ void LibraryScanner::cancel() {
     m_pool.waitForDone();
 }
 
-void LibraryScanner::slotTaskDone(bool success) {
-    //qDebug() << "LibraryScanner::slotTaskDone" << success;
-    ScopedTimer timer("LibraryScanner::slotTaskDone");
-    if (!success && m_scannerGlobal) {
-        m_scannerGlobal->clearScanFinishedCleanly();
-    }
-}
-
 void LibraryScanner::queueTask(ScannerTask* pTask) {
     //qDebug() << "LibraryScanner::queueTask" << pTask;
     ScopedTimer timer("LibraryScanner::queueTask");
     if (m_scannerGlobal.isNull() || m_scannerGlobal->shouldCancel()) {
         return;
     }
-    m_scannerGlobal->getTaskWatcher().watchTask(pTask, SIGNAL(taskDone(bool)));
-    connect(pTask, SIGNAL(taskDone(bool)),
-            this, SLOT(slotTaskDone(bool)));
+    m_scannerGlobal->getTaskWatcher().watchTask();
     connect(pTask, SIGNAL(queueTask(ScannerTask*)),
             this, SLOT(queueTask(ScannerTask*)));
     connect(pTask, SIGNAL(directoryHashedAndScanned(QString, bool, int)),

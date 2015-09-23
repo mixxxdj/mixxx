@@ -91,7 +91,6 @@ class LibraryScanner : public QThread {
     void slotFinishUnhashedScan();
 
     // ScannerTask signal handlers.
-    void slotTaskDone(bool success);
     void slotDirectoryHashedAndScanned(const QString& directoryPath,
                                    bool newDirectory, int hash);
     void slotDirectoryUnchanged(const QString& directoryPath);
