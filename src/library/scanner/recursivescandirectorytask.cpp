@@ -90,7 +90,7 @@ void RecursiveScanDirectoryTask::run() {
             if (!filesToImport.isEmpty()) {
                 m_pScanner->queueTask(
                         new ImportFilesTask(m_pScanner, m_scannerGlobal, dirPath,
-                                            newHash, prevHashExists, filesToImport,
+                                            prevHashExists, newHash, filesToImport,
                                             possibleCovers, m_pToken));
             } else {
                 emit(directoryHashedAndScanned(dirPath, !prevHashExists, newHash));
