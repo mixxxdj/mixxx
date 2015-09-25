@@ -734,7 +734,9 @@ void EngineShoutcast::run() {
     processConnect();
 
     setState(SIDECHAINWORKER_STATE_WAITING);
-    DEBUG_ASSERT(m_pOutputFifo);
+    DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
+        return;
+    }
     if (m_pOutputFifo->readAvailable()) {
         m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
     }
