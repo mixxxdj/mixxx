@@ -49,16 +49,17 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
     }
 
 #ifdef __WINDOWS__
+    // Resolution:
+    // 15   ms for GetSystemTimeAsFileTime
+    //  0.4 ms for GetSystemTimePreciseAsFileTime
+    // Performance:
+    //    9 cycles for GetSystemTimeAsFileTime
+    // 2761 cycles for GetSystemTimePreciseAsFileTime
     HMODULE kernel32_dll = LoadLibraryW(L"kernel32.dll");
     if (kernel32_dll) {
+        // for a 0.0004 ms Resolution on Win8
         s_pfpgGetSystemTimeFn = (PgGetSystemTimeFn)GetProcAddress(
                 kernel32_dll, "GetSystemTimePreciseAsFileTime");
-    }
-    if (s_pfpgGetSystemTimeFn == NULL) {
-        // no GetSystemTimePreciseAsFileTime available, fall
-        // back to GetSystemTimeAsFileTime. This happens before
-        // Windows 8 and Windows Server 2012
-        s_pfpgGetSystemTimeFn = &GetSystemTimeAsFileTime;
     }
 #endif
 }
@@ -190,11 +191,35 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
 #ifdef __WINDOWS__
     FILETIME ft;
     qint64 t;
-    DEBUG_ASSERT_AND_HANDLE(s_pfpgGetSystemTimeFn) {
-    	retrun 0;
+    // no GetSystemTimePreciseAsFileTime available, fall
+    // back to GetSystemTimeAsFileTime. This happens before
+    // Windows 8 and Windows Server 2012
+    // GetSystemTime?AsFileTime is NTP adjusted
+    // QueryPerformanceCounter depends on the CPU crystal
+    if(s_pfpgGetSystemTimeFn) {
+        s_pfpgGetSystemTimeFn(&ft);
+        return ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
+    } else {
+        static qint64 oldNow = 0;
+        static qint64 incCount = 0;
+        GetSystemTimeAsFileTime(&ft);
+        qint64 now = ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
+        if(now == oldNow) {
+            // timer was not incremented since last call (< 15 ms)
+            // Add time since last function call after last increment
+            // This reduces the jitter < one call cycle which is sufficient
+            LARGE_INTEGER li;
+            QueryPerformanceCounter(&li);
+            now += li.QuadPart - incCount;
+        } else {
+            // timer was incremented
+            LARGE_INTEGER li;
+            QueryPerformanceCounter(&li);
+            incCount = li.QuadPart;
+            oldNow = now;
+        }
+        return now;
     }
-    s_pfpgGetSystemTimeFn(&ft);
-    return ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
 #else
     // CLOCK_MONOTONIC is NTP adjusted
     struct timespec ts;
