@@ -764,7 +764,7 @@ void EngineShoutcast::run() {
                     &dataPtr2, &size2);
             process(dataPtr1, size1);
             if (size2 > 0) {
-                process(dataPtr1, size2);
+                process(dataPtr2, size2);
             }
             m_pOutputFifo->releaseReadRegions(readAvailable);
         }
