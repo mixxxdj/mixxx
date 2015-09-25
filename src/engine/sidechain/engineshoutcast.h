@@ -31,7 +31,7 @@
 #include "controlobjectthread.h"
 #include "controlobjectslave.h"
 #include "encoder/encodercallback.h"
-#include "engine/sidechain/sidechainworker.h"
+#include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"
 #include "trackinfoobject.h"
 #include "util/fifo.h"
@@ -45,7 +45,8 @@ typedef struct shout shout_t;
 struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
-class EngineShoutcast : public QThread, public EncoderCallback, public SideChainWorker {
+class EngineShoutcast :
+        public QThread, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
     EngineShoutcast(ConfigObject<ConfigValue>* _config);

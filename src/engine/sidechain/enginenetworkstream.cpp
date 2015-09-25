@@ -228,7 +228,7 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
 #endif
 }
 
-void EngineNetworkStream::addWorker(QSharedPointer<SideChainWorker> pWorker) {
+void EngineNetworkStream::addWorker(QSharedPointer<NetworkStreamWorker> pWorker) {
     m_pWorker = pWorker;
     m_pWorker->setOutputFifo(m_pOutputFifo);
 }

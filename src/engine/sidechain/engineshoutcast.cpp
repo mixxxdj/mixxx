@@ -71,11 +71,11 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
     signal(SIGPIPE, SIG_IGN);
 #endif
 
-    m_pShoutcastStatus->set(SIDECHAINWORKER_STATE_DISCONNECTED);
+    m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
             ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
 
-    setState(SIDECHAINWORKER_STATE_INIT);
+    setState(NETWORKSTREAMWORKER_STATE_INIT);
 
     // Initialize libshout
     shout_init();
@@ -114,7 +114,7 @@ EngineShoutcast::~EngineShoutcast() {
 bool EngineShoutcast::serverDisconnect() {
     m_bThreadQuit = true;
     wait();
-    setState(SIDECHAINWORKER_STATE_DISCONNECTED);
+    setState(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
     return false; // if no connection has been established, nothing can be disconnected
 }
 
@@ -137,7 +137,7 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
-    setState(SIDECHAINWORKER_STATE_BUSY);
+    setState(NETWORKSTREAMWORKER_STATE_BUSY);
     m_pShoutcastNeedUpdateFromPrefs->set(0.0);
 
     m_format_is_mp3 = false;
@@ -357,12 +357,12 @@ void EngineShoutcast::updateFromPreferences() {
         delete m_encoder;
         m_encoder = NULL;
     }
-    setState(SIDECHAINWORKER_STATE_READY);
+    setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
 bool EngineShoutcast::serverConnect() {
     start();
-    setState(SICECHAINWORKER_STATE_CONNECTING);
+    setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
     return true;
 }
 
@@ -370,7 +370,7 @@ bool EngineShoutcast::processConnect() {
     // set to busy in case another thread calls one of the other
     // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
-    m_pShoutcastStatus->set(SICECHAINWORKER_STATE_CONNECTING);
+    m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_CONNECTING);
     // reset the number of failures to zero
     m_iShoutFailures = 0;
     // set to a high number to automatically update the metadata
@@ -399,7 +399,7 @@ bool EngineShoutcast::processConnect() {
         m_iShoutStatus = shout_open(m_pShout);
         if (m_iShoutStatus == SHOUTERR_SUCCESS) {
             m_iShoutStatus = SHOUTERR_CONNECTED;
-            setState(SICECHAINWORKER_STATE_CONNECTED);
+            setState(NETWORKSTREAMWORKER_STATE_CONNECTED);
         }
 
         if ((m_iShoutStatus == SHOUTERR_BUSY) ||
@@ -415,25 +415,25 @@ bool EngineShoutcast::processConnect() {
         if (m_pShout) {
             shout_close(m_pShout);
         }
-        setState(SIDECHAINWORKER_STATE_ERROR);
+        setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-        m_pShoutcastStatus->set(SIDECHAINWORKER_STATE_DISCONNECTED);
+        m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
         return false;
     }
 
     m_iShoutFailures = 0;
     int timeout = 0;
     while (m_iShoutStatus == SHOUTERR_BUSY && timeout < TIMEOUT) {
-        setState(SIDECHAINWORKER_STATE_WAITING);
+        setState(NETWORKSTREAMWORKER_STATE_WAITING);
         qDebug() << "Connection pending. Sleeping...";
         sleep(1);
         m_iShoutStatus = shout_get_connected(m_pShout);
         ++ timeout;
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-        setState(SIDECHAINWORKER_STATE_READY);
+        setState(NETWORKSTREAMWORKER_STATE_READY);
         qDebug() << "***********Connected to streaming server...";
-        m_pShoutcastStatus->set(SICECHAINWORKER_STATE_CONNECTED);
+        m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_CONNECTED);
 
         // Signal user also that we are connected
         infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
@@ -443,14 +443,14 @@ bool EngineShoutcast::processConnect() {
 
         return true;
     }
-    setState(SIDECHAINWORKER_STATE_ERROR);
+    setState(NETWORKSTREAMWORKER_STATE_ERROR);
     //otherwise disable shoutcast in preferences
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
     if (m_pShout) {
         shout_close(m_pShout);
         //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
-    m_pShoutcastStatus->set(SIDECHAINWORKER_STATE_DISCONNECTED);
+    m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
     return false;
 }
 
@@ -458,7 +458,7 @@ void EngineShoutcast::processDisconnect() {
     if (isConnected()) {
         // We are conneced but shoutcast is disabled. Disconnect.
         shout_close(m_pShout);
-        m_pShoutcastStatus->set(SIDECHAINWORKER_STATE_DISCONNECTED);
+        m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
         infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
     }
 
@@ -525,7 +525,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
-    setState(SIDECHAINWORKER_STATE_BUSY);
+    setState(NETWORKSTREAMWORKER_STATE_BUSY);
     // If we are here then the user wants to be connected (shoutcast is enabled
     // in the preferences).
 
@@ -559,7 +559,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     if (metaDataHasChanged()) {
         updateMetaData();
     }
-    setState(SIDECHAINWORKER_STATE_READY);
+    setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
 bool EngineShoutcast::metaDataHasChanged() {
@@ -700,7 +700,7 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
-    setState(SIDECHAINWORKER_STATE_ERROR);
+    setState(NETWORKSTREAMWORKER_STATE_ERROR);
 }
 
 void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
@@ -730,10 +730,10 @@ void EngineShoutcast::run() {
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
 
-    setState(SIDECHAINWORKER_STATE_BUSY);
+    setState(NETWORKSTREAMWORKER_STATE_BUSY);
     processConnect();
 
-    setState(SIDECHAINWORKER_STATE_WAITING);
+    setState(NETWORKSTREAMWORKER_STATE_WAITING);
     DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
         return;
     }
@@ -741,7 +741,7 @@ void EngineShoutcast::run() {
         m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
     }
     m_threadWaiting = true;
-    setState(SIDECHAINWORKER_STATE_READY);
+    setState(NETWORKSTREAMWORKER_STATE_READY);
     for(;;) {
         m_readSema.acquire();
         // Check to see if Shoutcast is enabled, and pass the samples off to be
