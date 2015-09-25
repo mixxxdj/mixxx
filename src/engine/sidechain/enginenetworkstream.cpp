@@ -153,7 +153,7 @@ void EngineNetworkStream::writeSilence(int frames) {
 void EngineNetworkStream::scheduleWorker() {
     if (m_pOutputFifo->readAvailable()
             >= m_numOutputChannels * kNetworkLatencyFrames) {
-        m_pWorker->outputAvailabe();
+        m_pWorker->outputAvailable();
     }
 }
 
@@ -186,7 +186,7 @@ qint64 EngineNetworkStream::getStreamTimeUs() {
 qint64 EngineNetworkStream::getNetworkTimeUs() {
     // This matches the GPL2 implementation found in
     // https://github.com/codders/libshout/blob/a17fb84671d3732317b0353d7281cc47e2df6cf6/src/timing/timing.c
-    // Instead of ms resuolution we use a us resolution to allow low latency settings
+    // Instead of ms resolution we use a us resolution to allow low latency settings
     // will overflow > 200,000 years
 #ifdef __WINDOWS__
     FILETIME ft;

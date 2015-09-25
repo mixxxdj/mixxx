@@ -716,7 +716,7 @@ void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
 }
 
 // Is called from the Mixxx engine thread
-void EngineShoutcast::outputAvailabe() {
+void EngineShoutcast::outputAvailable() {
     m_readSema.release();
 }
 
