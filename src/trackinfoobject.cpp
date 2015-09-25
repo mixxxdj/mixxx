@@ -147,8 +147,8 @@ void TrackInfoObject::onTrackReferenceExpired(TrackInfoObject* pTrack) {
     DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
         return;
     }
-    // qDebug() << "TrackInfoObject::onTrackReferenceExpired"
-    //          << pTrack << pTrack->getId() << pTrack->getInfo();
+    //qDebug() << "TrackInfoObject::onTrackReferenceExpired"
+    //         << pTrack << pTrack->getId() << pTrack->getInfo();
     if (pTrack->m_bDeleteOnReferenceExpiration) {
         delete pTrack;
     } else {
