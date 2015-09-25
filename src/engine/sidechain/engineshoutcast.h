@@ -126,7 +126,7 @@ class EngineShoutcast : public QThread, public EncoderCallback, public SideChain
     bool m_protocol_is_shoutcast;
     bool m_ogg_dynamic_update;
     QVector<struct shoutcastCacheObject  *> m_pShoutcastCache;
-    bool m_bThreadQuit;
+    volatile bool m_bThreadQuit;
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;
