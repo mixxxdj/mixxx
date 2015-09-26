@@ -74,6 +74,9 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
     m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
             ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
+    const bool persist = true;
+    m_pShoutcastEnabled = new ControlObject(
+            ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),true, false, persist);
 
     setState(NETWORKSTREAMWORKER_STATE_INIT);
 
@@ -416,7 +419,7 @@ bool EngineShoutcast::processConnect() {
             shout_close(m_pShout);
         }
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
-        m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
+        m_pShoutcastEnabled->set(0);
         m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
         return false;
     }
@@ -444,8 +447,8 @@ bool EngineShoutcast::processConnect() {
         return true;
     }
     setState(NETWORKSTREAMWORKER_STATE_ERROR);
-    //otherwise disable shoutcast in preferences
-    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
+    // otherwise disable shoutcast in preferences
+    m_pShoutcastEnabled->set(0);
     if (m_pShout) {
         shout_close(m_pShout);
         //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
@@ -746,8 +749,7 @@ void EngineShoutcast::run() {
         m_readSema.acquire();
         // Check to see if Shoutcast is enabled, and pass the samples off to be
         // broadcast if necessary.
-        bool prefEnabled = (m_pConfig->getValueString(
-                ConfigKey(SHOUTCAST_PREF_KEY, "enabled")).toInt() == 1);
+        bool prefEnabled = m_pShoutcastEnabled->toBool();
         if (m_bThreadQuit || !prefEnabled) {
             m_threadWaiting = false;
             processDisconnect();

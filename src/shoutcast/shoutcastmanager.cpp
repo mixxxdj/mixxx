@@ -16,20 +16,18 @@ ShoutcastManager::ShoutcastManager(ConfigObject<ConfigValue>* pConfig,
                 new EngineShoutcast(pConfig));
         pNetworkStream->addWorker(m_pShoutcast);
     }
+    m_pShoutcastEnabled = new ControlObjectSlave(
+            SHOUTCAST_PREF_KEY, "enabled", this);
 }
 
 ShoutcastManager::~ShoutcastManager() {
     // Disable shoutcast so when Mixxx starts again it will not connect.
-    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "enabled"), 0);
+    m_pShoutcastEnabled->set(0);
 }
 
 void ShoutcastManager::setEnabled(bool value) {
-    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "enabled"),
-                   ConfigValue(value));
-
-    /**
-     *  Should this be started somewhere else?
-     */
+    m_pShoutcastEnabled->set(value);
+    //  Should this be started somewhere else?
     if (value == true) {
         m_pShoutcast->serverConnect();
     } else {
@@ -38,6 +36,5 @@ void ShoutcastManager::setEnabled(bool value) {
 }
 
 bool ShoutcastManager::isEnabled() {
-    return m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "enabled")).toInt() == 1;
+    return m_pShoutcastEnabled->toBool();
 }

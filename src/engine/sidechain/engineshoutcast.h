@@ -108,6 +108,7 @@ class EngineShoutcast :
     ConfigObject<ConfigValue>* m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
+    ControlObject* m_pShoutcastEnabled;
     ControlObjectSlave* m_pMasterSamplerate;
     ControlObject* m_pShoutcastStatus;
     // static metadata according to prefereneces
