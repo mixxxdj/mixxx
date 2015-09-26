@@ -7,11 +7,11 @@ EffectKnobParameters::EffectKnobParameters()
 EffectKnobParameters::~EffectKnobParameters() {
 }
 
-void EffectKnobParameters::minValue() {
+double EffectKnobParameters::minValue() {
     return m_dMinValue;
 }
 
-void EffectKnobParameters::maxValue() {
+double EffectKnobParameters::maxValue() {
     return m_dMaxValue;
 }
 
