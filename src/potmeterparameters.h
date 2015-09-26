@@ -5,6 +5,13 @@
 // ControlPotmeters and its derived classes.
 // They provide default values if some parameter is not explicitly set.
 
+// DO NOT CHANGE THE DEFAULT VALUES. A lot of Mixxx code relies on them.
+
+// NOTE(Ferran Pujol): An inheritance based approach was considered for
+// these classes. Since the only common property is maxValue, and the
+// size of the classes doesn't make up for code complexity I discarded
+// the idea.
+
 class EffectKnobParameters {
   public:
     EffectKnobParameters();
