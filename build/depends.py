@@ -525,6 +525,7 @@ class MixxxCore(Feature):
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
                    "controllogpotmeter.cpp",
+                   "potmeterparameters.cpp",
                    "controleffectknob.cpp",
                    "controlpushbutton.cpp",
                    "controlindicator.cpp",
