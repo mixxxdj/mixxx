@@ -22,7 +22,11 @@ KeyControl::KeyControl(QString group,
 
     // pitch is the distance to the original pitch in semitones
     // knob in semitones; 9.4 ct per midi step allowOutOfBounds = true;
-    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -6.0, 6.0, true);
+    PotmeterParameters pitchParameters;
+    pitchParameters.setMinValue(-6.0);
+    pitchParameters.setMaxValue(6.0);
+    pitchParameters.setAllowOutOfBounds(true);
+    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), pitchParameters);
     // Course adjust by full semitone steps.
     m_pPitch->setStepCount(12);
     // Fine adjust with semitone / 10 = 10 ct;.
@@ -34,7 +38,11 @@ KeyControl::KeyControl(QString group,
     // pitch_adjust is the distance to the linear pitch in semitones
     // set by the speed slider or to the locked key.
     // pitch_adjust knob in semitones; 4.7 ct per midi step; allowOutOfBounds = true;
-    m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -3.0, 3.0, true);
+    PotmeterParameters pitch_adjustParameters;
+    pitch_adjustParameters.setMinValue(-3.0);
+    pitch_adjustParameters.setMaxValue(3.0);
+    pitch_adjustParameters.setAllowOutOfBounds(true);
+    m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), pitch_adjustParameters);
     // Course adjust by full semitone steps.
     m_pPitchAdjust->setStepCount(6);
     // Fine adjust with semitone / 10 = 10 ct;.
@@ -62,9 +70,11 @@ KeyControl::KeyControl(QString group,
     connect(m_pEngineKey, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineKey(double)),
             Qt::DirectConnection);
-
+    PotmeterParameters visual_key_distanceParameters;
+    visual_key_distanceParameters.setMinValue(-0.5);
+    visual_key_distanceParameters.setMaxValue(0.5);
     m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(group, "visual_key_distance"),
-                                               -0.5, 0.5);
+                                               visual_key_distanceParameters);
     connect(m_pEngineKeyDistance, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineKeyDistance(double)),
             Qt::DirectConnection);

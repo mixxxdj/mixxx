@@ -36,12 +36,15 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
     connect(m_pControlChainEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainEnabled(double)));
 
-    m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0, 0.5);
+    PotmeterParameters potmeterParameters;
+    potmeterParameters.setNeutralValue(0.5);
+    m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), potmeterParameters);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainMix(double)));
     m_pControlChainMix->set(1.0);
 
-    m_pControlChainSuperParameter = new ControlPotmeter(ConfigKey(m_group, "super1"), 0.0, 1.0);
+    potmeterParameters.setNeutralValue(0.0);
+    m_pControlChainSuperParameter = new ControlPotmeter(ConfigKey(m_group, "super1"), potmeterParameters);
     connect(m_pControlChainSuperParameter, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainSuperParameter(double)));
     m_pControlChainSuperParameter->set(0.0);

@@ -79,7 +79,13 @@ BpmControl::BpmControl(QString group,
     // bpm_down controls.
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), 1, 200, 1, 0.1, true);
+    LinPotmeterParameters linPotmeterParameters;
+    linPotmeterParameters.setMinValue(1);
+    linPotmeterParameters.setMaxValue(200);
+    linPotmeterParameters.setStep(1);
+    linPotmeterParameters.setSmallStep(0.1);
+    linPotmeterParameters.setAllowOutOfBounds(true);
+    m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), linPotmeterParameters);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineBpm(double)),
             Qt::DirectConnection);

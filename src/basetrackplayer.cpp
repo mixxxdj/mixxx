@@ -73,9 +73,11 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
 
     // Waveform controls
+    PotmeterParameters potmeterParameters;
+    potmeterParameters.setMinValue(WaveformWidgetRenderer::s_waveformMinZoom);
+    potmeterParameters.setMaxValue(WaveformWidgetRenderer::s_waveformMaxZoom);
     m_pWaveformZoom = new ControlPotmeter(ConfigKey(group, "waveform_zoom"),
-                                          WaveformWidgetRenderer::s_waveformMinZoom,
-                                          WaveformWidgetRenderer::s_waveformMaxZoom);
+                                          potmeterParameters);
     m_pWaveformZoom->set(1.0);
     m_pWaveformZoom->setStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
             WaveformWidgetRenderer::s_waveformMinZoom);

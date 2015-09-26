@@ -47,12 +47,18 @@ RateControl::RateControl(QString group,
     m_pRateRange = new ControlObject(ConfigKey(group, "rateRange"));
     // Allow rate slider to go out of bounds so that master sync rate
     // adjustments are not capped.
+    PotmeterParameters rateParameters;
+    rateParameters.setMinValue(-1.0);
+    rateParameters.setAllowOutOfBounds(true);
     m_pRateSlider = new ControlPotmeter(ConfigKey(group, "rate"),
-                                        -1.0, 1.0, true);
+                                        rateParameters);
 
     // Search rate. Rate used when searching in sound. This overrules the
     // playback rate
-    m_pRateSearch = new ControlPotmeter(ConfigKey(group, "rateSearch"), -300., 300.);
+    PotmeterParameters rateSearchParameters;
+    rateSearchParameters.setMinValue(-300.0);
+    rateSearchParameters.setMaxValue (300.0);
+    m_pRateSearch = new ControlPotmeter(ConfigKey(group, "rateSearch"), rateSearchParameters);
 
     // Reverse button
     m_pReverseButton = new ControlPushButton(ConfigKey(group, "reverse"));

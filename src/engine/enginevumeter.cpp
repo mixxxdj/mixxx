@@ -23,20 +23,17 @@
 EngineVuMeter::EngineVuMeter(QString group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
-    m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
+    m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"));
     // left channel VU meter
-    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterL"), 0., 1.);
+    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterL"));
     // right channel VU meter
-    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
+    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterR"));
 
     // Used controlpotmeter as the example used it :/ perhaps someone with more
     // knowledge could use something more suitable...
-    m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, "PeakIndicator"),
-                                              0., 1.);
-    m_ctrlPeakIndicatorL = new ControlPotmeter(ConfigKey(group, "PeakIndicatorL"),
-                                              0., 1.);
-    m_ctrlPeakIndicatorR = new ControlPotmeter(ConfigKey(group, "PeakIndicatorR"),
-                                              0., 1.);
+    m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, "PeakIndicator"));
+    m_ctrlPeakIndicatorL = new ControlPotmeter(ConfigKey(group, "PeakIndicatorL"));
+    m_ctrlPeakIndicatorR = new ControlPotmeter(ConfigKey(group, "PeakIndicatorR"));
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
 

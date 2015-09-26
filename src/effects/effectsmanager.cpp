@@ -258,9 +258,11 @@ void EffectsManager::setupDefaults() {
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
+    PotmeterParameters potmeterParameters;
+    potmeterParameters.setMaxValue(22040);
     // These controls are used inside EQ Effects
-    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
-    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
+    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), potmeterParameters);
+    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), potmeterParameters);
 
     // Add an EqualizerRack.
     EqualizerRackPointer pEqRack = addEqualizerRack();
