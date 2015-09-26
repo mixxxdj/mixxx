@@ -18,7 +18,9 @@ class ControllerEngineTest : public MixxxTest {
     virtual void SetUp() {
         qDebug() << "SetUp";
         QThread::currentThread()->setObjectName("Main");
-        new ControlPotmeter(ConfigKey("[Test]", "potmeter"),-1.,1.);
+        PotmeterParameters potmeterParameters;
+        potmeterParameters.setMinValue(-1.);
+        new ControlPotmeter(ConfigKey("[Test]", "potmeter"), potmeterParameters);
         Controller* pController = NULL;
         cEngine = new ControllerEngine(pController);
         cEngine->setDebug(true);
