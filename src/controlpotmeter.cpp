@@ -19,18 +19,13 @@
 #include "controlpotmeter.h"
 #include "controlobjectthread.h"
 
-ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
-                                 double dNeutralValue,
-                                 bool allowOutOfBounds,
-                                 bool bIgnoreNops,
-                                 bool bTrack,
-                                 bool bPersist)
-        : ControlObject(key, bIgnoreNops, bTrack, bPersist),
+ControlPotmeter::ControlPotmeter(ConfigKey key, PotmeterParameters parameters)
+        : ControlObject(key, parameters.ignoreNops(), parameters.track(), parameters.persist()),
           m_controls(key) {
-    setRange(dMinValue, dMaxValue, dNeutralValue, allowOutOfBounds);
-    double default_value = dMinValue + 0.5 * (dMaxValue - dMinValue);
+    setRange(parameters.minValue(), parameters.maxValue(), parameters.neutralValue(), parameters.allowOutOfBounds());
+    double default_value = parameters.minValue() + 0.5 * (parameters.maxValue() - parameters.minValue());
     setDefaultValue(default_value);
-    if (!bPersist) {
+    if (!parameters.persist()) {
         set(default_value);
     }
     //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;

@@ -7,7 +7,8 @@
 class ControlEffectKnob : public ControlPotmeter {
     Q_OBJECT
   public:
-    ControlEffectKnob(ConfigKey key, double dMinValue = 0.0, double dMaxValue = 1.0);
+    ControlEffectKnob(ConfigKey key,
+			EffectKnobParameters parameters = EffectKnobParameters());
 
     void setBehavior(EffectManifestParameter::ControlHint type,
             double dMinValue, double dMaxValue, double dNeutralParameter);

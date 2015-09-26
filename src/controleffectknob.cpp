@@ -3,8 +3,8 @@
 #include "util/math.h"
 #include "effects/effectmanifestparameter.h"
 
-ControlEffectKnob::ControlEffectKnob(ConfigKey key, double dMinValue, double dMaxValue)
-        : ControlPotmeter(key, dMinValue, dMaxValue) {
+ControlEffectKnob::ControlEffectKnob(ConfigKey key, EffectKnobParameters parameters)
+        : ControlPotmeter(key, parameters) {
 }
 
 void ControlEffectKnob::setBehavior(EffectManifestParameter::ControlHint type,

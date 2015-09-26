@@ -1,19 +1,20 @@
 #include "controllinpotmeter.h"
 
-ControlLinPotmeter::ControlLinPotmeter(ConfigKey key,
-                                       double dMinValue, double dMaxValue,
-                                       double dStep, double dSmallStep,
-                                       double dNeutralValue, bool allowOutOfBounds)
-        : ControlPotmeter(key, dMinValue, dMaxValue, dNeutralValue, allowOutOfBounds) {
+ControlLinPotmeter::ControlLinPotmeter(ConfigKey key, LinPotmeterParameters parameters)
+        : ControlPotmeter(key, parameters) {
     if (m_pControl) {
         m_pControl->setBehavior(
-            new ControlLinPotmeterBehavior(dMinValue, dMaxValue, dNeutralValue, allowOutOfBounds));
+            new ControlLinPotmeterBehavior(parameters.minValue(),
+                parameters.maxValue(), parameters.neutralValue(),
+                parameters.allowOutOfBounds()));
     }
-    if (dStep) {
-        setStepCount((dMaxValue - dMinValue) / dStep);
+    if (parameters.step()) {
+        setStepCount((parameters.maxValue() - parameters.minValue())
+                        / parameters.step());
     }
-    if (dSmallStep) {
-        setSmallStepCount((dMaxValue - dMinValue) / dSmallStep);
+    if (parameters.smallStep()) {
+        setSmallStepCount((parameters.maxValue() - parameters.minValue())
+                        / parameters.smallStep());
     }
 }
 
