@@ -26,7 +26,7 @@ void EffectKnobParameters::setMaxValue(double value) {
 LinPotmeterParameters::LinPotmeterParameters()
         : m_dMinValue(0.0), m_dMaxValue(1.0), m_dNeutralValue(0.0),
           m_bAllowOutOfBounds(false), m_dStep(0.0),
-          m_dSmallStepTrack(0.0) {
+          m_dSmallStep(0.0) {
 }
 
 LinPotmeterParameters::~LinPotmeterParameters() {
