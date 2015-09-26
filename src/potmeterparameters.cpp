@@ -82,7 +82,7 @@ void LinPotmeterParameters::setSmallStep(double value) {
 
 LogPotmeterParameters::LogPotmeterParameters()
         : m_dMaxValue(1.0), m_dNeutralValue(0.0),
-          m_bMinDB(60.) {
+          m_dMinDB(60.) {
 }
 
 LogPotmeterParameters::~LogPotmeterParameters() {
