@@ -11,6 +11,8 @@
 #include <QPoint>
 #include <QSet>
 
+#include <algorithm>
+
 #include "library/libraryfeature.h"
 #include "library/cratetablemodel.h"
 #include "library/library.h"
@@ -49,8 +51,11 @@ class CrateFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onLazyChildExpandation(const QModelIndex& index);
 
-    void slotCreateCrate();
+    void slotCreateCrate(int crateType);
+    inline void slotCreateNormalCrate() { slotCreateCrate(0); } ;
+    inline void slotCreateFolderOfCrates() { slotCreateCrate(1); } ;
     void slotDeleteCrate();
     void slotRenameCrate();
     void slotDuplicateCrate();
@@ -62,23 +67,22 @@ class CrateFeature : public LibraryFeature {
     void slotCrateTableChanged(int playlistId);
     void slotCrateTableRenamed(int playlistId, QString a_strName);
     void htmlLinkClicked(const QUrl& link);
-
   private slots:
     void slotTrackSelected(TrackPointer pTrack);
     void slotResetSelectedTrack();
 
   private:
     QString getRootViewHtml() const;
-    QModelIndex constructChildModel(int selected_id);
-    void clearChildModel();
-    void buildCrateList();
     int crateIdFromIndex(QModelIndex index);
+    QModelIndex indexFromCrateId(int id);
+    void refreshModelHasChildren();
 
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
     QAction *m_pCreateCrateAction;
     QAction *m_pDeleteCrateAction;
     QAction *m_pRenameCrateAction;
+    QAction *m_pCreateCrateFolderAction;
     QAction *m_pLockCrateAction;
     QAction *m_pDuplicateCrateAction;
 #ifdef __AUTODJCRATES__
@@ -88,6 +92,9 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pExportPlaylistAction;
     QAction *m_pAnalyzeCrateAction;
     QList<QPair<int, QString> > m_crateList;
+    QHash<int,QList<QPair<int, QString>>> m_crateHashTree;
+    // TODO(vlada-dudr): how shall we use this nicely?
+    QList<int> m_openedFolders;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;

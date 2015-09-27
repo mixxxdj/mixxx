@@ -85,7 +85,7 @@ public:
     void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
-    void slotCreateCrate();
+    void slotCreateCrate(int type);
     void slotRequestAddDir(QString directory);
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);

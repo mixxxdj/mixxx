@@ -1441,7 +1441,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
                 validNameGiven = true;
             }
         } while (!validNameGiven);
-        iCrateId = crateDao.createCrate(name);// -1 is changed to the new crate ID returned by the DAO
+        iCrateId = crateDao.createCrate(name, 0, 0);// -1 is changed to the new crate ID returned by the DAO
         if (iCrateId == -1) {
             qDebug() << "Error creating crate with name " << name;
             QMessageBox::warning(NULL,

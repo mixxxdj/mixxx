@@ -1,6 +1,8 @@
 #ifndef TREE_ITEM_MODEL_H
 #define TREE_ITEM_MODEL_H
 
+#include <functional>
+
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
@@ -22,6 +24,11 @@ class TreeItemModel : public QAbstractItemModel {
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     virtual QModelIndex parent(const QModelIndex &index) const;
+    // if m_fHasChildren was set up, this function uses passed fuction,
+    // if it wasn't set up the default hasChildren function is used
+    // watch out that non-default function doesn't use QModelIndex!!
+    virtual bool hasChildren (const QModelIndex &index) const;
+    void setHasChildrenFunction(std::function<bool(QVariant)> function);
     // Tell the compiler we don't mean to shadow insertRows.
     using QAbstractItemModel::insertRows;
     virtual bool insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent = QModelIndex());
@@ -39,6 +46,10 @@ class TreeItemModel : public QAbstractItemModel {
 
   private:
     TreeItem *m_pRootItem;
+    // This allows to use feature-based selection of hasChildren function
+    // without excessive use of inheritance (derived class for each feature)
+    // The function is set up by function setHasChildrenFunction
+    std::function<bool(QVariant)> m_fHasChildren;
 };
 
 #endif

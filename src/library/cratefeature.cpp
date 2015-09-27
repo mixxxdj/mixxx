@@ -33,7 +33,11 @@ CrateFeature::CrateFeature(Library* pLibrary,
           m_pConfig(pConfig) {
     m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
-            this, SLOT(slotCreateCrate()));
+            this, SLOT(slotCreateNormalCrate()));
+
+    m_pCreateCrateFolderAction = new QAction(tr("Create New Folder"),this);
+    connect(m_pCreateCrateFolderAction, SIGNAL(triggered()),
+            this, SLOT(slotCreateFolderOfCrates()));
 
     m_pDeleteCrateAction = new QAction(tr("Remove"),this);
     connect(m_pDeleteCrateAction, SIGNAL(triggered()),
@@ -58,7 +62,15 @@ CrateFeature::CrateFeature(Library* pLibrary,
     m_pDuplicateCrateAction = new QAction(tr("Duplicate"),this);
     connect(m_pDuplicateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotDuplicateCrate()));
+/*
+    m_pCollapseAllAction = new QAction(tr("Collapse all"), this);
+    connect(m_pCollapseAllAction, SIGNAL(triggered()),
+            this, SLOT(slotCollapseAll()));
 
+    m_pExpandAllAction = new QAction(tr("Expand all"), this);
+    connect(m_pExpandAllAction, SIGNAL(triggered()),
+            this, SLOT(slotExpandAll()));
+*/
     m_pAnalyzeCrateAction = new QAction(tr("Analyze entire Crate"),this);
     connect(m_pAnalyzeCrateAction, SIGNAL(triggered()),
             this, SLOT(slotAnalyzeCrate()));
@@ -90,7 +102,9 @@ CrateFeature::CrateFeature(Library* pLibrary,
     // construct child model
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
-    constructChildModel(-1);
+    refreshModelHasChildren();
+    //add first crate level to model
+    onLazyChildExpandation(QModelIndex());
 
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
             this, SLOT(slotTrackSelected(TrackPointer)));
@@ -110,6 +124,7 @@ CrateFeature::~CrateFeature() {
 #ifdef __AUTODJCRATES__
     delete m_pAutoDjTrackSource;
 #endif // __AUTODJCRATES__
+    delete m_pCreateCrateFolderAction;
 }
 
 QVariant CrateFeature::title() {
@@ -128,13 +143,59 @@ int CrateFeature::crateIdFromIndex(QModelIndex index) {
 
     QString dataPath = item->dataPath().toString();
     bool ok = false;
-    int playlistId = dataPath.toInt(&ok);
+    int crateId = dataPath.toInt(&ok);
     if (!ok) {
         return -1;
     }
-    return playlistId;
+    return crateId;
 }
 
+QModelIndex CrateFeature::indexFromCrateId(int id) {
+    
+    qDebug() << "Tring to select crate id: " << id;
+
+    QStack<QModelIndex> cratesToProcess;
+    QModelIndex crate;
+    cratesToProcess.push(QModelIndex());
+    while (! cratesToProcess.empty()) {
+        crate = cratesToProcess.pop();
+
+        qDebug() << "CrateFeature::selectCrateById trying crate id: " << crateIdFromIndex(crate);
+
+        if (id == crateIdFromIndex(crate)) {
+            qDebug() << "Crate found, signalling to select it";
+            return crate;
+        }
+
+        for(int row = 0; row < m_childModel.rowCount(crate); row++) {
+            cratesToProcess.push(m_childModel.index(row, 0, crate));
+        }
+    }
+}
+
+// updates hasChildren function in childModel
+void CrateFeature::refreshModelHasChildren() { 
+    //put the set of folders to variable to be lambda-captureable
+    QSet<int> folderSet = m_crateDao.getFolderSet();
+    m_childModel.setHasChildrenFunction( 
+        [folderSet] (QVariant crateId) {
+             return folderSet.contains(crateId.toInt());
+        }
+    );
+}
+
+void CrateFeature::slotCrateTableChanged(int crateId) {
+    qDebug() << "slotCrateTableChanged() playlistId:" << crateId;
+
+    onLazyChildExpandation(QModelIndex());
+
+    refreshModelHasChildren();
+    
+    emit(featureSelect(this, indexFromCrateId(crateId)));
+
+}
+
+// @TODO(vlada-dudr): forbid dropping into folders
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     int crateId = crateIdFromIndex(index);
@@ -162,6 +223,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
     return true;
 }
 
+// @TODO(vlada-dudr): forbid dropping into folders
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     int crateId = crateIdFromIndex(index);
     if (crateId == -1) {
@@ -210,10 +272,12 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(NULL);
     menu.addAction(m_pCreateCrateAction);
+    menu.addAction(m_pCreateCrateFolderAction);
     menu.exec(globalPos);
 }
 
 void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+    qDebug() << "onRightClickChild";
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int crateId = crateIdFromIndex(index);
@@ -222,9 +286,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     }
 
     bool locked = m_crateDao.isCrateLocked(crateId);
-
-    m_pDeleteCrateAction->setEnabled(!locked);
-    m_pRenameCrateAction->setEnabled(!locked);
+    m_pDeleteCrateAction->setEnabled(!(locked ));
 
 #ifdef __AUTODJCRATES__
     bool bAutoDj = m_crateDao.isCrateInAutoDj(crateId);
@@ -235,6 +297,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
     QMenu menu(NULL);
     menu.addAction(m_pCreateCrateAction);
+    menu.addAction(m_pCreateCrateFolderAction);
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction);
     menu.addAction(m_pDuplicateCrateAction);
@@ -252,15 +315,74 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.exec(globalPos);
 }
 
-void CrateFeature::slotCreateCrate() {
+
+void CrateFeature::onLazyChildExpandation(const QModelIndex& index) {
+    qDebug() << "\e[31mEntering CrateFeature::onLazyChildExpandation\e[0m";
+    TreeItem* parent = m_childModel.getItem(index);
+
+    int parentId = parent->dataPath().toInt();
+
+    qDebug() << "\e[33mnode crate id: " << parentId << "\e[0m";
+
+    QList<QPair<int, QString>> childrenList =
+        m_crateDao.getChildren(parentId);
+
+    // if node doesn't have any children we have nothing to add
+    if (childrenList.size() == 0 ) { return ; }
+
+    //Before we populate the subtree, we need to delete old subtrees
+    m_childModel.removeRows(0, parent->childCount(), index);
+
+    //Sort the childrenList by name (using lambda to do the trick)
+    std::sort(
+        childrenList.begin(), 
+        childrenList.end(),
+        [] (QPair<int, QString> fst, QPair<int, QString> snd) {
+            return fst.second < snd.second;
+        }
+    );
+
+    QList<TreeItem*> newNodes;
+
+    int crateId;
+    QString crateName;
+    foreach(const auto& child, childrenList) {
+        crateId = child.first;
+        crateName = child.second;
+
+        qDebug() << "\e[32mAdding crate id: " << crateId << " title: "<< crateName<<"\e[0m";
+
+        // Create the TreeItem with parent from argument
+        TreeItem* item = new TreeItem(
+                    crateName, QString::number(crateId), this, parent);
+        bool locked = m_crateDao.isCrateLocked(crateId);
+        item->setIcon(locked ? 
+                    QIcon(":/images/library/ic_library_locked.png") : QIcon());
+        item->setBold(m_cratesSelectedTrackIsIn.contains(crateId));
+        newNodes << item;
+    }
+
+    // Append all the newly created TreeItems in a dynamic way to the childmodel
+    m_childModel.insertRows(newNodes, 0, newNodes.size(), index);
+    qDebug() << "\e[31mLeaving CrateFeature::onLazyChildExpandation\e[0m";
+}
+
+void CrateFeature::slotCreateCrate(int crateType) {
+    qDebug() << "CrateFeature::slotCreateCrate with type: " << crateType;
     QString name;
     bool validNameGiven = false;
+
+    QString text;
+    switch (crateType) {
+        case 0: text = tr("Enter name for new crate:") ; break;
+        case 1: text = tr("Enter name for new folder:") ; break;
+    }
 
     while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
                                      tr("Create New Crate"),
-                                     tr("Enter name for new crate:"),
+                                     text,
                                      QLineEdit::Normal, tr("New Crate"),
                                      &ok).trimmed();
 
@@ -282,7 +404,18 @@ void CrateFeature::slotCreateCrate() {
         }
     }
 
-    int crateId = m_crateDao.createCrate(name);
+    // If we clicked on folder we create new crate in it,
+    // otherwise in crate's parent folder
+    int parentId;
+    int lastRightClickedId = crateIdFromIndex(m_lastRightClickedIndex);
+    if (m_crateDao.isFolder(lastRightClickedId)) {
+        parentId = lastRightClickedId;
+    } else {
+        parentId = m_crateDao.getParentsId(lastRightClickedId);
+    }
+
+    int crateId = m_crateDao.createCrate(name, parentId, crateType);
+
     if (crateId != -1) {
         emit(showTrackModel(&m_crateTableModel));
     } else {
@@ -299,7 +432,7 @@ void CrateFeature::slotDeleteCrate() {
     if (crateId == -1) {
         return;
     }
-
+    //TODO(vlada-dudr) should we check lock of parents?
     bool locked = m_crateDao.isCrateLocked(crateId);
     if (locked) {
         qDebug() << "Skipping crate deletion because crate" << crateId << "is locked.";
@@ -322,6 +455,7 @@ void CrateFeature::slotRenameCrate() {
     }
     QString oldName = m_crateDao.crateName(crateId);
 
+    //TODO(vlada-dudr) should we check lock of parents?
     bool locked = m_crateDao.isCrateLocked(crateId);
     if (locked) {
         qDebug() << "Skipping crate rename because crate" << crateId << "is locked.";
@@ -332,6 +466,8 @@ void CrateFeature::slotRenameCrate() {
     bool validNameGiven = false;
 
     while (!validNameGiven) {
+        m_pRenameCrateAction->setEnabled(!locked);
+
         bool ok = false;
         newName = QInputDialog::getText(NULL,
                                         tr("Rename Crate"),
@@ -344,6 +480,7 @@ void CrateFeature::slotRenameCrate() {
             return;
         }
 
+        //TODO(vlada-dudr) cannot use this as name is not uniqe
         int existingId = m_crateDao.getCrateIdByName(newName);
 
         if (existingId != -1) {
@@ -362,6 +499,8 @@ void CrateFeature::slotRenameCrate() {
     if (!m_crateDao.renameCrate(crateId, newName)) {
         qDebug() << "Failed to rename crateId" << crateId;
     }
+
+    onLazyChildExpandation(m_lastRightClickedIndex);
 }
 
 void CrateFeature::slotDuplicateCrate() {
@@ -401,7 +540,7 @@ void CrateFeature::slotDuplicateCrate() {
         }
     }
 
-    int newCrateId = m_crateDao.createCrate(name);
+    int newCrateId = m_crateDao.createCrate(name, m_crateDao.getParentsId(oldCrateId),0);
     m_crateDao.copyCrateTracks(oldCrateId, newCrateId);
 
     if (newCrateId != -1) {
@@ -435,103 +574,6 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
         m_crateDao.setCrateInAutoDj(crateId, m_pAutoDjTrackSource->isChecked());
     }
 #endif // __AUTODJCRATES__
-}
-
-void CrateFeature::buildCrateList() {
-    m_crateList.clear();
-
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS CratesCountsDurations "
-        "AS SELECT "
-        "  crates.id as id, "
-        "  crates.name as name, "
-        "  COUNT(library.id) as count, "
-        "  SUM(library.duration) as durationSeconds "
-        "FROM crates "
-        "LEFT JOIN crate_tracks ON crate_tracks.crate_id = crates.id "
-        "LEFT JOIN library ON crate_tracks.track_id = library.id "
-        "WHERE show = 1 "
-        "GROUP BY crates.id;");
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    if (!query.exec(queryString)) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
-    crateListTableModel.setTable("CratesCountsDurations");
-    crateListTableModel.setSort(crateListTableModel.fieldIndex("name"),
-                                Qt::AscendingOrder);
-    crateListTableModel.select();
-    while (crateListTableModel.canFetchMore()) {
-        crateListTableModel.fetchMore();
-    }
-    QSqlRecord record = crateListTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
-    int countColumn = record.indexOf("count");
-    int durationColumn = record.indexOf("durationSeconds");
-
-    for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
-        int id = crateListTableModel.data(
-            crateListTableModel.index(row, idColumn)).toInt();
-        QString name = crateListTableModel.data(
-            crateListTableModel.index(row, nameColumn)).toString();
-        int count = crateListTableModel.data(
-            crateListTableModel.index(row, countColumn)).toInt();
-        int duration = crateListTableModel.data(
-            crateListTableModel.index(row, durationColumn)).toInt();
-        m_crateList.append(qMakePair(id, QString("%1 (%2) %3")
-                                     .arg(name, QString::number(count),
-                                          Time::formatSeconds(duration, false))));
-    }
-}
-
-/**
-  * Purpose: When inserting or removing playlists,
-  * we require the sidebar model not to reset.
-  * This method queries the database and does dynamic insertion
-*/
-QModelIndex CrateFeature::constructChildModel(int selected_id) {
-    buildCrateList();
-    QList<TreeItem*> data_list;
-    int selected_row = -1;
-    // Access the invisible root item
-    TreeItem* root = m_childModel.getItem(QModelIndex());
-
-    int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
-         it != m_crateList.end(); ++it, ++row) {
-        int crate_id = it->first;
-        QString crate_name = it->second;
-
-        if (selected_id == crate_id) {
-            // save index for selection
-            selected_row = row;
-            m_childModel.index(selected_row, 0);
-        }
-
-        // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(crate_name, QString::number(crate_id), this, root);
-        bool locked = m_crateDao.isCrateLocked(crate_id);
-        item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
-        item->setBold(m_cratesSelectedTrackIsIn.contains(crate_id));
-        data_list.append(item);
-    }
-
-    // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertRows(data_list, 0, m_crateList.size());
-    if (selected_row == -1) {
-        return QModelIndex();
-    }
-    return m_childModel.index(selected_row, 0);
-}
-
-/**
-  * Clears the child model dynamically
-  */
-void CrateFeature::clearChildModel() {
-    m_childModel.removeRows(0, m_crateList.size());
-    m_crateList.clear();
 }
 
 void CrateFeature::slotImportPlaylist() {
@@ -665,16 +707,6 @@ void CrateFeature::slotExportPlaylist() {
     }
 }
 
-void CrateFeature::slotCrateTableChanged(int crateId) {
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
-    clearChildModel();
-    m_lastRightClickedIndex = constructChildModel(crateId);
-    // Switch the view to the crate.
-    m_crateTableModel.setTableModel(crateId);
-    // Update selection
-    emit(featureSelect(this, m_lastRightClickedIndex));
-}
-
 void CrateFeature::slotCrateTableRenamed(int a_iCrateId,
                                          QString /* a_strName */) {
     slotCrateTableChanged(a_iCrateId);
@@ -682,7 +714,8 @@ void CrateFeature::slotCrateTableRenamed(int a_iCrateId,
 
 void CrateFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path())=="create") {
-        slotCreateCrate();
+        //@TODO(vlada-dudr): put something more creative, then 0 in there
+        slotCreateCrate(0);
     } else {
         qDebug() << "Unknown crate link clicked" << link;
     }
@@ -722,16 +755,19 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
 
     // Set all crates the track is in bold (or if there is no track selected,
     // clear all the bolding).
-    int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
-         it != m_crateList.end(); ++it, ++row) {
-        TreeItem* crate = rootItem->child(row);
-        if (crate == nullptr) {
-            continue;
+    QStack<TreeItem*> cratesToProcess;
+    TreeItem* crate;
+    cratesToProcess.push(rootItem);
+    while (! cratesToProcess.empty()) {
+        crate = cratesToProcess.pop();
+        
+        crate->setBold(
+                m_cratesSelectedTrackIsIn.contains(
+                    crate->dataPath().toInt()));
+
+        for(int row = 0; row < crate->childCount(); row++) {
+            cratesToProcess.push(crate->child(row));
         }
-        int crateId = it->first;
-        bool shouldBold = m_cratesSelectedTrackIsIn.contains(crateId);
-        crate->setBold(shouldBold);
     }
 
     m_childModel.triggerRepaint();

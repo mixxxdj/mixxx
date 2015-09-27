@@ -122,13 +122,31 @@ QModelIndex TreeItemModel::parent(const QModelIndex &index) const {
     if (!index.isValid())
         return QModelIndex();
 
-    TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
+    TreeItem *childItem = getItem(index);
     TreeItem *parentItem = childItem->parent();
 
     if (parentItem == m_pRootItem)
         return QModelIndex();
 
     return createIndex(parentItem->row(), 0, parentItem);
+}
+
+bool TreeItemModel::hasChildren(const QModelIndex &index) const {
+    TreeItem *item = getItem(index);
+
+    QVariant dataPath = item->dataPath();
+
+    if (m_fHasChildren) {
+        //here we use functors => the correct function is stored in variable
+        return m_fHasChildren(dataPath);
+    } else {
+        return QAbstractItemModel::hasChildren(index);
+    }
+}
+
+// sets up the function to determine if a node has children
+void TreeItemModel::setHasChildrenFunction(std::function<bool(QVariant)> function) {
+    m_fHasChildren = function;
 }
 
 int TreeItemModel::rowCount(const QModelIndex &parent) const {

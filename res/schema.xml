@@ -395,4 +395,15 @@ METADATA
       ALTER TABLE library ADD COLUMN coverart_hash INTEGER DEFAULT 0;
     </sql>
   </revision>
+  <revision version="25" min_compatible="3">
+    <description>
+        Add crate/playlist folders support
+    </description>
+    <sql>
+      ALTER TABLE crates ADD COLUMN parent_id INTEGER DEFAULT 0;
+      ALTER TABLE crates ADD COLUMN crate_type INTEGER DEFAULT 0;
+      ALTER TABLE Playlists ADD COLUMN parent_id INTEGER DEFAULT 0;
+      ALTER TABLE Playlists ADD COLUMN playlist_type INTEGER DEFAULT 0;
+    </sql>
+  </revision>
 </schema>

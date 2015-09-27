@@ -273,8 +273,8 @@ void Library::slotCreatePlaylist() {
     m_pPlaylistFeature->slotCreatePlaylist();
 }
 
-void Library::slotCreateCrate() {
-    m_pCrateFeature->slotCreateCrate();
+void Library::slotCreateCrate(int type) {
+    m_pCrateFeature->slotCreateCrate(type);
 }
 
 void Library::onSkinLoadFinished() {
