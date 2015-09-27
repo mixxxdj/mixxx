@@ -1,5 +1,6 @@
 #ifdef __WINDOWS__
 #include <windows.h>
+#include "util/performancetimer.h"
 #else
 #include <sys/time.h>
 #include <unistd.h>
@@ -202,6 +203,7 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
     } else {
         static qint64 oldNow = 0;
         static qint64 incCount = 0;
+        static PerformanceTimer timerSinceInc;
         GetSystemTimeAsFileTime(&ft);
         qint64 now = ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
         if(now == oldNow) {
@@ -209,13 +211,11 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
             // Add time since last function call after last increment
             // This reduces the jitter < one call cycle which is sufficient
             LARGE_INTEGER li;
-            QueryPerformanceCounter(&li);
-            now += li.QuadPart - incCount;
+            now += timerSinceInc.elapsed() / 1000;
         } else {
             // timer was incremented
             LARGE_INTEGER li;
-            QueryPerformanceCounter(&li);
-            incCount = li.QuadPart;
+            timerSinceInc.start();
             oldNow = now;
         }
         return now;

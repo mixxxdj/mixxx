@@ -277,6 +277,6 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"),  ConfigValue(custom_title->text()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_format"), ConfigValue(metadata_format->text()));
 
-    //Tell the EngineShoutcast object to update with these values by toggling this control object.
+    // Tell the EngineShoutcast object to update with these values by toggling this control object.
     m_pUpdateShoutcastFromPrefs->set(1.0);
 }
