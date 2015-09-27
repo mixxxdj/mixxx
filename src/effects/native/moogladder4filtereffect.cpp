@@ -2,8 +2,9 @@
 #include "util/math.h"
 
 
-static const double kMinCorner = 0.0003; // 13 Hz @ 44100
-static const double kMaxCorner = 0.5; // 22050 Hz @ 44100
+static const double kMinCorner = 0.0018; // 80 Hz @ 44100
+static const double kMaxCorner = 0.55;   // 24255 Hz @ 44100
+static const double k2MaxCorner = 0.27;   // 11907 Hz @ 44100
 static const unsigned int kStartupSamplerate = 44100;
 
 // static
@@ -36,17 +37,6 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     lpf->setMinimum(kMinCorner);
     lpf->setMaximum(kMaxCorner);
 
-    EffectManifestParameter* q = manifest.addParameter();
-    q->setId("resonance");
-    q->setName(QObject::tr("Resonance"));
-    q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
-    q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    q->setDefault(0);
-    q->setMinimum(0.0);
-    q->setMaximum(4.0);
-
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
@@ -58,7 +48,18 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     hpf->setNeutralPointOnScale(0.0);
     hpf->setDefault(kMinCorner);
     hpf->setMinimum(kMinCorner);
-    hpf->setMaximum(kMaxCorner);
+    hpf->setMaximum(k2MaxCorner);
+    
+    EffectManifestParameter* q = manifest.addParameter();
+    q->setId("resonance");
+    q->setName(QObject::tr("Resonance"));
+    q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
+    q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
+    q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
+    q->setDefault(2.2);
+    q->setMinimum(0.0);
+    q->setMaximum(3.5);
 
     return manifest;
 }

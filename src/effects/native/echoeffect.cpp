@@ -41,9 +41,9 @@ EffectManifest EchoEffect::getManifest() {
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_TIME);
-    time->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    //time->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
     time->setMinimum(0.1);
-    time->setDefault(0.25);
+    time->setDefault(0.1);
     time->setMaximum(2.0);
 
     time = manifest.addParameter();
@@ -55,7 +55,7 @@ EffectManifest EchoEffect::getManifest() {
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     time->setMinimum(0.00);
-    time->setDefault(0.40);
+    time->setDefault(0.9);
     time->setMaximum(1.0);
 
     time = manifest.addParameter();
