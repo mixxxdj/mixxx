@@ -721,7 +721,9 @@ void MixxxMainWindow::logBuildDetails() {
         buildInfo.append(
             QString("git r%2").arg(buildRevision));
     }
+#ifndef DISABLE_BUILDTIME // buildtime=1, on by default
     buildInfo.append("built on: " __DATE__ " @ " __TIME__);
+#endif
     if (!buildFlags.isEmpty()) {
         buildInfo.append(QString("flags: %1").arg(buildFlags.trimmed()));
     }
@@ -1168,6 +1170,7 @@ void MixxxMainWindow::initActions()
     m_pFileQuit->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileQuit->setStatusTip(quitText);
     m_pFileQuit->setWhatsThis(buildWhatsThis(quitTitle, quitText));
+    m_pFileQuit->setMenuRole(QAction::QuitRole);
     connect(m_pFileQuit, SIGNAL(triggered()), this, SLOT(slotFileQuit()));
 
     QString rescanTitle = tr("&Rescan Library");
@@ -1261,16 +1264,18 @@ void MixxxMainWindow::initActions()
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsPreferences->setStatusTip(preferencesText);
     m_pOptionsPreferences->setWhatsThis(buildWhatsThis(preferencesTitle, preferencesText));
+    m_pOptionsPreferences->setMenuRole(QAction::PreferencesRole);
     connect(m_pOptionsPreferences, SIGNAL(triggered()),
             this, SLOT(slotOptionsPreferences()));
 
     QString externalLinkSuffix = QChar(0x21D7);
-    
+
     QString aboutTitle = tr("&About");
     QString aboutText = tr("About the application");
     m_pHelpAboutApp = new QAction(aboutTitle, this);
     m_pHelpAboutApp->setStatusTip(aboutText);
     m_pHelpAboutApp->setWhatsThis(buildWhatsThis(aboutTitle, aboutText));
+    m_pHelpAboutApp->setMenuRole(QAction::AboutRole);
     connect(m_pHelpAboutApp, SIGNAL(triggered()),
             this, SLOT(slotHelpAbout()));
 
@@ -1294,7 +1299,7 @@ void MixxxMainWindow::initActions()
     m_pHelpShortcuts->setStatusTip(shortcutsText);
     m_pHelpShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
     connect(m_pHelpShortcuts, SIGNAL(triggered()), this, SLOT(slotHelpShortcuts()));
-    
+
     QString feedbackTitle = tr("Send Us &Feedback") + externalLinkSuffix;
     QString feedbackText = tr("Send feedback to the Mixxx team.");
     m_pHelpFeedback = new QAction(feedbackTitle, this);
