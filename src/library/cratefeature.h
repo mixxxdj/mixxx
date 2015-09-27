@@ -52,6 +52,7 @@ class CrateFeature : public LibraryFeature {
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void onLazyChildExpandation(const QModelIndex& index);
+    void itemCollapsed(const QModelIndex& index);
 
     void slotCreateCrate(int crateType);
     inline void slotCreateNormalCrate() { slotCreateCrate(0); } ;
@@ -94,7 +95,7 @@ class CrateFeature : public LibraryFeature {
     QList<QPair<int, QString> > m_crateList;
     QHash<int,QList<QPair<int, QString>>> m_crateHashTree;
     // TODO(vlada-dudr): how shall we use this nicely?
-    QList<int> m_openedFolders;
+    QList<int> m_openFolders;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;

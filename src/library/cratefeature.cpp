@@ -151,8 +151,6 @@ int CrateFeature::crateIdFromIndex(QModelIndex index) {
 }
 
 QModelIndex CrateFeature::indexFromCrateId(int id) {
-    
-    qDebug() << "Tring to select crate id: " << id;
 
     QStack<QModelIndex> cratesToProcess;
     QModelIndex crate;
@@ -161,7 +159,7 @@ QModelIndex CrateFeature::indexFromCrateId(int id) {
         crate = cratesToProcess.pop();
 
         if (id == crateIdFromIndex(crate)) {
-            qDebug() << "Crate found, signalling to select it";
+            qDebug() << "Found index of crate found id: " << id;
             return crate;
         }
 
@@ -169,6 +167,7 @@ QModelIndex CrateFeature::indexFromCrateId(int id) {
             cratesToProcess.push(m_childModel.index(row, 0, crate));
         }
     }
+    qDebug() << "Failed search for index of crate id: " << id;
     return QModelIndex();
 }
 
@@ -187,14 +186,24 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
     qDebug() << "slotCrateTableChanged() playlistId:" << crateId;
 
     onLazyChildExpandation(QModelIndex());
+    QModelIndex index;
+    foreach(int folderId, m_openFolders) {
+        index = indexFromCrateId(folderId);
+        if (index.isValid()) {
+            qDebug() << "Restored folder id: " << folderId;
+            emit(featureSelect(this, index));
+        } else {
+            qDebug() << "Failed restoring folder id: " << folderId;
+        }
+    }
+    if (indexFromCrateId(crateId).isValid())
+        emit(featureSelect(this, indexFromCrateId(crateId)));
 
     refreshModelHasChildren();
-    
-    emit(featureSelect(this, indexFromCrateId(crateId)));
 
+    qDebug() << "slotCrateTableChanged finished";
 }
 
-// @TODO(vlada-dudr): forbid dropping into folders
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     int crateId = crateIdFromIndex(index);
@@ -222,7 +231,6 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
     return true;
 }
 
-// @TODO(vlada-dudr): forbid dropping into folders
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     int crateId = crateIdFromIndex(index);
     if (crateId == -1 || m_crateDao.isFolder(crateIdFromIndex(index))) {
@@ -363,7 +371,14 @@ void CrateFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_childModel.insertRows(newNodes, 0, newNodes.size(), index);
+    if (!m_openFolders.contains(parentId))
+            m_openFolders.push_back(parentId);
     qDebug() << "\e[31mLeaving CrateFeature::onLazyChildExpandation\e[0m";
+}
+
+void CrateFeature::itemCollapsed(const QModelIndex& index) {
+    qDebug() << "Closing folder id: " << crateIdFromIndex(index);
+    m_openFolders.removeAll(crateIdFromIndex(index));
 }
 
 void CrateFeature::slotCreateCrate(int crateType) {

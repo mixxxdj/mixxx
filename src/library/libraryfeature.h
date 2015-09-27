@@ -76,10 +76,14 @@ class LibraryFeature : public QObject {
         Q_UNUSED(index);
     }
     // Only implement this, if using incremental or lazy childmodels, see BrowseFeature.
-    // This method is executed whenever you **double** click child items
+    // This method is executed whenever you expand child items
     virtual void onLazyChildExpandation(const QModelIndex& index) {
         Q_UNUSED(index);
     }
+    virtual void itemCollapsed(const QModelIndex& index) {
+        Q_UNUSED(index);
+    }
+
   signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);

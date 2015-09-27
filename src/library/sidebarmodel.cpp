@@ -234,7 +234,22 @@ void SidebarModel::clicked(const QModelIndex& index) {
         }
     }
 }
-void SidebarModel::doubleClicked(const QModelIndex& index) {
+
+void SidebarModel::slotCollapsed(const QModelIndex& index) {
+    if (index.isValid()) {
+        if (index.internalPointer() == this) {
+           return;
+        } else {
+            TreeItem* tree_item = (TreeItem*)index.internalPointer();
+            if (tree_item) {
+                LibraryFeature* feature = tree_item->getFeature();
+                feature->itemCollapsed(index);
+            }
+        }
+    }
+}
+
+void SidebarModel::slotExpanded(const QModelIndex& index) {
     if (index.isValid()) {
         if (index.internalPointer() == this) {
            return;
