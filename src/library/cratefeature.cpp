@@ -160,8 +160,6 @@ QModelIndex CrateFeature::indexFromCrateId(int id) {
     while (! cratesToProcess.empty()) {
         crate = cratesToProcess.pop();
 
-        qDebug() << "CrateFeature::selectCrateById trying crate id: " << crateIdFromIndex(crate);
-
         if (id == crateIdFromIndex(crate)) {
             qDebug() << "Crate found, signalling to select it";
             return crate;
@@ -171,6 +169,7 @@ QModelIndex CrateFeature::indexFromCrateId(int id) {
             cratesToProcess.push(m_childModel.index(row, 0, crate));
         }
     }
+    return QModelIndex();
 }
 
 // updates hasChildren function in childModel
@@ -199,7 +198,7 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     int crateId = crateIdFromIndex(index);
-    if (crateId == -1) {
+    if (crateId == -1 || m_crateDao.isFolder(crateIdFromIndex(index))) {
         return false;
     }
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
@@ -226,7 +225,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
 // @TODO(vlada-dudr): forbid dropping into folders
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     int crateId = crateIdFromIndex(index);
-    if (crateId == -1) {
+    if (crateId == -1 || m_crateDao.isFolder(crateIdFromIndex(index))) {
         return false;
     }
     bool locked = m_crateDao.isCrateLocked(crateId);
