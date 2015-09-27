@@ -21,7 +21,7 @@
 #include <QMimeData>
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
@@ -89,14 +89,14 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     palette.setColor(this->backgroundRole(), m_qColorBackground);
     setPalette(palette);
 
-    //setup hotcues and cue and loop(s)
+    // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
         if (mark.m_pointControl) {
-            connect(mark.m_pointControl, SIGNAL(valueChanged(double)),
-                    this, SLOT(onMarkChanged(double)));
+            mark.m_pointControl->connectValueChanged(
+                    SLOT(onMarkChanged(double)));
         }
     }
 
@@ -108,15 +108,15 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
             markRange.setup(m_group, child, context, m_signalColors);
 
             if (markRange.m_markEnabledControl) {
-                connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
+                markRange.m_markEnabledControl->connectValueChanged(
                         this, SLOT(onMarkRangeChange(double)));
             }
             if (markRange.m_markStartPointControl) {
-                connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
+                markRange.m_markStartPointControl->connectValueChanged(
                         this, SLOT(onMarkRangeChange(double)));
             }
             if (markRange.m_markEndPointControl) {
-                connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
+                markRange.m_markEndPointControl->connectValueChanged(
                         this, SLOT(onMarkRangeChange(double)));
             }
         }

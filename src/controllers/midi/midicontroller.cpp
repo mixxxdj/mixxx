@@ -83,8 +83,8 @@ void MidiController::createOutputHandlers() {
 
         const MidiOutputMapping& mapping = outIt.value();
 
-        QString group = mapping.control.group;
-        QString key = mapping.control.item;
+        QString group = mapping.controlKey.group;
+        QString key = mapping.controlKey.item;
 
         unsigned char status = mapping.output.status;
         unsigned char control = mapping.output.control;

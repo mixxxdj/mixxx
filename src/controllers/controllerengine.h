@@ -21,7 +21,7 @@
 
 // Forward declaration(s)
 class Controller;
-class ControlObjectThread;
+class ControlObjectScript;
 class ControllerEngine;
 
 // ControllerEngineConnection class for closure-compatible engine.connectControl
@@ -44,13 +44,13 @@ class ControllerEngineConnectionScriptValue : public QObject {
     //Q_PROPERTY(QScriptValue function READ function)
   public:
     ControllerEngineConnectionScriptValue(ControllerEngineConnection conn) {
-        this->conn = conn;
+        m_conn = conn;
     }
-    QString readId() const { return this->conn.id; }
+    QString readId() const { return m_conn.id; }
     Q_INVOKABLE void disconnect();
 
   private:
-   ControllerEngineConnection conn;
+    ControllerEngineConnection m_conn;
 };
 
 /* comparison function for ControllerEngineConnection */
@@ -114,7 +114,6 @@ class ControllerEngine : public QObject {
     virtual void timerEvent(QTimerEvent *event);
 
   public slots:
-    void slotValueChanged(double value);
     // Evaluate a script file
     bool evaluate(QString filepath);
 
@@ -160,7 +159,7 @@ class ControllerEngine : public QObject {
     bool checkException();
     QScriptEngine *m_pEngine;
 
-    ControlObjectThread* getControlObjectThread(QString group, QString name);
+    ControlObjectScript* getControlObjectScript(QString group, QString name);
 
     // Scratching functions & variables
     void scratchProcess(int timerId);
@@ -174,7 +173,7 @@ class ControllerEngine : public QObject {
     QMultiHash<ConfigKey, ControllerEngineConnection> m_connectedControls;
     QList<QString> m_scriptFunctionPrefixes;
     QMap<QString,QStringList> m_scriptErrors;
-    QHash<ConfigKey, ControlObjectThread*> m_controlCache;
+    QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     struct TimerInfo {
         QScriptValue callback;
         QScriptValue context;

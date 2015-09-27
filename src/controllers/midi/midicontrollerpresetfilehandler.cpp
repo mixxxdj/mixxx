@@ -124,7 +124,7 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
         // Unserialize output message from the XML
         MidiOutputMapping mapping;
-        mapping.control = ConfigKey(controlGroup, controlKey);
+        mapping.controlKey = ConfigKey(controlGroup, controlKey);
         mapping.description = controlDescription;
 
         QString midiStatus = output.firstChildElement("status").text();
@@ -181,7 +181,7 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
         // Use insertMulti because we support multiple outputs from the same
         // control.
-        preset->outputMappings.insertMulti(mapping.control, mapping);
+        preset->outputMappings.insertMulti(mapping.controlKey, mapping);
 
         output = output.nextSiblingElement("output");
     }
@@ -344,8 +344,8 @@ QDomElement MidiControllerPresetFileHandler::outputMappingToXML(
         QDomDocument* doc, const MidiOutputMapping& mapping) const {
     QDomElement outputNode = doc->createElement("output");
 
-    outputNode.appendChild(makeTextElement(doc, "group", mapping.control.group));
-    outputNode.appendChild(makeTextElement(doc, "key", mapping.control.item));
+    outputNode.appendChild(makeTextElement(doc, "group", mapping.controlKey.group));
+    outputNode.appendChild(makeTextElement(doc, "key", mapping.controlKey.item));
     if (!mapping.description.isEmpty()) {
         outputNode.appendChild(
             makeTextElement(doc, "description", mapping.description));

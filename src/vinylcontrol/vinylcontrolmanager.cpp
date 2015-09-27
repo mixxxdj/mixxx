@@ -6,7 +6,6 @@
 
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "controlobjectthread.h"
 #include "playermanager.h"
 #include "soundmanager.h"
 #include "util/timer.h"
@@ -75,7 +74,7 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_pVcEnabled.push_back(new ControlObjectThread(group, "vinylcontrol_enabled", this));
+        m_pVcEnabled.push_back(new ControlObjectSlave(group, "vinylcontrol_enabled", this));
         m_pVcEnabled.back()->set(0);
 
         // Default cueing should be off.

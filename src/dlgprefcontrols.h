@@ -25,7 +25,6 @@
 #include "preferences/dlgpreferencepage.h"
 
 class ControlObjectSlave;
-class ControlObjectThread;
 class ControlPotmeter;
 class SkinLoader;
 class PlayerManager;
@@ -83,11 +82,11 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     ControlObject* m_pControlPositionDisplay;
     ControlObjectSlave* m_pNumDecks;
     ControlObjectSlave* m_pNumSamplers;
-    QList<ControlObjectThread*> m_cueControls;
-    QList<ControlObjectThread*> m_rateControls;
-    QList<ControlObjectThread*> m_rateDirControls;
-    QList<ControlObjectThread*> m_rateRangeControls;
-    QList<ControlObjectThread*> m_keylockModeControls;
+    QList<ControlObjectSlave*> m_cueControls;
+    QList<ControlObjectSlave*> m_rateControls;
+    QList<ControlObjectSlave*> m_rateDirControls;
+    QList<ControlObjectSlave*> m_rateRangeControls;
+    QList<ControlObjectSlave*> m_keylockModeControls;
     MixxxMainWindow *m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
