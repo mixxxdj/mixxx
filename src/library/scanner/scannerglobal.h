@@ -12,6 +12,28 @@
 #include "util/task.h"
 #include "util/performancetimer.h"
 
+class DirInfo {
+  public:
+    DirInfo(const QDir& dir,
+            const SecurityTokenPointer& token)
+          : m_dir(dir),
+            m_token(token) {
+    }
+
+    const QDir& dir() const {
+        return m_dir;
+    }
+
+    const SecurityTokenPointer& token() const {
+        return m_token;
+    }
+
+  private:
+    QDir m_dir;
+    SecurityTokenPointer m_token;
+};
+
+
 class ScannerGlobal {
   public:
     ScannerGlobal(const QSet<QString>& trackLocations,
@@ -27,7 +49,6 @@ class ScannerGlobal {
               // Unless marked un-clean, we assume it will finish cleanly.
               m_scanFinishedCleanly(true),
               m_shouldCancel(false),
-              m_numAddedTracks(0),
               m_numScannedDirectories(0) {
     }
 
@@ -62,6 +83,18 @@ class ScannerGlobal {
             m_directoriesScanned.insert(canonicalPath);
             return false;
         }
+    }
+
+    inline void addUnhashedDir(const QDir& dir,
+                               const SecurityTokenPointer& token) {
+        QMutexLocker locker(&m_directoriesUnhashedMutex);
+        m_directoriesUnhashed.append(DirInfo(dir, token));
+    }
+
+    inline QList<DirInfo>& unhashedDirs() {
+        // no need for locking here, because it is only used
+        // when only one using thread is around.
+        return m_directoriesUnhashed;
     }
 
     // TODO(rryan) test whether tasks should create their own QRegExp.
@@ -125,11 +158,11 @@ class ScannerGlobal {
         return m_timer.elapsed();
     }
 
-    int numAddedTracks() const {
-        return m_numAddedTracks;
+    const QStringList& addedTracks() const {
+        return m_addedTracks;
     }
-    void trackAdded() {
-        m_numAddedTracks++;
+    void trackAdded(const QString& trackLocation) {
+        m_addedTracks << trackLocation;
     }
 
     int numScannedDirectories() const {
@@ -154,9 +187,15 @@ class ScannerGlobal {
 
     // This set will grow during a scan by successively
     // inserting the canonical paths of directories that
-    // have already been scanned.
+    // are about to be scanned.
     mutable QMutex m_directoriesScannedMutex;
     QSet<QString> m_directoriesScanned;
+
+    // This set will collect all locations of new
+    // discovered directories, they are scanned in a
+    // second run to avoid swapping between duplicated tracks
+    mutable QMutex m_directoriesUnhashedMutex;
+    QList<DirInfo> m_directoriesUnhashed;
 
     // Typically there are 1 to 2 entries in the blacklist so a O(n) search in a
     // QList may have better constant factors than a O(1) QSet check. However,
@@ -169,12 +208,14 @@ class ScannerGlobal {
     // The list of tracks verified by the scan.
     QStringList m_verifiedTracks;
 
+    // The list of tracks added by the scan.
+    QStringList m_addedTracks;
+
     volatile bool m_scanFinishedCleanly;
     volatile bool m_shouldCancel;
 
     // Stats tracking.
     PerformanceTimer m_timer;
-    int m_numAddedTracks;
     int m_numScannedDirectories;
 };
 
