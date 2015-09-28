@@ -483,7 +483,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         // Send header if there is one
         if (headerLen > 0) {
             // We are already synced by EngineNetworkstream
-            ret = shout_send(m_pShout, header, headerLen);
+            ret = shout_send_raw(m_pShout, header, headerLen);
             if (ret != SHOUTERR_SUCCESS) {
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
                 if (m_iShoutFailures > 3) {
