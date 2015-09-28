@@ -442,7 +442,10 @@ bool EngineShoutcast::processConnect() {
         infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
 
         m_bThreadQuit = false;
-        start();
+
+        if (m_pOutputFifo->readAvailable()) {
+            m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
+        }
 
         return true;
     }
@@ -476,8 +479,9 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
     int ret;
 
-    if (!m_pShout)
+    if (!m_pShout) {
         return;
+    }
 
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         // Send header if there is one
@@ -487,8 +491,10 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             if (ret != SHOUTERR_SUCCESS) {
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
                 if (m_iShoutFailures > 3) {
-                    if(!serverConnect()) {
-                        errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                    processDisconnect();
+                    if (!processConnect()) {
+                        errorDialog(tr("Lost connection to streaming server"),
+                                    tr("Please check your connection to the Internet and verify that your username and password are correct."));
                     }
                 }
                 else{
@@ -501,13 +507,15 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             }
         }
 
-        ret = shout_send(m_pShout, body, bodyLen);
+        ret = shout_send_raw(m_pShout, body, bodyLen);
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
             if (m_iShoutFailures > 3) {
-                if(!serverConnect())
+                processDisconnect();
+                if (!processConnect()) {
                     errorDialog(tr("Lost connection to streaming server"),
                                 tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                }
             }
             else{
                 m_iShoutFailures++;
@@ -517,7 +525,9 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         } else {
             //qDebug() << "yea I kinda sent footer";
         }
-        if (shout_queuelen(m_pShout) > 0) {
+
+        ssize_t queuelen = shout_queuelen(m_pShout);
+        if (queuelen > 0) {
             qDebug() << "DEBUG: queue length:" << (int)shout_queuelen(m_pShout);
         }
     } else {
@@ -540,7 +550,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // Initialize/update the encoder and libshout setup.
         updateFromPreferences();
 
-        if (serverConnect()) {
+        if (processConnect()) {
             infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
         } else {
             errorDialog(tr("Mixxx could not connect to streaming server"),
@@ -733,16 +743,15 @@ void EngineShoutcast::run() {
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
 
+    DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
+        return;
+    }
+
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
     processConnect();
 
     setState(NETWORKSTREAMWORKER_STATE_WAITING);
-    DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
-        return;
-    }
-    if (m_pOutputFifo->readAvailable()) {
-        m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
-    }
+
     m_threadWaiting = true;
     setState(NETWORKSTREAMWORKER_STATE_READY);
     for(;;) {
