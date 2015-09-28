@@ -31,7 +31,7 @@
 #include "controlobjectthread.h"
 #include "controlobjectslave.h"
 #include "encoder/encodercallback.h"
-#include "engine/sidechain/sidechainworker.h"
+#include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"
 #include "trackinfoobject.h"
 #include "util/fifo.h"
@@ -45,7 +45,8 @@ typedef struct shout shout_t;
 struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
-class EngineShoutcast : public QThread, public EncoderCallback, public SideChainWorker {
+class EngineShoutcast :
+        public QThread, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
     EngineShoutcast(ConfigObject<ConfigValue>* _config);
@@ -67,7 +68,7 @@ class EngineShoutcast : public QThread, public EncoderCallback, public SideChain
     bool serverDisconnect();
     bool isConnected();
 
-    virtual void outputAvailabe();
+    virtual void outputAvailable();
     virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo);
 
     virtual bool threadWaiting();
@@ -107,6 +108,7 @@ class EngineShoutcast : public QThread, public EncoderCallback, public SideChain
     ConfigObject<ConfigValue>* m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
+    ControlObject* m_pShoutcastEnabled;
     ControlObjectSlave* m_pMasterSamplerate;
     ControlObject* m_pShoutcastStatus;
     // static metadata according to prefereneces
@@ -126,7 +128,7 @@ class EngineShoutcast : public QThread, public EncoderCallback, public SideChain
     bool m_protocol_is_shoutcast;
     bool m_ogg_dynamic_update;
     QVector<struct shoutcastCacheObject  *> m_pShoutcastCache;
-    bool m_bThreadQuit;
+    volatile bool m_bThreadQuit;
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;

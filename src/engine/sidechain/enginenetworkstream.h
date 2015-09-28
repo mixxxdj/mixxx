@@ -3,7 +3,7 @@
 
 #include "util/types.h"
 #include "util/fifo.h"
-#include "engine/sidechain/sidechainworker.h"
+#include "engine/sidechain/networkstreamworker.h"
 
 class EngineNetworkStream {
   public:
@@ -34,7 +34,7 @@ class EngineNetworkStream {
 
     static qint64 getNetworkTimeUs();
 
-    void addWorker(QSharedPointer<SideChainWorker> pWorker);
+    void addWorker(QSharedPointer<NetworkStreamWorker> pWorker);
 
   private:
     void scheduleWorker();
@@ -47,7 +47,7 @@ class EngineNetworkStream {
     qint64 m_streamStartTimeUs;
     qint64 m_streamFramesWritten;
     qint64 m_streamFramesRead;
-    QSharedPointer<SideChainWorker> m_pWorker;
+    QSharedPointer<NetworkStreamWorker> m_pWorker;
     int m_writeOverflowCount;
 };
 

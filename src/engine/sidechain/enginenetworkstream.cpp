@@ -1,9 +1,17 @@
 #ifdef __WINDOWS__
 #include <windows.h>
+#include "util/performancetimer.h"
 #else
 #include <sys/time.h>
 #include <unistd.h>
 #endif
+
+#ifdef __WINDOWS__
+// For GetSystemTimeAsFileTime and GetSystemTimePreciseAsFileTime
+typedef VOID (WINAPI *PgGetSystemTimeFn)(LPFILETIME);
+static PgGetSystemTimeFn s_pfpgGetSystemTimeFn = NULL;
+#endif
+
 
 
 #include "engine/sidechain/enginenetworkstream.h"
@@ -40,6 +48,21 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
     if (numInputChannels) {
         m_pInputFifo = new FIFO<CSAMPLE>(numInputChannels * kBufferFrames);
     }
+
+#ifdef __WINDOWS__
+    // Resolution:
+    // 15   ms for GetSystemTimeAsFileTime
+    //  0.4 ms for GetSystemTimePreciseAsFileTime
+    // Performance:
+    //    9 cycles for GetSystemTimeAsFileTime
+    // 2761 cycles for GetSystemTimePreciseAsFileTime
+    HMODULE kernel32_dll = LoadLibraryW(L"kernel32.dll");
+    if (kernel32_dll) {
+        // for a 0.0004 ms Resolution on Win8
+        s_pfpgGetSystemTimeFn = (PgGetSystemTimeFn)GetProcAddress(
+                kernel32_dll, "GetSystemTimePreciseAsFileTime");
+    }
+#endif
 }
 
 EngineNetworkStream::~EngineNetworkStream() {
@@ -131,7 +154,7 @@ void EngineNetworkStream::writeSilence(int frames) {
 void EngineNetworkStream::scheduleWorker() {
     if (m_pOutputFifo->readAvailable()
             >= m_numOutputChannels * kNetworkLatencyFrames) {
-        m_pWorker->outputAvailabe();
+        m_pWorker->outputAvailable();
     }
 }
 
@@ -164,21 +187,48 @@ qint64 EngineNetworkStream::getStreamTimeUs() {
 qint64 EngineNetworkStream::getNetworkTimeUs() {
     // This matches the GPL2 implementation found in
     // https://github.com/codders/libshout/blob/a17fb84671d3732317b0353d7281cc47e2df6cf6/src/timing/timing.c
-    // Instead of ms resuolution we use a us resolution to allow low latency settings
+    // Instead of ms resolution we use a us resolution to allow low latency settings
     // will overflow > 200,000 years
 #ifdef __WINDOWS__
     FILETIME ft;
-    int64_t t;
-    GetSystemTimeAsFileTime(&ft);
-    return ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
+    qint64 t;
+    // no GetSystemTimePreciseAsFileTime available, fall
+    // back to GetSystemTimeAsFileTime. This happens before
+    // Windows 8 and Windows Server 2012
+    // GetSystemTime?AsFileTime is NTP adjusted
+    // QueryPerformanceCounter depends on the CPU crystal
+    if(s_pfpgGetSystemTimeFn) {
+        s_pfpgGetSystemTimeFn(&ft);
+        return ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
+    } else {
+        static qint64 oldNow = 0;
+        static qint64 incCount = 0;
+        static PerformanceTimer timerSinceInc;
+        GetSystemTimeAsFileTime(&ft);
+        qint64 now = ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
+        if(now == oldNow) {
+            // timer was not incremented since last call (< 15 ms)
+            // Add time since last function call after last increment
+            // This reduces the jitter < one call cycle which is sufficient
+            LARGE_INTEGER li;
+            now += timerSinceInc.elapsed() / 1000;
+        } else {
+            // timer was incremented
+            LARGE_INTEGER li;
+            timerSinceInc.start();
+            oldNow = now;
+        }
+        return now;
+    }
 #else
-    struct timeval mtv;
-    gettimeofday(&mtv, NULL);
-    return (qint64)(mtv.tv_sec) * 1000000 + mtv.tv_usec;
+    // CLOCK_MONOTONIC is NTP adjusted
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return ts.tv_sec * 1000000LL + ts.tv_nsec / 1000;
 #endif
 }
 
-void EngineNetworkStream::addWorker(QSharedPointer<SideChainWorker> pWorker) {
+void EngineNetworkStream::addWorker(QSharedPointer<NetworkStreamWorker> pWorker) {
     m_pWorker = pWorker;
     m_pWorker->setOutputFifo(m_pOutputFifo);
 }
