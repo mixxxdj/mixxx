@@ -1654,7 +1654,7 @@ bool TrackDAO::detectMovedTracks(QSet<int>* pTracksMovedSetOld,
     // can change by adding more ID3v2 tags
     int duration = -1;
 
-    // Querry tracks, where we need a successor for
+    // Query tracks, where we need a successor for
     deletedTrackQuery.prepare("SELECT track_locations.id, filename, duration FROM track_locations "
                   "INNER JOIN library ON track_locations.id=library.location "
                   "WHERE fs_deleted=1");
@@ -1666,7 +1666,7 @@ bool TrackDAO::detectMovedTracks(QSet<int>* pTracksMovedSetOld,
     FieldEscaper escaper(m_database);
     QStringList escapedAddedTracks = escaper.escapeStrings(addedTracks);
 
-    // Querry possible successors
+    // Query possible successors
     newTrackQuery.prepare(
             QString("SELECT track_locations.id FROM track_locations "
                     "INNER JOIN library ON track_locations.id=library.location "
