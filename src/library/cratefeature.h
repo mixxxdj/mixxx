@@ -76,6 +76,11 @@ class CrateFeature : public LibraryFeature {
     QString getRootViewHtml() const;
     int crateIdFromIndex(QModelIndex index);
     QModelIndex indexFromCrateId(int id);
+    // recursive worker of above function, not intended to be run itself
+    QModelIndex indexFromCrateId(int id, QModelIndex parent);
+    void boldCratesSelectedTrackIsIn();
+    // recursive worker of above function, not intended to be run itself
+    void boldCratesSelectedTrackIsIn(TreeItem* parent);
     void refreshModelHasChildren();
 
     TrackCollection* m_pTrackCollection;

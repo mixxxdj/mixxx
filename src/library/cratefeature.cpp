@@ -113,18 +113,6 @@ CrateFeature::CrateFeature(Library* pLibrary,
 }
 
 CrateFeature::~CrateFeature() {
-    //delete QActions
-    delete m_pCreateCrateAction;
-    delete m_pDeleteCrateAction;
-    delete m_pRenameCrateAction;
-    delete m_pDuplicateCrateAction;
-    delete m_pLockCrateAction;
-    delete m_pImportPlaylistAction;
-    delete m_pAnalyzeCrateAction;
-#ifdef __AUTODJCRATES__
-    delete m_pAutoDjTrackSource;
-#endif // __AUTODJCRATES__
-    delete m_pCreateCrateFolderAction;
 }
 
 QVariant CrateFeature::title() {
@@ -151,24 +139,44 @@ int CrateFeature::crateIdFromIndex(QModelIndex index) {
 }
 
 QModelIndex CrateFeature::indexFromCrateId(int id) {
+    return indexFromCrateId(id, QModelIndex());
+}
 
-    QStack<QModelIndex> cratesToProcess;
-    QModelIndex crate;
-    cratesToProcess.push(QModelIndex());
-    while (! cratesToProcess.empty()) {
-        crate = cratesToProcess.pop();
+QModelIndex CrateFeature::indexFromCrateId(int id, QModelIndex parent) {
+    if (id == crateIdFromIndex(parent)) 
+        return parent;
 
-        if (id == crateIdFromIndex(crate)) {
-            qDebug() << "Found index of crate found id: " << id;
-            return crate;
-        }
-
-        for(int row = 0; row < m_childModel.rowCount(crate); row++) {
-            cratesToProcess.push(m_childModel.index(row, 0, crate));
-        }
+    QModelIndex index;
+    // recursive search in childmodel
+    for(int row = 0; row < m_childModel.rowCount(parent); row++) {
+        index = indexFromCrateId(id, m_childModel.index(row, 0, parent));
+        if (index.isValid())
+            return index;
     }
-    qDebug() << "Failed search for index of crate id: " << id;
+
     return QModelIndex();
+} 
+
+void CrateFeature::boldCratesSelectedTrackIsIn() {
+    TreeItem* rootItem = m_childModel.getItem(QModelIndex());
+    if (rootItem == nullptr) {
+        return;
+    }
+    boldCratesSelectedTrackIsIn(rootItem);
+
+    m_childModel.triggerRepaint();
+}
+void CrateFeature::boldCratesSelectedTrackIsIn(TreeItem* parent) {
+    //bold this crate
+    parent->setBold(
+            m_cratesSelectedTrackIsIn.contains(
+                parent->dataPath().toInt()));
+
+    // and all its children
+    for(int row = 0; row < parent->childCount(); row++) {
+        boldCratesSelectedTrackIsIn(parent->child(row));
+    }
+
 }
 
 // updates hasChildren function in childModel
@@ -183,10 +191,14 @@ void CrateFeature::refreshModelHasChildren() {
 }
 
 void CrateFeature::slotCrateTableChanged(int crateId) {
-    qDebug() << "slotCrateTableChanged() playlistId:" << crateId;
+    qDebug() << "slotCrateTableChanged() crateId:" << crateId;
 
+    // regenerate whole childmodel
+    // start with creating the first level
     onLazyChildExpandation(QModelIndex());
     QModelIndex index;
+
+    // now we reopen all the folder opened before this slot was triggered
     foreach(int folderId, m_openFolders) {
         index = indexFromCrateId(folderId);
         if (index.isValid()) {
@@ -194,8 +206,12 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
             emit(featureSelect(this, index));
         } else {
             qDebug() << "Failed restoring folder id: " << folderId;
+            m_openFolders.removeAll(folderId);
         }
     }
+
+    // if possible, in the end we select the modified crate
+    // otherwise we select last opened folder
     if (indexFromCrateId(crateId).isValid())
         emit(featureSelect(this, indexFromCrateId(crateId)));
 
@@ -762,29 +778,7 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     TrackId trackId(pTrack.isNull() ? TrackId() : pTrack->getId());
     m_crateDao.getCratesTrackIsIn(trackId, &m_cratesSelectedTrackIsIn);
 
-    TreeItem* rootItem = m_childModel.getItem(QModelIndex());
-    if (rootItem == nullptr) {
-        return;
-    }
-
-    // Set all crates the track is in bold (or if there is no track selected,
-    // clear all the bolding).
-    QStack<TreeItem*> cratesToProcess;
-    TreeItem* crate;
-    cratesToProcess.push(rootItem);
-    while (! cratesToProcess.empty()) {
-        crate = cratesToProcess.pop();
-        
-        crate->setBold(
-                m_cratesSelectedTrackIsIn.contains(
-                    crate->dataPath().toInt()));
-
-        for(int row = 0; row < crate->childCount(); row++) {
-            cratesToProcess.push(crate->child(row));
-        }
-    }
-
-    m_childModel.triggerRepaint();
+    boldCratesSelectedTrackIsIn();
 }
 
 void CrateFeature::slotResetSelectedTrack() {
