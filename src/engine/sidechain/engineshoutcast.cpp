@@ -38,7 +38,9 @@
 #include "trackinfoobject.h"
 #include "util/sleep.h"
 
-#define TIMEOUT 10
+static const int kConnectRetries = 10;
+static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192kbit/s
+
 
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
         : m_pTextCodec(NULL),
@@ -387,9 +389,7 @@ bool EngineShoutcast::processConnect() {
     //If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
 
-    /**
-     * Make sure that we call updateFromPreferences allways
-     */
+    // Make sure that we call updateFromPreferences always
     if (m_encoder == NULL) {
         updateFromPreferences();
     }
@@ -408,12 +408,15 @@ bool EngineShoutcast::processConnect() {
         if ((m_iShoutStatus == SHOUTERR_BUSY) ||
             (m_iShoutStatus == SHOUTERR_CONNECTED) ||
             (m_iShoutStatus == SHOUTERR_SUCCESS))
+        {
             break;
+        }
 
         m_iShoutFailures++;
-        qDebug() << "Streaming server failed connect. Failures:" << m_iShoutFailures;
+        qDebug() << "Streaming server failed connect. Failures:" << shout_get_error(m_pShout);
         sleep(1);
     }
+
     if (m_iShoutFailures == iMaxTries) {
         if (m_pShout) {
             shout_close(m_pShout);
@@ -426,7 +429,7 @@ bool EngineShoutcast::processConnect() {
 
     m_iShoutFailures = 0;
     int timeout = 0;
-    while (m_iShoutStatus == SHOUTERR_BUSY && timeout < TIMEOUT) {
+    while (m_iShoutStatus == SHOUTERR_BUSY && timeout < kConnectRetries) {
         setState(NETWORKSTREAMWORKER_STATE_WAITING);
         qDebug() << "Connection pending. Sleeping...";
         sleep(1);
@@ -449,6 +452,9 @@ bool EngineShoutcast::processConnect() {
 
         return true;
     }
+
+    qDebug() << "EngineShoutcast::processConnect() error:" << shout_get_error(m_pShout);
+
     setState(NETWORKSTREAMWORKER_STATE_ERROR);
     // otherwise disable shoutcast in preferences
     m_pShoutcastEnabled->set(0);
@@ -488,8 +494,9 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         if (headerLen > 0) {
             // We are already synced by EngineNetworkstream
             ret = shout_send_raw(m_pShout, header, headerLen);
-            if (ret != SHOUTERR_SUCCESS) {
-                qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
+            if (ret < SHOUTERR_SUCCESS) {
+                qDebug() << "EngineShoutcast::write() header error:"
+                         << ret << shout_get_error(m_pShout);
                 if (m_iShoutFailures > 3) {
                     processDisconnect();
                     if (!processConnect()) {
@@ -508,8 +515,9 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         }
 
         ret = shout_send_raw(m_pShout, body, bodyLen);
-        if (ret != SHOUTERR_SUCCESS) {
-            qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
+        if (ret < SHOUTERR_SUCCESS) {
+            qDebug() << "EngineShoutcast::write() body error:"
+                     << ret << shout_get_error(m_pShout);
             if (m_iShoutFailures > 3) {
                 processDisconnect();
                 if (!processConnect()) {
@@ -529,6 +537,13 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         ssize_t queuelen = shout_queuelen(m_pShout);
         if (queuelen > 0) {
             qDebug() << "DEBUG: queue length:" << (int)shout_queuelen(m_pShout);
+            if (queuelen > kMaxNetworkCache) {
+                processDisconnect();
+                if (!processConnect()) {
+                    errorDialog(tr("Lost connection to streaming server"),
+                                tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                }
+            }
         }
     } else {
         qDebug() << "Error connecting to streaming server:" << shout_get_error(m_pShout);
@@ -748,12 +763,19 @@ void EngineShoutcast::run() {
     }
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
-    processConnect();
+    if (!processConnect()) {
+        errorDialog(tr("Can't connect to streaming server"),
+                    tr("Please check your connection to the Internet and verify that your username and password are correct."));
+        setState(NETWORKSTREAMWORKER_STATE_ERROR);
+        m_pShoutcastEnabled->set(0);
+        m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
+        return;
+    }
 
     setState(NETWORKSTREAMWORKER_STATE_WAITING);
-
     m_threadWaiting = true;
     setState(NETWORKSTREAMWORKER_STATE_READY);
+
     for(;;) {
         m_readSema.acquire();
         // Check to see if Shoutcast is enabled, and pass the samples off to be

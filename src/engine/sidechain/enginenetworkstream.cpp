@@ -129,7 +129,7 @@ void EngineNetworkStream::writeSilence(int frames) {
     int writeAvailable = m_pOutputFifo->writeAvailable();
     int writeRequired = frames * m_numOutputChannels;
     if (writeAvailable < writeRequired) {
-        qDebug() << "EngineNetworkStream::write() buffer full";
+        qDebug() << "EngineNetworkStream::writeSilence() buffer full";
     }
     int clearCount = math_min(writeAvailable, writeRequired);
     if (clearCount > 0) {
