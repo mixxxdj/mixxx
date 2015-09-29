@@ -23,7 +23,8 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "rating"
                      << "bitrate";
     m_specialFilters << "key"
-                     << "duration";
+                     << "duration"
+		     << "datetime_added";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -43,6 +44,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_fieldToSqlColumns["played"] << "timesplayed";
     m_fieldToSqlColumns["rating"] << "rating";
     m_fieldToSqlColumns["location"] << "location";
+    m_fieldToSqlColumns["datetime_added"] << "datetime_added";
 
     m_allFilters.append(m_textFilters);
     m_allFilters.append(m_numericFilters);
@@ -160,7 +162,10 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 } else if (field == "duration") {
                     pNode = std::make_unique<DurationFilterNode>(
                             m_fieldToSqlColumns[field], argument);
-                }
+                } else if (field == "datetime_added") {
+		    pNode = std::make_unique<TextFilterNode>(
+			m_database, m_fieldToSqlColumns[field], argument);
+		}
             }
             if (pNode) {
                 if (negate) {
