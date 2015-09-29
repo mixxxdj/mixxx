@@ -39,7 +39,7 @@
 #include "util/sleep.h"
 
 static const int kConnectRetries = 10;
-static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192kbit/s
+static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 
 
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
@@ -66,12 +66,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_bThreadQuit(false),
           m_threadWaiting(false),
           m_pOutputFifo(NULL) {
-
-#ifndef __WINDOWS__
-    // Ignore SIGPIPE signals that we get when the remote streaming server
-    // disconnects.
-    signal(SIGPIPE, SIG_IGN);
-#endif
 
     m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
@@ -536,7 +530,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 
         ssize_t queuelen = shout_queuelen(m_pShout);
         if (queuelen > 0) {
-            qDebug() << "DEBUG: queue length:" << (int)shout_queuelen(m_pShout);
+            qDebug() << "shout_queuelen" << queuelen;
             if (queuelen > kMaxNetworkCache) {
                 processDisconnect();
                 if (!processConnect()) {
@@ -758,6 +752,8 @@ void EngineShoutcast::run() {
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
 
+    ignoreSigpipe();
+
     DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
         return;
     }
@@ -808,3 +804,18 @@ bool EngineShoutcast::threadWaiting() {
     return m_threadWaiting;
 }
 
+void EngineShoutcast::ignoreSigpipe()
+{
+    // shout_send_raw() can cause SIGPIPE, which is passed to this theread
+    // and which will finally crash Mixxx if it remains unhandled.
+    // Each thread has its own signal mask, so it is safe to do this for the
+    // shoutcast thread only
+    // http://www.microhowto.info/howto/ignore_sigpipe_without_affecting_other_threads_in_a_process.html
+    sigset_t sigpipe_mask;
+    sigemptyset(&sigpipe_mask);
+    sigaddset(&sigpipe_mask, SIGPIPE);
+    sigset_t saved_mask;
+    if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) == -1) {
+        qDebug() << "EngineShoutcast::ignoreSigpipe() failed";
+    }
+}
