@@ -40,6 +40,7 @@
 
 static const int kConnectRetries = 10;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
+static const int kMaxShoutFailures = 3;
 
 
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
@@ -94,6 +95,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
 
 EngineShoutcast::~EngineShoutcast() {
     m_bThreadQuit = true;
+    m_readSema.release();
     wait(); // until the thread ends.
 
     delete m_pShoutcastNeedUpdateFromPrefs;
@@ -112,6 +114,7 @@ EngineShoutcast::~EngineShoutcast() {
 
 bool EngineShoutcast::serverDisconnect() {
     m_bThreadQuit = true;
+    m_readSema.release();
     wait();
     setState(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
     return false; // if no connection has been established, nothing can be disconnected
@@ -443,11 +446,16 @@ bool EngineShoutcast::processConnect() {
         if (m_pOutputFifo->readAvailable()) {
             m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
         }
+        m_threadWaiting = true;
 
         return true;
+    } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
+        qDebug() << "EngineShoutcast::processConnect() socket error."
+                 << "Is socket already in use?";
+    } else {
+        qDebug() << "EngineShoutcast::processConnect() error:"
+                 << m_iShoutStatus << shout_get_error(m_pShout);
     }
-
-    qDebug() << "EngineShoutcast::processConnect() error:" << shout_get_error(m_pShout);
 
     setState(NETWORKSTREAMWORKER_STATE_ERROR);
     // otherwise disable shoutcast in preferences
@@ -461,11 +469,14 @@ bool EngineShoutcast::processConnect() {
 }
 
 void EngineShoutcast::processDisconnect() {
+    qDebug() << "EngineShoutcast::processDisconnect()";
     if (isConnected()) {
+        m_threadWaiting = false;
         // We are conneced but shoutcast is disabled. Disconnect.
         shout_close(m_pShout);
         m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
         infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
+        m_iShoutStatus = SHOUTERR_UNCONNECTED;
     }
 
     if (m_encoder) {
@@ -477,8 +488,6 @@ void EngineShoutcast::processDisconnect() {
 
 void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
-    int ret;
-
     if (!m_pShout) {
         return;
     }
@@ -486,46 +495,13 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         // Send header if there is one
         if (headerLen > 0) {
-            // We are already synced by EngineNetworkstream
-            ret = shout_send_raw(m_pShout, header, headerLen);
-            if (ret < SHOUTERR_SUCCESS) {
-                qDebug() << "EngineShoutcast::write() header error:"
-                         << ret << shout_get_error(m_pShout);
-                if (m_iShoutFailures > 3) {
-                    processDisconnect();
-                    if (!processConnect()) {
-                        errorDialog(tr("Lost connection to streaming server"),
-                                    tr("Please check your connection to the Internet and verify that your username and password are correct."));
-                    }
-                }
-                else{
-                    m_iShoutFailures++;
-                }
-
+            if(!writeSingle(header, headerLen)) {
                 return;
-            } else {
-                //qDebug() << "yea I kinda sent header";
             }
         }
 
-        ret = shout_send_raw(m_pShout, body, bodyLen);
-        if (ret < SHOUTERR_SUCCESS) {
-            qDebug() << "EngineShoutcast::write() body error:"
-                     << ret << shout_get_error(m_pShout);
-            if (m_iShoutFailures > 3) {
-                processDisconnect();
-                if (!processConnect()) {
-                    errorDialog(tr("Lost connection to streaming server"),
-                                tr("Please check your connection to the Internet and verify that your username and password are correct."));
-                }
-            }
-            else{
-                m_iShoutFailures++;
-            }
-
+        if(!writeSingle(body, bodyLen)) {
             return;
-        } else {
-            //qDebug() << "yea I kinda sent footer";
         }
 
         ssize_t queuelen = shout_queuelen(m_pShout);
@@ -539,10 +515,30 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                 }
             }
         }
-    } else {
-        qDebug() << "Error connecting to streaming server:" << shout_get_error(m_pShout);
-        // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
+}
+
+bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
+    // We are already synced by EngineNetworkstream
+    int ret = shout_send_raw(m_pShout, data, len);
+    if (ret < SHOUTERR_SUCCESS && ret != SHOUTERR_BUSY) {
+        // in case of bussy, frames are queued and queue is checked below
+        qDebug() << "EngineShoutcast::write() header error:"
+                 << ret << shout_get_error(m_pShout);
+        if (m_iShoutFailures > kMaxShoutFailures) {
+            processDisconnect();
+            if (!processConnect()) {
+                errorDialog(tr("Lost connection to streaming server"),
+                            tr("Please check your connection to the Internet and verify that your username and password are correct."));
+            }
+        } else{
+            m_iShoutFailures++;
+        }
+        return false;
+    } else {
+        m_iShoutFailures = 0;
+    }
+    return true;
 }
 
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
@@ -767,10 +763,6 @@ void EngineShoutcast::run() {
         m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
         return;
     }
-
-    setState(NETWORKSTREAMWORKER_STATE_WAITING);
-    m_threadWaiting = true;
-    setState(NETWORKSTREAMWORKER_STATE_READY);
 
     for(;;) {
         m_readSema.acquire();

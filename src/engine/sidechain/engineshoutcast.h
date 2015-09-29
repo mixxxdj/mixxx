@@ -99,6 +99,8 @@ class EngineShoutcast :
 
     void ignoreSigpipe();
 
+    bool writeSingle(const unsigned char *data, size_t len);
+
     QByteArray encodeString(const QString& string);
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
