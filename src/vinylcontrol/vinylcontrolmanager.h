@@ -16,7 +16,6 @@
 #include "vinylcontrol/vinylsignalquality.h"
 
 class ControlObjectSlave;
-class ControlObjectThread;
 class ControlPushButton;
 class SoundManager;
 class VinylControl;
@@ -65,7 +64,7 @@ class VinylControlManager : public QObject {
     QSet<VinylSignalQualityListener*> m_listeners;
     VinylControlProcessor* m_pProcessor;
     int m_iTimerId;
-    QList<ControlObjectThread*> m_pVcEnabled;
+    QList<ControlObjectSlave*> m_pVcEnabled;
     ControlObjectSlave* m_pNumDecks;
     int m_iNumConfiguredDecks;
 };

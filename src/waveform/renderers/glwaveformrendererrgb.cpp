@@ -6,7 +6,6 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
-#include "controlobjectthread.h"
 #include "util/math.h"
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(

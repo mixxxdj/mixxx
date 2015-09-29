@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 
 class ControlObject;
 class ControlPushButton;
@@ -86,9 +86,9 @@ class LibraryControl : public QObject {
 
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
-    ControlObjectThread m_numDecks;
-    ControlObjectThread m_numSamplers;
-    ControlObjectThread m_numPreviewDecks;
+    ControlObjectSlave m_numDecks;
+    ControlObjectSlave m_numSamplers;
+    ControlObjectSlave m_numPreviewDecks;
     QMap<QString, LoadToGroupController*> m_loadToGroupControllers;
 };
 

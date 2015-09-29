@@ -88,8 +88,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     m_pPreGain = new ControlObjectSlave(group, "pregain", this);
     //BPM of the current song
-    m_pBPM = new ControlObjectThread(group, "file_bpm");
-    m_pKey = new ControlObjectThread(group, "file_key");
+    m_pBPM = new ControlObjectSlave(group, "file_bpm", this);
+    m_pKey = new ControlObjectSlave(group, "file_key", this);
 
     m_pReplayGain = new ControlObjectSlave(group, "replaygain", this);
     m_pPlay = new ControlObjectSlave(group, "play", this);
@@ -108,8 +108,6 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     delete m_pDuration;
     delete m_pWaveformZoom;
     delete m_pEndOfTrack;
-    delete m_pBPM;
-    delete m_pKey;
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
@@ -163,10 +161,10 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
     if (m_pLoadedTrack) {
         // Listen for updates to the file's BPM
         connect(m_pLoadedTrack.data(), SIGNAL(bpmUpdated(double)),
-                m_pBPM, SLOT(slotSet(double)));
+                m_pBPM, SLOT(set(double)));
 
         connect(m_pLoadedTrack.data(), SIGNAL(keyUpdated(double)),
-                m_pKey, SLOT(slotSet(double)));
+                m_pKey, SLOT(set(double)));
 
         // Listen for updates to the file's Replay Gain
         connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(double)),
@@ -206,8 +204,8 @@ void BaseTrackPlayerImpl::slotUnloadTrack(TrackPointer) {
     }
     m_replaygainPending = false;
     m_pDuration->set(0);
-    m_pBPM->slotSet(0);
-    m_pKey->slotSet(0);
+    m_pBPM->set(0);
+    m_pKey->set(0);
     m_pReplayGain->set(0);
     m_pLoopInPoint->set(-1);
     m_pLoopOutPoint->set(-1);
@@ -230,8 +228,8 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
 
     // Update the BPM and duration values that are stored in ControlObjects
     m_pDuration->set(m_pLoadedTrack->getDuration());
-    m_pBPM->slotSet(m_pLoadedTrack->getBpm());
-    m_pKey->slotSet(m_pLoadedTrack->getKey());
+    m_pBPM->set(m_pLoadedTrack->getBpm());
+    m_pKey->set(m_pLoadedTrack->getKey());
     m_pReplayGain->set(m_pLoadedTrack->getReplayGain());
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace

@@ -23,7 +23,7 @@ void ControllerOutputMappingTableModel::apply() {
         foreach (const MidiOutputMapping& mapping, m_midiOutputMappings) {
             // Use insertMulti because we support multiple outputs from the same
             // control.
-            m_pMidiPreset->outputMappings.insertMulti(mapping.control, mapping);
+            m_pMidiPreset->outputMappings.insertMulti(mapping.controlKey, mapping);
         }
     }
 }
@@ -171,9 +171,9 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_ACTION:
                 if (role == Qt::UserRole) {
                     // TODO(rryan): somehow get the delegate display text?
-                    return mapping.control.group + "," + mapping.control.item;
+                    return mapping.controlKey.group + "," + mapping.controlKey.item;
                 }
-                return qVariantFromValue(mapping.control);
+                return qVariantFromValue(mapping.controlKey);
             case MIDI_COLUMN_COMMENT:
                 return mapping.description;
             default:
@@ -233,7 +233,7 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ACTION:
-                mapping.control = qVariantValue<ConfigKey>(value);
+                mapping.controlKey = qVariantValue<ConfigKey>(value);
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_COMMENT:

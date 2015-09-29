@@ -62,6 +62,11 @@ class ControlObjectSlave : public QObject {
         return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
     }
 
+    // Returns the normalized parameter of the object. Thread safe, non-blocking.
+    inline double getDefault() const {
+        return m_pControl ? m_pControl->defaultValue() : 0.0;
+    }
+
   public slots:
     // Set the control to a new value. Non-blocking.
     inline void slotSet(double v) {
@@ -86,7 +91,7 @@ class ControlObjectSlave : public QObject {
             // not know the resulting value so it makes sense that we should emit a
             // general valueChanged() signal even though the change originated from
             // us. For this reason, we provide NULL here so that the change is
-            // broadcast as valueChanged() and not valueChangedByThis().
+            // not filtered in valueChanged()
             m_pControl->reset();
         }
     }
@@ -98,7 +103,7 @@ class ControlObjectSlave : public QObject {
 
   protected slots:
     // Receives the value from the master control by a unique direct connection
-    void slotValueChangedDirect(double v, QObject* pSetter) {
+    virtual void slotValueChangedDirect(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
             emit(valueChanged(v));
@@ -106,7 +111,15 @@ class ControlObjectSlave : public QObject {
     }
 
     // Receives the value from the master control by a unique auto connection
-    void slotValueChangedAuto(double v, QObject* pSetter) {
+    virtual void slotValueChangedAuto(double v, QObject* pSetter) {
+        if (pSetter != this) {
+            // This is base implementation of this function without scaling
+            emit(valueChanged(v));
+        }
+    }
+
+    // Receives the value from the master control by a unique Queued connection
+    virtual void slotValueChangedQueued(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
             emit(valueChanged(v));
