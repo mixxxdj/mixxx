@@ -393,11 +393,8 @@ bool EngineShoutcast::processConnect() {
         updateFromPreferences();
     }
 
-    const int iMaxTries = 3;
-    while (m_iShoutFailures < iMaxTries) {
-        if (m_pShout)
-            shout_close(m_pShout);
-
+    while (m_iShoutFailures < kMaxShoutFailures) {
+        shout_close(m_pShout);
         m_iShoutStatus = shout_open(m_pShout);
         if (m_iShoutStatus == SHOUTERR_SUCCESS) {
             m_iShoutStatus = SHOUTERR_CONNECTED;
@@ -416,7 +413,7 @@ bool EngineShoutcast::processConnect() {
         sleep(1);
     }
 
-    if (m_iShoutFailures < iMaxTries) {
+    if (m_iShoutFailures < kMaxShoutFailures) {
         m_iShoutFailures = 0;
         int timeout = 0;
         while (m_iShoutStatus == SHOUTERR_BUSY && timeout < kConnectRetries) {
@@ -454,10 +451,7 @@ bool EngineShoutcast::processConnect() {
     setState(NETWORKSTREAMWORKER_STATE_ERROR);
     // otherwise disable shoutcast in preferences
     m_pShoutcastEnabled->set(0);
-    if (m_pShout) {
-        shout_close(m_pShout);
-        //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-    }
+    shout_close(m_pShout);
     m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
     return false;
 }
