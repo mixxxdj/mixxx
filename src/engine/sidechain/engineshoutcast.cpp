@@ -372,9 +372,6 @@ bool EngineShoutcast::serverConnect() {
 }
 
 bool EngineShoutcast::processConnect() {
-    // set to busy in case another thread calls one of the other
-    // EngineShoutcast calls
-    m_iShoutStatus = SHOUTERR_BUSY;
     // reset the number of failures to zero
     m_iShoutFailures = 0;
     // set to a high number to automatically update the metadata
@@ -452,6 +449,11 @@ bool EngineShoutcast::processConnect() {
     // otherwise disable shoutcast in preferences
     m_pShoutcastEnabled->set(0);
     shout_close(m_pShout);
+    if (m_encoder) {
+        m_encoder->flush();
+        delete m_encoder;
+        m_encoder = NULL;
+    }
     m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
     return false;
 }
