@@ -49,6 +49,12 @@ class EngineShoutcast :
         public QThread, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
+    enum StatusCOStates {
+        STATUSCO_UNCONNECTED = 0, // IDLE state, no error
+        STATUSCO_CONNECTED = 1, // On Air
+        STATUSCO_FAILURE = 2 // Happens when disconnected by an error
+    };
+
     EngineShoutcast(ConfigObject<ConfigValue>* _config);
     virtual ~EngineShoutcast();
 
@@ -74,6 +80,9 @@ class EngineShoutcast :
     virtual bool threadWaiting();
 
     virtual void run();
+
+  private slots:
+    void slotStatusCO(double v);
 
   private:
     bool processConnect();
@@ -114,7 +123,7 @@ class EngineShoutcast :
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObject* m_pShoutcastEnabled;
     ControlObjectSlave* m_pMasterSamplerate;
-    ControlObject* m_pShoutcastStatus;
+    ControlObject* m_pStatusCO;
     // static metadata according to prefereneces
     bool m_custom_metadata;
     QString m_customArtist;
