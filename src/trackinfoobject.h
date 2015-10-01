@@ -71,7 +71,7 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
-    Q_PROPERTY(QString bpmFormatted READ getBpmStr STORED false)
+    Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
@@ -136,16 +136,16 @@ class TrackInfoObject : public QObject {
     QString getDurationStr() const;
 
     // Set BPM
-    void setBpm(double);
+    double setBpm(double);
     // Returns BPM
     double getBpm() const;
     // Returns BPM as a string
-    QString getBpmStr() const;
+    QString getBpmText() const;
 
     // A track with a locked BPM will not be re-analyzed by the beats or bpm
     // analyzer.
-    void setBpmLock(bool hasLock);
-    bool hasBpmLock() const;
+    void setBpmLocked(bool bpmLocked = true);
+    bool isBpmLocked() const;
 
     // Set ReplayGain
     void setReplayGain(float);
@@ -325,6 +325,8 @@ class TrackInfoObject : public QObject {
     // TIO local methods or the TrackDAO.
     void setDirty(bool bDirty);
 
+    void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
+
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
     void setId(TrackId id);
@@ -398,8 +400,7 @@ class TrackInfoObject : public QObject {
 
     Keys m_keys;
 
-    // BPM lock
-    bool m_bBpmLock;
+    bool m_bBpmLocked;
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;

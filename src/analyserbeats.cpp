@@ -46,7 +46,7 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    bool bpmLock = tio->hasBpmLock();
+    bool bpmLock = tio->isBpmLocked();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
         return false;
@@ -120,7 +120,7 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
         iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
     }
 
-    bool bpmLock = tio->hasBpmLock();
+    bool bpmLock = tio->isBpmLocked();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
         return true;
@@ -231,7 +231,7 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 
     // If the track received the beat lock while we were analyzing it then we
     // abort setting it.
-    if (tio->hasBpmLock()) {
+    if (tio->isBpmLocked()) {
         qDebug() << "Track was BPM-locked as we were analysing it. Aborting analysis.";
         return;
     }

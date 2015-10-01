@@ -220,7 +220,7 @@ void BrowseThread::populateModel() {
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_DURATION, item);
 
-        item = new QStandardItem(pTrack->getBpmStr());
+        item = new QStandardItem(pTrack->getBpmText());
         item->setToolTip(item->text());
         item->setData(pTrack->getBpm(), Qt::UserRole);
         row_data.insert(COLUMN_BPM, item);

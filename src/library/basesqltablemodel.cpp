@@ -855,7 +855,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setKeyText(value.toString(),
                            mixxx::track::io::key::USER);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
-        pTrack->setBpmLock(value.toBool());
+        pTrack->setBpmLocked(value.toBool());
     } else {
         // We never should get up to this point!
         DEBUG_ASSERT_AND_HANDLE(false) {

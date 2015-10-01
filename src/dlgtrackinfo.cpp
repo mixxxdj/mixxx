@@ -157,11 +157,11 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtLocation->setPlainText(pTrack->getLocation());
     txtType->setText(pTrack->getType());
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
-    txtBpm->setText(pTrack->getBpmStr());
+    txtBpm->setText(pTrack->getBpmText());
     txtKey->setText(pTrack->getKeyText());
     BeatsPointer pBeats = pTrack->getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
-    bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
+    bool enableBpmEditing = !pTrack->isBpmLocked() && beatsSupportsSet;
     spinBpm->setEnabled(enableBpmEditing);
     bpmTap->setEnabled(enableBpmEditing);
     bpmDouble->setEnabled(enableBpmEditing);
@@ -343,7 +343,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
     m_pLoadedTrack->setComment(txtComment->toPlainText());
 
-    if (!m_pLoadedTrack->hasBpmLock()) {
+    if (!m_pLoadedTrack->isBpmLocked()) {
         m_pLoadedTrack->setBpm(spinBpm->value());
     }
 

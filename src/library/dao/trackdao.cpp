@@ -401,7 +401,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":bitrate", pTrack->getBitrate());
     m_pQueryLibraryInsert->bindValue(":samplerate", pTrack->getSampleRate());
     m_pQueryLibraryInsert->bindValue(":cuepoint", pTrack->getCuePoint());
-    m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
+    m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->isBpmLocked()? 1 : 0);
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain());
 
     // We no longer store the wavesummary in the library table.
@@ -1114,7 +1114,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     } else {
         pTrack->setBpm(bpm);
     }
-    pTrack->setBpmLock(bpmLocked);
+    pTrack->setBpmLocked(bpmLocked);
     return false;
 }
 
@@ -1455,7 +1455,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //query.bindValue(":location", pTrack->getLocation());
     query.bindValue(":track_id", trackId.toVariant());
 
-    query.bindValue(":bpm_lock", pTrack->hasBpmLock() ? 1 : 0);
+    query.bindValue(":bpm_lock", pTrack->isBpmLocked() ? 1 : 0);
 
     BeatsPointer pBeats = pTrack->getBeats();
     QByteArray* pBeatsBlob = NULL;
