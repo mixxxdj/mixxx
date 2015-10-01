@@ -147,95 +147,96 @@ void BrowseThread::populateModel() {
         }
 
         QString filepath = fileIt.next();
-        TrackInfoObject tio(filepath, thisPath.token());
+        TrackPointer pTrack(TrackInfoObject::newTemporary(filepath, thisPath.token()));
+        pTrack->parse(false);
         QList<QStandardItem*> row_data;
 
         QStandardItem* item = new QStandardItem("0");
         item->setData("0", Qt::UserRole);
         row_data.insert(COLUMN_PREVIEW, item);
 
-        item = new QStandardItem(tio.getFileName());
+        item = new QStandardItem(pTrack->getFileName());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_FILENAME, item);
 
-        item = new QStandardItem(tio.getArtist());
+        item = new QStandardItem(pTrack->getArtist());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_ARTIST, item);
 
-        item = new QStandardItem(tio.getTitle());
+        item = new QStandardItem(pTrack->getTitle());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_TITLE, item);
 
-        item = new QStandardItem(tio.getAlbum());
+        item = new QStandardItem(pTrack->getAlbum());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_ALBUM, item);
 
-        item = new QStandardItem(tio.getAlbumArtist());
+        item = new QStandardItem(pTrack->getAlbumArtist());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_ALBUMARTIST, item);
 
-        item = new QStandardItem(tio.getTrackNumber());
+        item = new QStandardItem(pTrack->getTrackNumber());
         item->setToolTip(item->text());
         item->setData(item->text().toInt(), Qt::UserRole);
         row_data.insert(COLUMN_TRACK_NUMBER, item);
 
-        const QString year(tio.getYear());
+        const QString year(pTrack->getYear());
         item = new YearItem(year);
         item->setToolTip(year);
         // The year column is sorted according to the numeric calendar year
         item->setData(Mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
         row_data.insert(COLUMN_YEAR, item);
 
-        item = new QStandardItem(tio.getGenre());
+        item = new QStandardItem(pTrack->getGenre());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_GENRE, item);
 
-        item = new QStandardItem(tio.getComposer());
+        item = new QStandardItem(pTrack->getComposer());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_COMPOSER, item);
 
-        item = new QStandardItem(tio.getGrouping());
+        item = new QStandardItem(pTrack->getGrouping());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_GROUPING, item);
 
-        item = new QStandardItem(tio.getComment());
+        item = new QStandardItem(pTrack->getComment());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_COMMENT, item);
 
         QString duration = Time::formatSeconds(qVariantValue<int>(
-                tio.getDuration()), false);
+                pTrack->getDuration()), false);
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_DURATION, item);
 
-        item = new QStandardItem(tio.getBpmStr());
+        item = new QStandardItem(pTrack->getBpmStr());
         item->setToolTip(item->text());
-        item->setData(tio.getBpm(), Qt::UserRole);
+        item->setData(pTrack->getBpm(), Qt::UserRole);
         row_data.insert(COLUMN_BPM, item);
 
-        item = new QStandardItem(tio.getKeyText());
+        item = new QStandardItem(pTrack->getKeyText());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_KEY, item);
 
-        item = new QStandardItem(tio.getType());
+        item = new QStandardItem(pTrack->getType());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_TYPE, item);
 
-        item = new QStandardItem(tio.getBitrateStr());
+        item = new QStandardItem(pTrack->getBitrateStr());
         item->setToolTip(item->text());
-        item->setData(tio.getBitrate(), Qt::UserRole);
+        item->setData(pTrack->getBitrate(), Qt::UserRole);
         row_data.insert(COLUMN_BITRATE, item);
 
         item = new QStandardItem(filepath);
@@ -243,13 +244,13 @@ void BrowseThread::populateModel() {
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_LOCATION, item);
 
-        QDateTime modifiedTime = tio.getFileModifiedTime().toLocalTime();
+        QDateTime modifiedTime = pTrack->getFileModifiedTime().toLocalTime();
         item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
         item->setToolTip(item->text());
         item->setData(modifiedTime, Qt::UserRole);
         row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
-        QDateTime creationTime = tio.getFileCreationTime().toLocalTime();
+        QDateTime creationTime = pTrack->getFileCreationTime().toLocalTime();
         item = new QStandardItem(creationTime.toString(Qt::DefaultLocaleShortDate));
         item->setToolTip(item->text());
         item->setData(creationTime, Qt::UserRole);

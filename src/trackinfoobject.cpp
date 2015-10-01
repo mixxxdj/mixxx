@@ -21,15 +21,16 @@
 #include "util/xml.h"
 
 
-TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
-                                 SecurityTokenPointer pToken,
-                                 bool parseHeader, bool parseCoverArt)
+TrackInfoObject::TrackInfoObject(
+        const QFileInfo& fileInfo,
+        const SecurityTokenPointer& pToken,
+        TrackId trackId)
         : m_fileInfo(fileInfo),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
           m_bDeleteOnReferenceExpiration(false),
-          m_qMutex(QMutex::Recursive) {
-    m_id = TrackId();
+          m_qMutex(QMutex::Recursive),
+          m_id(std::move(trackId)) {
     m_analyserProgress = -1;
 
     m_bDirty = false;
@@ -46,11 +47,40 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
     m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
 
-    // Parse the metadata from file. This is not a quick operation!
     m_bHeaderParsed = false;
-    if (parseHeader) {
-        parse(parseCoverArt);
-    }
+}
+
+//static
+TrackPointer TrackInfoObject::newTemporary(
+        const QFileInfo& fileInfo,
+        const SecurityTokenPointer& pSecurityToken) {
+    return TrackPointer(
+            new TrackInfoObject(
+                    fileInfo,
+                    pSecurityToken,
+                    TrackId()),
+            &QObject::deleteLater);
+}
+
+//static
+TrackPointer TrackInfoObject::newTemporaryForSameFile(
+        const TrackPointer& pTrack) {
+    QMutexLocker lock(&pTrack->m_qMutex);
+    return newTemporary(
+                pTrack->m_fileInfo,
+                pTrack->m_pSecurityToken);
+}
+
+//static
+TrackPointer TrackInfoObject::newDummy(
+        const QFileInfo& fileInfo,
+        TrackId trackId) {
+    return TrackPointer(
+            new TrackInfoObject(
+                    fileInfo,
+                    SecurityTokenPointer(),
+                    trackId),
+            &QObject::deleteLater);
 }
 
 // static

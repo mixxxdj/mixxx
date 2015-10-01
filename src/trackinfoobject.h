@@ -33,11 +33,27 @@ namespace Mixxx {
 class TrackInfoObject : public QObject {
     Q_OBJECT
   public:
-    // Initialize track with a QFileInfo class
-    explicit TrackInfoObject(const QFileInfo& fileInfo = QFileInfo(),
-                    SecurityTokenPointer pToken = SecurityTokenPointer(),
-                    bool parseHeader = true,
-                    bool parseCoverArt = false);
+    TrackInfoObject(const TrackInfoObject&) = delete;
+    TrackInfoObject(TrackInfoObject&&) = delete;
+
+    // Creates a new empty temporary instance for fake tracks or for
+    // testing purposes. The resulting track will neither be stored
+    // in the database nor will the metadata of the corresponding file
+    // be updated.
+    static TrackPointer newTemporary(
+            const QFileInfo& fileInfo = QFileInfo(),
+            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
+    // Creates a new temporary instance from another track that references
+    // the same file. Please remember that the corresponding file might
+    // be modified after all references to the original track have been
+    // dropped. To be safe just keep the pointer to the original track
+    // for the lifetime of this temporary instance.
+    static TrackPointer newTemporaryForSameFile(
+            const TrackPointer& pTrack);
+    // Creates a dummy instance for testing purposes.
+    static TrackPointer newDummy(
+            const QFileInfo& fileInfo,
+            TrackId trackId);
 
     // Parse file metadata. If no file metadata is present, attempts to extract
     // artist and title information from the filename.
@@ -280,6 +296,11 @@ class TrackInfoObject : public QObject {
     void slotBeatsUpdated();
 
   private:
+    TrackInfoObject(
+            const QFileInfo& fileInfo,
+            const SecurityTokenPointer& pToken,
+            TrackId trackId);
+
     void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
     void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
 
@@ -378,7 +399,6 @@ class TrackInfoObject : public QObject {
     CoverArt m_coverArt;
 
     friend class TrackDAO;
-    friend class AutoDJProcessorTest;
 };
 
 #endif

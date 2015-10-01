@@ -46,8 +46,8 @@ void ImportFilesTask::run() {
             // without checking if we have cover art that is USER_SELECTED. If
             // this changes in the future you MUST check that the cover art is
             // not USER_SELECTED first.
-            TrackPointer pTrack = TrackPointer(
-                new TrackInfoObject(filePath, m_pToken, true, true));
+            TrackPointer pTrack(TrackInfoObject::newTemporary(file, m_pToken));
+            pTrack->parse(true);
 
             // If cover art is not found in the track metadata, populate from
             // possibleCovers.
