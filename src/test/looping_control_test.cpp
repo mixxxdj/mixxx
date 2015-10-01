@@ -56,6 +56,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
                 ConfigKey(m_sGroup1, "loop_move_1_forward")));
         m_pButtonBeatMoveBackward.reset(getControlObjectThread(
                 ConfigKey(m_sGroup1, "loop_move_1_backward")));
+        m_pButtonBeatLoop2Activate.reset(getControlObjectThread(
+                ConfigKey(m_sGroup1, "beatloop_2_activate")));
     }
 
     bool isLoopEnabled() {
@@ -84,6 +86,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
     QScopedPointer<ControlObjectThread> m_pPlayPosition;
     QScopedPointer<ControlObjectThread> m_pButtonBeatMoveForward;
     QScopedPointer<ControlObjectThread> m_pButtonBeatMoveBackward;
+    QScopedPointer<ControlObjectThread> m_pButtonBeatLoop2Activate;
 };
 
 TEST_F(LoopingControlTest, LoopSet) {
@@ -380,5 +383,30 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(300, m_pLoopEndPoint->get());
     EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+}
 
+TEST_F(LoopingControlTest, LoopResizeSeek) {
+    // Activating a new loop with a loop active should warp the playposition
+    // the same as it does when we scale the loop larger and smaller so we
+    // keep in sync with the beat.
+    m_pTrack1->setBpm(23520);
+    m_pLoopStartPoint->slotSet(0);
+    m_pLoopEndPoint->slotSet(600);
+    seekToSampleAndProcess(500);
+    m_pButtonReloopExit->slotSet(1);
+    EXPECT_TRUE(isLoopEnabled());
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+    EXPECT_EQ(600, m_pLoopEndPoint->get());
+    EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+
+    // Activate a shorter loop
+    m_pButtonBeatLoop2Activate->set(1.0);
+
+    ProcessBuffer();
+
+    // The loop is resized and we should have seeked to a mid-beat part of the
+    // loop.
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+    EXPECT_EQ(450, m_pLoopEndPoint->get());
+    EXPECT_EQ(50, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 }
