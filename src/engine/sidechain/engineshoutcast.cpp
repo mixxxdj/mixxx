@@ -373,6 +373,7 @@ bool EngineShoutcast::serverConnect() {
 
 bool EngineShoutcast::processConnect() {
     // reset the number of failures to zero
+    m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
     m_iShoutFailures = 0;
     // set to a high number to automatically update the metadata
     // on the first change
