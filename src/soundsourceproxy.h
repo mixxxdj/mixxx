@@ -43,14 +43,14 @@ public:
         }
     }
 
-    // Parse track metadata and (optionally) cover art from the file
+    // Load track metadata and (optionally) cover art from the file
     // if it has not already been parsed. With reloadFromFile = true
     // metadata and cover art will be reloaded from the file regardless
     // if it has already been parsed before or not.
-    void parseTrackMetadata(bool reloadFromFile = false) const {
+    void loadTrackMetadata(bool reloadFromFile = false) const {
         return m_pTrack->parseTrackMetadata(*this, false, reloadFromFile);
     }
-    void parseTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
+    void loadTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
         return m_pTrack->parseTrackMetadata(*this, true, reloadFromFile);
     }
 

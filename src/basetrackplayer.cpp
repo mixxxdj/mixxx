@@ -223,7 +223,7 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject) {
     m_replaygainPending = false;
 
     // Reload metadata from file, but only if required
-    SoundSourceProxy(m_pLoadedTrack).parseTrackMetadata();
+    SoundSourceProxy(m_pLoadedTrack).loadTrackMetadata();
 
     // m_pLoadedTrack->setPlayedAndUpdatePlayCount(); // Actually the song is loaded but not played
 

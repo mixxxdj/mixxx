@@ -50,7 +50,7 @@ void ImportFilesTask::run() {
             // Otherwise importing in a separate thread would become
             // much more complicated.
             TrackPointer pTrack(TrackInfoObject::newTemporary(file, m_pToken));
-            SoundSourceProxy(pTrack).parseTrackMetadataAndCoverArt();
+            SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
 
             // If cover art is not found in the track metadata, populate from
             // possibleCovers.

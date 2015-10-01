@@ -1310,7 +1310,7 @@ void WTrackTableView::slotReloadTrackMetadata() {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            SoundSourceProxy(pTrack).parseTrackMetadata(true);
+            SoundSourceProxy(pTrack).loadTrackMetadata(true);
         }
     }
 }
