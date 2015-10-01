@@ -15,6 +15,7 @@
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/trackid.h"
+#include "track/trackref.h"
 #include "track/playcounter.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
@@ -76,8 +77,6 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationText STORED false)
 
-    TrackId getId() const;
-
     QFileInfo getFileInfo() const {
         // Copying a QFileInfo is thread-safe (implicit sharing), no locking needed.
         return m_fileInfo;
@@ -86,6 +85,10 @@ class TrackInfoObject : public QObject {
         // Copying a QSharedPointer is thread-safe, no locking needed.
         return m_pSecurityToken;
     }
+
+    TrackId getId() const;
+
+    TrackRef createRef() const;
 
     // Accessors for various stats of the file on disk.
     // Returns absolute path to the file, including the filename.

@@ -916,6 +916,7 @@ class MixxxCore(Feature):
                    "track/keyfactory.cpp",
                    "track/keyutils.cpp",
                    "track/playcounter.cpp",
+                   "track/trackref.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
