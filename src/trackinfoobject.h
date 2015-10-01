@@ -278,6 +278,9 @@ class TrackInfoObject : public QObject {
     void setCoverArt(const CoverArt& cover);
     CoverArt getCoverArt() const;
 
+    // Explicitly mark as dirty, e.g. to trigger saving of metadata
+    // into files.
+    bool markDirty(bool bDirty = true);
     // Called when the shared pointer reference count for a library TrackPointer
     // drops to zero.
     static void onTrackReferenceExpired(TrackInfoObject* pTrack);
@@ -324,9 +327,13 @@ class TrackInfoObject : public QObject {
             bool parseCoverArt,
             bool reloadFromFile);
 
-    // Set whether the TIO is dirty not. This should never be called except by
-    // TIO local methods or the TrackDAO.
-    void setDirty(bool bDirty);
+    // Reset the dirty flag. This should only be called from the TrackDAO.
+    void resetDirty();
+
+    // Set whether the TIO is dirty not and unlock before emitting
+    // any signals. This must only be called from member functions.
+    bool markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
+    void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
     void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
@@ -387,8 +394,6 @@ class TrackInfoObject : public QObject {
     int m_iSampleRate;
     // Number of channels
     int m_iChannels;
-    // Track rating
-    int m_Rating;
     // Bitrate, number of kilobits per second of audio in the track
     int m_iBitrate;
     // Replay Gain volume
@@ -399,6 +404,8 @@ class TrackInfoObject : public QObject {
     float m_fCuePoint;
     // Date the track was added to the library
     QDateTime m_dateAdded;
+    // The Mixxx star rating
+    int m_iRating;
 
     PlayCounter m_playCounter;
 
