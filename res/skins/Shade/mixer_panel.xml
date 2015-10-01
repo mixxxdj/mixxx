@@ -638,6 +638,10 @@
 							</State>
 							<Pos>113,30</Pos>
 							<Connection>
+								<ConfigKey>[Shoutcast],enabled</ConfigKey>
+								<ButtonState>LeftButton</ButtonState>
+							</Connection>
+							<Connection>
 								<ConfigKey>[Shoutcast],status</ConfigKey>
 							</Connection>
 						</PushButton>

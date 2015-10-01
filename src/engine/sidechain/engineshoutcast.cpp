@@ -37,6 +37,7 @@
 #include "shoutcast/defs_shoutcast.h"
 #include "trackinfoobject.h"
 #include "util/sleep.h"
+#include "controlpushbutton.h"
 
 static const int kConnectRetries = 10;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
@@ -69,8 +70,11 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
             ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
 
     const bool persist = true;
-    m_pShoutcastEnabled = new ControlObject(
-            ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),true, false, persist);
+    m_pShoutcastEnabled = new ControlPushButton(
+            ConfigKey(SHOUTCAST_PREF_KEY,"enabled"), persist);
+    m_pShoutcastEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pShoutcastEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(slotEnableCO(double)));
 
     m_pStatusCO = new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status"));
     m_pStatusCO->connectValueChangeRequest(
@@ -112,14 +116,6 @@ EngineShoutcast::~EngineShoutcast() {
         shout_free(m_pShout);
     }
     shout_shutdown();
-}
-
-bool EngineShoutcast::serverDisconnect() {
-    m_pShoutcastEnabled->set(0);
-    m_readSema.release();
-    wait();
-    setState(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
-    return false; // if no connection has been established, nothing can be disconnected
 }
 
 bool EngineShoutcast::isConnected() {
@@ -441,6 +437,9 @@ bool EngineShoutcast::processConnect() {
             qDebug() << "EngineShoutcast::processConnect() error:"
                      << m_iShoutStatus << shout_get_error(m_pShout);
         }
+    } else {
+        // no connection
+
     }
     shout_close(m_pShout);
     if (m_encoder) {
@@ -806,4 +805,16 @@ void EngineShoutcast::slotStatusCO(double v) {
     Q_UNUSED(v);
     qWarning() << "WARNING:"
             << SHOUTCAST_PREF_KEY << "\"status\" is a read-only control.";
+}
+
+void EngineShoutcast::slotEnableCO(double v) {
+    if (v > 1.0) {
+        // Wrap around manually .
+        // Wrapping around in WPushbutton does not work
+        // since the status button has 4 states, but this CO is bool
+        m_pShoutcastEnabled->set(0.0);
+    }
+    if (v > 0.0) {
+        serverConnect();
+    }
 }

@@ -37,6 +37,7 @@
 #include "util/fifo.h"
 
 class Encoder;
+class ControlPushButton;
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
@@ -84,6 +85,7 @@ class EngineShoutcast :
 
   private slots:
     void slotStatusCO(double v);
+    void slotEnableCO(double v);
 
   private:
     bool processConnect();
@@ -122,7 +124,7 @@ class EngineShoutcast :
     ConfigObject<ConfigValue>* m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
-    ControlObject* m_pShoutcastEnabled;
+    ControlPushButton* m_pShoutcastEnabled;
     ControlObjectSlave* m_pMasterSamplerate;
     ControlObject* m_pStatusCO;
     // static metadata according to prefereneces
