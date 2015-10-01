@@ -142,7 +142,6 @@ class EngineShoutcast :
     bool m_protocol_is_shoutcast;
     bool m_ogg_dynamic_update;
     QVector<struct shoutcastCacheObject  *> m_pShoutcastCache;
-    volatile bool m_bThreadQuit;
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;

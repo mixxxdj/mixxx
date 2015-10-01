@@ -63,7 +63,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
-          m_bThreadQuit(false),
           m_threadWaiting(false),
           m_pOutputFifo(NULL) {
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
@@ -97,7 +96,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
 }
 
 EngineShoutcast::~EngineShoutcast() {
-    m_bThreadQuit = true;
+    m_pShoutcastEnabled->set(0);
     m_readSema.release();
     wait(); // until the thread ends.
 
@@ -116,7 +115,7 @@ EngineShoutcast::~EngineShoutcast() {
 }
 
 bool EngineShoutcast::serverDisconnect() {
-    m_bThreadQuit = true;
+    m_pShoutcastEnabled->set(0);
     m_readSema.release();
     wait();
     setState(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
@@ -372,7 +371,6 @@ bool EngineShoutcast::serverConnect() {
 }
 
 bool EngineShoutcast::processConnect() {
-    // reset the number of failures to zero
     m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
     m_iShoutFailures = 0;
     // set to a high number to automatically update the metadata
@@ -414,7 +412,9 @@ bool EngineShoutcast::processConnect() {
     if (m_iShoutFailures < kMaxShoutFailures) {
         m_iShoutFailures = 0;
         int timeout = 0;
-        while (m_iShoutStatus == SHOUTERR_BUSY && timeout < kConnectRetries) {
+        while (m_iShoutStatus == SHOUTERR_BUSY &&
+                timeout < kConnectRetries &&
+                m_pShoutcastEnabled->toBool()) {
             setState(NETWORKSTREAMWORKER_STATE_WAITING);
             qDebug() << "Connection pending. Sleeping...";
             sleep(1);
@@ -424,12 +424,9 @@ bool EngineShoutcast::processConnect() {
         if (m_iShoutStatus == SHOUTERR_CONNECTED) {
             setState(NETWORKSTREAMWORKER_STATE_READY);
             qDebug() << "***********Connected to streaming server...";
-            m_pStatusCO->setAndConfirm(NETWORKSTREAMWORKER_STATE_CONNECTED);
 
             // Signal user also that we are connected
             infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
-
-            m_bThreadQuit = false;
 
             if (m_pOutputFifo->readAvailable()) {
                 m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
@@ -440,22 +437,23 @@ bool EngineShoutcast::processConnect() {
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
             qDebug() << "EngineShoutcast::processConnect() socket error."
                      << "Is socket already in use?";
-        } else {
+        } else if (m_pShoutcastEnabled->toBool()) {
             qDebug() << "EngineShoutcast::processConnect() error:"
                      << m_iShoutStatus << shout_get_error(m_pShout);
         }
     }
-
-    setState(NETWORKSTREAMWORKER_STATE_ERROR);
-    // otherwise disable shoutcast in preferences
-    m_pShoutcastEnabled->set(0);
     shout_close(m_pShout);
     if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
         m_encoder = NULL;
     }
-    m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+    if (m_pShoutcastEnabled->toBool()) {
+        m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+        m_pShoutcastEnabled->set(0);
+    } else {
+        m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
+    }
     return false;
 }
 
@@ -465,7 +463,6 @@ void EngineShoutcast::processDisconnect() {
         m_threadWaiting = false;
         // We are conneced but shoutcast is disabled. Disconnect.
         shout_close(m_pShout);
-        m_pStatusCO->setAndConfirm(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
         infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
         m_iShoutStatus = SHOUTERR_UNCONNECTED;
     }
@@ -759,8 +756,7 @@ void EngineShoutcast::run() {
         m_readSema.acquire();
         // Check to see if Shoutcast is enabled, and pass the samples off to be
         // broadcast if necessary.
-        bool prefEnabled = m_pShoutcastEnabled->toBool();
-        if (m_bThreadQuit || !prefEnabled) {
+        if (!m_pShoutcastEnabled->toBool()) {
             m_threadWaiting = false;
             m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
             processDisconnect();
