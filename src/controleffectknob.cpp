@@ -9,31 +9,31 @@ ControlEffectKnob::ControlEffectKnob(ConfigKey key, EffectKnobParameters paramet
 
 void ControlEffectKnob::setBehavior(EffectManifestParameter::ControlHint type,
                                      double dMinValue, double dMaxValue,
-                                     double dNeutralParameter) {
+                                     double dScaleStartParameter) {
     if (m_pControl == NULL) {
         return;
     }
 
     if (type == EffectManifestParameter::CONTROL_KNOB_LINEAR) {
             m_pControl->setBehavior(new ControlLinPotmeterBehavior(
-                    dMinValue, dMaxValue, dNeutralParameter, false));
+                    dMinValue, dMaxValue, dScaleStartParameter, false));
     } else if (type == EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC) {
         if (dMinValue == 0) {
             if (dMaxValue == 1.0) {
                 // Volume like control
                 m_pControl->setBehavior(
-                        new ControlAudioTaperPotBehavior(-20, 0, dNeutralParameter));
+                        new ControlAudioTaperPotBehavior(-20, 0, dScaleStartParameter));
             } else if (dMaxValue > 1.0) {
                 // Gain like control
                 m_pControl->setBehavior(
-                        new ControlAudioTaperPotBehavior(-12, ratio2db(dMaxValue), dNeutralParameter));
+                        new ControlAudioTaperPotBehavior(-12, ratio2db(dMaxValue), dScaleStartParameter));
             } else {
                 m_pControl->setBehavior(
-                        new ControlLogPotmeterBehavior(dMinValue, dMaxValue, dNeutralParameter, -40));
+                        new ControlLogPotmeterBehavior(dMinValue, dMaxValue, dScaleStartParameter, -40));
             }
         } else {
             m_pControl->setBehavior(
-                    new ControlLogPotmeterBehavior(dMinValue, dMaxValue, dNeutralParameter, -40));
+                    new ControlLogPotmeterBehavior(dMinValue, dMaxValue, dScaleStartParameter, -40));
         }
     }
 }

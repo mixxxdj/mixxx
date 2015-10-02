@@ -8,7 +8,7 @@
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
           m_dCurrentAngle(140.0),
-          m_dNeutralParameter(0.0),
+          m_dScaleStartParameter(0.0),
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0),
           m_dKnobCenterXOffset(0),
@@ -133,7 +133,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
 
     ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
     if (defaultConnection) {
-        m_dNeutralParameter = defaultConnection->neutralParameter();
+        m_dScaleStartParameter = defaultConnection->scaleStartParameter();
     }
 
     // We update m_dCurrentAngle since onConnectedControlChanged uses it for
@@ -149,7 +149,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         int h = height();
         path.moveTo(w/2.0 + m_iMaskXOffset, h/2.0 + m_iMaskYOffset);
         double d = sqrt(pow(w+abs(m_iMaskXOffset),2) + pow(h+abs(m_iMaskYOffset),2));
-        double neutralAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * m_dNeutralParameter;
+        double neutralAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * m_dScaleStartParameter;
         path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d), 90 - neutralAngle, neutralAngle - m_dCurrentAngle);
 
         path.closeSubpath();

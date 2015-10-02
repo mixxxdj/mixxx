@@ -77,8 +77,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
             EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
-            double neutralParameter = m_pEffectParameter->getNeutralPointOnScale();
-            m_pControlValue->setBehavior(type, dMinimum, dMaximum, neutralParameter);
+            double scaleStartParameter = m_pEffectParameter->getNeutralPointOnScale();
+            m_pControlValue->setBehavior(type, dMinimum, dMaximum, scaleStartParameter);
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->set(dValue);
             // TODO(rryan) expose this from EffectParameter

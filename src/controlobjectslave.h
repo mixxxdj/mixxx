@@ -60,8 +60,8 @@ class ControlObjectSlave : public QObject {
         return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
     }
 
-    inline double neutralParameter() const {
-        return m_pControl ? m_pControl->neutralParameter() : 0.0;
+    inline double scaleStartParameter() const {
+        return m_pControl ? m_pControl->scaleStartParameter() : 0.0;
     }
 
   public slots:

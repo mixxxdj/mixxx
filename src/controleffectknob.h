@@ -11,7 +11,7 @@ class ControlEffectKnob : public ControlPotmeter {
 			EffectKnobParameters parameters = EffectKnobParameters());
 
     void setBehavior(EffectManifestParameter::ControlHint type,
-            double dMinValue, double dMaxValue, double dNeutralParameter);
+            double dMinValue, double dMaxValue, double dScaleStartParameter);
 };
 
 #endif // CONTROLLEFFECTKNOB_H

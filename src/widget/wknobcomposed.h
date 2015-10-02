@@ -42,7 +42,7 @@ class WKnobComposed : public WWidget {
     PaintablePointer m_pRing;
 
     double m_dCurrentAngle;
-    double m_dNeutralParameter;
+    double m_dScaleStartParameter;
     double m_dMinAngle;
     double m_dMaxAngle;
     double m_dKnobCenterXOffset;

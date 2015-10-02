@@ -5,7 +5,7 @@ ControlLinPotmeter::ControlLinPotmeter(ConfigKey key, LinPotmeterParameters para
     if (m_pControl) {
         m_pControl->setBehavior(
             new ControlLinPotmeterBehavior(parameters.minValue(),
-                parameters.maxValue(), parameters.neutralValue(),
+                parameters.maxValue(), parameters.scaleStartValue(),
                 parameters.allowOutOfBounds()));
     }
     if (parameters.step()) {

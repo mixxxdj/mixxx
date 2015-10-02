@@ -22,17 +22,15 @@ class ControlNumericBehavior {
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
 
-    // Parameter value where the control has a neutral effect
-    // or no effect. For example, for ControlAudioTaperPotBehavior this
-    // represents a knob position between 0 and 1 where
-    // the gain is 1 (0dB).
-    virtual double neutralParameter();
+    // This value is used for the skin system to determine a position
+    // of the control where its visual feedback should be off.
+    virtual double scaleStartParameter();
 };
 
 class ControlPotmeterBehavior : public ControlNumericBehavior {
   public:
     ControlPotmeterBehavior(double dMinValue, double dMaxValue,
-                            double dNeutralParameter, bool allowOutOfBounds);
+                            double dScaleStartParameter, bool allowOutOfBounds);
     virtual ~ControlPotmeterBehavior();
 
     virtual bool setFilter(double* dValue);
@@ -40,20 +38,20 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
     virtual double midiValueToParameter(double midiValue);
     virtual double parameterToValue(double dParam);
     virtual double valueToMidiParameter(double dValue);
-    virtual double neutralParameter();
+    virtual double scaleStartParameter();
 
   protected:
     double m_dMinValue;
     double m_dMaxValue;
     double m_dValueRange;
-    double m_dNeutralParameter;
+    double m_dScaleStartParameter;
     bool m_bAllowOutOfBounds;
 };
 
 class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
   public:
     ControlLogPotmeterBehavior(double dMinValue, double dMaxValue,
-                               double dNeutralParameter, double minDB);
+                               double dScaleStartParameter, double minDB);
     virtual ~ControlLogPotmeterBehavior();
 
     virtual double valueToParameter(double dValue);
@@ -67,14 +65,14 @@ class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
 class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
   public:
     ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
-                               double dNeutralParameter, bool allowOutOfBounds);
+                               double dScaleStartParameter, bool allowOutOfBounds);
     virtual ~ControlLinPotmeterBehavior();
 };
 
 class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
   public:
     ControlAudioTaperPotBehavior(double minDB, double maxDB,
-                                 double neutralParameter);
+                                 double scaleStartParameter);
     virtual ~ControlAudioTaperPotBehavior();
 
     virtual double valueToParameter(double dValue);

@@ -22,7 +22,7 @@
 ControlPotmeter::ControlPotmeter(ConfigKey key, PotmeterParameters parameters)
         : ControlObject(key, parameters.ignoreNops(), parameters.track(), parameters.persist()),
           m_controls(key) {
-    setRange(parameters.minValue(), parameters.maxValue(), parameters.neutralValue(), parameters.allowOutOfBounds());
+    setRange(parameters.minValue(), parameters.maxValue(), parameters.scaleStartValue(), parameters.allowOutOfBounds());
     double default_value = parameters.minValue() + 0.5 * (parameters.maxValue() - parameters.minValue());
     setDefaultValue(default_value);
     if (!parameters.persist()) {
@@ -43,13 +43,13 @@ void ControlPotmeter::setSmallStepCount(int count) {
 }
 
 void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
-                               double dNeutralValue,
+                               double dScaleStartValue,
                                bool allowOutOfBounds) {
     m_bAllowOutOfBounds = allowOutOfBounds;
 
     if (m_pControl) {
         m_pControl->setBehavior(
-                new ControlPotmeterBehavior(dMinValue, dMaxValue, dNeutralValue, allowOutOfBounds));
+                new ControlPotmeterBehavior(dMinValue, dMaxValue, dScaleStartValue, allowOutOfBounds));
     }
 }
 

@@ -119,8 +119,8 @@ class ControlObject : public QObject {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
 
-    inline double neutralParameter() const {
-        return m_pControl ? m_pControl->neutralParameter() : 0.0;
+    inline double scaleStartParameter() const {
+        return m_pControl ? m_pControl->scaleStartParameter() : 0.0;
     }
 
     // Returns the parameterized value of the object. Thread safe, non-blocking.

@@ -30,17 +30,17 @@ void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dPar
     pControl->set(parameterToValue(dNorm), NULL);
 }
 
-double ControlNumericBehavior::neutralParameter() {
+double ControlNumericBehavior::scaleStartParameter() {
     return 0.0;
 }
 
 ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
-                                                 double dNeutralParameter,
+                                                 double dScaleStartParameter,
                                                  bool allowOutOfBounds)
         : m_dMinValue(dMinValue),
           m_dMaxValue(dMaxValue),
           m_dValueRange(m_dMaxValue - m_dMinValue),
-          m_dNeutralParameter(dNeutralParameter),
+          m_dScaleStartParameter(dScaleStartParameter),
           m_bAllowOutOfBounds(allowOutOfBounds) {
 }
 
@@ -99,8 +99,8 @@ double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
     }
 }
 
-double ControlPotmeterBehavior::neutralParameter() {
-    return m_dNeutralParameter;
+double ControlPotmeterBehavior::scaleStartParameter() {
+    return m_dScaleStartParameter;
 }
 
 #define maxPosition 1.0
@@ -109,8 +109,8 @@ double ControlPotmeterBehavior::neutralParameter() {
 #define positionrange (maxPosition - minPosition)
 
 ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue,
-                                                       double dNeutralParameter, double minDB)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, dNeutralParameter, false) {
+                                                       double dScaleStartParameter, double minDB)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, dScaleStartParameter, false) {
     if (minDB >= 0) {
         qWarning() << "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() minDB must be negative";
         m_minDB = -1;
@@ -144,8 +144,8 @@ double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
 }
 
 ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
-                                                       double dNeutralParameter, bool allowOutOfBounds)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, dNeutralParameter, allowOutOfBounds) {
+                                                       double dScaleStartParameter, bool allowOutOfBounds)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, dScaleStartParameter, allowOutOfBounds) {
 }
 
 ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
@@ -153,12 +153,12 @@ ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
 
 ControlAudioTaperPotBehavior::ControlAudioTaperPotBehavior(
                              double minDB, double maxDB,
-                             double neutralParameter)
-        : ControlPotmeterBehavior(0.0, db2ratio(maxDB), neutralParameter, false),
+                             double scaleStartParameter)
+        : ControlPotmeterBehavior(0.0, db2ratio(maxDB), scaleStartParameter, false),
           m_minDB(minDB),
           m_maxDB(maxDB),
           m_offset(db2ratio(m_minDB)) {
-    m_midiCorrection = ceil(m_dNeutralParameter * 127) - (m_dNeutralParameter * 127);
+    m_midiCorrection = ceil(m_dScaleStartParameter * 127) - (m_dScaleStartParameter * 127);
 }
 
 ControlAudioTaperPotBehavior::~ControlAudioTaperPotBehavior() {
@@ -171,19 +171,19 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
     } else if (dValue < 1.0) {
         // db + linear overlay to reach
         // m_minDB = 0
-        // 0 dB = m_dNeutralParameter
+        // 0 dB = m_dScaleStartParameter
         double overlay = m_offset * (1 - dValue);
         if (m_minDB) {
-            dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_dNeutralParameter * -1;
+            dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_dScaleStartParameter * -1;
         } else {
-            dParam = dValue * m_dNeutralParameter;
+            dParam = dValue * m_dScaleStartParameter;
         }
     } else if (dValue == 1.0) {
-        dParam = m_dNeutralParameter;
+        dParam = m_dScaleStartParameter;
     } else if (dValue < m_dMaxValue) {
         // m_maxDB = 1
-        // 0 dB = m_dNeutralParameter
-        dParam = (ratio2db(dValue) / m_maxDB * (1 - m_dNeutralParameter)) + m_dNeutralParameter;
+        // 0 dB = m_dScaleStartParameter
+        dParam = (ratio2db(dValue) / m_maxDB * (1 - m_dScaleStartParameter)) + m_dScaleStartParameter;
     }
     //qDebug() << "ControlAudioTaperPotBehavior::valueToParameter" << "value =" << dValue << "dParam =" << dParam;
     return dParam;
@@ -193,22 +193,22 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
     double dValue = 1;
     if (dParam <= 0.0) {
         dValue = 0;
-    } else if (dParam < m_dNeutralParameter) {
+    } else if (dParam < m_dScaleStartParameter) {
         // db + linear overlay to reach
         // m_minDB = 0
-        // 0 dB = m_dNeutralParameter;
+        // 0 dB = m_dScaleStartParameter;
         if (m_minDB) {
-            double db = (dParam * m_minDB / (m_dNeutralParameter * -1)) + m_minDB;
+            double db = (dParam * m_minDB / (m_dScaleStartParameter * -1)) + m_minDB;
             dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;
         } else {
-            dValue = dParam / m_dNeutralParameter;
+            dValue = dParam / m_dScaleStartParameter;
         }
-    } else if (dParam == m_dNeutralParameter) {
+    } else if (dParam == m_dScaleStartParameter) {
         dValue = 1.0;
     } else if (dParam <= 1.0) {
         // m_maxDB = 1
-        // 0 dB = m_neutralParame;
-        dValue = db2ratio((dParam - m_dNeutralParameter) * m_maxDB / (1 - m_dNeutralParameter));
+        // 0 dB = m_dScaleStartParameter;
+        dValue = db2ratio((dParam - m_dScaleStartParameter) * m_maxDB / (1 - m_dScaleStartParameter));
     }
     //qDebug() << "ControlAudioTaperPotBehavior::parameterToValue" << "dValue =" << dValue << "dParam =" << dParam;
     return dValue;
@@ -216,15 +216,15 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
 
 double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) {
     double dParam;
-    if (m_dNeutralParameter && m_dNeutralParameter != 1.0) {
+    if (m_dScaleStartParameter && m_dScaleStartParameter != 1.0) {
         double neutralTest = (midiValue - m_midiCorrection) / 127.0;
-        if (neutralTest < m_dNeutralParameter) {
+        if (neutralTest < m_dScaleStartParameter) {
             dParam = midiValue /
-                    (127.0 + m_midiCorrection / m_dNeutralParameter);
+                    (127.0 + m_midiCorrection / m_dScaleStartParameter);
         } else {
             // m_midicorrection is allways < 1, so NaN check required
-            dParam = (midiValue - m_midiCorrection / m_dNeutralParameter) /
-                    (127.0 - m_midiCorrection / m_dNeutralParameter);
+            dParam = (midiValue - m_midiCorrection / m_dScaleStartParameter) /
+                    (127.0 - m_midiCorrection / m_dScaleStartParameter);
         }
     } else {
         dParam = midiValue / 127.0;
@@ -235,15 +235,15 @@ double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) {
 double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
     // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
     // center. The industry convention is that 64 is center.
-    // We fake things a little bit here to hit the m_dNeutralParameter
+    // We fake things a little bit here to hit the m_dScaleStartParameter
     // always on a full Midi integer
     double dParam = valueToParameter(dValue);
     double dMidiParam = dParam * 127.0;
-    if (m_dNeutralParameter && m_dNeutralParameter != 1.0) {
-        if (dParam < m_dNeutralParameter) {
-            dMidiParam += m_midiCorrection * dParam / m_dNeutralParameter;
+    if (m_dScaleStartParameter && m_dScaleStartParameter != 1.0) {
+        if (dParam < m_dScaleStartParameter) {
+            dMidiParam += m_midiCorrection * dParam / m_dScaleStartParameter;
         } else {
-            dMidiParam += m_midiCorrection * (1 - dParam) / m_dNeutralParameter;
+            dMidiParam += m_midiCorrection * (1 - dParam) / m_dScaleStartParameter;
         }
     }
     return dMidiParam;

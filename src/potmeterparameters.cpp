@@ -24,7 +24,7 @@ void EffectKnobParameters::setMaxValue(double value) {
 }
 
 LinPotmeterParameters::LinPotmeterParameters()
-        : m_dMinValue(0.0), m_dMaxValue(1.0), m_dNeutralValue(0.0),
+        : m_dMinValue(0.0), m_dMaxValue(1.0), m_dScaleStartValue(0.0),
           m_bAllowOutOfBounds(false), m_dStep(0.0),
           m_dSmallStep(0.0) {
 }
@@ -40,8 +40,8 @@ double LinPotmeterParameters::maxValue() {
     return m_dMaxValue;
 }
 
-double LinPotmeterParameters::neutralValue() {
-    return m_dNeutralValue;
+double LinPotmeterParameters::scaleStartValue() {
+    return m_dScaleStartValue;
 }
 
 bool LinPotmeterParameters::allowOutOfBounds() {
@@ -64,8 +64,8 @@ void LinPotmeterParameters::setMaxValue(double value) {
     m_dMaxValue = value;
 }
 
-void LinPotmeterParameters::setNeutralValue(double value) {
-    m_dNeutralValue = value;
+void LinPotmeterParameters::setScaleStartValue(double value) {
+    m_dScaleStartValue = value;
 }
 
 void LinPotmeterParameters::setAllowOutOfBounds(bool value) {
@@ -81,7 +81,7 @@ void LinPotmeterParameters::setSmallStep(double value) {
 }
 
 LogPotmeterParameters::LogPotmeterParameters()
-        : m_dMaxValue(1.0), m_dNeutralValue(0.0),
+        : m_dMaxValue(1.0), m_dScaleStartValue(0.0),
           m_dMinDB(60.) {
 }
 
@@ -92,8 +92,8 @@ double LogPotmeterParameters::maxValue() {
     return m_dMaxValue;
 }
 
-double LogPotmeterParameters::neutralValue() {
-    return m_dNeutralValue;
+double LogPotmeterParameters::scaleStartValue() {
+    return m_dScaleStartValue;
 }
 
 double LogPotmeterParameters::minDB() {
@@ -104,8 +104,8 @@ void LogPotmeterParameters::setMaxValue(double value) {
     m_dMaxValue = value;
 }
 
-void LogPotmeterParameters::setNeutralValue(double value) {
-    m_dNeutralValue = value;
+void LogPotmeterParameters::setScaleStartValue(double value) {
+    m_dScaleStartValue = value;
 }
 
 void LogPotmeterParameters::setMinDB(double value) {
@@ -114,7 +114,7 @@ void LogPotmeterParameters::setMinDB(double value) {
 
 
 PotmeterParameters::PotmeterParameters()
-        : m_dMinValue(0.0), m_dMaxValue(1.0), m_dNeutralValue(0.0),
+        : m_dMinValue(0.0), m_dMaxValue(1.0), m_dScaleStartValue(0.0),
           m_bAllowOutOfBounds(false), m_bIgnoreNops(true),
           m_bTrack(false), m_bPersist(false) {
 }
@@ -122,7 +122,7 @@ PotmeterParameters::PotmeterParameters()
 PotmeterParameters::PotmeterParameters(EffectKnobParameters& parameters)
         : m_dMinValue(parameters.minValue()),
           m_dMaxValue(parameters.maxValue()),
-          m_dNeutralValue(0.0),
+          m_dScaleStartValue(0.0),
           m_bAllowOutOfBounds(false), m_bIgnoreNops(true),
           m_bTrack(false), m_bPersist(false) {
 }
@@ -130,14 +130,14 @@ PotmeterParameters::PotmeterParameters(EffectKnobParameters& parameters)
 PotmeterParameters::PotmeterParameters(LinPotmeterParameters& parameters)
         : m_dMinValue(parameters.minValue()),
           m_dMaxValue(parameters.maxValue()),
-          m_dNeutralValue(parameters.neutralValue()),
+          m_dScaleStartValue(parameters.scaleStartValue()),
           m_bAllowOutOfBounds(parameters.allowOutOfBounds()),
           m_bIgnoreNops(true), m_bTrack(false), m_bPersist(false) {
 }
 
 PotmeterParameters::PotmeterParameters(LogPotmeterParameters& parameters)
         : m_dMinValue(0.0), m_dMaxValue(parameters.maxValue()),
-          m_dNeutralValue(parameters.neutralValue()),
+          m_dScaleStartValue(parameters.scaleStartValue()),
           m_bAllowOutOfBounds(false), m_bIgnoreNops(true),
           m_bTrack(false), m_bPersist(false) {
 }
@@ -153,8 +153,8 @@ double PotmeterParameters::maxValue() {
     return m_dMaxValue;
 }
 
-double PotmeterParameters::neutralValue() {
-    return m_dNeutralValue;
+double PotmeterParameters::scaleStartValue() {
+    return m_dScaleStartValue;
 }
 
 bool PotmeterParameters::allowOutOfBounds() {
@@ -181,8 +181,8 @@ void PotmeterParameters::setMaxValue(double value) {
     m_dMaxValue = value;
 }
 
-void PotmeterParameters::setNeutralValue(double value) {
-    m_dNeutralValue = value;
+void PotmeterParameters::setScaleStartValue(double value) {
+    m_dScaleStartValue = value;
 }
 
 void PotmeterParameters::setAllowOutOfBounds(bool value) {
