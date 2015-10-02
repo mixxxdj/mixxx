@@ -37,6 +37,7 @@
 #include "util/fifo.h"
 
 class Encoder;
+class ControlPushButton;
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
@@ -49,6 +50,13 @@ class EngineShoutcast :
         public QThread, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
+    enum StatusCOStates {
+        STATUSCO_UNCONNECTED = 0, // IDLE state, no error
+        STATUSCO_CONNECTING = 1, // 10 s max
+        STATUSCO_CONNECTED = 2, // On Air
+        STATUSCO_FAILURE = 3 // Happens when disconnected by an error
+    };
+
     EngineShoutcast(ConfigObject<ConfigValue>* _config);
     virtual ~EngineShoutcast();
 
@@ -75,6 +83,10 @@ class EngineShoutcast :
 
     virtual void run();
 
+  private slots:
+    void slotStatusCO(double v);
+    void slotEnableCO(double v);
+
   private:
     bool processConnect();
     void processDisconnect();
@@ -97,6 +109,10 @@ class EngineShoutcast :
     void serverWrite(unsigned char *header, unsigned char *body,
                int headerLen, int bodyLen);
 
+    void ignoreSigpipe();
+
+    bool writeSingle(const unsigned char *data, size_t len);
+
     QByteArray encodeString(const QString& string);
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
@@ -108,9 +124,9 @@ class EngineShoutcast :
     ConfigObject<ConfigValue>* m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
-    ControlObject* m_pShoutcastEnabled;
+    ControlPushButton* m_pShoutcastEnabled;
     ControlObjectSlave* m_pMasterSamplerate;
-    ControlObject* m_pShoutcastStatus;
+    ControlObject* m_pStatusCO;
     // static metadata according to prefereneces
     bool m_custom_metadata;
     QString m_customArtist;
@@ -128,7 +144,6 @@ class EngineShoutcast :
     bool m_protocol_is_shoutcast;
     bool m_ogg_dynamic_update;
     QVector<struct shoutcastCacheObject  *> m_pShoutcastCache;
-    volatile bool m_bThreadQuit;
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;

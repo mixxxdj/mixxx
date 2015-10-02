@@ -27,12 +27,6 @@ ShoutcastManager::~ShoutcastManager() {
 
 void ShoutcastManager::setEnabled(bool value) {
     m_pShoutcastEnabled->set(value);
-    //  Should this be started somewhere else?
-    if (value == true) {
-        m_pShoutcast->serverConnect();
-    } else {
-        m_pShoutcast->serverDisconnect();
-    }
 }
 
 bool ShoutcastManager::isEnabled() {

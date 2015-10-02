@@ -37,8 +37,12 @@
 #include "shoutcast/defs_shoutcast.h"
 #include "trackinfoobject.h"
 #include "util/sleep.h"
+#include "controlpushbutton.h"
 
-#define TIMEOUT 10
+static const int kConnectRetries = 10;
+static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
+static const int kMaxShoutFailures = 3;
+
 
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
         : m_pTextCodec(NULL),
@@ -52,7 +56,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_encoder(NULL),
           m_pShoutcastNeedUpdateFromPrefs(NULL),
           m_pMasterSamplerate(new ControlObjectSlave("[Master]", "samplerate")),
-          m_pShoutcastStatus(new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status"))),
           m_custom_metadata(false),
           m_firstCall(false),
           m_format_is_mp3(false),
@@ -61,22 +64,22 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
-          m_bThreadQuit(false),
           m_threadWaiting(false),
           m_pOutputFifo(NULL) {
-
-#ifndef __WINDOWS__
-    // Ignore SIGPIPE signals that we get when the remote streaming server
-    // disconnects.
-    signal(SIGPIPE, SIG_IGN);
-#endif
-
-    m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
             ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
+
     const bool persist = true;
-    m_pShoutcastEnabled = new ControlObject(
-            ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),true, false, persist);
+    m_pShoutcastEnabled = new ControlPushButton(
+            ConfigKey(SHOUTCAST_PREF_KEY,"enabled"), persist);
+    m_pShoutcastEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pShoutcastEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(slotEnableCO(double)));
+
+    m_pStatusCO = new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status"));
+    m_pStatusCO->connectValueChangeRequest(
+            this, SLOT(slotStatusCO(double)));
+    m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
 
     setState(NETWORKSTREAMWORKER_STATE_INIT);
 
@@ -97,11 +100,12 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
 }
 
 EngineShoutcast::~EngineShoutcast() {
-    m_bThreadQuit = true;
+    m_pShoutcastEnabled->set(0);
+    m_readSema.release();
     wait(); // until the thread ends.
 
     delete m_pShoutcastNeedUpdateFromPrefs;
-    delete m_pShoutcastStatus;
+    delete m_pStatusCO;
     delete m_pMasterSamplerate;
 
     if (m_pShoutMetaData) {
@@ -112,13 +116,6 @@ EngineShoutcast::~EngineShoutcast() {
         shout_free(m_pShout);
     }
     shout_shutdown();
-}
-
-bool EngineShoutcast::serverDisconnect() {
-    m_bThreadQuit = true;
-    wait();
-    setState(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
-    return false; // if no connection has been established, nothing can be disconnected
 }
 
 bool EngineShoutcast::isConnected() {
@@ -370,11 +367,7 @@ bool EngineShoutcast::serverConnect() {
 }
 
 bool EngineShoutcast::processConnect() {
-    // set to busy in case another thread calls one of the other
-    // EngineShoutcast calls
-    m_iShoutStatus = SHOUTERR_BUSY;
-    m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_CONNECTING);
-    // reset the number of failures to zero
+    m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
     m_iShoutFailures = 0;
     // set to a high number to automatically update the metadata
     // on the first change
@@ -387,18 +380,13 @@ bool EngineShoutcast::processConnect() {
     //If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
 
-    /**
-     * Make sure that we call updateFromPreferences allways
-     */
+    // Make sure that we call updateFromPreferences always
     if (m_encoder == NULL) {
         updateFromPreferences();
     }
 
-    const int iMaxTries = 3;
-    while (m_iShoutFailures < iMaxTries) {
-        if (m_pShout)
-            shout_close(m_pShout);
-
+    while (m_iShoutFailures < kMaxShoutFailures) {
+        shout_close(m_pShout);
         m_iShoutStatus = shout_open(m_pShout);
         if (m_iShoutStatus == SHOUTERR_SUCCESS) {
             m_iShoutStatus = SHOUTERR_CONNECTED;
@@ -408,61 +396,74 @@ bool EngineShoutcast::processConnect() {
         if ((m_iShoutStatus == SHOUTERR_BUSY) ||
             (m_iShoutStatus == SHOUTERR_CONNECTED) ||
             (m_iShoutStatus == SHOUTERR_SUCCESS))
+        {
             break;
+        }
 
         m_iShoutFailures++;
-        qDebug() << "Streaming server failed connect. Failures:" << m_iShoutFailures;
+        qDebug() << "Streaming server failed connect. Failures:" << shout_get_error(m_pShout);
         sleep(1);
     }
-    if (m_iShoutFailures == iMaxTries) {
-        if (m_pShout) {
-            shout_close(m_pShout);
+
+    if (m_iShoutFailures < kMaxShoutFailures) {
+        m_iShoutFailures = 0;
+        int timeout = 0;
+        while (m_iShoutStatus == SHOUTERR_BUSY &&
+                timeout < kConnectRetries &&
+                m_pShoutcastEnabled->toBool()) {
+            setState(NETWORKSTREAMWORKER_STATE_WAITING);
+            qDebug() << "Connection pending. Sleeping...";
+            sleep(1);
+            m_iShoutStatus = shout_get_connected(m_pShout);
+            ++ timeout;
         }
-        setState(NETWORKSTREAMWORKER_STATE_ERROR);
+        if (m_iShoutStatus == SHOUTERR_CONNECTED) {
+            setState(NETWORKSTREAMWORKER_STATE_READY);
+            qDebug() << "***********Connected to streaming server...";
+
+            // Signal user also that we are connected
+            infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
+
+            if (m_pOutputFifo->readAvailable()) {
+                m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
+            }
+            m_threadWaiting = true;
+            m_pStatusCO->setAndConfirm(STATUSCO_CONNECTED);
+            return true;
+        } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
+            qDebug() << "EngineShoutcast::processConnect() socket error."
+                     << "Is socket already in use?";
+        } else if (m_pShoutcastEnabled->toBool()) {
+            qDebug() << "EngineShoutcast::processConnect() error:"
+                     << m_iShoutStatus << shout_get_error(m_pShout);
+        }
+    } else {
+        // no connection
+
+    }
+    shout_close(m_pShout);
+    if (m_encoder) {
+        m_encoder->flush();
+        delete m_encoder;
+        m_encoder = NULL;
+    }
+    if (m_pShoutcastEnabled->toBool()) {
+        m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
         m_pShoutcastEnabled->set(0);
-        m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
-        return false;
+    } else {
+        m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
     }
-
-    m_iShoutFailures = 0;
-    int timeout = 0;
-    while (m_iShoutStatus == SHOUTERR_BUSY && timeout < TIMEOUT) {
-        setState(NETWORKSTREAMWORKER_STATE_WAITING);
-        qDebug() << "Connection pending. Sleeping...";
-        sleep(1);
-        m_iShoutStatus = shout_get_connected(m_pShout);
-        ++ timeout;
-    }
-    if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-        setState(NETWORKSTREAMWORKER_STATE_READY);
-        qDebug() << "***********Connected to streaming server...";
-        m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_CONNECTED);
-
-        // Signal user also that we are connected
-        infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
-
-        m_bThreadQuit = false;
-        start();
-
-        return true;
-    }
-    setState(NETWORKSTREAMWORKER_STATE_ERROR);
-    // otherwise disable shoutcast in preferences
-    m_pShoutcastEnabled->set(0);
-    if (m_pShout) {
-        shout_close(m_pShout);
-        //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-    }
-    m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
     return false;
 }
 
 void EngineShoutcast::processDisconnect() {
+    qDebug() << "EngineShoutcast::processDisconnect()";
     if (isConnected()) {
+        m_threadWaiting = false;
         // We are conneced but shoutcast is disabled. Disconnect.
         shout_close(m_pShout);
-        m_pShoutcastStatus->set(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
         infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
+        m_iShoutStatus = SHOUTERR_UNCONNECTED;
     }
 
     if (m_encoder) {
@@ -474,56 +475,59 @@ void EngineShoutcast::processDisconnect() {
 
 void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
-    int ret;
-
-    if (!m_pShout)
+    if (!m_pShout) {
         return;
+    }
 
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         // Send header if there is one
         if (headerLen > 0) {
-            // We are already synced by EngineNetworkstream
-            ret = shout_send(m_pShout, header, headerLen);
-            if (ret != SHOUTERR_SUCCESS) {
-                qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-                if (m_iShoutFailures > 3) {
-                    if(!serverConnect()) {
-                        errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-                    }
-                }
-                else{
-                    m_iShoutFailures++;
-                }
-
+            if(!writeSingle(header, headerLen)) {
                 return;
-            } else {
-                //qDebug() << "yea I kinda sent header";
             }
         }
 
-        ret = shout_send(m_pShout, body, bodyLen);
-        if (ret != SHOUTERR_SUCCESS) {
-            qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-            if (m_iShoutFailures > 3) {
-                if(!serverConnect())
+        if(!writeSingle(body, bodyLen)) {
+            return;
+        }
+
+        ssize_t queuelen = shout_queuelen(m_pShout);
+        if (queuelen > 0) {
+            qDebug() << "shout_queuelen" << queuelen;
+            if (queuelen > kMaxNetworkCache) {
+                m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+                processDisconnect();
+                if (!processConnect()) {
                     errorDialog(tr("Lost connection to streaming server"),
                                 tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                }
             }
-            else{
-                m_iShoutFailures++;
-            }
-
-            return;
-        } else {
-            //qDebug() << "yea I kinda sent footer";
         }
-        if (shout_queuelen(m_pShout) > 0) {
-            qDebug() << "DEBUG: queue length:" << (int)shout_queuelen(m_pShout);
-        }
-    } else {
-        qDebug() << "Error connecting to streaming server:" << shout_get_error(m_pShout);
-        // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
+}
+
+bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
+    // We are already synced by EngineNetworkstream
+    int ret = shout_send_raw(m_pShout, data, len);
+    if (ret < SHOUTERR_SUCCESS && ret != SHOUTERR_BUSY) {
+        // in case of bussy, frames are queued and queue is checked below
+        qDebug() << "EngineShoutcast::write() header error:"
+                 << ret << shout_get_error(m_pShout);
+        if (m_iShoutFailures > kMaxShoutFailures) {
+            m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
+            processDisconnect();
+            if (!processConnect()) {
+                errorDialog(tr("Lost connection to streaming server"),
+                            tr("Please check your connection to the Internet and verify that your username and password are correct."));
+            }
+        } else{
+            m_iShoutFailures++;
+        }
+        return false;
+    } else {
+        m_iShoutFailures = 0;
+    }
+    return true;
 }
 
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
@@ -535,12 +539,13 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     // If we aren't connected or the user has changed their preferences,
     // disconnect, update from prefs, and reconnect.
     if (m_pShoutcastNeedUpdateFromPrefs->toBool()) {
+        m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
         processDisconnect();
 
         // Initialize/update the encoder and libshout setup.
         updateFromPreferences();
 
-        if (serverConnect()) {
+        if (processConnect()) {
             infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
         } else {
             errorDialog(tr("Mixxx could not connect to streaming server"),
@@ -733,25 +738,26 @@ void EngineShoutcast::run() {
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
 
-    setState(NETWORKSTREAMWORKER_STATE_BUSY);
-    processConnect();
+    ignoreSigpipe();
 
-    setState(NETWORKSTREAMWORKER_STATE_WAITING);
     DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
         return;
     }
-    if (m_pOutputFifo->readAvailable()) {
-        m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
+
+    setState(NETWORKSTREAMWORKER_STATE_BUSY);
+    if (!processConnect()) {
+        errorDialog(tr("Can't connect to streaming server"),
+                    tr("Please check your connection to the Internet and verify that your username and password are correct."));
+        return;
     }
-    m_threadWaiting = true;
-    setState(NETWORKSTREAMWORKER_STATE_READY);
+
     for(;;) {
         m_readSema.acquire();
         // Check to see if Shoutcast is enabled, and pass the samples off to be
         // broadcast if necessary.
-        bool prefEnabled = m_pShoutcastEnabled->toBool();
-        if (m_bThreadQuit || !prefEnabled) {
+        if (!m_pShoutcastEnabled->toBool()) {
             m_threadWaiting = false;
+            m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
             processDisconnect();
             return;
         }
@@ -777,3 +783,38 @@ bool EngineShoutcast::threadWaiting() {
     return m_threadWaiting;
 }
 
+void EngineShoutcast::ignoreSigpipe()
+{
+    // shout_send_raw() can cause SIGPIPE, which is passed to this theread
+    // and which will finally crash Mixxx if it remains unhandled.
+    // Each thread has its own signal mask, so it is safe to do this for the
+    // shoutcast thread only
+    // http://www.microhowto.info/howto/ignore_sigpipe_without_affecting_other_threads_in_a_process.html
+    sigset_t sigpipe_mask;
+    sigemptyset(&sigpipe_mask);
+    sigaddset(&sigpipe_mask, SIGPIPE);
+    sigset_t saved_mask;
+    if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) == -1) {
+        qDebug() << "EngineShoutcast::ignoreSigpipe() failed";
+    }
+}
+
+
+void EngineShoutcast::slotStatusCO(double v) {
+    // Ignore external sets "status"
+    Q_UNUSED(v);
+    qWarning() << "WARNING:"
+            << SHOUTCAST_PREF_KEY << "\"status\" is a read-only control.";
+}
+
+void EngineShoutcast::slotEnableCO(double v) {
+    if (v > 1.0) {
+        // Wrap around manually .
+        // Wrapping around in WPushbutton does not work
+        // since the status button has 4 states, but this CO is bool
+        m_pShoutcastEnabled->set(0.0);
+    }
+    if (v > 0.0) {
+        serverConnect();
+    }
+}
