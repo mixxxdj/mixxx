@@ -361,7 +361,7 @@ void EngineShoutcast::updateFromPreferences() {
 }
 
 bool EngineShoutcast::serverConnect() {
-    start();
+    start(QThread::HighPriority);
     setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
     return true;
 }
