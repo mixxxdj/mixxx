@@ -739,7 +739,7 @@ StantonSCS3m.Agent = function(device) {
 
 	function throttle() {
 		if (!throttling) {
-			throttling = engine.beginTimer(10, tick);
+			throttling = engine.beginTimer(20, tick);
 		}
 	}
 
