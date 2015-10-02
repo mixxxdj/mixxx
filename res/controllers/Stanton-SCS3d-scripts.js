@@ -996,7 +996,14 @@ SCS3D.Agent = function(device) {
 
 	function LoopPatch(rolling) {
 		return function(channel) {
-			var cancel = setConst(channel, 'reloop_exit', 1);
+			// Keeps the current loop length
+			var currentLen = false;
+
+			var cancel = function() {
+				if (currentLen) setConst(channel, 'reloop_exit', 1)();
+				currentLen = false;
+			};
+
 			var setup = function(engage, cancelIfEngaged) {
 				comm.sysex(device.modeset.circle);
 				tell(rolling ? device.mode.loop.light.blue : device.mode.loop.light.red);
@@ -1004,7 +1011,7 @@ SCS3D.Agent = function(device) {
 				deckLights();
 
 				// Available loop lengths are powers of two in the range [-5..6]
-				var lengths = [0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64];
+				var lengths = ['0.03125', '0.0625', '0.125', '0.25', '0.5', '1', '2', '4', '8', '16', '32', '64'];
 				expect(device.slider.circle.slide.abs, function(value) {
 					// Map to range [-63..64] where 0 is top center
 					var lr = ((value + 64) % 128 - 63);
@@ -1014,6 +1021,8 @@ SCS3D.Agent = function(device) {
 					var len = lengths[4 + exp]; // == Math.pow(2, exp);
 
 					if (len == undefined) return;
+					if (len == currentLen) return;
+					currentLen = len;
 
 					if (rolling) {
 						set(channel, 'beatlooproll_'+len+'_activate')(true);
@@ -1030,11 +1039,15 @@ SCS3D.Agent = function(device) {
 				watchmulti(engineControls, function(values) {
 					var activeIndex = false;
 					lengths.forEach(function(len, index) {
-						if (values[index]) activeIndex = index;
+						if (values[index]) {
+							currentLen = len;
+							activeIndex = index;
+						}
 					});
 					if (activeIndex === false) {
 						// Turn off all lights
 						Bar(device.slider.circle.meter)(0);
+						currentLen = false;
 					} else {
 						Centerbar(device.slider.circle.meter)(
 							(12.5 - activeIndex) / 16
@@ -1045,9 +1058,14 @@ SCS3D.Agent = function(device) {
 				// Rolling loops are released as soon as the finger is taken off the circle
 				// All loops are released when touching center
 				// This covers the case when you are in rolling mode but a nonrolling loop is playing and you want to release that one by touching center
-				expect(device.slider.circle.release, cancelIfEngaged);
-				expect(device.slider.middle.release, cancel);
-
+				if (rolling) {
+					expect(device.slider.circle.release, cancelIfEngaged);
+					expect(device.slider.middle.release, cancel);
+				} else {
+					// In normal loop mode, touching center when the loop is
+					// not active engages it
+					expect(device.slider.middle.release, setConst(channel, 'reloop_exit', 1));
+				}
 
 				watchmulti({
 					enabled: [channel, 'loop_enabled'],
@@ -1089,7 +1107,7 @@ SCS3D.Agent = function(device) {
 				Autocancel('rolling', setup, cancel);
 			} else {
 				// Normal loops are canceled only by touching center
-				setup(false, cancel);
+				setup(false, false);
 			}
 		}
 	}
