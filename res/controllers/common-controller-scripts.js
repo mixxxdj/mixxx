@@ -92,6 +92,37 @@ script.deckFromGroup = function (group) {
 }
 
 /* -------- ------------------------------------------------------
+     script.bindConnections
+   Purpose: Binds multiple controls at once. See an example in Pioneer-DDJ-SB-scripts.js
+   Input:   The group whose controls are to be bound and an object
+            (controlstToFunctions) where the properties' names are
+            controls names and the values are the functions those
+            controls will be bound to.
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.bindConnections = function (group, controlsToFunctions, remove) {
+    var control;
+    remove = (remove === undefined) ? false : remove;
+
+    for (control in controlsToFunctions) {
+        engine.connectControl(group, control, controlsToFunctions[control], remove);
+        if (!remove) {
+            engine.trigger(group, control);
+        }
+    }
+}
+
+/* -------- ------------------------------------------------------
+     script.toggleControl
+   Purpose: Toggles an engine value
+   Input:   Group and control names
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.toggleControl = function (group, control) {
+    engine.setValue(group, control, !(engine.getValue(group, control)));
+}
+
+/* -------- ------------------------------------------------------
      script.absoluteLin
    Purpose: Maps an absolute linear control value to a linear Mixxx control
             value (like Volume: 0..1)

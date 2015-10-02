@@ -101,8 +101,8 @@ bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
                 }
             }
             if (!processTrack) {
-                it.remove();
                 progress100List.append(pTrack);
+                it.remove(); // since pTrack is a reference it is invalid now.
             } else {
                 progress0List.append(pTrack);
             }
@@ -284,7 +284,7 @@ void AnalyserQueue::stop() {
 }
 
 void AnalyserQueue::run() {
-    unsigned static id = 0; //the id of this thread, for debugging purposes
+    unsigned static id = 0; // the id of this thread, for debugging purposes
     QThread::currentThread()->setObjectName(QString("AnalyserQueue %1").arg(++id));
 
     // If there are no analyzers, don't waste time running.
@@ -380,7 +380,7 @@ void AnalyserQueue::emptyCheck() {
 }
 
 // This is called from the AnalyserQueue thread
-void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
+void AnalyserQueue::emitUpdateProgress(TrackPointer track, int progress) {
     if (!m_exit) {
         // First tryAcqire will have always success because sema is initialized with on
         // The following tries will success if the previous signal was processed in the GUI Thread
@@ -394,7 +394,7 @@ void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
         } else {
             m_progressInfo.sema.acquire();
         }
-        m_progressInfo.current_track = tio;
+        m_progressInfo.current_track = track;
         m_progressInfo.track_progress = progress;
         m_progressInfo.queue_size = m_queue_size;
         emit(updateProgress());
