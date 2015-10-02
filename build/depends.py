@@ -687,7 +687,6 @@ class MixxxCore(Feature):
 
                    "metadata/trackmetadata.cpp",
                    "metadata/trackmetadatataglib.cpp",
-                   "metadata/audiotagger.cpp",
 
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",

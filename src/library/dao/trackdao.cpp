@@ -10,7 +10,6 @@
 
 #include "library/dao/trackdao.h"
 
-#include "metadata/audiotagger.h"
 #include "library/queryutil.h"
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"
@@ -275,9 +274,6 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
             //qDebug() << "TrackDAO::saveTrack. Dirty. Calling update";
             updateTrack(pTrack);
 
-            // Write audio meta data, if enabled in the preferences
-            // TODO(DSC) Only wite tag if file Metatdata is dirty
-            writeMetadataToFile(pTrack);
 
             //qDebug() << this << "Dirty tracks remaining after clean save:" << m_dirtyTracks.size();
         } else {
@@ -1779,19 +1775,6 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
                           "WHERE id in (%1)").arg(trackIds.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-    }
-}
-
-void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
-    if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-
-        Mixxx::TrackMetadata trackMetadata;
-        pTrack->getMetadata(&trackMetadata);
-
-        AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
-        if (OK != tagger.save(trackMetadata)) {
-            qWarning() << "Failed to write track metadata:" << pTrack->getLocation();
-        }
     }
 }
 

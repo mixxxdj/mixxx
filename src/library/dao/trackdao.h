@@ -198,8 +198,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack);
     void bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocationId);
 
-    void writeMetadataToFile(TrackInfoObject* pTrack);
-
     QSqlDatabase& m_database;
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;
