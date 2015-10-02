@@ -72,6 +72,7 @@ class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
 class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
   public:
     ControlAudioTaperPotBehavior(double minDB, double maxDB,
+                                 double zeroDbParameter,
                                  double scaleStartParameter);
     virtual ~ControlAudioTaperPotBehavior();
 
@@ -83,6 +84,8 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
                                            ControlDoublePrivate* pControl);
 
   protected:
+    // a knob position between 0 and 1 where the gain is 1 (0dB)
+    double m_dZeroDbParameter;
     // the Start value of the pure db scale it cranked to -Infinity by the
     // linear part of the AudioTaperPot
     double m_minDB;

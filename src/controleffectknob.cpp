@@ -22,11 +22,11 @@ void ControlEffectKnob::setBehavior(EffectManifestParameter::ControlHint type,
             if (dMaxValue == 1.0) {
                 // Volume like control
                 m_pControl->setBehavior(
-                        new ControlAudioTaperPotBehavior(-20, 0, dScaleStartParameter));
+                        new ControlAudioTaperPotBehavior(-20, 0, 1, dScaleStartParameter));
             } else if (dMaxValue > 1.0) {
                 // Gain like control
                 m_pControl->setBehavior(
-                        new ControlAudioTaperPotBehavior(-12, ratio2db(dMaxValue), dScaleStartParameter));
+                        new ControlAudioTaperPotBehavior(-12, ratio2db(dMaxValue), 0.5, dScaleStartParameter));
             } else {
                 m_pControl->setBehavior(
                         new ControlLogPotmeterBehavior(dMinValue, dMaxValue, dScaleStartParameter, -40));

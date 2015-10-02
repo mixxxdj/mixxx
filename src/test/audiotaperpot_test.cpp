@@ -22,7 +22,7 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         const double minDB = -6;
         const double maxDB = 6;
         const double scaleStartParameter = 0.5;
-        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB, maxDB, scaleStartParameter);
+        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB, maxDB, scaleStartParameter, scaleStartParameter);
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_EQ(0.0, catpb->parameterToValue(0));
         // Parameter 0 is always 0 (-Infinity)
@@ -44,7 +44,7 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         const double minDB = 0;
         const double maxDB = 6;
         const double scaleStartParameter = 0.5;
-        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB, maxDB, scaleStartParameter);
+        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB, maxDB, scaleStartParameter, scaleStartParameter);
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_EQ(0.0, catpb->parameterToValue(0));
         // Parameter 0 is always 0 (-Infinity)
@@ -66,7 +66,7 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         const double minDB = -6;
         const double maxDB = 0;
         const double scaleStartParameter = 1;
-        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB, maxDB, scaleStartParameter);
+        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB, maxDB, scaleStartParameter, scaleStartParameter);
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_EQ(0.0, catpb->parameterToValue(0));
         // Parameter 0 is always 0 (-Infinity)

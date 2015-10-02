@@ -3,6 +3,13 @@
 
 ControlAudioTaperPot::ControlAudioTaperPot(ConfigKey key,
                                            double minDB, double maxDB,
+										   double zeroDbParameter)
+        : ControlAudioTaperPot(key, minDB, maxDB, zeroDbParameter, zeroDbParameter) {
+}
+
+ControlAudioTaperPot::ControlAudioTaperPot(ConfigKey key,
+                                           double minDB, double maxDB,
+										   double zeroDbParameter,
                                            double scaleStartParameter)
         : ControlPotmeter(key) {
 
@@ -13,6 +20,6 @@ ControlAudioTaperPot::ControlAudioTaperPot(ConfigKey key,
     if (m_pControl) {
         m_pControl->setBehavior(
                 new ControlAudioTaperPotBehavior(minDB, maxDB,
-                		scaleStartParameter));
+                        zeroDbParameter, scaleStartParameter));
     }
 }
