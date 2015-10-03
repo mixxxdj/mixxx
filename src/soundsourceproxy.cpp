@@ -39,17 +39,6 @@ const QStringList SOUND_SOURCE_PLUGIN_FILENAME_PATTERN("libsoundsource*");
 const QStringList SOUND_SOURCE_PLUGIN_FILENAME_PATTERN; // empty
 #endif
 
-SecurityTokenPointer openSecurityToken(QString qFilename,
-        SecurityTokenPointer pToken) {
-    if (pToken.isNull()) {
-        // Open a security token for the file if we are in a sandbox.
-        QFileInfo info(qFilename);
-        return Sandbox::openSecurityToken(info, true);
-    } else {
-        return pToken;
-    }
-}
-
 QList<QDir> getSoundSourcePluginDirectories() {
     QList<QDir> pluginDirs;
 
@@ -123,13 +112,9 @@ QList<QDir> getSoundSourcePluginDirectories() {
 }
 
 SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
-    : m_filePath(pTrack->getCanonicalLocation()),
+    : m_pTrack(pTrack),
+      m_filePath(pTrack->getCanonicalLocation()),
       m_url(QUrl::fromLocalFile(m_filePath)),
-      m_pTrack(pTrack),
-      m_pSecurityToken(
-              openSecurityToken(
-                      pTrack->getLocation(),
-                      pTrack->getSecurityToken())),
       m_pSoundSource(initialize(pTrack->getLocation())) {
 }
 

@@ -5,8 +5,6 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
-#include "util/sandbox.h"
-
 // Creates sound sources for filenames or tracks
 class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
@@ -78,11 +76,10 @@ private:
 
     static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
 
+    const TrackPointer m_pTrack;
+
     const QString m_filePath;
     const QUrl m_url;
-
-    const TrackPointer m_pTrack;
-    const SecurityTokenPointer m_pSecurityToken;
 
     const Mixxx::SoundSourcePointer m_pSoundSource;
 
