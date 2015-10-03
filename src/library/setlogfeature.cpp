@@ -210,7 +210,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                             TrackPointer track = m_pPlaylistTableModel->getTrack(index);
                             // Do not update the playcount, just set played
                             // status.
-                            track->setPlayed(true);
+                            track->setPlayed();
                         }
                     }
 
@@ -256,7 +256,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 
     // If the track is not present in the recent tracks list, mark it
     // played and update its playcount.
-    currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
+    currentPlayingTrack->setPlayedAndUpdatePlayCount();
 
     // We can only add tracks that are Mixxx library tracks, not external
     // sources.

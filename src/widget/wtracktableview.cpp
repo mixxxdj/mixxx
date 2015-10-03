@@ -129,6 +129,7 @@ WTrackTableView::~WTrackTableView() {
 
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
+    delete m_pSaveMetadataAct;
     delete m_pAddToPreviewDeck;
     delete m_pAutoDJAct;
     delete m_pAutoDJTopAct;
@@ -403,6 +404,10 @@ void WTrackTableView::createActions() {
     m_pReloadMetadataAct = new QAction(tr("Reload Metadata from File"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
+
+    m_pSaveMetadataAct = new QAction(tr("Save Metadata into File"), this);
+    connect(m_pSaveMetadataAct, SIGNAL(triggered()),
+            this, SLOT(slotSaveTrackMetadata()));
 
     m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Get Metadata from MusicBrainz"),this);
     connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
@@ -872,10 +877,11 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
     m_pMenu->addSeparator();
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_FILEMETADATA)) {
         m_pMenu->addAction(m_pReloadMetadataAct);
         m_pReloadMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
+        m_pMenu->addAction(m_pSaveMetadataAct);
     }
 
     // Cover art menu only applies if at least one track is selected.
@@ -893,7 +899,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             last.row(), m_iTrackLocationColumn).data().toString();
         info.coverLocation = last.sibling(
             last.row(), m_iCoverLocationColumn).data().toString();
-        m_pCoverMenu->setCoverArt(TrackPointer(), info);
+        m_pCoverMenu->setCoverArt(QString(), info);
         m_pMenu->addMenu(m_pCoverMenu);
     }
 
@@ -1295,7 +1301,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
 }
 
 void WTrackTableView::slotReloadTrackMetadata() {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_FILEMETADATA)) {
         return;
     }
 
@@ -1310,7 +1316,30 @@ void WTrackTableView::slotReloadTrackMetadata() {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->parse(false);
+            SoundSourceProxy(pTrack).loadTrackMetadata(true);
+        }
+    }
+}
+
+void WTrackTableView::slotSaveTrackMetadata() {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_FILEMETADATA)) {
+        return;
+    }
+
+    QModelIndexList indices = selectionModel()->selectedRows();
+
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            // Tags will be written to the file later after all references
+            // of this track in Mixxx have been released.
+            pTrack->markDirty();
         }
     }
 }
@@ -1327,7 +1356,7 @@ void WTrackTableView::slotResetPlayed() {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->setTimesPlayed(0);
+            pTrack->resetTimesPlayed();
         }
     }
 }
@@ -1547,7 +1576,7 @@ void WTrackTableView::slotScaleBpm(int scale) {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        if (!track->hasBpmLock()) { //bpm is not locked
+        if (!track->isBpmLocked()) { //bpm is not locked
             BeatsPointer beats = track->getBeats();
             if (beats != NULL) {
                 beats->scale(scalingFactor);
@@ -1569,7 +1598,7 @@ void WTrackTableView::lockBpm(bool lock) {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        track->setBpmLock(lock);
+        track->setBpmLocked(lock);
     }
 }
 
@@ -1584,7 +1613,7 @@ void WTrackTableView::slotClearBeats() {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        if (!track->hasBpmLock()) {
+        if (!track->isBpmLocked()) {
             track->setBeats(BeatsPointer());
         }
     }

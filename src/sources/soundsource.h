@@ -15,9 +15,12 @@ public:
         return m_type;
     }
 
+    // Default implementations for reading/writing track metadata.
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override;
+    Result writeTrackMetadata(
+            const TrackMetadata& trackMetadata) const override;
 
     // Opens the AudioSource for reading audio data.
     //

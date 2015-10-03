@@ -1,5 +1,5 @@
-#ifndef TRACKMETADATA_H
-#define TRACKMETADATA_H
+#ifndef MIXXX_TRACKMETADATA_H
+#define MIXXX_TRACKMETADATA_H
 
 #include <QDateTime>
 
@@ -90,6 +90,14 @@ public:
         m_key = key;
     }
 
+    // URL (used in promo track)
+    inline const QString& getUrl() const {
+        return m_url;
+    }
+    inline void setUrl(QString url) {
+        m_url = url;
+    }
+
     // #channels
     inline int getChannels() const {
         return m_channels;
@@ -121,6 +129,8 @@ public:
     inline void setDuration(int duration) {
         m_duration = duration;
     }
+    // Returns the duration as a string: H:MM:SS
+    static QString formatDuration(int duration);
 
     // beats / minute
     static const double kBpmUndefined;
@@ -168,12 +178,14 @@ public:
     static double parseBpm(const QString& sBpm, bool* pValid = 0);
     static QString formatBpm(double bpm);
     static QString formatBpm(int bpm);
+    static double normalizeBpm(double bpm);
 
     // Parse and format replay gain metadata according to the
     // ReplayGain 1.0 specification.
     // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_1.0_specification
     static double parseReplayGain(QString sReplayGain, bool* pValid = 0);
     static QString formatReplayGain(double replayGain);
+    static double normalizeReplayGain(double replayGain);
 
     // Parse an format date/time values according to ISO 8601
     inline static QDate parseDate(QString str) {
@@ -197,29 +209,38 @@ public:
     static QString reformatYear(QString year);
 
 private:
-    QString m_artist;
-    QString m_title;
+    // String fields (in alphabetical order)
     QString m_album;
     QString m_albumArtist;
-    QString m_genre;
+    QString m_artist;
     QString m_comment;
-    QString m_year;
-    QString m_trackNumber;
     QString m_composer;
+    QString m_genre;
     QString m_grouping;
     QString m_key;
+    QString m_title;
+    QString m_trackNumber;
+    QString m_year;
+    QString m_url;
 
-    // The following members need to be initialized
-    // explicitly in the constructor! Otherwise their
-    // value is undefined.
-    int m_channels;
-    int m_sampleRate;
-    int m_bitrate;
-    int m_duration;
+    // Floating-point fields (in alphabetical order)
     double m_bpm;
     double m_replayGain;
+
+    // Integer fields (in alphabetical order)
+    int m_bitrate; // kbit/s
+    int m_channels;
+    int m_duration; // seconds
+    int m_sampleRate; // Hz
 };
+
+bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs);
+
+inline
+bool operator!=(const TrackMetadata& lhs, const TrackMetadata& rhs) {
+    return !(lhs == rhs);
+}
 
 }
 
-#endif
+#endif // MIXXX_TRACKMETADATA_H

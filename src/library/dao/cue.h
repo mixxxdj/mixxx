@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QSharedPointer>
 
 #include "track/trackid.h"
 
@@ -70,5 +71,7 @@ class Cue : public QObject {
     friend class TrackInfoObject;
     friend class CueDAO;
 };
+
+typedef QSharedPointer<Cue> CuePointer;
 
 #endif /* CUE_H */

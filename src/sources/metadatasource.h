@@ -19,6 +19,10 @@ public:
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const = 0;
 
+    // Update track metadata of the source.
+    virtual Result writeTrackMetadata(
+            const TrackMetadata& trackMetadata) const = 0;
+
 protected:
     virtual ~MetadataSource() {}
 };

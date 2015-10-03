@@ -92,7 +92,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         }
     }
 
-    QList<TrackId> trackIds = m_trackDAO.addTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_trackDAO.addMultipleTracks(fileInfoList, true);
 
     int tracksAdded = m_playlistDao.insertTracksIntoPlaylist(
         trackIds, m_iPlaylistId, position);
@@ -240,7 +240,7 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_REORDER
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_RELOADMETADATA
+            | TRACKMODELCAPS_FILEMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOPREVIEWDECK

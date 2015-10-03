@@ -1,5 +1,7 @@
 #include "library/scanner/importfilestask.h"
 
+#include "trackinfocache.h"
+#include "soundsourceproxy.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/coverartutils.h"
 #include "util/timer.h"
@@ -41,16 +43,24 @@ void ImportFilesTask::run() {
             // directory hash has changed).
             emit(trackExists(filePath));
         } else {
-            // Parse the track including cover art from metadata. This is a new
-            // (never before seen) track so it is safe to parse cover art
-            // without checking if we have cover art that is USER_SELECTED. If
-            // this changes in the future you MUST check that the cover art is
-            // not USER_SELECTED first.
-            TrackPointer pTrack = TrackPointer(
-                new TrackInfoObject(filePath, m_pToken, true, true));
+            const TrackRef trackRef(file);
+            TrackInfoCacheLocker cacheLocker(
+                    TrackInfoCache::instance().resolve(trackRef));
+            TrackPointer pTrack(cacheLocker.getResolvedTrack());
+            if (pTrack.isNull()) {
+                qWarning() << "ImportFilesTask: Skipping inaccessible file"
+                        << trackRef;
+                continue;
+            }
+
+            SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
 
             // If cover art is not found in the track metadata, populate from
             // possibleCovers.
+            // This is a new (never before seen) track so it is safe
+            // to parse cover art without checking if we have cover art
+            // that is USER_SELECTED. If this changes in the future you
+            // MUST check that the cover art is not USER_SELECTED first.
             if (pTrack->getCoverArt().image.isNull()) {
                 CoverArt art = CoverArtUtils::selectCoverArtForTrack(
                     pTrack.data(), m_possibleCovers);
@@ -58,6 +68,9 @@ void ImportFilesTask::run() {
                     pTrack->setCoverArt(art);
                 }
             }
+
+            // Unlock the cache before emitting any signals
+            cacheLocker.unlockCache();
 
             emit(addNewTrack(pTrack));
         }

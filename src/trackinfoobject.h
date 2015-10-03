@@ -1,84 +1,59 @@
-/***************************************************************************
-                          trackinfoobject.h  -  description
-                             -------------------
-    begin                : 10 02 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef TRACKINFOOBJECT_H
 #define TRACKINFOOBJECT_H
 
 #include <QAtomicInt>
-#include <QDateTime>
-#include <QDomNode>
 #include <QFileInfo>
 #include <QList>
 #include <QMutex>
 #include <QObject>
 #include <QSharedPointer>
-#include <QString>
-#include <QWeakPointer>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
+#include "metadata/trackmetadata.h"
 #include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/trackid.h"
-#include "util/sandbox.h"
+#include "track/trackref.h"
+#include "track/playcounter.h"
+#include "util/defs.h" // Result
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
-class Cue;
+class SoundSourceProxy;
 
 class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
-namespace Mixxx {
-    class TrackMetadata;
-}
-
+// NOTE(uklotzde) TrackInfoObject is thread-safe. All return values must
+// be passed by-value instead of const-ref to avoid race conditions!
 class TrackInfoObject : public QObject {
     Q_OBJECT
+
   public:
-    // Initialize a new track with the filename.
-    TrackInfoObject(const QString& file="",
-                    SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true,
-                    bool parseCoverArt=false);
-    // Initialize track with a QFileInfo class
-    TrackInfoObject(const QFileInfo& fileInfo,
-                    SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true,
-                    bool parseCoverArt=false);
-    // Creates a new track given information from the xml file.
-    TrackInfoObject(const QDomNode &);
-    virtual ~TrackInfoObject();
+    TrackInfoObject(const TrackInfoObject&) = delete;
+    TrackInfoObject(TrackInfoObject&&) = delete;
 
-    // Parse file metadata. If no file metadata is present, attempts to extract
-    // artist and title information from the filename.
-    void parse(bool parseCoverArt);
-
-    // Returns the duration in seconds
-    int getDuration() const;
-    // Set duration in seconds
-    void setDuration(int);
-    // Returns the duration as a string: H:MM:SS
-    QString getDurationStr() const;
-
-    // Accessors for various stats of the file on disk. These are auto-populated
-    // when the TIO is constructed, or when setLocation() is called.
+    // Creates a new empty temporary instance for fake tracks or for
+    // testing purposes. The resulting track will neither be stored
+    // in the database nor will the metadata of the corresponding file
+    // be updated.
+    static TrackPointer newTemporary(
+            const QFileInfo& fileInfo = QFileInfo(),
+            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
+    // Creates a new temporary instance from another track that references
+    // the same file. Please remember that the corresponding file might
+    // be modified after all references to the original track have been
+    // dropped. To be safe just keep the pointer to the original track
+    // for the lifetime of this temporary instance.
+    static TrackPointer newTemporaryForSameFile(
+            const TrackPointer& pTrack);
+    // Creates a dummy instance for testing purposes.
+    static TrackPointer newDummy(
+            const QFileInfo& fileInfo,
+            TrackId trackId);
 
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
@@ -92,79 +67,97 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
-    Q_PROPERTY(QString bpmFormatted READ getBpmStr STORED false)
+    Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
-    Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
+    Q_PROPERTY(QString durationFormatted READ getDurationText STORED false)
 
+    QFileInfo getFileInfo() const {
+        // Copying a QFileInfo is thread-safe (implicit sharing), no locking needed.
+        return m_fileInfo;
+    }
+    SecurityTokenPointer getSecurityToken() const {
+        // Copying a QSharedPointer is thread-safe, no locking needed.
+        return m_pSecurityToken;
+    }
 
+    TrackId getId() const;
+
+    TrackRef createRef() const;
+
+    // Accessors for various stats of the file on disk.
     // Returns absolute path to the file, including the filename.
     QString getLocation() const;
     QString getCanonicalLocation() const;
-    QFileInfo getFileInfo() const;
-    SecurityTokenPointer getSecurityToken();
-
     // Returns the absolute path to the directory containing the file
     QString getDirectory() const;
-    // Returns the filename of the file.
-    QString getFilename() const;
-    // Returns the length of the file in bytes
-    int getLength() const;
-    // Returns whether the file exists on disk or not. Updated as of the time
-    // the TrackInfoObject is created, or when setLocation() is called.
+    // Returns the name of the file.
+    QString getFileName() const;
+    // Returns the size of the file in bytes
+    int getFileSize() const;
+    // Returns file modified datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileModifiedTime() const;
+    // Returns file creation datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileCreationTime() const;
+    // Returns whether the file exists on disk or not.
     bool exists() const;
 
-    // Returns ReplayGain
-    float getReplayGain() const;
-    // Set ReplayGain
-    void setReplayGain(float);
-    // Returns BPM
-    double getBpm() const;
-    // Set BPM
-    void setBpm(double);
-    // Returns BPM as a string
-    QString getBpmStr() const;
-    // A track with a locked BPM will not be re-analyzed by the beats or bpm
-    // analyzer.
-    void setBpmLock(bool hasLock);
-    bool hasBpmLock() const;
-    bool getHeaderParsed() const;
-    void setHeaderParsed(bool parsed = true);
-    // Returns the user comment
-    QString getComment() const;
-    // Sets the user commnet
-    void setComment(const QString&);
-    // Returns the file type
-    QString getType() const;
     // Sets the type of the string
     void setType(const QString&);
-    // Returns the bitrate
-    int getBitrate() const;
-    // Returns the bitrate as a string
-    QString getBitrateStr() const;
-    // Sets the bitrate
-    void setBitrate(int);
+    // Returns the file type
+    QString getType() const;
+
+    void setChannels(int iChannels);
+    // Get number of channels
+    int getChannels() const;
+
     // Set sample rate
     void setSampleRate(int iSampleRate);
     // Get sample rate
     int getSampleRate() const;
     // Set number of channels
-    void setChannels(int iChannels);
-    // Get number of channels
-    int getChannels() const;
-    // Output a formatted string with all the info
-    QString getInfo() const;
 
-    QDateTime getDateAdded() const;
+    // Sets the bitrate
+    void setBitrate(int);
+    // Returns the bitrate
+    int getBitrate() const;
+    // Returns the bitrate as a string
+    QString getBitrateStr() const;
+
+    // Indicates if track metadata has been parsed from the file
+    bool isTrackMetadataParsed() const;
+    // This function must only be called from TrackDAO! The visibility
+    // is 'public' instead of 'private' for technical reasons.
+    void setTrackMetadataParsed(bool parsedFromFile = true);
+
+    // Set duration in seconds
+    void setDuration(int);
+    // Returns the duration in seconds
+    int getDuration() const;
+    // Returns the duration as a string: H:MM:SS
+    QString getDurationText() const;
+
+    // Set BPM
+    double setBpm(double);
+    // Returns BPM
+    double getBpm() const;
+    // Returns BPM as a string
+    QString getBpmText() const;
+
+    // A track with a locked BPM will not be re-analyzed by the beats or bpm
+    // analyzer.
+    void setBpmLocked(bool bpmLocked = true);
+    bool isBpmLocked() const;
+
+    // Set ReplayGain
+    double setReplayGain(double replayGain);
+    // Returns ReplayGain
+    double getReplayGain() const;
+
     void setDateAdded(const QDateTime& dateAdded);
-
-    // Returns file modified datetime. Limited by the accuracy of what Qt
-    // QFileInfo gives us.
-    QDateTime getFileModifiedTime() const;
-
-    // Returns file creation datetime. Limited by the accuracy of what Qt
-    // QFileInfo gives us.
-    QDateTime getFileCreationTime() const;
+    QDateTime getDateAdded() const;
 
     // Getter/Setter methods for metadata
     // Return title
@@ -191,6 +184,10 @@ class TrackInfoObject : public QObject {
     QString getGenre() const;
     // Set genre
     void setGenre(const QString&);
+    // Returns the user comment
+    QString getComment() const;
+    // Sets the user commnet
+    void setComment(const QString&);
     // Return composer
     QString getComposer() const;
     // Set composer
@@ -203,20 +200,24 @@ class TrackInfoObject : public QObject {
     QString getTrackNumber() const;
     // Set Track Number
     void setTrackNumber(const QString&);
-    // Return number of times the track has been played
+
+    PlayCounter getPlayCounter() const;
+    void setPlayCounter(const PlayCounter& playCounter);
+
+    // Set played status without affecting the play count
+    void setPlayed(bool bPlayed = true);
+    // Returns true if the  track has been played during this session
+    bool isPlayed() const;
+
+    // Returns the number of times the track has been played
     int getTimesPlayed() const;
     // Set number of times the track has been played
-    void setTimesPlayed(int t);
-    // Increment times played with one
-    void incTimesPlayed();
-    // Returns true if track has been played this instance
-    bool getPlayed() const;
-    // Set played status and increment or decrement playcount.
-    void setPlayedAndUpdatePlaycount(bool);
-    // Set played status without affecting the playcount
-    void setPlayed(bool bPlayed);
+    void setTimesPlayed(int timesPlayed);
+    // Resets the play count back to 0
+    void resetTimesPlayed();
 
-    TrackId getId() const;
+    // Set played status and increment or decrement play count
+    void setPlayedAndUpdatePlayCount(bool bPlayed = true);
 
     // Returns rating
     int getRating() const;
@@ -227,6 +228,9 @@ class TrackInfoObject : public QObject {
     QString getURL();
     // Set URL for track
     void setURL(const QString& url);
+
+    // Output a formatted string with artist and title.
+    QString getInfo() const;
 
     ConstWaveformPointer getWaveform();
     void setWaveform(ConstWaveformPointer pWaveform);
@@ -243,18 +247,12 @@ class TrackInfoObject : public QObject {
     float getCuePoint();
 
     // Calls for managing the track's cue points
-    Cue* addCue();
-    void removeCue(Cue* cue);
-    const QList<Cue*>& getCuePoints();
-    void setCuePoints(QList<Cue*> cuePoints);
+    CuePointer addCue();
+    void removeCue(const CuePointer& pCue);
+    QList<CuePointer> getCuePoints() const;
+    void setCuePoints(const QList<CuePointer>& cuePoints);
 
     bool isDirty();
-
-    // Returns true if the track location has changed
-    bool locationChanged();
-
-    // Set the track's full file path
-    void setLocation(const QString& location);
 
     // Get the track's Beats list
     BeatsPointer getBeats() const;
@@ -262,14 +260,17 @@ class TrackInfoObject : public QObject {
     // Set the track's Beats
     void setBeats(BeatsPointer beats);
 
-    void setKeys(Keys keys);
-    const Keys& getKeys() const;
+    void resetKeys() {
+        setKeys(Keys());
+    }
+    void setKeys(const Keys& keys);
+    Keys getKeys() const;
     double getNumericKey() const;
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
     void setKey(mixxx::track::io::key::ChromaticKey key,
                 mixxx::track::io::key::Source source);
-    void setKeyText(QString key,
+    void setKeyText(const QString& keyText,
                     mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
     void setCoverInfo(const CoverInfo& cover);
@@ -278,14 +279,9 @@ class TrackInfoObject : public QObject {
     void setCoverArt(const CoverArt& cover);
     CoverArt getCoverArt() const;
 
-    // Called when the shared pointer reference count for a library TrackPointer
-    // drops to zero.
-    static void onTrackReferenceExpired(TrackInfoObject* pTrack);
-
-    // Set whether the track should delete itself when its reference count drops
-    // to zero. This happens during shutdown when TrackDAO has already been
-    // destroyed.
-    void setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration);
+    // Explicitly mark as dirty, e.g. to trigger saving of metadata
+    // into files.
+    bool markDirty(bool bDirty = true);
 
   public slots:
     void slotCueUpdated();
@@ -299,109 +295,87 @@ class TrackInfoObject : public QObject {
     void beatsUpdated();
     void keyUpdated(double key);
     void keysUpdated();
-    void ReplayGainUpdated(double replaygain);
+    void ReplayGainUpdated(double replayGain);
     void cuesUpdated();
     void changed(TrackInfoObject* pTrack);
     void dirty(TrackInfoObject* pTrack);
     void clean(TrackInfoObject* pTrack);
-    void referenceExpired(TrackInfoObject* pTrack);
 
   private slots:
     void slotBeatsUpdated();
 
   private:
-    // Common initialization function between all TIO constructors.
-    void initialize(bool parseHeader, bool parseCoverArt);
+    TrackInfoObject(
+            const QFileInfo& fileInfo,
+            const SecurityTokenPointer& pToken,
+            TrackId trackId);
 
-    void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
-    void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
+    // Set/get track trackMetadata all at once.
+    // When setting metadata the cover art image is optional and might be NULL.
+    void setTrackMetadata(const Mixxx::TrackMetadata& trackMetadata, QImage *pCoverArt, bool parsedFromFile);
+    void getTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata, bool* pParsedFromFile) const;
 
-    // Set whether the TIO is dirty not. This should never be called except by
-    // TIO local methods or the TrackDAO.
-    void setDirty(bool bDirty);
+    friend class SoundSourceProxy;
+    void parseTrackMetadata(
+            const SoundSourceProxy& proxy,
+            bool parseCoverArt,
+            bool reloadFromFile);
 
-    // Set a unique identifier for the track. Only used by services like
-    // TrackDAO
+    // Reset the dirty flag. This should only be called from the TrackDAO.
+    void resetDirty();
+
+    // Set whether the TIO is dirty not and unlock before emitting
+    // any signals. This must only be called from member functions.
+    bool markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
+    void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
+
+    void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
+    void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
+
+    // Set a unique identifier for the track. Only used by TrackDAO!
     void setId(TrackId id);
 
-    // Whether the track should delete itself when its reference count drops to
-    // zero. Used for cleaning up after shutdown.
-    volatile bool m_bDeleteOnReferenceExpiration;
+    // The file
+    const QFileInfo m_fileInfo;
+
+    const SecurityTokenPointer m_pSecurityToken;
+
+    // Track metadata
+    Mixxx::TrackMetadata m_metadata;
+
+    // Mutex protecting access to object
+    mutable QMutex m_qMutex;
+
+    // The unique ID of track. This value is only set once after the track
+    // has been inserted or is loaded from the library DB.
+    TrackId m_id;
 
     // Flag that indicates whether or not the TIO has changed. This is used by
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;
 
-    // Special flag for telling if the track location was changed.
-    bool m_bLocationChanged;
-
-    // The file
-    QFileInfo m_fileInfo;
-
-    SecurityTokenPointer m_pSecurityToken;
-
-    // Metadata
-    // Album
-    QString m_sAlbum;
-    // Artist
-    QString m_sArtist;
-    // Album Artist
-    QString m_sAlbumArtist;
-    // Title
-    QString m_sTitle;
-    // Genre
-    QString m_sGenre;
-    // Composer
-    QString m_sComposer;
-    // Grouping
-    QString m_sGrouping;
-    // Year
-    QString m_sYear;
-    // Track Number
-    QString m_sTrackNumber;
-
-
     // File type
     QString m_sType;
-    // User comment
-    QString m_sComment;
-    // URL (used in promo track)
-    QString m_sURL;
-    // Duration of track in seconds
-    int m_iDuration;
-    // Sample rate
-    int m_iSampleRate;
-    // Number of channels
-    int m_iChannels;
-    // Track rating
-    int m_Rating;
-    // Bitrate, number of kilobits per second of audio in the track
-    int m_iBitrate;
-    // Number of times the track has been played
-    int m_iTimesPlayed;
-    // Replay Gain volume
-    float m_fReplayGain;
-    // Has this track been played this sessions?
-    bool m_bPlayed;
-    // True if header was parsed
-    bool m_bHeaderParsed;
-    // Id. Unique ID of track
-    TrackId m_id;
+
     // Cue point in samples or something
     float m_fCuePoint;
     // Date the track was added to the library
     QDateTime m_dateAdded;
+    // The Mixxx star rating
+    int m_iRating;
+
+    PlayCounter m_playCounter;
 
     Keys m_keys;
 
-    // BPM lock
-    bool m_bBpmLock;
+    // Various boolean flags. Please refer to the corresponding
+    // setter/getter functions for detailed information about
+    // their usage.
+    bool m_metadataParsedFromFile;
+    bool m_bBpmLocked;
 
     // The list of cue points for the track
-    QList<Cue*> m_cuePoints;
-
-    // Mutex protecting access to object
-    mutable QMutex m_qMutex;
+    QList<CuePointer> m_cuePoints;
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;
@@ -415,7 +389,9 @@ class TrackInfoObject : public QObject {
     CoverArt m_coverArt;
 
     friend class TrackDAO;
-    friend class AutoDJProcessorTest;
+    friend class TrackInfoCache;
+    friend class TrackInfoCacheLocker;
+    friend class LegacyLibraryImporter;
 };
 
-#endif
+#endif // TRACKINFOOBJECT_H

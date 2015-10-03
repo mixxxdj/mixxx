@@ -16,8 +16,6 @@
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 
-class Cue;
-
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
@@ -61,13 +59,13 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotReloadCoverArt();
 
   private:
-    void populateFields(TrackPointer pTrack);
+    void populateFields(const TrackInfoObject& track);
     void populateCues(TrackPointer pTrack);
     void saveTrack();
     void unloadTrack(bool save);
     void clear();
     void init();
-    QHash<int, Cue*> m_cueMap;
+    QHash<int, CuePointer> m_cueMap;
     TrackPointer m_pLoadedTrack;
 
     QScopedPointer<TapFilter> m_pTapFilter;

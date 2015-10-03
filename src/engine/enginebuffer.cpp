@@ -492,13 +492,13 @@ void EngineBuffer::slotTrackLoading() {
 }
 
 TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
-    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    TrackPointer pTrack(TrackInfoObject::newTemporary());
     pTrack->setSampleRate(44100);
     // 10 seconds
     pTrack->setDuration(10);
     if (filebpm > 0) {
-        pTrack->setBpm(filebpm);
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), filebpm, 0.0);
+        double bpm = pTrack->setBpm(filebpm);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0);
         pTrack->setBeats(pBeats);
     }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);

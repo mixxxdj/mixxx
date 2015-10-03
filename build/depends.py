@@ -687,7 +687,6 @@ class MixxxCore(Feature):
 
                    "metadata/trackmetadata.cpp",
                    "metadata/trackmetadatataglib.cpp",
-                   "metadata/audiotagger.cpp",
 
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
@@ -803,7 +802,6 @@ class MixxxCore(Feature):
 
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
-                   "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
 
                    "library/scanner/libraryscanner.cpp",
@@ -909,6 +907,7 @@ class MixxxCore(Feature):
                    "circularsamplebuffer.cpp",
 
                    "trackinfoobject.cpp",
+                   "trackinfocache.cpp",
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
                    "track/beatfactory.cpp",
@@ -916,6 +915,8 @@ class MixxxCore(Feature):
                    "track/keys.cpp",
                    "track/keyfactory.cpp",
                    "track/keyutils.cpp",
+                   "track/playcounter.cpp",
+                   "track/trackref.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",

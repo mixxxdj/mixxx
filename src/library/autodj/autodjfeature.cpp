@@ -155,7 +155,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
         trackIds = trackDao.getTrackIds(files);
         trackDao.unhideTracks(trackIds);
     } else {
-        trackIds = trackDao.addTracks(files, true);
+        trackIds = trackDao.addMultipleTracks(files, true);
     }
 
     // remove tracks that could not be added
@@ -292,8 +292,9 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                     m_pAutoDJView->onShow();
                     return;
                 } else {
-                    qDebug() << "Track does not exist: "<< addedTrack->getInfo()
-                             << " " << addedTrack->getDirectory();
+                    qDebug() << "Track does not exist:"
+                            << addedTrack->getInfo()
+                            << addedTrack->getLocation();
                 }
             }
             failedRetrieveAttempts += 1;
@@ -306,14 +307,15 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             if (trackId.isValid()) {
                 TrackPointer addedTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
                 if(addedTrack->exists()) {
-                    if(!addedTrack->getPlayed()) {
+                    if(!addedTrack->isPlayed()) {
                         playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
                         m_pAutoDJView->onShow();
                         return;
                     }
                 } else {
-                    qDebug() << "Track does not exist:"<< addedTrack->getInfo()
-                             << addedTrack->getDirectory();
+                    qDebug() << "Track does not exist:"
+                            << addedTrack->getInfo()
+                            << addedTrack->getLocation();
                 }
             }
             failedRetrieveAttempts += 1;

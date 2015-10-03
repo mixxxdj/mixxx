@@ -24,6 +24,7 @@
 #include <QSqlDatabase>
 
 #include "configobject.h"
+#include "trackinfocache.h"
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cratedao.h"
@@ -47,7 +48,7 @@ class BpmDetector;
 /**
    @author Albert Santoni
 */
-class TrackCollection : public QObject {
+class TrackCollection : public QObject, public TrackInfoCacheEvictor {
     Q_OBJECT
   public:
     static const int kRequiredSchemaVersion;
@@ -70,6 +71,10 @@ class TrackCollection : public QObject {
     ConfigObject<ConfigValue>* getConfig() {
         return m_pConfig;
     }
+
+    void relocateDirectory(QString oldDir, QString newDir);
+
+    void evictTrack(TrackInfoObject* pTrack) override;
 
   protected:
 #ifdef __SQLITE3__

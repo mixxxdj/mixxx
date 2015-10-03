@@ -112,12 +112,10 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
     // qDebug() << "Tagfetcher got musicbrainz results and now parses them";
     const TrackPointer originalTrack = m_tracks[index];
     QList<TrackPointer> tracksGuessed;
-
     foreach (const MusicBrainzClient::Result& result, results) {
-        TrackPointer track(new TrackInfoObject(originalTrack->getLocation(),
-                                               originalTrack->getSecurityToken(),
-                                               false),
-                           &QObject::deleteLater);
+        TrackPointer track(
+                TrackInfoObject::newTemporaryForSameFile(
+                        originalTrack));
         track->setTitle(result.m_title);
         track->setArtist(result.m_artist);
         track->setAlbum(result.m_album);
