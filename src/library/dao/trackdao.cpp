@@ -639,7 +639,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
     return true;
 }
 
-TrackId TrackDAO::addTrack(const QFileInfo& fileInfo, bool unremove) {
+TrackId TrackDAO::addSingleTrack(const QFileInfo& fileInfo, bool unremove) {
     TrackPointer pTrack(TrackInfoObject::newTemporary(fileInfo));
     SoundSourceProxy(pTrack).loadTrackMetadata();
     // Add the song to the database.
@@ -666,8 +666,9 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     addTracksFinish(false);
 }
 
-QList<TrackId> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
-                                   bool unremove) {
+QList<TrackId> TrackDAO::addMultipleTracks(
+        const QList<QFileInfo>& fileInfoList,
+        bool unremove) {
     QList<TrackId> trackIds;
 
     // Prepare to add tracks to the database.

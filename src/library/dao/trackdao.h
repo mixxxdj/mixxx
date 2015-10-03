@@ -117,11 +117,13 @@ class TrackDAO : public QObject, public virtual DAO {
     // Returns a set of all track locations in the library.
     QSet<QString> getTrackLocations();
     QString getTrackLocation(TrackId trackId);
-    TrackId addTrack(const QFileInfo& fileInfo, bool unremove);
+
+    TrackId addSingleTrack(const QFileInfo& fileInfo, bool unremove);
+    QList<TrackId> addMultipleTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
+
     void addTracksPrepare();
     bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
     void addTracksFinish(bool rollback=false);
-    QList<TrackId> addTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
     void hideTracks(const QList<TrackId>& trackIds);
     void purgeTracks(const QList<TrackId>& trackIds);
     void purgeTracks(const QString& dir);
