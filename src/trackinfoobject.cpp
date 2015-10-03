@@ -936,15 +936,7 @@ void TrackInfoObject::setKeyText(QString key,
 
 QString TrackInfoObject::getKeyText() const {
     QMutexLocker lock(&m_qMutex);
-
-    mixxx::track::io::key::ChromaticKey key = m_keys.getGlobalKey();
-    if (key != mixxx::track::io::key::INVALID) {
-        return KeyUtils::keyToString(key);
-    }
-
-    // Fall back on text global name.
-    QString keyText = m_keys.getGlobalKeyText();
-    return keyText;
+    return KeyUtils::getGlobalKeyText(m_keys);
 }
 
 void TrackInfoObject::setBpmLock(bool bpmLock) {

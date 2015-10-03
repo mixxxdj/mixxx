@@ -16,6 +16,7 @@
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/keyfactory.h"
+#include "track/keyutils.h"
 #include "trackinfoobject.h"
 #include "library/coverart.h"
 #include "library/coverartutils.h"
@@ -450,8 +451,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
         keysVersion = keys.getVersion();
         keysSubVersion = keys.getSubVersion();
         key = keys.getGlobalKey();
-        // TODO(rryan): Get this logic out of TIO.
-        keyText = pTrack->getKeyText();
+        keyText = KeyUtils::getGlobalKeyText(keys);
     }
 
     m_pQueryLibraryInsert->bindValue(
@@ -1495,8 +1495,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
         keysVersion = keys.getVersion();
         keysSubVersion = keys.getSubVersion();
         key = keys.getGlobalKey();
-        // TODO(rryan): Get this logic out of TIO.
-        keyText = pTrack->getKeyText();
+        keyText = KeyUtils::getGlobalKeyText(keys);
     }
 
     query.bindValue(":keys", pKeysBlob ? *pKeysBlob : QVariant(QVariant::ByteArray));
