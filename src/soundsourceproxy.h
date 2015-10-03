@@ -71,6 +71,17 @@ public:
             return ERR;
         }
     }
+    // Low-level function for writing track metadata back into
+    // the audio file.
+    Result writeTrackMetadata(
+            const Mixxx::TrackMetadata& trackMetadata) const override {
+        if (m_pSoundSource) {
+            return m_pSoundSource->writeTrackMetadata(
+                    trackMetadata);
+        } else {
+            return ERR;
+        }
+    }
 
     // Opening the audio data through the proxy will
     // update the some metadata of the track object.
