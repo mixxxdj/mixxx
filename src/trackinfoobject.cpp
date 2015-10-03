@@ -2,23 +2,18 @@
 #include <QFile>
 #include <QMutexLocker>
 #include <QtDebug>
-#include <QRegExp>
 
 #include "trackinfoobject.h"
 
-#include "controlobject.h"
-#include "soundsourceproxy.h"
 #include "library/coverartutils.h"
-#include "metadata/trackmetadata.h"
+#include "metadata/trackmetadatataglib.h"
+#include "soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
-#include "util/compatibility.h"
-#include "util/cmdlineargs.h"
-#include "util/math.h"
 #include "util/assert.h"
-#include "util/xml.h"
-
+#include "util/compatibility.h"
+#include "waveform/waveform.h"
 
 
 namespace {
@@ -43,13 +38,28 @@ inline bool modifyFieldValue(T* pField, const T& value) {
     }
 }
 
-QString getGlobalKeyText(const Keys& keys) {
-    const mixxx::track::io::key::ChromaticKey key(keys.getGlobalKey());
-    if (key != mixxx::track::io::key::INVALID) {
-        return KeyUtils::keyToString(key);
+// Parses artist/title from the file name. Assumes that the file name is
+// written like: "artist - title.xxx" or "artist_-_title.xxx". Artist
+// and title fields are only overwritten if empty!
+void parseTrackMetadataFromFileName(Mixxx::TrackMetadata* pTrackMetadata, QString fileName) {
+    fileName.replace("_", " ");
+    QString titleWithFileType;
+    if (fileName.count('-') == 1) {
+        if (pTrackMetadata->getArtist().isEmpty()) {
+            const QString artist(fileName.section('-', 0, 0).trimmed());
+            if (!artist.isEmpty()) {
+                pTrackMetadata->setArtist(artist);
+            }
+        }
+        titleWithFileType = fileName.section('-', 1, 1).trimmed();
     } else {
-        // Fall back on text global name.
-        return keys.getGlobalKeyText();
+        titleWithFileType = fileName.trimmed();
+    }
+    if (pTrackMetadata->getTitle().isEmpty()) {
+        const QString title(titleWithFileType.section('.', 0, -2).trimmed());
+        if (!title.isEmpty()) {
+            pTrackMetadata->setTitle(title);
+        }
     }
 }
 
@@ -57,29 +67,19 @@ QString getGlobalKeyText(const Keys& keys) {
 
 TrackInfoObject::TrackInfoObject(
         const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pToken,
+        const SecurityTokenPointer& pSecurityToken,
         TrackId trackId)
         : m_fileInfo(fileInfo),
-          m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
-                  m_fileInfo, true) : pToken),
-          m_bDeleteOnReferenceExpiration(false),
+          m_pSecurityToken(openSecurityToken(m_fileInfo, pSecurityToken)),
           m_qMutex(QMutex::Recursive),
-          m_id(std::move(trackId)) {
-    m_analyserProgress = -1;
-
-    m_bDirty = false;
-    m_bBpmLocked = false;
-    m_bHeaderParsed = false;
-
-    m_iDuration = 0;
-    m_iBitrate = 0;
-    m_replayGain = 0.0;
-    m_bHeaderParsed = false;
-    m_iSampleRate = 0;
-    m_iChannels = 0;
-    m_fCuePoint = 0.0f;
-    m_dateAdded = QDateTime::currentDateTime();
-    m_iRating = 0;
+          m_id(std::move(trackId)),
+          m_bDirty(false),
+          m_fCuePoint(0.0f),
+          m_dateAdded(QDateTime::currentDateTime()),
+          m_iRating(0),
+          m_metadataParsedFromFile(false),
+          m_bBpmLocked(false),
+          m_analyserProgress(-1) {
 }
 
 //static
@@ -115,68 +115,48 @@ TrackPointer TrackInfoObject::newDummy(
             &QObject::deleteLater);
 }
 
-// static
-void TrackInfoObject::onTrackReferenceExpired(TrackInfoObject* pTrack) {
-    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
-        return;
-    }
-    //qDebug() << "TrackInfoObject::onTrackReferenceExpired"
-    //         << pTrack << pTrack->getId() << pTrack->getInfo();
-    if (pTrack->m_bDeleteOnReferenceExpiration) {
-        delete pTrack;
-    } else {
-        emit(pTrack->referenceExpired(pTrack));
-    }
-}
+void TrackInfoObject::setTrackMetadata(
+        const Mixxx::TrackMetadata& trackMetadata,
+        QImage *pCoverArt,
+        bool parsedFromFile) {
+    {
+        // enter locking scope
+        QMutexLocker lock(&m_qMutex);
 
-void TrackInfoObject::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration) {
-    m_bDeleteOnReferenceExpiration = deleteOnReferenceExpiration;
-}
-
-namespace {
-    // Parses artist/title from the file name and returns the file type.
-    // Assumes that the file name is written like: "artist - title.xxx"
-    // or "artist_-_title.xxx",
-    void parseMetadataFromFileName(Mixxx::TrackMetadata& trackMetadata, QString fileName) {
-        fileName.replace("_", " ");
-        QString titleWithFileType;
-        if (fileName.count('-') == 1) {
-            const QString artist(fileName.section('-', 0, 0).trimmed());
-            if (!artist.isEmpty()) {
-                trackMetadata.setArtist(artist);
+        bool modified = modifyFieldValue(&m_metadataParsedFromFile, parsedFromFile);
+        bool modifiedReplayGain =
+                (m_metadata.getReplayGain() != trackMetadata.getReplayGain());
+        bool modifiedCoverArt = false;
+        if (m_metadata != trackMetadata) {
+            const double replayGainBackup = m_metadata.getReplayGain();
+            m_metadata = trackMetadata;
+            if (!trackMetadata.isReplayGainValid()) {
+                // restore replay gain
+                m_metadata.setReplayGain(replayGainBackup);
+                modifiedReplayGain = false;
             }
-            titleWithFileType = fileName.section('-', 1, 1).trimmed();
-        } else {
-            titleWithFileType = fileName.trimmed();
+            modified = true;
         }
-        const QString title(titleWithFileType.section('.', 0, -2).trimmed());
-        if (!title.isEmpty()) {
-            trackMetadata.setTitle(title);
+        if (pCoverArt && !pCoverArt->isNull()) {
+            m_coverArt.image = *pCoverArt;
+            m_coverArt.info.hash = CoverArtUtils::calculateHash(
+                m_coverArt.image);
+            m_coverArt.info.coverLocation = QString();
+            m_coverArt.info.type = CoverInfo::METADATA;
+            m_coverArt.info.source = CoverInfo::GUESSED;
+            modifiedCoverArt = true;
+            modified = true;
         }
-    }
-}
-
-void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
-    // TODO(XXX): This involves locking the mutex for every setXXX
-    // method. We should figure out an optimization where there are private
-    // setters that don't lock the mutex.
-    setArtist(trackMetadata.getArtist());
-    setTitle(trackMetadata.getTitle());
-    setAlbum(trackMetadata.getAlbum());
-    setAlbumArtist(trackMetadata.getAlbumArtist());
-    setYear(trackMetadata.getYear());
-    setGenre(trackMetadata.getGenre());
-    setComposer(trackMetadata.getComposer());
-    setGrouping(trackMetadata.getGrouping());
-    setComment(trackMetadata.getComment());
-    setTrackNumber(trackMetadata.getTrackNumber());
-    setChannels(trackMetadata.getChannels());
-    setSampleRate(trackMetadata.getSampleRate());
-    setDuration(trackMetadata.getDuration());
-    setBitrate(trackMetadata.getBitrate());
-
-    if (trackMetadata.isReplayGainValid()) {
-        setReplayGain(trackMetadata.getReplayGain());
+        if (modified) {
+            markDirtyAndUnlock(&lock);
+            if (modifiedReplayGain) {
+                emit(ReplayGainUpdated(trackMetadata.getReplayGain()));
+            }
+            if (modifiedCoverArt) {
+                emit(coverArtUpdated());
+            }
+        }
+        // leave locking scope -> implicitly unlocked
     }
 
     // Need to set BPM after sample rate since beat grid creation depends on
@@ -191,27 +171,10 @@ void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
     }
 }
 
-void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
-    // TODO(XXX): This involves locking the mutex for every setXXX
-    // method. We should figure out an optimization where there are private
-    // getters that don't lock the mutex.
-    pTrackMetadata->setArtist(getArtist());
-    pTrackMetadata->setTitle(getTitle());
-    pTrackMetadata->setAlbum(getAlbum());
-    pTrackMetadata->setAlbumArtist(getAlbumArtist());
-    pTrackMetadata->setYear(Mixxx::TrackMetadata::reformatYear(getYear()));
-    pTrackMetadata->setGenre(getGenre());
-    pTrackMetadata->setComposer(getComposer());
-    pTrackMetadata->setGrouping(getGrouping());
-    pTrackMetadata->setComment(getComment());
-    pTrackMetadata->setTrackNumber(getTrackNumber());
-    pTrackMetadata->setChannels(getChannels());
-    pTrackMetadata->setSampleRate(getSampleRate());
-    pTrackMetadata->setDuration(getDuration());
-    pTrackMetadata->setBitrate(getBitrate());
-    pTrackMetadata->setReplayGain(getReplayGain());
-    pTrackMetadata->setBpm(getBpm());
-    pTrackMetadata->setKey(getKeyText());
+void TrackInfoObject::getTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata, bool* pParsedFromFile) const {
+    QMutexLocker lock(&m_qMutex);
+    *pTrackMetadata = m_metadata;
+    *pParsedFromFile = m_metadataParsedFromFile;
 }
 
 void TrackInfoObject::parseTrackMetadata(
@@ -224,7 +187,7 @@ void TrackInfoObject::parseTrackMetadata(
         qWarning() << "Failed to parse track metadata from file"
                 << getLocation()
                 << ": File is inaccessible or missing";
-        setHeaderParsed(false);
+        setTrackMetadataParsed(false);
         return;
     }
 
@@ -236,7 +199,7 @@ void TrackInfoObject::parseTrackMetadata(
                     << proxy.getFilePath()
                     << "<>"
                     << canonicalLocation;
-        setHeaderParsed(false);
+        setTrackMetadataParsed(false);
         return;
     }
 
@@ -244,22 +207,22 @@ void TrackInfoObject::parseTrackMetadata(
         qWarning() << "Failed to parse track metadata from file"
                 << getLocation()
                 << ": Unsupported file type";
-        setHeaderParsed(false);
+        setTrackMetadataParsed(false);
         return;
     }
     setType(proxy.getType());
 
-    bool parsedFromFile = getHeaderParsed();
-    if (parsedFromFile && !reloadFromFile) {
-        return; // do not reload from file
-    }
     Mixxx::TrackMetadata trackMetadata;
+    bool parsedFromFile = false;
     // Use the existing trackMetadata as default values. Otherwise
-    // existing values in the library will be overwritten with
+    // existing values in the library would be overwritten with
     // empty values if the corresponding file tags are missing.
     // Depending on the file type some kind of tags might even
     // not be supported at all and those would get lost!
-    getMetadata(&trackMetadata);
+    getTrackMetadata(&trackMetadata, &parsedFromFile);
+    if (parsedFromFile && !reloadFromFile) {
+        return; // do not reload from file
+    }
     QImage coverArt;
     // If parsing of the cover art image should be omitted the
     // 2nd output parameter must be set to nullptr. Cover art
@@ -277,22 +240,11 @@ void TrackInfoObject::parseTrackMetadata(
     // from the file name.
     // TODO(rryan): Should we re-visit this decision?
     if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
-        parseMetadataFromFileName(trackMetadata, m_fileInfo.fileName());
+        parseTrackMetadataFromFileName(&trackMetadata, m_fileInfo.fileName());
     }
 
     // Dump the trackMetadata extracted from the file back into the track.
-    setMetadata(trackMetadata);
-    if (pCoverArt && !pCoverArt->isNull()) {
-        CoverArt coverArt;
-        coverArt.image = *pCoverArt;
-        coverArt.info.hash = CoverArtUtils::calculateHash(
-                coverArt.image);
-        coverArt.info.coverLocation = QString();
-        coverArt.info.type = CoverInfo::METADATA;
-        coverArt.info.source = CoverInfo::GUESSED;
-        setCoverArt(coverArt);
-    }
-    setHeaderParsed(parsedFromFile);
+    setTrackMetadata(trackMetadata, pCoverArt, parsedFromFile);
 }
 
 QString TrackInfoObject::getLocation() const {
@@ -300,7 +252,7 @@ QString TrackInfoObject::getLocation() const {
     // (copy-on write). But operating on a single instance of QFileInfo
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.absoluteFilePath();
+    return TrackRef::location(m_fileInfo);
 }
 
 QString TrackInfoObject::getCanonicalLocation() const {
@@ -308,7 +260,7 @@ QString TrackInfoObject::getCanonicalLocation() const {
     // (copy-on write). But operating on a single instance of QFileInfo
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.canonicalFilePath();
+    return TrackRef::canonicalLocation(m_fileInfo);
 }
 
 QString TrackInfoObject::getDirectory() const {
@@ -368,11 +320,9 @@ TrackId TrackInfoObject::getId() const {
 }
 
 void TrackInfoObject::setId(TrackId id) {
-    DEBUG_ASSERT(id.isValid());
     QMutexLocker lock(&m_qMutex);
-    // The track's id must be set only once and immediately after
-    // the object has been created.
-    DEBUG_ASSERT(!m_id.isValid());
+    // The Id must not be modified from a valid value to another valid value
+    DEBUG_ASSERT(!id.isValid() || !m_id.isValid() || (id == m_id));
     m_id = std::move(id);
     // Changing the Id does not make the track dirty because the
     // Id is always generated by the Database itself.
@@ -396,26 +346,32 @@ double TrackInfoObject::setBpm(double bpm) {
         return bpm;
     }
 
+    double normalizedBpm =
+            Mixxx::TrackMetadata::normalizeBpm(bpm);
+    DEBUG_ASSERT(normalizedBpm ==
+            Mixxx::TrackMetadata::normalizeBpm(normalizedBpm));
+
     QMutexLocker lock(&m_qMutex);
 
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
-        BeatsPointer pBeats(BeatFactory::makeBeatGrid(this, bpm, 0));
+        BeatsPointer pBeats(BeatFactory::makeBeatGrid(this, normalizedBpm, 0));
         setBeatsAndUnlock(&lock, pBeats);
-        return bpm;
+        return normalizedBpm;
     }
 
     // Continue with the regular case
-    if (m_pBeats->getBpm() != bpm) {
+    if (m_pBeats->getBpm() != normalizedBpm) {
         qDebug() << "Updating BPM:" << getLocation();
-        m_pBeats->setBpm(bpm);
+        m_pBeats->setBpm(normalizedBpm);
+        m_metadata.setBpm(normalizedBpm);
         markDirtyAndUnlock(&lock);
         // Tell the GUI to update the bpm label...
         //qDebug() << "TrackInfoObject signaling BPM update to" << f;
-        emit(bpmUpdated(bpm));
+        emit(bpmUpdated(normalizedBpm));
     }
 
-    return bpm;
+    return normalizedBpm;
 }
 
 double TrackInfoObject::getBpm() const {
@@ -466,6 +422,8 @@ void TrackInfoObject::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats
                     this, SLOT(slotBeatsUpdated()));
         }
     }
+    m_metadata.setBpm(
+            Mixxx::TrackMetadata::normalizeBpm(bpm));
     markDirtyAndUnlock(pLock);
     emit(bpmUpdated(bpm));
     emit(beatsUpdated());
@@ -479,43 +437,49 @@ BeatsPointer TrackInfoObject::getBeats() const {
 void TrackInfoObject::slotBeatsUpdated() {
     QMutexLocker lock(&m_qMutex);
     double bpm = m_pBeats->getBpm();
+    m_metadata.setBpm(bpm);
     markDirtyAndUnlock(&lock);
     emit(bpmUpdated(bpm));
     emit(beatsUpdated());
 }
 
 double TrackInfoObject::setReplayGain(double replayGain) {
+    double normalizedReplayGain =
+            Mixxx::TrackMetadata::normalizeReplayGain(replayGain);
+    DEBUG_ASSERT(normalizedReplayGain ==
+            Mixxx::TrackMetadata::normalizeReplayGain(normalizedReplayGain));
     QMutexLocker lock(&m_qMutex);
-    if (modifyFieldValue(&m_replayGain, replayGain)) {
+    if (m_metadata.getReplayGain() != normalizedReplayGain) {
+        m_metadata.setReplayGain(normalizedReplayGain);
         markDirtyAndUnlock(&lock);
         emit(ReplayGainUpdated(replayGain));
     }
-    return replayGain;
+    return normalizedReplayGain;
 }
 
 double TrackInfoObject::getReplayGain() const {
     QMutexLocker lock(&m_qMutex);
-    return m_replayGain;
+    return m_metadata.getReplayGain();
 }
 
-bool TrackInfoObject::getHeaderParsed()  const {
+void TrackInfoObject::setTrackMetadataParsed(bool parsedFromFile) {
     QMutexLocker lock(&m_qMutex);
-    return m_bHeaderParsed;
-}
-
-void TrackInfoObject::setHeaderParsed(bool parsed) {
-    QMutexLocker lock(&m_qMutex);
-    if (modifyFieldValue(&m_bHeaderParsed, parsed)) {
+    if (modifyFieldValue(&m_metadataParsedFromFile, parsedFromFile)) {
         markDirtyAndUnlock(&lock);
     }
 }
 
+bool TrackInfoObject::isTrackMetadataParsed()  const {
+    QMutexLocker lock(&m_qMutex);
+    return m_metadataParsedFromFile;
+}
+
 QString TrackInfoObject::getInfo() const {
     QMutexLocker lock(&m_qMutex);
-    if (m_sArtist.trimmed().isEmpty()) {
-        return m_sTitle;
+    if (m_metadata.getArtist().trimmed().isEmpty()) {
+        return m_metadata.getTitle();
     } else {
-        return m_sArtist + ", " + m_sTitle;
+        return m_metadata.getArtist() + ", " + m_metadata.getTitle();
     }
 }
 
@@ -531,15 +495,15 @@ void TrackInfoObject::setDateAdded(const QDateTime& dateAdded) {
 
 void TrackInfoObject::setDuration(int iDuration) {
     QMutexLocker lock(&m_qMutex);
-    if (m_iDuration != iDuration) {
-        m_iDuration = iDuration;
+    if (m_metadata.getDuration() != iDuration) {
+        m_metadata.setDuration(iDuration);
         markDirtyAndUnlock(&lock);
     }
 }
 
 int TrackInfoObject::getDuration() const {
     QMutexLocker lock(&m_qMutex);
-    return m_iDuration;
+    return m_metadata.getDuration();
 }
 
 QString TrackInfoObject::getDurationText() const {
@@ -548,126 +512,117 @@ QString TrackInfoObject::getDurationText() const {
 
 QString TrackInfoObject::getTitle() const {
     QMutexLocker lock(&m_qMutex);
-    return m_sTitle;
+    return m_metadata.getTitle();
 }
 
 void TrackInfoObject::setTitle(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    QString title = s.trimmed();
-    if (m_sTitle != title) {
-        m_sTitle = title;
+    if (m_metadata.getTitle() != s.trimmed()) {
+        m_metadata.setTitle(s.trimmed());
         markDirtyAndUnlock(&lock);
     }
 }
 
 QString TrackInfoObject::getArtist() const {
     QMutexLocker lock(&m_qMutex);
-    return m_sArtist;
+    return m_metadata.getArtist();
 }
 
 void TrackInfoObject::setArtist(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    QString artist = s.trimmed();
-    if (m_sArtist != artist) {
-        m_sArtist = artist;
+    if (m_metadata.getArtist() != s.trimmed()) {
+        m_metadata.setArtist(s.trimmed());
         markDirtyAndUnlock(&lock);
     }
 }
 
 QString TrackInfoObject::getAlbum() const {
     QMutexLocker lock(&m_qMutex);
-    return m_sAlbum;
+    return m_metadata.getAlbum();
 }
 
 void TrackInfoObject::setAlbum(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    QString album = s.trimmed();
-    if (m_sAlbum != album) {
-        m_sAlbum = album;
+    if (m_metadata.getAlbum() != s.trimmed()) {
+        m_metadata.setAlbum(s.trimmed());
         markDirtyAndUnlock(&lock);
     }
 }
 
 QString TrackInfoObject::getAlbumArtist()  const {
     QMutexLocker lock(&m_qMutex);
-    return m_sAlbumArtist;
+    return m_metadata.getAlbumArtist();
 }
 
 void TrackInfoObject::setAlbumArtist(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    QString st = s.trimmed();
-    if (m_sAlbumArtist != st) {
-        m_sAlbumArtist = st;
+    if (m_metadata.getAlbumArtist() != s.trimmed()) {
+        m_metadata.setAlbumArtist(s.trimmed());
         markDirtyAndUnlock(&lock);
     }
 }
 
 QString TrackInfoObject::getYear()  const {
     QMutexLocker lock(&m_qMutex);
-    return m_sYear;
+    return m_metadata.getYear();
 }
 
 void TrackInfoObject::setYear(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    QString year = s.trimmed();
-    if (m_sYear != year) {
-        m_sYear = year;
+    if (m_metadata.getYear() != s.trimmed()) {
+        m_metadata.setYear(s.trimmed());
         markDirtyAndUnlock(&lock);
     }
 }
 
 QString TrackInfoObject::getGenre() const {
     QMutexLocker lock(&m_qMutex);
-    return m_sGenre;
+    return m_metadata.getGenre();
 }
 
 void TrackInfoObject::setGenre(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    QString genre = s.trimmed();
-    if (m_sGenre != genre) {
-        m_sGenre = genre;
+    if (m_metadata.getGenre() != s.trimmed()) {
+        m_metadata.setGenre(s.trimmed());
         markDirtyAndUnlock(&lock);
     }
 }
 
 QString TrackInfoObject::getComposer() const {
     QMutexLocker lock(&m_qMutex);
-    return m_sComposer;
+    return m_metadata.getComposer();
 }
 
 void TrackInfoObject::setComposer(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    QString composer = s.trimmed();
-    if (m_sComposer != composer) {
-        m_sComposer = composer;
+    if (m_metadata.getComposer() != s.trimmed()) {
+        m_metadata.setComposer(s.trimmed());
         markDirtyAndUnlock(&lock);
     }
 }
 
 QString TrackInfoObject::getGrouping()  const {
     QMutexLocker lock(&m_qMutex);
-    return m_sGrouping;
+    return m_metadata.getGrouping();
 }
 
 void TrackInfoObject::setGrouping(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    QString grouping = s.trimmed();
-    if (m_sGrouping != grouping) {
-        m_sGrouping = grouping;
+    if (m_metadata.getGrouping() != s.trimmed()) {
+        m_metadata.setGrouping(s.trimmed());
         markDirtyAndUnlock(&lock);
     }
 }
 
 QString TrackInfoObject::getTrackNumber()  const {
     QMutexLocker lock(&m_qMutex);
-    return m_sTrackNumber;
+    return m_metadata.getTrackNumber();
 }
 
 void TrackInfoObject::setTrackNumber(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    QString tn = s.trimmed();
-    if (m_sTrackNumber != tn) {
-        m_sTrackNumber = tn;
+    if (m_metadata.getTrackNumber() != s.trimmed()) {
+        m_metadata.setTrackNumber(s.trimmed());
         markDirtyAndUnlock(&lock);
     }
 }
@@ -732,13 +687,13 @@ void TrackInfoObject::setPlayCounter(const PlayCounter& playCounter) {
 
 QString TrackInfoObject::getComment() const {
     QMutexLocker lock(&m_qMutex);
-    return m_sComment;
+    return m_metadata.getComment();
 }
 
 void TrackInfoObject::setComment(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (s != m_sComment) {
-        m_sComment = s;
+    if (m_metadata.getComment() != s) {
+        m_metadata.setComment(s);
         markDirtyAndUnlock(&lock);
     }
 }
@@ -757,31 +712,33 @@ void TrackInfoObject::setType(const QString& s) {
 
 void TrackInfoObject::setSampleRate(int iSampleRate) {
     QMutexLocker lock(&m_qMutex);
-    if (modifyFieldValue(&m_iSampleRate, iSampleRate)) {
+    if (m_metadata.getSampleRate() != iSampleRate) {
+        m_metadata.setSampleRate(iSampleRate);
         markDirtyAndUnlock(&lock);
     }
 }
 
 int TrackInfoObject::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
-    return m_iSampleRate;
+    return m_metadata.getSampleRate();
 }
 
 void TrackInfoObject::setChannels(int iChannels) {
     QMutexLocker lock(&m_qMutex);
-    if (modifyFieldValue(&m_iChannels, iChannels)) {
+    if (m_metadata.getChannels() != iChannels) {
+        m_metadata.setChannels(iChannels);
         markDirtyAndUnlock(&lock);
     }
 }
 
 int TrackInfoObject::getChannels() const {
     QMutexLocker lock(&m_qMutex);
-    return m_iChannels;
+    return m_metadata.getChannels();
 }
 
 int TrackInfoObject::getBitrate() const {
     QMutexLocker lock(&m_qMutex);
-    return m_iBitrate;
+    return m_metadata.getBitrate();
 }
 
 QString TrackInfoObject::getBitrateStr() const {
@@ -790,7 +747,8 @@ QString TrackInfoObject::getBitrateStr() const {
 
 void TrackInfoObject::setBitrate(int iBitrate) {
     QMutexLocker lock(&m_qMutex);
-    if (modifyFieldValue(&m_iBitrate, iBitrate)) {
+    if (m_metadata.getBitrate() != iBitrate) {
+        m_metadata.setBitrate(iBitrate);
         markDirtyAndUnlock(&lock);
     }
 }
@@ -813,15 +771,15 @@ void TrackInfoObject::setWaveSummary(const QByteArray* pWave, bool updateUI)
 
 void TrackInfoObject::setURL(const QString& url) {
     QMutexLocker lock(&m_qMutex);
-    if (m_sURL != url) {
-        m_sURL = url;
+    if (m_metadata.getUrl() != url) {
+        m_metadata.setUrl(url);
         markDirtyAndUnlock(&lock);
     }
 }
 
 QString TrackInfoObject::getURL() {
     QMutexLocker lock(&m_qMutex);
-    return m_sURL;
+    return m_metadata.getUrl();
 }
 
 ConstWaveformPointer TrackInfoObject::getWaveform() {
@@ -976,6 +934,7 @@ void TrackInfoObject::setKeys(const Keys& keys) {
 
 void TrackInfoObject::setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys) {
     m_keys = keys;
+    m_metadata.setKey(KeyUtils::getGlobalKeyText(m_keys));
     // New key might be INVALID. We don't care.
     mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
     markDirtyAndUnlock(pLock);

@@ -9,14 +9,22 @@
 // in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
-    static void loadPlugins(); // not thread-safe
+    // Initially registers all built-in SoundSource providers and
+    // loads all SoundSource plugins with additional providers. This
+    // function is not thread-safe and must be called only once
+    // upon startup of the application.
+    static void loadPlugins();
 
     static QStringList getSupportedFileExtensions() {
         return s_soundSourceProviders.getRegisteredFileExtensions();
     }
     static QStringList getSupportedFileExtensionsByPlugins();
-    static QStringList getSupportedFileNamePatterns();
-    static QRegExp getSupportedFileNameRegex();
+    static const QStringList& getSupportedFileNamePatterns() {
+        return s_supportedFileNamePatterns;
+    }
+    static const QRegExp& getSupportedFileNamesRegex() {
+        return s_supportedFileNamesRegex;
+    }
 
     static bool isUrlSupported(const QUrl& url);
     static bool isFileSupported(const QFileInfo& fileInfo);
@@ -56,6 +64,7 @@ public:
     void loadTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
         m_pTrack->parseTrackMetadata(*this, true, reloadFromFile);
     }
+    static Result saveTrackMetadata(const TrackInfoObject* pTrack);
 
     // Low-level function for parsing track metadata and cover art
     // embedded in the audio file into the corresponding objects.
@@ -92,17 +101,31 @@ public:
 
 private:
     static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
+    static QStringList s_supportedFileNamePatterns;
+    static QRegExp s_supportedFileNamesRegex;
 
-    static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
+    // Special case: Construction from a plain TIO pointer is needed
+    // for writing metadata immediately before the TIO is destroyed.
+    explicit SoundSourceProxy(
+            const TrackInfoObject* pTrack);
 
     const TrackPointer m_pTrack;
 
     const QString m_filePath;
     const QUrl m_url;
 
+    static Mixxx::SoundSourceProviderPointer findSoundSourceProvider(
+            const QUrl& url);
+
+    const Mixxx::SoundSourceProviderPointer m_pSoundSourceProvider;
+
+    Mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;
+
+    void initSoundSource();
+
     // This pointer must stay in this class together with
     // the corresponding track pointer. Don't pass it around!!
-    const Mixxx::SoundSourcePointer m_pSoundSource;
+    Mixxx::SoundSourcePointer m_pSoundSource;
 
     // Keeps track of opening and closing the corresponding
     // SoundSource. This pointer can safely be passed around,

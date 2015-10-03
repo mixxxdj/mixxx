@@ -175,7 +175,7 @@ void LibraryScanner::slotStartScan() {
 
     QSet<QString> trackLocations = m_trackDao.getTrackLocations();
     QHash<QString, int> directoryHashes = m_libraryHashDao.getDirectoryHashes();
-    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNameRegex());
+    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
     QRegExp coverExtensionFilter =
             QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
                     Qt::CaseInsensitive);
@@ -481,7 +481,8 @@ void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
     if (m_scannerGlobal) {
         m_scannerGlobal->trackAdded();
     }
-    if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
+    TrackId trackId(m_trackDao.addTracksAdd(pTrack.data(), false));
+    if (trackId.isValid()) {
         // Successfully added. Signal the main instance of TrackDAO,
         // that there is a new track in the database.
         emit(trackAdded(pTrack));

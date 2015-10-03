@@ -9,6 +9,7 @@
 
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
+#include "trackinfocache.h"
 #include "metadata/trackmetadata.h"
 #include "util/time.h"
 #include "util/trace.h"
@@ -146,9 +147,17 @@ void BrowseThread::populateModel() {
             return populateModel();
         }
 
-        QString filepath = fileIt.next();
-        TrackPointer pTrack(TrackInfoObject::newTemporary(filepath, thisPath.token()));
+        const QString filePath = fileIt.next();
+        TrackInfoCacheLocker cacheLocker(TrackInfoCache::instance().resolve(
+                TrackRef(filePath), thisPath.token()));
+        TrackPointer pTrack(cacheLocker.getResolvedTrack());
+        if (pTrack.isNull()) {
+            qWarning() << "Skipping inaccessible file"
+                    << filePath;
+            continue;
+        }
         SoundSourceProxy(pTrack).loadTrackMetadata();
+        cacheLocker.unlockCache();
 
         QList<QStandardItem*> row_data;
 
@@ -240,7 +249,7 @@ void BrowseThread::populateModel() {
         item->setData(pTrack->getBitrate(), Qt::UserRole);
         row_data.insert(COLUMN_BITRATE, item);
 
-        item = new QStandardItem(filepath);
+        item = new QStandardItem(filePath);
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_LOCATION, item);
@@ -264,7 +273,7 @@ void BrowseThread::populateModel() {
         if (row % 10 == 0) {
             // this is a blocking operation
             emit(rowsAppended(rows, thisModelObserver));
-            qDebug() << "Append " << rows.count() << " from " << filepath;
+            qDebug() << "Append " << rows.count() << " from " << filePath;
             rows.clear();
         }
         // Sleep additionally for 10ms which prevents us from GUI freezes

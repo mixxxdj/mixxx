@@ -268,13 +268,6 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
                                                    SLOT(map()));
     }
 
-    // Do not write meta data back to ID3 when meta data has changed
-    // Because multiple TrackDao objects can exists for a particular track
-    // writing meta data may ruin your MP3 file if done simultaneously.
-    // see Bug #728197
-    // For safety reasons, we deactivate this feature.
-    m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
-
     // library dies in seemingly unrelated qtsql error about not having a
     // sqlite driver if this path doesn't exist. Normally config->Save()
     // above would make it but if it doesn't get run for whatever reason
@@ -325,6 +318,9 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
                              m_pPlayerManager,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
+
+    // Create the singular TrackInfoCache instance
+    TrackInfoCache::createInstance(m_pLibrary->getTrackCollection());
 
     launchProgress(35);
 
@@ -574,11 +570,20 @@ void MixxxMainWindow::finalize() {
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
 
+    // Evict all remaining tracks from the cache to trigger
+    // updating of modified tracks.
+    TrackInfoCache::instance().evictAll();
+
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
     qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
+
+    // The TrackInfoCache singleton must be destroyed immediately
+    // after the library has been destroyed!
+    qDebug() << "Destroying TrackInfoCache" << qTime.elapsed();
+    TrackInfoCache::destroyInstance();
 
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();

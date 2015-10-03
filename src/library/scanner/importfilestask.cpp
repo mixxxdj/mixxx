@@ -1,5 +1,6 @@
 #include "library/scanner/importfilestask.h"
 
+#include "trackinfocache.h"
 #include "soundsourceproxy.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/coverartutils.h"
@@ -42,14 +43,16 @@ void ImportFilesTask::run() {
             // directory hash has changed).
             emit(trackExists(filePath));
         } else {
-            // Create a temporary TIO for importing that is not
-            // inserted into the TIO cache until requested. This
-            // pointer goes out of scope after importing has
-            // completed successfully. It will be passed around
-            // through some signals, but is not stored permanently.
-            // Otherwise importing in a separate thread would become
-            // much more complicated.
-            TrackPointer pTrack(TrackInfoObject::newTemporary(file, m_pToken));
+            const TrackRef trackRef(file);
+            TrackInfoCacheLocker cacheLocker(
+                    TrackInfoCache::instance().resolve(trackRef));
+            TrackPointer pTrack(cacheLocker.getResolvedTrack());
+            if (pTrack.isNull()) {
+                qWarning() << "ImportFilesTask: Skipping inaccessible file"
+                        << trackRef;
+                continue;
+            }
+
             SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
 
             // If cover art is not found in the track metadata, populate from
@@ -65,6 +68,9 @@ void ImportFilesTask::run() {
                     pTrack->setCoverArt(art);
                 }
             }
+
+            // Unlock the cache before emitting any signals
+            cacheLocker.unlockCache();
 
             emit(addNewTrack(pTrack));
         }

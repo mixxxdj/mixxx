@@ -3,6 +3,7 @@
 
 #include "library/coverartutils.h"
 
+#include "trackinfocache.h"
 #include "soundsourceproxy.h"
 #include "util/regex.h"
 
@@ -27,10 +28,20 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
-        const QString& trackLocation,
+        const TrackRef& trackRef,
         SecurityTokenPointer pToken) {
-    TrackPointer pTrack(
-            TrackInfoObject::newTemporary(trackLocation, pToken));
+    TrackPointer pTrack;
+    if (trackRef.isValid()) {
+        TrackInfoCacheLocker cacheLocker(
+                TrackInfoCache::instance().resolve(trackRef, pToken));
+        pTrack = cacheLocker.getResolvedTrack();
+    }
+    if (pTrack.isNull()) {
+        qWarning() << "CoverArtUtils: Failed to extract cover from inaccessible file"
+                << trackRef;
+        return QImage();
+    }
+
     SoundSourceProxy proxy(pTrack);
     QImage coverArt;
     if (OK == proxy.parseTrackMetadataAndCoverArt(nullptr, &coverArt)) {
@@ -47,10 +58,11 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
             qDebug() << "CoverArtUtils::loadCover METADATA cover with empty trackLocation.";
             return QImage();
         }
+        const QFileInfo fileInfo(info.trackLocation);
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-            QFileInfo(info.trackLocation), true);
-        return CoverArtUtils::extractEmbeddedCover(info.trackLocation,
-                                                   pToken);
+            QFileInfo(fileInfo), true);
+        return CoverArtUtils::extractEmbeddedCover(
+                TrackRef(fileInfo), pToken);
     } else if (info.type == CoverInfo::FILE) {
         if (info.trackLocation.isEmpty()) {
             qDebug() << "CoverArtUtils::loadCover FILE cover with empty trackLocation."
@@ -87,10 +99,8 @@ CoverArt CoverArtUtils::guessCoverArt(TrackPointer pTrack) {
         return art;
     }
 
-    const QFileInfo trackInfo = pTrack->getFileInfo();
-    const QString trackLocation = trackInfo.absoluteFilePath();
-
-    art.image = extractEmbeddedCover(trackLocation, pTrack->getSecurityToken());
+    const QFileInfo trackInfo(pTrack->getFileInfo());
+    art.image = extractEmbeddedCover(TrackRef(trackInfo), pTrack->getSecurityToken());
     if (!art.image.isNull()) {
         art.info.hash = calculateHash(art.image);
         art.info.coverLocation = QString();

@@ -11,6 +11,11 @@ class LibraryTest : public MixxxTest {
   protected:
     LibraryTest() {
         m_pTrackCollection.reset(new TrackCollection(config()));
+        TrackInfoCache::createInstance(m_pTrackCollection.data());
+    }
+    ~LibraryTest() {
+        TrackInfoCache::instance().evictAll();
+        TrackInfoCache::destroyInstance();
     }
 
     TrackCollection* collection() {

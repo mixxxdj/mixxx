@@ -8,6 +8,8 @@
 #include <QCoreApplication>
 #include <QChar>
 
+#include <memory>
+
 #include "library/dao/trackdao.h"
 
 #include "library/queryutil.h"
@@ -16,7 +18,7 @@
 #include "track/beats.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
-#include "trackinfoobject.h"
+#include "trackinfocache.h"
 #include "library/coverart.h"
 #include "library/coverartutils.h"
 #include "library/dao/cratedao.h"
@@ -30,9 +32,6 @@
 #include "util/timer.h"
 #include "util/math.h"
 
-QHash<TrackId, TrackWeakPointer> TrackDAO::m_sTracks;
-QMutex TrackDAO::m_sTracksMutex;
-
 enum { UndefinedRecordIndex = -2 };
 
 TrackCacheItem::TrackCacheItem(TrackPointer pTrack)
@@ -40,25 +39,9 @@ TrackCacheItem::TrackCacheItem(TrackPointer pTrack)
     DEBUG_ASSERT(m_pTrack);
 }
 
-TrackCacheItem::~TrackCacheItem() {
-    DEBUG_ASSERT_AND_HANDLE(!m_pTrack.isNull()) {
-        return;
-    }
-    // qDebug() << "~TrackCacheItem" << m_pTrack << "ID"
-    //          << m_pTrack->getId() << m_pTrack->getInfo();
-
-    // Signal to TrackDAO::saveTrack(TrackPointer) to save the track if it is
-    // dirty. Does not drop the strong reference to the track until saveTrack
-    // completes.
-    if (m_pTrack->isDirty()) {
-        emit(saveTrack(m_pTrack));
-    }
-}
-
 // The number of recently used tracks to cache strong references to at
-// once. Once the n+1'th track is created, the TrackDAO's QCache deletes its
-// TrackCacheItem which signals to TrackDAO::saveTrack(TrackPointer) to save the
-// track and drop the strong reference. The recent tracks cache basically
+// once. Once the n+1'th track is created, the TrackDAO's QCache deletes it
+// and drops the strong reference. The recent tracks cache basically
 // functions to prevent repeated getTrack() calls for the same track from
 // repeatedly deserializing / serializing a track to the database since this is
 // expensive.
@@ -97,37 +80,10 @@ TrackDAO::~TrackDAO() {
 }
 
 void TrackDAO::finish() {
-    // Save all tracks that haven't been saved yet.
-    QMutexLocker locker(&m_sTracksMutex);
-    QHashIterator<TrackId, TrackWeakPointer> it(m_sTracks);
-    while (it.hasNext()) {
-        it.next();
-        // Cast from TrackWeakPointer to TrackPointer. If the track still exists
-        // then pTrack will be non-NULL. If the track is dirty then save it.
-        TrackPointer pTrack = it.value();
-        if (!pTrack.isNull()) {
-            if (pTrack->isDirty()) {
-                saveTrack(pTrack);
-            }
+    qDebug() << "TrackDAO::finish()";
 
-            // When this reference expires, tell the track to delete itself
-            // rather than signalling to TrackDAO.
-            pTrack->setDeleteOnReferenceExpiration(true);
-        }
-    }
-    m_sTracks.clear();
-    locker.unlock();
-
-    // Clear cache, so all cached tracks without other references are deleted.
-    // Will queue a bunch of saveTrack calls for every TrackCacheItem in
-    // m_recentTracksCache. The event loop is already stopped at this point so
-    // the queued signals won't be processed.
+    // Drop all strong references of recently loaded tracks.
     clearCache();
-
-    // Clearing the cache should queue a bunch of save events for tracks still
-    // in the recent tracks cache. Deliver those events manually since we don't
-    // have an event loop running anymore.
-    QCoreApplication::sendPostedEvents(this, 0);
 
     // clear out played information on exit
     // crash prevention: if mixxx crashes, played information will be maintained
@@ -255,36 +211,29 @@ bool TrackDAO::trackExistsInDatabase(const QString& absoluteFilePath) {
     return getTrackId(absoluteFilePath).isValid();
 }
 
-void TrackDAO::saveTrack(TrackPointer track) {
-    if (track) {
-        saveTrack(track.data());
-    }
-}
-
 void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
-    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
-        return;
-    }
-    //qDebug() << "TrackDAO::saveTrack" << pTrack->getId() << pTrack->getInfo();
-    TrackId trackId(pTrack->getId());
-    if (trackId.isValid()) {
-        // Track has already been stored in database
-        if (pTrack->isDirty()) {
-            //qDebug() << this << "Dirty tracks before clean save:" << m_dirtyTracks.size();
-            //qDebug() << "TrackDAO::saveTrack. Dirty. Calling update";
+    DEBUG_ASSERT(nullptr != pTrack);
+
+    if (pTrack->isDirty()) {
+        // Only update the database if the track has already been added!
+        if (pTrack->getId().isValid()) {
             updateTrack(pTrack);
-
-
-            //qDebug() << this << "Dirty tracks remaining after clean save:" << m_dirtyTracks.size();
-        } else {
-            //qDebug() << "TrackDAO::saveTrack. Not Dirty";
-            //qDebug() << this << "Dirty tracks remaining:" << m_dirtyTracks.size();
-            //qDebug() << "Skipping track update for track" << pTrack->getId();
         }
-    } else {
-        // Track has not been added to database
-        //qDebug() << "TrackDAO::saveTrack. Adding track";
-        addTrack(pTrack, false);
+
+        // Write audio meta data, if enabled in the preferences.
+        //
+        // TODO(DSC) Only write tag if file metadata is dirty.
+        // Currently metadata will also be saved if for example
+        // cue points have been modified, even if this information
+        // is only stored in the database.
+        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+            if (OK != SoundSourceProxy::saveTrackMetadata(pTrack)) {
+                qWarning() << "Failed to save track metadata" << pTrack->createRef();
+            }
+        }
+
+        pTrack->resetDirty();
+        emit(trackClean(pTrack->getId()));
     }
 }
 
@@ -407,7 +356,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     //query.bindValue(":datetime_added", pTrack->getDateAdded());
     m_pQueryLibraryInsert->bindValue(":channels", pTrack->getChannels());
     m_pQueryLibraryInsert->bindValue(":mixxx_deleted", 0);
-    m_pQueryLibraryInsert->bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
+    m_pQueryLibraryInsert->bindValue(":header_parsed", pTrack->isTrackMetadataParsed() ? 1 : 0);
 
     CoverInfo coverInfo = pTrack->getCoverInfo();
     m_pQueryLibraryInsert->bindValue(":coverart_source", coverInfo.source);
@@ -532,13 +481,13 @@ void TrackDAO::addTracksFinish(bool rollback) {
     m_tracksAddedSet.clear();
 }
 
-bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
+TrackId TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
 
     if (!m_pQueryLibraryInsert || !m_pQueryTrackLocationInsert ||
         !m_pQueryLibrarySelect || !m_pQueryTrackLocationSelect) {
         qDebug() << "TrackDAO::addTracksAdd: needed SqlQuerys have not "
                     "been prepared. Adding no tracks";
-        return false;
+        return TrackId();
     }
 
     int trackLocationId = -1;
@@ -561,7 +510,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
             // We can't even select this, something is wrong.
             LOG_FAILED_QUERY(*m_pQueryTrackLocationSelect)
                         << "Can't find track location ID after failing to insert. Something is wrong.";
-            return false;
+            return TrackId();
         }
         if (m_trackLocationIdColumn == UndefinedRecordIndex) {
             m_trackLocationIdColumn = m_pQueryTrackLocationSelect->record().indexOf("id");
@@ -598,14 +547,9 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
                 }
             }
             // Regardless of whether we unremoved this track or not -- it's
-            // already in the library and so we need to skip it. Set the track's
-            // trackId so the caller can know it. TODO(XXX) this is a little
-            // weird because the track has whatever metadata the caller supplied
-            // and that metadata may differ from what is already in the
-            // database. I'm ignoring this corner case. rryan 10/2011
-            pTrack->setId(trackId);
+            // already in the library and so we need to skip it instead of
+            // adding it to m_tracksAddedSet.
         }
-        return false;
     } else {
         // Inserting succeeded, so just get the last rowid.
         QVariant lastInsert = m_pQueryTrackLocationInsert->lastInsertId();
@@ -616,7 +560,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         // that track location from the same table. "It shouldn't
         // happen"... unless I screwed up - Albert :)
         DEBUG_ASSERT_AND_HANDLE(trackLocationId >= 0) {
-            return false;
+            return TrackId();
         }
 
         bindTrackToLibraryInsert(pTrack, trackLocationId);
@@ -627,43 +571,48 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
             LOG_FAILED_QUERY(*m_pQueryLibraryInsert)
                     << "Failed to INSERT new track into library:"
                     << pTrack->getLocation();
-            return false;
+            return TrackId();
         }
         trackId = TrackId(m_pQueryLibraryInsert->lastInsertId());
-        pTrack->setId(trackId);
         m_analysisDao.saveTrackAnalyses(pTrack);
         m_cueDao.saveTrackCues(trackId, pTrack);
         pTrack->resetDirty();
+        m_tracksAddedSet.insert(trackId);
     }
-    m_tracksAddedSet.insert(trackId);
-    return true;
+    pTrack->setId(trackId);
+    return trackId;
+}
+
+TrackId TrackDAO::addTrack(const TrackRef& trackRef, bool unremove) {
+    TrackInfoCacheLocker cacheLocker(
+            TrackInfoCache::instance().resolve(trackRef));
+    TrackPointer pTrack(cacheLocker.getResolvedTrack());
+    if (pTrack.isNull()) {
+        qWarning() << "File not found"
+                << trackRef.getLocation();
+        return TrackId();
+    }
+    SoundSourceProxy(pTrack).loadTrackMetadata();
+    TrackId trackId(addTracksAdd(pTrack.data(), unremove));
+    cacheLocker.updateResolvedTrackId(trackId);
+    return trackId;
 }
 
 TrackId TrackDAO::addSingleTrack(const QFileInfo& fileInfo, bool unremove) {
-    TrackPointer pTrack(TrackInfoObject::newTemporary(fileInfo));
-    SoundSourceProxy(pTrack).loadTrackMetadata();
-    // Add the song to the database.
-    addTrack(pTrack.data(), unremove);
-    return pTrack->getId();
-}
-
-void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
-    //qDebug() << "TrackDAO::addTrack" << QThread::currentThread() << m_database.connectionName();
-    //qDebug() << "TrackCollection::addTrack(), inserting into DB";
-    // Why you be giving me NULL pTracks
-    DEBUG_ASSERT_AND_HANDLE(pTrack) {
-        return;
-    }
+    const TrackRef trackRef(fileInfo);
 
     // Check that track is a supported extension.
-    if (!SoundSourceProxy::isFileSupported(pTrack->getFileInfo())) {
-        // TODO(XXX) provide some kind of error code on a per-track basis.
-        return;
+    if (!SoundSourceProxy::isFileSupported(fileInfo)) {
+        qWarning() << "Unsupported file"
+                << trackRef.getLocation();
+        return TrackId();
     }
 
     addTracksPrepare();
-    addTracksAdd(pTrack, unremove);
+    TrackId trackId(addTrack(trackRef, unremove));
     addTracksFinish(false);
+
+    return trackId;
 }
 
 QList<TrackId> TrackDAO::addMultipleTracks(
@@ -689,9 +638,9 @@ QList<TrackId> TrackDAO::addMultipleTracks(
     query.prepare("INSERT INTO playlist_import (add_index, location) "
                   "VALUES (:add_index, :location)");
     int index = 0;
-    foreach (const QFileInfo& rFileInfo, fileInfoList) {
+    for (const auto& fileInfo: fileInfoList) {
         query.bindValue(":add_index", index);
-        query.bindValue(":location", rFileInfo.absoluteFilePath());
+        query.bindValue(":location", fileInfo.absoluteFilePath());
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
         }
@@ -736,14 +685,17 @@ QList<TrackId> TrackDAO::addMultipleTracks(
     const int locationColumn = query.record().indexOf("location");
     while (query.next()) {
         int addIndex = query.value(addIndexColumn).toInt();
-        QString filePath = query.value(locationColumn).toString();
-        const QFileInfo& fileInfo = fileInfoList.at(addIndex);
-        TrackPointer pTrack(TrackInfoObject::newTemporary(fileInfo));
-        SoundSourceProxy(pTrack).loadTrackMetadata();
-        addTracksAdd(pTrack.data(), unremove);
-        TrackId trackId = pTrack->getId();
+        const QString trackLocation = query.value(locationColumn).toString();
+        qDebug() << "TrackDAO: Adding file"
+                << trackLocation;
+
+        const QFileInfo fileInfo(fileInfoList.at(addIndex));
+        const TrackRef trackRef(fileInfo);
+        DEBUG_ASSERT(trackRef.getLocation() == trackLocation);
+
+        TrackId trackId(addTrack(trackRef, unremove));
         if (trackId.isValid()) {
-            trackIds.append(trackId);
+            trackIds.append(std::move(trackId));
         }
     }
 
@@ -914,8 +866,10 @@ void TrackDAO::purgeTracks(const QList<TrackId>& trackIds) {
     }
     transaction.commit();
 
-    // also need to clean playlists, crates, cues and track_analyses
+    // Reset the ids of all purged tracks that are still cached
+    TrackInfoCache::instance().resetIds(trackIds);
 
+    // also need to clean playlists, crates, cues and track_analyses
     m_cueDao.deleteCuesForTracks(trackIds);
     m_playlistDao.removeTracksFromPlaylists(trackIds);
     m_crateDao.removeTracksFromCrates(trackIds);
@@ -925,33 +879,6 @@ void TrackDAO::purgeTracks(const QList<TrackId>& trackIds) {
     emit(tracksRemoved(tracksRemovedSet));
     // notify trackmodels that they should update their cache as well.
     emit(forceModelUpdate());
-}
-
-void TrackDAO::slotTrackReferenceExpired(TrackInfoObject* pTrack) {
-    // Should not be possible.
-    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
-        return;
-    }
-
-    // qDebug() << "TrackDAO::slotTrackReferenceExpired" << pTrack << "ID"
-    //          << pTrack->getId() << pTrack->getInfo();
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to notify us once its reference count
-    // has dropped to zero. This is invoked via a QueuedConnection so even
-    // though the track reference count can drop to zero in any thread this
-    // handler runs in the main thread.
-
-    // Save the track if it is dirty.
-    if (pTrack->isDirty()) {
-        saveTrack(pTrack);
-    }
-
-    // Delete Track from weak reference cache
-    m_sTracksMutex.lock();
-    m_sTracks.remove(pTrack->getId());
-    m_sTracksMutex.unlock();
-
-    delete pTrack;
 }
 
 namespace {
@@ -1093,7 +1020,7 @@ bool setTrackFiletype(const QSqlRecord& record, const int column,
 
 bool setTrackHeaderParsed(const QSqlRecord& record, const int column,
                           TrackPointer pTrack) {
-    pTrack->setHeaderParsed(record.value(column).toBool());
+    pTrack->setTrackMetadataParsed(record.value(column).toBool());
     return false;
 }
 
@@ -1164,6 +1091,10 @@ struct ColumnPopulator {
 #define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
 
 TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
+    if (!trackId.isValid()) {
+        return TrackPointer();
+    }
+
     ScopedTimer t("TrackDAO::getTrackFromDB");
     QSqlQuery query(m_database);
 
@@ -1249,32 +1180,60 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     }
 
     // Location is the first column.
-    QString location = queryRecord.value(0).toString();
-
-    TrackPointer pTrack = TrackPointer(
-            new TrackInfoObject(location, SecurityTokenPointer(), trackId),
-            TrackInfoObject::onTrackReferenceExpired);
+    const QString trackLocation(queryRecord.value(0).toString());
+    const QFileInfo fileInfo(trackLocation);
+    TrackInfoCacheLocker cacheLocker(
+            TrackInfoCache::instance().resolve(
+                    TrackRef(fileInfo, trackId)));
+    TrackPointer pTrack(cacheLocker.getResolvedTrack());
+    DEBUG_ASSERT_AND_HANDLE(!pTrack.isNull()) {
+        return pTrack;
+    }
 
     // TIO already stats the file to see if it exists, what its length is,
     // etc. So don't bother setting it.
 
     // For every column run its populator to fill the track in with the data.
-    bool shouldDirty = false;
+    bool markTrackDirty = false;
     for (int i = 0; i < recordCount; ++i) {
         TrackPopulatorFn populator = columns[i].populator;
         if (populator != NULL) {
             // If any populator says the track should be dirty then we dirty it.
-            shouldDirty = (*populator)(queryRecord, i, pTrack) || shouldDirty;
+            if ((*populator)(queryRecord, i, pTrack)) {
+                markTrackDirty = true;
+            }
         }
     }
 
     // Populate track cues from the cues table.
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
 
+    if (cacheLocker.getResolveResult() == TrackInfoCacheLocker::RESOLVE_MISS) {
+        // Reset the dirty flag of freshly allocated tracks
+        pTrack->resetDirty();
+        // Reload both metadata and cover art from file if the track was
+        // not already cached. This must be done while the TrackInfoCache
+        // is still locked and before inserting the track into the recent
+        // tracks cache!
+        // NOTE(uklotzde): With reloadFromFile = false metadata is only
+        // reloaded if it has not already been parsed once before. Setting
+        // reloadFromFile = true will enforce reloading from file on every
+        // cache miss. This is a viable option (and my preferred setting)
+        // if considering the tags in the file as the primary source of
+        // truth instead of the Mixxx DB. As a prerequisite metadata must
+        // be written back into file tags as soon as the track is dropped
+        // from the cache. Otherwise any modifications to metadata would
+        // be lost!
+        const bool reloadFromFile = m_pConfig &&
+                (m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) &&
+                (m_pConfig->getValueString(ConfigKey("[Library]","ReloadAudioTags")).toInt() == 1);
+        SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt(reloadFromFile);
+    }
+
     // Normally we will set the track as clean but sometimes when loading from
     // the database we need to perform upkeep that ought to be written back to
     // the database when the track is deleted.
-    pTrack->markDirty(shouldDirty);
+    const bool isTrackDirty = pTrack->markDirty(markTrackDirty);
 
     // Listen to dirty and changed signals
     connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
@@ -1286,43 +1245,22 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
             this, SLOT(slotTrackChanged(TrackInfoObject*)),
             Qt::DirectConnection);
-    // Queued connection. We are not in a rush to process reference
-    // count expirations and it can produce dangerous signal loops.
-    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    connect(pTrack.data(), SIGNAL(referenceExpired(TrackInfoObject*)),
-            this, SLOT(slotTrackReferenceExpired(TrackInfoObject*)),
-            Qt::QueuedConnection);
 
-    m_sTracksMutex.lock();
-    // Automatic conversion to a weak pointer
-    m_sTracks[trackId] = pTrack;
-    //int trackCount = m_sTracks.count();
-    m_sTracksMutex.unlock();
-    //qDebug() << "TrackDAO::m_sTracks.count() =" << trackCount;
-
+    // Insert the loaded track into the recent tracks cache
     TrackCacheItem* pCacheItem = new TrackCacheItem(pTrack);
-
-    // Queued connection. We are not in a rush to process cache
-    // expirations and it can produce dangerous signal loops.
-    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    connect(pCacheItem, SIGNAL(saveTrack(TrackPointer)),
-            this, SLOT(saveTrack(TrackPointer)),
-            Qt::QueuedConnection);
-
     m_recentTracksCache.insert(trackId, pCacheItem);
+
+    cacheLocker.unlockCache();
 
     // If the track is dirty send dirty notifications after we inserted
     // it in the cache. BaseTrackCache cares about dirty notifications
-    // and the setDirty call above happens before we connect to the
+    // and the markDirty() call above happens before we connect to the
     // track's signals.
-    if (shouldDirty) {
+    if (isTrackDirty) {
         emit(trackDirty(trackId));
+    } else {
+        emit(trackClean(trackId));
     }
-
-    // If the header hasn't been parsed, parse it but only after we set the
-    // track clean and hooked it up to the track cache, because this will
-    // dirty it.
-    SoundSourceProxy(pTrack).loadTrackMetadata();
 
     return pTrack;
 }
@@ -1346,34 +1284,16 @@ TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
     }
 
     // Next, check the weak-reference cache to see if the track still has a
-    // strong reference somewhere. It's possible that something is currently
-    // using this track so its reference count is non-zero despite it not being
-    // present in the track cache.
-    QMutexLocker locker(&m_sTracksMutex);
-    QHash<TrackId, TrackWeakPointer>::iterator it = m_sTracks.find(trackId);
-    if (it != m_sTracks.end()) {
-        //qDebug() << "Returning cached TIO for track" << id;
-        pTrack = it.value();
-    }
-
-    // Unlock the track cache mutex. Otherwise we can deadlock.
-    locker.unlock();
+    // strong reference somewhere.
+    pTrack = TrackInfoCache::instance().lookup(trackId);
 
     // If we were able to convert a weak reference to a strong reference then
     // re-insert it into the recent tracks cache so that its least-recently-used
     // tracking is accurate.
-    if (pTrack) {
+    if (!pTrack.isNull()) {
         // NOTE: Never call QCache::insert() while holding the weak-reference
         // hash mutex. It may trigger a cache delete and trigger a deadlock.
         TrackCacheItem* pCacheItem = new TrackCacheItem(pTrack);
-
-        // Queued connection. We are not in a rush to process cache
-        // expirations and it can produce dangerous signal loops.
-        // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-        connect(pCacheItem, SIGNAL(saveTrack(TrackPointer)),
-                this, SLOT(saveTrack(TrackPointer)),
-                Qt::QueuedConnection);
-
         m_recentTracksCache.insert(trackId, pCacheItem);
         return pTrack;
     } else if (cacheOnly) {
@@ -1388,21 +1308,15 @@ TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
 
 // Saves a track's info back to the database
 void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
-    DEBUG_ASSERT_AND_HANDLE(pTrack) {
-        return;
-    }
+    const TrackId trackId(pTrack->getId());
+    DEBUG_ASSERT(trackId.isValid());
 
     ScopedTransaction transaction(m_database);
     // QTime time;
     // time.start();
-    //qDebug() << "TrackDAO::updateTrackInDatabase" << QThread::currentThread() << m_database.connectionName();
-
-    //qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
-
-    TrackId trackId(pTrack->getId());
-    DEBUG_ASSERT_AND_HANDLE(trackId.isValid()) {
-        return;
-    }
+    qDebug() << "TrackDAO:"
+            << "Updating track in database"
+            << pTrack->getLocation();
 
     QSqlQuery query(m_database);
 
@@ -1448,7 +1362,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     query.bindValue(":played", pTrack->isPlayed() ? 1 : 0);
     query.bindValue(":channels", pTrack->getChannels());
-    query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
+    query.bindValue(":header_parsed", pTrack->isTrackMetadataParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());
     query.bindValue(":track_id", trackId.toVariant());
 
@@ -1513,13 +1427,11 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
     //time.start();
     m_analysisDao.saveTrackAnalyses(pTrack);
-    m_cueDao.saveTrackCues(trackId, pTrack);
+    m_cueDao.saveTrackCues(pTrack->getId(), pTrack);
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed() << "ms";
     //time.start();
-    pTrack->resetDirty();
-    //qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
 }
 
 // Mark all the tracks in the library as invalid.
@@ -1742,8 +1654,7 @@ bool TrackDAO::detectMovedFiles(QSet<TrackId>* pTracksMovedSetOld,
 }
 
 void TrackDAO::clearCache() {
-    // Triggers a deletion of all the TrackCacheItems which in turn calls
-    // saveTrack(TrackPointer) for all of the tracks in the recent tracks cache.
+    // Drops all strong references from the recent tracks cache.
     m_recentTracksCache.clear();
 }
 
@@ -1822,7 +1733,7 @@ bool TrackDAO::verifyRemainingTracks(volatile const bool* pCancel) {
 namespace {
     QImage parseCoverArt(const QFileInfo& fileInfo) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
-        return CoverArtUtils::extractEmbeddedCover(fileInfo.filePath(), pToken);
+        return CoverArtUtils::extractEmbeddedCover(TrackRef(fileInfo), pToken);
     }
 }
 
@@ -1967,11 +1878,11 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
                                      bool processCoverArt,
                                      bool* pAlreadyInLibrary) {
     TrackId trackId(getTrackId(trackLocation));
-    bool track_already_in_library = trackId.isValid();
+    bool trackAlreadyInLibrary = trackId.isValid();
 
     // Add Track to library -- unremove if it was previously removed.
     if (!trackId.isValid()) {
-        trackId = addTrack(trackLocation, true);
+        trackId = addSingleTrack(trackLocation, true);
     }
 
     TrackPointer pTrack;
@@ -1979,18 +1890,17 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
         pTrack = getTrack(trackId);
     }
 
-    // addTrack or getTrack may fail. If they did, create a transient
-    // TrackPointer. We explicitly do not process cover art while creating the
-    // TrackInfoObject since we want to do it asynchronously (see below).
+    // addTrack or getTrack may fail.
     if (pTrack.isNull()) {
-        pTrack = TrackInfoObject::newTemporary(trackLocation);
-        SoundSourceProxy(pTrack).loadTrackMetadata();
+        qWarning() << "Failed to load track"
+                << trackLocation;
+        return pTrack;
     }
 
     // If the track wasn't in the library already then it has not yet been
     // checked for cover art. If processCoverArt is true then we should request
     // cover processing via CoverArtCache asynchronously.
-    if (processCoverArt && pTrack && !track_already_in_library) {
+    if (processCoverArt && !trackAlreadyInLibrary) {
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache != NULL) {
             pCache->requestGuessCover(pTrack);
@@ -1998,7 +1908,7 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
     }
 
     if (pAlreadyInLibrary != NULL) {
-        *pAlreadyInLibrary = track_already_in_library;
+        *pAlreadyInLibrary = trackAlreadyInLibrary;
     }
 
     return pTrack;

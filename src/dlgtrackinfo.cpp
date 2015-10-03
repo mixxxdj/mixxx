@@ -137,31 +137,31 @@ void DlgTrackInfo::cueDelete() {
     }
 }
 
-void DlgTrackInfo::populateFields(TrackPointer pTrack) {
-    setWindowTitle(pTrack->getArtist() % " - " % pTrack->getTitle());
+void DlgTrackInfo::populateFields(const TrackInfoObject& track) {
+    setWindowTitle(track.getArtist() % " - " % track.getTitle());
 
     // Editable fields
-    txtTrackName->setText(pTrack->getTitle());
-    txtArtist->setText(pTrack->getArtist());
-    txtAlbum->setText(pTrack->getAlbum());
-    txtAlbumArtist->setText(pTrack->getAlbumArtist());
-    txtGenre->setText(pTrack->getGenre());
-    txtComposer->setText(pTrack->getComposer());
-    txtGrouping->setText(pTrack->getGrouping());
-    txtYear->setText(pTrack->getYear());
-    txtTrackNumber->setText(pTrack->getTrackNumber());
-    txtComment->setPlainText(pTrack->getComment());
-    spinBpm->setValue(pTrack->getBpm());
+    txtTrackName->setText(track.getTitle());
+    txtArtist->setText(track.getArtist());
+    txtAlbum->setText(track.getAlbum());
+    txtAlbumArtist->setText(track.getAlbumArtist());
+    txtGenre->setText(track.getGenre());
+    txtComposer->setText(track.getComposer());
+    txtGrouping->setText(track.getGrouping());
+    txtYear->setText(track.getYear());
+    txtTrackNumber->setText(track.getTrackNumber());
+    txtComment->setPlainText(track.getComment());
+    spinBpm->setValue(track.getBpm());
     // Non-editable fields
-    txtDuration->setText(pTrack->getDurationText());
-    txtLocation->setPlainText(pTrack->getLocation());
-    txtType->setText(pTrack->getType());
-    txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
-    txtBpm->setText(pTrack->getBpmText());
-    txtKey->setText(pTrack->getKeyText());
-    BeatsPointer pBeats = pTrack->getBeats();
+    txtDuration->setText(track.getDurationText());
+    txtLocation->setPlainText(track.getLocation());
+    txtType->setText(track.getType());
+    txtBitrate->setText(QString(track.getBitrateStr()) + (" ") + tr("kbps"));
+    txtBpm->setText(track.getBpmText());
+    txtKey->setText(track.getKeyText());
+    BeatsPointer pBeats = track.getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
-    bool enableBpmEditing = !pTrack->isBpmLocked() && beatsSupportsSet;
+    bool enableBpmEditing = !track.isBpmLocked() && beatsSupportsSet;
     spinBpm->setEnabled(enableBpmEditing);
     bpmTap->setEnabled(enableBpmEditing);
     bpmDouble->setEnabled(enableBpmEditing);
@@ -169,9 +169,9 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmTwoThirds->setEnabled(enableBpmEditing);
     bpmThreeFourth->setEnabled(enableBpmEditing);
 
-    m_loadedCoverInfo = pTrack->getCoverInfo();
-    int reference = pTrack->getId().toInt();
-    m_loadedCoverInfo.trackLocation = pTrack->getLocation();
+    m_loadedCoverInfo = track.getCoverInfo();
+    int reference = track.getId().toInt();
+    m_loadedCoverInfo.trackLocation = track.getLocation();
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo.trackLocation, m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
@@ -187,7 +187,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
         return;
     }
 
-    populateFields(m_pLoadedTrack);
+    populateFields(*m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
 
     disconnect(this, SLOT(updateTrackMetadata()));
@@ -476,13 +476,15 @@ void DlgTrackInfo::reloadTrackMetadata() {
     if (m_pLoadedTrack) {
         TrackPointer pTrack(TrackInfoObject::newTemporaryForSameFile(m_pLoadedTrack));
         SoundSourceProxy(pTrack).loadTrackMetadata();
-        populateFields(pTrack);
+        if (!pTrack.isNull()) {
+            populateFields(*pTrack);
+        }
     }
 }
 
 void DlgTrackInfo::updateTrackMetadata() {
-    if (m_pLoadedTrack) {
-        populateFields(m_pLoadedTrack);
+    if (!m_pLoadedTrack.isNull()) {
+        populateFields(*m_pLoadedTrack);
     }
 }
 

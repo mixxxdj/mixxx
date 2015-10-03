@@ -71,6 +71,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
   private slots:
     void slotRowHeightValueChanged(int);
     void slotSelectFont();
+    void slotWriteAudioTagsToggled();
+    void slotReloadAudioTagsClicked(bool checked);
 
   private:
     void initialiseDirList();

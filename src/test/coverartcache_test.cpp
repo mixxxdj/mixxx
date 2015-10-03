@@ -5,12 +5,12 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/trackcollection.h"
-#include "test/mixxxtest.h"
+#include "test/librarytest.h"
 #include "soundsourceproxy.h"
 
 // first inherit from MixxxTest to construct a QApplication to be able to
 // construct the default QPixmap in CoverArtCache
-class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
+class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
   protected:
     virtual void SetUp() {
     }

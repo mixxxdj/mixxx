@@ -70,30 +70,24 @@ void CrateTableModel::setTableModel(int crateId) {
 
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     Q_UNUSED(index);
-    // If a track is dropped but it isn't in the library, then add it because
-    // the user probably dropped a file from outside Mixxx into this playlist.
-    QFileInfo fileInfo(location);
-    if (!fileInfo.exists()) {
-        return false;
-    }
 
     TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    TrackId trackId(trackDao.addTrack(fileInfo, true));
-
-    bool success = false;
-    if (trackId.isValid()) {
-        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(trackId, m_iCrateId);
-    }
-
-    if (success) {
+    // If a track is dropped but it isn't in the library, then add it because
+    // the user probably dropped a file from outside Mixxx into this crate.
+    // This will only succeed if the file actually exist. If the track is
+    // already contained in the library it will not insert a duplicate.
+    // It also handles unremoving logic if the track has been removed from
+    // the library recently and re-adds it.
+    QFileInfo fileInfo(location);
+    const TrackId trackId(trackDao.addSingleTrack(fileInfo, true));
+    if (trackId.isValid() &&
+            m_pTrackCollection->getCrateDAO().addTrackToCrate(trackId, m_iCrateId)) {
         // TODO(rryan) just add the track dont select
         select();
         return true;
     } else {
         qDebug() << "CrateTableModel::addTrack could not add track"
-                 << fileInfo.absoluteFilePath() << "to crate" << m_iCrateId;
+                 << location << "to crate" << m_iCrateId;
         return false;
     }
 }
@@ -164,7 +158,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_ADDTOPLAYLIST
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_RELOADMETADATA
+            | TRACKMODELCAPS_FILEMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOPREVIEWDECK

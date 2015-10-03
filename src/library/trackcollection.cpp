@@ -163,6 +163,31 @@ void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource)
     m_defaultTrackSource = trackSource;
 }
 
+void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
+    // We only call this method if the user has picked a relocated directory via
+    // a file dialog. This means the system sandboxer (if we are sandboxed) has
+    // granted us permission to this folder. Create a security bookmark while we
+    // have permission so that we can access the folder on future runs. We need
+    // to canonicalize the path so we first wrap the directory string with a
+    // QDir.
+    QDir directory(newDir);
+    Sandbox::createSecurityToken(directory);
+
+    QSet<TrackId> movedIds(
+            m_directoryDao.relocateDirectory(oldDir, newDir));
+
+    // Discard all cached tracks
+    TrackInfoCache::instance().evictAll();
+
+    // Clear cache to that all TIO with the old dir information get updated
+    m_trackDao.clearCache();
+    m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
+}
+
+void TrackCollection::evictTrack(TrackInfoObject* pTrack) {
+    m_trackDao.saveTrack(pTrack);
+}
+
 #ifdef __SQLITE3__
 // from public domain code
 // http://www.archivum.info/qt-interest@trolltech.com/2008-12/00584/Re-%28Qt-interest%29-Qt-Sqlite-UserDefinedFunction.html
@@ -376,7 +401,6 @@ int TrackCollection::likeCompareInner(
     }
     return iString == stringSize;
 }
-
 
 
 /*
