@@ -143,6 +143,8 @@ void GLSLWaveformRendererSignal::createGeometry() {
     if (m_unitQuadListId != -1)
         return;
 
+#ifndef __OPENGLES__
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(-1.0, 1.0, -1.0, 1.0, -10.0, 10.0);
@@ -169,6 +171,8 @@ void GLSLWaveformRendererSignal::createGeometry() {
         glEnd();
     }
     glEndList();
+
+#endif
 }
 
 void GLSLWaveformRendererSignal::createFrameBuffers()
@@ -275,6 +279,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     //qDebug() << "GAIN" << allGain << lowGain << midGain << highGain;
 
+#ifndef __OPENGLES__
+
     //paint into frame buffer
     {
         glMatrixMode(GL_PROJECTION);
@@ -345,7 +351,6 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
             glVertex3f(firstVisualIndex, 1.0f, 0.0f);
         }
         glEnd();
-
 
         m_framebuffer->release();
 
@@ -420,6 +425,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
+
+#endif
 
     painter->endNativePainting();
 }

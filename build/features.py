@@ -6,6 +6,25 @@ from mixxx import Feature
 import SCons.Script as SCons
 import depends
 
+class OpenGLES(Feature):
+	def description(self):
+		return "OpenGL-ES >= 2.0 support [Experimental]"
+
+	def enabled(self, build):
+		build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
+		return int(build.flags['opengles'])
+
+	def add_options(self, build, vars):
+		vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
+
+	def configure(self, build, conf):
+		if not self.enabled(build):
+          		return
+		if build.flags['opengles']:
+			build.env.Append(CPPDEFINES='__OPENGLES__')
+	
+	def sources(self, build):
+		return []
 
 class HSS1394(Feature):
     def description(self):
