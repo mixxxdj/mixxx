@@ -23,6 +23,10 @@ public:
     explicit SoundSourceProxy(
             const TrackPointer& pTrack);
 
+    const TrackPointer& getTrack() const {
+        return m_pTrack;
+    }
+
     const QString& getFilePath() const {
         return m_filePath;
     }
@@ -39,6 +43,21 @@ public:
         }
     }
 
+    // Parse track metadata and (optionally) cover art from the file
+    // if it has not already been parsed. With reloadFromFile = true
+    // metadata and cover art will be reloaded from the file regardless
+    // if it has already been parsed before or not.
+    void parseTrackMetadata(bool reloadFromFile = false) const {
+        return m_pTrack->parseTrackMetadata(*this, false, reloadFromFile);
+    }
+    void parseTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
+        return m_pTrack->parseTrackMetadata(*this, true, reloadFromFile);
+    }
+
+    // Low-level function for parsing track metadata and cover art
+    // embedded in the audio file into the corresponding objects.
+    // The track referenced by this proxy is not modified! Both
+    // parameters are optional and can be set to nullptr/NULL.
     Result parseTrackMetadataAndCoverArt(
             Mixxx::TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override {
@@ -48,20 +67,6 @@ public:
         } else {
             return ERR;
         }
-    }
-
-    // Only for  backward compatibility.
-    // Should be removed when no longer needed.
-    Result parseTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
-        return parseTrackMetadataAndCoverArt(pTrackMetadata, NULL);
-    }
-
-    // Only for  backward compatibility.
-    // Should be removed when no longer needed.
-    QImage parseCoverArt() const {
-        QImage coverArt;
-        const Result result = parseTrackMetadataAndCoverArt(NULL, &coverArt);
-        return (result == OK) ? coverArt : QImage();
     }
 
     // Opening the audio data through the proxy will

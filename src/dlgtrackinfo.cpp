@@ -3,6 +3,7 @@
 
 #include "dlgtrackinfo.h"
 #include "trackinfoobject.h"
+#include "soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dao/cue.h"
@@ -475,7 +476,7 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
 void DlgTrackInfo::reloadTrackMetadata() {
     if (m_pLoadedTrack) {
         TrackPointer pTrack(TrackInfoObject::newTemporaryForSameFile(m_pLoadedTrack));
-        pTrack->parse(true);
+        SoundSourceProxy(pTrack).parseTrackMetadata();
         populateFields(pTrack);
     }
 }
