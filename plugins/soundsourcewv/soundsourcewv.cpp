@@ -121,9 +121,11 @@ inline long unsigned SoundSourceWV::length(){
 
 
 Result SoundSourceWV::parseHeader() {
-    const QByteArray qBAFilename(getFilename().toLocal8Bit());
-    TagLib::WavPack::File f(qBAFilename.constData());
-
+#ifdef _WIN32
+    TagLib::WavPack::File f(getFilename().toStdWString().data());
+#else
+    TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
+#endif
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -145,7 +147,11 @@ Result SoundSourceWV::parseHeader() {
 }
 
 QImage SoundSourceWV::parseCoverArt() {
+#ifdef _WIN32
+    TagLib::WavPack::File f(getFilename().toStdWString().data());
+#else
     TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
+#endif
     TagLib::APE::Tag *ape = f.APETag();
     if (ape) {
         return Mixxx::getCoverInAPETag(*ape);

@@ -245,9 +245,11 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
    Parse the the file to get metadata
  */
 Result SoundSourceOggVorbis::parseHeader() {
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
-    TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
-
+#ifdef _WIN32
+    TagLib::Ogg::Vorbis::File f(getFilename().toStdWString().data());
+#else
+    TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
+#endif
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -269,7 +271,11 @@ Result SoundSourceOggVorbis::parseHeader() {
 }
 
 QImage SoundSourceOggVorbis::parseCoverArt() {
+#ifdef _WIN32
+    TagLib::Ogg::Vorbis::File f(getFilename().toStdWString().data());
+#else
     TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
+#endif
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
         return Mixxx::getCoverInXiphComment(*xiph);

@@ -554,7 +554,11 @@ Result SoundSourceFFmpeg::parseHeader() {
     bool is_aiff = location.endsWith("aiff", Qt::CaseInsensitive);
 
     if (is_flac) {
+#ifdef _WIN32
+        TagLib::FLAC::File f(getFilename().toStdWString().data());
+#else
         TagLib::FLAC::File f(qBAFilename.constData());
+#endif
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -577,7 +581,11 @@ Result SoundSourceFFmpeg::parseHeader() {
             }
         }
     } else if (is_wav) {
+#ifdef _WIN32
+        TagLib::RIFF::WAV::File f(getFilename().toStdWString().data());
+#else
         TagLib::RIFF::WAV::File f(qBAFilename.constData());
+#endif
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -605,7 +613,11 @@ Result SoundSourceFFmpeg::parseHeader() {
 
     } else if (is_aiff) {
         // Try AIFF
+#ifdef _WIN32
+        TagLib::RIFF::AIFF::File f(getFilename().toStdWString().data());
+#else
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
+#endif
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -616,8 +628,11 @@ Result SoundSourceFFmpeg::parseHeader() {
             return ERR;
         }
     } else if (is_mp3) {
+#ifdef _WIN32
+        TagLib::MPEG::File f(getFilename().toStdWString().data());
+#else
         TagLib::MPEG::File f(qBAFilename.constData());
-
+#endif
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -641,8 +656,11 @@ Result SoundSourceFFmpeg::parseHeader() {
             }
         }
     } else if (is_ogg) {
+#ifdef _WIN32
+        TagLib::Ogg::Vorbis::File f(getFilename().toStdWString().data());
+#else
         TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
-
+#endif
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -660,8 +678,11 @@ Result SoundSourceFFmpeg::parseHeader() {
             }
         }
     } else if (is_mp4) {
-        TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-
+#ifdef _WIN32
+        TagLib::MP4::File f(getFilename().toStdWString().data());
+#else
+        TagLib::MP4::File f(qBAFilename.constData());
+#endif
         if (!readFileHeader(this, f)) {
            return ERR;
         }
@@ -764,7 +785,11 @@ QImage SoundSourceFFmpeg::parseCoverArt() {
             coverArt = Mixxx::getCoverInXiphComment(*xiph);
         }
    } else if (getType() == "mp4" || getType() == "m4a") {
-        TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+#ifdef _WIN32
+        TagLib::MP4::File f(getFilename().toStdWString().data());
+#else
+        TagLib::MP4::File f(qBAFilename.constData());
+#endif
         TagLib::MP4::Tag *mp4(f.tag());
         if (mp4) {
             coverArt = Mixxx::getCoverInMP4Tag(*mp4);

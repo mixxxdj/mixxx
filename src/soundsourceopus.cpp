@@ -188,8 +188,11 @@ Result SoundSourceOpus::parseHeader() {
 
 // If we don't have new enough Taglib we use libopusfile parser!
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+#ifdef _WIN32
+    TagLib::Ogg::Opus::File f(getFilename().toStdWString().data());
+#else
     TagLib::Ogg::Opus::File f(qBAFilename.constData());
-
+#endif
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -272,7 +275,11 @@ QList<QString> SoundSourceOpus::supportedFileExtensions() {
 
 QImage SoundSourceOpus::parseCoverArt() {
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+#ifdef _WIN32
+    TagLib::Ogg::Opus::File f(getFilename().toStdWString().data());
+#else
     TagLib::Ogg::Opus::File f(getFilename().toLocal8Bit().constData());
+#endif
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
         return Mixxx::getCoverInXiphComment(*xiph);

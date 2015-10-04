@@ -563,9 +563,11 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 }
 
 Result SoundSourceMp3::parseHeader() {
-    QByteArray qBAFilename(getFilename().toLocal8Bit());
-    TagLib::MPEG::File f(qBAFilename.constData());
-
+#ifdef _WIN32
+    TagLib::MPEG::File f(getFilename().toStdWString().data());
+#else
+    TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
+#endif
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -594,7 +596,11 @@ Result SoundSourceMp3::parseHeader() {
 
 QImage SoundSourceMp3::parseCoverArt() {
     QImage coverArt;
+#ifdef _WIN32
+    TagLib::MPEG::File f(getFilename().toStdWString().data());
+#else
     TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
+#endif
     TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
     if (id3v2) {
         coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
