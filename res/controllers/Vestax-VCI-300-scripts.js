@@ -189,7 +189,9 @@
  *              control. Tapping the BPM manually by holding "Scroll" is
  *              still possible.
  * 2014-08-18 Sync mapping with push-and-hold
- *            - Use MIDI mapping for "sync_enabled" to support push-and-hold
+ *            - Use MIDI mapping for "sync_enabled" to support push-and-hold.
+ *              Tapping the BPM manually by holding "Scroll" is no longer
+ *              possible.
  *            - Use setParameter() instead of setValue() for effect parameters
  * 2015-01-16 Filter effect parameter update
  *            - Rename filter effect parameter from "parameter"
@@ -198,6 +200,8 @@
  *            - Use new EqualizerRack
  *            - Connect filter effect to QuickEffectRack
  *            - Improve scratching experience
+ * 2015-10-04 Cleanup for version 1.12
+ *            - Delete obsolete code
  * ...to be continued...
  **********************************************************************/
 
@@ -521,8 +525,7 @@ VestaxVCI300.Deck.prototype.updateRateRange = function() {
 
 VestaxVCI300.Deck.prototype.updateSyncState = function() {
     var syncValue =
-        engine.getValue(this.group, "sync_enabled") ||
-        engine.getValue(this.group, "bpm_tap");
+        engine.getValue(this.group, "sync_enabled");
     this.syncLED.trigger(syncValue);
 };
 
@@ -568,7 +571,6 @@ VestaxVCI300.Deck.prototype.disconnectControls = function() {
     VestaxVCI300.disconnectControl(this.group, "loop_halve");
     VestaxVCI300.disconnectControl(this.group, "loop_double");
     VestaxVCI300.disconnectControl(this.group, "sync_enabled");
-    VestaxVCI300.disconnectControl(this.group, "bpm_tap");
     VestaxVCI300.disconnectControl(this.group, "reverseroll");
     VestaxVCI300.disconnectControl(this.filterGroup, "enabled");
     for (var beatsIndex in VestaxVCI300.autoLoopBeatsArray) {
