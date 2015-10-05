@@ -207,7 +207,7 @@ static int mp4_open(struct input_plugin_data *ip_data)
 
     /* init decoder according to mpeg-4 audio config */
     if (faacDecInit2(priv->decoder, buf, buf_size,
-            (SAMPLERATE_TYPE*)&priv->sample_rate, &priv->channels) < 0) {
+            &priv->sample_rate, &priv->channels) < 0) {
         free(buf);
         goto out;
     }
