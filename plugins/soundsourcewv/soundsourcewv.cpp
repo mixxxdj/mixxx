@@ -256,7 +256,6 @@ uint32_t SoundSourceWV::GetPosCallback(void *id)
     if (!pFile) {
         return 0;
     }
-    pFile->reset();
     return pFile->pos();
 }
 
