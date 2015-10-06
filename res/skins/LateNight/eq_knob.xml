@@ -49,7 +49,6 @@
                     <Template src="skin:knob_textless.xml">
                        <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
                        <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
-                       <SetVariable name="centered">true</SetVariable>
                     </Template>
                 </Children>
             </WidgetGroup>
