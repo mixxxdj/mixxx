@@ -1,10 +1,24 @@
+////////////////////////////////////////////////////////////////////////
+// JSHint configuration                                               //
+////////////////////////////////////////////////////////////////////////
+/* global engine                                                      */
+/* global script                                                      */
+/* global print                                                       */
+/* global midi                                                        */
+////////////////////////////////////////////////////////////////////////
+
+// name: Vestax VCI-100MKII
+// author: Takeshi Soejima
+// description: 2015-10-6
+// wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
+
 var VCI102 = {};
 
-VCI102.headVolume = function (ch, midino, value, status, group) {
+VCI102.headVolume = function(ch, midino, value, status, group) {
     engine.setValue(group, "headVolume", value / 127);
 };
 
-VCI102.volume = function (ch, midino, value, status, group) {
+VCI102.volume = function(ch, midino, value, status, group) {
     engine.setValue(group, "volume", value / 127);
 };
 
@@ -12,7 +26,7 @@ VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
 
 VCI102.shift = [0, 0];
 
-VCI102.setShift = function (ch, value) {
+VCI102.setShift = function(ch, value) {
     var i, j, enabled;
     VCI102.shift[ch] = value * 2 / 127;
     for (i = ch; i < 4; i += 2) {
@@ -23,20 +37,20 @@ VCI102.setShift = function (ch, value) {
     }
 };
 
-VCI102.shiftL = function (ch, midino, value, status, group) {
+VCI102.shiftL = function(ch, midino, value, status, group) {
     VCI102.setShift(0, value);
-}
+};
 
-VCI102.shiftR = function (ch, midino, value, status, group) {
+VCI102.shiftR = function(ch, midino, value, status, group) {
     VCI102.setShift(1, value);
-}
+};
 
 VCI102.selectTimer = 0;
 
-VCI102.selectTrack = function (value, select) {
+VCI102.selectTrack = function(value, select) {
     if (value) {
         select();
-        VCI102.selectTimer = engine.beginTimer(500, function () {
+        VCI102.selectTimer = engine.beginTimer(500, function() {
             VCI102.selectTimer = engine.beginTimer(40, select);
         }, true);
     } else {
@@ -44,32 +58,32 @@ VCI102.selectTrack = function (value, select) {
     }
 };
 
-VCI102.SelectPrevTrack = function (ch, midino, value, status, group) {
-    VCI102.selectTrack(value, function () {
+VCI102.SelectPrevTrack = function(ch, midino, value, status, group) {
+    VCI102.selectTrack(value, function() {
         engine.setValue(group, "SelectPrevTrack", 1);
     });
 };
 
-VCI102.SelectNextTrack = function (ch, midino, value, status, group) {
-    VCI102.selectTrack(value, function () {
+VCI102.SelectNextTrack = function(ch, midino, value, status, group) {
+    VCI102.selectTrack(value, function() {
         engine.setValue(group, "SelectNextTrack", 1);
     });
 };
 
 VCI102.keylock = [0, 0, 0, 0];
 
-VCI102.slip = function (value, group, key) {
+VCI102.slip = function(value, group, key) {
     if (! value) {
         if (engine.getValue(group, "slip_enabled")) {
             engine.setValue(group, "slip_enabled", 0);
-            engine.beginTimer(40, function () {
+            engine.beginTimer(40, function() {
                 engine.setValue(group, "slip_enabled", 1);
             }, true);
         }
     }
 };
 
-VCI102.scratch = function (ch, midino, value, status, group) {
+VCI102.scratch = function(ch, midino, value, status, group) {
     var deck = ch + 1;
     if (value) {
         VCI102.keylock[ch] = engine.getValue(group, "keylock");
@@ -82,33 +96,33 @@ VCI102.scratch = function (ch, midino, value, status, group) {
     }
 };
 
-VCI102.jog = function (ch, midino, value, status, group) {
+VCI102.jog = function(ch, midino, value, status, group) {
     var deck = ch + 1;
     value -= 64;
     if (engine.isScratching(deck)) {
         engine.scratchTick(deck, value);
-    } else if (engine.getValue(group, "volume") == 0 || (1 - engine.getValue(group, "orientation")) * engine.getValue("[Master]", "crossfader") == 1) {
+    } else if ((engine.getValue(group, "orientation") - 1) * engine.getValue("[Master]", "crossfader") != 1) {
         engine.setValue(group, "jog", value * value * value / 512);
     }
 };
 
 VCI102.rate = [64, 64, 64, 64];
 
-VCI102.rateMSB = function (ch, midino, value, status, group) {
+VCI102.rateMSB = function(ch, midino, value, status, group) {
     VCI102.rate[ch] = value;
 };
 
-VCI102.rateLSB = function (ch, midino, value, status, group) {
+VCI102.rateLSB = function(ch, midino, value, status, group) {
     engine.setValue(group, "rate", (8192 - value - VCI102.rate[ch] * 128) / 8192);
 };
 
-VCI102.pitch = function (ch, midino, value, status, group) {
+VCI102.pitch = function(ch, midino, value, status, group) {
     engine.setValue(group, "pitch", Math.round((value - 64) * 3 / 32));
 };
 
 VCI102.beat = [4, 4, 4, 4];
 
-VCI102.setBeat = function (ch, status, value) {
+VCI102.setBeat = function(ch, status, value) {
     var LED = [[0x33, 0x29], [0x29, 0x26], [0x33, 0x29], [0x29, 0x26]];
     if (value >= 1/32 && value <= 64) {
         VCI102.beat[ch] = value;
@@ -117,7 +131,7 @@ VCI102.setBeat = function (ch, status, value) {
     }
 };
 
-VCI102.beatloop_exit = function (ch, midino, value, status, group) {
+VCI102.beatloop_exit = function(ch, midino, value, status, group) {
     if (value) {
         if (engine.getValue(group, "loop_enabled")) {
             engine.setValue(group, "reloop_exit", 1);
@@ -127,7 +141,7 @@ VCI102.beatloop_exit = function (ch, midino, value, status, group) {
     }
 };
 
-VCI102.reloop_beatloop = function (ch, midino, value, status, group) {
+VCI102.reloop_beatloop = function(ch, midino, value, status, group) {
     if (value) {
         if (engine.getValue(group, "loop_enabled")) {
             engine.setValue(group, "beatloop", VCI102.beat[ch]);
@@ -137,7 +151,7 @@ VCI102.reloop_beatloop = function (ch, midino, value, status, group) {
     }
 };
 
-VCI102.loop_halve = function (ch, midino, value, status, group) {
+VCI102.loop_halve = function(ch, midino, value, status, group) {
     if (engine.getValue(group, "loop_enabled")) {
         engine.setValue(group, "loop_halve", value / 127);
     } else if (value) {
@@ -145,7 +159,7 @@ VCI102.loop_halve = function (ch, midino, value, status, group) {
     }
 };
 
-VCI102.loop_double = function (ch, midino, value, status, group) {
+VCI102.loop_double = function(ch, midino, value, status, group) {
     if (engine.getValue(group, "loop_enabled")) {
         engine.setValue(group, "loop_double", value / 127);
     } else if (value) {
@@ -155,7 +169,7 @@ VCI102.loop_double = function (ch, midino, value, status, group) {
 
 VCI102.Deck = ["[Channel1]", "[Channel2]"];
 
-VCI102.setDeck = function (ch, midino, value, status, group) {
+VCI102.setDeck = function(ch, midino, value, status, group) {
     var i;
     if (value) {
         VCI102.Deck[ch] = group;
@@ -165,7 +179,7 @@ VCI102.setDeck = function (ch, midino, value, status, group) {
     }
 };
 
-VCI102.solo = function (ch, midino, value, status, group) {
+VCI102.solo = function(ch, midino, value, status, group) {
     var i;
     if (value) {
         for (i = 0; i < 4; i ++) {
@@ -174,7 +188,7 @@ VCI102.solo = function (ch, midino, value, status, group) {
     }
 };
 
-VCI102.shutdown = function () {
+VCI102.shutdown = function() {
     var i, j;
     for (i = 0x90; i < 0x94; i ++) {
         for (j = 0x22; j < 0x3B; j ++) {
@@ -183,11 +197,11 @@ VCI102.shutdown = function () {
     }
 };
 
-VCI102.init = function () {
+VCI102.init = function() {
     var i, j, k, activate, enabled, led;
     var LED = [[0x2C, 0x25, 0x27, 0x28], [0x28, 0x25, 0x27, 0x2C]];
     var LFX = [0x3A, 0x38];
-    function headMix (value, group, key) {
+    function headMix(value, group, key) {
         var i;
         if (value) {
             if (engine.getValue("[Master]", "headMix") == 1) {
@@ -202,13 +216,13 @@ VCI102.init = function () {
             engine.setValue("[Master]", "headMix", 1);
         }
     }
-    function makeButton (key) {
-        VCI102[key] = function (ch, midino, value, status, group) {
+    function makeButton(key) {
+        VCI102[key] = function(ch, midino, value, status, group) {
             engine.setValue(VCI102.Deck[ch % 2], key, value / 127);
         };
     }
-    function makeLED (ch, midino) {
-        return function (value, group, key) {
+    function makeLED(ch, midino) {
+        return function(value, group, key) {
             var i;
             if (group == VCI102.Deck[ch]) {
                 value *= 127;
@@ -218,8 +232,8 @@ VCI102.init = function () {
             }
         };
     }
-    function makeLFX (ch, midino, shift) {
-        return function (value, group, key) {
+    function makeLFX(ch, midino, shift) {
+        return function(value, group, key) {
             if (VCI102.shift[ch % 2] == shift) {
                 midi.sendShortMsg(0x90 + ch, midino, value * 127);
             }
