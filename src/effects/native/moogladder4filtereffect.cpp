@@ -22,6 +22,7 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
             "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsForFilterKnob(true);
+    manifest.setSuperKnobScaleStart(0.5);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");

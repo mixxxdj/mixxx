@@ -250,6 +250,13 @@ void EffectSlot::onChainSuperParameterChanged(double parameter, bool force) {
     }
 }
 
+double EffectSlot::superParameterScaleStart() {
+    if (m_pEffect) {
+        EffectManifest manifest = m_pEffect->getManifest();
+        return manifest.superKnobScaleStart();
+    }
+}
+
 void EffectSlot::syncSofttakeover() {
     for (int i = 0; i < m_parameters.size(); ++i) {
         m_parameters[i]->syncSofttakeover();

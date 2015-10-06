@@ -34,6 +34,10 @@ double ControlNumericBehavior::scaleStartParameter() {
     return 0.0;
 }
 
+void ControlNumericBehavior::setScaleStartParameter(double value) {
+    Q_UNUSED(value);
+}
+
 ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
                                                  double dScaleStartParameter,
                                                  bool allowOutOfBounds)
@@ -101,6 +105,11 @@ double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
 
 double ControlPotmeterBehavior::scaleStartParameter() {
     return m_dScaleStartParameter;
+}
+
+void ControlPotmeterBehavior::setScaleStartParameter(double value) {
+    // TODO(Ferran Pujol): Check if value is between valid bounds (0,1)?
+    m_dScaleStartParameter = value;
 }
 
 #define maxPosition 1.0

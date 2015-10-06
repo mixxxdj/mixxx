@@ -262,6 +262,12 @@ double ControlDoublePrivate::scaleStartParameter() {
     return 0.0;
 }
 
+void ControlDoublePrivate::setScaleStartParameter(double value) {
+    if (!m_pBehavior.isNull()) {
+        m_pBehavior->setScaleStartParameter(value);
+    }
+}
+
 bool ControlDoublePrivate::connectValueChangeRequest(const QObject* receiver,
         const char* method, Qt::ConnectionType type) {
     // confirmation is only required if connect was successful

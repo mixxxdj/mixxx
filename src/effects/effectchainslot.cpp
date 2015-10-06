@@ -43,7 +43,6 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
             this, SLOT(slotControlChainMix(double)));
     m_pControlChainMix->set(1.0);
 
-    potmeterParameters.setScaleStartValue(0.0);
     m_pControlChainSuperParameter = new ControlPotmeter(ConfigKey(m_group, "super1"), potmeterParameters);
     connect(m_pControlChainSuperParameter, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainSuperParameter(double)));
@@ -114,6 +113,14 @@ void EffectChainSlot::setSuperParameter(double value) {
 
 void EffectChainSlot::setSuperParameterDefaultValue(double value) {
     m_pControlChainSuperParameter->setDefaultValue(value);
+}
+
+double EffectChainSlot::superParameterScaleStart() const {
+    return m_pControlChainSuperParameter->scaleStartParameter();
+}
+
+void EffectChainSlot::setSuperParameterScaleStart(double value) {
+    m_pControlChainSuperParameter->setScaleStartParameter(value);
 }
 
 void EffectChainSlot::slotChainNameChanged(const QString&) {

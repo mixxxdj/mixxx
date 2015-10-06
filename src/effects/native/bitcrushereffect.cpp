@@ -17,6 +17,7 @@ EffectManifest BitCrusherEffect::getManifest() {
         "The BitCrusher is an effect that adds quantisation noise to the signal "
         "by the reduction of the resolution or bandwidth of the samples."));
     manifest.setIsForFilterKnob(true);
+    manifest.setSuperKnobScaleStart(1.0);
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* depth = manifest.addParameter();

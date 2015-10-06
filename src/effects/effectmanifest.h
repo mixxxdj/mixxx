@@ -25,6 +25,7 @@ class EffectManifest {
         : m_isMixingEQ(false),
           m_isMasterEQ(false),
           m_isForFilterKnob(false),
+          m_dSuperKnobScaleStart(0.0),
           m_effectRampsFromDry(false) {
     }
     virtual ~EffectManifest() {
@@ -87,6 +88,14 @@ class EffectManifest {
         m_isForFilterKnob = value;
     }
 
+    virtual const double& superKnobScaleStart() const {
+        return m_dSuperKnobScaleStart;
+    }
+
+    virtual void setSuperKnobScaleStart(const double value) {
+        m_dSuperKnobScaleStart = value;
+    }
+
     virtual void setDescription(const QString& description) {
         m_description = description;
     }
@@ -122,6 +131,8 @@ class EffectManifest {
     bool m_isMasterEQ;
     // This helps us at DlgPrefEQ's basic selection of Filter knob effects
     bool m_isForFilterKnob;
+    // This helps the skin draw knob rings correctly.
+    double m_dSuperKnobScaleStart;
     QList<EffectManifestParameter> m_parameters;
     bool m_effectRampsFromDry;
 };
