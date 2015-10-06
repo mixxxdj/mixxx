@@ -15,6 +15,8 @@
         <Size><Variable name="width"/>f,<Variable name="height"/>f</Size>
         <Knob>knob_indicator.svg</Knob>
         <BackPath scalemode="STRETCH">knob_bg.svg</BackPath>
+        <Ring>knob_ring.svg</Ring>
+        <RingMaskYOffset>2.353</RingMaskYOffset>
         <MinAngle>-135</MinAngle>
         <MaxAngle>135</MaxAngle>
         <Connection>
