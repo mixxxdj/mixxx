@@ -92,7 +92,6 @@ Result SoundSourceMediaFoundation::open()
         qDebug() << "open()" << getFilename();
     }
 
-    QString qurlStr(getFilename());
     int wcFilenameLength(getFilename().toWCharArray(m_wcFilename));
     // toWCharArray does not append a null terminator to the string!
     m_wcFilename[wcFilenameLength] = '\0';
@@ -376,9 +375,7 @@ inline unsigned long SoundSourceMediaFoundation::length()
 
 Result SoundSourceMediaFoundation::parseHeader()
 {
-    // Must be toLocal8Bit since Windows fopen does not do UTF-8
-    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-
+    TagLib::MP4::File f(getFilename().toStdWString().data());
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -401,7 +398,7 @@ Result SoundSourceMediaFoundation::parseHeader()
 
 QImage SoundSourceMediaFoundation::parseCoverArt() {
     setType("m4a");
-    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+    TagLib::MP4::File f(getFilename().toStdWString().data());
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
         return Mixxx::getCoverInMP4Tag(*mp4);
