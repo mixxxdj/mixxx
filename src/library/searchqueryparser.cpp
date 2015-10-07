@@ -26,7 +26,8 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "duration"
 	             << "added"
 	             << "dateadded"
-		     << "datetime_added";
+		     << "datetime_added"
+	             << "date_added";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -164,7 +165,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 } else if (field == "duration") {
                     pNode = std::make_unique<DurationFilterNode>(
                             m_fieldToSqlColumns[field], argument);
-                } else if (field == "datetime_added" || field == "added" || field == "dateadded") {
+                } else if (field == "date_added" || field == "datetime_added" || field == "added" || field == "dateadded") {
 		    field = "datetime_added";
 		    pNode = std::make_unique<TextFilterNode>(
 			m_database, m_fieldToSqlColumns[field], argument);
