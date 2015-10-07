@@ -206,12 +206,10 @@ int SoundSourceOggVorbis::SeekCallback(void *datasource, ogg_int64_t offset,
 
    switch(whence) {
    case SEEK_SET:
-       pFile->reset();
        return pFile->seek(offset) ? 0 : -1;
    case SEEK_CUR:
-       return pFile->seek(offset) ? 0 : -1;
+       return pFile->seek(pFile->pos() + offset) ? 0 : -1;
    case SEEK_END:
-       pFile->reset();
        return pFile->seek(pFile->size() + offset) ? 0 : -1;
    default:
        return -1;
