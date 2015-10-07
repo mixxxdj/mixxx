@@ -14,7 +14,8 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dKnobCenterXOffset(0),
           m_dKnobCenterYOffset(0),
           m_dMaskXOffset(0.0),
-          m_dMaskYOffset(0.0) {
+          m_dMaskYOffset(0.0),
+          m_dRingMinSpan(0.0) {
 }
 
 WKnobComposed::~WKnobComposed() {
@@ -67,6 +68,9 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "KnobCenterYOffset")) {
         m_dKnobCenterYOffset = context.selectDouble(node, "KnobCenterYOffset");
     }
+
+    if (context.hasNode(node, "RingMinSpan")) {
+        m_dRingMinSpan = context.selectDouble(node, "RingMinSpan");
 }
 
 void WKnobComposed::clear() {
@@ -149,8 +153,21 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         int h = height();
         path.moveTo(w/2.0 + m_dMaskXOffset, h/2.0 + m_dMaskYOffset);
         double d = sqrt(pow(w+abs(m_dMaskXOffset),2) + pow(h+abs(m_dMaskYOffset),2));
+        QRectF rectangle = QRectF((w-d)/2.0,(h-d)/2.0,d,d);
+        // We do all calculations with Mixxx angles
         double dScaleStartAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * m_dScaleStartParameter;
-        path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d), 90 - dScaleStartAngle, dScaleStartAngle - m_dCurrentAngle);
+        double dInitialAngle = 0;
+        double dSpan = 0;
+
+        if (m_dCurrentAngle < dScaleStartAngle) {
+            dInitialAngle = dScaleStartAngle + m_dRingMinSpan;
+            dSpan = math_min(m_dCurrentAngle - dScaleStartAngle - m_dRingMinSpan, -2*m_dRingMinSpan);
+        } else {
+            dInitialAngle = dScaleStartAngle - m_dRingMinSpan;
+            dSpan = math_max(m_dCurrentAngle - dScaleStartAngle + m_dRingMinSpan, 2*m_dRingMinSpan);
+        }
+        // Here we convert to Qt angles
+        path.arcTo(rectangle, 90 - dInitialAngle, -dSpan);
 
         path.closeSubpath();
         p.save();

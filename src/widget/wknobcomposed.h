@@ -49,6 +49,7 @@ class WKnobComposed : public WWidget {
     double m_dKnobCenterYOffset;
     double m_dMaskXOffset;
     double m_dMaskYOffset;
+    double m_dRingMinSpan;
 
     KnobEventHandler<WKnobComposed> m_handler;
     friend class KnobEventHandler<WKnobComposed>;
