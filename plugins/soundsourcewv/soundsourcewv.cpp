@@ -63,9 +63,9 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
         m_sampleScaleFactor = CSAMPLE_PEAK;
     } else {
         const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
-        const uint32_t wavpackPeakSampleValue = uint32_t(1)
+        const uint32_t wavpackPeakSampleValue = 1u
                 << (bitsPerSample - 1);
-        m_sampleScaleFactor = CSAMPLE_PEAK / CSAMPLE(wavpackPeakSampleValue);
+        m_sampleScaleFactor = CSAMPLE_PEAK / wavpackPeakSampleValue;
     }
 
     return OK;
