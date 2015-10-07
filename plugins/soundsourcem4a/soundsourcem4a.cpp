@@ -96,7 +96,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     //  * appropriate for the platform, locale, file system, etc.
     //  * (prefer to use UTF-8 when possible).
 #if MP4V2_PROJECT_version_hex <= 0x00010901
-    m_hFile = MP4Read(getFilename().toUtf8().constData(), 0);
+    m_hFile = MP4Read(getLocalFileName().toUtf8().constData(), 0);
 #else
     m_hFile = MP4Read(getLocalFileName().toUtf8().constData());
 #endif
