@@ -266,7 +266,6 @@ int SoundSourceWV::SetPosAbsCallback(void* id, unsigned int pos)
     if (!pFile) {
         return 0;
     }
-    pFile->reset();
     return pFile->seek(pos) ? 0 : -1;
 }
 
@@ -280,12 +279,10 @@ int SoundSourceWV::SetPosRelCallback(void *id, int delta, int mode)
 
     switch(mode) {
     case SEEK_SET:
-        pFile->reset();
         return pFile->seek(delta) ? 0 : -1;
     case SEEK_CUR:
-        return pFile->seek(delta) ? 0 : -1;
+        return pFile->seek(pFile->pos() + delta) ? 0 : -1;
     case SEEK_END:
-        pFile->reset();
         return pFile->seek(pFile->size() + delta) ? 0 : -1;
     default:
         return -1;
