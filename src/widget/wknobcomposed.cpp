@@ -168,12 +168,12 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         double dInitialAngle = 0;
         double dSpan = 0;
 
-        if (m_dCurrentAngle < dScaleStartAngle) {
-            dInitialAngle = dScaleStartAngle + m_dRingMinSpan;
-            dSpan = math_min(m_dCurrentAngle - dScaleStartAngle - m_dRingMinSpan, -2*m_dRingMinSpan);
+        if (m_dCurrentAngle < dScaleStartAngle || dScaleStartAngle > 0.5) {
+            dInitialAngle = math_clamp(dScaleStartAngle + m_dRingMinSpan, m_dMinAngle, m_dMaxAngle);
+            dSpan = math_min(m_dCurrentAngle - dInitialAngle, -2*m_dRingMinSpan);
         } else {
-            dInitialAngle = dScaleStartAngle - m_dRingMinSpan;
-            dSpan = math_max(m_dCurrentAngle - dScaleStartAngle + m_dRingMinSpan, 2*m_dRingMinSpan);
+            dInitialAngle = math_clamp(dScaleStartAngle - m_dRingMinSpan, m_dMinAngle, m_dMaxAngle);
+            dSpan = math_max(m_dCurrentAngle - dInitialAngle, 2*m_dRingMinSpan);
         }
         // Here we convert to Qt angles
         path.arcTo(rectangle, 90 - dInitialAngle, -dSpan);
