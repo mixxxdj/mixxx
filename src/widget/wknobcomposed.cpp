@@ -7,15 +7,15 @@
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
-          m_dCurrentAngle(140.0),
           m_dScaleStartParameter(0.0),
-          m_dMinAngle(-230.0),
-          m_dMaxAngle(50.0),
+          m_dMinAngle(-135),
+          m_dMaxAngle(135),
           m_dKnobCenterXOffset(0),
           m_dKnobCenterYOffset(0),
           m_dMaskXOffset(0.0),
           m_dMaskYOffset(0.0),
           m_dRingMinSpan(0.0) {
+    m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * 0.5;
 }
 
 WKnobComposed::~WKnobComposed() {
