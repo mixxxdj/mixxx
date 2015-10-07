@@ -62,9 +62,20 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     // and will not be improved. We are aware of its shortcomings like
     // the lack of proper error handling.
 
+    // From opus/opusfile.h
+    // On Windows, this string must be UTF-8 (to allow access to
+    // files whose names cannot be represented in the current
+    // MBCS code page).
+    // All other systems use the native character encoding.
+#ifdef _WIN32
+    QByteArray qBAFilename = getLocalFileName().toUtf8();
+#else
+    QByteArray qBAFilename = getLocalFileName().toLocal8Bit();
+#endif
+
     int error = 0;
     OggOpusFileOwner l_ptrOpusFile(
-            op_open_file(getLocalFileNameBytes().constData(), &error));
+            op_open_file(qBAFilename.constData(), &error));
 
     int i = 0;
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
@@ -117,14 +128,24 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
 }
 
 Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    const QByteArray qbaFilename(getLocalFileNameBytes());
+    // From opus/opusfile.h
+    // On Windows, this string must be UTF-8 (to allow access to
+    // files whose names cannot be represented in the current
+    // MBCS code page).
+    // All other systems use the native character encoding.
+#ifdef _WIN32
+    QByteArray qBAFilename = getLocalFileName().toUtf8();
+#else
+    QByteArray qBAFilename = getLocalFileName().toLocal8Bit();
+#endif
+
     int errorCode = 0;
 
     DEBUG_ASSERT(!m_pOggOpusFile);
-    m_pOggOpusFile = op_open_file(qbaFilename.constData(), &errorCode);
+    m_pOggOpusFile = op_open_file(qBAFilename.constData(), &errorCode);
     if (!m_pOggOpusFile) {
-        qWarning() << "Failed to open OggOpus file:" << getUrlString() << "errorCode"
-                << errorCode;
+        qWarning() << "Failed to open OggOpus file:" << getUrlString()
+                << "errorCode" << errorCode;
         return ERR;
     }
 

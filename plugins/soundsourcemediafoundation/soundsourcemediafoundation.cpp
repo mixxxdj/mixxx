@@ -109,7 +109,6 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
         return ERR;
     }
 
-    QString qurlStr(fileName);
     // http://social.msdn.microsoft.com/Forums/en/netfxbcl/thread/35c6a451-3507-40c8-9d1c-8d4edde7c0cc
     // gives maximum path + file length as 248 + 260, using that -bkgood
     m_wcFilename = new wchar_t[248 + 260];

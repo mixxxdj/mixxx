@@ -505,7 +505,7 @@ class WavPack(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=False)
+        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=True)
         if not have_wv:
             raise Exception(
                 'Could not find libwavpack, libwv or its development headers.')

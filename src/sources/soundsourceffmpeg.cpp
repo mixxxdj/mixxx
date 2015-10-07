@@ -69,8 +69,9 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    const QByteArray qBAFilename(getLocalFileNameBytes());
-    qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
+    const QString localFileName(getLocalFileName());
+    const QByteArray qBAFilename(getLocalFileName().toLocal8Bit());
+    qDebug() << "New SoundSourceFFmpeg :" << localFileName;
 
     DEBUG_ASSERT(!m_pFormatCtx);
     m_pFormatCtx = avformat_alloc_context();
@@ -84,10 +85,16 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     m_pFormatCtx->max_analyze_duration = 999999999;
 #endif
 
+#ifdef _WIN32
+#warning No Unicode filnames supported
+// Solution: use register register_protocol(&ufile_protocol); from:
+// https://github.com/lalinsky/picard-debian/blob/9be0dfeec7da9af5d01bc11aa530f873511a59b0/picard/musicdns/avcodec.c
+#endif
+
     // Open file and make m_pFormatCtx
     if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), NULL,
                             &l_iFormatOpts) != 0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
         return ERR;
     }
 
@@ -97,7 +104,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     // Retrieve stream information
     if (avformat_find_stream_info(m_pFormatCtx, NULL) < 0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
         return ERR;
     }
 
@@ -116,7 +123,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (m_iAudioStream == -1) {
         qDebug() <<
                  "SoundSourceFFmpeg::tryOpen: cannot find an audio stream: cannot open"
-                 << qBAFilename;
+                 << localFileName;
         return ERR;
     }
 
@@ -126,12 +133,12 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     // Find the decoder for the audio stream
     if (!(m_pCodec = avcodec_find_decoder(m_pCodecCtx->codec_id))) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find a decoder for" <<
-                 qBAFilename;
+                localFileName;
         return ERR;
     }
 
     if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL)<0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
         return ERR;
     }
 
