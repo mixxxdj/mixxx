@@ -149,8 +149,8 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         int h = height();
         path.moveTo(w/2.0 + m_dMaskXOffset, h/2.0 + m_dMaskYOffset);
         double d = sqrt(pow(w+abs(m_dMaskXOffset),2) + pow(h+abs(m_dMaskYOffset),2));
-        double neutralAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * m_dScaleStartParameter;
-        path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d), 90 - neutralAngle, neutralAngle - m_dCurrentAngle);
+        double dScaleStartAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * m_dScaleStartParameter;
+        path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d), 90 - dScaleStartAngle, dScaleStartAngle - m_dCurrentAngle);
 
         path.closeSubpath();
         p.save();
