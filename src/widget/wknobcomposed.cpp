@@ -13,8 +13,8 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dMaxAngle(50.0),
           m_dKnobCenterXOffset(0),
           m_dKnobCenterYOffset(0),
-          m_iMaskXOffset(0.0),
-          m_iMaskYOffset(0.0) {
+          m_dMaskXOffset(0.0),
+          m_dMaskYOffset(0.0) {
 }
 
 WKnobComposed::~WKnobComposed() {
@@ -45,11 +45,11 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     }
 
     if (context.hasNode(node, "RingCenterXOffset")) {
-        m_iMaskXOffset = context.selectDouble(node, "MaskXOffset");
+        m_dMaskXOffset = context.selectDouble(node, "MaskXOffset");
     }
 
     if (context.hasNode(node, "RingCenterYOffset")) {
-        m_iMaskYOffset = context.selectDouble(node, "MaskYOffset");
+        m_dMaskYOffset = context.selectDouble(node, "MaskYOffset");
     }
 
     if (context.hasNode(node, "MinAngle")) {
@@ -147,8 +147,8 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         QPainterPath path;
         int w = width();
         int h = height();
-        path.moveTo(w/2.0 + m_iMaskXOffset, h/2.0 + m_iMaskYOffset);
-        double d = sqrt(pow(w+abs(m_iMaskXOffset),2) + pow(h+abs(m_iMaskYOffset),2));
+        path.moveTo(w/2.0 + m_dMaskXOffset, h/2.0 + m_dMaskYOffset);
+        double d = sqrt(pow(w+abs(m_dMaskXOffset),2) + pow(h+abs(m_dMaskYOffset),2));
         double neutralAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * m_dScaleStartParameter;
         path.arcTo(QRectF((w-d)/2.0,(h-d)/2.0,d,d), 90 - neutralAngle, neutralAngle - m_dCurrentAngle);
 
