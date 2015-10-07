@@ -54,11 +54,11 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     }
 
     if (context.hasNode(node, "MinAngle")) {
-        m_dMinAngle = math_clamp(context.selectDouble(node, "MinAngle"), 0, 360);
+        m_dMinAngle = math_clamp(context.selectDouble(node, "MinAngle"), -180.0, 180.0);
     }
 
     if (context.hasNode(node, "MaxAngle")) {
-        m_dMaxAngle = math_clamp(context.selectDouble(node, "MaxAngle", 0, 360);
+        m_dMaxAngle = math_clamp(context.selectDouble(node, "MaxAngle"), -180.0, 180.0);
     }
     if (m_dMinAngle > m_dMaxAngle) {
         double temp = m_dMinAngle;
