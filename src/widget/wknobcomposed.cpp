@@ -54,11 +54,16 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     }
 
     if (context.hasNode(node, "MinAngle")) {
-        m_dMinAngle = context.selectDouble(node, "MinAngle");
+        m_dMinAngle = math_clamp(context.selectDouble(node, "MinAngle"), 0, 360);
     }
 
     if (context.hasNode(node, "MaxAngle")) {
-        m_dMaxAngle = context.selectDouble(node, "MaxAngle");
+        m_dMaxAngle = math_clamp(context.selectDouble(node, "MaxAngle", 0, 360);
+    }
+    if (m_dMinAngle > m_dMaxAngle) {
+        double temp = m_dMinAngle;
+        m_dMinAngle = m_dMaxAngle;
+        m_dMaxAngle = temp;
     }
 
     if (context.hasNode(node, "KnobCenterXOffset")) {
@@ -71,6 +76,10 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
 
     if (context.hasNode(node, "RingMinSpan")) {
         m_dRingMinSpan = context.selectDouble(node, "RingMinSpan");
+    }
+    if (m_dRingMinSpan < 0) {
+        m_dRingMinSpan = 0;
+    }
 }
 
 void WKnobComposed::clear() {
