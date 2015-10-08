@@ -1670,7 +1670,7 @@ bool TrackDAO::detectMovedTracks(QSet<int>* pTracksMovedSetOld,
     newTrackQuery.prepare(
             QString("SELECT track_locations.id FROM track_locations "
                     "INNER JOIN library ON track_locations.id=library.location "
-                    "WHERE location IN (%1) AND "
+                    "WHERE track_locations.location IN (%1) AND "
                     "filename=:filename AND "
                     "duration=:duration").arg(escapedAddedTracks.join(",")));
 
