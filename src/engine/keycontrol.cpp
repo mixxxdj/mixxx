@@ -42,6 +42,7 @@ KeyControl::KeyControl(QString group,
     pitch_adjustParameters.setMinValue(-3.0);
     pitch_adjustParameters.setMaxValue(3.0);
     pitch_adjustParameters.setAllowOutOfBounds(true);
+    pitch_adjustParameters.setScaleStartValue(0.5);
     m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), pitch_adjustParameters);
     // Course adjust by full semitone steps.
     m_pPitchAdjust->setStepCount(6);
