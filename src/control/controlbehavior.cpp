@@ -246,7 +246,7 @@ double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) {
 double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
     // 7-bit MIDI has 128 values [0, 127]. This means there is no such thing as
     // center. The industry convention is that 64 is center.
-    // We fake things a little bit here to hit the m_dScaleStartParameter
+    // We fake things a little bit here to hit the m_dZeroDbParameter
     // always on a full Midi integer
     double dParam = valueToParameter(dValue);
     double dMidiParam = dParam * 127.0;
