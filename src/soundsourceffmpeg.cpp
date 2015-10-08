@@ -376,8 +376,6 @@ Result SoundSourceFFmpeg::open() {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
-
     qDebug() << "New SoundSourceFFmpeg :" << getFilename();
 
     m_pFormatCtx = avformat_alloc_context();
@@ -386,15 +384,22 @@ Result SoundSourceFFmpeg::open() {
     m_pFormatCtx->max_analyze_duration = 999999999;
 #endif
 
-#ifdef _WIN32
-#warning No Unicode filnames supported
-// Solution: use register register_protocol(&ufile_protocol); from:
-// https://github.com/lalinsky/picard-debian/blob/9be0dfeec7da9af5d01bc11aa530f873511a59b0/picard/musicdns/avcodec.c
+    // libav replaces open() with ff_win32_open() which accepts a
+    // Utf8 path
+    // see: avformat/os_support.h
+    // The old method defining an URL_PROTOCOL is deprecated
+#if defined(_WIN32) && !defined(__MINGW32CE__)
+    const QByteArray qBAFilename(
+            avformat_version() >= ((52<<16)+(0<<8)+0) ?
+            getLocalFileName().toUtf8() :
+            getLocalFileName().toLocal8Bit());
+#else
+    const QByteArray qBAFilename(getLocalFileName().toLocal8Bit());
 #endif
 
     // Open file and make m_pFormatCtx
     if (avformat_open_input(&m_pFormatCtx,
-            getFilename().toLocal8Bit().constData(), NULL, &l_iFormatOpts)
+            qBAFilename.constData(), NULL, &l_iFormatOpts)
             != 0) {
         qDebug() << "av_open_input_file: cannot open" << getFilename();
         return ERR;
