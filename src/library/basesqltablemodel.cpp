@@ -837,18 +837,10 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setComposer(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) == column) {
         pTrack->setGrouping(value.toString());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) == column) {
-        pTrack->setType(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) == column) {
         pTrack->setTrackNumber(value.toString());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION) == column) {
-        pTrack->setLocation(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
         pTrack->setComment(value.toString());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) == column) {
-        pTrack->setDuration(value.toInt());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) == column) {
-        pTrack->setBitrate(value.toInt());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
         // QVariant::toFloat needs >= QT 4.6.x
         pTrack->setBpm(static_cast<double>(value.toDouble()));
@@ -864,6 +856,13 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
                            mixxx::track::io::key::USER);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         pTrack->setBpmLock(value.toBool());
+    } else {
+        // We never should get up to this point!
+        DEBUG_ASSERT_AND_HANDLE(false) {
+            qWarning() << "Column"
+                    << m_tableColumnCache.columnNameForFieldIndex(column)
+                    << "is not editable!";
+        }
     }
 }
 

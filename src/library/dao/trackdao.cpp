@@ -16,6 +16,7 @@
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/keyfactory.h"
+#include "track/keyutils.h"
 #include "trackinfoobject.h"
 #include "library/coverart.h"
 #include "library/coverartutils.h"
@@ -371,8 +372,8 @@ void TrackDAO::bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack) {
     // gets called only in addTracksAdd
     m_pQueryTrackLocationInsert->bindValue(":location", pTrack->getLocation());
     m_pQueryTrackLocationInsert->bindValue(":directory", pTrack->getDirectory());
-    m_pQueryTrackLocationInsert->bindValue(":filename", pTrack->getFilename());
-    m_pQueryTrackLocationInsert->bindValue(":filesize", pTrack->getLength());
+    m_pQueryTrackLocationInsert->bindValue(":filename", pTrack->getFileName());
+    m_pQueryTrackLocationInsert->bindValue(":filesize", pTrack->getFileSize());
     // Should this check pTrack->exists()?
     m_pQueryTrackLocationInsert->bindValue(":fs_deleted", 0);
     m_pQueryTrackLocationInsert->bindValue(":needs_verification", 0);
@@ -450,8 +451,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
         keysVersion = keys.getVersion();
         keysSubVersion = keys.getSubVersion();
         key = keys.getGlobalKey();
-        // TODO(rryan): Get this logic out of TIO.
-        keyText = pTrack->getKeyText();
+        keyText = KeyUtils::getGlobalKeyText(keys);
     }
 
     m_pQueryLibraryInsert->bindValue(
@@ -578,7 +578,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         if (!m_pQueryLibrarySelect->exec()) {
              LOG_FAILED_QUERY(*m_pQueryLibrarySelect)
                      << "Failed to query existing track: "
-                     << pTrack->getFilename();
+                     << pTrack->getLocation();
         } else {
             bool mixxx_deleted = false;
             if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
@@ -598,7 +598,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
                 if (!m_pQueryLibraryUpdate->exec()) {
                     LOG_FAILED_QUERY(*m_pQueryLibraryUpdate)
                             << "Failed to unremove existing track: "
-                            << pTrack->getFilename();
+                            << pTrack->getLocation();
                 }
             }
             // Regardless of whether we unremoved this track or not -- it's
@@ -630,7 +630,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
             // but marked deleted? Skip this track.
             LOG_FAILED_QUERY(*m_pQueryLibraryInsert)
                     << "Failed to INSERT new track into library:"
-                    << pTrack->getFilename();
+                    << pTrack->getLocation();
             return false;
         }
         trackId = TrackId(m_pQueryLibraryInsert->lastInsertId());
@@ -1495,8 +1495,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
         keysVersion = keys.getVersion();
         keysSubVersion = keys.getSubVersion();
         key = keys.getGlobalKey();
-        // TODO(rryan): Get this logic out of TIO.
-        keyText = pTrack->getKeyText();
+        keyText = KeyUtils::getGlobalKeyText(keys);
     }
 
     query.bindValue(":keys", pKeysBlob ? *pKeysBlob : QVariant(QVariant::ByteArray));

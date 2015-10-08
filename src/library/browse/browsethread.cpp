@@ -154,7 +154,7 @@ void BrowseThread::populateModel() {
         item->setData("0", Qt::UserRole);
         row_data.insert(COLUMN_PREVIEW, item);
 
-        item = new QStandardItem(tio.getFilename());
+        item = new QStandardItem(tio.getFileName());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_FILENAME, item);
