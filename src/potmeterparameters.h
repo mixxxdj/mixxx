@@ -33,14 +33,14 @@ class LinPotmeterParameters {
 
     double minValue();                          // Default: 0.
     double maxValue();                          // Default: 1.
-    double scaleStartValue();                   // Default: 0.
+    double scaleStartParameter();               // Default: 0.
     bool allowOutOfBounds();                    // Default: false
     double step();                              // Default: 0.
     double smallStep();                         // Default: 0.
 
     void setMinValue(double value);
     void setMaxValue(double value);
-    void setScaleStartValue(double value);
+    void setScaleStartParameter(double value);
     void setAllowOutOfBounds(bool value);
     void setStep(double value);
     void setSmallStep(double value);
@@ -48,7 +48,7 @@ class LinPotmeterParameters {
   private:
     double m_dMinValue;
     double m_dMaxValue;
-    double m_dScaleStartValue;
+    double m_dScaleStartParameter;
     bool m_bAllowOutOfBounds;
     double m_dStep;
     double m_dSmallStep;
@@ -60,16 +60,16 @@ class LogPotmeterParameters {
     virtual ~LogPotmeterParameters();
 
     double maxValue();                          // Default: 1.
-    double scaleStartValue();                      // Default: 0.
+    double scaleStartParameter();               // Default: 0.
     double minDB();                             // Default: 60.
 
     void setMaxValue(double value);
-    void setScaleStartValue(double value);
+    void setScaleStartParameter(double value);
     void setMinDB(double value);
 
   private:
     double m_dMaxValue;
-    double m_dScaleStartValue;
+    double m_dScaleStartParameter;
     double m_dMinDB;
 };
 
@@ -83,7 +83,7 @@ class PotmeterParameters {
 
     double minValue();                          // Default: 0.
     double maxValue();                          // Default: 1.
-    double scaleStartValue();                      // Default: 0.
+    double scaleStartParameter();               // Default: 0.
     bool allowOutOfBounds();                    // Default: false
     bool ignoreNops();                          // Default: true
     bool track();                               // Default: false
@@ -91,7 +91,7 @@ class PotmeterParameters {
 
     void setMinValue(double value);
     void setMaxValue(double value);
-    void setScaleStartValue(double value);
+    void setScaleStartParameter(double value);
     void setAllowOutOfBounds(bool value);
     void setIgnoreNops(bool value);
     void setTrack(bool value);
@@ -100,7 +100,7 @@ class PotmeterParameters {
   private:
     double m_dMinValue;
     double m_dMaxValue;
-    double m_dScaleStartValue;
+    double m_dScaleStartParameter;
     bool m_bAllowOutOfBounds;
     bool m_bIgnoreNops;
     bool m_bTrack;

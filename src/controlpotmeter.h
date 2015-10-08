@@ -85,7 +85,7 @@ class ControlPotmeter : public ControlObject {
 
     // Sets the minimum and maximum allowed value. The control value is reset
     // when calling this method
-    void setRange(double dMinValue, double dMaxValue, double dScaleStartValue, bool allowOutOfBounds);
+    void setRange(double dMinValue, double dMaxValue, double dScaleStartParameter, bool allowOutOfBounds);
 
   protected:
     bool m_bAllowOutOfBounds;
