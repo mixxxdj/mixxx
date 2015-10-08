@@ -26,6 +26,18 @@ EffectManifest AutoPanEffect::getManifest() {
             "A delay, inversed on each side, is added to increase the "
             "spatial move and the period can be synced with the BPM."));
 
+    // Width : applied on the channel with gain reducing.
+    EffectManifestParameter* width = manifest.addParameter();
+    width->setId("width");
+    width->setName(QObject::tr("Width"));
+    width->setDescription("How far the signal goes on the left or on the right");
+    width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    width->setMinimum(0.0);
+    width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
+    width->setDefault(0.00);
+
     // Period unit
     EffectManifestParameter* periodUnit = manifest.addParameter();
     periodUnit->setId("periodUnit");
@@ -65,18 +77,6 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setMinimum(0.0);
     smoothing->setMaximum(0.5);  // there are two steps per period so max is half
     smoothing->setDefault(0.0);
-
-    // Width : applied on the channel with gain reducing.
-    EffectManifestParameter* width = manifest.addParameter();
-    width->setId("width");
-    width->setName(QObject::tr("Width"));
-    width->setDescription("How far the signal goes on the left or on the right");
-    width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    width->setMinimum(0.0);
-    width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
-    width->setDefault(0.00);
 
     return manifest;
 }
