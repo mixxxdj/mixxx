@@ -36,7 +36,7 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     width->setMinimum(0.0);
     width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
-    width->setDefault(0.00);
+    width->setDefault(0.5);
 
     // Period unit
     EffectManifestParameter* periodUnit = manifest.addParameter();
@@ -63,7 +63,7 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     period->setMinimum(0.0625);     // 1 / 16
     period->setMaximum(129.0);      // 128 + 1
-    period->setDefault(8.0);
+    period->setDefault(3.0);
 
     // This parameter controls the easing of the sound from a side to another.
     EffectManifestParameter* smoothing = manifest.addParameter();
@@ -76,7 +76,9 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     smoothing->setMinimum(0.0);
     smoothing->setMaximum(0.5);  // there are two steps per period so max is half
-    smoothing->setDefault(0.0);
+    smoothing->setDefault(0.25);
+    // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
+    //                     make the scaleStartParameter for this be 1.
 
     return manifest;
 }
