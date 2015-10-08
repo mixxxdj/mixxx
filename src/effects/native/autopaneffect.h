@@ -19,18 +19,18 @@
 // somewhere else (I hear clicks when I change the period of flanger for example).
 class RampedSample {
   public:
-    
+
     inline RampedSample()
         : ramped(false),
           maxDifference(1.0f),
           initialized(false) {}
-    
+
     virtual ~RampedSample(){};
-    
+
     inline void setRampingThreshold(const float newMaxDifference) {
         maxDifference = newMaxDifference;
     }
-    
+
     inline void setWithRampingApplied(const float newValue) {
         if (!initialized) {
             currentValue = newValue;
@@ -46,13 +46,13 @@ class RampedSample {
             }
         }
     }
-    
+
     inline operator float() {
         return currentValue;
     }
-    
+
     bool ramped;
-    
+
   private:
     float maxDifference;
     float currentValue;
@@ -70,7 +70,7 @@ struct PanGroupState {
         m_dPreviousPeriod = -1.0;
     }
     ~PanGroupState() {
-        // todo delete buffer
+        SampleUtil::free(m_pDelayBuf);
     }
     unsigned int time;
     RampedSample frac;
@@ -97,9 +97,9 @@ class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
                       const GroupFeatureState& groupFeatures);
 
     double computeLawCoefficient(double position);
-    
+
   private:
-    
+
     QString debugString() const {
         return getId();
     }
@@ -108,7 +108,7 @@ class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
     EngineEffectParameter* m_pPeriodUnitParameter;
     EngineEffectParameter* m_pPeriodParameter;
     EngineEffectParameter* m_pWidthParameter;
-    
+
     DISALLOW_COPY_AND_ASSIGN(AutoPanEffect);
 };
 
