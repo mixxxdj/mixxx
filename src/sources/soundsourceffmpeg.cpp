@@ -69,8 +69,8 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    const QByteArray qBAFilename(getLocalFileNameBytes());
-    qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
+    const QString localFileName(getLocalFileName());
+    qDebug() << "New SoundSourceFFmpeg :" << localFileName;
 
     DEBUG_ASSERT(!m_pFormatCtx);
     m_pFormatCtx = avformat_alloc_context();
@@ -80,24 +80,39 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         return ERR;
     }
 
-#if LIBAVCODEC_VERSION_INT < 3622144
+    // TODO() why is this required, should't it be a runtime check
+#if LIBAVCODEC_VERSION_INT < 3622144 // 55.69.0
     m_pFormatCtx->max_analyze_duration = 999999999;
+#endif
+
+    // libav replaces open() with ff_win32_open() which accepts a
+    // Utf8 path
+    // see: avformat/os_support.h
+    // The old method defining an URL_PROTOCOL is deprecated
+#if defined(_WIN32) && !defined(__MINGW32CE__)
+    const QByteArray qBAFilename(
+            avformat_version() >= ((52<<16)+(0<<8)+0) ?
+            getLocalFileName().toUtf8() :
+            getLocalFileName().toLocal8Bit());
+#else
+    const QByteArray qBAFilename(getLocalFileName().toLocal8Bit());
 #endif
 
     // Open file and make m_pFormatCtx
     if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), NULL,
                             &l_iFormatOpts) != 0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
         return ERR;
     }
 
-#if LIBAVCODEC_VERSION_INT > 3544932
+    // TODO() why is this required, should't it be a runtime check
+#if LIBAVCODEC_VERSION_INT > 3544932 // 54.23.100
     av_dict_free(&l_iFormatOpts);
 #endif
 
     // Retrieve stream information
     if (avformat_find_stream_info(m_pFormatCtx, NULL) < 0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
         return ERR;
     }
 
@@ -116,7 +131,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (m_iAudioStream == -1) {
         qDebug() <<
                  "SoundSourceFFmpeg::tryOpen: cannot find an audio stream: cannot open"
-                 << qBAFilename;
+                 << localFileName;
         return ERR;
     }
 
@@ -126,12 +141,12 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     // Find the decoder for the audio stream
     if (!(m_pCodec = avcodec_find_decoder(m_pCodecCtx->codec_id))) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find a decoder for" <<
-                 qBAFilename;
+                localFileName;
         return ERR;
     }
 
     if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL)<0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
         return ERR;
     }
 

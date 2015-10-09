@@ -893,7 +893,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     // is read and data in subsequent tags is ignored.
 
     if (kFileTypeMP3 == fileType) {
+#ifdef _WIN32
+        TagLib::MPEG::File file(fileName.toStdWString().data());
+#else
         TagLib::MPEG::File file(fileName.toLocal8Bit().constData());
+#endif
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::ID3v2::Tag* pID3v2Tag =
                     hasID3v2Tag(file) ? file.ID3v2Tag() : NULL;
@@ -919,7 +923,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
             }
         }
     } else if (kFileTypeMP4 == fileType) {
+#ifdef _WIN32
+        TagLib::MP4::File file(fileName.toStdWString().data());
+#else
         TagLib::MP4::File file(fileName.toLocal8Bit().constData());
+#endif
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::MP4::Tag* pMP4Tag = file.tag();
             if (pMP4Tag) {
@@ -936,7 +944,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
             }
         }
     } else if (kFileTypeFLAC == fileType) {
+#ifdef _WIN32
+        TagLib::FLAC::File file(fileName.toStdWString().data());
+#else
         TagLib::FLAC::File file(fileName.toLocal8Bit().constData());
+#endif
         if (pCoverArt) {
             // FLAC files may contain cover art that is not part
             // of any tag. Use the first picture from this list
@@ -974,7 +986,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
             }
         }
     } else if (kFileTypeOggVorbis == fileType) {
+#ifdef _WIN32
+        TagLib::Ogg::Vorbis::File file(fileName.toStdWString().data());
+#else
         TagLib::Ogg::Vorbis::File file(fileName.toLocal8Bit().constData());
+#endif
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::Ogg::XiphComment* pXiphComment = file.tag();
             if (pXiphComment) {
@@ -992,7 +1008,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         }
 #if TAGLIB_HAS_OPUSFILE
     } else if (kFileTypeOggOpus == fileType) {
+#ifdef _WIN32
+        TagLib::Ogg::Opus::File file(fileName.toStdWString().data());
+#else
         TagLib::Ogg::Opus::File file(fileName.toLocal8Bit().constData());
+#endif
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::Ogg::XiphComment* pXiphComment = file.tag();
             if (pXiphComment) {
@@ -1010,7 +1030,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         }
 #endif // TAGLIB_HAS_OPUSFILE
     } else if (kFileTypeWavPack == fileType) {
+#ifdef _WIN32
+        TagLib::WavPack::File file(fileName.toStdWString().data());
+#else
         TagLib::WavPack::File file(fileName.toLocal8Bit().constData());
+#endif
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::APE::Tag* pAPETag =
                     hasAPETag(file) ? file.APETag() : NULL;
@@ -1028,7 +1052,12 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
             }
         }
     } else if (kFileTypeWAV == fileType) {
+
+#ifdef _WIN32
+        TagLib::RIFF::WAV::File file(fileName.toStdWString().data());
+#else
         TagLib::RIFF::WAV::File file(fileName.toLocal8Bit().constData());
+#endif
         if (readAudioProperties(pTrackMetadata, file)) {
 #if TAGLIB_HAS_WAV_ID3V2TAG
             const TagLib::ID3v2::Tag* pID3v2Tag =
@@ -1050,7 +1079,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
             }
         }
     } else if (kFileTypeAIFF == fileType) {
+#ifdef _WIN32
+        TagLib::RIFF::AIFF::File file(fileName.toStdWString().data());
+#else
         TagLib::RIFF::AIFF::File file(fileName.toLocal8Bit().constData());
+#endif
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::ID3v2::Tag* pID3v2Tag = file.tag();
             if (pID3v2Tag) {
@@ -1083,8 +1116,13 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
     bool anyTagsWritten = false;
 
     if (kFileTypeMP3 == fileType) {
+#ifdef _WIN32
+        QScopedPointer<TagLib::MPEG::File> pMPEGFile(
+                new TagLib::MPEG::File(fileName.toStdWString().data()));
+#else
         QScopedPointer<TagLib::MPEG::File> pMPEGFile(
                 new TagLib::MPEG::File(fileName.toLocal8Bit().constData()));
+#endif
         bool defaultID3V2 = true;
         if (hasAPETag(*pMPEGFile)) {
             anyTagsWritten |= writeTrackMetadataIntoAPETag(pMPEGFile->APETag(), trackMetadata);
@@ -1096,13 +1134,23 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         }
         pFile.reset(pMPEGFile.take()); // transfer ownership
     } else if (kFileTypeMP4 == fileType) {
+#ifdef _WIN32
+        QScopedPointer<TagLib::MP4::File> pMP4File(
+                new TagLib::MP4::File(fileName.toStdWString().data()));
+#else
         QScopedPointer<TagLib::MP4::File> pMP4File(
                 new TagLib::MP4::File(fileName.toLocal8Bit().constData()));
+#endif
         anyTagsWritten |= writeTrackMetadataIntoMP4Tag(pMP4File->tag(), trackMetadata);
         pFile.reset(pMP4File.take()); // transfer ownership
     } else if (kFileTypeFLAC == fileType) {
+#ifdef _WIN32
+        QScopedPointer<TagLib::FLAC::File> pFLACFile(
+                new TagLib::FLAC::File(fileName.toStdWString().data()));
+#else
         QScopedPointer<TagLib::FLAC::File> pFLACFile(
                 new TagLib::FLAC::File(fileName.toLocal8Bit().constData()));
+#endif
         bool defaultXiphComment = true;
         if (hasID3v2Tag(*pFLACFile)) {
             anyTagsWritten |= writeTrackMetadataIntoID3v2Tag(pFLACFile->ID3v2Tag(), trackMetadata);
@@ -1114,25 +1162,45 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         }
         pFile.reset(pFLACFile.take()); // transfer ownership
     } else if (kFileTypeOggVorbis == fileType) {
+#ifdef _WIN32
+        QScopedPointer<TagLib::Ogg::Vorbis::File> pOggVorbisFile(
+                new TagLib::Ogg::Vorbis::File(fileName.toStdWString().data()));
+#else
         QScopedPointer<TagLib::Ogg::Vorbis::File> pOggVorbisFile(
                 new TagLib::Ogg::Vorbis::File(fileName.toLocal8Bit().constData()));
+#endif
         anyTagsWritten |= writeTrackMetadataIntoXiphComment(pOggVorbisFile->tag(), trackMetadata);
         pFile.reset(pOggVorbisFile.take()); // transfer ownership
 #if TAGLIB_HAS_OPUSFILE
     } else if (kFileTypeOggOpus == fileType) {
+#ifdef _WIN32
+        QScopedPointer<TagLib::Ogg::Opus::File> pOggOpusFile(
+                new TagLib::Ogg::Opus::File(fileName.toStdWString().data()));
+#else
         QScopedPointer<TagLib::Ogg::Opus::File> pOggOpusFile(
                 new TagLib::Ogg::Opus::File(fileName.toLocal8Bit().constData()));
+#endif // _WIN32
         anyTagsWritten |= writeTrackMetadataIntoXiphComment(pOggOpusFile->tag(), trackMetadata);
         pFile.reset(pOggOpusFile.take()); // transfer ownership
 #endif // TAGLIB_HAS_OPUSFILE
     } else if (kFileTypeWavPack == fileType) {
+#ifdef _WIN32
+        QScopedPointer<TagLib::WavPack::File> pWavPackFile(
+                new TagLib::WavPack::File(fileName.toStdWString().data()));
+#else
         QScopedPointer<TagLib::WavPack::File> pWavPackFile(
                 new TagLib::WavPack::File(fileName.toLocal8Bit().constData()));
+#endif // _WIN32
         anyTagsWritten |= writeTrackMetadataIntoAPETag(pWavPackFile->APETag(true), trackMetadata);
         pFile.reset(pWavPackFile.take()); // transfer ownership
     } else if (kFileTypeWAV == fileType) {
+#ifdef _WIN32
+        QScopedPointer<TagLib::RIFF::WAV::File> pWAVFile(
+                new TagLib::RIFF::WAV::File(fileName.toStdWString().data()));
+#else
         QScopedPointer<TagLib::RIFF::WAV::File> pWAVFile(
                 new TagLib::RIFF::WAV::File(fileName.toLocal8Bit().constData()));
+#endif // _WIN32
 #if TAGLIB_HAS_WAV_ID3V2TAG
         anyTagsWritten |= writeTrackMetadataIntoID3v2Tag(pWAVFile->ID3v2Tag(), trackMetadata);
 #else
@@ -1140,8 +1208,13 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
 #endif
         pFile.reset(pWAVFile.take()); // transfer ownership
     } else if (kFileTypeAIFF == fileType) {
+#ifdef _WIN32
+        QScopedPointer<TagLib::RIFF::AIFF::File> pAIFFFile(
+                new TagLib::RIFF::AIFF::File(fileName.toStdWString().data()));
+#else
         QScopedPointer<TagLib::RIFF::AIFF::File> pAIFFFile(
                 new TagLib::RIFF::AIFF::File(fileName.toLocal8Bit().constData()));
+#endif // _WIN32
         anyTagsWritten |= writeTrackMetadataIntoID3v2Tag(pAIFFFile->tag(), trackMetadata);
         pFile.reset(pAIFFFile.take()); // transfer ownership
     }

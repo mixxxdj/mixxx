@@ -14,14 +14,11 @@ SoundSourceSndFile::~SoundSourceSndFile() {
 Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_pSndFile);
     SF_INFO sfInfo;
-#ifdef __WINDOWS__
-    // Pointer valid until string changed
-    const QString fileName(getLocalFileName());
-    LPCWSTR lpcwFilename = (LPCWSTR) fileName.utf16();
-    m_pSndFile = sf_wchar_open(lpcwFilename, SFM_READ, &sfInfo);
-#else
     memset(&sfInfo, 0, sizeof(sfInfo));
-    m_pSndFile = sf_open(getLocalFileNameBytes().constData(), SFM_READ, &sfInfo);
+#ifdef __WINDOWS__
+    m_pSndFile = sf_wchar_open(fileName.toStdWString().data(), SFM_READ, &sfInfo);
+#else
+    m_pSndFile = sf_open(getLocalFileName().toLocal8Bit(), SFM_READ, &sfInfo);
 #endif
 
     if (!m_pSndFile) {   // sf_format_check is only for writes

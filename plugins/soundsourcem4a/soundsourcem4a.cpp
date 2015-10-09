@@ -89,11 +89,16 @@ SoundSourceM4A::~SoundSourceM4A() {
 
 Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(MP4_INVALID_FILE_HANDLE == m_hFile);
-    /* open MP4 file, check for >= ver 1.9.1 */
+    // open MP4 file, check for >= ver 1.9.1
+    // From mp4v2/file.h:
+    //  * On Windows, this should be a UTF-8 encoded string.
+    //  * On other platforms, it should be an 8-bit encoding that is
+    //  * appropriate for the platform, locale, file system, etc.
+    //  * (prefer to use UTF-8 when possible).
 #if MP4V2_PROJECT_version_hex <= 0x00010901
-    m_hFile = MP4Read(getLocalFileNameBytes().constData(), 0);
+    m_hFile = MP4Read(getLocalFileName().toUtf8().constData(), 0);
 #else
-    m_hFile = MP4Read(getLocalFileNameBytes().constData());
+    m_hFile = MP4Read(getLocalFileName().toUtf8().constData());
 #endif
     if (MP4_INVALID_FILE_HANDLE == m_hFile) {
         qWarning() << "Failed to open file for reading:" << getUrlString();
