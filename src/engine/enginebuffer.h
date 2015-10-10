@@ -104,11 +104,13 @@ class EngineBuffer : public EngineObject {
     };
   public:
     enum SeekRequest {
-        NO_SEEK,
-        SEEK_STANDARD,
-        SEEK_EXACT,
-        SEEK_PHASE
+        NO_SEEK = 0x00,
+        SEEK_PHASE = 0x01,
+        SEEK_EXACT = 0x02,
+        SEEK_STANDARD = 0x03, // = (SEEK_EXACT | SEEK_PHASE)
+        // … some more options with value which is a power of two
     };
+    Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
     enum KeylockEngine {
         SOUNDTOUCH,
@@ -233,7 +235,7 @@ class EngineBuffer : public EngineObject {
     void setNewPlaypos(double playpos);
 
     void processSyncRequests();
-    void processSeek();
+    void processSeek(bool paused);
 
     bool updateIndicatorsAndModifyPlay(bool newPlay);
     void verifyPlay();
@@ -376,6 +378,7 @@ class EngineBuffer : public EngineObject {
     bool m_bScalerOverride;
 
     QAtomicInt m_iSeekQueued;
+    QAtomicInt m_iSeekPhaseQueued;
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<double> m_queuedPosition;
@@ -409,5 +412,7 @@ class EngineBuffer : public EngineObject {
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(EngineBuffer::SeekRequests)
 
 #endif

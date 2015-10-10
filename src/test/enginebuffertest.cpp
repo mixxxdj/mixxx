@@ -370,11 +370,35 @@ TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
 
 TEST_F(EngineBufferE2ETest, CueGotoAndStopTest) {
     // Bes sure, that the Crossfade buffer is processed only once
-    // Bug 1504838
+    // Bug #1504838
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandstop"), 1.0);
     ProcessBuffer();
     assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
                               kProcessBufferSize, "CueGotoAndStopTest");
+}
+
+TEST_F(EngineBufferE2ETest, CueGotoAndPlayTest) {
+    // Bes sure, cue seek is not overwritten by quantization seek
+    // Bug #1504503
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            1000, EngineBuffer::SEEK_EXACT);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandplay"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "CueGotoAndPlayTest");
+}
+
+TEST_F(EngineBufferE2ETest, CueStartPlayTest) {
+    // Bes sure, cue seek is not overwritten by quantization seek
+    // Bug #1504851
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "start_play"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "StartPlayTest");
 }
