@@ -443,15 +443,18 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     }
 }
 
-// TODO() Make sure that this is called only once per callback
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
-    CSAMPLE* fadeout = m_pScale->getScaled(iBufferSize);
-    SampleUtil::copy(m_pCrossfadeBuffer, fadeout, iBufferSize);
+    if (!m_bCrossfadeReady) {
+        // Read buffer, as if there where no parameter change
+        // (Must be called only once per callback)
+        CSAMPLE* fadeout = m_pScale->getScaled(iBufferSize);
+        SampleUtil::copy(m_pCrossfadeBuffer, fadeout, iBufferSize);
 
-    // Restore the original position that was lost due to getScaled() above
-    m_pReadAheadManager->notifySeek(m_filepos_play);
+        // Restore the original position that was lost due to getScaled() above
+        m_pReadAheadManager->notifySeek(m_filepos_play);
 
-    m_bCrossfadeReady = true;
+        m_bCrossfadeReady = true;
+    }
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
