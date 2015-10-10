@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2015-10-6</description>
+    <description>2015-10-10</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -121,7 +121,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VCI102.scratch</key>
+        <key>VCI102.scratchEnable</key>
         <status>0x90</status>
         <midino>0x3B</midino>
         <options>
@@ -130,7 +130,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VCI102.scratch</key>
+        <key>VCI102.scratchEnable</key>
         <status>0x91</status>
         <midino>0x3B</midino>
         <options>
@@ -139,7 +139,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>VCI102.scratch</key>
+        <key>VCI102.scratchEnable</key>
         <status>0x92</status>
         <midino>0x3B</midino>
         <options>
@@ -148,7 +148,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>VCI102.scratch</key>
+        <key>VCI102.scratchEnable</key>
         <status>0x93</status>
         <midino>0x3B</midino>
         <options>
@@ -1037,7 +1037,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VCI102.reloop_beatloop</key>
+        <key>VCI102.reloop_out</key>
         <status>0x90</status>
         <midino>0x46</midino>
         <options>
@@ -1046,7 +1046,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VCI102.reloop_beatloop</key>
+        <key>VCI102.reloop_out</key>
         <status>0x91</status>
         <midino>0x53</midino>
         <options>
@@ -1055,7 +1055,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>VCI102.reloop_beatloop</key>
+        <key>VCI102.reloop_out</key>
         <status>0x92</status>
         <midino>0x46</midino>
         <options>
@@ -1064,7 +1064,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>VCI102.reloop_beatloop</key>
+        <key>VCI102.reloop_out</key>
         <status>0x93</status>
         <midino>0x53</midino>
         <options>
