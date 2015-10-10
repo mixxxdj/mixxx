@@ -443,6 +443,7 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     }
 }
 
+// TODO() Make sure that this is called only once per callback
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
     CSAMPLE* fadeout = m_pScale->getScaled(iBufferSize);
     SampleUtil::copy(m_pCrossfadeBuffer, fadeout, iBufferSize);
@@ -772,6 +773,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
         processSyncRequests();
+
+        // Note: This may effects the m_filepos_play, play, scaler and crossfade buffer
         processSeek();
 
         // speed is the ratio between track-time and real-time
@@ -885,6 +888,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // master.
         if (m_scratching_old && !is_scratching && m_pQuantize->get() > 0.0
                 && m_pSyncControl->getSyncMode() == SYNC_FOLLOWER && !paused) {
+            // TODO() The resulting seek is processed in the following callback
+            // That is to late
             requestSyncPhase();
         }
 

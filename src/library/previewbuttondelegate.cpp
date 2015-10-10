@@ -157,7 +157,7 @@ void PreviewButtonDelegate::buttonClicked() {
         emit(loadTrackToPlayer(pTrack, group, true));
     } else if (pTrack == pOldTrack && !playing) {
         // Since the Preview deck might be hidden
-        // Starting at cue is a predictable behaviour
+        // Starting at cue is a predictable behavior
         m_pCueGotoAndPlay->set(1.0);
     } else {
         m_pPreviewDeckPlay->set(0.0);

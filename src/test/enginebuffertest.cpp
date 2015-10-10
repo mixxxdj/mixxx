@@ -367,3 +367,14 @@ TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
     // Note: we cannot compare a golden buffer here, because the result depends
     // on the uses library version
 }
+
+TEST_F(EngineBufferE2ETest, CueGotoAndStopTest) {
+    // Bes sure, that the Crossfade buffer is processed only once
+    // Bug 1504838
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandstop"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "CueGotoAndStopTest");
+}
