@@ -67,7 +67,7 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
         QImage* /*pCoverArt*/) const {
     // The modplug library currently does not support reading cover-art from
     // modplug files -- kain88 (Oct 2014)
-    QFile modFile(getLocalFileNameBytes());
+    QFile modFile(getLocalFileName());
     modFile.open(QIODevice::ReadOnly);
     const QByteArray fileBuf(modFile.readAll());
     modFile.close();
