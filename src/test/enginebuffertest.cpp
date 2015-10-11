@@ -369,7 +369,7 @@ TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
 }
 
 TEST_F(EngineBufferE2ETest, CueGotoAndStopTest) {
-    // Bes sure, that the Crossfade buffer is processed only once
+    // Be sure, that the Crossfade buffer is processed only once
     // Bug #1504838
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
@@ -380,7 +380,7 @@ TEST_F(EngineBufferE2ETest, CueGotoAndStopTest) {
 }
 
 TEST_F(EngineBufferE2ETest, CueGotoAndPlayTest) {
-    // Bes sure, cue seek is not overwritten by quantization seek
+    // Be sure, cue seek is not overwritten by quantization seek
     // Bug #1504503
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
@@ -393,7 +393,7 @@ TEST_F(EngineBufferE2ETest, CueGotoAndPlayTest) {
 }
 
 TEST_F(EngineBufferE2ETest, CueStartPlayTest) {
-    // Bes sure, cue seek is not overwritten by quantization seek
+    // Be sure, cue seek is not overwritten by quantization seek
     // Bug #1504851
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
@@ -401,4 +401,17 @@ TEST_F(EngineBufferE2ETest, CueStartPlayTest) {
     ProcessBuffer();
     assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
                               kProcessBufferSize, "StartPlayTest");
+}
+
+TEST_F(EngineBufferE2ETest, CueGotoAndPlayDenon) {
+    // Be sure, cue point is not moved
+    // enable Denon mode Bug #1504934
+    ControlObject::set(ConfigKey(m_sGroup1, "cue_mode"), 2.0); // CUE_MODE_DENON
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            1000, EngineBuffer::SEEK_EXACT);
+    ProcessBuffer();
+    double cueBefore = ControlObject::get(ConfigKey(m_sGroup1, "cue_point"));
+    ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandplay"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(cueBefore, ControlObject::get(ConfigKey(m_sGroup1, "cue_point")));
 }
