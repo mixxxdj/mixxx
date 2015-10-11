@@ -84,9 +84,9 @@ private:
     const TrackPointer m_pTrack;
     const SecurityTokenPointer m_pSecurityToken;
 
-    static Mixxx::QList<SoundSourceProviderRegistration> findSoundSourceProviderRegistrations(const QUrl& url);
+    static QList<Mixxx::SoundSourceProviderRegistration> findSoundSourceProviderRegistrations(const QUrl& url);
 
-    const Mixxx::QList<SoundSourceProviderRegistration> m_soundSourceProviderRegistrations;
+    const QList<Mixxx::SoundSourceProviderRegistration> m_soundSourceProviderRegistrations;
     int m_soundSourceProviderRegistrationIndex;
 
     Mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;

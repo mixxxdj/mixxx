@@ -197,7 +197,7 @@ void SoundSourceProxy::loadPlugins() {
             s_soundSourceProviders.getRegisteredFileExtensions());
     for (const auto &supportedFileExtension: supportedFileExtensions) {
         qDebug() << "SoundSource providers for file extension" << supportedFileExtension;
-        const QList<SoundSourceProviderRegistration> registrationsForFileExtension(
+        const QList<Mixxx::SoundSourceProviderRegistration> registrationsForFileExtension(
                 s_soundSourceProviders.getRegistrationsForFileExtension(
                         supportedFileExtension));
         for (const auto& registration: registrationsForFileExtension) {
@@ -230,7 +230,7 @@ QStringList SoundSourceProxy::getSupportedFileExtensionsByPlugins() {
     QStringList supportedFileExtensionsByPlugins;
     const QStringList supportedFileExtensions(getSupportedFileExtensions());
     for (const auto &supportedFileExtension: supportedFileExtensions) {
-        const QList<SoundSourceProviderRegistration> registrationsForFileExtension(
+        const QList<Mixxx::SoundSourceProviderRegistration> registrationsForFileExtension(
                 s_soundSourceProviders.getRegistrationsForFileExtension(
                         supportedFileExtension));
         for (const auto& registration: registrationsForFileExtension) {
@@ -264,16 +264,16 @@ bool SoundSourceProxy::isFileExtensionSupported(const QString& fileExtension) {
 }
 
 // static
-Mixxx::QList<SoundSourceProviderRegistration>
+QList<Mixxx::SoundSourceProviderRegistration>
 SoundSourceProxy::findSoundSourceProviderRegistrations(
         const QUrl& url) {
     QString fileExtension(Mixxx::SoundSource::getFileExtensionFromUrl(url));
     if (fileExtension.isEmpty()) {
         qWarning() << "Unknown file type:" << url.toString();
-        return Mixxx::QList<SoundSourceProviderRegistration>();
+        return QList<Mixxx::SoundSourceProviderRegistration>();
     }
 
-    QList<SoundSourceProviderRegistration> registrationsForFileExtension(
+    QList<Mixxx::SoundSourceProviderRegistration> registrationsForFileExtension(
             s_soundSourceProviders.getRegistrationsForFileExtension(
                     fileExtension));
     if (registrationsForFileExtension.isEmpty()) {

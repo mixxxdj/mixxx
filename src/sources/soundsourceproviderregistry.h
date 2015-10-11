@@ -38,29 +38,49 @@ private:
 // Registry for SoundSourceProviders
 class SoundSourceProviderRegistry {
 public:
+    // Registers a provider for all supported file extensions
+    // with their implicit priority hint.
     void registerProvider(
             const SoundSourceProviderPointer& pProvider);
-    void registerProvider(
-            const SoundSourceProviderPointer& pProvider,
-            SoundSourceProviderPriority priority);
+    // Registers a provider from a plugin library for all supported
+    // file extensions with their implicit priority hint.
     void registerPluginLibrary(
             const SoundSourcePluginLibraryPointer& pPluginLibrary);
-    void registerPluginLibrary(
+
+    // Registers a provider for a single file extension with an
+    // explicitly specified priority. The provider must support
+    // the given file extension.
+    void registerProviderForFileExtension(
+            const QString& fileExtension,
+            const SoundSourceProviderPointer& pProvider,
+            SoundSourceProviderPriority providerPriority);
+    // Registers a provider from a plugin library for a single file
+    // extension with an explicitly specified priority. The provider
+    // must support the given file extension.
+    void registerPluginProviderForFileExtension(
+            const QString& fileExtension,
             const SoundSourcePluginLibraryPointer& pPluginLibrary,
-            SoundSourceProviderPriority priority);
+            const SoundSourceProviderPointer& pProvider,
+            SoundSourceProviderPriority providerPriority);
 
     QStringList getRegisteredFileExtensions() const {
         return m_registrations.keys();
     }
 
-    const QList<SoundSourceProviderRegistration>& getRegistrationsForFileExtension(const QString& fileExtension) const;
+    // Returns all registrations for the given file extension.
+    // If no providers have been registered for this file extension
+    // an empty list will be returned.
+    const QList<SoundSourceProviderRegistration>& getRegistrationsForFileExtension(
+            const QString& fileExtension) const;
 
 private:
     static const QList<SoundSourceProviderRegistration> EMPTY_REGISTRATION_LIST;
 
     typedef QMap<QString, QList<SoundSourceProviderRegistration>> FileExtension2RegistrationList;
 
-    void addRegistration(const SoundSourceProviderRegistration& registration);
+    void addRegistrationForFileExtension(
+            const QString& fileExtension,
+            const SoundSourceProviderRegistration& registration);
 
     FileExtension2RegistrationList m_registrations;
 };

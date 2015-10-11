@@ -34,9 +34,14 @@ public:
 
     // The suggested priority of this provider compared to others
     // supporting the same file extension(s). Please note that an
-    // application may register a provider with any priority, no
-    // matter what this function actually returns!
-    virtual SoundSourceProviderPriority getPriorityHint() const {
+    // application may override the returned value to support
+    // customization.
+    //
+    // The priority may vary with the file type that is currently
+    // represented by the file extension.
+    virtual SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const {
+        Q_UNUSED(supportedFileExtension);
         return SoundSourceProviderPriority::DEFAULT;
     }
 
