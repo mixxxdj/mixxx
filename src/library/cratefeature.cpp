@@ -203,6 +203,20 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     emit(enableCoverArtDisplay(true));
 }
 
+void CrateFeature::activateCrate(int crateId) {
+    //qDebug() << "CrateFeature::activateCrate()" << crateId;
+    QModelIndex index = indexFromCrateId(crateId);   
+    if (crateId != -1 && index.isValid()) {
+        m_crateTableModel.setTableModel(crateId);
+        emit(showTrackModel(&m_crateTableModel));
+        emit(enableCoverArtDisplay(true));
+        // Update selection
+        emit(featureSelect(this, m_lastRightClickedIndex));
+        activateChild(m_lastRightClickedIndex);
+    }
+}
+
+
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(NULL);
@@ -281,7 +295,7 @@ void CrateFeature::slotCreateCrate() {
 
     int crateId = m_crateDao.createCrate(name);
     if (crateId != -1) {
-        emit(showTrackModel(&m_crateTableModel));
+        activateCrate(crateId);
     } else {
         qDebug() << "Error creating crate with name " << name;
         QMessageBox::warning(NULL,
@@ -402,7 +416,7 @@ void CrateFeature::slotDuplicateCrate() {
     m_crateDao.copyCrateTracks(oldCrateId, newCrateId);
 
     if (newCrateId != -1) {
-        emit(showTrackModel(&m_crateTableModel));
+        activateCrate(newCrateId);
     } else {
         qDebug() << "Error creating crate with name " << name;
         QMessageBox::warning(NULL,
@@ -575,7 +589,8 @@ void CrateFeature::slotImportPlaylist() {
 
       //Iterate over the List that holds URLs of playlist entires
       m_crateTableModel.addTracks(QModelIndex(), entries);
-
+      activateChild(m_lastRightClickedIndex);
+      
       //delete the parser object
       delete playlist_parser;
     }
@@ -665,15 +680,11 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     clearChildModel();
     m_lastRightClickedIndex = constructChildModel(crateId);
-    // Switch the view to the crate.
-    m_crateTableModel.setTableModel(crateId);
-    // Update selection
-    emit(featureSelect(this, m_lastRightClickedIndex));
 }
 
 void CrateFeature::slotCrateTableRenamed(int a_iCrateId,
                                          QString /* a_strName */) {
-    slotCrateTableChanged(a_iCrateId);
+    activateCrate(a_iCrateId);
 }
 
 void CrateFeature::htmlLinkClicked(const QUrl& link) {
@@ -704,4 +715,18 @@ QString CrateFeature::getRootViewHtml() const {
                 .arg(createCrateLink));
     html.append("</td></tr></table>");
     return html;
+}
+
+QModelIndex CrateFeature::indexFromCrateId(int crateId) {
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
+         it != m_crateList.end(); ++it, ++row) {
+        int current_id = it->first;
+        QString crate_name = it->second;
+
+        if (crateId == current_id) {
+            return m_childModel.index(row, 0);
+        }
+    }
+    return QModelIndex();
 }

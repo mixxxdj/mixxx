@@ -44,6 +44,7 @@ class CrateFeature : public LibraryFeature {
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
+    void activateCrate(int crateId);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
@@ -66,6 +67,9 @@ class CrateFeature : public LibraryFeature {
     void clearChildModel();
     void buildCrateList();
     int crateIdFromIndex(QModelIndex index);
+    // Get the QModelIndex of a crate based on its id.  Returns QModelIndex()
+    // on failure.
+    QModelIndex indexFromCrateId(int crateId);
 
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
