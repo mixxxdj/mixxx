@@ -40,12 +40,9 @@ const SINT kNumberOfPrefetchFrames = 2112;
 // Searches for the first audio track in the MP4 file that
 // suits our needs.
 MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile) {
-    const MP4TrackId maxTrackId = MP4GetNumberOfTracks(hFile, nullptr, 0);
-    for (MP4TrackId trackId = 1; trackId <= maxTrackId; ++trackId) {
-        const char* trackType = MP4GetTrackType(hFile, trackId);
-        if ((nullptr == trackType) || !MP4_IS_AUDIO_TRACK_TYPE(trackType)) {
-            continue;
-        }
+    const u_int32_t minTrackId = 1;
+    const u_int32_t maxTrackId = MP4GetNumberOfTracks(hFile, MP4_AUDIO_TRACK_TYPE, 0);
+    for (u_int32_t trackId = minTrackId; trackId <= maxTrackId; ++trackId) {
         const char* mediaDataName = MP4GetTrackMediaDataName(hFile, trackId);
         if ((nullptr == mediaDataName) || (0 != strcasecmp(mediaDataName, "mp4a"))) {
             continue;
