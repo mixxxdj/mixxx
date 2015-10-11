@@ -1,3 +1,5 @@
+"use strict";
+
 // Issues
 // - Each deck rembembers the mode it was in, confusing? Would it be better to
 //   keep the current mode on deck switch?
@@ -546,6 +548,25 @@ SCS3D.Agent = function(device) {
 		}
 	}
 
+
+	function CircleCenterbar(lights) {
+		var count = lights.length;
+		var range = count - 1;
+		var center = range / 2; // Zero-based
+		return function(value) {
+			var pos = Math.max(0, Math.min(range, (1-value) * range));
+			var left = Math.min(center, pos);
+			var right = Math.max(center, pos);
+			print(left+" "+pos+" "+right);
+			var i = 0;
+			for (; i < count; i++) {
+				var light = lights[i];
+				var on = i >= left && i <= right;
+				tell([light[0], light[1], +on]);
+			}
+		}
+	}
+
 	// Return a handler that lights LED from the bottom of the meter
 	// For zero values no light is turned on
 	function Bar(lights) {
@@ -700,6 +721,17 @@ SCS3D.Agent = function(device) {
 			engine.setParameter(channel, control,
 				value/127
 			);
+		}
+	}
+
+
+	// use circle as a fader with dead zone to avoid accidental cutover
+	function circleset(channel, control) {
+		return function(value) {
+			var turned = (value / 127 + 0.5) % 1;
+			var centered = (turned - 0.5) * 20/16;
+			var normalized = Math.max(0, Math.min(1, centered + 0.5));
+			engine.setParameter(channel, control, normalized);
 		}
 	}
 
@@ -970,9 +1002,33 @@ SCS3D.Agent = function(device) {
 		'[Channel4]': Modeswitch(3, effectPatches)
 	};
 
+	var FxSuperPatch = function(nr) {
+		return function(channel, held) {
+			var effectunit = '[EffectRack1_EffectUnit'+(nr+1)+']';
+			comm.sysex(device.modeset.circle);
+			watch(effectunit, 'super1', CircleCenterbar(device.slider.circle.meter));
+			expect(device.slider.circle.slide.abs, circleset(effectunit, 'super1'));
+		}
+	}
+
+	// Active effect mode per channel
+	var effectSuperPatches = [FxSuperPatch(0), FxSuperPatch(1), FxSuperPatch(2), FxSuperPatch(3)];
+	var effectSuperModes = {
+		'[Channel1]': Modeswitch(0, effectSuperPatches),
+		'[Channel2]': Modeswitch(1, effectSuperPatches),
+		'[Channel3]': Modeswitch(2, effectSuperPatches),
+		'[Channel4]': Modeswitch(3, effectSuperPatches)
+	};
+
+
 	function fxpatch(channel, held) {
 		tell(device.mode.fx.light.red);
 		effectModes[channel].patch()(channel, held);
+	}
+
+	function fxsuperpatch(channel, held) {
+		tell(device.mode.fx.light.blue);
+		effectSuperModes[channel].patch()(channel, held);
 	}
 
 	function eqpatch(channel, held) {
@@ -1412,7 +1468,7 @@ SCS3D.Agent = function(device) {
 	}
 
 	var modeMap = {
-		'fx': [fxpatch],
+		'fx': [fxpatch, fxsuperpatch],
 		'eq': [eqpatch],
 		'loop': [LoopPatch(false), LoopPatch(true)],
 		'trig': [Trigpatch(0), Trigpatch(1), Trigpatch(2)],
