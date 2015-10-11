@@ -37,31 +37,58 @@ const MP4SampleId kSampleBlockIdMin = 1;
 // playback from any point in the bistream."
 const SINT kNumberOfPrefetchFrames = 2112;
 
+inline bool isValidMediaDataName(
+        const char* mediaDataName) {
+    return (nullptr != mediaDataName) &&
+            (0 == strcasecmp(mediaDataName, "mp4a"));
+}
+
 // Searches for the first audio track in the MP4 file that
 // suits our needs.
-MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile) {
-    const MP4TrackId maxTrackId = MP4GetNumberOfTracks(hFile, nullptr, 0);
-    for (MP4TrackId trackId = 1; trackId <= maxTrackId; ++trackId) {
-        const char* trackType = MP4GetTrackType(hFile, trackId);
-        if ((nullptr == trackType) || !MP4_IS_AUDIO_TRACK_TYPE(trackType)) {
-            continue;
-        }
+MP4TrackId findFirstAudioTrackId(const QString& fileName, MP4FileHandle hFile) {
+    const u_int32_t minTrackId = 1;
+    const u_int32_t maxTrackId = MP4GetNumberOfTracks(hFile, MP4_AUDIO_TRACK_TYPE, 0);
+    if (minTrackId > maxTrackId) {
+        qWarning() << "No audio tracks found in file"
+                << fileName;
+        return MP4_INVALID_TRACK_ID;
+    }
+    for (u_int32_t trackId = minTrackId; trackId <= maxTrackId; ++trackId) {
         const char* mediaDataName = MP4GetTrackMediaDataName(hFile, trackId);
-        if ((nullptr == mediaDataName) || (0 != strcasecmp(mediaDataName, "mp4a"))) {
+        if (!isValidMediaDataName(mediaDataName)) {
+            qWarning() << "Unsupported media data name"
+                    << QString((mediaDataName == nullptr) ? "" : mediaDataName)
+                    << "in track"
+                    << trackId
+                    << "of file"
+                    << fileName;
             continue;
         }
         const u_int8_t audioType = MP4GetTrackEsdsObjectTypeId(hFile, trackId);
-        if (MP4_INVALID_AUDIO_TYPE == audioType) {
-            continue;
-        }
-        if (MP4_MPEG4_AUDIO_TYPE == audioType) {
-            const u_int8_t audioMpeg4Type = MP4GetTrackAudioMpeg4Type(hFile,
-                    trackId);
-            if (MP4_IS_MPEG4_AAC_AUDIO_TYPE(audioMpeg4Type)) {
+        if (MP4_IS_AAC_AUDIO_TYPE(audioType)) {
+            if (MP4_MPEG4_AUDIO_TYPE == audioType) {
+                const u_int8_t mpeg4AudioType =
+                        MP4GetTrackAudioMpeg4Type(hFile, trackId);
+                if (MP4_IS_MPEG4_AAC_AUDIO_TYPE(mpeg4AudioType)) {
+                    return trackId;
+                } else {
+                    qWarning() << "Unsupported MPEG4 audio type"
+                            << int(mpeg4AudioType)
+                            << "in track"
+                            << trackId
+                            << "of file"
+                            << fileName;
+                }
+            } else {
                 return trackId;
             }
-        } else if (MP4_IS_AAC_AUDIO_TYPE(audioType)) {
-            return trackId;
+        } else {
+            qWarning() << "Unsupported audio type"
+                    << int(audioType)
+                    << "in track"
+                    << trackId
+                    << "of file"
+                    << fileName;
         }
     }
     return MP4_INVALID_TRACK_ID;
@@ -105,7 +132,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
         return ERR;
     }
 
-    m_trackId = findFirstAudioTrackId(m_hFile);
+    m_trackId = findFirstAudioTrackId(getLocalFileName(), m_hFile);
     if (MP4_INVALID_TRACK_ID == m_trackId) {
         qWarning() << "No AAC track found:" << getUrlString();
         return ERR;
