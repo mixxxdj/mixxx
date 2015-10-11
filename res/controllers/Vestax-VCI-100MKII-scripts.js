@@ -9,7 +9,7 @@
 
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2015-10-10
+// description: 2015-10-11
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 var VCI102 = {};
@@ -70,8 +70,6 @@ VCI102.SelectNextTrack = function(ch, midino, value, status, group) {
     });
 };
 
-VCI102.keylock = [0, 0, 0, 0];
-
 VCI102.slip = function(value, group, key) {
     if (!value) {
         if (engine.getValue(group, "slip_enabled")) {
@@ -86,12 +84,9 @@ VCI102.slip = function(value, group, key) {
 VCI102.scratchEnable = function(ch, midino, value, status, group) {
     var deck = ch + 1;
     if (value) {
-        VCI102.keylock[ch] = engine.getValue(group, "keylock");
-        engine.setValue(group, "keylock", 0);
         engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
     } else {
         engine.scratchDisable(deck, false);
-        engine.setValue(group, "keylock", VCI102.keylock[ch]);
         VCI102.slip(value, group);
     }
 };
