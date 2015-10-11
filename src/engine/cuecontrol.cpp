@@ -45,8 +45,6 @@ CueControl::CueControl(QString group,
     m_pCuePoint->set(-1.0);
 
     m_pCueMode = new ControlObject(ConfigKey(group, "cue_mode"));
-    // 0.0 -> Pioneer mode
-    // 1.0 -> Denon mode
 
     m_pCueSet = new ControlPushButton(ConfigKey(group, "cue_set"));
     m_pCueSet->setButtonMode(ControlPushButton::TRIGGER);
@@ -609,6 +607,8 @@ void CueControl::saveCuePoint(double cuePoint) {
     }
 }
 
+// Moves the cue point to current position or to closest beat in case
+// quantize is enabled
 void CueControl::cueSet(double v) {
     if (!v)
         return;

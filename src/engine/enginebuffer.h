@@ -104,11 +104,10 @@ class EngineBuffer : public EngineObject {
     };
   public:
     enum SeekRequest {
-        NO_SEEK = 0x00,
+        SEEK_NONE = 0x00,
         SEEK_PHASE = 0x01,
         SEEK_EXACT = 0x02,
         SEEK_STANDARD = 0x03, // = (SEEK_EXACT | SEEK_PHASE)
-        // … some more options with value which is a power of two
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
@@ -381,7 +380,7 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iSeekPhaseQueued;
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
-    ControlValueAtomic<double> m_queuedPosition;
+    ControlValueAtomic<double> m_queuedSeekPosition;
 
     // Holds the last sample value of the previous buffer. This is used when ramping to
     // zero in case of an immediate stop of the playback

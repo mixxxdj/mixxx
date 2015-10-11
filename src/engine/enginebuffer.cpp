@@ -93,7 +93,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_startButton(NULL),
           m_endButton(NULL),
           m_bScalerOverride(false),
-          m_iSeekQueued(NO_SEEK),
+          m_iSeekQueued(SEEK_NONE),
+          m_iSeekPhaseQueued(SEEK_NONE),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(SYNC_INVALID),
           m_bLastBufferPaused(true),
@@ -401,7 +402,8 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
     // Write the position before the seek type, to reduce a possible race
     // condition effect
-    m_queuedPosition.setValue(newpos);
+    m_queuedSeekPosition.setValue(newpos);
+    // set m_queuedPosition valid
     m_iSeekQueued = seekType;
 }
 
@@ -1189,22 +1191,22 @@ void EngineBuffer::processSyncRequests() {
 
 void EngineBuffer::processSeek(bool paused) {
     // We need to read position just after reading seekType, to ensure that we
-    // read the matching position to seek_typ or a position from a new seek
-    // just queued from an other thread
-    // the later case is ok, because we will process the new seek in the next
-    // call anyway.
+    // read the matching position to seek_typ or a position from a new (second)
+    // seek just queued from an other thread
+    // The later case is ok, because we will process the new seek in the next
+    // call anyway again.
 
     SeekRequests seekType = static_cast<SeekRequest>(
-            m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
-    double position = m_queuedPosition.getValue();
+            m_iSeekQueued.fetchAndStoreRelease(SEEK_NONE));
+    double position = m_queuedSeekPosition.getValue();
 
     // Add SEEK_PHASE bit, if any
     seekType |= static_cast<SeekRequests>(
-            m_iSeekPhaseQueued.fetchAndStoreRelease(NO_SEEK));
+            m_iSeekPhaseQueued.fetchAndStoreRelease(SEEK_NONE));
 
 
     switch (seekType) {
-        case NO_SEEK:
+        case SEEK_NONE:
             return;
         case SEEK_PHASE:
             // only adjust phase
