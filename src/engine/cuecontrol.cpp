@@ -27,6 +27,7 @@ CueControl::CueControl(QString group,
         m_pPlayButton(ControlObject::getControl(ConfigKey(group, "play"))),
         m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
         m_iCurrentlyPreviewingHotcues(0),
+        m_bypassCueSetByPlay(false),
         m_iNumHotCues(NUM_HOT_CUES),
         m_pLoadedTrack(),
         m_mutex(QMutex::Recursive) {
@@ -436,6 +437,8 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
         int position = pCue->getPosition();
         if (position != -1) {
             seekAbs(position);
+            // don't move the cue point to the hot cue point in DENON mode
+            m_bypassCueSetByPlay = true;
             m_pPlayButton->set(1.0);
         }
     }
@@ -645,6 +648,9 @@ void CueControl::cueGotoAndPlay(double v)
     QMutexLocker lock(&m_mutex);
     // Start playing if not already
     if (!m_pPlayButton->toBool()) {
+        // cueGoto is processed asynchrony.
+        // avoid a wrong cue set if seek by cueGoto is still pending
+        m_bypassCueSetByPlay = true;
         m_pPlayButton->set(1.0);
     }
 }
@@ -816,11 +822,13 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
 
     if ((cueMode == CUE_MODE_DENON || cueMode == CUE_MODE_NUMARK) &&
             newPlay && playPossible &&
-            !m_pPlayButton->toBool()) {
+            !m_pPlayButton->toBool() &&
+            !m_bypassCueSetByPlay) {
         // in Denon mode each play from pause moves the cue point
         // if not previewing
         cueSet(1.0);
     }
+    m_bypassCueSetByPlay = false;
 
     // when previewing, "play" was set by cue button, a following toggle request
     // (play = 0.0) is used for latching play.
