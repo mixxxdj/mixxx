@@ -1,3 +1,12 @@
+////////////////////////////////////////////////////////////////////////
+// JSHint configuration                                               //
+////////////////////////////////////////////////////////////////////////
+/* global engine                                                      */
+/* global script                                                      */
+/* global print                                                       */
+/* global midi                                                        */
+////////////////////////////////////////////////////////////////////////
+
 function HerculesMP3e2 () {}
 
 // Control schema: http://blog.ebruni.it/blog/wp-content/uploads/2010/01/Hercules-mp3e2-schema-comandi.jpg
@@ -5,22 +14,19 @@ function HerculesMP3e2 () {}
 // Explaination: http://www.mixxx.org/wiki/doku.php/hercules_dj_control_mp3_e2
 
 // Number of the standard RPM value. Lower values increase de sensitivity as the really records.
-standardRpm = 33.33;
+var standardRpm = 33.33;
 
 // The alpha value for the filter (start with 1/8 (0.125) and tune from there)
-alpha = 1/8;
+var alpha = 1/8;
 
 // The beta value for the filter (start with alpha/32 and tune from there)
-beta = alpha/20;
+var beta = alpha/20;
 
 // Timer to disable the scratch if the "jog wheel" is stopped for "x" milliseconds (default = 60)
-scratchResetTime = 60;
-
-// Seconds to the end of track after which cue button blink (default = 30)
-secondsBlink = 30;  
+var scratchResetTime = 60;
 
 // Tune the jog sensitivity when the scratch mode is disabled (default = 1, increase for increase the sensitivity
-jogSensitivity = 0.8;
+var jogSensitivity = 0.8;
 
 // Debug switch. set to true to print debug log messages in console.
 var debug=false;
@@ -38,15 +44,11 @@ var jogPlaylistSensitivityDivider = 3;
 var jogPlaylistSense = 0;
 var jogPlaylistCounter = 0;
 
-superButtonHold = 0;
-automixPressed = false;
-scratchButton = 0;
-scratchMode = 0;
-scratchTimer = 0;
-wheelMove = [0,0,0,0];
-pitchIncrementRelative = 0;
-//scratchFactor = 0;
-//jogPitchFactor = 0;
+var superButtonHold = 0;
+var automixPressed = false;
+var scratchMode = 0;
+var scratchTimer = 0;
+var wheelMove = [0,0,0,0];
 
 /*HerculesMP3e2.controls = {
     "inputs": {
@@ -95,8 +97,8 @@ HerculesMP3e2.switchDeck = function (group)
 {
 	var deck = group.replace("Channel1", "Channel"+deckA);
 	deck = deck.replace("Channel2", "Channel"+deckB);
-	return deck
-}
+	return deck;
+};
 
 
 // This function connect a control or remove the connection if the remove parameter is set to true.
@@ -116,14 +118,14 @@ HerculesMP3e2.connectControl = function (deck, remove)
 	engine.connectControl("[Channel"+deck+"]", "sync_enabled", "HerculesMP3e2.syncmode", remove);
 	engine.connectControl("[Channel"+deck+"]", "pfl", "HerculesMP3e2.pflLeds", remove);
 	if (debug)
-		print("*** "+(remove == true) ? "Disable" : "Enable" + " soft takeover for [EqualizerRack1_[Channel"+deck+"]_Effect1].parameter[1-3]");
-	engine.softTakeover("[EqualizerRack1_[Channel"+deck+"]_Effect1]", "parameter1", (remove == true) ? false : true);
-	engine.softTakeover("[EqualizerRack1_[Channel"+deck+"]_Effect1]", "parameter2", (remove == true) ? false : true);
-	engine.softTakeover("[EqualizerRack1_[Channel"+deck+"]_Effect1]", "parameter3", (remove == true) ? false : true);
+		print("*** "+(remove === true) ? "Disable" : "Enable" + " soft takeover for [EqualizerRack1_[Channel"+deck+"]_Effect1].parameter[1-3]");
+	engine.softTakeover("[EqualizerRack1_[Channel"+deck+"]_Effect1]", "parameter1", (remove === true) ? false : true);
+	engine.softTakeover("[EqualizerRack1_[Channel"+deck+"]_Effect1]", "parameter2", (remove === true) ? false : true);
+	engine.softTakeover("[EqualizerRack1_[Channel"+deck+"]_Effect1]", "parameter3", (remove === true) ? false : true);
 	if (debug)
-		print("*** "+(remove == true) ? "Disable" : "Enable" + " soft takeover for [Channel"+deck+"].volume");
-	engine.softTakeover("[Channel"+deck+"]", "volume", (remove == true) ? false : true);
-}
+		print("*** "+(remove === true) ? "Disable" : "Enable" + " soft takeover for [Channel"+deck+"].volume");
+	engine.softTakeover("[Channel"+deck+"]", "volume", (remove === true) ? false : true);
+};
 
 // This function prints its argument values for debug purposes
 // Use it like this : 	engine.connectControl("[Channel1]", "volume", "HerculesMP3e2.debugControl");
@@ -146,15 +148,18 @@ HerculesMP3e2.updateLeds = function (deck)
 	engine.trigger("[Channel"+deck+"]", "hotcue_4_enabled");
 	engine.trigger("[Channel"+deck+"]", "sync_enabled");
 	engine.trigger("[Channel"+deck+"]", "pfl");
-}
+};
 
-HerculesMP3e2.init = function (id) 
+HerculesMP3e2.init = function (id, debugging) 
 { 
+	if (debugging)
+		debug=true;
+  
 	if (debug)
-		print("*** Hercules MP3 e2 initialization begins");
+		print("*** Hercules MP3 e2 id "+id+" initialization begins");
 	
 	// Switch off all LEDs
-	for (i=1; i<95; i++) 
+	for (var i=1; i<95; i++) 
 	{
 		midi.sendShortMsg(0x90, i, 0x00);
 	}
@@ -179,13 +184,13 @@ HerculesMP3e2.init = function (id)
 };
 
 
-HerculesMP3e2.shutdown = function (id) 
+HerculesMP3e2.shutdown = function() 
 {
 	if (debug)
 		print("*** Hercules MP3 e2 shutdown begins. Swhitching off all leds");
 
 	// Switch off all LEDs
-	for (i=1; i<95; i++)
+	for (var i=1; i<95; i++)
 	{
 		midi.sendShortMsg(0x90, i, 0x00);
 	}
@@ -245,13 +250,13 @@ HerculesMP3e2.masterTempo = function (midino, control, value, status, group)
         }
 	else if (superButtonHold == 1)
 	{
-        	if (value && scratchMode == 0)
-			engine.setValue(deck, "keylock", (engine.getValue(deck, "keylock") == 0) ? 1 : 0);
+        	if (value && scratchMode === 0)
+			engine.setValue(deck, "keylock", (engine.getValue(deck, "keylock") === 0) ? 1 : 0);
 	}
 	else
 	{
 		if (value)
-			engine.setValue(deck, "sync_enabled", (engine.getValue(deck, "sync_enabled") == 0) ? 1 : 0);
+			engine.setValue(deck, "sync_enabled", (engine.getValue(deck, "sync_enabled") === 0) ? 1 : 0);
 	}
 };
 
@@ -324,7 +329,7 @@ HerculesMP3e2.scroll = function (midino, control, value, status, group)
 	if (control == 0x2C)
 		deck = "[Sampler"+deckA+"]";
 	else
-		deck = "[Sampler"+deckB+"]"
+		deck = "[Sampler"+deckB+"]";
 
 	if (value)
 	{
@@ -507,10 +512,13 @@ HerculesMP3e2.pitch = function (midino, control, value, status, group)
 	// Shifted: Headphone volume and pre/main (this are 4-deck independant)
 	// Supershifted: QuickEffect Filter knob
 	
+  var sign;
+  var newValue;
+  
 	if (superButtonHold == 2) 
 	{
 		sign = (value == 0x01) ? 1 : -1;
-		
+		    
 		if (group == "[Channel1]") 
 		{
 			newValue = HerculesMP3e2.knobIncrement("[QuickEffectRack1_[Channel"+deckA+"]]", "super1", 0, 1, 0.5, 20, sign);
@@ -549,10 +557,12 @@ HerculesMP3e2.knobIncrement = function (group, action, minValue, maxValue, centr
 {
 	// This function allows you to increment a non-linear value like the volume's knob
 	// sign must be 1 for positive increment, -1 for negative increment
-	semiStep = step/2;
-	rangeWidthLeft = centralValue-minValue;
-	rangeWidthRight = maxValue-centralValue;
-	actual = engine.getValue(group, action);
+	var semiStep = step/2;
+	var rangeWidthLeft = centralValue-minValue;
+	var rangeWidthRight = maxValue-centralValue;
+	var actual = engine.getValue(group, action);
+	var newValue;
+	var increment;
 	
 	if (actual < 1) 
 	{
@@ -682,7 +692,7 @@ HerculesMP3e2.scratch = function (midino, control, value, status, group)
         // Normal scratch function
 	if (value) 
 	{
-		if(scratchMode == 0) 
+		if(scratchMode === 0) 
 		{
 		// Enable the scratch mode on the corrisponding deck and start the timer
 			scratchMode = 1;
@@ -870,7 +880,7 @@ HerculesMP3e2.syncmode = function (value, group, control)
 			midi.sendShortMsg(0x90,39,0x7F); //fixed on
 		}
 	}
-	else if (value == 0) //None => led off
+	else if (value === 0) //None => led off
 	{
 		if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3)))
 		{
@@ -883,7 +893,7 @@ HerculesMP3e2.syncmode = function (value, group, control)
 			midi.sendShortMsg(0x90,39,0x00); //fixed off
 		}
 	}
-}
+};
 
 HerculesMP3e2.cueLed = function (value, group, control)
 {
@@ -895,7 +905,7 @@ HerculesMP3e2.cueLed = function (value, group, control)
 	{
 		midi.sendShortMsg(0x90,34, (value) ? 0x7F : 0x00); // Switch-on Cue Led
 	}
-}
+};
 
 // Play led
 HerculesMP3e2.playLed = function (value, group, control)
@@ -908,16 +918,15 @@ HerculesMP3e2.playLed = function (value, group, control)
 	{
 		midi.sendShortMsg(0x90,35, (value) ? 0x7F : 0x00); // Switch-on Play Led
 	}
-}
+};
 
 // Switch on the hotcue leds
 HerculesMP3e2.hotcueLeds = function (value, group, control)
 {
-	var ledStatus = (value == 0) ? 0x00 : 0x7F;
-	
+	var ledStatus = (value === 0) ? 0x00 : 0x7F;
+	var ledNo=0;	
 	if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3)))
 	{
-		var ledNo=0;
 		switch (control)
 		{
 			case "hotcue_1_enabled":
@@ -937,7 +946,6 @@ HerculesMP3e2.hotcueLeds = function (value, group, control)
 	}
 	else if (((group == "[Channel2]") && (deckB == 2)) || ((group == "[Channel4]") && (deckB == 4)))
 	{
-		var ledNo=0;
 		switch (control)
 		{
 			case "hotcue_1_enabled":
@@ -955,7 +963,7 @@ HerculesMP3e2.hotcueLeds = function (value, group, control)
 		}
 		midi.sendShortMsg(0x90,ledNo,ledStatus);
 	}
-}
+};
 
 // Switch-on the K1 Led if the loop start is set
 HerculesMP3e2.loopStartSetLeds = function (loopStartPos, group) 
@@ -991,16 +999,17 @@ HerculesMP3e2.wind = function (midino, control, value, status, group)
 {
         //normal: fwd and rwd
         //shift: adjust pregain
-	//supershift: same as shift
+        //supershift: same as shift
 	
-	var deck = HerculesMP3e2.switchDeck(group);
+        var deck = HerculesMP3e2.switchDeck(group);
+        var newValue = 0;
 	
         if (control == 0x21 || control == 0x0D)
         {
                 if (superButtonHold >= 1 && value)
                 {
-			var newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, 1);
-			engine.setValue(deck, "pregain", newValue);
+                        newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, 1);
+                        engine.setValue(deck, "pregain", newValue);
                 }
                 else
                 {
@@ -1011,8 +1020,8 @@ HerculesMP3e2.wind = function (midino, control, value, status, group)
         {
                 if (superButtonHold >= 1 && value)
                 {
-			var newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, -1);
-			engine.setValue(deck, "pregain", newValue);
+                        newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, -1);
+                        engine.setValue(deck, "pregain", newValue);
                 }
                 else
                 {
@@ -1136,19 +1145,19 @@ HerculesMP3e2.filterKnob = function (group, control, value)
 {
 	var deck = HerculesMP3e2.switchDeck(group);
 	engine.setValue("[EqualizerRack1_"+deck+"_Effect1]", control, script.absoluteNonLin(value, 0, 1, 4));
-}
+};
 
 HerculesMP3e2.filterHigh = function (midino, control, value, status, group)
 {
 	HerculesMP3e2.filterKnob(group, "parameter3", value);
-}
+};
 
 HerculesMP3e2.filterMid = function (midino, control, value, status, group)
 {
 	HerculesMP3e2.filterKnob(group, "parameter2", value);
-}
+};
 
 HerculesMP3e2.filterLow = function (midino, control, value, status, group)
 {
 	HerculesMP3e2.filterKnob(group, "parameter1", value);
-}
+};
