@@ -23,6 +23,8 @@
 
 #include "soundsource.h"
 
+class QFile;
+
 class SoundSourceOggVorbis : public Mixxx::SoundSource {
  public:
   explicit SoundSourceOggVorbis(QString qFilename);
@@ -35,10 +37,18 @@ class SoundSourceOggVorbis : public Mixxx::SoundSource {
   QImage parseCoverArt();
   static QList<QString> supportedFileExtensions();
  private:
+  static size_t ReadCallback(void *ptr,
+          size_t size, size_t nmemb, void *datasource);
+  static int SeekCallback(void *datasource, ogg_int64_t offset, int whence);
+  static int CloseCallback(void *datasource);
+  static long TellCallback(void *datasource);
+  static ov_callbacks s_callbacks;
+
   int channels;
   unsigned long filelength;
   OggVorbis_File vf;
   int current_section;
+  QFile* m_pFile;
 };
 
 #endif

@@ -4,6 +4,7 @@
 //format_samples adapted from cmus (Peter Lemenkov)
 
 #include <QtDebug>
+#include <QFile>
 
 #include "soundsourcewv.h"
 #include "soundsourcetaglib.h"
@@ -12,19 +13,42 @@
 #include <taglib/wavpackfile.h>
 namespace Mixxx {
 
+//static
+WavpackStreamReader SoundSourceWV::s_streamReader = {
+    SoundSourceWV::ReadBytesCallback,
+    SoundSourceWV::GetPosCallback,
+    SoundSourceWV::SetPosAbsCallback,
+    SoundSourceWV::SetPosRelCallback,
+    SoundSourceWV::PushBackByteCallback,
+    SoundSourceWV::GetlengthCallback,
+    SoundSourceWV::CanSeekCallback,
+    SoundSourceWV::WriteBytesCallback
+};
+
 SoundSourceWV::SoundSourceWV(QString qFilename)
     : SoundSource(qFilename),
     filewvc(NULL),
     Bps(0),
-    filelength(0) {
+    filelength(0),
+    m_pWVFile(NULL),
+    m_pWVCFile(NULL) {
     setType("wv");
 }
-
 
 SoundSourceWV::~SoundSourceWV(){
    if (filewvc) {
     WavpackCloseFile(filewvc);
-    filewvc=NULL;
+    filewvc = NULL;
+   }
+   if (m_pWVFile) {
+       m_pWVFile->close();
+       delete m_pWVFile;
+       m_pWVFile = NULL;
+   }
+   if (m_pWVCFile) {
+       m_pWVCFile->close();
+       delete m_pWVCFile;
+       m_pWVCFile = NULL;
    }
 }
 
@@ -39,9 +63,20 @@ QList<QString> SoundSourceWV::supportedFileExtensions()
 Result SoundSourceWV::open()
 {
     QByteArray qBAFilename(getFilename().toLocal8Bit());
-    char msg[80];   //hold possible error message
+    char msg[80];   // hold possible error message
 
-    filewvc = WavpackOpenFileInput(qBAFilename.constData(), msg, OPEN_2CH_MAX | OPEN_WVC,0);
+    // We use WavpackOpenFileInputEx to support Unicode paths on windows
+    // http://www.wavpack.com/lib_use.txt
+    m_pWVFile = new QFile(getFilename());
+    m_pWVFile->open(QFile::ReadOnly);
+    QString correctionfileName(getFilename() + "c");
+    if (QFile::exists(correctionfileName)) {
+        // If there is a correction file, open it as well
+        m_pWVCFile = new QFile(correctionfileName);
+        m_pWVCFile->open(QFile::ReadOnly);
+    }
+    filewvc = WavpackOpenFileInputEx(&s_streamReader, m_pWVFile, m_pWVCFile, msg,
+             OPEN_2CH_MAX | OPEN_WVC, 0);
     if (!filewvc) {
         qDebug() << "SSWV::open: failed to open file : "<< msg;
         return ERR;
@@ -49,7 +84,10 @@ Result SoundSourceWV::open()
     if (WavpackGetMode(filewvc) & MODE_FLOAT) {
         qDebug() << "SSWV::open: cannot load 32bit float files";
         WavpackCloseFile(filewvc);
-        filewvc=NULL;
+        filewvc = NULL;
+        m_pWVFile->close();
+        delete m_pWVFile;
+        m_pWVFile = NULL;
         return ERR;
     }
     // wavpack_open succeeded -> populate variables
@@ -57,8 +95,9 @@ Result SoundSourceWV::open()
     setSampleRate(WavpackGetSampleRate(filewvc));
     setChannels(WavpackGetReducedChannels(filewvc));
     Bps=WavpackGetBytesPerSample(filewvc);
-    qDebug () << "SSWV::open: opened filewvc with filelength: "<<filelength<<" SampleRate: " << getSampleRate()
-        << " channels: " << getChannels() << " bytes per samp: "<<Bps;
+    qDebug() << "SSWV::open: opened filewvc with filelength: " << filelength
+            << " SampleRate: " << getSampleRate() << " channels: "
+            << getChannels() << " bytes per samp: " << Bps;
     if (Bps>2) {
         qDebug() << "SSWV::open: warning: input file has > 2 bytes per sample, will be truncated to 16bits";
     }
@@ -83,13 +122,13 @@ unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destinat
 
     //tempbuffer is fixed size : WV_BUF_LENGTH of uint32
     while (sampsread != size) {
-        timesamps=(size-sampsread)>>1;      //timesamps still remaining
-        if (timesamps > (WV_BUF_LENGTH / getChannels())) {  //if requested size requires more than one buffer filling
-            timesamps=(WV_BUF_LENGTH / getChannels());      //tempbuffer must hold (timesamps * channels) samples
+        timesamps = (size-sampsread) >> 1; // timesamps still remaining
+        if (timesamps > (unsigned long)(WV_BUF_LENGTH / getChannels())) {  //if requested size requires more than one buffer filling
+            timesamps = (WV_BUF_LENGTH / getChannels());      //tempbuffer must hold (timesamps * channels) samples
             qDebug() << "SSWV::read : performance warning, size requested > buffer size !";
         }
 
-        tsdone=WavpackUnpackSamples(filewvc, tempbuffer, timesamps);    //fill temp buffer with timesamps*4bytes*channels
+        tsdone = WavpackUnpackSamples(filewvc, tempbuffer, timesamps);    //fill temp buffer with timesamps*4bytes*channels
                 //data is right justified, format_samples() fixes that.
 
         SoundSourceWV::format_samples(Bps, (char *) (dest + (sampsread>>1) * getChannels()), tempbuffer, tsdone*getChannels());
@@ -121,9 +160,11 @@ inline long unsigned SoundSourceWV::length(){
 
 
 Result SoundSourceWV::parseHeader() {
-    const QByteArray qBAFilename(getFilename().toLocal8Bit());
-    TagLib::WavPack::File f(qBAFilename.constData());
-
+#ifdef _WIN32
+    TagLib::WavPack::File f(getFilename().toStdWString().data());
+#else
+    TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
+#endif
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -145,7 +186,11 @@ Result SoundSourceWV::parseHeader() {
 }
 
 QImage SoundSourceWV::parseCoverArt() {
+#ifdef _WIN32
+    TagLib::WavPack::File f(getFilename().toStdWString().data());
+#else
     TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
+#endif
     TagLib::APE::Tag *ape = f.APETag();
     if (ape) {
         return Mixxx::getCoverInAPETag(*ape);
@@ -191,6 +236,98 @@ void SoundSourceWV::format_samples(int Bps, char *dst, int32_t *src, uint32_t co
     }
 
     return;
+}
+
+//static
+int32_t SoundSourceWV::ReadBytesCallback(void* id, void* data, int bcount)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->read((char*)data, bcount);
+}
+
+
+// static
+uint32_t SoundSourceWV::GetPosCallback(void *id)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->pos();
+}
+
+//static
+int SoundSourceWV::SetPosAbsCallback(void* id, unsigned int pos)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->seek(pos) ? 0 : -1;
+}
+
+//static
+int SoundSourceWV::SetPosRelCallback(void *id, int delta, int mode)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+
+    switch(mode) {
+    case SEEK_SET:
+        return pFile->seek(delta) ? 0 : -1;
+    case SEEK_CUR:
+        return pFile->seek(pFile->pos() + delta) ? 0 : -1;
+    case SEEK_END:
+        return pFile->seek(pFile->size() + delta) ? 0 : -1;
+    default:
+        return -1;
+    }
+}
+
+//static
+int SoundSourceWV::PushBackByteCallback(void* id, int c)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    pFile->ungetChar((char)c);
+    return 1;
+}
+
+//static
+uint32_t SoundSourceWV::GetlengthCallback(void* id)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->size();
+}
+
+//static
+int SoundSourceWV::CanSeekCallback(void *id)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->isSequential() ? 0 : 1;
+}
+
+//static
+int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount)
+{
+    QFile* pFile = static_cast<QFile*>(id);
+    if (!pFile) {
+        return 0;
+    }
+    return (int32_t)pFile->write((char*)data, bcount);
 }
 
 }  // namespace Mixxx

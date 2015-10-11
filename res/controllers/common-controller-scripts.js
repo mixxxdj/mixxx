@@ -140,6 +140,22 @@ script.absoluteLin = function (value, low, high, min, max) {
 }
 
 /* -------- ------------------------------------------------------
+     script.absoluteLinInverse
+   Purpose: Maps a linear Mixxx control value (like balance: -1..1) to an absolute linear value
+            (inverse of the above function)
+   Input:   Control value (e.g. a knob,) MixxxControl values for the lowest and
+            highest points, lowest knob value, highest knob value
+            (Default knob values are standard MIDI 0..127)
+   Output:  Linear value corresponding to the knob position
+   -------- ------------------------------------------------------ */
+script.absoluteLinInverse = function (value, low, high, min, max) {
+    if (!min) min = 0;
+    if (!max) max = 127;
+    return ((((value-low)*(max-min))/(high-low)) + min);
+}
+
+
+/* -------- ------------------------------------------------------
      script.absoluteNonLin
    Purpose: Maps an absolute linear control value to a non-linear Mixxx control
             value (like EQs: 0..1..4)

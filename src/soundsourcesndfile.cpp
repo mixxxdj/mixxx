@@ -70,7 +70,8 @@ Result SoundSourceSndFile::open() {
     }
 
     if (sf_error(fh)>0) {
-        qWarning() << "libsndfile: Error opening file" << getFilename() << sf_strerror(fh);
+        qWarning() << "libsndfile: Error opening file"
+                   << getFilename() << sf_strerror(fh);
         return ERR;
     }
 
@@ -157,7 +158,11 @@ Result SoundSourceSndFile::parseHeader()
     QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     if (is_flac) {
+#ifdef _WIN32
+        TagLib::FLAC::File f(getFilename().toStdWString().data());
+#else
         TagLib::FLAC::File f(qBAFilename.constData());
+#endif
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -248,7 +253,11 @@ QImage SoundSourceSndFile::parseCoverArt() {
     const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
     if (getType() == "flac") {
+#ifdef _WIN32
+        TagLib::FLAC::File f(getFilename().toStdWString().data());
+#else
         TagLib::FLAC::File f(qBAFilename.constData());
+#endif
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
@@ -269,14 +278,22 @@ QImage SoundSourceSndFile::parseCoverArt() {
             }
         }
     } else if (getType() == "wav") {
+#ifdef _WIN32
+        TagLib::RIFF::WAV::File f(getFilename().toStdWString().data());
+#else
         TagLib::RIFF::WAV::File f(qBAFilename.constData());
+#endif
         TagLib::ID3v2::Tag* id3v2 = f.tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
         }
     } else {
         // Try AIFF
+#ifdef _WIN32
+        TagLib::RIFF::AIFF::File f(getFilename().toStdWString().data());
+#else
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
+#endif
         TagLib::ID3v2::Tag* id3v2 = f.tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
