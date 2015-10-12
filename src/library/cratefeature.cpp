@@ -80,7 +80,7 @@ CrateFeature::CrateFeature(QObject* parent,
             this, SLOT(slotCrateTableChanged(int)));
 
     connect(&m_crateDao, SIGNAL(changed(int)),
-            this, SLOT(slotCrateTableChanged(int)));
+            this, SLOT(slotCrateContentChanged(int)));
 
     connect(&m_crateDao, SIGNAL(renamed(int,QString)),
             this, SLOT(slotCrateTableRenamed(int,QString)));
@@ -536,6 +536,26 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
     return m_childModel.index(selected_row, 0);
 }
 
+void CrateFeature::updateChildModel(int selected_id) {
+    buildCrateList();
+
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
+         it != m_crateList.end(); ++it, ++row) {
+        int crate_id = it->first;
+        QString crate_name = it->second;
+
+        if (selected_id == crate_id) {
+            TreeItem* item = m_childModel.getItem(indexFromCrateId(crate_id));
+            item->setData(crate_name, QString::number(crate_id));
+            bool locked = m_crateDao.isCrateLocked(crate_id);
+            item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
+
+        }
+
+    }
+}
+
 /**
   * Clears the child model dynamically
   */
@@ -677,9 +697,14 @@ void CrateFeature::slotExportPlaylist() {
 }
 
 void CrateFeature::slotCrateTableChanged(int crateId) {
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    //qDebug() << "slotCrateTableChanged() crateId:" << crateId;
     clearChildModel();
     m_lastRightClickedIndex = constructChildModel(crateId);
+}
+
+void CrateFeature::slotCrateContentChanged(int crateId) {
+    //qDebug() << "slotCrateContentChanged()crateId:" << crateId;
+    updateChildModel(crateId);
 }
 
 void CrateFeature::slotCrateTableRenamed(int a_iCrateId,
