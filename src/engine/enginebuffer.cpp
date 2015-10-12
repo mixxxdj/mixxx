@@ -94,7 +94,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_endButton(NULL),
           m_bScalerOverride(false),
           m_iSeekQueued(SEEK_NONE),
-          m_iSeekPhaseQueued(SEEK_NONE),
+          m_iSeekPhaseQueued(0),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(SYNC_INVALID),
           m_bLastBufferPaused(true),
@@ -409,7 +409,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
 
 void EngineBuffer::requestSyncPhase() {
     // Don't overwrite m_iSeekQueued
-    m_iSeekPhaseQueued = SEEK_PHASE;
+    m_iSeekPhaseQueued = 1;
 }
 
 void EngineBuffer::requestEnableSync(bool enabled) {
@@ -1201,9 +1201,9 @@ void EngineBuffer::processSeek(bool paused) {
     double position = m_queuedSeekPosition.getValue();
 
     // Add SEEK_PHASE bit, if any
-    seekType |= static_cast<SeekRequests>(
-            m_iSeekPhaseQueued.fetchAndStoreRelease(SEEK_NONE));
-
+    if (m_iSeekPhaseQueued.fetchAndStoreRelease(0)) {
+        seekType |= SEEK_PHASE;
+    }
 
     switch (seekType) {
         case SEEK_NONE:
