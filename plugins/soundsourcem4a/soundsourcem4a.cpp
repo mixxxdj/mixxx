@@ -37,10 +37,16 @@ const MP4SampleId kSampleBlockIdMin = 1;
 // playback from any point in the bistream."
 const SINT kNumberOfPrefetchFrames = 2112;
 
+// The TrackId is a 1-based index of the tracks in an MP4 file
 const u_int32_t kMinTrackId = 1;
 
 inline
 u_int32_t getMaxTrackId(MP4FileHandle hFile) {
+    // The maximum TrackId equals the number of all tracks
+    // in an MP4 file. We pass nullptr and 0 as arguments
+    // to avoid any type/subtype filtering at this point!
+    // Otherwise the previous assumption would no longer
+    // be valid!
     return MP4GetNumberOfTracks(hFile, nullptr, 0);
 }
 
