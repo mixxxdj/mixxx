@@ -211,15 +211,19 @@
     
     <!-- Other bitwidth already installed -->
     <Property Id="MyWarningText3" Value=' ' />    
+    <?if $(var.Platform) = x86 ?>    
     <SetProperty Id="MyWarningText3"
                  After="SetMyWarningText2"
-    <?if $(var.Platform) = x86 ?>    
                  Value="!(loc.bitWidthMismatch64)">
-    <?else?>
-                 Value="!(loc.bitWidthMismatch32)">    
-    <?endif?>
        OTHERBITWIDTHINSTALLED
     </SetProperty>
+    <?else?>
+    <SetProperty Id="MyWarningText3"
+                 After="SetMyWarningText2"
+                 Value="!(loc.bitWidthMismatch32)">    
+       OTHERBITWIDTHINSTALLED
+    </SetProperty>
+    <?endif?>
 
                  
     <SetProperty Id="MyWarningText" After="SetMyWarningText3" Value="[MyWarningText1]&#13;&#10;&#13;&#10;[MyWarningText2]&#13;&#10;&#13;&#10;[MyWarningText3]" /> 
