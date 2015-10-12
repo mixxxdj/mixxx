@@ -108,9 +108,17 @@ double ControlPotmeterBehavior::scaleStartParameter() {
 }
 
 void ControlPotmeterBehavior::setScaleStartParameter(double value) {
+    if (value < 0.0) {
+        m_dScaleStartParameter = 0;
+        qWarning() << "ControlPotmeterBehavior::setScaleStartParameter(double value) value must be between 0 and 1.";
+        return;
+    }
+    if (value > 1.0) {
+        m_dScaleStartParameter = 1.;
+        qWarning() << "ControlPotmeterBehavior::setScaleStartParameter(double value) value must be between 0 and 1.";
+        return;
+    }
     m_dScaleStartParameter = value;
-    math_clamp(value, 0.0, 1.0);
-    qWarning() << "ControlPotmeterBehavior::setScaleStartParameter(double value) value must be between 0 and 1.";
 }
 
 #define maxPosition 1.0
