@@ -46,19 +46,18 @@ void HidReader::run() {
     delete [] data;
 }
 
-QString safeDecodeWideString(wchar_t* pStr, size_t max_length) {
-    if (pStr == NULL) {
-        return QString();
+QString safeDecodeWideString(const wchar_t* pStr, size_t max_length) {
+#ifdef __WINDOWS__
+    // We cannot use Qts wchar_t functions, since the may work or not
+    // depending on the '/Zc:wchar_t-' build flag in the Qt configs
+    if (sizeof(wchar_t) == sizeof(QChar)) {
+        return QString::fromUtf16((const ushort *)pStr, (int)max_length);
+    } else {
+        return QString::fromUcs4((uint *)pStr, (int)max_length);
     }
-    // pStr is untrusted since it might be non-null terminated.
-    wchar_t* tmp = new wchar_t[max_length+1];
-    // wcsnlen is not available on all platforms, so just make a temporary
-    // buffer
-    wcsncpy(tmp, pStr, max_length);
-    tmp[max_length] = 0;
-    QString result = QString::fromWCharArray(tmp);
-    delete [] tmp;
-    return result;
+#else
+    return QString::fromWCharArray(pStr, (int)max_length);
+#endif
 }
 
 HidController::HidController(const hid_device_info deviceInfo)
@@ -335,10 +334,10 @@ void HidController::send(QByteArray data, unsigned int reportID) {
         if (debugging()) {
             qWarning() << "Unable to send data to" << getName()
                        << "serial #" << hid_serial << ":"
-                       << QString::fromWCharArray(hid_error(m_pHidDevice));
+                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
         } else {
             qWarning() << "Unable to send data to" << getName() << ":"
-                       << QString::fromWCharArray(hid_error(m_pHidDevice));
+                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
         }
     } else if (debugging()) {
         qDebug() << result << "bytes sent to" << getName()
