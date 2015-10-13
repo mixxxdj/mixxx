@@ -161,7 +161,7 @@ inline long unsigned SoundSourceWV::length(){
 
 Result SoundSourceWV::parseHeader() {
 #ifdef _WIN32
-    TagLib::WavPack::File f(getFilename().toStdWString().data());
+    TagLib::WavPack::File f(getFilename().toStdWString().c_str());
 #else
     TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
 #endif
@@ -187,7 +187,7 @@ Result SoundSourceWV::parseHeader() {
 
 QImage SoundSourceWV::parseCoverArt() {
 #ifdef _WIN32
-    TagLib::WavPack::File f(getFilename().toStdWString().data());
+    TagLib::WavPack::File f(getFilename().toStdWString().c_str());
 #else
     TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
 #endif

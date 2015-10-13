@@ -564,7 +564,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
 Result SoundSourceMp3::parseHeader() {
 #ifdef _WIN32
-    TagLib::MPEG::File f(getFilename().toStdWString().data());
+    TagLib::MPEG::File f(getFilename().toStdWString().c_str());
 #else
     TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
 #endif
@@ -597,7 +597,7 @@ Result SoundSourceMp3::parseHeader() {
 QImage SoundSourceMp3::parseCoverArt() {
     QImage coverArt;
 #ifdef _WIN32
-    TagLib::MPEG::File f(getFilename().toStdWString().data());
+    TagLib::MPEG::File f(getFilename().toStdWString().c_str());
 #else
     TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
 #endif

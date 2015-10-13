@@ -182,7 +182,7 @@ inline long unsigned SoundSourceM4A::length(){
 
 Result SoundSourceM4A::parseHeader(){
 #ifdef _WIN32
-    TagLib::MP4::File f(getFilename().toStdWString().data());
+    TagLib::MP4::File f(getFilename().toStdWString().c_str());
 #else
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
 #endif
@@ -208,7 +208,7 @@ Result SoundSourceM4A::parseHeader(){
 
 QImage SoundSourceM4A::parseCoverArt() {
 #ifdef _WIN32
-    TagLib::MP4::File f(getFilename().toStdWString().data());
+    TagLib::MP4::File f(getFilename().toStdWString().c_str());
 #else
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
 #endif
