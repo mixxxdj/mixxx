@@ -16,7 +16,7 @@ Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     SF_INFO sfInfo;
     memset(&sfInfo, 0, sizeof(sfInfo));
 #ifdef __WINDOWS__
-    m_pSndFile = sf_wchar_open(fileName.toStdWString().data(), SFM_READ, &sfInfo);
+    m_pSndFile = sf_wchar_open(fileName.toStdWString().c_str(), SFM_READ, &sfInfo);
 #else
     m_pSndFile = sf_open(getLocalFileName().toLocal8Bit(), SFM_READ, &sfInfo);
 #endif
