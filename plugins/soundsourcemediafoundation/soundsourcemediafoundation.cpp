@@ -86,15 +86,10 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
     CoUninitialize();
 }
 
-Result SoundSourceMediaFoundation::open()
-{
+Result SoundSourceMediaFoundation::open() {
     if (sDebug) {
         qDebug() << "open()" << getFilename();
     }
-
-    int wcFilenameLength(getFilename().toWCharArray(m_wcFilename));
-    // toWCharArray does not append a null terminator to the string!
-    m_wcFilename[wcFilenameLength] = '\0';
 
     HRESULT hr(S_OK);
     // Initialize the COM library.
@@ -112,7 +107,13 @@ Result SoundSourceMediaFoundation::open()
     }
 
     // Create the source reader to read the input file.
-    hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
+    hr = MFCreateSourceReaderFromURL(
+            ((sizeof(wchar_t) == sizeof(QChar)) ?
+            (const wchar_t*)getFilename().utf16() :
+            getFilename().toStdWString().c_str()),
+            NULL,
+            &m_pReader);
+
     if (FAILED(hr)) {
         qWarning() << "SSMF: Error opening input file:" << getFilename();
         return ERR;
@@ -375,7 +376,7 @@ inline unsigned long SoundSourceMediaFoundation::length()
 
 Result SoundSourceMediaFoundation::parseHeader()
 {
-    TagLib::MP4::File f(getFilename().toStdWString().c_str());
+    TagLib::MP4::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
     if (!readFileHeader(this, f)) {
         return ERR;
     }

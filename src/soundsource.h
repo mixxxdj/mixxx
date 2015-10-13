@@ -46,9 +46,17 @@ typedef int (*getSoundSourceAPIVersionFunc)();
 typedef void (*freeFileExtensionsFunc)(char** exts);
 
 
-/*
-  Base class for sound sources.
-*/
+#ifdef _WIN32
+#define TAGLIB_FILENAME_FROM_QSTRING(fileName) \
+            ((sizeof(wchar_t) == sizeof(QChar)) ? \
+            (const wchar_t*)fileName.utf16() : \
+            fileName.toStdWString().c_str())
+#else
+#define TAGLIB_FILENAME_FROM_QSTRING(fileName) (fileName).toLocal8Bit().constData()
+#endif // _WIN32
+
+
+// Base class for sound sources.
 namespace Mixxx
 {
 class SoundSource

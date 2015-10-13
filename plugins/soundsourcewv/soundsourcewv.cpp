@@ -60,9 +60,7 @@ QList<QString> SoundSourceWV::supportedFileExtensions()
 }
 
 
-Result SoundSourceWV::open()
-{
-    QByteArray qBAFilename(getFilename().toLocal8Bit());
+Result SoundSourceWV::open() {
     char msg[80];   // hold possible error message
 
     // We use WavpackOpenFileInputEx to support Unicode paths on windows
@@ -160,11 +158,7 @@ inline long unsigned SoundSourceWV::length(){
 
 
 Result SoundSourceWV::parseHeader() {
-#ifdef _WIN32
-    TagLib::WavPack::File f(getFilename().toStdWString().c_str());
-#else
-    TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
-#endif
+    TagLib::WavPack::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -186,11 +180,7 @@ Result SoundSourceWV::parseHeader() {
 }
 
 QImage SoundSourceWV::parseCoverArt() {
-#ifdef _WIN32
-    TagLib::WavPack::File f(getFilename().toStdWString().c_str());
-#else
-    TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
-#endif
+    TagLib::WavPack::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
     TagLib::APE::Tag *ape = f.APETag();
     if (ape) {
         return Mixxx::getCoverInAPETag(*ape);

@@ -156,11 +156,7 @@ inline unsigned long SoundSourceFLAC::length() {
 }
 
 Result SoundSourceFLAC::parseHeader() {
-#ifdef _WIN32
-    TagLib::FLAC::File f(getFilename().toStdWString().c_str());
-#else
-    TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
-#endif
+    TagLib::FLAC::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -187,11 +183,7 @@ Result SoundSourceFLAC::parseHeader() {
 }
 
 QImage SoundSourceFLAC::parseCoverArt() {
-#ifdef _WIN32
-    TagLib::FLAC::File f(getFilename().toStdWString().c_str());
-#else
-    TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
-#endif
+    TagLib::FLAC::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
     QImage coverArt;
     TagLib::Ogg::XiphComment *xiph(f.xiphComment());
     if (xiph) {
