@@ -250,7 +250,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
  */
 Result SoundSourceOggVorbis::parseHeader() {
 #ifdef _WIN32
-    TagLib::Ogg::Vorbis::File f(getFilename().toStdWString().data());
+    TagLib::Ogg::Vorbis::File f(getFilename().toStdWString().c_str());
 #else
     TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
 #endif
@@ -276,7 +276,7 @@ Result SoundSourceOggVorbis::parseHeader() {
 
 QImage SoundSourceOggVorbis::parseCoverArt() {
 #ifdef _WIN32
-    TagLib::Ogg::Vorbis::File f(getFilename().toStdWString().data());
+    TagLib::Ogg::Vorbis::File f(getFilename().toStdWString().c_str());
 #else
     TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
 #endif

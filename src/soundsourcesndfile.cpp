@@ -159,7 +159,7 @@ Result SoundSourceSndFile::parseHeader()
 
     if (is_flac) {
 #ifdef _WIN32
-        TagLib::FLAC::File f(getFilename().toStdWString().data());
+        TagLib::FLAC::File f(getFilename().toStdWString().c_str());
 #else
         TagLib::FLAC::File f(qBAFilename.constData());
 #endif
@@ -254,7 +254,7 @@ QImage SoundSourceSndFile::parseCoverArt() {
 
     if (getType() == "flac") {
 #ifdef _WIN32
-        TagLib::FLAC::File f(getFilename().toStdWString().data());
+        TagLib::FLAC::File f(getFilename().toStdWString().c_str());
 #else
         TagLib::FLAC::File f(qBAFilename.constData());
 #endif
@@ -279,7 +279,7 @@ QImage SoundSourceSndFile::parseCoverArt() {
         }
     } else if (getType() == "wav") {
 #ifdef _WIN32
-        TagLib::RIFF::WAV::File f(getFilename().toStdWString().data());
+        TagLib::RIFF::WAV::File f(getFilename().toStdWString().c_str());
 #else
         TagLib::RIFF::WAV::File f(qBAFilename.constData());
 #endif
@@ -290,7 +290,7 @@ QImage SoundSourceSndFile::parseCoverArt() {
     } else {
         // Try AIFF
 #ifdef _WIN32
-        TagLib::RIFF::AIFF::File f(getFilename().toStdWString().data());
+        TagLib::RIFF::AIFF::File f(getFilename().toStdWString().c_str());
 #else
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
 #endif

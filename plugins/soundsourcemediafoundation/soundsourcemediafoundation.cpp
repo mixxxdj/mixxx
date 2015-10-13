@@ -375,7 +375,7 @@ inline unsigned long SoundSourceMediaFoundation::length()
 
 Result SoundSourceMediaFoundation::parseHeader()
 {
-    TagLib::MP4::File f(getFilename().toStdWString().data());
+    TagLib::MP4::File f(getFilename().toStdWString().c_str());
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -398,7 +398,7 @@ Result SoundSourceMediaFoundation::parseHeader()
 
 QImage SoundSourceMediaFoundation::parseCoverArt() {
     setType("m4a");
-    TagLib::MP4::File f(getFilename().toStdWString().data());
+    TagLib::MP4::File f(getFilename().toStdWString().c_str());
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
         return Mixxx::getCoverInMP4Tag(*mp4);

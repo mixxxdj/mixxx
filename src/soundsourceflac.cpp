@@ -157,7 +157,7 @@ inline unsigned long SoundSourceFLAC::length() {
 
 Result SoundSourceFLAC::parseHeader() {
 #ifdef _WIN32
-    TagLib::FLAC::File f(getFilename().toStdWString().data());
+    TagLib::FLAC::File f(getFilename().toStdWString().c_str());
 #else
     TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
 #endif
@@ -188,7 +188,7 @@ Result SoundSourceFLAC::parseHeader() {
 
 QImage SoundSourceFLAC::parseCoverArt() {
 #ifdef _WIN32
-    TagLib::FLAC::File f(getFilename().toStdWString().data());
+    TagLib::FLAC::File f(getFilename().toStdWString().c_str());
 #else
     TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
 #endif
