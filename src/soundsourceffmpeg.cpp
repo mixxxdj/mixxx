@@ -391,10 +391,10 @@ Result SoundSourceFFmpeg::open() {
 #if defined(_WIN32) && !defined(__MINGW32CE__)
     const QByteArray qBAFilename(
             avformat_version() >= ((52<<16)+(0<<8)+0) ?
-            getLocalFileName().toUtf8() :
-            getLocalFileName().toLocal8Bit());
+            getFilename().toUtf8() :
+            getFilename().toLocal8Bit());
 #else
-    const QByteArray qBAFilename(getLocalFileName().toLocal8Bit());
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 #endif
 
     // Open file and make m_pFormatCtx
@@ -800,7 +800,6 @@ QImage SoundSourceFFmpeg::parseCoverArt() {
 #else
         TagLib::MPEG::File f(qBAFilename.constData());
 #endif
-        TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
