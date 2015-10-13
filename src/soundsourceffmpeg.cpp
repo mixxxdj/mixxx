@@ -811,7 +811,7 @@ QImage SoundSourceFFmpeg::parseCoverArt() {
             }
         }
     } else if (getType() == "ogg" || getType() == "opus") {
-#if _WIN32
+#ifdef _WIN32
         TagLib::Ogg::Vorbis::File f(getFilename().toStdWString().data());
 #else
         TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
