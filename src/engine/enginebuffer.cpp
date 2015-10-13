@@ -402,6 +402,11 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
     // Write the position before the seek type, to reduce a possible race
     // condition effect
+    DEBUG_ASSERT_AND_HANDLE(seekType != SEEK_PHASE) {
+        // SEEK_PASE with a position is not supported
+        // use SEEK_STANDARD for that
+        seekType = SEEK_STANDARD;
+    }
     m_queuedSeekPosition.setValue(newpos);
     // set m_queuedPosition valid
     m_iSeekQueued = seekType;
