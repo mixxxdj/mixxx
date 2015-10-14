@@ -137,8 +137,14 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
-    setState(NETWORKSTREAMWORKER_STATE_BUSY);
     m_pShoutcastNeedUpdateFromPrefs->set(0.0);
+
+    if(getState() == NETWORKSTREAMWORKER_STATE_CONNECTED) {
+        qDebug() << "EngineShoutcast::updateFromPreferences: Can't edit preferences when playing";
+        return;
+    }
+
+    setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
