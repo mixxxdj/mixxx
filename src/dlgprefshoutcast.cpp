@@ -228,6 +228,14 @@ void DlgPrefShoutcast::slotApply()
 {
     m_pShoutcastEnabled->set(enableLiveBroadcasting->isChecked());
 
+    // Don't let user modify information if
+    // sending is enabled.
+    if(m_pShoutcastEnabled->toBool() == true) {
+        setDialogEnabled(false);
+    } else {
+        setDialogEnabled(true);
+    }
+
     // Combo boxes, make sure to load their data not their display strings.
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "servertype"),
             ConfigValue(comboBoxServerType->itemData(
