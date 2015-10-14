@@ -218,49 +218,10 @@ void DlgPrefShoutcast::slotUpdate() {
     // Don't let user modify information if
     // sending is enabled.
     if(m_pShoutcastEnabled->toBool() == true) {
-        comboBoxServerType->setEnabled(false);
-        mountpoint->setEnabled(false);
-        host->setEnabled(false);
-        port->setEnabled(false);
-        login->setEnabled(false);
-        password->setEnabled(false);
-        stream_name->setEnabled(false);
-        stream_website->setEnabled(false);
-        stream_genre->setEnabled(false);
-        stream_desc->setEnabled(false);
-        stream_public->setEnabled(false);
-        ogg_dynamicupdate->setEnabled(false);
-        comboBoxEncodingBitrate->setEnabled(false);
-        comboBoxEncodingFormat->setEnabled(false);
-        enableUtf8Metadata->setEnabled(false);
-        comboBoxEncodingChannels->setEnabled(false);
-        enableCustomMetadata->setEnabled(false);
-        custom_artist->setEnabled(false);
-        custom_title->setEnabled(false);
-        metadata_format->setEnabled(false);
+        setDialogEnabled(false);
     } else {
-        comboBoxServerType->setEnabled(true);
-        mountpoint->setEnabled(true);
-        host->setEnabled(true);
-        port->setEnabled(true);
-        login->setEnabled(true);
-        password->setEnabled(true);
-        stream_name->setEnabled(true);
-        stream_website->setEnabled(true);
-        stream_desc->setEnabled(true);
-        stream_genre->setEnabled(true);
-        stream_public->setEnabled(true);
-        ogg_dynamicupdate->setEnabled(true);
-        comboBoxEncodingBitrate->setEnabled(true);
-        comboBoxEncodingFormat->setEnabled(true);
-        enableUtf8Metadata->setEnabled(true);
-        comboBoxEncodingChannels->setEnabled(true);
-        enableCustomMetadata->setEnabled(true);
-        custom_artist->setEnabled(true);
-        custom_title->setEnabled(true);
-        metadata_format->setEnabled(true);
+        setDialogEnabled(true);
     }
-
 }
 
 void DlgPrefShoutcast::slotApply()
@@ -326,4 +287,27 @@ void DlgPrefShoutcast::slotApply()
 
     // Tell the EngineShoutcast object to update with these values by toggling this control object.
     m_pUpdateShoutcastFromPrefs->set(1.0);
+}
+
+void DlgPrefShoutcast::setDialogEnabled(bool enabled) {
+        comboBoxServerType->setEnabled(enabled);
+        mountpoint->setEnabled(enabled);
+        host->setEnabled(enabled);
+        port->setEnabled(enabled);
+        login->setEnabled(enabled);
+        password->setEnabled(enabled);
+        stream_name->setEnabled(enabled);
+        stream_website->setEnabled(enabled);
+        stream_genre->setEnabled(enabled);
+        stream_desc->setEnabled(enabled);
+        stream_public->setEnabled(enabled);
+        ogg_dynamicupdate->setEnabled(enabled);
+        comboBoxEncodingBitrate->setEnabled(enabled);
+        comboBoxEncodingFormat->setEnabled(enabled);
+        enableUtf8Metadata->setEnabled(enabled);
+        comboBoxEncodingChannels->setEnabled(enabled);
+        enableCustomMetadata->setEnabled(enabled);
+        custom_artist->setEnabled(enabled);
+        custom_title->setEnabled(enabled);
+        metadata_format->setEnabled(enabled);
 }
