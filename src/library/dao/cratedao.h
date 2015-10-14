@@ -30,6 +30,12 @@ const QString CRATETRACKSTABLE_CRATEID = "crate_id";
 class CrateDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
+    enum CrateType {
+        CRATE,
+        FOLDER_OF_CRATES,
+//      SMART_CRATE???
+    };
+
     CrateDAO(QSqlDatabase& database);
     virtual ~CrateDAO();
 
@@ -39,7 +45,7 @@ class CrateDAO : public QObject, public virtual DAO {
     void initialize();
 
     unsigned int crateCount();
-    int createCrate(const QString& name);
+    int createCrate(const QString& name, const int& parentId, const int& crateType);
     bool deleteCrate(const int crateId);
     bool renameCrate(const int crateId, const QString& newName);
     bool setCrateLocked(const int crateId, const bool locked);
@@ -66,6 +72,14 @@ class CrateDAO : public QObject, public virtual DAO {
     void removeTracksFromCrates(const QList<TrackId>& ids);
     bool isTrackInCrate(TrackId trackId, const int crateId);
     void getCratesTrackIsIn(TrackId trackId, QSet<int>* crateSet) const;
+    // This method returns list of pairs id-name of crates 
+    // which are children of crate with id passed to the method
+    QList<QPair<int,QString>> getChildren(const int parentId);
+    //returns parent's id
+    int getParentsId(const int crateId);
+    // gives all crate ids which are folders
+    QSet<int> getFolderSet() const;
+    bool isFolder(int crateId);
 
   signals:
     void added(int crateId);

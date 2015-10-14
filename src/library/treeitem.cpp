@@ -117,7 +117,11 @@ bool TreeItem::removeChildren(int position, int count) {
     for (int row = 0; row < count; ++row) {
         //Remove from list to avoid invalid pointers
         TreeItem* item = m_childItems.takeAt(position);
-        if(item) delete item;
+        qDebug() << "Removing child data: " << item->data() << " dataPath: " << item->dataPath();
+        if(item) {
+            item->removeChildren(0, item->childCount());
+            delete item;
+        }
     }
     return true;
 }

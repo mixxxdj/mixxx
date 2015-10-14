@@ -8,6 +8,7 @@
 
 #include "library/dao/cratedao.h"
 #include "library/queryutil.h"
+#include "util/time.h"
 
 CrateDAO::CrateDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -62,10 +63,14 @@ unsigned int CrateDAO::crateCount() {
     return query.value(0).toInt();
 }
 
-int CrateDAO::createCrate(const QString& name) {
+int CrateDAO::createCrate(const QString& name, const int& parentId, const int& crateType) {
     QSqlQuery query(m_database);
-    query.prepare("INSERT INTO " CRATE_TABLE " (name) VALUES (:name)");
+    query.prepare(
+            "INSERT INTO " CRATE_TABLE " (name,parent_id,crate_type)"
+            " VALUES (:name,:parentId,:crateType)");
     query.bindValue(":name", name);
+    query.bindValue(":parentId", parentId);
+    query.bindValue(":crateType", crateType);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -485,4 +490,90 @@ void CrateDAO::getCratesTrackIsIn(TrackId trackId,
          it != m_cratesTrackIsIn.end() && it.key() == trackId; ++it) {
         crateSet->insert(it.value());
     }
+}
+
+QList<QPair<int,QString>> CrateDAO::getChildren(const int parentId) {
+
+    qDebug() << "queriyng children for crate id: " << parentId;
+
+    QList<QPair<int,QString>> childList;
+
+    QSqlQuery query(m_database);
+    //this should make the query more memory efficient
+    query.setForwardOnly(true);
+    query.prepare(
+        "SELECT "
+        "  crates.id as id, "
+        "  crates.name as name, "
+        "  COUNT(library.id) as count, "
+        "  SUM(library.duration) as durationSeconds "
+        "FROM crates "
+        "LEFT JOIN crate_tracks ON crate_tracks.crate_id = crates.id "
+        "LEFT JOIN library ON crate_tracks.track_id = library.id "
+        "WHERE show = 1 AND crates.parent_id=?"
+        "GROUP BY crates.id;");
+    query.addBindValue(parentId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    int id;
+    QString name;
+    while (query.next()) {
+        id = query.value(0).toInt();
+        name = QString("%1 (%2) %3").arg(
+                query.value(1).toString(),
+                query.value(2).toString(),
+                Time::formatSeconds(query.value(3).toInt(), false));
+        childList.append(qMakePair(id, name));
+    }
+    return childList;
+}
+
+int CrateDAO::getParentsId(const int crateId) {
+    QSqlQuery query(m_database);
+    query.prepare(
+            "SELECT parent_id "
+            "FROM crates "
+            "WHERE id=:crateId;");
+    query.bindValue(":crateId", crateId);
+
+    qDebug()<<"getting parent id of crate: "<<crateId;
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    if (query.next()) {
+        return query.value(0).toInt();
+    } else {
+        return 0;
+    }
+}
+
+bool CrateDAO::isFolder(int crateId) {
+    return getFolderSet().contains(crateId);
+}
+
+QSet<int> CrateDAO::getFolderSet() const {
+    QSqlQuery query(m_database);
+    query.prepare(
+            "SELECT id "
+            "FROM crates "
+            "WHERE crate_type=:crateType;");
+    query.bindValue(":crateType", FOLDER_OF_CRATES);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    QSet<int> result;
+
+    while (query.next()) {
+        result << query.value(0).toInt();
+        qDebug() << "\e[0;36mGetFolderSet - added folder id: " << query.value(0).toInt() << "\e[0m";
+    }
+
+    qDebug() << "query: " << query.lastQuery();
+    return result;
 }
