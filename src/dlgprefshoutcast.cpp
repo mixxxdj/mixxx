@@ -214,6 +214,53 @@ void DlgPrefShoutcast::slotResetToDefaults() {
 
 void DlgPrefShoutcast::slotUpdate() {
     enableLiveBroadcasting->setChecked(m_pShoutcastEnabled->toBool());
+
+    // Don't let user modify information if
+    // sending is enabled.
+    if(m_pShoutcastEnabled->toBool() == true) {
+        comboBoxServerType->setEnabled(false);
+        mountpoint->setEnabled(false);
+        host->setEnabled(false);
+        port->setEnabled(false);
+        login->setEnabled(false);
+        password->setEnabled(false);
+        stream_name->setEnabled(false);
+        stream_website->setEnabled(false);
+        stream_genre->setEnabled(false);
+        stream_desc->setEnabled(false);
+        stream_public->setEnabled(false);
+        ogg_dynamicupdate->setEnabled(false);
+        comboBoxEncodingBitrate->setEnabled(false);
+        comboBoxEncodingFormat->setEnabled(false);
+        enableUtf8Metadata->setEnabled(false);
+        comboBoxEncodingChannels->setEnabled(false);
+        enableCustomMetadata->setEnabled(false);
+        custom_artist->setEnabled(false);
+        custom_title->setEnabled(false);
+        metadata_format->setEnabled(false);
+    } else {
+        comboBoxServerType->setEnabled(true);
+        mountpoint->setEnabled(true);
+        host->setEnabled(true);
+        port->setEnabled(true);
+        login->setEnabled(true);
+        password->setEnabled(true);
+        stream_name->setEnabled(true);
+        stream_website->setEnabled(true);
+        stream_desc->setEnabled(true);
+        stream_genre->setEnabled(true);
+        stream_public->setEnabled(true);
+        ogg_dynamicupdate->setEnabled(true);
+        comboBoxEncodingBitrate->setEnabled(true);
+        comboBoxEncodingFormat->setEnabled(true);
+        enableUtf8Metadata->setEnabled(true);
+        comboBoxEncodingChannels->setEnabled(true);
+        enableCustomMetadata->setEnabled(true);
+        custom_artist->setEnabled(true);
+        custom_title->setEnabled(true);
+        metadata_format->setEnabled(true);
+    }
+
 }
 
 void DlgPrefShoutcast::slotApply()
