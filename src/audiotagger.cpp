@@ -22,10 +22,10 @@
 #include <taglib/textidentificationframe.h>
 
 #ifdef _WIN32
-#define TAGLIB_FILENAME_FROM_QSTRING(fileName) \
-            ((sizeof(wchar_t) == sizeof(QChar)) ? \
-            (const wchar_t*)fileName.utf16() : \
-            NULL)
+STATIC_ASSERT(sizeof(wchar_t) == sizeof(QChar));
+#define TAGLIB_FILENAME_FROM_QSTRING(fileName) (const wchar_t*)fileName.utf16()
+// Note: we cannot use QString::toStdWString since QT 4 is compiled with
+// '/Zc:wchar_t-' flag and QT 5 not
 #else
 #define TAGLIB_FILENAME_FROM_QSTRING(fileName) (fileName).toLocal8Bit().constData()
 #endif // _WIN32

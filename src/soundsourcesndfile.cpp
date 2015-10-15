@@ -56,12 +56,10 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
 
 Result SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
-    fh = sf_wchar_open(
-            ((sizeof(wchar_t) == sizeof(QChar)) ?
-            (const wchar_t*)getFilename().utf16() :
-            NULL),
-            SFM_READ,
-            &info);
+    STATIC_ASSERT(sizeof(wchar_t) == sizeof(QChar));
+    fh = sf_wchar_open((const wchar_t*)getFilename().utf16(), SFM_READ, &info);
+    // Note: we cannot use QString::toStdWString since QT 4 is compiled with
+    // '/Zc:wchar_t-' flag and QT 5 not
 #else
     fh = sf_open(getFilename().toLocal8Bit().constData(), SFM_READ, &info);
 #endif

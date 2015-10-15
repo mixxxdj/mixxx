@@ -53,7 +53,6 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     : SoundSource(filename)
     , m_pReader(NULL)
     , m_pAudioType(NULL)
-    , m_wcFilename(NULL)
     , m_nextFrame(0)
     , m_leftoverBuffer(NULL)
     , m_leftoverBufferSize(0)
@@ -69,15 +68,10 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     setType("m4a");
     setChannels(kNumChannels);
     setSampleRate(kSampleRate);
-
-    // http://social.msdn.microsoft.com/Forums/en/netfxbcl/thread/35c6a451-3507-40c8-9d1c-8d4edde7c0cc
-    // gives maximum path + file length as 248 + 260, using that -bkgood
-    m_wcFilename = new wchar_t[248 + 260];
 }
 
 SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
 {
-    delete [] m_wcFilename;
     delete [] m_leftoverBuffer;
 
     safeRelease(&m_pReader);
