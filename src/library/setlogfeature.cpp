@@ -288,6 +288,19 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     }
 }
 
+void SetlogFeature::slotPlaylistContentChanged(int playlistId) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistContentChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_SET_LOG ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        updateChildModel(playlistId);
+    }
+}
+
 void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
                                              QString /* a_strName */) {
     if (!m_pPlaylistTableModel) {

@@ -15,17 +15,16 @@ class TaskWatcher : public QObject {
     // Increment the number of active tasks by one and watch pTask for
     // doneSignal. This should be called before the task starts to prevent a
     // race condition where the task completes before we listen for doneSignal.
-    void watchTask(QObject* pTask, const char* doneSignal);
+    void watchTask();
 
-  signals:
-    // Signalled when all watched tasks are done from the thread that emitted
-    // the last taskDone() signal.
-    void allTasksDone();
-
-  private slots:
     // Called when an individual task is done.
     // WARNING: Invoked in the thread the task runs in.
     void taskDone();
+
+  signals:
+    // Signaled when all watched tasks are done from the thread that emitted
+    // the last taskDone() signal.
+    void allTasksDone();
 
   private:
     QAtomicInt m_activeTasks;

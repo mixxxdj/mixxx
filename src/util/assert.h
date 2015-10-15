@@ -51,4 +51,10 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 
 #define DEBUG_ASSERT_AND_HANDLE(cond) if ((!(cond)) && mixxx_maybe_debug_assert_return_true(#cond, __FILE__, __LINE__))
 
+// Compile time assertion
+// if condition is false, compiler stops with
+// error: size of array ‘_ASSERT_’ is negative
+#define STATIC_ASSERT(cond) typedef char mixxx_static_assert[(cond)?1:-1]
+
+
 #endif /* ASSERT_H */

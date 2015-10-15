@@ -1099,11 +1099,6 @@ class MixxxCore(Feature):
             else:
                 raise Exception('Invalid machine type for Windows build.')
 
-            # Ugh, MSVC-only hack :( see
-            # http://www.qtforum.org/article/17883/problem-using-qstring-
-            # fromstdwstring.html
-            build.env.Append(CXXFLAGS='/Zc:wchar_t-')
-
             # Build with multiple processes. TODO(XXX) make this configurable.
             # http://msdn.microsoft.com/en-us/library/bb385193.aspx
             build.env.Append(CCFLAGS='/MP')

@@ -19,7 +19,8 @@
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 
 #ifdef _WIN32
-#define TAGLIB_FILENAME_FROM_QSTRING(fileName) (fileName).toStdWString().c_str();
+STATIC_ASSERT(sizeof(wchar_t) == sizeof(QChar));
+#define TAGLIB_FILENAME_FROM_QSTRING(fileName) (const wchar_t*)fileName.utf16()
 #else
 #define TAGLIB_FILENAME_FROM_QSTRING(fileName) (fileName).toLocal8Bit().constData()
 #endif // _WIN32
