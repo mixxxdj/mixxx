@@ -45,6 +45,7 @@ class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDl
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
+    void shoutcastEnabledChanged(double value);
 
   signals:
     void apply(const QString &);
