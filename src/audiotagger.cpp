@@ -25,7 +25,7 @@
 #define TAGLIB_FILENAME_FROM_QSTRING(fileName) \
             ((sizeof(wchar_t) == sizeof(QChar)) ? \
             (const wchar_t*)fileName.utf16() : \
-            fileName.toStdWString().c_str())
+            NULL)
 #else
 #define TAGLIB_FILENAME_FROM_QSTRING(fileName) (fileName).toLocal8Bit().constData()
 #endif // _WIN32
