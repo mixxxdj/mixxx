@@ -109,8 +109,9 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
     }
 
     // Create the source reader to read the input file.
-    STATIC_ASSERT(sizeof(wchar_t) == sizeof(QChar));
-    hr = MFCreateSourceReaderFromURL((const wchar_t*)getFilename().utf16(),
+    static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
+    hr = MFCreateSourceReaderFromURL(
+            (wchar_t*)getFilename().utf16(),
             NULL,
             &m_pReader);
 
