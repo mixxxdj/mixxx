@@ -102,9 +102,7 @@ Result SoundSourceMediaFoundation::open() {
 
     // Create the source reader to read the input file.
     hr = MFCreateSourceReaderFromURL(
-            ((sizeof(wchar_t) == sizeof(QChar)) ?
-            (const wchar_t*)getFilename().utf16() :
-            getFilename().toStdWString().c_str()),
+            TAGLIB_FILENAME_FROM_QSTRING(getFilename()),
             NULL,
             &m_pReader);
 
@@ -393,7 +391,7 @@ Result SoundSourceMediaFoundation::parseHeader()
 
 QImage SoundSourceMediaFoundation::parseCoverArt() {
     setType("m4a");
-    TagLib::MP4::File f(getFilename().toStdWString().c_str());
+    TagLib::MP4::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
         return Mixxx::getCoverInMP4Tag(*mp4);
