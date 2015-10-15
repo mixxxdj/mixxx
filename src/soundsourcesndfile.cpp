@@ -59,7 +59,7 @@ Result SoundSourceSndFile::open() {
     fh = sf_wchar_open(
             ((sizeof(wchar_t) == sizeof(QChar)) ?
             (const wchar_t*)getFilename().utf16() :
-            NULL,
+            NULL),
             SFM_READ,
             &info);
 #else
