@@ -56,7 +56,7 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
 
 Result SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
-    STATIC_ASSERT(sizeof(wchar_t) == sizeof(QChar));
+    static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
     fh = sf_wchar_open((const wchar_t*)getFilename().utf16(), SFM_READ, &info);
     // Note: we cannot use QString::toStdWString since QT 4 is compiled with
     // '/Zc:wchar_t-' flag and QT 5 not

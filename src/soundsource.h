@@ -48,7 +48,7 @@ typedef void (*freeFileExtensionsFunc)(char** exts);
 
 
 #ifdef _WIN32
-STATIC_ASSERT(sizeof(wchar_t) == sizeof(QChar));
+static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
 #define TAGLIB_FILENAME_FROM_QSTRING(fileName) (const wchar_t*)fileName.utf16()
 // Note: we cannot use QString::toStdWString since QT 4 is compiled with
 // '/Zc:wchar_t-' flag and QT 5 not
