@@ -868,8 +868,8 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
             if (newPlay == 0.0 && !isTrackAtCue() &&
                     !atEndPosition()) {
                 if (cueMode == CUE_MODE_MIXXX) {
-                    // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
-                    m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+                    // in Mixxx mode Cue Button does not flash
+                    m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
                 } else {
                     // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point
                     m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
@@ -920,8 +920,8 @@ void CueControl::updateIndicators() {
                 if (!isTrackAtCue()) {
                     if (!atEndPosition()) {
                         if (cueMode == CUE_MODE_MIXXX) {
-                            // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
-                            m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+                            // in Mixxx mode Cue Button does not flash
+                            m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
                         } else {
                             // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point
                             m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
