@@ -238,6 +238,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     // Update combo box
     ComboBoxCueDefault->addItem(tr("Mixxx mode"));
+    ComboBoxCueDefault->addItem(tr("Mixxx mode (no blinking)"));
     ComboBoxCueDefault->addItem(tr("Pioneer mode"));
     ComboBoxCueDefault->addItem(tr("Denon mode"));
     ComboBoxCueDefault->addItem(tr("Numark mode"));

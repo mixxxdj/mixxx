@@ -14,9 +14,10 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 static const double CUE_MODE_MIXXX = 0.0;
-static const double CUE_MODE_PIONEER = 1.0;
-static const double CUE_MODE_DENON = 2.0;
-static const double CUE_MODE_NUMARK = 3.0;
+static const double CUE_MODE_MIXXX_NO_BLINK = 1.0;
+static const double CUE_MODE_PIONEER = 2.0;
+static const double CUE_MODE_DENON = 3.0;
+static const double CUE_MODE_NUMARK = 4.0;
 
 CueControl::CueControl(QString group,
                        ConfigObject<ConfigValue>* _config) :
@@ -855,7 +856,8 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
                 // Flashing indicates that a following play would move cue point
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
             }
-        } else if (cueMode == CUE_MODE_MIXXX || cueMode == CUE_MODE_NUMARK) {
+        } else if (cueMode == CUE_MODE_MIXXX || cueMode == CUE_MODE_MIXXX_NO_BLINK ||
+                   cueMode == CUE_MODE_NUMARK) {
             m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
         } else {
             // Flashing indicates that play is possible in Pioneer mode
@@ -870,6 +872,8 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
                 if (cueMode == CUE_MODE_MIXXX) {
                     // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                     m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+                } else if (cueMode == CUE_MODE_MIXXX_NO_BLINK) {
+                    m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
                 } else {
                     // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point
                     m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
@@ -922,6 +926,8 @@ void CueControl::updateIndicators() {
                         if (cueMode == CUE_MODE_MIXXX) {
                             // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                             m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+                        } else if (cueMode == CUE_MODE_MIXXX_NO_BLINK) {
+
                         } else {
                             // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point
                             m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
