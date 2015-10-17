@@ -25,7 +25,7 @@
                <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
                <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
 
-               <Control Id="WarningMsg" Type="Text" X="100" Y="80" Width="250" Height="64"
+               <Control Id="WarningMsg" Type="Text" X="100" Y="80" Width="250" Height="110"
                         NoPrefix="yes" Text="[MyWarningText]" />
 
                <Control Id="WarningIcon" Type="Icon" X="20" Y="80" Width="64" Height="64"
