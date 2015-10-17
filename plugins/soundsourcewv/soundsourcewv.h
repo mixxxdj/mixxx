@@ -19,6 +19,8 @@
 #define MY_EXPORT
 #endif
 
+class QFile;
+
 #define WV_BUF_LENGTH 65536
 
 namespace Mixxx {
@@ -35,11 +37,23 @@ class SoundSourceWV : public SoundSource {
   QImage parseCoverArt();
   static QList<QString> supportedFileExtensions();
  private:
-  WavpackContext * filewvc; //works as a file handle to access the wv file.
+  static int32_t ReadBytesCallback(void* id, void* data, int bcount);
+  static uint32_t GetPosCallback(void* id);
+  static int SetPosAbsCallback(void* id, unsigned int pos);
+  static int SetPosRelCallback(void* id, int delta, int mode);
+  static int PushBackByteCallback(void* id, int c);
+  static uint32_t GetlengthCallback(void* id);
+  static int CanSeekCallback(void* id);
+  static int32_t WriteBytesCallback(void* id, void* data, int32_t bcount);
+  static WavpackStreamReader s_streamReader;
+
+  WavpackContext* filewvc; // works as a file handle to access the wv file.
   int Bps;
   unsigned long filelength;
-  int32_t tempbuffer[WV_BUF_LENGTH];	//hax ! legacy from cmus. this is 64k*4bytes.
-  void format_samples(int, char *, int32_t *, uint32_t);
+  int32_t tempbuffer[WV_BUF_LENGTH];	// hax ! legacy from cmus. this is 64k*4bytes.
+  void format_samples(int, char*, int32_t*, uint32_t);
+  QFile* m_pWVFile;
+  QFile* m_pWVCFile;
 };
 
 

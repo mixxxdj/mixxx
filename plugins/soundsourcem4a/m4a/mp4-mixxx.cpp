@@ -170,9 +170,9 @@ static int mp4_open(struct input_plugin_data *ip_data)
 
     /* open mpeg-4 file, check for >= ver 1.9.1 */
 #if MP4V2_PROJECT_version_hex <= 0x00010901
-    priv->mp4.handle = MP4Read(ip_data->filename, 0);
+    priv->mp4.handle = MP4Read(ip_data->filenameUtf8, 0);
 #else
-    priv->mp4.handle = MP4Read(ip_data->filename);
+    priv->mp4.handle = MP4Read(ip_data->filenameUtf8);
 #endif
     if (!priv->mp4.handle) {
         qDebug() << "MP4Read failed";
@@ -207,7 +207,7 @@ static int mp4_open(struct input_plugin_data *ip_data)
 
     /* init decoder according to mpeg-4 audio config */
     if (faacDecInit2(priv->decoder, buf, buf_size,
-            (SAMPLERATE_TYPE*)&priv->sample_rate, &priv->channels) < 0) {
+            &priv->sample_rate, &priv->channels) < 0) {
         free(buf);
         goto out;
     }
@@ -472,30 +472,6 @@ static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
     return mp4_current_sample(ip_data);
 }
 
-static int mp4_seek(struct input_plugin_data *ip_data, double offset)
-{
-    struct mp4_private *priv;
-    MP4SampleId sample;
-    uint32_t scale;
-
-    priv = (mp4_private*) ip_data->private_ipd;
-
-    scale = MP4GetTrackTimeScale(priv->mp4.handle, priv->mp4.track);
-    if (scale == 0)
-        return -IP_ERROR_INTERNAL;
-
-    sample = MP4GetSampleIdFromTime(priv->mp4.handle, priv->mp4.track,
-        (MP4Timestamp)(offset * (double)scale), 0);
-    if (sample == MP4_INVALID_SAMPLE_ID)
-        return -IP_ERROR_INTERNAL;
-
-    qDebug() << "seeking from sample" << priv->mp4.sample << "to sample" << sample;
-    priv->mp4.sample = sample;
-    priv->overflow_buf_len = 0;
-
-    return priv->mp4.sample;
-}
-
 /* commented because we use TagLib now ??? -- bkgood
 static int mp4_read_comments(struct input_plugin_data *ip_data,
         struct keyval **comments)
@@ -564,22 +540,6 @@ static int mp4_read_comments(struct input_plugin_data *ip_data,
 }
 */
 
-static int mp4_duration(struct input_plugin_data *ip_data)
-{
-    struct mp4_private *priv;
-    uint32_t scale;
-    uint64_t duration;
-
-    priv = (mp4_private*) ip_data->private_ipd;
-
-    scale = MP4GetTrackTimeScale(priv->mp4.handle, priv->mp4.track);
-    if (scale == 0)
-        return 0;
-
-    duration = MP4GetTrackDuration(priv->mp4.handle, priv->mp4.track);
-
-    return duration / scale;
-}
 /*
 const struct input_plugin_ops ip_ops = {
     .open = mp4_open,

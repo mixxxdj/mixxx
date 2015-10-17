@@ -53,7 +53,6 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     : SoundSource(filename)
     , m_pReader(NULL)
     , m_pAudioType(NULL)
-    , m_wcFilename(NULL)
     , m_nextFrame(0)
     , m_leftoverBuffer(NULL)
     , m_leftoverBufferSize(0)
@@ -69,15 +68,10 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     setType("m4a");
     setChannels(kNumChannels);
     setSampleRate(kSampleRate);
-
-    // http://social.msdn.microsoft.com/Forums/en/netfxbcl/thread/35c6a451-3507-40c8-9d1c-8d4edde7c0cc
-    // gives maximum path + file length as 248 + 260, using that -bkgood
-    m_wcFilename = new wchar_t[248 + 260];
 }
 
 SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
 {
-    delete [] m_wcFilename;
     delete [] m_leftoverBuffer;
 
     safeRelease(&m_pReader);
@@ -86,16 +80,10 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
     CoUninitialize();
 }
 
-Result SoundSourceMediaFoundation::open()
-{
+Result SoundSourceMediaFoundation::open() {
     if (sDebug) {
         qDebug() << "open()" << getFilename();
     }
-
-    QString qurlStr(getFilename());
-    int wcFilenameLength(getFilename().toWCharArray(m_wcFilename));
-    // toWCharArray does not append a null terminator to the string!
-    m_wcFilename[wcFilenameLength] = '\0';
 
     HRESULT hr(S_OK);
     // Initialize the COM library.
@@ -113,7 +101,11 @@ Result SoundSourceMediaFoundation::open()
     }
 
     // Create the source reader to read the input file.
-    hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
+    hr = MFCreateSourceReaderFromURL(
+            TAGLIB_FILENAME_FROM_QSTRING(getFilename()),
+            NULL,
+            &m_pReader);
+
     if (FAILED(hr)) {
         qWarning() << "SSMF: Error opening input file:" << getFilename();
         return ERR;
@@ -376,9 +368,7 @@ inline unsigned long SoundSourceMediaFoundation::length()
 
 Result SoundSourceMediaFoundation::parseHeader()
 {
-    // Must be toLocal8Bit since Windows fopen does not do UTF-8
-    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-
+    TagLib::MP4::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -401,7 +391,7 @@ Result SoundSourceMediaFoundation::parseHeader()
 
 QImage SoundSourceMediaFoundation::parseCoverArt() {
     setType("m4a");
-    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+    TagLib::MP4::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
         return Mixxx::getCoverInMP4Tag(*mp4);

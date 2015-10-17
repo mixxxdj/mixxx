@@ -376,9 +376,7 @@ Result SoundSourceFFmpeg::open() {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
-
-    qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
+    qDebug() << "New SoundSourceFFmpeg :" << getFilename();
 
     m_pFormatCtx = avformat_alloc_context();
 
@@ -386,10 +384,24 @@ Result SoundSourceFFmpeg::open() {
     m_pFormatCtx->max_analyze_duration = 999999999;
 #endif
 
+    // libav replaces open() with ff_win32_open() which accepts a
+    // Utf8 path
+    // see: avformat/os_support.h
+    // The old method defining an URL_PROTOCOL is deprecated
+#if defined(_WIN32) && !defined(__MINGW32CE__)
+    const QByteArray qBAFilename(
+            avformat_version() >= ((52<<16)+(0<<8)+0) ?
+            getFilename().toUtf8() :
+            getFilename().toLocal8Bit());
+#else
+    const QByteArray qBAFilename(getFilename().toLocal8Bit());
+#endif
+
     // Open file and make m_pFormatCtx
-    if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), NULL,
-                            &l_iFormatOpts)!=0) {
-        qDebug() << "av_open_input_file: cannot open" << qBAFilename;
+    if (avformat_open_input(&m_pFormatCtx,
+            qBAFilename.constData(), NULL, &l_iFormatOpts)
+            != 0) {
+        qDebug() << "av_open_input_file: cannot open" << getFilename();
         return ERR;
     }
 
@@ -401,7 +413,7 @@ Result SoundSourceFFmpeg::open() {
 
     // Retrieve stream information
     if (avformat_find_stream_info(m_pFormatCtx, NULL)<0) {
-        qDebug() << "av_find_stream_info: cannot open" << qBAFilename;
+        qDebug() << "av_find_stream_info: cannot open" << getFilename();
         return ERR;
     }
 
@@ -419,21 +431,21 @@ Result SoundSourceFFmpeg::open() {
         }
     if (m_iAudioStream==-1) {
         qDebug() << "ffmpeg: cannot find an audio stream: cannot open"
-                 << qBAFilename;
+                 << getFilename();
         return ERR;
     }
 
     // Get a pointer to the codec context for the video stream
-    m_pCodecCtx=m_pFormatCtx->streams[m_iAudioStream]->codec;
+    m_pCodecCtx = m_pFormatCtx->streams[m_iAudioStream]->codec;
 
     // Find the decoder for the audio stream
-    if (!(m_pCodec=avcodec_find_decoder(m_pCodecCtx->codec_id))) {
-        qDebug() << "ffmpeg: cannot find a decoder for" << qBAFilename;
+    if (!(m_pCodec = avcodec_find_decoder(m_pCodecCtx->codec_id))) {
+        qDebug() << "ffmpeg: cannot find a decoder for" << getFilename();
         return ERR;
     }
 
     if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL)<0) {
-        qDebug() << "ffmpeg:  cannot open" << qBAFilename;
+        qDebug() << "ffmpeg:  cannot open" << getFilename();
         return ERR;
     }
 
@@ -554,7 +566,7 @@ Result SoundSourceFFmpeg::parseHeader() {
     bool is_aiff = location.endsWith("aiff", Qt::CaseInsensitive);
 
     if (is_flac) {
-        TagLib::FLAC::File f(qBAFilename.constData());
+        TagLib::FLAC::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -577,7 +589,7 @@ Result SoundSourceFFmpeg::parseHeader() {
             }
         }
     } else if (is_wav) {
-        TagLib::RIFF::WAV::File f(qBAFilename.constData());
+        TagLib::RIFF::WAV::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -605,7 +617,7 @@ Result SoundSourceFFmpeg::parseHeader() {
 
     } else if (is_aiff) {
         // Try AIFF
-        TagLib::RIFF::AIFF::File f(qBAFilename.constData());
+        TagLib::RIFF::AIFF::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -616,8 +628,7 @@ Result SoundSourceFFmpeg::parseHeader() {
             return ERR;
         }
     } else if (is_mp3) {
-        TagLib::MPEG::File f(qBAFilename.constData());
-
+        TagLib::MPEG::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -641,8 +652,7 @@ Result SoundSourceFFmpeg::parseHeader() {
             }
         }
     } else if (is_ogg) {
-        TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
-
+        TagLib::Ogg::Vorbis::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -660,8 +670,7 @@ Result SoundSourceFFmpeg::parseHeader() {
             }
         }
     } else if (is_mp4) {
-        TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-
+        TagLib::MP4::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         if (!readFileHeader(this, f)) {
            return ERR;
         }
@@ -681,8 +690,7 @@ Result SoundSourceFFmpeg::parseHeader() {
         }
     } else if (is_opus) {
         // If some have too old Taglib it's his own pain
-        TagLib::Ogg::Opus::File f(qBAFilename.constData());
-
+        TagLib::Ogg::Opus::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -708,11 +716,10 @@ QImage SoundSourceFFmpeg::parseCoverArt() {
     QString location = getFilename();
     setType(location.section(".",-1).toLower());
 
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
     QImage coverArt;
 
     if (getType() == "flac") {
-        TagLib::FLAC::File f(qBAFilename.constData());
+        TagLib::FLAC::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
@@ -733,20 +740,20 @@ QImage SoundSourceFFmpeg::parseCoverArt() {
             }
         }
     } else if (getType() == "wav") {
-        TagLib::RIFF::WAV::File f(qBAFilename.constData());
+        TagLib::RIFF::WAV::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         TagLib::ID3v2::Tag* id3v2 = f.tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
         }
     } else if (getType() == "aiff") {
         // Try AIFF
-        TagLib::RIFF::AIFF::File f(qBAFilename.constData());
+        TagLib::RIFF::AIFF::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         TagLib::ID3v2::Tag* id3v2 = f.tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
         }
     } else if (getType() == "mp3") {
-        TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
+        TagLib::MPEG::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
@@ -758,13 +765,13 @@ QImage SoundSourceFFmpeg::parseCoverArt() {
             }
         }
     } else if (getType() == "ogg" || getType() == "opus") {
-        TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
+        TagLib::Ogg::Vorbis::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         TagLib::Ogg::XiphComment *xiph = f.tag();
         if (xiph) {
             coverArt = Mixxx::getCoverInXiphComment(*xiph);
         }
    } else if (getType() == "mp4" || getType() == "m4a") {
-        TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+        TagLib::MP4::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         TagLib::MP4::Tag *mp4(f.tag());
         if (mp4) {
             coverArt = Mixxx::getCoverInMP4Tag(*mp4);

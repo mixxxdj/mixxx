@@ -69,7 +69,7 @@ struct input_plugin_data {
 struct input_plugin_data {
 	// filled by ip-layer
 //	QString filename;
-	char *filename;
+	char *filenameUtf8;
 	int fd;
 
 	unsigned int remote : 1;

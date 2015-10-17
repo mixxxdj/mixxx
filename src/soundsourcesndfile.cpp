@@ -56,12 +56,12 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
 
 Result SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
-    // Pointer valid until string changed
-    LPCWSTR lpcwFilename = (LPCWSTR)getFilename().utf16();
-    fh = sf_wchar_open(lpcwFilename, SFM_READ, &info);
+    static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
+    fh = sf_wchar_open((const wchar_t*)getFilename().utf16(), SFM_READ, &info);
+    // Note: we cannot use QString::toStdWString since QT 4 is compiled with
+    // '/Zc:wchar_t-' flag and QT 5 not
 #else
-    const QByteArray qbaFilename(getFilename().toLocal8Bit());
-    fh = sf_open(qbaFilename.constData(), SFM_READ, &info);
+    fh = sf_open(getFilename().toLocal8Bit().constData(), SFM_READ, &info);
 #endif
 
     if (fh == NULL) {   // sf_format_check is only for writes
@@ -70,7 +70,8 @@ Result SoundSourceSndFile::open() {
     }
 
     if (sf_error(fh)>0) {
-        qWarning() << "libsndfile: Error opening file" << getFilename() << sf_strerror(fh);
+        qWarning() << "libsndfile: Error opening file"
+                   << getFilename() << sf_strerror(fh);
         return ERR;
     }
 
@@ -154,10 +155,9 @@ Result SoundSourceSndFile::parseHeader()
 
     bool is_flac = location.endsWith("flac", Qt::CaseInsensitive);
     bool is_wav = location.endsWith("wav", Qt::CaseInsensitive);
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     if (is_flac) {
-        TagLib::FLAC::File f(qBAFilename.constData());
+        TagLib::FLAC::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -180,7 +180,7 @@ Result SoundSourceSndFile::parseHeader()
             }
         }
     } else if (is_wav) {
-        TagLib::RIFF::WAV::File f(qBAFilename.constData());
+        TagLib::RIFF::WAV::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -226,7 +226,7 @@ Result SoundSourceSndFile::parseHeader()
         }
     } else {
         // Try AIFF
-        TagLib::RIFF::AIFF::File f(qBAFilename.constData());
+        TagLib::RIFF::AIFF::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -245,10 +245,9 @@ QImage SoundSourceSndFile::parseCoverArt() {
     QImage coverArt;
     QString location = getFilename();
     setType(location.section(".",-1).toLower());
-    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
     if (getType() == "flac") {
-        TagLib::FLAC::File f(qBAFilename.constData());
+        TagLib::FLAC::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
@@ -269,14 +268,14 @@ QImage SoundSourceSndFile::parseCoverArt() {
             }
         }
     } else if (getType() == "wav") {
-        TagLib::RIFF::WAV::File f(qBAFilename.constData());
+        TagLib::RIFF::WAV::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         TagLib::ID3v2::Tag* id3v2 = f.tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
         }
     } else {
         // Try AIFF
-        TagLib::RIFF::AIFF::File f(qBAFilename.constData());
+        TagLib::RIFF::AIFF::File f(TAGLIB_FILENAME_FROM_QSTRING(getFilename()));
         TagLib::ID3v2::Tag* id3v2 = f.tag();
         if (id3v2) {
             coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);

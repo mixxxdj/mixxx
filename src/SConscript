@@ -378,7 +378,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 resource_map[str(tfile)] = 'translations'
 
         qtdir = build.env['QTDIR']
-        qt_frameworks = depends.Qt.find_framework_path(qtdir)
+        qt_frameworks = depends.Qt.find_framework_libdir(qtdir, qt5)
         if not qt_frameworks:
                 raise Exception('Could not find frameworks in Qt directory: %s' % qtdir)
         #qt_menu.nib for Cocoa Qt 4.7+
