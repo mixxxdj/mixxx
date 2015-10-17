@@ -6,6 +6,25 @@ from mixxx import Feature
 import SCons.Script as SCons
 import depends
 
+class OpenGLES(Feature):
+	def description(self):
+		return "OpenGL-ES >= 2.0 support [Experimental]"
+
+	def enabled(self, build):
+		build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
+		return int(build.flags['opengles'])
+
+	def add_options(self, build, vars):
+		vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
+
+	def configure(self, build, conf):
+		if not self.enabled(build):
+          		return
+		if build.flags['opengles']:
+			build.env.Append(CPPDEFINES='__OPENGLES__')
+	
+	def sources(self, build):
+		return []
 
 class HSS1394(Feature):
     def description(self):
@@ -486,7 +505,7 @@ class WavPack(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=False)
+        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=True)
         if not have_wv:
             raise Exception(
                 'Could not find libwavpack, libwv or its development headers.')
@@ -599,6 +618,32 @@ class AsmLib(Feature):
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='/Oi-')
             build.env.Prepend(LIBS='libacof%so' % build.bitwidth)
+
+
+class BuildTime(Feature):
+    def description(self):
+        return "Use __DATE__ and __TIME__"
+
+    def enabled(self, build):
+        build.flags['buildtime'] = util.get_flags(build.env, 'buildtime', 1)
+        if int(build.flags['buildtime']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add(
+            'buildtime', 'Set to 0 to disable build time (__DATE__ and __TIME__) usage.', 1)
+
+    def configure(self, build, conf):
+        # Distributions like openSUSE use tools (e. g. build-compare) to detect
+        # whether a built binary differs from a former build to avoid unneeded
+        # publishing of packages.
+        # If __DATE__ and __TIME__ are used the built binary differs always but
+        # the tools cannot detect the root and publish a new package although
+        # the only change is caused by __DATE__ and __TIME__.
+        # So let distributions disable __DATE__ and __TIME__ via buildtime=0.
+        if not self.enabled(build):
+            build.env.Append(CPPDEFINES='DISABLE_BUILDTIME')
 
 
 class QDebug(Feature):
@@ -1010,7 +1055,10 @@ class Optimize(Feature):
             if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
-                build.env.Append(CCFLAGS='/arch:SSE2')
+                # SSE and SSE2 are core instructions on x64 
+                # and consequently raise a warning message from compiler with this flag on x64.
+                if not build.machine_is_64bit:
+                    build.env.Append(CCFLAGS='/arch:SSE2')
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
             elif optimize_level == Optimize.LEVEL_NATIVE:
                 self.status = "native: tuned for this CPU (%s)" % build.machine

@@ -1,7 +1,6 @@
 #ifndef MIXXX_SOUNDSOURCEPROVIDER_H
 #define MIXXX_SOUNDSOURCEPROVIDER_H
 
-#include <QSharedPointer>
 #include <QString>
 #include <QStringList>
 #include <QUrl>
@@ -21,8 +20,6 @@ public:
 
     virtual SoundSourcePointer newSoundSource(const QUrl& url) = 0;
 };
-
-typedef QSharedPointer<SoundSourceProvider> SoundSourceProviderPointer;
 
 } // namespace Mixxx
 

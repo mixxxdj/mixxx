@@ -50,19 +50,17 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_dAnalyserProgress(-1.0),
         m_bAnalyserFinalizing(false),
         m_trackLoaded(false) {
-    m_endOfTrackControl = new ControlObjectThread(
-            m_group, "end_of_track");
-    connect(m_endOfTrackControl, SIGNAL(valueChanged(double)),
-             this, SLOT(onEndOfTrackChange(double)));
-    m_trackSamplesControl = new ControlObjectThread(m_group, "track_samples");
-    m_playControl = new ControlObjectThread(m_group, "play");
+    m_endOfTrackControl = new ControlObjectSlave(
+            m_group, "end_of_track", this);
+    m_endOfTrackControl->connectValueChanged(
+             SLOT(onEndOfTrackChange(double)));
+    m_trackSamplesControl =
+            new ControlObjectSlave(m_group, "track_samples", this);
+    m_playControl = new ControlObjectSlave(m_group, "play", this);
     setAcceptDrops(true);
 }
 
 WOverview::~WOverview() {
-    delete m_endOfTrackControl;
-    delete m_trackSamplesControl;
-    delete m_playControl;
     if (m_pWaveformSourceImage) {
         delete m_pWaveformSourceImage;
     }

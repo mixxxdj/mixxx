@@ -14,14 +14,14 @@ SoundSourceSndFile::~SoundSourceSndFile() {
 Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_pSndFile);
     SF_INFO sfInfo;
-#ifdef __WINDOWS__
-    // Pointer valid until string changed
-    const QString fileName(getLocalFileName());
-    LPCWSTR lpcwFilename = (LPCWSTR) fileName.utf16();
-    m_pSndFile = sf_wchar_open(lpcwFilename, SFM_READ, &sfInfo);
-#else
     memset(&sfInfo, 0, sizeof(sfInfo));
-    m_pSndFile = sf_open(getLocalFileNameBytes().constData(), SFM_READ, &sfInfo);
+#ifdef __WINDOWS__
+    static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
+    m_pSndFile = sf_wchar_open(fileName.utf16(), SFM_READ, &sfInfo);
+    // Note: we cannot use QString::toStdWString since QT 4 is compiled with
+    // '/Zc:wchar_t-' flag and QT 5 not
+#else
+    m_pSndFile = sf_open(getLocalFileName().toLocal8Bit(), SFM_READ, &sfInfo);
 #endif
 
     if (!m_pSndFile) {   // sf_format_check is only for writes

@@ -176,8 +176,8 @@ class AutoDJProcessorTest : public LibraryTest {
     virtual ~AutoDJProcessorTest() {
     }
 
-    void setTrackId(TrackPointer pTrack, int id) {
-        pTrack->setId(id);
+    void setTrackId(TrackPointer pTrack, TrackId trackId) {
+        pTrack->setId(trackId);
     }
 
     FakeMaster master;
@@ -229,8 +229,8 @@ TEST_F(AutoDJProcessorTest, QueueEmpty) {
 }
 
 TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     // Need two tracks -- one to be loaded in the left deck and one to load in
@@ -280,8 +280,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
 }
 
 TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFails) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     // Need three tracks -- one to be loaded in the left deck (failing to load),
@@ -351,8 +351,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFails) {
 }
 
 TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     // Need three tracks -- one to be loaded in the left deck (succeeding), one
@@ -423,12 +423,12 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
 }
 
 TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    setTrackId(pTrack, testId + 1);
+    setTrackId(pTrack, TrackId(testId.toInt() + 1));
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -464,12 +464,12 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
 }
 
 TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    setTrackId(pTrack, testId + 1);
+    setTrackId(pTrack, TrackId(testId.toInt() + 1));
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -521,12 +521,12 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
 }
 
 TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     // Pretend a track is playing on deck 2.
     TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    setTrackId(pTrack, testId + 1);
+    setTrackId(pTrack, TrackId(testId.toInt() + 1));
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -562,12 +562,12 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
 }
 
 TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     // Pretend a track is playing on deck 2.
     TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    setTrackId(pTrack, testId + 1);
+    setTrackId(pTrack, TrackId(testId.toInt() + 1));
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -619,14 +619,14 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
 }
 
 TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     // Crossfader starts on the right.
     master.crossfader.set(1.0);
     // Pretend a track is playing on deck 2.
     TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    setTrackId(pTrack, testId + 1);
+    setTrackId(pTrack, TrackId(testId.toInt() + 1));
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -700,14 +700,14 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
 }
 
 TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     // Crossfader starts on the right.
     master.crossfader.set(1.0);
     // Pretend a track is playing on deck 2.
     TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    setTrackId(pTrack, testId + 1);
+    setTrackId(pTrack, TrackId(testId.toInt() + 1));
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -797,14 +797,14 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
 }
 
 TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     // Crossfader starts on the left.
     master.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    setTrackId(pTrack, testId + 1);
+    setTrackId(pTrack, TrackId(testId.toInt() + 1));
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -878,14 +878,14 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
 }
 
 TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     // Crossfader starts on the left.
     master.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    setTrackId(pTrack, testId + 1);
+    setTrackId(pTrack, TrackId(testId.toInt() + 1));
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -976,14 +976,14 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
 
 
 TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     // Crossfader starts on the left.
     master.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    setTrackId(pTrack, testId + 1);
+    setTrackId(pTrack, TrackId(testId.toInt() + 1));
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -1057,14 +1057,14 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
 }
 
 TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     // Crossfader starts on the left.
     master.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    setTrackId(pTrack, testId + 1);
+    setTrackId(pTrack, TrackId(testId.toInt() + 1));
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -1113,8 +1113,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
 }
 
 TEST_F(AutoDJProcessorTest, TrackZeroLength) {
-    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
-    ASSERT_LT(0, testId);
+    TrackId testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_TRUE(testId.isValid());
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     // Need two tracks -- one to be loaded in the left deck and one to load in

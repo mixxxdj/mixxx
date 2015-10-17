@@ -135,10 +135,10 @@ void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) 
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
-        if (m_iPreviewDeckTrackId > -1) {
+        if (m_previewDeckTrackId.isValid()) {
             const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_iPreviewDeckTrackId);
-            m_iPreviewDeckTrackId = -1;
+            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
+            m_previewDeckTrackId = TrackId(); // invalidate
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
@@ -151,8 +151,8 @@ void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) 
             for (int row = 0; row < rowCount(); ++row) {
                 QString location = index(row, fieldIndex("location")).data().toString();
                 if (location == pTrack->getLocation()) {
-                    m_iPreviewDeckTrackId = index(row, 0).data().toInt();
-                    //Debug() << "foreign track id" << m_iPreviewDeckTrackId;
+                    m_previewDeckTrackId = TrackId(index(row, 0).data());
+                    //Debug() << "foreign track id" << m_previewDeckTrackId;
                     break;
                 }
             }

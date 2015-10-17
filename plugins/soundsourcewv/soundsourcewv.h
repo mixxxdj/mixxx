@@ -5,10 +5,12 @@
 
 #include "wavpack/wavpack.h"
 
+class QFile;
+
 namespace Mixxx {
 
 class SoundSourceWV: public SoundSourcePlugin {
-public:
+  public:
     explicit SoundSourceWV(const QUrl& url);
     ~SoundSourceWV();
 
@@ -19,12 +21,23 @@ public:
     SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer) override;
 
-private:
+  private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
-    WavpackContext* m_wpc;
+    static int32_t ReadBytesCallback(void* id, void* data, int bcount);
+    static uint32_t GetPosCallback(void* id);
+    static int SetPosAbsCallback(void* id, unsigned int pos);
+    static int SetPosRelCallback(void* id, int delta, int mode);
+    static int PushBackByteCallback(void* id, int c);
+    static uint32_t GetlengthCallback(void* id);
+    static int CanSeekCallback(void* id);
+    static int32_t WriteBytesCallback(void* id, void* data, int32_t bcount);
+    static WavpackStreamReader s_streamReader;
 
+    WavpackContext* m_wpc;
     CSAMPLE m_sampleScaleFactor;
+    QFile* m_pWVFile;
+    QFile* m_pWVCFile;
 };
 
 class SoundSourceProviderWV: public SoundSourceProvider {
@@ -39,6 +52,9 @@ public:
 }  // namespace Mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider();
+Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*);
 
 #endif // MIXXX_SOUNDSOURCEWV_H

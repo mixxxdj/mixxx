@@ -79,7 +79,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
             this, SLOT(slotCrateTableChanged(int)));
 
     connect(&m_crateDao, SIGNAL(changed(int)),
-            this, SLOT(slotCrateTableChanged(int)));
+            this, SLOT(slotCrateContentChanged(int)));
 
     connect(&m_crateDao, SIGNAL(renamed(int,QString)),
             this, SLOT(slotCrateTableRenamed(int,QString)));
@@ -142,7 +142,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
         return false;
     }
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
         m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
@@ -153,9 +153,9 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
     qDebug() << "CrateFeature::dropAcceptChild adding tracks"
             << trackIds.size() << " to crate "<< crateId;
     // remove tracks that could not be added
-    for (int trackId = 0; trackId < trackIds.size(); ++trackId) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
+    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); ++trackIdIndex) {
+        if (!trackIds.at(trackIdIndex).isValid()) {
+            trackIds.removeAt(trackIdIndex--);
         }
     }
     m_crateDao.addTracksToCrate(crateId, &trackIds);
@@ -205,6 +205,20 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     emit(showTrackModel(&m_crateTableModel));
     emit(enableCoverArtDisplay(true));
 }
+
+void CrateFeature::activateCrate(int crateId) {
+    //qDebug() << "CrateFeature::activateCrate()" << crateId;
+    QModelIndex index = indexFromCrateId(crateId);   
+    if (crateId != -1 && index.isValid()) {
+        m_crateTableModel.setTableModel(crateId);
+        emit(showTrackModel(&m_crateTableModel));
+        emit(enableCoverArtDisplay(true));
+        // Update selection
+        emit(featureSelect(this, m_lastRightClickedIndex));
+        activateChild(m_lastRightClickedIndex);
+    }
+}
+
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
@@ -284,7 +298,7 @@ void CrateFeature::slotCreateCrate() {
 
     int crateId = m_crateDao.createCrate(name);
     if (crateId != -1) {
-        emit(showTrackModel(&m_crateTableModel));
+        activateCrate(crateId);
     } else {
         qDebug() << "Error creating crate with name " << name;
         QMessageBox::warning(NULL,
@@ -405,7 +419,7 @@ void CrateFeature::slotDuplicateCrate() {
     m_crateDao.copyCrateTracks(oldCrateId, newCrateId);
 
     if (newCrateId != -1) {
-        emit(showTrackModel(&m_crateTableModel));
+        activateCrate(newCrateId);
     } else {
         qDebug() << "Error creating crate with name " << name;
         QMessageBox::warning(NULL,
@@ -526,6 +540,26 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
     return m_childModel.index(selected_row, 0);
 }
 
+void CrateFeature::updateChildModel(int selected_id) {
+    buildCrateList();
+
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
+         it != m_crateList.end(); ++it, ++row) {
+        int crate_id = it->first;
+        QString crate_name = it->second;
+
+        if (selected_id == crate_id) {
+            TreeItem* item = m_childModel.getItem(indexFromCrateId(crate_id));
+            item->setData(crate_name, QString::number(crate_id));
+            bool locked = m_crateDao.isCrateLocked(crate_id);
+            item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
+
+        }
+
+    }
+}
+
 /**
   * Clears the child model dynamically
   */
@@ -579,7 +613,8 @@ void CrateFeature::slotImportPlaylist() {
 
       //Iterate over the List that holds URLs of playlist entires
       m_crateTableModel.addTracks(QModelIndex(), entries);
-
+      activateChild(m_lastRightClickedIndex);
+      
       //delete the parser object
       delete playlist_parser;
     }
@@ -589,7 +624,7 @@ void CrateFeature::slotAnalyzeCrate() {
     if (m_lastRightClickedIndex.isValid()) {
         int crateId = crateIdFromIndex(m_lastRightClickedIndex);
         if (crateId >= 0) {
-            QList<int> ids = m_crateDao.getTrackIds(crateId);
+            QList<TrackId> ids = m_crateDao.getTrackIds(crateId);
             emit(analyzeTracks(ids));
         }
     }
@@ -666,18 +701,19 @@ void CrateFeature::slotExportPlaylist() {
 }
 
 void CrateFeature::slotCrateTableChanged(int crateId) {
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    //qDebug() << "slotCrateTableChanged() crateId:" << crateId;
     clearChildModel();
     m_lastRightClickedIndex = constructChildModel(crateId);
-    // Switch the view to the crate.
-    m_crateTableModel.setTableModel(crateId);
-    // Update selection
-    emit(featureSelect(this, m_lastRightClickedIndex));
+}
+
+void CrateFeature::slotCrateContentChanged(int crateId) {
+    //qDebug() << "slotCrateContentChanged()crateId:" << crateId;
+    updateChildModel(crateId);
 }
 
 void CrateFeature::slotCrateTableRenamed(int a_iCrateId,
                                          QString /* a_strName */) {
-    slotCrateTableChanged(a_iCrateId);
+    activateCrate(a_iCrateId);
 }
 
 void CrateFeature::htmlLinkClicked(const QUrl& link) {
@@ -712,7 +748,7 @@ QString CrateFeature::getRootViewHtml() const {
 
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
-    int trackId = pTrack.isNull() ? -1 : pTrack->getId();
+    TrackId trackId(pTrack.isNull() ? TrackId() : pTrack->getId());
     m_crateDao.getCratesTrackIsIn(trackId, &m_cratesSelectedTrackIsIn);
 
     TreeItem* rootItem = m_childModel.getItem(QModelIndex());
@@ -739,4 +775,18 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
 
 void CrateFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackPointer());
+}
+
+QModelIndex CrateFeature::indexFromCrateId(int crateId) {
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
+         it != m_crateList.end(); ++it, ++row) {
+        int current_id = it->first;
+        QString crate_name = it->second;
+
+        if (crateId == current_id) {
+            return m_childModel.index(row, 0);
+        }
+    }
+    return QModelIndex();
 }

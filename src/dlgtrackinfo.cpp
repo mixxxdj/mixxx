@@ -170,9 +170,9 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmThreeFourth->setEnabled(enableBpmEditing);
 
     m_loadedCoverInfo = pTrack->getCoverInfo();
-    int reference = pTrack->getId();
+    int reference = pTrack->getId().toInt();
     m_loadedCoverInfo.trackLocation = pTrack->getLocation();
-    m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo.trackLocation, m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         pCache->requestCover(m_loadedCoverInfo, this, reference);
@@ -203,10 +203,10 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
                                   QPixmap pixmap, bool fromCache) {
     Q_UNUSED(fromCache);
     if (pRequestor == this && m_pLoadedTrack &&
-            m_pLoadedTrack->getId() == requestReference) {
+            m_pLoadedTrack->getId().toInt() == requestReference) {
         qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
                  << pixmap.size();
-        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCoverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack->getLocation(), m_loadedCoverInfo, pixmap);
     }
 }
 
@@ -227,7 +227,7 @@ void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
     // TODO(rryan) don't use track ID as a reference
     int reference = 0;
     if (m_pLoadedTrack) {
-        reference = m_pLoadedTrack->getId();
+        reference = m_pLoadedTrack->getId().toInt();
         m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
     }
     CoverArtCache* pCache = CoverArtCache::instance();
@@ -440,7 +440,7 @@ void DlgTrackInfo::clear() {
     cueTable->setRowCount(0);
 
     m_loadedCoverInfo = CoverInfo();
-    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(QString(), m_loadedCoverInfo, QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {

@@ -12,7 +12,7 @@ ElectrixTweaker.eqSensitivity = 6
 ElectrixTweaker.vinylMode = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 
 /**
- * Electrix Tweaker controller script 1.0 for Mixxx 1.12
+ * Electrix Tweaker controller script 1.1 for Mixxx 1.12
  * Copyright (C) 2015 Be <be.0@gmx.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -30,76 +30,89 @@ ElectrixTweaker.vinylMode = {'[Channel1]': false, '[Channel2]': false, '[Channel
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Description:
-The shift buttons are the small circular button in the middle of the arrows at the top and the yellow buttons in the grid at the bottom.
+There are two different kinds of shift buttons. The top shift button is the small circular button in the middle of the arrows. The deck shift buttons are the yellow buttons in the small button grids towards the bottom. The deck shift buttons only affect the side of the controller that they are on.
 
 Big encoder: scroll through library
-Big encoder + shift: scroll through library quickly
+Big encoder + top shift: scroll through library quickly
 Big encoder press: toggle big library view
-Big encoder press + shift: load selected track into first stopped deck
+Big encoder press + top shift: load selected track into first stopped deck
 
-Side arrows load the selected track into the corresponding deck and light up when the deck is loaded. Press shift and a side arrow to eject the track in that deck (by default, Mixxx only lets you eject a track when it is paused).
+Side arrows load the selected track into the corresponding deck and light up when the deck is loaded. Press top shift and a side arrow to eject the track in that deck (by default, Mixxx only lets you eject a track when it is paused).
 
-Up and down arrows navigate the left library pane. Press shift and either the up or down arrow to expand a category.
+Up and down arrows navigate the left library pane. Press top shift and either the up or down arrow to expand a category.
 
 Big velocity sensitive buttons: one shot samplers
 	Off when empty, red when loaded
 	Press a button to load the selected sample into a sampler and play it
 	Press a button to play a sample. When the button is released, the sample will stop playing.
+	Press top shift and a sampler button to eject a sample from a sampler
 	Samples will play with their volume proportional to how much force was used to strike the button. You can adjust the sensitivity or disable the velocity sensitivity (and make them work as on/off switches) by adjusting options at the top of the JavaScript file in a text editor.
 
 The analog knobs control filters for each deck.
-Pressing shift and turning the right analog knob controls cue/master mix in the headphones. Turning it all the way to the right with shift pressed toggles split cue mode.
 
 The small button below the encoders toggles the mode for the encoders on that side. White is EQ mode, purple is loop mode.
-	In EQ mode, the encoders control high, mid, and low EQs from top to bottom. Pressing the encoder kills the EQ. Pressing the encoder while holding shift resets the EQ to center. You can adjust the sensitivity of the EQs by adjusting the option at the top of the JavaScript file in a text editor.
+	In EQ mode, the encoders control high, mid, and low EQs from top to bottom. Pressing the encoder kills the EQ. Pressing the encoder while holding deck shift resets the EQ to center. You can adjust the sensitivity of the EQs by adjusting the option at the top of the JavaScript file in a text editor.
 
 	In loop mode:
 		Top encoder: adjust loop move size. Center LED represents 1 beat. Each step to the right doubles the move size; each step to the left halves the move size.
 		Middle encoder: move loop backwards and forwards by the number of beats set with the top encoder
 		Bottom encoder: adjust loop length. Center LED represents 1 beat. Each step to the right doubles the loop size; each step to the left halves the loop size. Press the encoder to toggle loops on/off. With slip mode on, when the loop is disabled, the deck will jump to where it would have been if the loop was not activated. Loops in slip mode are only active as long as the encoder is held down. 
 
-	While holding shift (in either EQ or loop mode):
+	While holding deck shift (in either EQ or loop mode):
 		Middle encoder: skips through the track 32 beats at a time
 		Low encoder: scroll through the 4 pages of hotcues on the button grid
+
+	While holding top shift:
+		Top left encoder: headphone gain
+		Middle left encoder: cue/master mix in headphones
+		Middle left encoder press: toggle split cue mode (master output in right ear, headphone cue output in left ear)
+		Lower left encoder: left deck gain
+
+		Top right encoder: master gain
+		Middle right encoder: master balance
+		Lower right encoder: right deck gain
+
+		Pressing the encoders resets the parameters they control to their default values except for cue/master mix in headphones.
 
 Small button above the vertical fader: toggle headphone cueing
 Vertical fader: volume
 Buttons below faders: play/pause
-While holding shift:
+While holding deck shift:
 	Headphone button: exit loop
-	Play/pause (with yellow shift buttons at bottom): cue. While a track is paused, hold shift and the cue button to preview from the cue point. Let go of the cue button to stop the track and jump back to the cue point. Let go of shift to let the track continue playing. 
-	Play/pause (with red shift button at top): jump to cue point and stop
+	Play/pause: cue. While a track is paused, hold shift and the cue button to preview from the cue point. Let go of the cue button to stop the track and jump back to the cue point. Let go of shift to let the track continue playing. 
+Play/pause with top shift: jump to cue point and stop
 
 The 8x4 grid of small buttons is divided in half with each side controlling a deck.
-	The top two rows are hotcue buttons. By default, they control hotcues 1-8. By pressing shift and turning the low encoder, they can be switched between 4 pages with 8 hotcues each for a total of 32 hotcues. The pages are color coded, in order, cyan, green, red, and white. When there is no hotcue set, the LEDs are off.
+	The top two rows are hotcue buttons. By default, they control hotcues 1-8. By pressing deck shift and turning the low encoder, they can be switched between 4 pages with 8 hotcues each for a total of 32 hotcues. The pages are color coded, in order, cyan, green, red, and white. When there is no hotcue set, the LEDs are off.
 	To set a hotcue point, press a hotcue button that is off.
 	When slip mode is off, pressing a hotcue button will simply jump to that hotcue point.
 	When slip mode is on, if the deck is playing, it will jump to the hotcue and jump back to where it would have been when the button is released. If the deck was not playing, the deck will preview from the hotcue as long as the button is pressed. Pressing play while the button is pressed will let the deck continue playing after the button is released.
+	To move a hotcue, press the hotcue button while holding deck shift.
+	To delete a hotcue, press the hotcue button while holding top shift.
 
-	The button in the bottom left of the deck's grid and the button above that are the navigation or vinyl options buttons. By default, they are in navigation button mode. Vinyl option mode can be enabled for a deck by pressing both the top red shift button and the bottom yellow shift button in that deck's grid. Alternatively, vinyl mode can be enabled on startup by editing the ElectrixTweaker.vinylMode variable at the top of the script.
+	The button in the bottom left of the deck's grid and the button above that are the navigation or vinyl options buttons. By default, they are in navigation button mode. Vinyl option mode can be enabled for a deck by pressing deck shift while holding top shift. Alternatively, vinyl mode can be enabled on startup by editing the ElectrixTweaker.vinylMode variable at the top of the script.
 		In navigation mode:
 			When quantize is off, they are green:
 				forward/reverse playback
-				with shift: temporary pitch bend
+				with deck shift: temporary pitch bend
 			When quantize is on, they are white:
 				skip forward/backwards by 4 beats
-				with shift: skip forwards/backwards by 1 beat
+				with deck shift: skip forwards/backwards by 1 beat
 		In vinyl mode:
-			Top button: cycles through vinyl control modes: absolute (LED off), relative (LED indicates cue mode), and constant (LED red). If the deck is in relative mode and playing, pressing the button cycles through cue modes: off (white), cue (yellow), hotcue (green). When the deck is playing in relative mode, pressing the button with shift switches to constant mode.
+			Top button: cycles through vinyl control modes: absolute (LED off), relative (LED indicates cue mode), and constant (LED red). If the deck is in relative mode and playing, pressing the button cycles through cue modes: off (white), cue (yellow), hotcue (green). When the deck is playing in relative mode, pressing the button with deck shift switches to constant mode.
 			
-			Bottom button: toggle vinyl control. Turns green when vinyl control is enabled. With shift pressed, it toggles passthrough mode and turns white. Pressing the button while passthrough mode is enabled turns passthrough mode off (without toggling whether vinyl control is enabled).
+			Bottom button: toggle vinyl control. Turns green when vinyl control is enabled. With deck shift pressed, it toggles passthrough mode and turns white. Pressing the button while passthrough mode is enabled turns passthrough mode off (without toggling whether vinyl control is enabled).
 
-	The yellow button is a shift button.
-	The button to the left of the yellow shift button toggles slip mode.
-	The button to the right of the yellow shift button toggles betwen decks 1 & 3 on the left and decks 2 & 4 on the left. When a side is on deck 1 or 2, the switch buttons are blue. When a side is on deck 2 or 4, the switch buttons are magenta.
+	The yellow button is the deck shift button.
+	The button to the left of the yellow deck shift button toggles slip mode.
+	The button to the right of the yellow deck shift button toggles betwen decks 1 & 3 on the left and decks 2 & 4 on the left. When a side is on deck 1 or 2, the switch buttons are blue. When a side is on deck 2 or 4, the switch buttons are magenta.
 
 	The button to the right of the bottom green/white navigation buttons toggles quantize mode.
-	The next button to the right (below the yellow shift button) toggles keylock.
+	The next button to the right (below the yellow deck shift button) toggles keylock.
 	The next button to the right (the bottom right button in the deck's grid) toggles sync lock.
 
-	While holding shift:
-		Hotcues (yellow shift button): move hotcue to current play position
-		Hotcues (red shift button at top): delete hotcue
+	While holding deck shift:
+		Hotcues: move hotcue to current play position
 		Slip mode: place loop start point at current play position
 		Deck toggle: place loop end point at current play position
 		Quantize: align beatgrid with current play position
@@ -229,7 +242,7 @@ ElectrixTweaker.buttons['[Channel4]'] = ElectrixTweaker.buttons['[Channel2]']
 
 ElectrixTweaker.shift = false
 ElectrixTweaker.topShift = false
-ElectrixTweaker.bottomShift = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
+ElectrixTweaker.deckShift = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 ElectrixTweaker.deck = {'[Channel1]': '[Channel1]', '[Channel2]': '[Channel2]'}
 ElectrixTweaker.mode = {'[Channel1]': 'eq', '[Channel2]': 'eq', '[Channel3]': 'eq', '[Channel4]': 'eq'}
 ElectrixTweaker.loopMoveSize = {'[Channel1]': 1, '[Channel2]': 1, '[Channel3]': 1, '[Channel4]': 1}
@@ -269,11 +282,9 @@ ElectrixTweaker.init = function () {
 	if (engine.getValue('[Master]', 'num_samplers') < 8) {
 		engine.setValue('[Master]', 'num_samplers', 8)
 	}
-	engine.softTakeover('[Master]', 'headMix', true)
-	engine.softTakeover('[Master]', 'headVolume', true)
 	for (var group in ElectrixTweaker.encoders) { // loop over each [Channel]
-		engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
-		engine.softTakeover(group, 'volume', true)
+// 		engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
+// 		engine.softTakeover(group, 'volume', true)
 		// uncomment the line below when Bug #1472868 is fixed
 // 		ElectrixTweaker.vinylMode[group] = engine.getValue(group, 'vinylcontrol_enabled')
 		engine.setValue(group, 'vinylcontrol_enabled', ElectrixTweaker.vinylMode[group])
@@ -286,7 +297,7 @@ ElectrixTweaker.init = function () {
 	}
 	
 	midi.sendShortMsg(0x90, 39, 127) // light up arrow
-	midi.sendShortMsg(0x90, 40, 127) // light shift button
+	midi.sendShortMsg(0x90, 40, 127) // light top shift button
 	midi.sendShortMsg(0x90, 41, 127) // light down arrow
 // 	midi.sendSysexMsg(ElectrixTweaker.requestConfiguration, ElectrixTweaker.requestConfiguration.length)
 // 	for (var msg in ElectrixTweaker.defaultSettings) {
@@ -481,50 +492,78 @@ ElectrixTweaker.connectVinylLEDs = function (group, remove) {
 	}
 }
 
-ElectrixTweaker.shiftButton = function (channel, control, value, status, group) {
-	group = ElectrixTweaker.deck[group]
-	ElectrixTweaker.shift = ! ElectrixTweaker.shift
-	if (control == 0x28) {
-		ElectrixTweaker.topShift = ! ElectrixTweaker.topShift
-	} else if (control == ElectrixTweaker.buttons[group]['shift']) {
-		ElectrixTweaker.bottomShift[group] = ! ElectrixTweaker.bottomShift[group]
-	}
+ElectrixTweaker.topShiftButton = function (channel, control, value, status, group) {
+// 	ElectrixTweaker.shift = ! ElectrixTweaker.shift
+	ElectrixTweaker.topShift = ! ElectrixTweaker.topShift
+
+	ElectrixTweaker.connectEncoderMode(ElectrixTweaker.deck['[Channel1]'], ElectrixTweaker.mode[group], value/127)
+	ElectrixTweaker.connectEncoderMode(ElectrixTweaker.deck['[Channel2]'], ElectrixTweaker.mode[group], value/127)
 	if (value) {
-		for (channel in ElectrixTweaker.deck) {
-			// set mid encoder to relative mode
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['cc'], 64)
-			// set mid LED ring to walk mode with local control disabled
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Low']['ring'], 96)
-			midi.sendShortMsg(
-				0xB0,
-				ElectrixTweaker.encoders[channel]['Low']['ring'],
-				ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[channel]+1]
-			)
-			// set low encoder to relative mode
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Mid']['cc'], 64)
-			// set low encoder LED ring to EQ mode with local control disabled
-			// There seems to be a bug in the Tweaker firmware when local control is enabled one LED ring but not another. If local control is enabled here, the other rings behave confusingly.
-			midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[channel]['Mid']['ring'], 98)
-			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[channel]['Mid']['ring'], 64)
+		for (group in ElectrixTweaker.deck) {
+			for (var encoder in ElectrixTweaker.encoders[group]) {
+				// set encoder to absolute EQ mode with speed 5
+				midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['cc'], 70 + 8*ElectrixTweaker.eqSensitivity)
+				// enable local control of LED ring
+				midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group][encoder]['ring'], 70)
+			}
+			engine.connectControl(ElectrixTweaker.deck[group], 'pregain', 'ElectrixTweaker.gainLEDs')
+			engine.trigger(ElectrixTweaker.deck[group], 'pregain')
 		}
-		if (ElectrixTweaker.topShift && ElectrixTweaker.bottomShift[group]) {
+	} else {
+		for (group in ElectrixTweaker.deck) {
+			engine.connectControl(ElectrixTweaker.deck[group], 'pregain', 'ElectrixTweaker.gainLEDs', true)
+		}
+	}
+	
+	var controlsToFunctions = {
+		'volume': 'ElectrixTweaker.masterGainLEDs',
+		'balance': 'ElectrixTweaker.masterBalanceLEDs',
+		'headVolume': 'ElectrixTweaker.headGainLEDs',
+		'headMix': 'ElectrixTweaker.headMixLEDs',
+		'headSplit': 'ElectrixTweaker.headSplitLED'
+	}
+	for (var control in controlsToFunctions) {
+		engine.connectControl('[Master]', control, controlsToFunctions[control], ! value/127)
+		if (value) {
+			engine.trigger('[Master]', control)
+		}
+	}
+}
+
+ElectrixTweaker.deckShiftButton = function (channel, control, value, status, group) {
+	group = ElectrixTweaker.deck[group]
+// 	ElectrixTweaker.shift = ! ElectrixTweaker.shift
+	ElectrixTweaker.deckShift[group] = ! ElectrixTweaker.deckShift[group]
+	if (value) {
+		// set mid encoder to relative mode
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Low']['cc'], 64)
+		// set mid LED ring to walk mode with local control disabled
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Low']['ring'], 96)
+		midi.sendShortMsg(
+			0xB0,
+			ElectrixTweaker.encoders[group]['Low']['ring'],
+			ElectrixTweaker.encoderRingStepsFill[ElectrixTweaker.hotcuePage[group]+1]
+		)
+		// set low encoder to relative mode
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Mid']['cc'], 64)
+		// set low encoder LED ring to EQ mode with local control disabled
+		// There seems to be a bug in the Tweaker firmware when local control is enabled one LED ring but not another. If local control is enabled here, the other rings behave confusingly.
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Mid']['ring'], 98)
+		midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Mid']['ring'], 64)
+		if (ElectrixTweaker.topShift && ElectrixTweaker.deckShift[group]) {
 			ElectrixTweaker.connectVinylLEDs(group, ElectrixTweaker.vinylMode[group])
 			ElectrixTweaker.vinylMode[group] = ! ElectrixTweaker.vinylMode[group]
 		}
 	} else {
-		for (channel in ElectrixTweaker.encoders) {
-			engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[channel])
-		}
-		
+		engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[group])
 	}
-	ElectrixTweaker.connectEncoderMode(ElectrixTweaker.deck['[Channel1]'], ElectrixTweaker.mode[ElectrixTweaker.deck['[Channel1]']], value/127)
-	ElectrixTweaker.connectEncoderMode(ElectrixTweaker.deck['[Channel2]'], ElectrixTweaker.mode[ElectrixTweaker.deck['[Channel2]']], value/127)
+	ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], value/127)
 }
 
 // ================================================== ARROWS + BIG ENCODER ====================================================
 
 ElectrixTweaker.bigEncoder = function (channel, control, value, status, group) {
-	if (ElectrixTweaker.shift) {
+	if (ElectrixTweaker.topShift) {
 		for (i=0 ; i<35; i++) {
 			engine.setValue('[Playlist]', (value == 1) ? 'SelectNextTrack' : 'SelectPrevTrack', 1)
 		}
@@ -534,7 +573,7 @@ ElectrixTweaker.bigEncoder = function (channel, control, value, status, group) {
 }
 ElectrixTweaker.bigEncoderButton = function (channel, control, value, status, group) {
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.topShift) {
 			engine.setValue('[Playlist]', 'LoadSelectedIntoFirstStopped', 1)
 		} else {
 			engine.setValue('[Master]', 'maximize_library', ! engine.getValue('[Master]', 'maximize_library'))
@@ -544,7 +583,7 @@ ElectrixTweaker.bigEncoderButton = function (channel, control, value, status, gr
 ElectrixTweaker.arrowSide = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.topShift) {
 				engine.setValue(group, 'eject', 1)
 				engine.beginTimer(250, 'engine.setValue("'+group+'", "eject", 0)', true)
 		} else {
@@ -557,7 +596,7 @@ ElectrixTweaker.arrowSideLED = function (value, group, control) {
 }
 ElectrixTweaker.arrowUp = function (channel, control, value, status, group) {
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.topShift) {
 			engine.setValue('[Playlist]', 'ToggleSelectedSidebarItem', 1)
 		} else {
 			engine.setValue('[Playlist]', 'SelectPrevPlaylist', 1)
@@ -566,7 +605,7 @@ ElectrixTweaker.arrowUp = function (channel, control, value, status, group) {
 }
 ElectrixTweaker.arrowDown = function (channel, control, value, status, group) {
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.topShift) {
 			engine.setValue('[Playlist]', 'ToggleSelectedSidebarItem', 1)
 		} else {
 			engine.setValue('[Playlist]', 'SelectNextPlaylist', 1)
@@ -579,7 +618,7 @@ ElectrixTweaker.arrowDown = function (channel, control, value, status, group) {
 ElectrixTweaker.oneShot = function (channel, control, value, status, group) {
 	if (value) {
 		if (engine.getValue(group, 'track_samples')) {
-			if (ElectrixTweaker.shift) {
+			if (ElectrixTweaker.topShift) {
 				engine.setValue(group, 'key', 0)
 				engine.setValue(group, 'sync_enabled', 0)
 				engine.setValue(group, 'repeat', 0)
@@ -611,24 +650,16 @@ ElectrixTweaker.oneShotLED = function (value, group, control) {
 
 ElectrixTweaker.leftKnob = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-// 	if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
+	// soft takeover
+	if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
 		engine.setValue('[QuickEffectRack1_'+group+']', 'super1', script.absoluteLin(value, 0, 1))
-// 	}
+	}
 }
 ElectrixTweaker.rightKnob = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
-		if (value == 127) {
-			engine.setValue('[Master]', 'headSplit', ! engine.getValue('[Master]', 'headSplit'))
-		} else {
-			if (Math.abs(engine.getValue('[Master]', 'headMix') - (value - 64)/64) < .2) {
-				engine.setValue('[Master]', 'headMix', script.absoluteLin(value, -1, 1))
-			}
-		}
-	} else {
-		if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
-			engine.setValue('[QuickEffectRack1_'+group+']', 'super1', script.absoluteLin(value, 0, 1))
-		}
+	// soft takeover
+	if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
+		engine.setValue('[QuickEffectRack1_'+group+']', 'super1', script.absoluteLin(value, 0, 1))
 	}
 }
 
@@ -643,42 +674,88 @@ ElectrixTweaker.eqEncoderKillButtonLED = function (value, group, control) {
 	midi.sendShortMsg(0x90, ElectrixTweaker.encoders[group][encoder]['button'], value * 127)
 }
 
+ElectrixTweaker.masterGainLEDs = function (value, group, control) {
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders['[Channel2]']['High']['cc'], script.absoluteNonLinInverse(value, 0, 1, 4))
+}
+
+ElectrixTweaker.masterBalanceLEDs = function (value, group, control) {
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders['[Channel2]']['Mid']['cc'], script.absoluteLinInverse(value, -1, 1))
+}
+
+ElectrixTweaker.headGainLEDs = function (value, group, control) {
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders['[Channel1]']['High']['cc'], script.absoluteNonLinInverse(value, 0, 1, 4))
+}
+
+ElectrixTweaker.headMixLEDs = function (value, group, control) {
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders['[Channel1]']['Mid']['cc'], script.absoluteLinInverse(value, -1, 1))
+}
+
+ElectrixTweaker.headSplitLED = function (value, group, control) {
+	midi.sendShortMsg(0x90, ElectrixTweaker.encoders['[Channel1]']['Mid']['button'], value * 127)
+}
+
+ElectrixTweaker.gainLEDs = function (value, group, control) {
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Low']['cc'], script.absoluteNonLinInverse(value, 0, 1, 4))
+}
+
 ElectrixTweaker.highEncoder = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	switch (ElectrixTweaker.mode[group]) {
-		case 'eq':
-			engine.setValue(group, 'filterHigh', script.absoluteNonLin(value, 0, 1, 4) )
-			break
-		case 'loop':
-			if ((value == 127) && (ElectrixTweaker.loopMoveSize[group] >= Math.pow(2, -5))) {
-				ElectrixTweaker.loopMoveSize[group] = ElectrixTweaker.loopMoveSize[group] / 2
-			} else if ((value == 1) && (ElectrixTweaker.loopMoveSize[group] <= Math.pow(2, 5))) {
-				ElectrixTweaker.loopMoveSize[group] = ElectrixTweaker.loopMoveSize[group] * 2
-			}
-			midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['High']['ring'], ElectrixTweaker.encoderRingSteps[ 6 + Math.log(ElectrixTweaker.loopMoveSize[group]) / Math.log(2) ] )
-			break
+	if (ElectrixTweaker.topShift) {
+		if (control == ElectrixTweaker.encoders['[Channel1]']['High']['cc']) {
+			engine.setValue('[Master]', 'headVolume', script.absoluteNonLin(value, 0, 1, 5))
+		} else {
+			engine.setValue('[Master]', 'volume', script.absoluteNonLin(value, 0, 1, 5))
+		}
+	} else {
+		switch (ElectrixTweaker.mode[group]) {
+			case 'eq':
+				engine.setValue(group, 'filterHigh', script.absoluteNonLin(value, 0, 1, 4) )
+				break
+			case 'loop':
+				if ((value == 127) && (ElectrixTweaker.loopMoveSize[group] >= Math.pow(2, -5))) {
+					ElectrixTweaker.loopMoveSize[group] = ElectrixTweaker.loopMoveSize[group] / 2
+				} else if ((value == 1) && (ElectrixTweaker.loopMoveSize[group] <= Math.pow(2, 5))) {
+					ElectrixTweaker.loopMoveSize[group] = ElectrixTweaker.loopMoveSize[group] * 2
+				}
+				midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['High']['ring'], ElectrixTweaker.encoderRingSteps[ 6 + Math.log(ElectrixTweaker.loopMoveSize[group]) / Math.log(2) ] )
+				break
+		}
 	}
 }
 ElectrixTweaker.highEncoderPress = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		switch (ElectrixTweaker.mode[group]) {
-			case 'eq':
-				if (ElectrixTweaker.shift) {
-					engine.setValue(group, 'filterHigh', 1)
-				} else {
-					engine.setValue(group, 'filterHighKill', ! engine.getValue(group, 'filterHighKill'))
-				}
-				break
-			case 'loop':
-				// What to do with this?
-				break
+		if (ElectrixTweaker.topShift) {
+			if (control == ElectrixTweaker.encoders['[Channel1]']['High']['button']) {
+				engine.setValue('[Master]', 'headVolume', 1)
+			} else {
+				engine.setValue('[Master]', 'volume', 1)
+			}
+		} else {
+			switch (ElectrixTweaker.mode[group]) {
+				case 'eq':
+					if (ElectrixTweaker.deckShift[group]) {
+						engine.setValue(group, 'filterHigh', 1)
+					} else {
+						engine.setValue(group, 'filterHighKill', ! engine.getValue(group, 'filterHighKill'))
+					}
+					break
+				case 'loop':
+					// What to do with this?
+					break
+			}
 		}
 	}
 }
 ElectrixTweaker.midEncoder = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
+	if (ElectrixTweaker.topShift) {
+		if (control == ElectrixTweaker.encoders['[Channel1]']['Mid']['cc']) {
+			engine.setValue('[Master]', 'headMix', script.absoluteLin(value, -1, 1))
+		} else {
+			engine.setValue('[Master]', 'balance', script.absoluteLin(value, -1, 1))
+		}
+	} else if (ElectrixTweaker.deckShift[group]) {
 		engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[group])
 		if (value == 127) {
 			engine.setValue(group, 'beatjump_32_backward', 1)
@@ -711,22 +788,32 @@ ElectrixTweaker.midEncoder = function (channel, control, value, status, group) {
 ElectrixTweaker.midEncoderPress = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		switch (ElectrixTweaker.mode[group]) {
-			case 'eq':
-				if (ElectrixTweaker.shift) {
-					engine.setValue(group, 'filterMid', 1)
-				} else {
-					engine.setValue(group, 'filterMidKill', ! engine.getValue(group, 'filterMidKill'))
-				}
-				break
-			case 'loop':
-				// What to do with this?
+		if (ElectrixTweaker.topShift) {
+			if (control == ElectrixTweaker.encoders['[Channel1]']['Mid']['button']) {
+				engine.setValue('[Master]', 'headSplit', ! engine.getValue('[Master]', 'headSplit'))
+			} else {
+				engine.setValue('[Master]', 'balance', 0)
+			}
+		} else {
+			switch (ElectrixTweaker.mode[group]) {
+				case 'eq':
+					if (ElectrixTweaker.deckShift[group]) {
+						engine.setValue(group, 'filterMid', 1)
+					} else {
+						engine.setValue(group, 'filterMidKill', ! engine.getValue(group, 'filterMidKill'))
+					}
+					break
+				case 'loop':
+					// What to do with this?
+			}
 		}
 	}
 }
 ElectrixTweaker.lowEncoder = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
+	if (ElectrixTweaker.topShift) {
+		engine.setValue(group, 'pregain', script.absoluteNonLin(value, 0, 1, 4))
+	} else if (ElectrixTweaker.deckShift[group]) {
 		if (value == 1 && ElectrixTweaker.hotcuePage[group] < 3) {
 			ElectrixTweaker.connectHotcuePage(group, true)
 			ElectrixTweaker.hotcuePage[group]++
@@ -768,24 +855,28 @@ ElectrixTweaker.lowEncoder = function (channel, control, value, status, group) {
 ElectrixTweaker.lowEncoderPress = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		switch (ElectrixTweaker.mode[group]) {
-			case 'eq':
-				if (ElectrixTweaker.shift) {
-					engine.setValue(group, 'filterLow', 1)
-				} else {
-					engine.setValue(group, 'filterLowKill', ! engine.getValue(group, 'filterLowKill'))
-				}
-				break
-			case 'loop':
-				if (ElectrixTweaker.slipMode[group]) {
-					engine.setValue(group, 'slip_enabled', ! engine.getValue(group, 'slip_enabled'))
-				}
-				if (engine.getValue(group, 'loop_enabled')) {
-					engine.setValue(group, 'reloop_exit', 1)
-				} else {
-					engine.setValue(group, 'beatloop_' + ElectrixTweaker.loopSize[group] + '_activate', 1)
-				}
-				break
+		if (ElectrixTweaker.topShift) {
+			engine.setValue(group, 'pregain', 1)
+		} else {
+			switch (ElectrixTweaker.mode[group]) {
+				case 'eq':
+					if (ElectrixTweaker.deckShift[group]) {
+						engine.setValue(group, 'filterLow', 1)
+					} else {
+						engine.setValue(group, 'filterLowKill', ! engine.getValue(group, 'filterLowKill'))
+					}
+					break
+				case 'loop':
+					if (ElectrixTweaker.slipMode[group]) {
+						engine.setValue(group, 'slip_enabled', ! engine.getValue(group, 'slip_enabled'))
+					}
+					if (engine.getValue(group, 'loop_enabled')) {
+						engine.setValue(group, 'reloop_exit', 1)
+					} else {
+						engine.setValue(group, 'beatloop_' + ElectrixTweaker.loopSize[group] + '_activate', 1)
+					}
+					break
+			}
 		}
 	} else if (ElectrixTweaker.mode[group] == 'loop' && (ElectrixTweaker.slipMode[group] || ElectrixTweaker.slipModeUnsetWhileLooping[group])) {
 		engine.setValue(group, 'slip_enabled', ! engine.getValue(group, 'slip_enabled'))
@@ -817,11 +908,12 @@ ElectrixTweaker.modeButton = function (channel, control, value, status, group) {
 
 ElectrixTweaker.fader = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
+	if (ElectrixTweaker.deckShift[group]) {
 		if (Math.abs(engine.getValue(group, 'rate') - (value - 64)/64) < .2) {
 			engine.setValue(group, 'rate', script.absoluteLin(value, -1, 1))
 		}
 	} else {
+		// soft takeover
 		if (Math.abs(value - script.absoluteNonLinInverse(engine.getValue(group, 'volume'), 0, .25, 1)) < 30) {
 			engine.setValue(group, 'volume', script.absoluteNonLin(value, 0, .25, 1))
 		}
@@ -831,7 +923,7 @@ ElectrixTweaker.fader = function (channel, control, value, status, group) {
 ElectrixTweaker.pflButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			engine.setValue(group, 'reloop_exit', 1)
 		} else {
 			engine.setValue(group, 'pfl', ! engine.getValue(group, 'pfl'))
@@ -848,12 +940,10 @@ ElectrixTweaker.pflButtonLED = function (value, group, control) {
 
 ElectrixTweaker.playButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
-		if (ElectrixTweaker.topShift && value) {
-			engine.setValue(group, 'cue_gotoandstop', 1)
-		} else {
-			engine.setValue(group, 'cue_default', value)
-		}
+	if (ElectrixTweaker.deckShift[group]) {
+		engine.setValue(group, 'cue_default', value)
+	} else if (ElectrixTweaker.topShift) {
+		engine.setValue(group, 'cue_gotoandstop', 1)
 	} else if (value) {
 		if (ElectrixTweaker.hotcuesPressed[group]) {
 			ElectrixTweaker.playPressedWhileCueJuggling[group] = true
@@ -890,7 +980,7 @@ ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 	var cue = cueButton + (8 * ElectrixTweaker.hotcuePage[group])
 	if (value) {
 		if (engine.getValue(group, 'hotcue_'+cue+'_enabled')) {
-			if (ElectrixTweaker.shift && (! ElectrixTweaker.topShift)) {
+			if (ElectrixTweaker.deckShift[group]) {
 				engine.setValue(group, 'hotcue_'+cue+'_set', 1)
 			} else if (ElectrixTweaker.topShift) {
 				engine.setValue(group, 'hotcue_'+cue+'_clear', 1)
@@ -933,7 +1023,7 @@ ElectrixTweaker.hotcueLED = function (value, group, control) {
 ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			engine.setValue(group, 'loop_in', 1)
 		} else {
 			if (ElectrixTweaker.slipMode[group]) {
@@ -960,7 +1050,7 @@ ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
 
 ElectrixTweaker.deckToggle = function (channel, control, value, status, group) {
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			engine.setValue(ElectrixTweaker.deck[group], 'loop_out', 1)
 		} else {
 			var deckNumber = parseInt(
@@ -982,7 +1072,7 @@ ElectrixTweaker.deckToggle = function (channel, control, value, status, group) {
 ElectrixTweaker.sync = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			engine.setValue(group, 'rate', 0)
 		} else {
 			engine.setValue(group, 'sync_enabled', ! engine.getValue(group, 'sync_enabled'))
@@ -1000,7 +1090,7 @@ ElectrixTweaker.syncLED = function (value, group, control) {
 ElectrixTweaker.key = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			if (engine.getValue(group, 'file_key') != engine.getValue(group, 'key')) {
 				engine.setValue(group, 'reset_key', 1)
 			} else {
@@ -1022,7 +1112,7 @@ ElectrixTweaker.keylockLED = function (value, group, control) {
 ElectrixTweaker.quantize = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (ElectrixTweaker.shift) {
+		if (ElectrixTweaker.deckShift[group]) {
 			engine.setValue(group, 'beats_translate_curpos', 1)
 		} else {
 			engine.setValue(group, 'quantize', ! engine.getValue(group, 'quantize'))
@@ -1108,14 +1198,14 @@ ElectrixTweaker.forward = function (channel, control, value, status, group) {
 	} else {
 		if (engine.getValue(group, 'quantize')) {
 			if (value) {
-				if (ElectrixTweaker.shift) {
+				if (ElectrixTweaker.deckShift[group]) {
 					engine.setValue(group, 'beatjump_1_forward', 1)
 				} else {
 					engine.setValue(group, 'beatjump_4_forward', 1)
 				}
 			}
 		} else {
-			if (ElectrixTweaker.shift) {
+			if (ElectrixTweaker.deckShift[group]) {
 				engine.setValue(group, 'rate_temp_up', value / 127)
 			} else {
 				engine.setValue(group, 'fwd', value)
@@ -1127,7 +1217,7 @@ ElectrixTweaker.back = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (ElectrixTweaker.vinylMode[group]) {
 		if (value) {
-			if (ElectrixTweaker.shift || engine.getValue(group, 'passthrough')) {
+			if (ElectrixTweaker.deckShift[group] || engine.getValue(group, 'passthrough')) {
 				engine.setValue(group, 'passthrough', ! engine.getValue(group, 'passthrough'))
 			} else {
 				engine.setValue(group, 'vinylcontrol_enabled', ! engine.getValue(group, 'vinylcontrol_enabled'))
@@ -1136,14 +1226,14 @@ ElectrixTweaker.back = function (channel, control, value, status, group) {
 	} else {
 		if (engine.getValue(group, 'quantize')) {
 			if (value) {
-				if (ElectrixTweaker.shift) {
+				if (ElectrixTweaker.deckShift[group]) {
 					engine.setValue(group, 'beatjump_1_backward', 1)
 				} else {
 					engine.setValue(group, 'beatjump_4_backward', 1)
 				}
 			}
 		} else {
-			if (ElectrixTweaker.shift) {
+			if (ElectrixTweaker.deckShift[group]) {
 				engine.setValue(group, 'rate_temp_down', value / 127)
 			} else {
 				engine.setValue(group, 'back', value)

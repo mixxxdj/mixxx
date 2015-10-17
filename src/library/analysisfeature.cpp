@@ -67,8 +67,8 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-    connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<int>)),
-            this, SLOT(analyzeTracks(QList<int>)));
+    connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<TrackId>)),
+            this, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
             this, SLOT(stopAnalysis()));
 
@@ -108,7 +108,7 @@ void AnalysisFeature::activate() {
     emit(enableCoverArtDisplay(true));
 }
 
-void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
+void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (m_pAnalyserQueue == NULL) {
         // Save the old BPM detection prefs setting (on or off)
         m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
@@ -130,7 +130,7 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
         emit(analysisActive(true));
     }
 
-    foreach(int trackId, trackIds) {
+    for (const auto& trackId: trackIds) {
         TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
         if (pTrack) {
             //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
@@ -174,7 +174,7 @@ bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<int> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }

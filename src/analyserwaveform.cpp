@@ -114,11 +114,11 @@ bool AnalyserWaveform::loadStored(TrackPointer tio) const {
     ConstWaveformPointer pLoadedTrackWaveform;
     ConstWaveformPointer pLoadedTrackWaveformSummary;
 
-    int trackId = tio->getId();
+    TrackId trackId = tio->getId();
     bool missingWaveform = pTrackWaveform.isNull();
     bool missingWavesummary = pTrackWaveformSummary.isNull();
 
-    if (trackId != -1 && (missingWaveform || missingWavesummary)) {
+    if (trackId.isValid() && (missingWaveform || missingWavesummary)) {
         QList<AnalysisDao::AnalysisInfo> analyses =
                 m_analysisDao->getAnalysesForTrack(trackId);
 

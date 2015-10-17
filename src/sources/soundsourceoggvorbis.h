@@ -6,6 +6,8 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
+class QFile;
+
 namespace Mixxx {
 
 class SoundSourceOggVorbis: public SoundSource {
@@ -29,9 +31,17 @@ private:
             CSAMPLE* sampleBuffer, SINT sampleBufferSize,
             bool readStereoSamples);
 
+    static size_t ReadCallback(void *ptr, size_t size, size_t nmemb,
+            void *datasource);
+    static int SeekCallback(void *datasource, ogg_int64_t offset, int whence);
+    static int CloseCallback(void *datasource);
+    static long TellCallback(void *datasource);
+    static ov_callbacks s_callbacks;
+
     OggVorbis_File m_vf;
 
     SINT m_curFrameIndex;
+    QFile* m_pFile;
 };
 
 class SoundSourceProviderOggVorbis: public SoundSourceProvider {

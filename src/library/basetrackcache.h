@@ -47,40 +47,40 @@ class BaseTrackCache : public QObject {
     // Data access methods
     ////////////////////////////////////////////////////////////////////////////
 
-    virtual QVariant data(int trackId, int column) const;
+    virtual QVariant data(TrackId trackId, int column) const;
     virtual int columnCount() const;
     virtual int fieldIndex(const QString& column) const;
     QString columnNameForFieldIndex(int index) const;
     QString columnSortForFieldIndex(int index) const;
     int fieldIndex(ColumnCache::Column column) const;
-    virtual void filterAndSort(const QSet<int>& trackIds,
+    virtual void filterAndSort(const QSet<TrackId>& trackIds,
                                QString query, QString extraFilter,
                                QString orderByClause,
                                const int sortColumn,
                                Qt::SortOrder sortOrder,
-                               QHash<int, int>* trackToIndex);
-    virtual bool isCached(int trackId) const;
-    virtual void ensureCached(int trackId);
-    virtual void ensureCached(QSet<int> trackIds);
+                               QHash<TrackId, int>* trackToIndex);
+    virtual bool isCached(TrackId trackId) const;
+    virtual void ensureCached(TrackId trackId);
+    virtual void ensureCached(QSet<TrackId> trackIds);
     virtual void setSearchColumns(const QStringList& columns);
 
   signals:
-    void tracksChanged(QSet<int> trackIds);
+    void tracksChanged(QSet<TrackId> trackIds);
 
   private slots:
-    void slotTracksAdded(QSet<int> trackId);
-    void slotTracksRemoved(QSet<int> trackId);
-    void slotTrackDirty(int trackId);
-    void slotTrackClean(int trackId);
-    void slotTrackChanged(int trackId);
+    void slotTracksAdded(QSet<TrackId> trackId);
+    void slotTracksRemoved(QSet<TrackId> trackId);
+    void slotTrackDirty(TrackId trackId);
+    void slotTrackClean(TrackId trackId);
+    void slotTrackChanged(TrackId trackId);
     void slotDbTrackAdded(TrackPointer pTrack);
 
   private:
-    TrackPointer lookupCachedTrack(int trackId) const;
+    TrackPointer lookupCachedTrack(TrackId trackId) const;
     bool updateIndexWithQuery(const QString& query);
     bool updateIndexWithTrackpointer(TrackPointer pTrack);
-    void updateTrackInIndex(int trackId);
-    void updateTracksInIndex(QSet<int> trackIds);
+    void updateTrackInIndex(TrackId trackId);
+    void updateTracksInIndex(QSet<TrackId> trackIds);
     void getTrackValueForColumn(TrackPointer pTrack, int column,
                                 QVariant& trackValue) const;
 
@@ -89,7 +89,7 @@ class BaseTrackCache : public QObject {
     int findSortInsertionPoint(TrackPointer pTrack,
                                const int sortColumn,
                                const Qt::SortOrder sortOrder,
-                               const QVector<int> trackIds) const;
+                               const QVector<TrackId> trackIds) const;
     int compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                             QVariant val1, QVariant val2) const;
     bool trackMatches(const TrackPointer& pTrack,
@@ -112,13 +112,13 @@ class BaseTrackCache : public QObject {
 
     // Temporary storage for filterAndSort()
 
-    QVector<int> m_trackOrder;
+    QVector<TrackId> m_trackOrder;
 
-    QSet<int> m_dirtyTracks;
+    QSet<TrackId> m_dirtyTracks;
 
     bool m_bIndexBuilt;
     bool m_bIsCaching;
-    QHash<int, QVector<QVariant> > m_trackInfo;
+    QHash<TrackId, QVector<QVariant> > m_trackInfo;
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
     SearchQueryParser* m_pQueryParser;
