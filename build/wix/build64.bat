@@ -25,6 +25,8 @@ REM Harvest main DLL from install dir
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x64 -dSourceDir=..\..\dist64 -arch x64 -out subdirs\mainDLL.wixobj subdirs\mainDLL.wxs
 
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x64 -arch x64 warningDlg.wxs
+"%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x64 -arch x64 LocalizedLicenceDlg.wxs
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x64 -dPromo=%promo% -arch x64 mixxx.wxs
 
-"%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:en-us -loc Localization\en-us\mixxx_en-us.wxl -out mixxx-64.msi *.wixobj subdirs\*.wixobj
+"%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:en-us -loc Localization\en-us\mixxx_en-us.wxl -out mixxx-en_us-64.msi *.wixobj subdirs\*.wixobj
+"%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:fr-fr -loc Localization\fr-fr\mixxx_fr-fr.wxl -out mixxx-fr_fr-64.msi *.wixobj subdirs\*.wixobj
