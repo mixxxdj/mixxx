@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.12.0+">
+<MixxxMIDIPreset mixxxVersion="1.12.0+" schemaVersion="1">
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2015-10-11</description>
+    <description>2015-10-18</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">

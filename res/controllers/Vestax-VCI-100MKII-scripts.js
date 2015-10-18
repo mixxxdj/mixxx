@@ -9,7 +9,7 @@
 
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2015-10-11
+// description: 2015-10-18
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 var VCI102 = {};
@@ -81,13 +81,30 @@ VCI102.slip = function(value, group, key) {
     }
 };
 
+VCI102.scratchTimer = [0, 0, 0, 0];
+
 VCI102.scratchEnable = function(ch, midino, value, status, group) {
     var deck = ch + 1;
     if (value) {
-        engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
+        if (VCI102.scratchTimer[ch]) {
+            engine.stopTimer(VCI102.scratchTimer[ch]);
+            VCI102.scratchTimer[ch] = 0;
+        } else {
+            engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
+        }
     } else {
-        engine.scratchDisable(deck, false);
-        VCI102.slip(value, group);
+        VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
+            var vel = Math.abs(engine.getValue(group, "scratch2"));
+            if (vel < 1 && (vel < 1e-9 || engine.getValue(group, "play"))) {
+                if (VCI102.scratchTimer[ch]) {
+                    engine.stopTimer(VCI102.scratchTimer[ch]);
+                    VCI102.scratchTimer[ch] = 0;
+                    engine.scratchDisable(
+                        deck, !engine.getValue(group, "slip_enabled"));
+                    VCI102.slip(value, group);
+                }
+            }
+        });
     }
 };
 
@@ -96,8 +113,7 @@ VCI102.jog = function(ch, midino, value, status, group) {
     value -= 64;
     if (engine.isScratching(deck)) {
         engine.scratchTick(deck, value);
-    } else if ((engine.getValue(group, "orientation") - 1)
-               * engine.getValue("[Master]", "crossfader") != 1) {
+    } else if (!engine.getValue(group, "slip_enabled")) {
         engine.setValue(group, "jog", value * value * value / 512);
     }
 };
