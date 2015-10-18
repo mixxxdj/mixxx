@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WixLocalization Culture="fr-fr" Codepage="1252" xmlns="http://schemas.microsoft.com/wix/2006/localization">
-   <String Id="Language">1036</String>         <!-- Supported language and codepage codes can be found here: http://www.tramontana.co.hu/wix/lesson2.php#2.4 -->
+   <String Id="Language">1036</String>         <!-- Supported language and codepage codes can be found here: http://www.science.co.il/Language/Locale-codes.asp -->
  
    <!-- Programm informations -->
    <String Id="ApplicationName">Mixxx</String>
@@ -19,9 +19,6 @@
    <String Id="bitWidthMismatch32">Vous installez une version 32 bits de Mixxx, mais il existe déjà une version 64 bits installée. Ceci peut conduire à un comportement imprévisible. SVP, désinstallez d'abord ou téléchargez l'installeur correspondant pour mettre à jour, à moins de savoir exactement ce que vous faites.</String>
    <String Id="bitWidthMismatch64">Vous installez une version 64 bits de Mixxx, mais il existe déjà une version 32 bits installée. Ceci peut conduire à un comportement imprévisible. SVP, désinstallez d'abord ou téléchargez l'installeur correspondant pour mettre à jour, à moins de savoir exactement ce que vous faites.</String>
 
-   <!-- Localized Licence -->
-   <String Id="LicenseRtf" Overridable="yes">Localization\fr-fr\LICENSE_fr-fr.rtf</String>
-   
    <!-- Custom Warning Dialog -->
    <String Id="WarningDlgTitle">{\WixUI_Font_Title}Attention</String>
  

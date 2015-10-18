@@ -122,7 +122,10 @@
 
     <!-- Install VCRedist -->
     <CustomAction Id='InstallVCRedist' BinaryKey='VCRedist' ExeCommand='/quiet /install' Return='check' />
-
+    
+    <!-- License agreement -->
+    <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
+    
     <!-- 
       Launch conditions
 
@@ -411,24 +414,15 @@
   <UIRef Id="WixUI_FeatureTree" />
   <UIRef Id="WixUI_ErrorProgressText" />
 
-    <DialogRef Id="LicenseAgreementDialogOverwritten" />
-
-
-    <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDialogOverwritten">1</Publish>
-    
-    <Publish Dialog="LicenseAgreementDialogOverwritten" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
-    <Publish Dialog="LicenseAgreementDialogOverwritten" Control="Next" Event="NewDialog" Value="CustomizeDlg">LicenseAcceptedOverwritten = "1" AND NOT OLDER_VERSION_FOUND</Publish>
-    <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDialogOverwritten">1</Publish>    
-
     <DialogRef Id="WarningDlg" />
     
-    <Publish Dialog="WarningDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDialogOverwritten">1</Publish>
+    <Publish Dialog="WarningDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg">1</Publish>
     <Publish Dialog="WarningDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
 
     <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="WarningDlg"><![CDATA[( NOT MyWarningText1 = " " ) OR ( NOT MyWarningText2 = " ") OR ( NOT MyWarningText3 = " ")]]></Publish>
-    <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDialogOverwritten"><![CDATA[( MyWarningText1 = " " ) AND ( MyWarningText2 = " " ) AND ( MyWarningText3 = " " )]]></Publish>
+    <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg"><![CDATA[( MyWarningText1 = " " ) AND ( MyWarningText2 = " " ) AND ( MyWarningText3 = " " )]]></Publish>
     
-    <Publish Dialog="LicenseAgreementDialogOverwritten" Control="Back" Event="NewDialog" Value="WarningDlg"><![CDATA[( NOT MyWarningText1 = " " ) OR ( NOT MyWarningText2 = " ") OR ( NOT MyWarningText3 = " ")]]></Publish>
+    <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WarningDlg"><![CDATA[( NOT MyWarningText1 = " " ) OR ( NOT MyWarningText2 = " ") OR ( NOT MyWarningText3 = " ")]]></Publish>
 </UI>    
     
   </Product>

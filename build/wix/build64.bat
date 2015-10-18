@@ -3,11 +3,14 @@
 REM set this to the folder where you build the dependencies
 set WINLIB_PATH=D:\mixxx-buildserver64
 
+echo "*** Cleaning"
 del *.wixobj
 del *.wixpdb
 del /Q subdirs\*.*
 
-for /F %%d IN (subdirs.txt) DO (
+echo "*** Building intermediate files"
+
+FOR %%d IN (controllers,fonts,imageformats,keyboard,plugins,skins,translations) DO (
   "%WIX%"\bin\heat.exe dir ..\..\dist64\%%d -nologo -sfrag -suid -ag -srd -cg %%dComp -dr %%dDir -out subdirs\%%d.wxs -sw5150 -var var.%%dVar  
   "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x64 -d%%dVar=..\..\dist64\%%d -arch x64 -out subdirs\%%d.wixobj subdirs\%%d.wxs
 )
@@ -25,8 +28,12 @@ REM Harvest main DLL from install dir
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x64 -dSourceDir=..\..\dist64 -arch x64 -out subdirs\mainDLL.wixobj subdirs\mainDLL.wxs
 
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x64 -arch x64 warningDlg.wxs
-"%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x64 -arch x64 LocalizedLicenceDlg.wxs
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=x64 -dPromo=%promo% -arch x64 mixxx.wxs
 
-"%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:en-us -loc Localization\en-us\mixxx_en-us.wxl -out mixxx-en_us-64.msi *.wixobj subdirs\*.wixobj
-"%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:fr-fr -loc Localization\fr-fr\mixxx_fr-fr.wxl -out mixxx-fr_fr-64.msi *.wixobj subdirs\*.wixobj
+FOR %%G IN (Localization\*.wxl) DO (
+  REM skip 19 chars (Localization\mixxx_), keep until end -4 char (.wxl)
+  set _locfile=%%G
+  set _locale=!_locfile:~19,-4!
+  echo "*** Building package for locale !_locale!"
+  "%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:!_locale! -loc %%G -out mixxx-64-!_locale!.msi *.wixobj subdirs\*.wixobj
+)
