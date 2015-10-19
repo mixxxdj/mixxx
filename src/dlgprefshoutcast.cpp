@@ -31,10 +31,11 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
           m_pConfig(_config) {
     setupUi(this);
 
-    m_pUpdateShoutcastFromPrefs = new ControlObjectSlave(
-            SHOUTCAST_PREF_KEY, "update_from_prefs", this);
     m_pShoutcastEnabled = new ControlObjectSlave(
             SHOUTCAST_PREF_KEY, "enabled", this);
+    m_pShoutcastEnabled->connectValueChanged(
+            SLOT(shoutcastEnabledChanged(double)));
+
 
     // Enable live broadcasting checkbox
     enableLiveBroadcasting->setChecked(
@@ -292,9 +293,6 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"), ConfigValue(custom_artist->text()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"),  ConfigValue(custom_title->text()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_format"), ConfigValue(metadata_format->text()));
-
-    // Tell the EngineShoutcast object to update with these values by toggling this control object.
-    m_pUpdateShoutcastFromPrefs->set(1.0);
 }
 
 void DlgPrefShoutcast::setDialogEnabled(bool enabled) {
@@ -318,4 +316,12 @@ void DlgPrefShoutcast::setDialogEnabled(bool enabled) {
         custom_artist->setEnabled(enabled);
         custom_title->setEnabled(enabled);
         metadata_format->setEnabled(enabled);
+}
+
+void DlgPrefShoutcast::shoutcastEnabledChanged(double value) {
+    qDebug() << "DlgPrefShoutcast::shoutcastEnabledChanged()" << value;
+    bool enabled = value == 1.0; // 0 and 2 are disabled
+    setDialogEnabled(!enabled);
+    enableLiveBroadcasting->setChecked(enabled);
+
 }

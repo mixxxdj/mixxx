@@ -45,6 +45,7 @@ class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDl
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
+    void shoutcastEnabledChanged(double value);
 
   signals:
     void apply(const QString &);
@@ -52,8 +53,6 @@ class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDl
   private:
     void setDialogEnabled(bool enabled);
     ConfigObject<ConfigValue>* m_pConfig;
-    // If set to 1, EngineShoutcast will update it's settings.
-    ControlObjectSlave* m_pUpdateShoutcastFromPrefs;
     ControlObjectSlave* m_pShoutcastEnabled;
 };
 

@@ -54,7 +54,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_iShoutFailures(0),
           m_pConfig(_config),
           m_encoder(NULL),
-          m_pShoutcastNeedUpdateFromPrefs(NULL),
           m_pMasterSamplerate(new ControlObjectSlave("[Master]", "samplerate")),
           m_custom_metadata(false),
           m_firstCall(false),
@@ -66,9 +65,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_ogg_dynamic_update(false),
           m_threadWaiting(false),
           m_pOutputFifo(NULL) {
-    m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
-            ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
-
     const bool persist = true;
     m_pShoutcastEnabled = new ControlPushButton(
             ConfigKey(SHOUTCAST_PREF_KEY,"enabled"), persist);
@@ -104,7 +100,6 @@ EngineShoutcast::~EngineShoutcast() {
     m_readSema.release();
     wait(); // until the thread ends.
 
-    delete m_pShoutcastNeedUpdateFromPrefs;
     delete m_pStatusCO;
     delete m_pMasterSamplerate;
 
@@ -136,8 +131,6 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
-
-    m_pShoutcastNeedUpdateFromPrefs->set(0.0);
 
     if(getState() == NETWORKSTREAMWORKER_STATE_CONNECTED) {
         qDebug() << "EngineShoutcast::updateFromPreferences: Can't edit preferences when playing";
@@ -541,23 +534,6 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
     // If we are here then the user wants to be connected (shoutcast is enabled
     // in the preferences).
-
-    // If we aren't connected or the user has changed their preferences,
-    // disconnect, update from prefs, and reconnect.
-    if (m_pShoutcastNeedUpdateFromPrefs->toBool()) {
-        m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
-        processDisconnect();
-
-        // Initialize/update the encoder and libshout setup.
-        updateFromPreferences();
-
-        if (processConnect()) {
-            infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
-        } else {
-            errorDialog(tr("Mixxx could not connect to streaming server"),
-                        tr("Please check your connection to the Internet and verify that your username and password are correct."));
-        }
-    }
 
     // If we aren't connected, bail.
     if (m_iShoutStatus != SHOUTERR_CONNECTED)
