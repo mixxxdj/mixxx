@@ -17,7 +17,7 @@ String.prototype.toInt = function() {
 
 // Causes script print() calls to appear in the log file as well
 print = function(string) {
-	engine.log(string);
+    engine.log(string);
 }
 
 // ----------------- Generic functions ---------------------
@@ -151,7 +151,10 @@ script.absoluteLin = function (value, low, high, min, max) {
 script.absoluteLinInverse = function (value, low, high, min, max) {
     if (!min) min = 0;
     if (!max) max = 127;
-    return ((((value-low)*(max-min))/(high-low)) + min);
+    var result = (((value-low)*(max-min))/(high-low)) + min
+    if (result < min) return min;
+    if (result > max) return max;
+    return result;
 }
 
 
@@ -184,14 +187,19 @@ script.absoluteNonLin = function (value, low, mid, high, min, max) {
  Output: MixxxControl value scaled to output range
  -------- ------------------------------------------------------ */
 script.absoluteNonLinInverse = function (value, low, mid, high, min, max) {
-	if (!min) min = 0;
-	if (!max) max = 127;
-	var center = (max-min)/2;
-	if (value==mid)
-		return center;
-	if (value<mid)
-		return (center/(mid-low)) * (value-low);
-	return center + (center/(high-mid)) * (value-mid);
+    if (!min) min = 0;
+    if (!max) max = 127;
+    var center = (max-min)/2;
+    var result;
+    if (value==mid)
+        return center;
+    if (value<mid)
+        result = (center/(mid-low)) * (value-low);
+    else
+        result = center + (center/(high-mid)) * (value-mid);
+    if (result < min) return min;
+    if (result > max) return max;
+    return result;
 }
 
 /* -------- ------------------------------------------------------
