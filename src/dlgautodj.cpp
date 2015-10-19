@@ -217,6 +217,7 @@ void DlgAutoDJ::updateSelectionInfo()
     }
 
     QString label = QString();
+    QString tooltip = QString();
     
     if (!indices.isEmpty()) {
     	
@@ -248,7 +249,13 @@ void DlgAutoDJ::updateSelectionInfo()
 	
 	label.append(" ");
 	label.append(tr("(%Ln track(s))","track_count", indices.size()));
+	
+	tooltip = QString(tr("%1h%2m%3s in selection")).arg(hours)
+	.arg(minutes,2,10,QChar('0'))
+	.arg(seconds,2,10,QChar('0'));
+	
     }
     
+    labelSelectionInfo->setToolTip(tooltip);
     labelSelectionInfo->setText(label);
 }

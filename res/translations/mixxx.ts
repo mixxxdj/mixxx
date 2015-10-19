@@ -2848,6 +2848,11 @@
         </translation>
     </message>
     <message>
+        <location filename="../../src/dlgautodj.cpp" line="253"/>
+        <source>%1h%2m%3s in selection</source>
+        <translation>%1h%2m%3s in selection</translation>
+    </message>
+    <message>
         <location filename="../../src/dlgautodj.ui" line="14"/>
         <source>Auto DJ</source>
         <translation type="unfinished"></translation>
