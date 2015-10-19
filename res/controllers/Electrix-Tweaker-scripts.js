@@ -12,7 +12,7 @@ ElectrixTweaker.eqSensitivity = 6
 ElectrixTweaker.vinylMode = {'[Channel1]': false, '[Channel2]': false, '[Channel3]': false, '[Channel4]': false}
 
 /**
- * Electrix Tweaker controller script 1.1 for Mixxx 1.12
+ * Electrix Tweaker controller script 1.1.1 for Mixxx 1.12
  * Copyright (C) 2015 Be <be.0@gmx.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -461,14 +461,25 @@ ElectrixTweaker.deckShiftButton = function (channel, control, value, status, gro
 		// There seems to be a bug in the Tweaker firmware when local control is enabled one LED ring but not another. If local control is enabled here, the other rings behave confusingly.
 		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Mid']['ring'], 98)
 		midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Mid']['ring'], 64)
+		// set high encoder to absolute EQ mode
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['High']['cc'], 78)
+		// set high LED ring to EQ mode with local control disabled
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['High']['ring'], 78)
+		engine.connectControl(group, 'rate', 'ElectrixTweaker.rateEncoderLEDs')
+		engine.trigger(group, 'rate')
 		if (ElectrixTweaker.topShift && ElectrixTweaker.deckShift[group]) {
 			ElectrixTweaker.connectVinylLEDs(group, ElectrixTweaker.vinylMode[group])
 			ElectrixTweaker.vinylMode[group] = ! ElectrixTweaker.vinylMode[group]
 		}
 	} else {
 		engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[group])
+		engine.connectControl(group, 'rate', 'ElectrixTweaker.rateEncoderLEDs', true)
 	}
 	ElectrixTweaker.connectEncoderMode(group, ElectrixTweaker.mode[group], value/127)
+}
+
+ElectrixTweaker.rateEncoderLEDs = function (value, group, control) {
+	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['High']['cc'], script.absoluteLinInverse(value, -1, 1))
 }
 
 // ================================================== ARROWS + BIG ENCODER ====================================================
@@ -617,6 +628,8 @@ ElectrixTweaker.highEncoder = function (channel, control, value, status, group) 
 		} else {
 			engine.setValue('[Master]', 'volume', script.absoluteNonLin(value, 0, 1, 5))
 		}
+	} else if (ElectrixTweaker.deckShift[group]) {
+		engine.setValue(group, 'rate', script.absoluteLin(value, -1, 1))
 	} else {
 		switch (ElectrixTweaker.mode[group]) {
 			case 'eq':
@@ -819,15 +832,9 @@ ElectrixTweaker.modeButton = function (channel, control, value, status, group) {
 
 ElectrixTweaker.fader = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.deckShift[group]) {
-		if (Math.abs(engine.getValue(group, 'rate') - (value - 64)/64) < .2) {
-			engine.setValue(group, 'rate', script.absoluteLin(value, -1, 1))
-		}
-	} else {
-		// soft takeover
-		if (Math.abs(value - script.absoluteNonLinInverse(engine.getValue(group, 'volume'), 0, .25, 1)) < 30) {
-			engine.setValue(group, 'volume', script.absoluteNonLin(value, 0, .25, 1))
-		}
+	// soft takeover
+	if (Math.abs(value - script.absoluteNonLinInverse(engine.getValue(group, 'volume'), 0, .25, 1)) < 30) {
+		engine.setValue(group, 'volume', script.absoluteNonLin(value, 0, .25, 1))
 	}
 }
 
