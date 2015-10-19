@@ -461,7 +461,8 @@ ElectrixTweaker.deckShiftButton = function (channel, control, value, status, gro
 		// There seems to be a bug in the Tweaker firmware when local control is enabled one LED ring but not another. If local control is enabled here, the other rings behave confusingly.
 		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Mid']['ring'], 98)
 		midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['Mid']['ring'], 64)
-		// set high encoder to absolute EQ mode
+		// set high encoder to absolute EQ mode with sensitivity level 1
+		// 1 step = 1 MIDI value for fine pitch control
 		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['High']['cc'], 78)
 		// set high LED ring to EQ mode with local control disabled
 		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['High']['ring'], 78)
@@ -629,7 +630,7 @@ ElectrixTweaker.highEncoder = function (channel, control, value, status, group) 
 			engine.setValue('[Master]', 'volume', script.absoluteNonLin(value, 0, 1, 5))
 		}
 	} else if (ElectrixTweaker.deckShift[group]) {
-		engine.setValue(group, 'rate', script.absoluteLin(value, -1, 1))
+		engine.setValue(group, 'rate', script.absoluteLin(value, -1, 1, 0, 126))
 	} else {
 		switch (ElectrixTweaker.mode[group]) {
 			case 'eq':
