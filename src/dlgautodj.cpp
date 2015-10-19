@@ -32,6 +32,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
             m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+	    this, SLOT(updateSelectionInfo()));
+
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -82,6 +85,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(m_pAutoDJProcessor, SIGNAL(autoDJStateChanged(AutoDJProcessor::AutoDJState)),
             this, SLOT(autoDJStateChanged(AutoDJProcessor::AutoDJState)));
     autoDJStateChanged(m_pAutoDJProcessor->getState());
+    
+    updateSelectionInfo();
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -196,4 +201,54 @@ void DlgAutoDJ::setTrackTableFont(const QFont& font) {
 
 void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
     m_pTrackTableView->setTrackTableRowHeight(rowHeight);
+}
+
+void DlgAutoDJ::updateSelectionInfo()
+{
+    int duration = 0;
+    
+    QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
+
+    for(int i=0;i!= indices.size();i++) {
+      TrackPointer pTrack = m_pAutoDJTableModel->getTrack(indices.at(i));
+      if (pTrack) {
+        duration += pTrack->getDuration();
+      }
+    }
+
+    QString label = QString();
+    
+    if (!indices.isEmpty()) {
+    	
+      	int hours = duration / 3600;
+	int minutes = (duration - (hours*3600)) / 60;
+	int seconds = duration - (hours * 3600) - (minutes*60);
+
+	if (hours > 0) {
+	  label.append(tr("%Ln hour(s)", "duration_hours", hours));
+	}
+	
+	if (minutes > 0) {
+	  if (hours > 0) { 
+	    label.append(", ");
+	  }
+	  label.append(tr("%Ln minute(s)","duration_minutes", minutes));
+	}
+	
+	if (hours == 0 && seconds > 0) {
+	  if (minutes > 0) {
+	    label.append(", ");
+	  }
+	  label.append(tr("%Ln second(s)","duration_seconds", seconds));
+	}
+	
+	if (hours == 0 && minutes == 0 && seconds == 0) {
+	  label.append(tr("0 seconds"));
+	}
+	
+	label.append(" ");
+	label.append(tr("(%Ln track(s))","track_count", indices.size()));
+    }
+    
+    labelSelectionInfo->setText(label);
 }

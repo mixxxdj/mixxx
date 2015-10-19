@@ -2806,6 +2806,47 @@
         <source>Disable Auto DJ</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <location filename="../../src/dlgautodj.cpp" line="228"/>
+        <source>%Ln hour(s)</source>
+        <comment>duration_hours</comment>
+        <translation>
+            <numerusform>1 hour</numerusform>
+            <numerusform>%n hours</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/dlgautodj.cpp" line="235"/>
+        <source>%Ln minute(s)</source>
+        <comment>duration_minutes</comment>
+        <translation>
+            <numerusform>1 minute</numerusform>
+            <numerusform>%n minutes</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/dlgautodj.cpp" line="242"/>
+        <source>%Ln second(s)</source>
+        <comment>duration_seconds</comment>
+        <translation>
+            <numerusform>1 second</numerusform>
+            <numerusform>%n seconds</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgautodj.cpp" line="246"/>
+        <source>0 seconds</source>
+        <translation>less than a second</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/dlgautodj.cpp" line="250"/>
+        <source>(%Ln track(s))</source>
+        <comment>track_count</comment>
+        <translation>
+            <numerusform>(1 track)</numerusform>
+            <numerusform>(%n tracks)</numerusform>
+        </translation>
+    </message>
     <message>
         <location filename="../../src/dlgautodj.ui" line="14"/>
         <source>Auto DJ</source>
