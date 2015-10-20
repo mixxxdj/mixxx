@@ -13,6 +13,8 @@
 #include "cachingreader.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
+// TODO: Convert these doubles to a standard enum
+// and convert elseif logic to switch statements
 static const double CUE_MODE_MIXXX = 0.0;
 static const double CUE_MODE_PIONEER = 1.0;
 static const double CUE_MODE_DENON = 2.0;
@@ -927,7 +929,7 @@ void CueControl::updateIndicators() {
                             // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                             m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
                         } else if (cueMode == CUE_MODE_MIXXX_NO_BLINK) {
-
+                            m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
                         } else {
                             // in Pioneer mode Cue Button is flashing fast if CUE will move Cue point
                             m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
