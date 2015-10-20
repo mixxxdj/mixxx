@@ -221,6 +221,13 @@ private:
     int m_sampleRate; // Hz
 };
 
+bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs);
+
+inline
+bool operator!=(const TrackMetadata& lhs, const TrackMetadata& rhs) {
+    return !(lhs == rhs);
+}
+
 }
 
 #endif // MIXXX_TRACKMETADATA_H
