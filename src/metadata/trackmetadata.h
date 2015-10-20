@@ -1,5 +1,5 @@
-#ifndef TRACKMETADATA_H
-#define TRACKMETADATA_H
+#ifndef MIXXX_TRACKMETADATA_H
+#define MIXXX_TRACKMETADATA_H
 
 #include <QDateTime>
 
@@ -197,29 +197,30 @@ public:
     static QString reformatYear(QString year);
 
 private:
-    QString m_artist;
-    QString m_title;
+    // String fields (in alphabetical order)
     QString m_album;
     QString m_albumArtist;
-    QString m_genre;
+    QString m_artist;
     QString m_comment;
-    QString m_year;
-    QString m_trackNumber;
     QString m_composer;
+    QString m_genre;
     QString m_grouping;
     QString m_key;
+    QString m_title;
+    QString m_trackNumber;
+    QString m_year;
 
-    // The following members need to be initialized
-    // explicitly in the constructor! Otherwise their
-    // value is undefined.
-    int m_channels;
-    int m_sampleRate;
-    int m_bitrate;
-    int m_duration;
+    // Floating-point fields (in alphabetical order)
     double m_bpm;
     double m_replayGain;
+
+    // Integer fields (in alphabetical order)
+    int m_bitrate; // kbit/s
+    int m_channels;
+    int m_duration; // seconds
+    int m_sampleRate; // Hz
 };
 
 }
 
-#endif
+#endif // MIXXX_TRACKMETADATA_H

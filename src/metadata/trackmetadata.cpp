@@ -38,7 +38,7 @@ double TrackMetadata::parseBpm(const QString& sBpm, bool* pValid) {
             qDebug() << "Scaling BPM value:" << bpm;
             bpm /= 10.0;
         }
-        if (TrackMetadata::isBpmValid(bpm)) {
+        if (isBpmValid(bpm)) {
             if (pValid) {
                 *pValid = true;
             }
@@ -53,7 +53,7 @@ double TrackMetadata::parseBpm(const QString& sBpm, bool* pValid) {
 }
 
 QString TrackMetadata::formatBpm(double bpm) {
-    if (TrackMetadata::isBpmValid(bpm)) {
+    if (isBpmValid(bpm)) {
         return QString::number(bpm);
     } else {
         return QString();
@@ -61,7 +61,7 @@ QString TrackMetadata::formatBpm(double bpm) {
 }
 
 QString TrackMetadata::formatBpm(int bpm) {
-    if (TrackMetadata::isBpmValid(bpm)) {
+    if (isBpmValid(bpm)) {
         return QString::number(bpm);
     } else {
         return QString();
@@ -194,13 +194,13 @@ QString TrackMetadata::reformatYear(QString year) {
     return year.simplified();
 }
 
-TrackMetadata::TrackMetadata() :
-        m_channels(0),
-        m_sampleRate(0),
-        m_bitrate(0),
-        m_duration(0),
-        m_bpm(kBpmUndefined),
-        m_replayGain(kReplayGainUndefined) {
+TrackMetadata::TrackMetadata()
+    : m_bpm(kBpmUndefined),
+      m_replayGain(kReplayGainUndefined),
+      m_bitrate(0),
+      m_channels(0),
+      m_duration(0),
+      m_sampleRate(0) {
 }
 
 } //namespace Mixxx
