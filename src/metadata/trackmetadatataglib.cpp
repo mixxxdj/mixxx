@@ -43,6 +43,7 @@ static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size th
 #include <taglib/wavfile.h>
 #include <taglib/aifffile.h>
 
+#include <taglib/commentsframe.h>
 #include <taglib/textidentificationframe.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
@@ -362,6 +363,41 @@ TagLib::String::Type getID3v2StringType(const TagLib::ID3v2::Tag& tag, bool isNu
     return stringType;
 }
 
+// Finds the first comments frame with a matching description.
+// If multiple comments frames with matching descriptions exist
+// prefer the first with a non-empty content if requested.
+TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
+        const TagLib::ID3v2::Tag& tag,
+        const QString& description = QString(),
+        bool preferNotEmpty = true) {
+    TagLib::ID3v2::FrameList commentsFrames(tag.frameListMap()["COMM"]);
+    TagLib::ID3v2::CommentsFrame* pFirstFrame = nullptr;
+    for (TagLib::ID3v2::FrameList::ConstIterator it(commentsFrames.begin());
+            it != commentsFrames.end(); ++it) {
+        auto pFrame =
+                dynamic_cast<TagLib::ID3v2::CommentsFrame*>(*it);
+        if (nullptr != pFrame) {
+            const QString frameDescription(
+                    toQString(pFrame->description()));
+            if (0 == frameDescription.compare(
+                    description, Qt::CaseInsensitive)) {
+                if (preferNotEmpty && pFrame->toString().isEmpty()) {
+                    // we might need the first matching frame later
+                    // even if it is empty
+                    if (pFirstFrame == nullptr) {
+                        pFirstFrame = pFrame;
+                    }
+                } else {
+                    // found what we are looking for
+                    return pFrame;
+                }
+            }
+        }
+    }
+    // simply return the first matching frame
+    return pFirstFrame;
+}
+
 // Finds the first text frame that with a matching description.
 // If multiple comments frames with matching descriptions exist
 // prefer the first with a non-empty content if requested.
@@ -416,6 +452,32 @@ void writeID3v2TextIdentificationFrame(
     // double deletion!
     pFrame.release();
 }
+
+void writeID3v2CommentsFrame(
+        TagLib::ID3v2::Tag* pTag,
+        const QString& text,
+        const QString& description = QString(),
+        bool isNumericOrURL = false) {
+    TagLib::ID3v2::CommentsFrame* pFrame =
+            findFirstCommentsFrame(*pTag, description);
+    if (nullptr != pFrame) {
+        // Modify existing frame
+        pFrame->setDescription(toTagLibString(description));
+        pFrame->setText(toTagLibString(text));
+    } else {
+        // Add a new frame
+        const TagLib::String::Type stringType =
+                getID3v2StringType(*pTag, isNumericOrURL);
+        auto pFrame =
+                std::make_unique<TagLib::ID3v2::CommentsFrame>(stringType);
+        pFrame->setDescription(toTagLibString(description));
+        pFrame->setText(toTagLibString(text));
+        pTag->addFrame(pFrame.get());
+        // Now the plain pointer in pFrame is owned and managed
+        // by pTag. We need to release the ownership to avoid
+        // double deletion!
+        pFrame.release();
+    }
 }
 
 void writeID3v2UserTextIdentificationFrame(
@@ -445,14 +507,26 @@ void writeID3v2UserTextIdentificationFrame(
     }
 }
 
-void writeTrackMetadataIntoTag(TagLib::Tag* pTag, const TrackMetadata& trackMetadata) {
+void writeTrackMetadataIntoTag(
+        TagLib::Tag* pTag,
+        const TrackMetadata& trackMetadata,
+        bool writeComment = true) {
     DEBUG_ASSERT(pTag); // already validated before
 
     pTag->setArtist(toTagLibString(trackMetadata.getArtist()));
     pTag->setTitle(toTagLibString(trackMetadata.getTitle()));
     pTag->setAlbum(toTagLibString(trackMetadata.getAlbum()));
     pTag->setGenre(toTagLibString(trackMetadata.getGenre()));
-    pTag->setComment(toTagLibString(trackMetadata.getComment()));
+
+    // NOTE(uklotzde): Setting the comment for ID3v2 tags does
+    // not work as expected when using TagLib 1.9.1 and must
+    // be skipped! Otherwise special purpose comment fields
+    // with a description like "iTunSMPB" might be overwritten.
+    // Mixxx implements a special case handling for ID3v2 comment
+    // frames.
+    if (writeComment) {
+        pTag->setComment(toTagLibString(trackMetadata.getComment()));
+    }
 
     // Set the numeric year if available
     const QDate yearDate(
@@ -779,7 +853,8 @@ bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
         return false;
     }
 
-    writeTrackMetadataIntoTag(pTag, trackMetadata);
+    writeTrackMetadataIntoTag(pTag, trackMetadata, false);
+    writeID3v2CommentsFrame(pTag, trackMetadata.getComment());
 
     // additional tags
     writeID3v2TextIdentificationFrame(pTag, "TPE2",
