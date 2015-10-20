@@ -135,13 +135,14 @@ inline QString toQString(const TagLib::String& tString) {
     }
 }
 
-// Returns the first element of TagLib string list.
-inline QString toQStringFirst(const TagLib::StringList& strList) {
-    if (strList.isEmpty()) {
-        return QString();
-    } else {
-        return toQString(strList.front());
+// Returns the first element of TagLib string list that is not empty.
+QString toQStringFirstNotEmpty(const TagLib::StringList& strList) {
+    for (const auto& str: strList) {
+        if (!str.isEmpty()) {
+            return toQString(str);
+        }
     }
+    return QString();
 }
 
 // Returns the text of an ID3v2 frame as a string.
@@ -150,22 +151,22 @@ inline QString toQString(const TagLib::ID3v2::Frame& frame) {
 }
 
 // Returns the first frame of an ID3v2 tag as a string.
-inline QString toQStringFirst(const TagLib::ID3v2::FrameList& frameList) {
-    if (frameList.isEmpty() || (NULL == frameList.front())) {
-        return QString();
-    } else {
-        return toQString(*frameList.front());
+QString toQStringFirstNotEmpty(
+        const TagLib::ID3v2::FrameList& frameList) {
+    for (const TagLib::ID3v2::Frame* pFrame: frameList) {
+        if (nullptr != pFrame) {
+            TagLib::String str(pFrame->toString());
+            if (!str.isEmpty()) {
+                return toQString(str);
+            }
+        }
     }
+    return QString();
 }
 
-// Returns the first value of an MP4 item as a string.
-inline QString toQStringFirst(const TagLib::MP4::Item& mp4Item) {
-    const TagLib::StringList strList(mp4Item.toStringList());
-    if (strList.isEmpty()) {
-        return QString();
-    } else {
-        return toQString(strList.front());
-    }
+// Returns the first non-empty value of an MP4 item as a string.
+inline QString toQStringFirstNotEmpty(const TagLib::MP4::Item& mp4Item) {
+    return toQStringFirstNotEmpty(mp4Item.toStringList());
 }
 
 // Returns an APE item as a string.
@@ -361,62 +362,86 @@ TagLib::String::Type getID3v2StringType(const TagLib::ID3v2::Tag& tag, bool isNu
     return stringType;
 }
 
-TagLib::ID3v2::UserTextIdentificationFrame* findUserTextIdentificationFrame(
-        const TagLib::ID3v2::Tag& tag, QString description) {
+// Finds the first text frame that with a matching description.
+// If multiple comments frames with matching descriptions exist
+// prefer the first with a non-empty content if requested.
+TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame(
+        const TagLib::ID3v2::Tag& tag,
+        const QString& description,
+        bool preferNotEmpty = true) {
+    DEBUG_ASSERT(!description.isEmpty());
     TagLib::ID3v2::FrameList textFrames(tag.frameListMap()["TXXX"]);
+    TagLib::ID3v2::UserTextIdentificationFrame* pFirstFrame = nullptr;
     for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
             it != textFrames.end(); ++it) {
-        TagLib::ID3v2::UserTextIdentificationFrame* pTextFrame =
+        auto pFrame =
                 dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
-        if (pTextFrame) {
-            const QString textFrameDescription(
-                    toQString(pTextFrame->description()));
-            if (0 == textFrameDescription.compare(
+        if (nullptr != pFrame) {
+            const QString frameDescription(
+                    toQString(pFrame->description()));
+            if (0 == frameDescription.compare(
                     description, Qt::CaseInsensitive)) {
-                return pTextFrame; // found
+                if (preferNotEmpty && pFrame->toString().isEmpty()) {
+                    // we might need the first matching frame later
+                    // even if it is empty
+                    if (pFirstFrame == nullptr) {
+                        pFirstFrame = pFrame;
+                    }
+                } else {
+                    // found what we are looking for
+                    return pFrame;
+                }
             }
         }
     }
-    return 0; // not found
+    // simply return the first matching frame
+    return pFirstFrame;
 }
 
-void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
-        const TagLib::ByteVector &id, const QString& text, bool isNumericOrURL = false) {
+void writeID3v2TextIdentificationFrame(
+        TagLib::ID3v2::Tag* pTag,
+        const TagLib::ByteVector &id,
+        const QString& text,
+        bool isNumericOrURL = false) {
     DEBUG_ASSERT(pTag);
 
     const TagLib::String::Type stringType =
             getID3v2StringType(*pTag, isNumericOrURL);
-    auto pTextFrame =
+    auto pFrame =
             std::make_unique<TagLib::ID3v2::TextIdentificationFrame>(id, stringType);
-    pTextFrame->setText(toTagLibString(text));
-    replaceID3v2Frame(pTag, pTextFrame.get());
-    // Now the plain pointer in pTextFrame is owned and
-    // managed by pTag. We need to release the ownership
-    // to avoid double deletion!
-    pTextFrame.release();
+    pFrame->setText(toTagLibString(text));
+    replaceID3v2Frame(pTag, pFrame.get());
+    // Now the plain pointer in pFrame is owned and managed
+    // by pTag. We need to release the ownership to avoid
+    // double deletion!
+    pFrame.release();
+}
 }
 
-void writeID3v2UserTextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
-        const QString& description, const QString& text, bool isNumericOrURL = false) {
-    TagLib::ID3v2::UserTextIdentificationFrame* pTextFrame =
-            findUserTextIdentificationFrame(*pTag, description);
-    if (pTextFrame) {
+void writeID3v2UserTextIdentificationFrame(
+        TagLib::ID3v2::Tag* pTag,
+        const QString& text,
+        const QString& description,
+        bool isNumericOrURL = false) {
+    TagLib::ID3v2::UserTextIdentificationFrame* pFrame =
+            findFirstUserTextIdentificationFrame(*pTag, description);
+    if (nullptr != pFrame) {
         // Modify existing frame
-        pTextFrame->setDescription(toTagLibString(description));
-        pTextFrame->setText(toTagLibString(text));
+        pFrame->setDescription(toTagLibString(description));
+        pFrame->setText(toTagLibString(text));
     } else {
         // Add a new frame
         const TagLib::String::Type stringType =
                 getID3v2StringType(*pTag, isNumericOrURL);
-        auto pTextFrame =
+        auto pFrame =
                 std::make_unique<TagLib::ID3v2::UserTextIdentificationFrame>(stringType);
-        pTextFrame->setDescription(toTagLibString(description));
-        pTextFrame->setText(toTagLibString(text));
-        pTag->addFrame(pTextFrame.get());
-        // Now the plain pointer in pTextFrame is owned and
-        // managed by pTag. We need to release the ownership
-        // to avoid double deletion!
-        pTextFrame.release();
+        pFrame->setDescription(toTagLibString(description));
+        pFrame->setText(toTagLibString(text));
+        pTag->addFrame(pFrame.get());
+        // Now the plain pointer in pFrame is owned and managed
+        // by pTag. We need to release the ownership to avoid
+        // double deletion!
+        pFrame.release();
     }
 }
 
@@ -470,40 +495,46 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
 
     readTrackMetadataFromTag(pTrackMetadata, tag);
 
+    TagLib::ID3v2::CommentsFrame* pCommentsFrame =
+            findFirstCommentsFrame(tag);
+    if (nullptr != pCommentsFrame) {
+        pTrackMetadata->setComment(toQString(*pCommentsFrame));
+    }
+
     const TagLib::ID3v2::FrameList albumArtistFrame(tag.frameListMap()["TPE2"]);
     if (!albumArtistFrame.isEmpty()) {
-        pTrackMetadata->setAlbumArtist(toQStringFirst(albumArtistFrame));
+        pTrackMetadata->setAlbumArtist(toQStringFirstNotEmpty(albumArtistFrame));
     }
 
     if (pTrackMetadata->getAlbum().isEmpty()) {
         const TagLib::ID3v2::FrameList originalAlbumFrame(
                 tag.frameListMap()["TOAL"]);
-        pTrackMetadata->setAlbum(toQStringFirst(originalAlbumFrame));
+        pTrackMetadata->setAlbum(toQStringFirstNotEmpty(originalAlbumFrame));
     }
 
     const TagLib::ID3v2::FrameList composerFrame(tag.frameListMap()["TCOM"]);
     if (!composerFrame.isEmpty()) {
-        pTrackMetadata->setComposer(toQStringFirst(composerFrame));
+        pTrackMetadata->setComposer(toQStringFirstNotEmpty(composerFrame));
     }
 
     const TagLib::ID3v2::FrameList groupingFrame(tag.frameListMap()["TIT1"]);
     if (!groupingFrame.isEmpty()) {
-        pTrackMetadata->setGrouping(toQStringFirst(groupingFrame));
+        pTrackMetadata->setGrouping(toQStringFirstNotEmpty(groupingFrame));
     }
 
     // ID3v2.4.0: TDRC replaces TYER + TDAT
     const QString recordingTime(
-            toQStringFirst(tag.frameListMap()["TDRC"]));
+            toQStringFirstNotEmpty(tag.frameListMap()["TDRC"]));
     if ((4 <= tag.header()->majorVersion()) && !recordingTime.isEmpty()) {
             pTrackMetadata->setYear(recordingTime);
     } else {
         // Fallback to TYER + TDAT
         const QString recordingYear(
-                toQStringFirst(tag.frameListMap()["TYER"]).trimmed());
+                toQStringFirstNotEmpty(tag.frameListMap()["TYER"]).trimmed());
         QString year(recordingYear);
         if (ID3V2_TYER_FORMAT.length() == recordingYear.length()) {
             const QString recordingDate(
-                    toQStringFirst(tag.frameListMap()["TDAT"]).trimmed());
+                    toQStringFirstNotEmpty(tag.frameListMap()["TDAT"]).trimmed());
             if (ID3V2_TDAT_FORMAT.length() == recordingDate.length()) {
                 const QDate date(
                         QDate::fromString(
@@ -521,17 +552,17 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
 
     const TagLib::ID3v2::FrameList bpmFrame(tag.frameListMap()["TBPM"]);
     if (!bpmFrame.isEmpty()) {
-        parseBpm(pTrackMetadata, toQStringFirst(bpmFrame));
+        parseBpm(pTrackMetadata, toQStringFirstNotEmpty(bpmFrame));
     }
 
     const TagLib::ID3v2::FrameList keyFrame(tag.frameListMap()["TKEY"]);
     if (!keyFrame.isEmpty()) {
-        pTrackMetadata->setKey(toQStringFirst(keyFrame));
+        pTrackMetadata->setKey(toQStringFirstNotEmpty(keyFrame));
     }
 
     // Only read track gain (not album gain)
     TagLib::ID3v2::UserTextIdentificationFrame* pReplayGainFrame =
-            findUserTextIdentificationFrame(tag, "REPLAYGAIN_TRACK_GAIN");
+            findFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_TRACK_GAIN");
     if (pReplayGainFrame && (2 <= pReplayGainFrame->fieldList().size())) {
         // The value is stored in the 2nd field
         parseReplayGain(pTrackMetadata,
@@ -593,57 +624,57 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
     if (pTrackMetadata->getComment().isEmpty()
             && tag.fieldListMap().contains("COMMENT")) {
         pTrackMetadata->setComment(
-                toQStringFirst(tag.fieldListMap()["COMMENT"]));
+                toQStringFirstNotEmpty(tag.fieldListMap()["COMMENT"]));
     }
 
     if (tag.fieldListMap().contains("ALBUMARTIST")) {
         pTrackMetadata->setAlbumArtist(
-                toQStringFirst(tag.fieldListMap()["ALBUMARTIST"]));
+                toQStringFirstNotEmpty(tag.fieldListMap()["ALBUMARTIST"]));
     }
     if (pTrackMetadata->getAlbumArtist().isEmpty()
             && tag.fieldListMap().contains("ALBUM_ARTIST")) {
         // try alternative field name
         pTrackMetadata->setAlbumArtist(
-                toQStringFirst(tag.fieldListMap()["ALBUM_ARTIST"]));
+                toQStringFirstNotEmpty(tag.fieldListMap()["ALBUM_ARTIST"]));
     }
     if (pTrackMetadata->getAlbumArtist().isEmpty()
             && tag.fieldListMap().contains("ALBUM ARTIST")) {
         // try alternative field name
         pTrackMetadata->setAlbumArtist(
-                toQStringFirst(tag.fieldListMap()["ALBUM ARTIST"]));
+                toQStringFirstNotEmpty(tag.fieldListMap()["ALBUM ARTIST"]));
     }
 
     if (tag.fieldListMap().contains("COMPOSER")) {
         pTrackMetadata->setComposer(
-                toQStringFirst(tag.fieldListMap()["COMPOSER"]));
+                toQStringFirstNotEmpty(tag.fieldListMap()["COMPOSER"]));
     }
 
     if (tag.fieldListMap().contains("GROUPING")) {
         pTrackMetadata->setGrouping(
-                toQStringFirst(tag.fieldListMap()["GROUPING"]));
+                toQStringFirstNotEmpty(tag.fieldListMap()["GROUPING"]));
     }
 
     // The release date formatted according to ISO 8601. Might
     // be followed by a space character and arbitrary text.
     // http://age.hobba.nl/audio/mirroredpages/ogg-tagging.html
     if (tag.fieldListMap().contains("DATE")) {
-        pTrackMetadata->setYear(toQStringFirst(tag.fieldListMap()["DATE"]));
+        pTrackMetadata->setYear(toQStringFirstNotEmpty(tag.fieldListMap()["DATE"]));
     }
 
     // Some tags use "BPM" so check for that.
     if (tag.fieldListMap().contains("BPM")) {
-        parseBpm(pTrackMetadata, toQStringFirst(tag.fieldListMap()["BPM"]));
+        parseBpm(pTrackMetadata, toQStringFirstNotEmpty(tag.fieldListMap()["BPM"]));
     }
 
     // Give preference to the "TEMPO" tag which seems to be more standard
     if (tag.fieldListMap().contains("TEMPO")) {
-        parseBpm(pTrackMetadata, toQStringFirst(tag.fieldListMap()["TEMPO"]));
+        parseBpm(pTrackMetadata, toQStringFirstNotEmpty(tag.fieldListMap()["TEMPO"]));
     }
 
     // Only read track gain (not album gain)
     if (tag.fieldListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
         parseReplayGain(pTrackMetadata,
-                toQStringFirst(tag.fieldListMap()["REPLAYGAIN_TRACK_GAIN"]));
+                toQStringFirstNotEmpty(tag.fieldListMap()["REPLAYGAIN_TRACK_GAIN"]));
     }
 
     /*
@@ -655,12 +686,12 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
      * or a "KEY" vorbis comment.
      */
     if (tag.fieldListMap().contains("KEY")) {
-        pTrackMetadata->setKey(toQStringFirst(tag.fieldListMap()["KEY"]));
+        pTrackMetadata->setKey(toQStringFirstNotEmpty(tag.fieldListMap()["KEY"]));
     }
     if (tag.fieldListMap().contains("INITIALKEY")) {
         // This is the preferred field for storing the musical key.
         pTrackMetadata->setKey(
-                toQStringFirst(tag.fieldListMap()["INITIALKEY"]));
+                toQStringFirstNotEmpty(tag.fieldListMap()["INITIALKEY"]));
     }
 }
 
@@ -674,24 +705,24 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
     // Get Album Artist
     if (getItemListMap(tag).contains("aART")) {
         pTrackMetadata->setAlbumArtist(
-                toQStringFirst(getItemListMap(tag)["aART"]));
+                toQStringFirstNotEmpty(getItemListMap(tag)["aART"]));
     }
 
     // Get Composer
     if (getItemListMap(tag).contains("\251wrt")) {
         pTrackMetadata->setComposer(
-                toQStringFirst(getItemListMap(tag)["\251wrt"]));
+                toQStringFirstNotEmpty(getItemListMap(tag)["\251wrt"]));
     }
 
     // Get Grouping
     if (getItemListMap(tag).contains("\251grp")) {
         pTrackMetadata->setGrouping(
-                toQStringFirst(getItemListMap(tag)["\251grp"]));
+                toQStringFirstNotEmpty(getItemListMap(tag)["\251grp"]));
     }
 
     // Get date/year as string
     if (getItemListMap(tag).contains("\251day")) {
-        pTrackMetadata->setYear(toQStringFirst(getItemListMap(tag)["\251day"]));
+        pTrackMetadata->setYear(toQStringFirstNotEmpty(getItemListMap(tag)["\251day"]));
     }
 
     // Get BPM
@@ -713,26 +744,26 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
         // BPM value that might have been read before is
         // overwritten.
         parseBpm(pTrackMetadata,
-                toQStringFirst(getItemListMap(tag)["----:com.apple.iTunes:BPM"]));
+                toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:BPM"]));
     }
 
     // Only read track gain (not album gain)
     if (getItemListMap(tag).contains(
             "----:com.apple.iTunes:replaygain_track_gain")) {
         parseReplayGain(pTrackMetadata,
-                toQStringFirst(getItemListMap(tag)["----:com.apple.iTunes:replaygain_track_gain"]));
+                toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:replaygain_track_gain"]));
     }
 
     // Read musical key (conforms to Rapid Evolution)
     if (getItemListMap(tag).contains("----:com.apple.iTunes:KEY")) {
         pTrackMetadata->setKey(
-                toQStringFirst(getItemListMap(tag)["----:com.apple.iTunes:KEY"]));
+                toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:KEY"]));
     }
     // Read musical key (conforms to MixedInKey, Serato, Traktor)
     if (getItemListMap(tag).contains("----:com.apple.iTunes:initialkey")) {
         // This is the preferred field for storing the musical key!
         pTrackMetadata->setKey(
-                toQStringFirst(getItemListMap(tag)["----:com.apple.iTunes:initialkey"]));
+                toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:initialkey"]));
     }
 }
 
@@ -792,7 +823,7 @@ bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     const QString replayGain(
             TrackMetadata::formatReplayGain(trackMetadata.getReplayGain()));
     writeID3v2UserTextIdentificationFrame(
-            pTag, "REPLAYGAIN_TRACK_GAIN", replayGain, true);
+            pTag, replayGain, "REPLAYGAIN_TRACK_GAIN", true);
 
     return true;
 }
