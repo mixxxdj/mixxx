@@ -220,6 +220,13 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
         }
         return now;
     }
+#elif defined(__APPLE__)
+    // clock_gettime is not implemented on OSX
+    // gettimeofday can go backward due to NTP adjusting
+    // this will work here, because we take the stream start time for reference
+    struct timeval mtv;
+    gettimeofday(&mtv, NULL);
+    return (qint64)(mtv.tv_sec) * 1000000 + mtv.tv_usec;
 #else
     // CLOCK_MONOTONIC is NTP adjusted
     struct timespec ts;
