@@ -58,7 +58,7 @@ void BaseExternalLibraryFeature::slotAddToAutoDJTop() {
 void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
     // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     QString playlist;
     appendTrackIdsFromRightClickIndex(&trackIds, &playlist);
     if (trackIds.isEmpty()) {
@@ -72,7 +72,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
     // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     QString playlist;
     appendTrackIdsFromRightClickIndex(&trackIds, &playlist);
     if (trackIds.isEmpty()) {
@@ -96,7 +96,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
 }
 
 // This is a common function for all external Librarys copied to Mixxx DB
-void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist) {
+void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
@@ -129,8 +129,8 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* t
                 continue;
             }
 
-            int trackId = track->getId();
-            if (trackId == -1) {
+            TrackId trackId(track->getId());
+            if (!trackId.isValid()) {
                 continue;
             }
 

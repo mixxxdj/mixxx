@@ -453,7 +453,7 @@ BeatTracker::beatTrackNew()
         --nonZeroCount;
     }
 
-    std::cerr << "Note: nonZeroCount was " << m_d->dfOutput.size() << ", is now " << nonZeroCount << std::endl;
+    //std::cerr << "Note: nonZeroCount was " << m_d->dfOutput.size() << ", is now " << nonZeroCount << std::endl;
 
     for (size_t i = 2; i < nonZeroCount; ++i) { // discard first two elts
         df.push_back(m_d->dfOutput[i]);
