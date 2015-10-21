@@ -31,7 +31,7 @@ ReloopBeatpad.playlist = [];
 ReloopBeatpad.master = [];
 ReloopBeatpad.recording = [];
 
-//Global constants
+//Global constants/variables
 var ON = 0x7F,
     OFF = 0x00,
     DOWN = 0x7F,
@@ -40,19 +40,30 @@ var ON = 0x7F,
     LBtn = 0x90,
     RBtn = 0x91,
     MBtn = 0x94,
+    //Performance modes
     CUEMODE = 0,
     LOOPMODE = 1,
     FXMODE = 2,
+    //(4 "Sampler" modes)
     SAMPLERMODE = 3,
     SAMPLERBANKSTATUSMODE = 4,
     LOOPMODESTATUS = 5,
     FXRACKSELECTMODE = 6,
+    //loop kind : simple normal loop mode/Loop roll mode
     SIMPLE = 1,
-    ROLL = 2, //loop kind
+    ROLL = 2, 
     ControllerStatusSysex = [0xF0, 0x26, 0x2D, 0x65, 0x22, 0xF7],
     HardwareLight = false,
-    scriptpause = 5; //period (in ms) while the script wwill be paused when sending messages to the controller in order to avoid too much data flow at once in the same time
-
+    //scriptpause :
+    //period (in ms) while the script will be paused when sending messages 
+    //to the controller in order to avoid too much data flow at once in the same time
+    scriptpause = 5,
+    //TrackEndWarning :
+    //By default, when you reach the end of the track, the jog wheel are flashing.
+    //set this variable to false to disable this behaviour.
+    //(idea by be.ing, member of the Mixxx team)
+    TrackEndWarning=true;
+    
 //Utilities
 function pauseScript(ms) {
     startDate = new Date();
@@ -73,15 +84,6 @@ Math.sign = Math.sign || function(x) {
 Number.prototype.mod = function(n) {
     return ((this % n) + n) % n;
 }; //computes the mathematical modulus
-
-//Objects
-//Arrays
-/*
-ReloopBeatpad.decks = [];
-ReloopBeatpad.playlist = [];
-ReloopBeatpad.master = [];
-ReloopBeatpad.recording = [];
-*/
 
 //Constants
 ReloopBeatpad.MIDI = {
@@ -141,6 +143,8 @@ ReloopBeatpad.PadColor = {
     lilac: 0x07,
     orange: 0x08
 };
+
+
 
 
 //Initialise and shutdown stuff.
@@ -369,7 +373,12 @@ ReloopBeatpad.deck = function(deckNum) {
             engine.trigger("[Deere]", "sampler_bank_" + i);
         }
     };
-
+    
+    //Hydra buttons (Load, sync and shift) : 
+    //Buttons that behave differently wether you do a long press, a quick press or a double quick press
+    //three flavors you can put in your own mappings.
+    
+    //Part that handles the behaviour of the Load button : long press (>500 ms)/short press
     //Last Time the LOAD Btn was pressed before released
     this.LOADlongpress = false;
     this.LOADtimer = 0;
@@ -395,6 +404,7 @@ ReloopBeatpad.deck = function(deckNum) {
         }
     };
 
+    //Part that handles the behaviour of the Sync button : long press/simple short press/double quick press
     //Last Time the SYNC Btn was pressed before released
     this.SYNCcount = 0;
     this.SYNCtimer = 0;
@@ -438,6 +448,25 @@ ReloopBeatpad.deck = function(deckNum) {
     this.SYNCcountTozero = function() {
         this.SYNCcount = 0;
         this.SYNCtimer = 0;
+    };
+    
+    //Part that handles the behaviour of the shift button : simple short press/double quick press
+    //Last Time the SYNC Btn was pressed before released
+    this.SHIFTcount = 0;
+    this.SHIFTtimer = 0;
+
+    this.SHIFTup = function() {
+        this.SHIFTcount = this.SHIFTcount + 1;
+        this.SHIFTtimer = engine.beginTimer(200, "ReloopBeatpad.decks.D" + this.deckNum + ".SHIFTcountTozero()", true);
+        if (this.SHIFTcount > 1) {
+            //Double press : toggle jog wheel flashing when end of the track
+            TrackEndWarning=!TrackEndWarning;
+        }
+    };
+
+    this.SHIFTcountTozero = function() {
+        this.SHIFTcount = 0;
+        this.SHIFTtimer = 0;
     };
 
     this.iCUTtimer = 0;
@@ -1456,7 +1485,11 @@ ReloopBeatpad.WheelBend = function(channel, control, value, status, group) {
 ReloopBeatpad.ShiftBtn = function(channel, control, value, status, group) {
     var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
     deck.Shifted = (value == DOWN);
-    deck.trigger();
+    //trigger lights in different mode if the deck is shifted or not
+                    //examples : SYNC/SET/JUMP and Pause/play buttons have a second function
+    if (value==UP) {
+        deck.SHIFTup();
+    }
 };
 
 ReloopBeatpad.brake = function(channel, control, value, status, group) {
@@ -2040,6 +2073,9 @@ ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
         if (timeremaining <= 0) {
             trackwarning = 3;
         }
+        if (!TrackEndWarning) {
+            trackwarning = 0;
+        }
         switch (trackwarning) {
             case 0:
                 var isLoopActive = engine.getValue(group, "loop_enabled");
@@ -2098,7 +2134,7 @@ ReloopBeatpad.OnBeatActive = function(value, group, control) {
     if (!(deck.JogScratchStatus || deck.JogSeekStatus)) {
         if (value == 1) {
             var timeremaining = engine.getValue(group, "duration") * (1 - engine.getValue(group, "play_position") );
-            if (timeremaining <= 30) { //flashing end of track
+            if ((timeremaining <= 30) && (TrackEndWarning)) { //flashing end of track
                 engine.trigger(group, "playposition");
             } else {
                 deck.status.RimRed.light.onOff(deck.beatpos * 3 + 1);
