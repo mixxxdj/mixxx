@@ -8,11 +8,13 @@
 #include <QAction>
 #include <QList>
 #include <QPair>
+#include <QSet>
 #include <QString>
 
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "trackinfoobject.h"
 
 class WLibrary;
 class MixxxKeyboard;
@@ -36,7 +38,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
   signals:
     void showPage(const QUrl& page);
-    void analyzeTracks(QList<int>);
+    void analyzeTracks(QList<TrackId>);
 
   public slots:
     virtual void activate();
@@ -91,10 +93,16 @@ class BasePlaylistFeature : public LibraryFeature {
     QList<QPair<int, QString> > m_playlistList;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
+    TrackPointer m_pSelectedTrack;
+
+  private slots:
+    void slotTrackSelected(TrackPointer pTrack);
+    void slotResetSelectedTrack();
 
   private:
     virtual QString getRootViewHtml() const = 0;
 
+    QSet<int> m_playlistsSelectedTrackIsIn;
     QString m_rootViewName;
 };
 

@@ -74,10 +74,10 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
-    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
-    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<int>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
+    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
+    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     addFeature(m_pAnalysisFeature);
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
@@ -351,11 +351,11 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
     QDir directory(newDir);
     Sandbox::createSecurityToken(directory);
 
-    QSet<int> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir, newDir);
+    QSet<TrackId> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir, newDir);
 
     // Clear cache to that all TIO with the old dir information get updated
     m_pTrackCollection->getTrackDAO().clearCache();
-    m_pTrackCollection->getTrackDAO().databaseTracksMoved(movedIds, QSet<int>());
+    m_pTrackCollection->getTrackDAO().databaseTracksMoved(movedIds, QSet<TrackId>());
     // also update the config file if necessary so that downgrading is still
     // possible
     QString conDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);

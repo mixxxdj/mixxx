@@ -71,10 +71,8 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     // First set all sections to be hidden and update logical indexes.
     for (int li = 0; li < headers->count(); ++li) {
         headers->setSectionHidden(li, true);
-        // TODO(owilliams): replace with auto once we're building on c++11.
-        state_map::iterator it = map.find(
-                headers->model()->headerData(
-                        li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString());
+        auto it = map.find(headers->model()->headerData(
+            li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString());
         if (it != map.end()) {
             it.value()->set_logical_index(li);
         }
