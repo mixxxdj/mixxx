@@ -610,8 +610,9 @@ HerculesMP3e2.sync = function(midino, control, value, status, group) {
 
     var deck = HerculesMP3e2.switchDeck(group);
 
-    if (superButtonHold == 2 && value) {
-        engine.setValue(deck, "filterMidKill", !(engine.getValue(deck, "filterMidKill")));
+    if (superButtonHold == 2) {
+        if (value)
+            engine.setValue(deck, "filterMidKill", !(engine.getValue(deck, "filterMidKill")));
     } else if (superButtonHold == 1) {
         engine.setValue(deck, "beats_translate_curpos", value ? 1 : 0);
     } else {
