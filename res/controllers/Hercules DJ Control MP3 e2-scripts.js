@@ -49,6 +49,8 @@ var scratchMode = 0;
 var scratchTimer = 0;
 var wheelMove = [0, 0, 0, 0];
 
+// HerculesMP3e2.controls is completely useless but I kept it here
+// to be used as a reference of MP3e2 MIDI controls
 /*HerculesMP3e2.controls = {
     "inputs": {
 	0x11: { "channel": 1, "name": "loadA", 		"type": "button" },
