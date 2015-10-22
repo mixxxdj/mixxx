@@ -51,7 +51,6 @@ class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDl
     void apply(const QString &);
 
   private:
-    void setDialogEnabled(bool enabled);
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObjectSlave* m_pShoutcastEnabled;
 };

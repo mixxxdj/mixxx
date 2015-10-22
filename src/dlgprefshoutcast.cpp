@@ -219,9 +219,9 @@ void DlgPrefShoutcast::slotUpdate() {
     // Don't let user modify information if
     // sending is enabled.
     if(m_pShoutcastEnabled->toBool()) {
-        setDialogEnabled(false);
+        this->setEnabled(false);
     } else {
-        setDialogEnabled(true);
+        this->setEnabled(true);
     }
 }
 
@@ -232,9 +232,9 @@ void DlgPrefShoutcast::slotApply()
     // Don't let user modify information if
     // sending is enabled.
     if(m_pShoutcastEnabled->toBool()) {
-        setDialogEnabled(false);
+        this->setEnabled(false);
     } else {
-        setDialogEnabled(true);
+        this->setEnabled(true);
     }
 
     // Combo boxes, make sure to load their data not their display strings.
@@ -295,33 +295,10 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_format"), ConfigValue(metadata_format->text()));
 }
 
-void DlgPrefShoutcast::setDialogEnabled(bool enabled) {
-        comboBoxServerType->setEnabled(enabled);
-        mountpoint->setEnabled(enabled);
-        host->setEnabled(enabled);
-        port->setEnabled(enabled);
-        login->setEnabled(enabled);
-        password->setEnabled(enabled);
-        stream_name->setEnabled(enabled);
-        stream_website->setEnabled(enabled);
-        stream_genre->setEnabled(enabled);
-        stream_desc->setEnabled(enabled);
-        stream_public->setEnabled(enabled);
-        ogg_dynamicupdate->setEnabled(enabled);
-        comboBoxEncodingBitrate->setEnabled(enabled);
-        comboBoxEncodingFormat->setEnabled(enabled);
-        enableUtf8Metadata->setEnabled(enabled);
-        comboBoxEncodingChannels->setEnabled(enabled);
-        enableCustomMetadata->setEnabled(enabled);
-        custom_artist->setEnabled(enabled);
-        custom_title->setEnabled(enabled);
-        metadata_format->setEnabled(enabled);
-}
-
 void DlgPrefShoutcast::shoutcastEnabledChanged(double value) {
     qDebug() << "DlgPrefShoutcast::shoutcastEnabledChanged()" << value;
     bool enabled = value == 1.0; // 0 and 2 are disabled
-    setDialogEnabled(!enabled);
+    this->setEnabled(!enabled);
     enableLiveBroadcasting->setChecked(enabled);
 
 }
