@@ -1,29 +1,40 @@
-/**
- * Reloop Beeatpad controller script v1.2.0 for Mixxx 1.12
- * Copyright (C) 2015  Chloé AVRILLON
+////////////////////////////////////////////////////////////////////////
+// JSHint configuration                                               //
+////////////////////////////////////////////////////////////////////////
+/* global engine                                                      */
+/* global script                                                      */
+/* global print                                                       */
+/* global midi                                                        */
+////////////////////////////////////////////////////////////////////////
+/***********************************************************************
+ * Reloop Beatpad controller script
+ * Author: Chloé AVRILLON (DJ Chloé)
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * Key features
+ * ------------
+ * - Light and Jog wheel light handling
+ *-  shift+wheelturn in "Jog Scratch" mode do automatic cut of the fader while scratching
+ * - press/double press/long press handling
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * References
+ * ---------------
+ * Wiki/manual : http://www.mixxx.org/wiki/doku.php/reloop_beatpad
+ * support forum : http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=7581
+ * e-mail : chloe.avrillon@gmail.com
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- **/
-//Written by Chloé AVRILLON (DJ Chloé). Thanks to authors of other scripts
-//chloe.avrillon@gmail.com
-//and particularly to authors of Numark Dj2Go, KANE QuNeo, Vestax-VCI-400
-// various new things not seen in other mapings like :
-// - shift+wheelturn in "Jog Scratch" mode do automatic cut of the fader while scratching
-function ReloopBeatpad () {}
+ * Thanks
+ * ----------------
+ * Thanks to authors of other scripts and particularly to authors of
+ * Numark Dj2Go, KANE QuNeo, Vestax-VCI-400
+ *
+ * Revision history
+ * ----------------
+ * 2015-10-22 - Initial revision for Mixxx 1.12.0
+ * This is a neverending story...
+ ***********************************************************************/
+function ReloopBeatpad() {}
 
-ReloopBeatpad();  //Very important ! Initializes the declared function, yep
+new ReloopBeatpad(); //Very important ! Initializes the declared function, yep
 
 //Array of Objects can be created
 ReloopBeatpad.decks = [];
@@ -51,19 +62,19 @@ var ON = 0x7F,
     FXRACKSELECTMODE = 6,
     //loop kind : simple normal loop mode/Loop roll mode
     SIMPLE = 1,
-    ROLL = 2, 
+    ROLL = 2,
     ControllerStatusSysex = [0xF0, 0x26, 0x2D, 0x65, 0x22, 0xF7],
     HardwareLight = false,
     //scriptpause :
-    //period (in ms) while the script will be paused when sending messages 
+    //period (in ms) while the script will be paused when sending messages
     //to the controller in order to avoid too much data flow at once in the same time
     scriptpause = 5,
     //TrackEndWarning :
     //By default, when you reach the end of the track, the jog wheel are flashing.
     //set this variable to false to disable this behaviour.
     //(idea by be.ing, member of the Mixxx team)
-    TrackEndWarning=true;
-    
+    TrackEndWarning = true;
+
 //Utilities
 function pauseScript(ms) {
     startDate = new Date();
@@ -108,7 +119,7 @@ ReloopBeatpad.MIDI = {
     FXPad: 0x54, //(4 Buttons 0x54~0x57 (+0--+4)
     SamplerPad: 0x58, //(4 Sampler Buttons 0x58~0x5B (+0--+4)  (RGB color leds)
     Shift: 0x5C,
-    Sync: 0x5D,
+    mSync: 0x5D,
     Set: 0x5E, //"Cue Play" in the Beatpad documentation
     Jump: 0x5F, //"MainCue" in the Beatpad documentation
     Play: 0x60,
@@ -172,6 +183,7 @@ ReloopBeatpad.shutdown = function() {
     for (i = 0; i < ReloopBeatpad.timers.length; i++) {
         engine.stopTimer(ReloopBeatpad.timers[i]);
     }
+
     // Extinguish all LEDs
     ReloopBeatpad.TurnLEDsOff();
     print("Reloop Beatpad: " + ReloopBeatpad.id + " shut down.");
@@ -350,20 +362,17 @@ ReloopBeatpad.deck = function(deckNum) {
     this.looppadstatus = 0;
     this.InstantFXBtnDown = false;
 
-    this.trigger = function() {
+    this.triggershift = function() {
         if (this.Shifted) {
             this.status.brake.light.onOff(OFF);
             this.control.censor.light.onOff(OFF);
         }
         engine.trigger(this.group, "track_samples");
         engine.trigger(this.group, "play_indicator");
-        engine.trigger(this.group, "beat_active");
         engine.trigger(this.group, "cue_point");
         engine.trigger(this.group, "sync_enabled");
         engine.trigger(this.group, "keylock");
-        engine.trigger(this.group, "VuMeter");
-        engine.trigger(this.group, "bpm");
-        engine.trigger(this.group, "duration");
+        engine.trigger(this.group, "pfl");
 
         for (i = 1; i <= 4; i++) {
             engine.trigger(this.group, "hotcue_" + i + "_position");
@@ -373,34 +382,37 @@ ReloopBeatpad.deck = function(deckNum) {
             engine.trigger("[Deere]", "sampler_bank_" + i);
         }
     };
-    
-    //Hydra buttons (Load, sync and shift) : 
+
+    //Hydra buttons (Load, sync and shift) :
     //Buttons that behave differently wether you do a long press, a quick press or a double quick press
     //three flavors you can put in your own mappings.
-    
+
     //Part that handles the behaviour of the Load button : long press (>500 ms)/short press
     //Last Time the LOAD Btn was pressed before released
     this.LOADlongpress = false;
     this.LOADtimer = 0;
 
-    this.LOADdolongpress = function() {
+    this.LOADassertlongpress = function() {
         this.LOADlongpress = true;
         this.LOADtimer = 0;
     };
 
     this.LOADdown = function() {
         this.LOADlongpress = false;
-        this.LOADtimer = engine.beginTimer(500, "ReloopBeatpad.decks.D" + this.deckNum + ".LOADdolongpress()", true);
+        this.LOADtimer = engine.beginTimer(500, "ReloopBeatpad.decks.D" + this.deckNum + ".LOADassertlongpress()", true);
     };
 
     this.LOADup = function() {
-        engine.stopTimer(this.LOADtimer);
+        if (this.LOADtimer !== 0) {
+            engine.stopTimer(this.LOADtimer);
+            this.LOADtimer = 0;
+        }
         if (this.LOADlongpress) {
             engine.setValue(this.group, 'eject', true);
-            midi.sendShortMsg(0x8F + this.deckNum, ReloopBeatpad.MIDI.Load, OFF);
+            this.control.load.light.onOff(OFF);
         } else {
             engine.setValue(this.group, 'LoadSelectedTrack', true);
-            midi.sendShortMsg(0x8F + this.deckNum, ReloopBeatpad.MIDI.Load, ON);
+            this.control.load.light.onOff(ON);
         }
     };
 
@@ -411,27 +423,49 @@ ReloopBeatpad.deck = function(deckNum) {
     this.SYNClongpress = false;
     this.SYNClongpresstimer = 0;
 
-    this.SYNCdolongpress = function() {
+    this.SYNCassertlongpress = function() {
         this.SYNClongpress = true;
-        this.SYNClongpresstimer = 0;
         this.control.sync.light.flashOn(100, ON, 100, 10);
+        //let's take action of the long press
+        this.SYNCdecide();
     };
 
+    //Button pressed
     this.SYNCdown = function() {
-        this.SYNClongpress = false;
         this.control.sync.light.onOff(ON);
-        this.SYNClongpresstimer = engine.beginTimer(500, "ReloopBeatpad.decks.D" + this.deckNum + ".SYNCdolongpress()", true);
+        if (this.SYNCtimer === 0) { //first press (inits)
+            this.SYNClongpress = false;
+            this.SYNClongpresstimer = engine.beginTimer(500, "ReloopBeatpad.decks.D" + this.deckNum + ".SYNCassertlongpress()", true);
+            this.SYNCtimer = engine.beginTimer(200, "ReloopBeatpad.decks.D" + this.deckNum + ".SYNCdecide()", true);
+            this.SYNCcount = 1;
+        } else { //2nd press (before SYNCtimer's out), stop timers and take action immediatly
+            engine.stopTimer(this.SYNClongpresstimer);
+            engine.stopTimer(this.SYNCtimer);
+            this.SYNCcount = 2;
+            this.SYNCdecide();
+        }
     };
 
-    this.SYNCup = function() {
-        engine.stopTimer(this.SYNClongpresstimer);
-        this.control.sync.light.onOff(OFF);
+    //Button released
+    this.SYNCup = function() { //button release , stop long timer, keep long timer
+        if (this.SYNClongpresstimer !== 0) {
+            engine.stopTimer(this.SYNClongpresstimer);
+        }
+    };
+
+    //Take actions
+    this.SYNCdecide = function() {
+        if (this.SYNClongpresstimer !== 0) {
+            engine.stopTimer(this.SYNClongpresstimer);
+        }
+        this.SYNClongpresstimer = 0;
+        this.SYNCtimer = 0;
+
+        this.control.sync.light.onOff(OFF); //keep
         if (this.SYNClongpress) {
             engine.setValue(this.group, 'sync_enabled', true);
         } else {
-            this.SYNCcount = this.SYNCcount + 1;
-            this.SYNCtimer = engine.beginTimer(200, "ReloopBeatpad.decks.D" + this.deckNum + ".SYNCcountTozero()", true);
-            if (this.SYNCcount > 1) {
+            if (this.SYNCcount == 2) {
                 //Double press : Sync and play
                 engine.setValue(this.group, 'sync_enabled', false);
                 engine.setValue(this.group, 'play', true);
@@ -443,30 +477,36 @@ ReloopBeatpad.deck = function(deckNum) {
 
             }
         }
-    };
-
-    this.SYNCcountTozero = function() {
         this.SYNCcount = 0;
-        this.SYNCtimer = 0;
     };
-    
-    //Part that handles the behaviour of the shift button : simple short press/double quick press
-    //Last Time the SYNC Btn was pressed before released
-    this.SHIFTcount = 0;
-    this.SHIFTtimer = 0;
 
-    this.SHIFTup = function() {
-        this.SHIFTcount = this.SHIFTcount + 1;
-        this.SHIFTtimer = engine.beginTimer(200, "ReloopBeatpad.decks.D" + this.deckNum + ".SHIFTcountTozero()", true);
-        if (this.SHIFTcount > 1) {
-            //Double press : toggle jog wheel flashing when end of the track
-            TrackEndWarning=!TrackEndWarning;
+    //Part that handles the behaviour of the pfl button (in shift mode) : simple short press/double quick press
+    this.PFLcount = 0;
+    this.PFLtimer = 0;
+
+    //Button pressed
+    this.PFLDown = function() {
+        if (this.PFLtimer === 0) { //first press
+            this.PFLtimer = engine.beginTimer(200, "ReloopBeatpad.decks.D" + this.deckNum + ".PFLdecide()", true);
+            this.PFLcount = 1;
+        } else { //2nd press (before timer's out)
+            engine.stopTimer(this.PFLtimer);
+            this.PFLcount = 2;
+            this.SYNCdecide();
         }
     };
 
-    this.SHIFTcountTozero = function() {
-        this.SHIFTcount = 0;
-        this.SHIFTtimer = 0;
+    //Take action
+    this.PFLdecide = function() {
+        this.PFLtimer = 0;
+        if (this.PFLcount == 2) {
+            //Double press : toggle quantize
+            this.control.quantize.onOff(!this.control.quantize.checkOn());
+        } else {
+            //Single press : toggle slip mode
+            this.control.slip.onOff(!this.control.slip.checkOn());
+        }
+        this.PFLcount = 0;
     };
 
     this.iCUTtimer = 0;
@@ -683,27 +723,32 @@ ReloopBeatpad.control = function(key, control, midino, group) {
 
 //Has on/off and flashing modes for all button lights. Light objects are only created for buttons that can
 //actually illuminate.
-ReloopBeatpad.light = function(group, control, midino, deckID, controlID) {
+ReloopBeatpad.light = function(control, midino, deckID, controlID, kind) {
     this.control = control;
     this.midino = midino;
-    this.objStr = "ReloopBeatpad.decks." + deckID + ".control." + controlID + ".light";
+    this.objStr = "ReloopBeatpad.decks." + deckID + "." + kind + "." + controlID + ".light";
     this.lit = 0;
     this.flashTimer = 0;
     this.flashTimer2 = 0;
     this.flashOnceTimer = 0;
     this.flashDuration = 0;
     this.flashOnceDuration = 0;
+
+    //public : light on/off
     this.onOff = function(value) {
+        //stop pending flashing effects now
         if (this.flashTimer !== 0) {
             engine.stopTimer(this.flashTimer);
             this.flashTimer = 0;
             this.flashDuration = 0;
         }
+
         if (this.flashTimer2 !== 0) {
             engine.stopTimer(this.flashTimer2);
             this.flashTimer2 = 0;
             this.flashDuration = 0;
         }
+
         if (this.flashOnceTimer !== 0) {
             engine.stopTimer(this.flashOnceTimer);
             this.flashOnceTimer = 0;
@@ -713,21 +758,88 @@ ReloopBeatpad.light = function(group, control, midino, deckID, controlID) {
         pauseScript(scriptpause);
         this.lit = value;
     };
-    this.flashOnceOn = function(num_ms, value, relight, valueoff) {
-        if (this.flashOnceTimer !== 0) {
-            engine.stopTimer(this.flashOnceTimer);
-            this.flashOnceTimer = 0;
-            this.flashOnceDuration = 0;
+
+    //public : make a light flashing
+    this.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relight, valueoff) {
+        //stop pending timers
+        this.flashOff();
+
+        //init
+        this.flashDuration = num_ms_on;
+
+        //1st flash
+        //This is because the permanent timer below takes num_ms_on milisecs before first flash.
+        this.flashOnceOn(num_ms_on, value);
+
+        if (flashCount !== 1) {
+            //flashcount =0 means permanent flash,
+            //flashcount>0 , means temporary flash, first flash already done,
+            //so we don't need this part  if flashcount=1
+            //permanent timer
+            this.flashTimer = engine.beginTimer((num_ms_on + num_ms_off), this.objStr + ".flashOnceOn(" + num_ms_on + "," + value + ",false," + valueoff + ")");
         }
+        if (flashCount > 1) {
+            //flashcount>0 , means temporary flash, first flash already done,
+            //so we don't need this part  if flashcount=1
+            //temporary timer. The end of this timer stops the permanent flashing
+            this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, this.objStr + ".Stopflash(" + relight + ")", true);
+        }
+    };
+
+    //public
+    this.get_flashDuration = function() {
+        return this.flashDuration;
+    };
+
+    //private : relight=true : restore light state before it was flashing
+    //this is a call back function (called in flashon() )
+    this.flashOff = function(relight) {
+        //stop permanent timer if any
+        if (this.flashTimer !== 0) {
+            engine.stopTimer(this.flashTimer);
+            //reset flash variables to 0
+            this.flashTimer = 0;
+        }
+        if (this.flashTimer2 !== 0) {
+            engine.stopTimer(this.flashTimer2);
+            //reset flash variables to 0
+            this.flashTimer2 = 0;
+        }
+        this.flashDuration = 0;
+        if (relight) {
+            this.onOff(this.lit);
+        } else {
+            this.onOff(OFF);
+        }
+    };
+
+    //private : relight=true : restore light state before it was flashing
+    //this is a call back function (called in flashon() )
+    this.Stopflash = function(relight) {
+        //stop permanent timer
+        if (this.flashTimer !== 0) {
+            engine.stopTimer(this.flashTimer);
+        }
+        //reset flash variables to 0
+        this.flashTimer = 0;
+        this.flashTimer2 = 0;
+        this.flashDuration = 0;
+        this.flashOff(relight);
+    };
+
+    //private : call back function (called in flashon() )
+    this.flashOnceOn = function(num_ms, value, relight, valueoff) {
         midi.sendShortMsg(this.control, this.midino, value);
         pauseScript(scriptpause);
         this.flashOnceDuration = num_ms;
         this.flashOnceTimer = engine.beginTimer(num_ms - scriptpause, this.objStr + ".flashOnceOff(" + relight + "," + valueoff + ")", true);
     };
+
+    //private :call back function (called in flashOnceOn() )
     this.flashOnceOff = function(relight, valueoff) {
-        engine.stopTimer(this.flashOnceTimer);
         this.flashOnceTimer = 0;
         this.flashOnceDuration = 0;
+
         if (relight) {
             midi.sendShortMsg(this.control, this.midino, this.lit);
             pauseScript(scriptpause);
@@ -736,30 +848,6 @@ ReloopBeatpad.light = function(group, control, midino, deckID, controlID) {
             pauseScript(scriptpause);
             this.lit = OFF;
         }
-    };
-
-    this.flashOff = function(relight) {
-        if (relight) {
-            this.onOff(this.lit);
-            pauseScript(scriptpause);
-        } else {
-            this.onOff(OFF);
-            pauseScript(scriptpause);
-        }
-    };
-    this.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relight, valueoff) {
-        this.flashOff();
-        this.flashDuration = num_ms_on;
-        this.flashOnceOn(num_ms_on, value); //This is because the timer take num_ms_on milisecs before first flash.
-        if (flashCount !== 1) {
-            this.flashTimer = engine.beginTimer((num_ms_on + num_ms_off), this.objStr + ".flashOnceOn(" + num_ms_on + "," + value + ",false," + valueoff + ")");
-        }
-        if (flashCount > 1) {
-            this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, this.objStr + ".flashOff(" + relight + ")", true);
-        }
-    };
-    this.get_flashDuration = function() {
-        return this.flashDuration;
     };
 };
 
@@ -778,83 +866,8 @@ ReloopBeatpad.status = function(control, midino) {
     };
 };
 
-ReloopBeatpad.statuslight = function(control, midino, deckID, controlID) {
-    this.control = control;
-    this.midino = midino;
-    this.objStr = "ReloopBeatpad.decks." + deckID + ".status." + controlID + ".light";
-    this.lit = 0;
-    this.flashTimer = 0;
-    this.flashTimer2 = 0;
-    this.flashOnceTimer = 0;
-    this.flashDuration = 0;
-    this.onOff = function(value) {
-        if (this.flashTimer !== 0) {
-            engine.stopTimer(this.flashTimer);
-            this.flashTimer = 0;
-            this.flashDuration = 0;
-        }
-        if (this.flashTimer2 !== 0) {
-            engine.stopTimer(this.flashTimer2);
-            this.flashTimer2 = 0;
-            this.flashDuration = 0;
-        }
-        if (this.flashOnceTimer !== 0) {
-            engine.stopTimer(this.flashOnceTimer);
-            this.flashOnceTimer = 0;
-            this.flashOnceDuration = 0;
-        }
-        midi.sendShortMsg(this.control, this.midino, value);
-        pauseScript(scriptpause);
-        this.lit = value;
-    };
-    this.flashOnceOn = function(num_ms, value, relight, valueoff) {
-        if (this.flashOnceTimer !== 0) {
-            engine.stopTimer(this.flashOnceTimer);
-            this.flashOnceTimer = 0;
-            this.flashOnceDuration = 0;
-        }
-        midi.sendShortMsg(this.control, this.midino, value);
-        pauseScript(scriptpause);
-        this.flashOnceDuration = num_ms;
-        this.flashOnceTimer = engine.beginTimer(num_ms - scriptpause, this.objStr + ".flashOnceOff(" + relight + "," + valueoff + ")", true);
-    };
-    this.flashOnceOff = function(relight, valueoff) {
-        engine.stopTimer(this.flashOnceTimer);
-        this.flashOnceTimer = 0;
-        this.flashOnceDuration = 0;
-        if (relight) {
-            midi.sendShortMsg(this.control, this.midino, this.lit);
-            pauseScript(scriptpause);
-        } else {
-            midi.sendShortMsg(this.control, this.midino, valueoff);
-            pauseScript(scriptpause);
-            this.lit = OFF;
-        }
-    };
 
-    this.flashOff = function(relight) {
-        if (relight) {
-            this.onOff(this.lit);
-        } else {
-            this.onOff(OFF);
-        }
-    };
-    this.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relight, valueoff) {
-        this.flashOff();
-        this.flashDuration = num_ms_on;
-        this.flashOnceOn(num_ms_on, value); //This is because the timer take num_ms_on milisecs before first flash.
-        if (flashCount !== 1) {
-            this.flashTimer = engine.beginTimer((num_ms_on + num_ms_off), this.objStr + ".flashOnceOn(" + num_ms_on + "," + value + ",false," + valueoff + ")");
-        }
-        if (flashCount > 1) {
-            this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, this.objStr + ".flashOff(" + relight + ")", true);
-        }
-    };
-    this.get_flashDuration = function() {
-        return this.flashDuration;
-    };
-};
-// Some explanation about this part wich control the lights (colors, flashing effect, and so forth) 
+// Some explanation about this part wich control the lights (colors, flashing effect, and so forth)
 //of the jog wheel.
 //It is alayered structure like layers in paint programs.
 //The lowest level (0) is the background and the highest is the foreground (show 6)
@@ -924,8 +937,8 @@ ReloopBeatpad.rgblight = function(control, deckID) {
 
     this.lit = [OFF, OFF, OFF, OFF];
     this.flashTimer = 0;
+    this.flashTimer2 = 0;
     this.flashOnceTimer = 0;
-    this.flashOnceTimer2 = 0;
     this.flashDuration = 0;
     this.updatecontroller = function() {
         //null="transparent"
@@ -955,38 +968,110 @@ ReloopBeatpad.rgblight = function(control, deckID) {
         }
     };
 
+    //public : light on/off
     this.onOff = function(showname, value) {
         if (this.flashTimer !== 0) {
             engine.stopTimer(this.flashTimer);
-            engine.stopTimer(this.flashTimer2);
             this.flashTimer = 0;
+            this.flashDuration = 0;
+            this.layers.show5.activate = false;
+            this.layers.show6.activate = false;
+        }
+
+        if (this.flashTimer2 !== 0) {
+            engine.stopTimer(this.flashTimer2);
             this.flashTimer2 = 0;
             this.flashDuration = 0;
             this.layers.show5.activate = false;
             this.layers.show6.activate = false;
         }
+
         if (this.flashOnceTimer !== 0) {
             engine.stopTimer(this.flashOnceTimer);
             this.flashOnceTimer = 0;
+            this.flashOnceDuration = 0;
             this.layers.show5.activate = false;
             this.layers.show6.activate = false;
         }
 
         this.activateshow(showname, (value) ? true : false);
     };
-    this.flashOnceOn = function(num_ms, relight) {
-        if (this.flashOnceTimer !== 0) {
-            engine.stopTimer(this.flashOnceTimer);
-            this.flashOnceTimer = 0;
-            this.flashOnceDuration = 0;
+
+    //public : make a rgb light flashing
+    this.flashOn = function(num_ms_on, value, num_ms_off, flashCount) {
+        //stop pending timers
+        this.flashOff();
+
+        //inits
+        this.layers.show5.activate = true;
+        this.flashDuration = num_ms_on;
+
+        //1st flash
+        //This is because the permanent timer below takes num_ms_on milisecs before first flash.
+        this.flashOnceOn(num_ms_on, true);
+
+        if (flashCount !== 1) {
+            //flashcount =0 means permanent flash,
+            //flashcount>0 , means temporary flash, first flash already done,
+            //so we don't need this part  if flashcount=1
+            //permanent timer
+            this.flashTimer = engine.beginTimer((num_ms_on + num_ms_off), this.objStr + ".flashOnceOn(" + num_ms_on + ",true)");
         }
+        if (flashCount > 1) {
+            //flashcount>0 , means temporary flash, first flash already done,
+            //so we don't need this part  if flashcount=1
+            //temporary timer. The end of this timer stops the permanent flashing
+            this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, this.objStr + ".Stopflash()", true);
+        }
+    };
+
+    //private : relight=true : restore light state before it was flashing
+    //this is a call back function (called in flashon() )
+    this.flashOff = function(relight) {
+        //stop permanent timer if any
+        if (this.flashTimer !== 0) {
+            engine.stopTimer(this.flashTimer);
+            //reset flash variables to 0
+            this.flashTimer = 0;
+        }
+        if (this.flashTimer2 !== 0) {
+            engine.stopTimer(this.flashTimer2);
+            //reset flash variables to 0
+            this.flashTimer2 = 0;
+        }
+        this.layers.show5.activate = false;
+        this.activateshow("show6", false);
+    };
+
+    //private : relight=true : restore light state before it was flashing
+    //this is a call back function (called in flashon() )
+    this.Stopflash = function(relight) {
+        //stop permanent timer
+        if (this.flashTimer !== 0) {
+            engine.stopTimer(this.flashTimer);
+        }
+        //reset flash variables to 0
+        this.flashTimer = 0;
+        this.flashTimer2 = 0;
+        this.flashDuration = 0;
+        this.flashOff(relight);
+    }
+
+    //public
+    this.get_flashDuration = function() {
+        return this.flashDuration;
+    };
+
+    //private : call back function (called in flashon() )
+    this.flashOnceOn = function(num_ms, relight) {
         this.layers.show5.activate = true;
         this.activateshow("show6", true);
         this.flashOnceDuration = num_ms;
         this.flashOnceTimer = engine.beginTimer(num_ms - 10, this.objStr + ".flashOnceOff(" + relight + ")", true);
     };
+
+    //private :call back function (called in flashOnceOn() )
     this.flashOnceOff = function(relight) {
-        engine.stopTimer(this.flashOnceTimer);
         this.flashOnceTimer = 0;
         this.flashOnceDuration = 0;
         if (relight) {
@@ -995,31 +1080,6 @@ ReloopBeatpad.rgblight = function(control, deckID) {
             this.layers.show5.activate = false;
         }
         this.activateshow("show6", false);
-    };
-
-    this.flashOff = function() {
-        engine.stopTimer(this.flashTimer);
-        this.flashTimer = 0;
-        engine.stopTimer(this.flashTimer2);
-        this.flashTimer2 = 0;
-        this.flashOnceDuration = 0;
-        this.layers.show5.activate = false;
-        this.activateshow("show6", false);
-    };
-    this.flashOn = function(num_ms_on, value, num_ms_off, flashCount) {
-        this.flashOff();
-        this.layers.show5.activate = true;
-        this.flashDuration = num_ms_on;
-        this.flashOnceOn(num_ms_on, true);
-        if (flashCount !== 1) {
-            this.flashTimer = engine.beginTimer((num_ms_on + num_ms_off), this.objStr + ".flashOnceOn(" + num_ms_on + ",true)");
-        }
-        if (flashCount > 1) {
-            this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, this.objStr + ".flashOff()", true);
-        }
-    };
-    this.get_flashDuration = function() {
-        return this.flashDuration;
     };
 
     //RGB light showtime
@@ -1101,7 +1161,7 @@ ReloopBeatpad.addControl = function(arrID, ID, controlObj, addLight) {
     var arrAdd = this[arrID];
     if (addLight) {
         //If the button can illuminate, a light object is created for it (see above).
-        controlObj.light = new ReloopBeatpad.light(this.group, controlObj.control, controlObj.midino, "D" + this.deckNum, ID);
+        controlObj.light = new ReloopBeatpad.light(controlObj.control, controlObj.midino, "D" + this.deckNum, ID, "control");
     }
     arrAdd[ID] = controlObj;
 };
@@ -1110,7 +1170,7 @@ ReloopBeatpad.addStatus = function(arrID, ID, statusObj, addLight) {
     var arrAdd = this[arrID];
     if (addLight) {
         //If the button can illuminate, a light object is created for it (see above
-        statusObj.light = new ReloopBeatpad.statuslight(statusObj.control, statusObj.midino, "D" + this.deckNum, ID);
+        statusObj.light = new ReloopBeatpad.light(statusObj.control, statusObj.midino, "D" + this.deckNum, ID, "status");
     }
     arrAdd[ID] = statusObj;
 };
@@ -1139,15 +1199,17 @@ ReloopBeatpad.initobjects = function() {
         decks.D1.addControl("control", "load", new control("LoadSelectedTrack", LBtn, MIDI.Load, "[Channel1]"), true);
         decks.D2.addControl("control", "load", new control("LoadSelectedTrack", RBtn, MIDI.Load, "[Channel2]"), true);
 
-        decks.D1.addControl("control", "sync", new control("beatsync", LBtn, MIDI.Sync, "[Channel1]"), true);
-        decks.D2.addControl("control", "sync", new control("beatsync", RBtn, MIDI.Sync, "[Channel2]"), true);
-        decks.D1.addControl("control", "start", new control("start", LBtn, MIDI.Sync + SHIFT, "[Channel1]"), true);
-        decks.D2.addControl("control", "start", new control("start", RBtn, MIDI.Sync + SHIFT, "[Channel2]"), true);
+        decks.D1.addControl("control", "sync", new control("beatsync", LBtn, MIDI.mSync, "[Channel1]"), true);
+        decks.D2.addControl("control", "sync", new control("beatsync", RBtn, MIDI.mSync, "[Channel2]"), true);
+        decks.D1.addControl("control", "start", new control("start", LBtn, MIDI.mSync + SHIFT, "[Channel1]"), true);
+        decks.D2.addControl("control", "start", new control("start", RBtn, MIDI.mSync + SHIFT, "[Channel2]"), true);
 
         decks.D1.addControl("control", "pfl", new control("pfl", LBtn, MIDI.pfl, "[Channel1]"), true);
         decks.D2.addControl("control", "pfl", new control("pfl", RBtn, MIDI.pfl, "[Channel2]"), true);
         decks.D1.addControl("control", "slip", new control("slip_enabled", LBtn, MIDI.pfl + SHIFT, "[Channel1]"), true);
         decks.D2.addControl("control", "slip", new control("slip_enabled", RBtn, MIDI.pfl + SHIFT, "[Channel2]"), true);
+        decks.D1.addControl("control", "quantize", new control("quantize", LBtn, MIDI.pfl + SHIFT, "[Channel1]"), true);
+        decks.D2.addControl("control", "quantize", new control("quantize", RBtn, MIDI.pfl + SHIFT, "[Channel2]"), true);
 
         decks.D1.addControl("control", "Set", new control("cue_default", LBtn, MIDI.Set, "[Channel1]"), true);
         decks.D2.addControl("control", "Set", new control("cue_default", RBtn, MIDI.Set, "[Channel2]"), true);
@@ -1244,7 +1306,8 @@ ReloopBeatpad.initobjects = function() {
         decks.D1.addStatus("status", "VUMeter", new status(LBtn, MIDI.VUMeter), true);
         decks.D2.addStatus("status", "VUMeter", new status(RBtn, MIDI.VUMeter), true);
 
-        addStatus("status", "recording", new status(MBtn, MIDI.rec), true);
+        decks.D1.addStatus("status", "recording", new status(MBtn, MIDI.rec), true);
+        decks.D2.addStatus("status", "recording", new status(MBtn, MIDI.rec), true);
     }
 
 };
@@ -1302,6 +1365,8 @@ ReloopBeatpad.init = function(id, debug) {
     engine.connectControl("[Channel2]", "bpm", "ReloopBeatpad.OnBPMChange");
     engine.connectControl("[Channel1]", "duration", "ReloopBeatpad.OnDurationChange");
     engine.connectControl("[Channel2]", "duration", "ReloopBeatpad.OnDurationChange");
+    engine.connectControl("[Channel1]", "pfl", "ReloopBeatpad.OnPFLStatusChange");
+    engine.connectControl("[Channel2]", "pfl", "ReloopBeatpad.OnPFLStatusChange");
 
     engine.connectControl("[EffectRack1_EffectUnit1_Effect1]", "loaded", function(value, group, control) {
         ReloopBeatpad.OnEffectLoaded(value, group, control, 1);
@@ -1360,11 +1425,6 @@ ReloopBeatpad.init = function(id, debug) {
     engine.connectControl("[Deere]", "sampler_bank_4", function(value, group, control) {
         ReloopBeatpad.OnBankLoaded(value, group, control, 4);
     });
-    // Conveniences
-    engine.setValue("[Channel1]", "keylock", true);
-    engine.setValue("[Channel1]", "quantize", true);
-    engine.setValue("[Channel2]", "keylock", true);
-    engine.setValue("[Channel2]", "quantize", true);
 
     //After midi controller receive this Outbound Message request SysEx Message,
     //midi controller will send the status of every item on the
@@ -1395,6 +1455,9 @@ ReloopBeatpad.init = function(id, debug) {
     engine.trigger("[Channel2]", "bpm");
     engine.trigger("[Channel1]", "duration");
     engine.trigger("[Channel2]", "duration");
+    engine.trigger("[Channel1]", "pfl");
+    engine.trigger("[Channel2]", "pfl");
+    engine.trigger("[Recording]", "status");
 
     for (i = 1; i <= 4; i++) {
         engine.trigger("[Channel1]", "hotcue_" + i + "_position");
@@ -1484,12 +1547,10 @@ ReloopBeatpad.WheelBend = function(channel, control, value, status, group) {
 // ********************** Buttons and Co ****************
 ReloopBeatpad.ShiftBtn = function(channel, control, value, status, group) {
     var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
-    deck.Shifted = (value == DOWN);
-    //trigger lights in different mode if the deck is shifted or not
-                    //examples : SYNC/SET/JUMP and Pause/play buttons have a second function
-    if (value==UP) {
-        deck.SHIFTup();
-    }
+    deck.Shifted = (value === DOWN);
+    //trigger() : lights in different mode if the deck is shifted or not
+    //examples : SYNC/SET/JUMP and Pause/play buttons have a second function
+    deck.triggershift();
 };
 
 ReloopBeatpad.brake = function(channel, control, value, status, group) {
@@ -1539,6 +1600,30 @@ ReloopBeatpad.RecBtn = function(channel, control, value, status, group) {
     }
 };
 
+ReloopBeatpad.sRecBtn = function(channel, control, value, status, group) {
+    print("RecBtn ");
+    if (value == DOWN) {
+        TrackEndWarning = !TrackEndWarning;
+        print("TrackEndWarning " + TrackEndWarning);
+        ReloopBeatpad.decks.D1.status.recording.light.flashOn(200, ON, 200, 3, true);
+    }
+};
+
+ReloopBeatpad.pflBtn = function(channel, control, value, status, group) {
+    var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
+    if (value == DOWN) {
+        deck.control.pfl.onOff(!deck.control.pfl.checkOn());
+    }
+};
+
+ReloopBeatpad.spflBtn = function(channel, control, value, status, group) {
+    //simple press : slip mode togggle ; double press : quantize toggle
+    var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
+    if (value == DOWN) {
+        deck.PFLDown();
+    }
+};
+
 ReloopBeatpad.LoadBtn = function(channel, control, value, status, group) {
     //LOAD hold <500ms : load track, >500ms : eject
     var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
@@ -1550,7 +1635,7 @@ ReloopBeatpad.LoadBtn = function(channel, control, value, status, group) {
 };
 
 ReloopBeatpad.SyncBtn = function(channel, control, value, status, group) {
-    //SYNC pressed once :sync  , pressed twice : play
+    //SYNC pressed once :sync  , pressed twice : play, long press SYNC Lock
 
     var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
     if (value == DOWN) {
@@ -1935,7 +2020,7 @@ ReloopBeatpad.SamplerPad = function(channel, control, value, status, group) {
             case LOOPMODESTATUS:
                 deck.ToggleLoopKind();
                 break;
-            default :
+            default:
                 break;
         }
     }
@@ -2032,15 +2117,11 @@ ReloopBeatpad.OnTrackLoaded = function(value, group, control) {
     var decknum = group.substring(8, 9) >> 0;
     var deck = ReloopBeatpad.decks["D" + decknum];
     deck.control.load.light.onOff((value) ? ON : OFF);
-    if (value === 0) {
-        deck.loaded = false;
-        deck.RGBShow.notloaded(true);
-    } else {
-        deck.loaded = true;
-        deck.RGBShow.notloaded(false);
-        deck.status.RimRed.light.onOff(OFF);
+    oldloaded = deck.loaded;
+    deck.loaded = (value !== 0);
+    if (oldloaded != deck.loaded) { //if this value changed we update the jog lights
+        engine.trigger(group, "playposition");
     }
-    engine.trigger(group, "playposition");
 };
 
 ReloopBeatpad.OnKeylock = function(value, group, control) {
@@ -2060,6 +2141,7 @@ ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
     var decknum = group.substring(8, 9) >> 0;
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (deck.loaded) {
+        deck.RGBShow.notloaded(false);
         deck.control.start.light.onOff((value) ? OFF : ON);
         var timeremaining = engine.getValue(group, "duration") * (1 - value);
         var trackwarning = 0;
@@ -2105,25 +2187,24 @@ ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
 
             case 1: // if less than 30 seconds before end of track : flashing slowly
                 if (deck.status.RimRed.light.get_flashDuration() !== 1000) {
-                    deck.status.RimRed.light.flashOff();
                     deck.status.RimRed.light.flashOn(1000, ON, 1000);
                 }
                 break;
 
             case 2: // if less than 10 seconds before end of track : flashing fast
                 if (deck.status.RimRed.light.get_flashDuration() !== 300) {
-                    deck.status.RimRed.light.flashOff();
                     deck.status.RimRed.light.flashOn(300, ON, 300);
                 }
                 break;
 
             case 3: // end of strack : full ring lit
-                deck.status.RimRed.light.flashOff();
                 deck.status.RimRed.light.onOff(ON);
                 break;
-            default :
+            default:
                 break;
         }
+    } else {
+        deck.RGBShow.notloaded(true);
     }
 };
 
@@ -2133,7 +2214,7 @@ ReloopBeatpad.OnBeatActive = function(value, group, control) {
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (!(deck.JogScratchStatus || deck.JogSeekStatus)) {
         if (value == 1) {
-            var timeremaining = engine.getValue(group, "duration") * (1 - engine.getValue(group, "play_position") );
+            var timeremaining = engine.getValue(group, "duration") * (1 - engine.getValue(group, "playposition"));
             if ((timeremaining <= 30) && (TrackEndWarning)) { //flashing end of track
                 engine.trigger(group, "playposition");
             } else {
@@ -2148,7 +2229,13 @@ ReloopBeatpad.OnBeatActive = function(value, group, control) {
 };
 
 ReloopBeatpad.OnRecordingStatusChange = function(value, group, control) {
-    ReloopBeatpad.status.recording.light.onOff((value) ? ON : OFF);
+    ReloopBeatpad.decks.D1.status.recording.light.onOff((value) ? ON : OFF);
+};
+
+ReloopBeatpad.OnPFLStatusChange = function(value, group, control) {
+    var decknum = group.substring(8, 9) >> 0;
+    var deck = ReloopBeatpad.decks["D" + decknum];
+    deck.control.pfl.light.onOff((value) ? ON : OFF);
 };
 
 ReloopBeatpad.OnBPMChange = function(value, group, control) {

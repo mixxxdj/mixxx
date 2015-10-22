@@ -154,32 +154,32 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>ReloopBeatpad.pflBtn</key>
                 <description>PFL 1</description>
                 <status>0x90</status>
                 <midino>0x61</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>ReloopBeatpad.pflBtn</key>
                 <description>PFL 2</description>
                 <status>0x91</status>
                 <midino>0x61</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>slip_enabled</key>
+                <key>ReloopBeatpad.spflBtn</key>
                 <description>SHIFT+PFL 2</description>
                 <status>0x91</status>
                 <midino>0x61</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -883,6 +883,16 @@
                 </options>
             </control>
             <control>
+                <group>[Recording]</group>
+                <key>ReloopBeatpad.sRecBtn</key>
+                <description>REC Btn</description>
+                <status>0x94</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>pitch_set_default</key>
                 <description>SHIFT_FILTER_MID 1</description>
@@ -1124,12 +1134,12 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>slip_enabled</key>
+                <key>ReloopBeatpad.spflBtn</key>
                 <description>SHIFT+PFL 1</description>
                 <status>0x90</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
