@@ -218,7 +218,7 @@ void DlgPrefShoutcast::slotUpdate() {
 
     // Don't let user modify information if
     // sending is enabled.
-    if(m_pShoutcastEnabled->toBool() == true) {
+    if(m_pShoutcastEnabled->toBool()) {
         setDialogEnabled(false);
     } else {
         setDialogEnabled(true);
@@ -231,7 +231,7 @@ void DlgPrefShoutcast::slotApply()
 
     // Don't let user modify information if
     // sending is enabled.
-    if(m_pShoutcastEnabled->toBool() == true) {
+    if(m_pShoutcastEnabled->toBool()) {
         setDialogEnabled(false);
     } else {
         setDialogEnabled(true);
