@@ -723,7 +723,7 @@ void EngineShoutcast::run() {
     ignoreSigpipe();
 
     DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
-        qDebug() << "EngineShoutcast::run: Shoutcast handle is not available. Aborting";
+        qDebug() << "EngineShoutcast::run: Shoutcast FIFO handle is not available. Aborting";
         return;
     }
 
@@ -734,7 +734,7 @@ void EngineShoutcast::run() {
         return;
     }
 
-    for(;;) {
+    while(true) {
         m_readSema.acquire();
         // Check to see if Shoutcast is enabled, and pass the samples off to be
         // broadcast if necessary.
