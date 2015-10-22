@@ -34,7 +34,7 @@
  ***********************************************************************/
 function ReloopBeatpad() {}
 
-new ReloopBeatpad(); //Very important ! Initializes the declared function, yep
+ReloopBeatpad(); //Very important ! Initializes the declared function, yep
 
 //Array of Objects can be created
 ReloopBeatpad.decks = [];
@@ -46,7 +46,7 @@ ReloopBeatpad.recording = [];
 var ON = 0x7F,
     OFF = 0x00,
     DOWN = 0x7F,
-    UP = 0x00,
+    //UP = 0x00, //unused in the script, may be one day...
     SHIFT = -0x40,
     LBtn = 0x90,
     RBtn = 0x91,
@@ -77,8 +77,8 @@ var ON = 0x7F,
 
 //Utilities
 function pauseScript(ms) {
-    startDate = new Date();
-    currentDate = null;
+    var startDate = new Date();
+    var currentDate = null;
     while (currentDate - startDate < ms) {
         currentDate = new Date();
     }
@@ -92,9 +92,13 @@ Math.sign = Math.sign || function(x) {
     return x > 0 ? 1 : -1;
 };
 
-Number.prototype.mod = function(n) {
-    return ((this % n) + n) % n;
-}; //computes the mathematical modulus
+function intpart(n) {
+    if (n<0) {
+        return Math.ceil(n);
+    } else {
+        return Math.floor(n);
+    }
+}
 
 //Constants
 ReloopBeatpad.MIDI = {
@@ -164,6 +168,7 @@ ReloopBeatpad.PadColor = {
 
 ReloopBeatpad.TurnLEDsOff = function() {
     // Turn all LEDS off
+    var i,j;
     for (i = LBtn; i <= RBtn; i++) { // 2 decks
         midi.sendShortMsg(i, 0x41, OFF);
         midi.sendShortMsg(i, 0x42, OFF);
@@ -179,6 +184,7 @@ ReloopBeatpad.TurnLEDsOff = function() {
 };
 
 ReloopBeatpad.shutdown = function() {
+    var i;
     // Stop all timers
     for (i = 0; i < ReloopBeatpad.timers.length; i++) {
         engine.stopTimer(ReloopBeatpad.timers[i]);
@@ -201,6 +207,7 @@ ReloopBeatpad.getduration = function(group) {
 // This take care of sampler PAD lights when a Bank of Samples or only one sample is changed or loaded,
 //or when the sampler mode is changed to display other status
 ReloopBeatpad.SamplerBank = function() {
+    var decknum;
     this.bankactive = 1;
     this.loaded = [];
     this.loaded.length = 17;
@@ -247,16 +254,17 @@ ReloopBeatpad.SamplerBank = function() {
     this.LedUpdateSampler = function(samplernum) {
         var samplerbaseindex = (this.bankactive - 1) * 4;
         if ((samplerbaseindex < samplernum) && (samplernum <= (samplerbaseindex + 4))) {
-            padindex = samplernum - samplerbaseindex;
+            var padindex = samplernum - samplerbaseindex;
             this.LedUpdate(padindex);
         }
     };
+
     //Will update, if necessary the four Sampler PAD at once
     this.LedsUpdate = function() {
         var samplerbaseindex = (this.bankactive - 1) * 4;
         var samplerindex = 0;
         var color = 0;
-        var isloaded, isplaying, deck;
+        var isloaded, isplaying, deck, decknum,i;
 
         for (decknum = 1; decknum <= 2; decknum++) {
             deck = ReloopBeatpad.decks["D" + decknum];
@@ -312,16 +320,18 @@ ReloopBeatpad.SamplerBank = function() {
     };
 
     this.play = function(padnum, value) {
-        samplerindex = (this.bankactive - 1) * 4 + padnum;
-        isplaying = engine.getValue("[Sampler" + samplerindex + "]", "play");
-        if (!isplaying) {
-
-            engine.setValue("[Sampler" + samplerindex + "]", "cue_gotoandplay", 1);
-            engine.setValue("[Sampler" + samplerindex + "]", "beatsync", 1);
+        var samplerindex = (this.bankactive - 1) * 4 + padnum;
+        var isplaying = engine.getValue("[Sampler" + samplerindex + "]", "play");
+        if (value) {
+            if (!isplaying) {
+                engine.setValue("[Sampler" + samplerindex + "]", "cue_gotoandplay", 1);
+                engine.setValue("[Sampler" + samplerindex + "]", "beatsync", 1);
+            } else {
+                engine.setValue("[Sampler" + samplerindex + "]", "stop", 1);
+            }
         } else {
             engine.setValue("[Sampler" + samplerindex + "]", "stop", 1);
         }
-        //this.LedUpdate(samplerindex);
     };
 };
 
@@ -363,6 +373,7 @@ ReloopBeatpad.deck = function(deckNum) {
     this.InstantFXBtnDown = false;
 
     this.triggershift = function() {
+        var i;
         if (this.Shifted) {
             this.status.brake.light.onOff(OFF);
             this.control.censor.light.onOff(OFF);
@@ -943,7 +954,7 @@ ReloopBeatpad.rgblight = function(control, deckID) {
     this.updatecontroller = function() {
         //null="transparent"
         var tosend = [null, null, null, null];
-        var showname;
+        var showname, i, j, k;
         for (k = 0; k <= 3; k++) {
             for (j = 6; tosend[k] === null; j--) {
                 showname = "show" + j;
@@ -998,7 +1009,9 @@ ReloopBeatpad.rgblight = function(control, deckID) {
     };
 
     //public : make a rgb light flashing
-    this.flashOn = function(num_ms_on, value, num_ms_off, flashCount) {
+    this.flashOn = function(num_ms_on, RGBColor, num_ms_off, flashCount) {
+        this.setshow("show6", RGBColor);
+
         //stop pending timers
         this.flashOff();
 
@@ -1027,7 +1040,7 @@ ReloopBeatpad.rgblight = function(control, deckID) {
 
     //private : relight=true : restore light state before it was flashing
     //this is a call back function (called in flashon() )
-    this.flashOff = function(relight) {
+    this.flashOff = function() {
         //stop permanent timer if any
         if (this.flashTimer !== 0) {
             engine.stopTimer(this.flashTimer);
@@ -1045,7 +1058,7 @@ ReloopBeatpad.rgblight = function(control, deckID) {
 
     //private : relight=true : restore light state before it was flashing
     //this is a call back function (called in flashon() )
-    this.Stopflash = function(relight) {
+    this.Stopflash = function() {
         //stop permanent timer
         if (this.flashTimer !== 0) {
             engine.stopTimer(this.flashTimer);
@@ -1054,8 +1067,8 @@ ReloopBeatpad.rgblight = function(control, deckID) {
         this.flashTimer = 0;
         this.flashTimer2 = 0;
         this.flashDuration = 0;
-        this.flashOff(relight);
-    }
+        this.flashOff();
+    };
 
     //public
     this.get_flashDuration = function() {
@@ -1183,137 +1196,118 @@ ReloopBeatpad.addRGB = function(RGBObj) {
 
 // ----------   Other global variables    ----------
 ReloopBeatpad.initobjects = function() {
+    var i;
     //This creates 'addControl' and 'addStatus' constructor functions to the deck class, using the above functions as a templates.
     ReloopBeatpad.deck.prototype.addStatus = ReloopBeatpad.addStatus;
     ReloopBeatpad.deck.prototype.addControl = ReloopBeatpad.addControl;
     ReloopBeatpad.deck.prototype.addRGB = ReloopBeatpad.addRGB;
+    
     //Creating the two deck objects.
-    with(ReloopBeatpad) {
+    ReloopBeatpad.addControl("decks", "D1", new ReloopBeatpad.deck("1"));
+    ReloopBeatpad.addControl("decks", "D2", new ReloopBeatpad.deck("2"));
 
-        addControl("decks", "D1", new deck("1"));
-        addControl("decks", "D2", new deck("2"));
+    //control creators
+    this.cc1 = function(arrID, ID, key, midino, complement, group, addLight) {
+        var NewControl = new ReloopBeatpad.control(key, LBtn, ReloopBeatpad.MIDI[midino]+complement,group);
+        ReloopBeatpad.decks.D1.addControl(arrID, ID, NewControl, addLight);
+    };
 
+    this.cc2 = function(arrID, ID, key, midino, complement, group, addLight) {
+        var NewControl = new ReloopBeatpad.control(key, RBtn, ReloopBeatpad.MIDI[midino]+complement,group);
+        ReloopBeatpad.decks.D2.addControl(arrID, ID, NewControl, addLight);
+    };
+    
+    this.cc = function(arrID, ID, key, midino, complement, addLight) {
+        this.cc1(arrID, ID, key, midino, complement, "[Channel1]", addLight);
+        this.cc2(arrID, ID, key, midino, complement, "[Channel2]", addLight);
+    };
 
-        //All controls below associated with left or right deck.
+    //status creator
+    this.sc = function(arrID, ID, midino, complement, addLight) {
+        var NewStatus;
+        NewStatus = new ReloopBeatpad.status(LBtn, ReloopBeatpad.MIDI[midino]+complement);
+        ReloopBeatpad.decks.D1.addStatus(arrID, ID, NewStatus, addLight);
+        NewStatus = new ReloopBeatpad.status(RBtn, ReloopBeatpad.MIDI[midino]+complement);
+        ReloopBeatpad.decks.D2.addStatus(arrID, ID, NewStatus, addLight);
+    };
 
-        decks.D1.addControl("control", "load", new control("LoadSelectedTrack", LBtn, MIDI.Load, "[Channel1]"), true);
-        decks.D2.addControl("control", "load", new control("LoadSelectedTrack", RBtn, MIDI.Load, "[Channel2]"), true);
+    this.scM = function(arrID, ID, midino, complement, addLight) {
+        var NewStatus = new ReloopBeatpad.status(MBtn, ReloopBeatpad.MIDI[midino]+complement);
+        ReloopBeatpad.decks.D1.addStatus(arrID, ID, NewStatus, addLight);
+        ReloopBeatpad.decks.D2.addStatus(arrID, ID, NewStatus, addLight);
+    };
 
-        decks.D1.addControl("control", "sync", new control("beatsync", LBtn, MIDI.mSync, "[Channel1]"), true);
-        decks.D2.addControl("control", "sync", new control("beatsync", RBtn, MIDI.mSync, "[Channel2]"), true);
-        decks.D1.addControl("control", "start", new control("start", LBtn, MIDI.mSync + SHIFT, "[Channel1]"), true);
-        decks.D2.addControl("control", "start", new control("start", RBtn, MIDI.mSync + SHIFT, "[Channel2]"), true);
+    //All controls below associated with left or right deck.
+    this.cc("control", "load", "LoadSelectedTrack", "Load", 0, true);
+    this.cc("control", "sync", "beatsync", "mSync", 0, true);
+    this.cc("control", "start", "start", "mSync", SHIFT, true);
+    this.cc("control", "pfl", "pfl", "pfl", 0, true);
+    this.cc("control", "slip", "slip_enabled", "pfl", SHIFT, true);
+    this.cc("control", "quantize", "quantize", "pfl", SHIFT, true);
+    this.cc("control", "Set", "cue_default", "Set", 0, true);
+    this.cc("control", "keylock", "keylock", "Set", SHIFT, true);
+    this.cc("control", "jump", "cue_gotoandplay", "Jump", 0, true);
+    this.cc("control", "play", "play", "Play", 0, true);
+    this.cc("control", "LoadAndPlay", "LoadSelectedTrackAndPlay", "Play", 0, true);
+    this.cc("control", "censor", "reverseroll", "Play", SHIFT, true);
+    this.cc("control", "bendMinus", "rate_temp_down", "BendMinus", 0, true);
+    this.cc("control", "beatjumpMinus", "beatjump_1_backward", "BendMinus", SHIFT, true);
+    this.cc("control", "bendPlus", "rate_temp_up", "BendPlus", 0, true);
+    this.cc("control", "beatjumpPlus", "beatjump_1_forward", "BendPlus", SHIFT, true);
 
-        decks.D1.addControl("control", "pfl", new control("pfl", LBtn, MIDI.pfl, "[Channel1]"), true);
-        decks.D2.addControl("control", "pfl", new control("pfl", RBtn, MIDI.pfl, "[Channel2]"), true);
-        decks.D1.addControl("control", "slip", new control("slip_enabled", LBtn, MIDI.pfl + SHIFT, "[Channel1]"), true);
-        decks.D2.addControl("control", "slip", new control("slip_enabled", RBtn, MIDI.pfl + SHIFT, "[Channel2]"), true);
-        decks.D1.addControl("control", "quantize", new control("quantize", LBtn, MIDI.pfl + SHIFT, "[Channel1]"), true);
-        decks.D2.addControl("control", "quantize", new control("quantize", RBtn, MIDI.pfl + SHIFT, "[Channel2]"), true);
-
-        decks.D1.addControl("control", "Set", new control("cue_default", LBtn, MIDI.Set, "[Channel1]"), true);
-        decks.D2.addControl("control", "Set", new control("cue_default", RBtn, MIDI.Set, "[Channel2]"), true);
-        decks.D1.addControl("control", "keylock", new control("keylock", LBtn, MIDI.Set + SHIFT, "[Channel1]"), true);
-        decks.D2.addControl("control", "keylock", new control("keylock", RBtn, MIDI.Set + SHIFT, "[Channel2]"), true);
-
-        decks.D1.addControl("control", "jump", new control("cue_gotoandplay", LBtn, MIDI.Jump, "[Channel1]"), true);
-        decks.D2.addControl("control", "jump", new control("cue_gotoandplay", RBtn, MIDI.Jump, "[Channel2]"), true);
-
-        decks.D1.addControl("control", "play", new control("play", LBtn, MIDI.Play, "[Channel1]"), true);
-        decks.D2.addControl("control", "play", new control("play", RBtn, MIDI.Play, "[Channel2]"), true);
-        decks.D1.addControl("control", "LoadAndPlay", new control("LoadSelectedTrackAndPlay", LBtn, MIDI.Play, "[Channel1]"), true);
-        decks.D2.addControl("control", "LoadAndPlay", new control("LoadSelectedTrackAndPlay", RBtn, MIDI.Play, "[Channel2]"), true);
-
-        decks.D1.addControl("control", "censor", new control("reverseroll", LBtn, MIDI.Play + SHIFT, "[Channel1]"), true);
-        decks.D2.addControl("control", "censor", new control("reverseroll", RBtn, MIDI.Play + SHIFT, "[Channel2]"), true);
-
-        decks.D1.addControl("control", "bendMinus", new control("rate_temp_down", LBtn, MIDI.BendMinus, "[Channel1]"), true);
-        decks.D2.addControl("control", "bendMinus", new control("rate_temp_down", RBtn, MIDI.BendMinus, "[Channel2]"), true);
-        decks.D1.addControl("control", "beatjumpMinus", new control("beatjump_1_backward", LBtn, MIDI.BendMinus + SHIFT, "[Channel1]"), true);
-        decks.D2.addControl("control", "beatjumpMinus", new control("beatjump_1_backward", RBtn, MIDI.BendMinus + SHIFT, "[Channel2]"), true);
-
-        decks.D1.addControl("control", "bendPlus", new control("rate_temp_up", LBtn, MIDI.BendPlus, "[Channel1]"), true);
-        decks.D2.addControl("control", "bendPlus", new control("rate_temp_up", RBtn, MIDI.BendPlus, "[Channel2]"), true);
-        decks.D1.addControl("control", "beatjumpPlus", new control("beatjump_1_forward", LBtn, MIDI.BendPlus + SHIFT, "[Channel1]"), true);
-        decks.D2.addControl("control", "beatjumpPlus", new control("beatjump_1_forward", RBtn, MIDI.BendPlus + SHIFT, "[Channel2]"), true);
-
-        for (i = 1; i <= 4; i++) {
-            decks.D1.addControl("control", "FXPad" + i, new control("group_[Channel1]_enable", LBtn, MIDI.FXPad + i - 1, "[EffectRack1_EffectUnit" + i + "]"), HardwareLight);
-            decks.D2.addControl("control", "FXPad" + i, new control("group_[Channel2]_enable", RBtn, MIDI.FXPad + i - 1, "[EffectRack1_EffectUnit" + i + "]"), HardwareLight);
-        }
-
-        for (i = 1; i <= 4; i++) {
-            decks.D1.addControl("control", "LoopPad" + i, new control("beatlooproll_" + Math.pow(2, i - 4) + "_activate", LBtn, MIDI.LoopPad + i - 1, "[Channel1]"), HardwareLight);
-            decks.D2.addControl("control", "LoopPad" + i, new control("beatlooproll_" + Math.pow(2, i - 4) + "_activate", RBtn, MIDI.LoopPad + i - 1, "[Channel2]"), HardwareLight);
-        }
-        for (i = 1; i <= 4; i++) {
-            decks.D1.addControl("control", "sLoopPad" + i, new control("beatlooproll_" + Math.pow(2, i) + "_activate", LBtn, MIDI.LoopPad + i - 1 + SHIFT, "[Channel1]"), HardwareLight);
-            decks.D2.addControl("control", "sLoopPad" + i, new control("beatlooproll_" + Math.pow(2, i) + "_activate", RBtn, MIDI.LoopPad + i - 1 + SHIFT, "[Channel2]"), HardwareLight);
-        }
-
-        for (i = 1; i <= 4; i++) {
-            decks.D1.addControl("control", "sSamplerPad" + i, new control("sampler_bank_" + i, LBtn, MIDI.LoopPad + i - 1 + SHIFT, "[Deere]"), false);
-            decks.D2.addControl("control", "sSamplerPad" + i, new control("sampler_bank_" + i, RBtn, MIDI.LoopPad + i - 1 + SHIFT, "[Deere]"), false);
-        }
-        //Status Buttons and visualizations
-
-        decks.D1.addStatus("status", "brake", new status(LBtn, MIDI.Jump + SHIFT), true);
-        decks.D2.addStatus("status", "brake", new status(RBtn, MIDI.Jump + SHIFT), true);
-
-        decks.D1.addStatus("status", "RimRed", new status(LBtn, MIDI.RIM_Red), true);
-        decks.D2.addStatus("status", "RimRed", new status(RBtn, MIDI.RIM_Red), true);
-        decks.D1.addStatus("status", "RimBlue", new status(LBtn, MIDI.RIM_Blue), true);
-        decks.D2.addStatus("status", "RimBlue", new status(RBtn, MIDI.RIM_Blue), true);
-
-        decks.D1.addRGB(new rgblight(LBtn, "D1"));
-        decks.D2.addRGB(new rgblight(RBtn, "D2"));
-
-        decks.D1.addStatus("status", "iScratch", new status(LBtn, MIDI.iScratch), HardwareLight);
-        decks.D2.addStatus("status", "iScratch", new status(RBtn, MIDI.iScratch), HardwareLight);
-        decks.D1.addStatus("status", "Vinyl", new status(LBtn, MIDI.Vinyl), HardwareLight);
-        decks.D2.addStatus("status", "Vinyl", new status(RBtn, MIDI.Vinyl), HardwareLight);
-
-
-        decks.D1.addStatus("status", "Loop", new status(LBtn, MIDI.Loop), true);
-        decks.D2.addStatus("status", "Loop", new status(RBtn, MIDI.Loop), true);
-        decks.D1.addStatus("status", "FX_ON", new status(LBtn, MIDI.FX_ON), true);
-        decks.D2.addStatus("status", "FX_ON", new status(RBtn, MIDI.FX_ON), true);
-
-        decks.D1.addStatus("status", "Cue", new status(LBtn, MIDI.Cue), HardwareLight);
-        decks.D2.addStatus("status", "Cue", new status(RBtn, MIDI.Cue), HardwareLight);
-        decks.D1.addStatus("status", "Loop_Bounce", new status(LBtn, MIDI.Loop_Bounce), HardwareLight);
-        decks.D2.addStatus("status", "Loop_Bounce", new status(RBtn, MIDI.Loop_Bounce), HardwareLight);
-        decks.D1.addStatus("status", "InstantFX", new status(LBtn, MIDI.InstantFX), HardwareLight);
-        decks.D2.addStatus("status", "InstantFX", new status(RBtn, MIDI.InstantFX), HardwareLight);
-        decks.D1.addStatus("status", "spinback", new status(LBtn, MIDI.InstantFX + SHIFT), HardwareLight);
-        decks.D2.addStatus("status", "spinback", new status(RBtn, MIDI.InstantFX + SHIFT), HardwareLight);
-        decks.D1.addStatus("status", "Sampler", new status(LBtn, MIDI.Sampler));
-        decks.D2.addStatus("status", "Sampler", new status(RBtn, MIDI.Sampler));
-        for (i = 1; i <= 4; i++) {
-            decks.D1.addStatus("status", "CuePad" + i, new status(LBtn, MIDI.CuePad + i - 1), true);
-            decks.D2.addStatus("status", "CuePad" + i, new status(RBtn, MIDI.CuePad + i - 1), true);
-            decks.D1.addStatus("status", "sCuePad" + i, new status(LBtn, MIDI.CuePad + i - 1 + SHIFT), true);
-            decks.D2.addStatus("status", "sCuePad" + i, new status(RBtn, MIDI.CuePad + i - 1 + SHIFT), true);
-        }
-
-
-        for (i = 1; i <= 4; i++) {
-            decks.D1.addStatus("status", "SamplerPad" + i, new status(LBtn, MIDI.SamplerPad + i - 1), true);
-            decks.D2.addStatus("status", "SamplerPad" + i, new status(RBtn, MIDI.SamplerPad + i - 1), true);
-            decks.D1.addStatus("status", "sSamplerPad" + i, new status(LBtn, MIDI.SamplerPad + i - 1 + SHIFT), true);
-            decks.D2.addStatus("status", "sSamplerPad" + i, new status(RBtn, MIDI.SamplerPad + i - 1 + SHIFT), true);
-        }
-        decks.D1.addStatus("status", "VUMeter", new status(LBtn, MIDI.VUMeter), true);
-        decks.D2.addStatus("status", "VUMeter", new status(RBtn, MIDI.VUMeter), true);
-
-        decks.D1.addStatus("status", "recording", new status(MBtn, MIDI.rec), true);
-        decks.D2.addStatus("status", "recording", new status(MBtn, MIDI.rec), true);
+    for (i = 1; i <= 4; i++) {
+        this.cc1("control", "FXPad" + i, "group_[Channel1]_enable", "FXPad", i - 1, "[EffectRack1_EffectUnit" + i + "]", HardwareLight);
+        this.cc2("control", "FXPad" + i, "group_[Channel2]_enable", "FXPad", i - 1, "[EffectRack1_EffectUnit" + i + "]", HardwareLight);
     }
 
+    for (i = 1; i <= 4; i++) {
+        this.cc("control", "LoopPad" + i, "beatlooproll_" + Math.pow(2, i - 4) + "_activate", "LoopPad", i - 1, HardwareLight);
+    }
+
+    for (i = 1; i <= 4; i++) {
+        this.cc("control", "sLoopPad" + i, "beatlooproll_" + Math.pow(2, i) + "_activate", "LoopPad", i - 1 + SHIFT, HardwareLight);
+    }
+
+    for (i = 1; i <= 4; i++) {
+        this.cc1("control", "sSamplerPad" + i, "sampler_bank_" + i, "LoopPad", i - 1 + SHIFT, "Deere", false);
+        this.cc2("control", "sSamplerPad" + i, "sampler_bank_" + i, "LoopPad", i - 1 + SHIFT, "Deere", false);
+    }
+    
+    //Status Buttons and visualizations
+
+    this.sc("status", "brake", "Jump", SHIFT, true);
+    this.sc("status", "RimRed", "RIM_Red", 0, true);
+    this.sc("status", "RimBlue", "RIM_Blue", 0, true);
+    this.sc("status", "iScratch", "iScratch", 0, HardwareLight);
+    this.sc("status", "Vinyl", "Vinyl", 0, HardwareLight);
+    this.sc("status", "Loop", "Loop", 0, true);
+    this.sc("status", "FX_ON", "FX_ON", 0, true);
+    this.sc("status", "Cue", "Cue", 0, HardwareLight);
+    this.sc("status", "Loop_Bounce", "Loop_Bounce", 0, HardwareLight);
+    this.sc("status", "InstantFX", "InstantFX", 0, HardwareLight);
+    this.sc("status", "spinback", "InstantFX", SHIFT, HardwareLight);
+    this.sc("status", "Sampler", "Sampler", 0, HardwareLight);
+
+    for (i = 1; i <= 4; i++) {
+        this.sc("status", "CuePad" + i, "CuePad", i - 1, true);
+        this.sc("status", "sCuePad" + i, "CuePad", i - 1 + SHIFT, true);
+    }
+
+    for (i = 1; i <= 4; i++) {
+        this.sc("status", "SamplerPad" + i, "SamplerPad", i - 1, true);
+        this.sc("status", "sSamplerPad" + i, "SamplerPad", i - 1 + SHIFT, true);
+    }
+    this.sc("status", "VUMeter", "VUMeter", 0, true);
+    this.scM("status", "recording", "rec", 0, true);
+
+    //Jog wheels RGB lights
+    ReloopBeatpad.decks.D1.addRGB(new ReloopBeatpad.rgblight(LBtn, "D1"));
+    ReloopBeatpad.decks.D2.addRGB(new ReloopBeatpad.rgblight(RBtn, "D2"));
 };
 
 
 ReloopBeatpad.init = function(id, debug) {
+    var i;
     //Connect button lights to equivalent controls. The track_samples control
     //is being used to tell if a track has successfully loaded (whereupon lights
     //flash twice. Best way I could think of in the absence of a proper control
@@ -1361,8 +1355,6 @@ ReloopBeatpad.init = function(id, debug) {
     engine.connectControl("[Channel2]", "VuMeter", "ReloopBeatpad.OnVuMeterChange");
     engine.connectControl("[Channel1]", "playposition", "ReloopBeatpad.OnPlaypositionChange");
     engine.connectControl("[Channel2]", "playposition", "ReloopBeatpad.OnPlaypositionChange");
-    engine.connectControl("[Channel1]", "bpm", "ReloopBeatpad.OnBPMChange");
-    engine.connectControl("[Channel2]", "bpm", "ReloopBeatpad.OnBPMChange");
     engine.connectControl("[Channel1]", "duration", "ReloopBeatpad.OnDurationChange");
     engine.connectControl("[Channel2]", "duration", "ReloopBeatpad.OnDurationChange");
     engine.connectControl("[Channel1]", "pfl", "ReloopBeatpad.OnPFLStatusChange");
@@ -1486,13 +1478,13 @@ ReloopBeatpad.WheelScratchTouch = function(channel, control, value, status, grou
 
 // The Jog Scratch that actually controls the scratching
 ReloopBeatpad.WheelScratch = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0; //way faster than parseInt(group.substring(8,9))
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     deck.onWheelMove(control, value);
 };
 
 ReloopBeatpad.WheelSeekTouch = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (value == DOWN) {
         //Hand on the Jog wheel, fast seek activated
@@ -1504,7 +1496,7 @@ ReloopBeatpad.WheelSeekTouch = function(channel, control, value, status, group) 
 };
 
 ReloopBeatpad.WheelSeek = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     // See if we're seekink fast. If not, it means the DJ
     // is using the border. Seeking slowly (beatjump function works
@@ -1519,7 +1511,7 @@ ReloopBeatpad.WheelSeek = function(channel, control, value, status, group) {
 };
 
 ReloopBeatpad.WheelBendTouch = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (value == DOWN) {
         deck.jogbending = true;
@@ -1530,7 +1522,7 @@ ReloopBeatpad.WheelBendTouch = function(channel, control, value, status, group) 
 };
 
 ReloopBeatpad.WheelBend = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
 
     // See if we're scratching. If not, do wheel jog.
@@ -1554,7 +1546,7 @@ ReloopBeatpad.ShiftBtn = function(channel, control, value, status, group) {
 };
 
 ReloopBeatpad.brake = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (value == DOWN) {
         deck.status.brake.onOff(ON);
@@ -1568,7 +1560,7 @@ ReloopBeatpad.brake = function(channel, control, value, status, group) {
 //censor
 ReloopBeatpad.reverseroll = function(channel, control, value, status, group) {
 
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (value == DOWN) {
         deck.control.censor.onOff(ON);
@@ -1579,9 +1571,8 @@ ReloopBeatpad.reverseroll = function(channel, control, value, status, group) {
     }
 };
 
-
-
 ReloopBeatpad.SelectPlayList = function(channel, control, value, status, group) {
+    var i;
     value = value - 0x40;
     if (value < 0) {
         for (i = 0; i < -value; i++) {
@@ -1731,7 +1722,7 @@ ReloopBeatpad.CueBtn = function(channel, control, value, status, group) {
 };
 
 ReloopBeatpad.InstantFXBtn = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
 
     if (control <= 0x30) { //(SHIFT+Btn)<=0x30
@@ -1778,8 +1769,7 @@ ReloopBeatpad.FXSelectPush = function(channel, control, value, status, group) {
 };
 
 ReloopBeatpad.sFXSelectPush = function(channel, control, value, status, group) {
-    var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
-    // quick button for the QUICK fx : ENABLE_DISABLE
+    // quick button for Instant fx : ENABLE/DISABLE
 
     //desactivate previous pending effect
     if (value == DOWN) {
@@ -1986,7 +1976,7 @@ ReloopBeatpad.LoopSizeKnob = function(channel, control, value, status, group) {
 };
 
 ReloopBeatpad.SamplerBtn = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (value == DOWN) {
         if (deck.PadMode < SAMPLERMODE) {
@@ -2027,8 +2017,6 @@ ReloopBeatpad.SamplerPad = function(channel, control, value, status, group) {
 };
 
 ReloopBeatpad.sSamplerPad = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
-    var deck = ReloopBeatpad.decks["D" + decknum];
     var padindex = control - ReloopBeatpad.MIDI.SamplerPad + 1 - SHIFT;
     if (value == DOWN) {
         ReloopBeatpad.samplers.play(padindex, false);
@@ -2036,7 +2024,7 @@ ReloopBeatpad.sSamplerPad = function(channel, control, value, status, group) {
 };
 
 ReloopBeatpad.FXSelectKnob = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     value = value - 0x40;
     var n = deck.CurrentEffectRack;
@@ -2045,8 +2033,6 @@ ReloopBeatpad.FXSelectKnob = function(channel, control, value, status, group) {
 
 //Does not work for the moment, not implemented in Mixxx
 ReloopBeatpad.sFXSelectKnob = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
-    var deck = ReloopBeatpad.decks["D" + decknum];
     value = value - 0x40;
     if (value > 0) {
         engine.setValue("[QuickEffectRack1]", "effect_selector", value);
@@ -2055,19 +2041,19 @@ ReloopBeatpad.sFXSelectKnob = function(channel, control, value, status, group) {
 
 ReloopBeatpad.FXParam = function(channel, control, value, status, group) {
     //Super for EffectRack
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     engine.setValue("[EffectRack1_EffectUnit" + deck.CurrentEffectRack + "]", "super1", value / 128);
 };
 
 ReloopBeatpad.FXParamShift = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     engine.setValue("[EffectRack1_EffectUnit" + deck.CurrentEffectRack + "]", "mix", value / 128);
 };
 
 ReloopBeatpad.FilterMid = function(channel, control, value, status, group) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     engine.setValue("[QuickEffectRack1_" + group + "]", "super1_set_default", value);
     deck.status.RimBlue.light.onOff(OFF);
@@ -2077,7 +2063,7 @@ ReloopBeatpad.FilterMid = function(channel, control, value, status, group) {
 
 ReloopBeatpad.FilterKnob = function(channel, control, value, status, group) {
     //Super for QuickEffectRack1_[Channel1]
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     var newstatus = (value > 0x40) ? 2 : 4;
     engine.setValue("[QuickEffectRack1_" + group + "]", "super1", value / 128);
@@ -2114,10 +2100,10 @@ ReloopBeatpad.OnSyncEnabledChange = function(value, group, control) {
 };
 
 ReloopBeatpad.OnTrackLoaded = function(value, group, control) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     deck.control.load.light.onOff((value) ? ON : OFF);
-    oldloaded = deck.loaded;
+    var oldloaded = deck.loaded;
     deck.loaded = (value !== 0);
     if (oldloaded != deck.loaded) { //if this value changed we update the jog lights
         engine.trigger(group, "playposition");
@@ -2138,7 +2124,7 @@ ReloopBeatpad.OnVuMeterChange = function(value, group, control) {
 
 ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
     // Rim Red : 1st behaviour 0x01-0x18 ; 2nd Behavior = 1st +24 ;3d behavior ON/OFF
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (deck.loaded) {
         deck.RGBShow.notloaded(false);
@@ -2171,7 +2157,7 @@ ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
                 } else {
                     if (deck.JogScratchStatus) { //Spinny
                         var revolutions = value * ReloopBeatpad.getduration(group) / 1.8; //33+1/3 rev/mn=1.8 s/rev
-                        var needle = ((revolutions - (revolutions | 0)) * 24) | 0;
+                        var needle = intpart( (revolutions - intpart(revolutions)) * 24);
                         ledindex = Math.floor(needle) + 1;
                         deck.status.RimRed.light.onOff(ledindex);
                     } else if (deck.JogSeekStatus) { //Track position
@@ -2210,7 +2196,7 @@ ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
 
 ReloopBeatpad.OnBeatActive = function(value, group, control) {
     //OnPlayPosition n°2 !!!
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (!(deck.JogScratchStatus || deck.JogSeekStatus)) {
         if (value == 1) {
@@ -2233,19 +2219,9 @@ ReloopBeatpad.OnRecordingStatusChange = function(value, group, control) {
 };
 
 ReloopBeatpad.OnPFLStatusChange = function(value, group, control) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     deck.control.pfl.light.onOff((value) ? ON : OFF);
-};
-
-ReloopBeatpad.OnBPMChange = function(value, group, control) {
-    var decknum = group.substring(8, 9) >> 0;
-    var deck = ReloopBeatpad.decks["D" + decknum];
-
-    var otherdecknum = 3 - decknum;
-    var othergroup = "[Channel" + otherdecknum + "]";
-    var otherdeck = ReloopBeatpad.decks["D" + otherdecknum];
-    engine.trigger(group, "playposition");
 };
 
 ReloopBeatpad.OnDurationChange = function(value, group, control) {
@@ -2253,13 +2229,14 @@ ReloopBeatpad.OnDurationChange = function(value, group, control) {
 };
 
 ReloopBeatpad.OnHotcuePositionChange = function(value, group, control, padindex) {
-    var decknum = group.substring(8, 9) >> 0;
+    var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     deck.status["CuePad" + padindex].onOff((value == -1) ? OFF : ON);
     deck.status["sCuePad" + padindex].onOff((value == -1) ? OFF : ON);
 };
 
 ReloopBeatpad.OnEffectLoaded = function(value, group, control, index) {
+    var i;
     var parameterlinkedcount = 0;
     var linktype = 0;
     if (value) {
@@ -2294,7 +2271,6 @@ ReloopBeatpad.OnSamplePlayStop = function(value, group, control) {
 
 ReloopBeatpad.OnBankLoaded = function(value, group, control, index) {
     if (value == 1) {
-        var decknum = group.substring(8, 9) >> 0;
         ReloopBeatpad.samplers.bankactive = index;
         ReloopBeatpad.samplers.LedsUpdate();
     }
@@ -2302,5 +2278,5 @@ ReloopBeatpad.OnBankLoaded = function(value, group, control, index) {
 
 
 ReloopBeatpad.inboundSysex = function(data, length) {
-    print("data sysex :" + data);
+    print("data sysex ("+length+") :" + data);
 };
