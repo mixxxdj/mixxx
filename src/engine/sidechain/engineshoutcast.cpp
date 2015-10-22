@@ -723,6 +723,7 @@ void EngineShoutcast::run() {
     ignoreSigpipe();
 
     DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
+        qDebug() << "EngineShoutcast::run: Shoutcast handle is not available. Aborting";
         return;
     }
 
