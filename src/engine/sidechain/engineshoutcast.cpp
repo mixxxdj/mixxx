@@ -787,7 +787,7 @@ void EngineShoutcast::slotStatusCO(double v) {
     // Ignore external sets "status"
     Q_UNUSED(v);
     qWarning() << "WARNING:"
-            << SHOUTCAST_PREF_KEY << "\"status\" is a read-only control.";
+            << SHOUTCAST_PREF_KEY << "\"status\" is a read-only control, ignoring";
 }
 
 void EngineShoutcast::slotEnableCO(double v) {
