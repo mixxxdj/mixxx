@@ -428,6 +428,7 @@ bool EngineShoutcast::processConnect() {
             }
             m_threadWaiting = true;
             m_pStatusCO->setAndConfirm(STATUSCO_CONNECTED);
+            emit(shoutcastConnected());
             return true;
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
             qDebug() << "EngineShoutcast::processConnect() socket error."
@@ -463,6 +464,7 @@ void EngineShoutcast::processDisconnect() {
         shout_close(m_pShout);
         infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
         m_iShoutStatus = SHOUTERR_UNCONNECTED;
+        emit(shoutcastDisconnected());
     }
 
     if (m_encoder) {
