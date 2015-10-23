@@ -72,12 +72,17 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);
-    
+
     void slotUpdateSpeedAutoReset(int);
 
   private:
     void notifyRebootNecessary();
     bool checkSkinResolution(QString skin);
+
+    // Because the CueDefault list is out of order, we have to set the combo
+    // box using the user data, not the index.  Returns the userData value used,
+    // which may be different than the supplied argument if nothing was found.
+    int setCueDefaultIndexByData(int userData);
 
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObject* m_pControlPositionDisplay;
@@ -94,7 +99,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
-    
+
     int m_speedAutoReset;
     int m_keylockMode;
 };
