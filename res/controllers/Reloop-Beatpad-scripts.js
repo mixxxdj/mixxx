@@ -473,34 +473,68 @@ ReloopBeatpad.deck = function(deckNum) {
     this.SYNClongpress = false;
     this.SYNClongpresstimer = 0;
 
+    // Timer's call back for long press
     this.SYNCassertlongpress = function() {
         this.SYNClongpress = true;
+        this.SYNClongpresstimer = 0;
         this.control.sync.light.flashOn(100, ON, 100, 10);
         // let's take action of the long press
         this.SYNCdecide();
+    };
+    
+    // Timer's callback for single press/double press
+    this.SYNCassert1press = function() {
+        // Short Timer ran out before it was manually stopped by release of the button (SYNCup): 
+        // for sure it is a single click (short or long), we will know when button will be released
+        // or when longtimer will stop by itself 
+        this.SYNCtimer = 0;
+        if (this.SYNClongpresstimer === 0) {
+            // long press timer was stop (short press)
+            //take action
+            this.SYNCdecide();
+        }
     };
 
     // Button pressed
     this.SYNCdown = function() {
         this.control.sync.light.onOff(ON);
-        if (this.SYNCtimer === 0) { //first press (inits)
+        if (this.SYNCcount === 0) { //first press (inits)
+            // 1st press
+            this.SYNCcount = 1;
+            //and short press
             this.SYNClongpress = false;
             this.SYNClongpresstimer = engine.beginTimer(500, "ReloopBeatpad.decks.D" + this.deckNum + ".SYNCassertlongpress()", true);
-            this.SYNCtimer = engine.beginTimer(200, "ReloopBeatpad.decks.D" + this.deckNum + ".SYNCdecide()", true);
-            this.SYNCcount = 1;
-        } else { // 2nd press (before SYNCtimer's out), stop timers and take action immediatly
+            this.SYNCtimer = engine.beginTimer(400, "ReloopBeatpad.decks.D" + this.deckNum + ".SYNCassert1press()", true);
+        } else if (this.SYNCcount == 1) { // 2nd press (before short timer's out)
+            // stop timers...
             engine.stopTimer(this.SYNClongpresstimer);
+            this.SYNClongpresstimer = 0;
             engine.stopTimer(this.SYNCtimer);
+            //2nd press
             this.SYNCcount = 2;
+            this.SYNCtimer = 0 ;
+            // ...and take action immediatly
             this.SYNCdecide();
-        }
+        } //else :
+            // 2nd press after short timer's out, this cannot happen,
+            // do nothing
     };
 
     // Button released
-    this.SYNCup = function() { // button release , stop long timer, keep long timer
-        if (this.SYNClongpresstimer !== 0) {
-            engine.stopTimer(this.SYNClongpresstimer);
-        }
+    this.SYNCup = function() { 
+        // button release , 
+        if (this.SYNClongpress == false) {
+            // long press was not asserted by timer (SYNCassertlongpress)
+            // Button is released before timer's out
+            
+            // If first Buttun up, long timer is still running
+            // stop long timer if it is still running, keep short timer, longpress will never happen
+            if (this.SYNClongpresstimer !== 0) {
+                engine.stopTimer(this.SYNClongpresstimer);
+                this.SYNClongpresstimer = 0;
+            }
+        } //else : 
+            // longpressed is confirmed, we already took action in SYNCassertlongpress
     };
 
     // Take actions
@@ -515,19 +549,26 @@ ReloopBeatpad.deck = function(deckNum) {
         if (this.SYNClongpress) {
             engine.setValue(this.group, 'sync_enabled', true);
         } else {
-            if (this.SYNCcount == 2) {
-                // Double press : Sync and play
+            if (engine.getValue(this.group, 'sync_enabled')) {
+                //If sync lock is enabled, simply disable sync lock
                 engine.setValue(this.group, 'sync_enabled', false);
-                engine.setValue(this.group, 'play', true);
-                engine.setValue(this.group, 'beatsync', true);
+            } else {
+                if (this.SYNCcount == 2) {
+                    // Double press : Sync and play
+                    engine.setValue(this.group, 'sync_enabled', false);
+                    engine.setValue(this.group, 'play', true);
+                    engine.setValue(this.group, 'beatsync', true);
 
-            } else { // We pressed sync only once
-                engine.setValue(this.group, 'sync_enabled', false);
-                engine.setValue(this.group, 'beatsync', true);
+                } else { // We pressed sync only once
+                    engine.setValue(this.group, 'sync_enabled', false);
+                    engine.setValue(this.group, 'beatsync', true);
 
+                }
             }
         }
+        //re-init
         this.SYNCcount = 0;
+        this.SYNClongpress = false;
     };
 
     // *****
