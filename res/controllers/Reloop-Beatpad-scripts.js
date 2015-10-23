@@ -65,43 +65,43 @@ var TrackEndWarning = true;
 ***********************************************************************/
 function ReloopBeatpad() {}
 
-ReloopBeatpad(); //Very important ! Initializes the declared function, yep
+ReloopBeatpad(); // Very important ! Initializes the declared function, yep
 
-//Array of Objects can be created
+// Array of Objects can be created
 ReloopBeatpad.decks = [];
 ReloopBeatpad.playlist = [];
 ReloopBeatpad.master = [];
 ReloopBeatpad.recording = [];
 
-//Global constants/variables
+// Global constants/variables
 var ON = 0x7F,
     OFF = 0x00,
     DOWN = 0x7F,
-    //UP = 0x00, //unused in the script, may be one day...
+    // UP = 0x00, // unused in the script, may be one day...
     SHIFT = -0x40,
     LBtn = 0x90,
     RBtn = 0x91,
     MBtn = 0x94,
-    //Performance modes
+    // Performance modes
     CUEMODE = 0,
     LOOPMODE = 1,
     FXMODE = 2,
-    //(4 "Sampler" modes)
+    // 4 "Sampler" modes
     SAMPLERMODE = 3,
     SAMPLERBANKSTATUSMODE = 4,
     LOOPMODESTATUS = 5,
     FXRACKSELECTMODE = 6,
-    //loop kind : simple normal loop mode/Loop roll mode
+    // loop kind : simple normal loop mode/Loop roll mode
     SIMPLE = 1,
     ROLL = 2,
     ControllerStatusSysex = [0xF0, 0x26, 0x2D, 0x65, 0x22, 0xF7],
     HardwareLight = false,
-    //scriptpause :
-    //period (in ms) while the script will be paused when sending messages
-    //to the controller in order to avoid too much data flow at once in the same time
+    // scriptpause :
+    // period (in ms) while the script will be paused when sending messages
+    // to the controller in order to avoid too much data flow at once in the same time
     scriptpause = 5;
 
-//Utilities
+// Utilities
 function pauseScript(ms) {
     var startDate = new Date();
     var currentDate = null;
@@ -126,44 +126,44 @@ function intpart(n) {
     }
 }
 
-//Constants
+//  Constants
 ReloopBeatpad.MIDI = {
     rec: 0x41,
     Trackpush: 0x46,
     BendMinus: 0x41,
     BendPlus: 0x42,
-    //Jog modes
+    // Jog modes
     Vinyl: 0x45,
     iScratch: 0x46,
-    //Pitch+FX switchs
+    // Pitch+FX switchs
     Loop: 0x44,
     Loop_size_push: 0x43,
     FX_ON: 0x47,
-    //Performance mode
+    // Performance mode
     Cue: 0x48,
     Loop_Bounce: 0x49,
     InstantFX: 0x4A,
     Sampler: 0x4B,
-    CuePad: 0x4C, //(4 Buttons 0x4C~0x4F (+0--+4)
-    LoopPad: 0x50, //(4 Buttons 0x50~0x53 (+0--+4)
-    FXPad: 0x54, //(4 Buttons 0x54~0x57 (+0--+4)
-    SamplerPad: 0x58, //(4 Sampler Buttons 0x58~0x5B (+0--+4)  (RGB color leds)
+    CuePad: 0x4C,      // (4 Buttons 0x4C~0x4F (+0--+4)
+    LoopPad: 0x50,     // (4 Buttons 0x50~0x53 (+0--+4)
+    FXPad: 0x54,       // (4 Buttons 0x54~0x57 (+0--+4)
+    SamplerPad: 0x58,  // (4 Sampler Buttons 0x58~0x5B (+0--+4)  (RGB color leds)
     Shift: 0x5C,
     mSync: 0x5D,
-    Set: 0x5E, //"Cue Play" in the Beatpad documentation
-    Jump: 0x5F, //"MainCue" in the Beatpad documentation
+    Set: 0x5E,         // "Cue Play" in the Beatpad documentation
+    Jump: 0x5F,        // "MainCue" in the Beatpad documentation
     Play: 0x60,
     pfl: 0x61,
     Load: 0x62,
-    VUMeter: 0x66, //values : 0x00~0x08
-    //Vinyl RIM Leds
-    RIM_Red: 0x67, // 1st behaviour 0x01-0x18 ; 2nd Behavior = 1st +24 ;3d behavior ON/OFF
-    RIM_Blue: 0x68, // 1st behaviour 0x05-0x08 ; 2nd Behavior = 1st -4;3d behavior ON/OFF
-    RIM_RGB: 0x69 //4 RGB Leds 0x69~0x6C (+0--+4) : for values, see ReloopBeatpad.RGB just below 
+    VUMeter: 0x66,     // values : 0x00~0x08
+    // Vinyl RIM Leds
+    RIM_Red: 0x67,    // 1st behaviour 0x01-0x18 ; 2nd Behavior = 1st +24 ;3d behavior ON/OFF
+    RIM_Blue: 0x68,   // 1st behaviour 0x05-0x08 ; 2nd Behavior = 1st -4;3d behavior ON/OFF
+    RIM_RGB: 0x69     // 4 RGB Leds 0x69~0x6C (+0--+4) : for values, see ReloopBeatpad.RGB just below 
 };
 
 
-//Colors used by the jogwheels
+// Colors used by the jogwheels
 ReloopBeatpad.RGB = {
     black: 0x00,
     red: 0x01,
@@ -175,6 +175,7 @@ ReloopBeatpad.RGB = {
     white: 0x07
 };
 
+//Colors used b the PADs (in Sampler mode)
 ReloopBeatpad.PadColor = {
     black: 0x00,
     blue: 0x01,
@@ -190,8 +191,8 @@ ReloopBeatpad.PadColor = {
 
 
 
-//Initialise and shutdown stuff.
-//========================================================
+// Initialise and shutdown stuff.
+// ========================================================
 // ----------   Functions   ----------
 
 ReloopBeatpad.TurnLEDsOff = function() {
@@ -224,8 +225,8 @@ ReloopBeatpad.shutdown = function() {
 };
 
 
-//Setting up classes for objects
-//========================================================
+// Setting up classes for objects
+// ========================================================
 
 ReloopBeatpad.getduration = function(group) {
     return engine.getValue(group, "track_samples") / engine.getValue(group, "track_samplerate") / 2;
@@ -233,7 +234,7 @@ ReloopBeatpad.getduration = function(group) {
 
 
 // This take care of sampler PAD lights when a Bank of Samples or only one sample is changed or loaded,
-//or when the sampler mode is changed to display other status
+// or when the sampler mode is changed to display other status
 ReloopBeatpad.SamplerBank = function() {
     var decknum;
     this.bankactive = 1;
@@ -247,20 +248,20 @@ ReloopBeatpad.SamplerBank = function() {
         for (decknum = 1; decknum <= 2; decknum++) {
             deck = ReloopBeatpad.decks["D" + decknum];
             switch (deck.PadMode) {
-                //Sampler bank select status
+                // Sampler bank select status
                 case SAMPLERBANKSTATUSMODE:
                     color = (padindex == this.bankactive) ? ReloopBeatpad.PadColor.magenta : 0;
                     deck.status["SamplerPad" + padindex].light.onOff(color);
                     break;
-                    //Loop mode Status
+                    // Loop mode Status
                 case LOOPMODESTATUS:
                     break;
-                    //FX rack Select status
+                    // FX rack Select status
                 case FXRACKSELECTMODE:
                     color = (padindex == deck.CurrentEffectRack) ? ReloopBeatpad.PadColor.purple : 0;
                     deck.status["SamplerPad" + padindex].light.onOff(color);
                     break;
-                    //normal sampler mode
+                    // Normal sampler mode
                 default:
                     samplerbaseindex = (this.bankactive - 1) * 4;
                     samplerindex = samplerbaseindex + padindex;
@@ -277,8 +278,8 @@ ReloopBeatpad.SamplerBank = function() {
     };
 
     // This will update only one Sampler PAD light, only if it is necessary
-    //This is used to filter the led change in normal sampler mode, depending
-    //if we display the sample bank of the requested Sample or not
+    // This is used to filter the led change in normal sampler mode, depending
+    // if we display the sample bank of the requested Sample or not
     this.LedUpdateSampler = function(samplernum) {
         var samplerbaseindex = (this.bankactive - 1) * 4;
         if ((samplerbaseindex < samplernum) && (samplernum <= (samplerbaseindex + 4))) {
@@ -287,7 +288,7 @@ ReloopBeatpad.SamplerBank = function() {
         }
     };
 
-    //Will update, if necessary the four Sampler PAD at once
+    // Will update, if necessary the four Sampler PAD at once
     this.LedsUpdate = function() {
         var samplerbaseindex = (this.bankactive - 1) * 4;
         var samplerindex = 0;
@@ -297,14 +298,14 @@ ReloopBeatpad.SamplerBank = function() {
         for (decknum = 1; decknum <= 2; decknum++) {
             deck = ReloopBeatpad.decks["D" + decknum];
             switch (deck.PadMode) {
-                //Sampler bank select status
+                // Sampler bank select status
                 case SAMPLERBANKSTATUSMODE:
                     for (i = 1; i <= 4; i++) {
                         color = (i == this.bankactive) ? ReloopBeatpad.PadColor.fushia : 0;
                         deck.status["SamplerPad" + i].light.onOff(color);
                     }
                     break;
-                    //Loop mode Status
+                    // Loop mode Status
                 case LOOPMODESTATUS:
                     deck.status.SamplerPad1.light.onOff(ReloopBeatpad.PadColor.magenta);
                     deck.status.SamplerPad2.light.onOff(OFF);
@@ -312,14 +313,14 @@ ReloopBeatpad.SamplerBank = function() {
                     color = (deck.loopkind == SIMPLE) ? OFF : ReloopBeatpad.PadColor.magenta;
                     deck.status.SamplerPad4.light.onOff(color);
                     break;
-                    //FX rack Select status
+                    // FX rack Select status
                 case FXRACKSELECTMODE:
                     for (i = 1; i <= 4; i++) {
                         color = (i == deck.CurrentEffectRack) ? ReloopBeatpad.PadColor.purple : 0;
                         deck.status["SamplerPad" + i].light.onOff(color);
                     }
                     break;
-                    //normal sampler mode
+                    // Normal sampler mode
                 default:
                     for (i = 1; i <= 4; i++) {
                         samplerindex = samplerbaseindex + i;
@@ -422,12 +423,18 @@ ReloopBeatpad.deck = function(deckNum) {
         }
     };
 
-    //Hydra buttons (Load, sync and shift) :
-    //Buttons that behave differently wether you do a long press, a quick press or a double quick press
-    //three flavors you can put in your own mappings.
+    // *****************************************************************
+    // "Hydra" buttons (Load, sync and pfl) :
+    // these buttons behave differently wether you do
+    // a long press, a quick press or a double quick press
+    // three flavors you can put in your own mappings.
 
-    //Part that handles the behaviour of the Load button : long press (>500 ms)/short press
-    //Last Time the LOAD Btn was pressed before released
+    // *****
+    // Part that handles the behaviour of the Load button : 
+    // long press (>500 ms)/short press
+    // *****
+    
+    // Last Time the LOAD Btn was pressed before released
     this.LOADlongpress = false;
     this.LOADtimer = 0;
 
@@ -455,8 +462,12 @@ ReloopBeatpad.deck = function(deckNum) {
         }
     };
 
-    //Part that handles the behaviour of the Sync button : long press/simple short press/double quick press
-    //Last Time the SYNC Btn was pressed before released
+    // *****
+    // Part that handles the behaviour of the Sync button : 
+    // long press/simple short press/double quick press
+    // *****
+
+    // Last Time the SYNC Btn was pressed before released
     this.SYNCcount = 0;
     this.SYNCtimer = 0;
     this.SYNClongpress = false;
@@ -465,11 +476,11 @@ ReloopBeatpad.deck = function(deckNum) {
     this.SYNCassertlongpress = function() {
         this.SYNClongpress = true;
         this.control.sync.light.flashOn(100, ON, 100, 10);
-        //let's take action of the long press
+        // let's take action of the long press
         this.SYNCdecide();
     };
 
-    //Button pressed
+    // Button pressed
     this.SYNCdown = function() {
         this.control.sync.light.onOff(ON);
         if (this.SYNCtimer === 0) { //first press (inits)
@@ -477,7 +488,7 @@ ReloopBeatpad.deck = function(deckNum) {
             this.SYNClongpresstimer = engine.beginTimer(500, "ReloopBeatpad.decks.D" + this.deckNum + ".SYNCassertlongpress()", true);
             this.SYNCtimer = engine.beginTimer(200, "ReloopBeatpad.decks.D" + this.deckNum + ".SYNCdecide()", true);
             this.SYNCcount = 1;
-        } else { //2nd press (before SYNCtimer's out), stop timers and take action immediatly
+        } else { // 2nd press (before SYNCtimer's out), stop timers and take action immediatly
             engine.stopTimer(this.SYNClongpresstimer);
             engine.stopTimer(this.SYNCtimer);
             this.SYNCcount = 2;
@@ -485,14 +496,14 @@ ReloopBeatpad.deck = function(deckNum) {
         }
     };
 
-    //Button released
-    this.SYNCup = function() { //button release , stop long timer, keep long timer
+    // Button released
+    this.SYNCup = function() { // button release , stop long timer, keep long timer
         if (this.SYNClongpresstimer !== 0) {
             engine.stopTimer(this.SYNClongpresstimer);
         }
     };
 
-    //Take actions
+    // Take actions
     this.SYNCdecide = function() {
         if (this.SYNClongpresstimer !== 0) {
             engine.stopTimer(this.SYNClongpresstimer);
@@ -505,12 +516,12 @@ ReloopBeatpad.deck = function(deckNum) {
             engine.setValue(this.group, 'sync_enabled', true);
         } else {
             if (this.SYNCcount == 2) {
-                //Double press : Sync and play
+                // Double press : Sync and play
                 engine.setValue(this.group, 'sync_enabled', false);
                 engine.setValue(this.group, 'play', true);
                 engine.setValue(this.group, 'beatsync', true);
 
-            } else { //We pressed sync only once
+            } else { // We pressed sync only once
                 engine.setValue(this.group, 'sync_enabled', false);
                 engine.setValue(this.group, 'beatsync', true);
 
@@ -519,35 +530,41 @@ ReloopBeatpad.deck = function(deckNum) {
         this.SYNCcount = 0;
     };
 
-    //Part that handles the behaviour of the pfl button (in shift mode) : simple short press/double quick press
+    // *****
+    // Part that handles the behaviour of the pfl button (in shift mode) :
+    // simple short press/double quick press
+    // *****
     this.PFLcount = 0;
     this.PFLtimer = 0;
 
-    //Button pressed
+    // Button pressed
     this.PFLDown = function() {
-        if (this.PFLtimer === 0) { //first press
+        if (this.PFLtimer === 0) { // first press
             this.PFLtimer = engine.beginTimer(200, "ReloopBeatpad.decks.D" + this.deckNum + ".PFLdecide()", true);
             this.PFLcount = 1;
-        } else { //2nd press (before timer's out)
+        } else { // 2nd press (before timer's out)
             engine.stopTimer(this.PFLtimer);
             this.PFLcount = 2;
             this.SYNCdecide();
         }
     };
 
-    //Take action
+    // Take action
     this.PFLdecide = function() {
         this.PFLtimer = 0;
         if (this.PFLcount == 2) {
-            //Double press : toggle quantize
+            // Double press : toggle quantize
             this.control.quantize.onOff(!this.control.quantize.checkOn());
         } else {
-            //Single press : toggle slip mode
+            // Single press : toggle slip mode
             this.control.slip.onOff(!this.control.slip.checkOn());
         }
         this.PFLcount = 0;
     };
 
+    // *************************************************
+    // iCut mode management
+    // ****
     this.iCUTtimer = 0;
     this.iCUTdelay = 20;
     this.iCutfadersave = 0;
@@ -574,35 +591,40 @@ ReloopBeatpad.deck = function(deckNum) {
         }
     };
 
-    //Pitchbend attribute. Required for pitchbend to be ramping (i.e speeds up/slows down the more the wheel is moved).
+    // *************************************************
+    // Pitch bend management
+    // ******
+    //  attribute. Required for pitchbend to be ramping (i.e speeds up/slows down the more the wheel is moved).
     this.bendVal = 0;
-    //Timer used to turn of pitch bend.
+    // Timer used to turn of pitch bend.
     this.pitchTimer = 0;
-    //The alternative mode to scratching for the jog wheel.
+    // The alternative mode to scratching for the jog wheel.
     this.pitchBend = function(forwards) {
-        //For some reason the ramping pitchbend option in Mixx menu together with temp_rate_up/down doesn't seem
-        //to work for the jog wheel. So this function allows the pitch bend to ramp the faster/more
-        //revolutions of the wheel.
+        // For some reason the ramping pitchbend option in Mixx menu together with temp_rate_up/down doesn't seem
+        // to work for the jog wheel. So this function allows the pitch bend to ramp the faster/more
+        // revolutions of the wheel.
         if (this.pitchTimer !== 0) {
             engine.stopTimer(this.pitchTimer);
         }
 
-        var bendConst = 0.002; //Adjust to suit.
-        var nVal = (Math.abs(this.bendVal) + bendConst); //Turn bendVal to absolute value and add.
-        nVal = (nVal > 3.0) ? 3.0 : nVal; //If gone over 3, keep at 3.
-        this.bendVal = (forwards) ? nVal : -nVal; //Return to positive or minus number.
+        var bendConst = 0.002; // Adjust to suit.
+        var nVal = (Math.abs(this.bendVal) + bendConst); // Turn bendVal to absolute value and add.
+        nVal = (nVal > 3.0) ? 3.0 : nVal; // If gone over 3, keep at 3.
+        this.bendVal = (forwards) ? nVal : -nVal; // Return to positive or minus number.
         engine.setValue(this.group, "jog", this.bendVal);
         this.pitchTimer = engine.beginTimer(20, "ReloopBeatpad.decks.D" + this.deckNum + ".pitchBendOff()", true);
     };
-    //Used by function above. Turns pitchbend off.
+    // Used by function above. Turns pitchbend off.
     this.pitchBendOff = function() {
         this.bendVal = 0;
         this.pitchTimer = 0;
     };
 
 
-
-    //Thank you to the authors of the Vestax VCI 400 mapping script
+    // *****************************************************************
+    // Jog wheel management (scratching, bending, ...)
+    // ******
+    // Thank you to the authors of the Vestax VCI 400 mapping script
     this.finishWheelTouch = function() {
         this.wheelTouchInertiaTimer = 0;
         var play = engine.getValue(this.group, "play");
@@ -639,10 +661,10 @@ ReloopBeatpad.deck = function(deckNum) {
         }
 
         if (value == DOWN) {
-            //Hand on the Jog wheel, scratch activated
-            var intervalsPerRev = 1600; //Beatpad jog wheel is 800 intervals per revolution.
-            var rpm = 33 + 1 / 3; //Adjust to suit.
-            var alpha = 1.0 / 8; //Adjust to suit.
+            // Hand on the Jog wheel, scratch activated
+            var intervalsPerRev = 1600; // Beatpad jog wheel is 800 intervals per revolution.
+            var rpm = 33 + 1 / 3 ; //Adjust to suit.
+            var alpha = 1.0 / 8;   //Adjust to suit.
             var beta = alpha / 32; //Adjust to suit.
             /*
              * if "control"<0x40, then the DJ is doing a SHIFT+JogWheel (iCut with Dejay from Algorriddim)
@@ -682,12 +704,12 @@ ReloopBeatpad.deck = function(deckNum) {
             // if "Jog Scratch" mode is activated on the Beatpad, we have for the "control" value
             // Left JogWheel  --> 0x63, +SHIFT --> 0x23
             // Right JogWheel --> 0x65, +SHIFT --> 0x25
-            //According to the Quick start guide :
+            // According to the Quick start guide :
             //      iCut MODE :
             //      DJAY will automatically cut your track with the
             //      cross fader when holding SHIFT and scratching
             //      with the jog wheel
-            //According to Reloop Website : http://www.reloop.com/reloop-beatpad (Explorer tab)
+            // According to Reloop Website : http://www.reloop.com/reloop-beatpad (Explorer tab)
             //      iCut :
             //      this mode simulates a scratch routine. When the jog wheel is turned back
             //      the crossfader closes, when the jog wheel is turned forward the crossfader
@@ -706,18 +728,19 @@ ReloopBeatpad.deck = function(deckNum) {
             if (direction > 0) {
                 direction = 0;
             } // Backward=-1 (close), forward =0 (open)
-            // Left Deck ? direction = 0 (open : crossfader to zéro) or 1 (close : crossfader to the right)
+            //  Left Deck ? direction = 0 (open : crossfader to zéro) or 1 (close : crossfader to the right)
             // Right Deck ? direction = 0 (open : crossfader to zéro) or -1 (close : crossfader to the left)
             if (this.deckNum == 1) {
                 direction = -direction;
-            } //else do nothing
+            } // else do nothing
             this.iCUT(direction);
             engine.scratchTick(this.deckNum, jogValue);
         }
 
     };
 
-    //Controls for the deck--buttons, sliders, etc--are associated with the deck using this array.
+    //  for the deck--buttons, sliders, etc--are associated with
+    // the deck using this array.
     this.control = [];
     this.status = [];
     this.RGBShow = undefined;
@@ -743,9 +766,11 @@ ReloopBeatpad.deck = function(deckNum) {
     };
 };
 
-//Control class for control objects, e.g. play button. Objects for the two jog wheels are not created this way, instead they are
-//represented directly by the deck objects. This was just an easier way to do it, and there will only ever be one jog wheel
-//per deck anyway.
+// Control class for control objects, e.g. play button. Objects for the
+// two jog wheels are not created this way, instead they are
+// represented directly by the deck objects. This was just an easier
+//  way to do it, and there will only ever be one jog wheel
+//  per deck anyway.
 ReloopBeatpad.control = function(key, control, midino, group) {
     this.key = key;
     this.control = control;
@@ -760,8 +785,8 @@ ReloopBeatpad.control = function(key, control, midino, group) {
     };
 };
 
-//Has on/off and flashing modes for all button lights. Light objects are only created for buttons that can
-//actually illuminate.
+// Has on/off and flashing modes for all button lights. Light objects are only created for buttons that can
+// actually illuminate.
 ReloopBeatpad.light = function(control, midino, deckID, controlID, kind) {
     this.control = control;
     this.midino = midino;
@@ -773,9 +798,9 @@ ReloopBeatpad.light = function(control, midino, deckID, controlID, kind) {
     this.flashDuration = 0;
     this.flashOnceDuration = 0;
 
-    //public : light on/off
+    // public : light on/off
     this.onOff = function(value) {
-        //stop pending flashing effects now
+        // stop pending flashing effects now
         if (this.flashTimer !== 0) {
             engine.stopTimer(this.flashTimer);
             this.flashTimer = 0;
@@ -798,23 +823,24 @@ ReloopBeatpad.light = function(control, midino, deckID, controlID, kind) {
         this.lit = value;
     };
 
-    //public : make a light flashing
+    // public : make a light flashing
     this.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relight, valueoff) {
         //stop pending timers
         this.flashOff();
 
-        //init
+        // init
         this.flashDuration = num_ms_on;
 
-        //1st flash
-        //This is because the permanent timer below takes num_ms_on milisecs before first flash.
+        // 1st flash
+        // This is because the permanent timer below takes 
+        // num_ms_on milisecs before first flash.
         this.flashOnceOn(num_ms_on, value);
 
         if (flashCount !== 1) {
-            //flashcount =0 means permanent flash,
-            //flashcount>0 , means temporary flash, first flash already done,
-            //so we don't need this part  if flashcount=1
-            //permanent timer
+            // flashcount =0 means permanent flash,
+            // flashcount>0 , means temporary flash, first flash already done,
+            // so we don't need this part  if flashcount=1
+            // permanent timer
             this.flashTimer = engine.beginTimer((num_ms_on + num_ms_off), this.objStr + ".flashOnceOn(" + num_ms_on + "," + value + ",false," + valueoff + ")");
         }
         if (flashCount > 1) {
@@ -825,13 +851,13 @@ ReloopBeatpad.light = function(control, midino, deckID, controlID, kind) {
         }
     };
 
-    //public
+    // public
     this.get_flashDuration = function() {
         return this.flashDuration;
     };
 
-    //private : relight=true : restore light state before it was flashing
-    //this is a call back function (called in flashon() )
+    // private : relight=true : restore light state before it was flashing
+    // this is a call back function (called in flashon() )
     this.flashOff = function(relight) {
         //stop permanent timer if any
         if (this.flashTimer !== 0) {
@@ -852,21 +878,21 @@ ReloopBeatpad.light = function(control, midino, deckID, controlID, kind) {
         }
     };
 
-    //private : relight=true : restore light state before it was flashing
-    //this is a call back function (called in flashon() )
+    // private : relight=true : restore light state before it was flashing
+    // this is a call back function (called in flashon() )
     this.Stopflash = function(relight) {
-        //stop permanent timer
+        // stop permanent timer
         if (this.flashTimer !== 0) {
             engine.stopTimer(this.flashTimer);
         }
-        //reset flash variables to 0
+        // reset flash variables to 0
         this.flashTimer = 0;
         this.flashTimer2 = 0;
         this.flashDuration = 0;
         this.flashOff(relight);
     };
 
-    //private : call back function (called in flashon() )
+    // private : call back function (called in flashon() )
     this.flashOnceOn = function(num_ms, value, relight, valueoff) {
         midi.sendShortMsg(this.control, this.midino, value);
         pauseScript(scriptpause);
@@ -874,7 +900,7 @@ ReloopBeatpad.light = function(control, midino, deckID, controlID, kind) {
         this.flashOnceTimer = engine.beginTimer(num_ms - scriptpause, this.objStr + ".flashOnceOff(" + relight + "," + valueoff + ")", true);
     };
 
-    //private :call back function (called in flashOnceOn() )
+    // private :call back function (called in flashOnceOn() )
     this.flashOnceOff = function(relight, valueoff) {
         this.flashOnceTimer = 0;
         this.flashOnceDuration = 0;
@@ -907,20 +933,20 @@ ReloopBeatpad.status = function(control, midino) {
 
 
 // Some explanation about this part wich control the lights (colors, flashing effect, and so forth)
-//of the jog wheel.
-//It is a layered structure like layers in paint programs.
-//The lowest level (0) is the background and the highest is the foreground (show 6)
-//Each of the layer permits to act like a mask for the lower ones.
-//Each show corresponds to a light show to indicate wether you apply an effect, the lp/hp filter , loops, etc
-//The jogwheel has 4 RGB leds , so there is 4 slots for each show.
+// of the jog wheel.
+// It is a layered structure like layers in paint programs.
+// The lowest level (0) is the background and the highest is the foreground (show 6)
+// Each of the layer permits to act like a mask for the lower ones.
+// Each show corresponds to a light show to indicate wether you apply an effect, the lp/hp filter , loops, etc
+// The jogwheel has 4 RGB leds , so there is 4 slots for each show.
 // let's that we have toggle an Effect of the effect rack (show 1), the jog wheel
-//will illuminate magenta, yellow, cyan or green depending of the effect.
-//If above that we turn the lp/hp filter button to the right (High passs),
-//the right part will illuminate white (show 2), leaving the left part with the color of the effect.
-//The left part of (slots 1 and 2), set to "null", will be considered as being transparent for the layer show n°2,
-//leaving the correponding slots below (show1) in order to be displayed.
-//Shows 5 and 6 are reserved for temporary blinking : blinking off can be transparent or full black
-//This technique prevents throwing too many messages to the controller to lit on or off the leds.
+// will illuminate magenta, yellow, cyan or green depending of the effect.
+// If above that we turn the lp/hp filter button to the right (High passs),
+// the right part will illuminate white (show 2), leaving the left part with the color of the effect.
+// The left part of (slots 1 and 2), set to "null", will be considered as being transparent for the layer show n°2,
+// leaving the correponding slots below (show1) in order to be displayed.
+// Shows 5 and 6 are reserved for temporary blinking : blinking off can be transparent or full black
+// This technique prevents throwing too many messages to the controller to lit on or off the leds.
 ReloopBeatpad.rgblight = function(control, deckID) {
     this.control = control;
     this.midino = 0x69;
@@ -949,12 +975,12 @@ ReloopBeatpad.rgblight = function(control, deckID) {
         "show5": {
             activated: true,
             colors: [null, null, null, null]
-        }, //reserved for blinking  (blink Off values)
+        }, // reserved for blinking  (blink Off values)
         "show6": {
             activated: false,
             colors: [null, null, null, null]
-        }
-    }; //reserved for blinking (blink On values)
+        } // reserved for blinking (blink On values)
+    }; 
     this.setshow = function(showname, color1, color2, color3, color4) {
         if (showname !== "show0") {
             if (color1 === undefined) {
@@ -1007,7 +1033,7 @@ ReloopBeatpad.rgblight = function(control, deckID) {
         }
     };
 
-    //public : light on/off
+    // public : light on/off
     this.onOff = function(showname, value) {
         if (this.flashTimer !== 0) {
             engine.stopTimer(this.flashTimer);
@@ -1036,74 +1062,74 @@ ReloopBeatpad.rgblight = function(control, deckID) {
         this.activateshow(showname, (value) ? true : false);
     };
 
-    //public : make a rgb light flashing
+    // public : make a rgb light flashing
     this.flashOn = function(num_ms_on, RGBColor, num_ms_off, flashCount) {
         this.setshow("show6", RGBColor);
 
-        //stop pending timers
+        // stop pending timers
         this.flashOff();
 
-        //inits
+        // inits
         this.layers.show5.activate = true;
         this.flashDuration = num_ms_on;
 
-        //1st flash
-        //This is because the permanent timer below takes num_ms_on milisecs before first flash.
+        // 1st flash
+        // This is because the permanent timer below takes num_ms_on milisecs before first flash.
         this.flashOnceOn(num_ms_on, true);
 
         if (flashCount !== 1) {
-            //flashcount =0 means permanent flash,
-            //flashcount>0 , means temporary flash, first flash already done,
-            //so we don't need this part  if flashcount=1
-            //permanent timer
+            // flashcount =0 means permanent flash,
+            // flashcount>0 , means temporary flash, first flash already done,
+            // so we don't need this part  if flashcount=1
+            // permanent timer
             this.flashTimer = engine.beginTimer((num_ms_on + num_ms_off), this.objStr + ".flashOnceOn(" + num_ms_on + ",true)");
         }
         if (flashCount > 1) {
-            //flashcount>0 , means temporary flash, first flash already done,
-            //so we don't need this part  if flashcount=1
-            //temporary timer. The end of this timer stops the permanent flashing
+            // flashcount>0 , means temporary flash, first flash already done,
+            // so we don't need this part  if flashcount=1
+            // temporary timer. The end of this timer stops the permanent flashing
             this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, this.objStr + ".Stopflash()", true);
         }
     };
 
-    //private : relight=true : restore light state before it was flashing
-    //this is a call back function (called in flashon() )
+    // private : relight=true : restore light state before it was flashing
+    // this is a call back function (called in flashon() )
     this.flashOff = function() {
-        //stop permanent timer if any
+        // stop permanent timer if any
         if (this.flashTimer !== 0) {
             engine.stopTimer(this.flashTimer);
-            //reset flash variables to 0
+            // reset flash variables to 0
             this.flashTimer = 0;
         }
         if (this.flashTimer2 !== 0) {
             engine.stopTimer(this.flashTimer2);
-            //reset flash variables to 0
+            // reset flash variables to 0
             this.flashTimer2 = 0;
         }
         this.layers.show5.activate = false;
         this.activateshow("show6", false);
     };
 
-    //private : relight=true : restore light state before it was flashing
-    //this is a call back function (called in flashon() )
+    // private : relight=true : restore light state before it was flashing
+    // this is a call back function (called in flashon() )
     this.Stopflash = function() {
-        //stop permanent timer
+        // stop permanent timer
         if (this.flashTimer !== 0) {
             engine.stopTimer(this.flashTimer);
         }
-        //reset flash variables to 0
+        // reset flash variables to 0
         this.flashTimer = 0;
         this.flashTimer2 = 0;
         this.flashDuration = 0;
         this.flashOff();
     };
 
-    //public
+    // public
     this.get_flashDuration = function() {
         return this.flashDuration;
     };
 
-    //private : call back function (called in flashon() )
+    // private : call back function (called in flashon() )
     this.flashOnceOn = function(num_ms, relight) {
         this.layers.show5.activate = true;
         this.activateshow("show6", true);
@@ -1111,7 +1137,7 @@ ReloopBeatpad.rgblight = function(control, deckID) {
         this.flashOnceTimer = engine.beginTimer(num_ms - 10, this.objStr + ".flashOnceOff(" + relight + ")", true);
     };
 
-    //private :call back function (called in flashOnceOn() )
+    // private :call back function (called in flashOnceOn() )
     this.flashOnceOff = function(relight) {
         this.flashOnceTimer = 0;
         this.flashOnceDuration = 0;
@@ -1123,8 +1149,8 @@ ReloopBeatpad.rgblight = function(control, deckID) {
         this.activateshow("show6", false);
     };
 
-    //RGB light showtime
-    //we use a dedicated layer for each light show to display
+    // RGB light showtime
+    // we use a dedicated layer for each light show to display
     this.effects = function(value) {
         var RGBColor;
         switch (value) {
@@ -1210,7 +1236,7 @@ ReloopBeatpad.addControl = function(arrID, ID, controlObj, addLight) {
 ReloopBeatpad.addStatus = function(arrID, ID, statusObj, addLight) {
     var arrAdd = this[arrID];
     if (addLight) {
-        //If the button can illuminate, a light object is created for it (see above
+        // If the button can illuminate, a light object is created for it (see above
         statusObj.light = new ReloopBeatpad.light(statusObj.control, statusObj.midino, "D" + this.deckNum, ID, "status");
     }
     arrAdd[ID] = statusObj;
@@ -1225,16 +1251,16 @@ ReloopBeatpad.addRGB = function(RGBObj) {
 // ----------   Other global variables    ----------
 ReloopBeatpad.initobjects = function() {
     var i;
-    //This creates 'addControl' and 'addStatus' constructor functions to the deck class, using the above functions as a templates.
+    // This creates 'addControl' and 'addStatus' constructor functions to the deck class, using the above functions as a templates.
     ReloopBeatpad.deck.prototype.addStatus = ReloopBeatpad.addStatus;
     ReloopBeatpad.deck.prototype.addControl = ReloopBeatpad.addControl;
     ReloopBeatpad.deck.prototype.addRGB = ReloopBeatpad.addRGB;
     
-    //Creating the two deck objects.
+    // Creating the two deck objects.
     ReloopBeatpad.addControl("decks", "D1", new ReloopBeatpad.deck("1"));
     ReloopBeatpad.addControl("decks", "D2", new ReloopBeatpad.deck("2"));
 
-    //control creators
+    // control creators
     this.cc1 = function(arrID, ID, key, midino, complement, group, addLight) {
         var NewControl = new ReloopBeatpad.control(key, LBtn, ReloopBeatpad.MIDI[midino]+complement,group);
         ReloopBeatpad.decks.D1.addControl(arrID, ID, NewControl, addLight);
@@ -1250,7 +1276,7 @@ ReloopBeatpad.initobjects = function() {
         this.cc2(arrID, ID, key, midino, complement, "[Channel2]", addLight);
     };
 
-    //status creator
+    // status creator
     this.sc = function(arrID, ID, midino, complement, addLight) {
         var NewStatus;
         NewStatus = new ReloopBeatpad.status(LBtn, ReloopBeatpad.MIDI[midino]+complement);
@@ -1265,7 +1291,7 @@ ReloopBeatpad.initobjects = function() {
         ReloopBeatpad.decks.D2.addStatus(arrID, ID, NewStatus, addLight);
     };
 
-    //All controls below associated with left or right deck.
+    // All controls below associated with left or right deck.
     this.cc("control", "load", "LoadSelectedTrack", "Load", 0, true);
     this.cc("control", "sync", "beatsync", "mSync", 0, true);
     this.cc("control", "start", "start", "mSync", SHIFT, true);
@@ -1301,7 +1327,7 @@ ReloopBeatpad.initobjects = function() {
         this.cc2("control", "sSamplerPad" + i, "sampler_bank_" + i, "LoopPad", i - 1 + SHIFT, "Deere", false);
     }
     
-    //Status Buttons and visualizations
+    // Status Buttons and visualizations
 
     this.sc("status", "brake", "Jump", SHIFT, true);
     this.sc("status", "RimRed", "RIM_Red", 0, true);
@@ -1444,15 +1470,15 @@ ReloopBeatpad.init = function(id, debug) {
         ReloopBeatpad.OnBankLoaded(value, group, control, 4);
     });
 
-    //After midi controller receive this Outbound Message request SysEx Message,
-    //midi controller will send the status of every item on the
-    //control surface. (Mixxx will be initialized with current values)
+    // After midi controller receive this Outbound Message request SysEx Message,
+    // midi controller will send the status of every item on the
+    // control surface. (Mixxx will be initialized with current values)
     print("polling Beatpad , sysex msg :" + ControllerStatusSysex);
 
     midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 
 
-    //check if there is already something loaded on each deck (when script reinitialize)
+    // check if there is already something loaded on each deck (when script reinitialize)
     engine.trigger("[Channel1]", "track_samples");
     engine.trigger("[Channel2]", "track_samples");
     engine.trigger("[Channel1]", "play_indicator");
@@ -1513,10 +1539,10 @@ ReloopBeatpad.WheelSeekTouch = function(channel, control, value, status, group) 
     var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (value == DOWN) {
-        //Hand on the Jog wheel, fast seek activated
+        // Hand on the Jog wheel, fast seek activated
         deck.seekingfast = true;
     } else {
-        //Hand off the Jog wheel, desactivate fast seek
+        // Hand off the Jog wheel, desactivate fast seek
         deck.seekingfast = false;
     }
 };
@@ -1527,7 +1553,7 @@ ReloopBeatpad.WheelSeek = function(channel, control, value, status, group) {
     // Test if we are "seeking fast". If not, it means that the DJ
     // is using the border ring, we then navigate into the track
     // slowly (beatjump function id working way better than "fwd"or "back" 
-    //functions with the jogwheels for seeking the track)
+    // functions with the jogwheels for seeking the track)
     if (!deck.seekingfast) {
         engine.setValue(group, "beatjump", (value - 0x40) / 4);
         return;
@@ -1567,8 +1593,8 @@ ReloopBeatpad.WheelBend = function(channel, control, value, status, group) {
 ReloopBeatpad.ShiftBtn = function(channel, control, value, status, group) {
     var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
     deck.Shifted = (value === DOWN);
-    //trigger() : lights in different mode if the deck is shifted or not
-    //examples : SYNC/SET/JUMP and Pause/play buttons have a second function
+    // trigger() : lights in different mode if the deck is shifted or not
+    // examples : SYNC/SET/JUMP and Pause/play buttons have a second function
     deck.triggershift();
 };
 
@@ -1773,7 +1799,7 @@ ReloopBeatpad.FXSelectPush = function(channel, control, value, status, group) {
     var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
     // quick button for the current fx
 
-    //desactivate previous pending effect
+    // desactivate previous pending effect
     if (value == DOWN) {
         deck.control["FXPad" + deck.CurrentEffectRack].onOff(ON);
         deck.status.FX_ON.light.onOff(ON);
@@ -1803,7 +1829,7 @@ ReloopBeatpad.sFXSelectPush = function(channel, control, value, status, group) {
         var oldvalue = engine.getValue("[QuickEffectRack1_" + group + "_Effect1]", "enabled");
         engine.setValue("[QuickEffectRack1_" + group + "_Effect1]", "enabled", (!oldvalue));
     }
-};
+};  
 
 ReloopBeatpad.InstantFXPad = function(channel, control, value, status, group) {
     var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
@@ -1816,7 +1842,7 @@ ReloopBeatpad.InstantFXPad = function(channel, control, value, status, group) {
             deck.SelectEffectRack(padindex);
         }
     } else {
-        //desactivate previous pending effect
+        // desactivate previous pending effect
         deck.control["FXPad" + deck.CurrentEffectRack].onOff(OFF);
         if (value == DOWN) {
             deck.control["FXPad" + padindex].onOff(ON);
@@ -1862,7 +1888,7 @@ ReloopBeatpad.LoopBtn = function(channel, control, value, status, group) {
     if (value == DOWN) {
         if (deck.loopkind == SIMPLE) {
             if (!isLoopActive) {
-                //activate loop
+                // activate loop
                 engine.setValue(group, "beatloop_" + deck.loopsize.toString() + "_activate", 1);
                 deck.status.Loop.onOff(ON);
                 deck.RGBShow.loops(ON);
@@ -1873,14 +1899,14 @@ ReloopBeatpad.LoopBtn = function(channel, control, value, status, group) {
                 deck.RGBShow.loops(OFF);
             }
         } else {
-            //activate roll
+            // activate roll
             engine.setValue(group, "beatlooproll_" + deck.loopsize.toString() + "_activate", 1);
             deck.status.Loop.onOff(ON);
             deck.RGBShow.loops(ON);
         }
     } else {
         if (deck.loopkind == ROLL) {
-            //deactivate roll
+            // deactivate roll
             engine.setValue(group, "beatlooproll_" + deck.loopsize.toString() + "_activate", 0);
             deck.status.Loop.onOff(OFF);
             deck.RGBShow.loops(OFF);
@@ -2174,7 +2200,7 @@ ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
         switch (trackwarning) {
             case 0:
                 var isLoopActive = engine.getValue(group, "loop_enabled");
-                if (isLoopActive) { //loop_position clock
+                if (isLoopActive) { // loop_position clock
                     var ts = engine.getValue(group, "track_samples");
                     var loopstart = engine.getValue(group, "loop_start_position");
                     var loopend = engine.getValue(group, "loop_end_position");
