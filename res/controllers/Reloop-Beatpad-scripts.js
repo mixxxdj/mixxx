@@ -15,7 +15,17 @@
  * - Light and Jog wheel light handling
  *-  shift+wheelturn in "Jog Scratch" mode do automatic cut of the fader while scratching
  * - press/double press/long press handling
- *
+ * 
+ * Option
+ * ---------------
+ * By default, when you reach the end of the track, the jog wheel are flashing.
+ * set this variable just below to "false" instead of "true"
+ * in order to disable this behaviour by default.
+ * This can be toggled from the controller also (see the Wiki)
+ * (idea by be.ing, member of the Mixxx team)
+ **************************/
+var TrackEndWarning = true;
+ /*************************
  * References
  * ---------------
  * Wiki/manual : http://www.mixxx.org/wiki/doku.php/reloop_beatpad
@@ -68,12 +78,7 @@ var ON = 0x7F,
     //scriptpause :
     //period (in ms) while the script will be paused when sending messages
     //to the controller in order to avoid too much data flow at once in the same time
-    scriptpause = 5,
-    //TrackEndWarning :
-    //By default, when you reach the end of the track, the jog wheel are flashing.
-    //set this variable to false to disable this behaviour.
-    //(idea by be.ing, member of the Mixxx team)
-    TrackEndWarning = true;
+    scriptpause = 5;
 
 //Utilities
 function pauseScript(ms) {
@@ -133,9 +138,11 @@ ReloopBeatpad.MIDI = {
     //Vinyl RIM Leds
     RIM_Red: 0x67, // 1st behaviour 0x01-0x18 ; 2nd Behavior = 1st +24 ;3d behavior ON/OFF
     RIM_Blue: 0x68, // 1st behaviour 0x05-0x08 ; 2nd Behavior = 1st -4;3d behavior ON/OFF
-    RIM_RGB: 0x69 //(4 RGB Leds 0x69~0x6C (+0--+4)
+    RIM_RGB: 0x69 //4 RGB Leds 0x69~0x6C (+0--+4) : for values, see ReloopBeatpad.RGB just below 
 };
 
+
+//Colors used by the jogwheels
 ReloopBeatpad.RGB = {
     black: 0x00,
     red: 0x01,
@@ -249,7 +256,7 @@ ReloopBeatpad.SamplerBank = function() {
     };
 
     // This will update only one Sampler PAD light, only if it is necessary
-    //This is used to filter the led changein normal sampler mode, depending
+    //This is used to filter the led change in normal sampler mode, depending
     //if we display the sample bank of the requested Sample or not
     this.LedUpdateSampler = function(samplernum) {
         var samplerbaseindex = (this.bankactive - 1) * 4;
