@@ -15,8 +15,8 @@
  * - Light and Jog wheel light handling
  *-  shift+wheelturn in "Jog Scratch" mode do automatic cut of the fader while scratching
  * - press/double press/long press handling
- * 
- * Option
+ * *********************************************************************
+ * ==============             User Options             =================
  * ---------------
  * By default, when you reach the end of the track, the jog wheel are flashing.
  * set this variable just below to "false" instead of "true"
@@ -25,8 +25,8 @@
  * (idea by be.ing, member of the Mixxx team)
  **************************/
 var TrackEndWarning = true;
- /*************************
- * References
+ /**********************************************************************
+ * User References
  * ---------------
  * Wiki/manual : http://www.mixxx.org/wiki/doku.php/reloop_beatpad
  * support forum : http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=7581
@@ -40,8 +40,29 @@ var TrackEndWarning = true;
  * Revision history
  * ----------------
  * 2015-10-22 - Initial revision for Mixxx 1.12.0
+ * 2015-10-22 - GPL v2 licence, rework of this header, JSHint.com quality check,
+ *              a few comments, minor changes, typos
  * This is a neverending story...
- ***********************************************************************/
+ ***********************************************************************
+ *                           GPL v2 licence
+ *                           -------------- 
+ * Reloop Beatpad controller script script 1.2.1 for Mixxx 1.12
+ * Copyright (C) 2015 Chloé AVRILLON
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+***********************************************************************/
 function ReloopBeatpad() {}
 
 ReloopBeatpad(); //Very important ! Initializes the declared function, yep
@@ -713,9 +734,9 @@ ReloopBeatpad.deck = function(deckNum) {
         this.loopkind = 3 - this.loopkind;
         if (isLoopActive) {
             if (this.loopkind == SIMPLE) {
-                engine.setValue(this.group, "beatloop_" + this.loopsize.toString() + "_activate", 1);
+                engine.setValue(this.group, "beatloop_" + this.loopsize+ "_activate", 1);
             } else {
-                engine.setValue(this.group, "beatlooproll_" + this.loopsize.toString() + "_activate", 1);
+                engine.setValue(this.group, "beatlooproll_" + this.loopsize+ "_activate", 1);
             }
         }
         ReloopBeatpad.samplers.LedsUpdate();
@@ -887,7 +908,7 @@ ReloopBeatpad.status = function(control, midino) {
 
 // Some explanation about this part wich control the lights (colors, flashing effect, and so forth)
 //of the jog wheel.
-//It is alayered structure like layers in paint programs.
+//It is a layered structure like layers in paint programs.
 //The lowest level (0) is the background and the highest is the foreground (show 6)
 //Each of the layer permits to act like a mask for the lower ones.
 //Each show corresponds to a light show to indicate wether you apply an effect, the lp/hp filter , loops, etc
@@ -1324,8 +1345,6 @@ ReloopBeatpad.init = function(id, debug) {
 
     ReloopBeatpad.TurnLEDsOff();
     ReloopBeatpad.initobjects();
-    // Enable 2 decks in v1.11.x and above
-    engine.setValue("[Master]", "num_decks", 2);
 
     // Set soft-takeover for all Sampler volumes
     for (i = engine.getValue("[Master]", "num_samplers"); i >= 1; i--) {
@@ -1505,9 +1524,10 @@ ReloopBeatpad.WheelSeekTouch = function(channel, control, value, status, group) 
 ReloopBeatpad.WheelSeek = function(channel, control, value, status, group) {
     var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
-    // See if we're seekink fast. If not, it means the DJ
-    // is using the border. Seeking slowly (beatjump function works
-    // way better than "fwd"or "back" functions with jogwheels
+    // Test if we are "seeking fast". If not, it means that the DJ
+    // is using the border ring, we then navigate into the track
+    // slowly (beatjump function id working way better than "fwd"or "back" 
+    //functions with the jogwheels for seeking the track)
     if (!deck.seekingfast) {
         engine.setValue(group, "beatjump", (value - 0x40) / 4);
         return;
