@@ -80,9 +80,10 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     bool checkSkinResolution(QString skin);
 
     // Because the CueDefault list is out of order, we have to set the combo
-    // box using the user data, not the index.  Returns the userData value used,
-    // which may be different than the supplied argument if nothing was found.
-    int setCueDefaultIndexByData(int userData);
+    // box using the user data, not the index.  Returns the index of the item
+    // that has the corresponding userData. If the userdata is not in the list,
+    // returns zero.
+    int cueDefaultIndexByData(int userData) const;
 
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObject* m_pControlPositionDisplay;
