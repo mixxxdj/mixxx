@@ -157,7 +157,6 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSo
     if (!m_pSoundSource->isValid()) {
         qWarning() << "Invalid file:" << m_pSoundSource->getUrlString()
                 << "channels" << m_pSoundSource->getChannelCount()
-                << "frame rate" << m_pSoundSource->getChannelCount();
                 << "sampling rate" << m_pSoundSource->getSamplingRate();
         return m_pAudioSource;
     }
