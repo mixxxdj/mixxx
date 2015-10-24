@@ -2806,52 +2806,6 @@
         <source>Disable Auto DJ</source>
         <translation type="unfinished"></translation>
     </message>
-    <message numerus="yes">
-        <location filename="../../src/dlgautodj.cpp" line="228"/>
-        <source>%Ln hour(s)</source>
-        <comment>duration_hours</comment>
-        <translation>
-            <numerusform>1 hour</numerusform>
-            <numerusform>%n hours</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../../src/dlgautodj.cpp" line="235"/>
-        <source>%Ln minute(s)</source>
-        <comment>duration_minutes</comment>
-        <translation>
-            <numerusform>1 minute</numerusform>
-            <numerusform>%n minutes</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../../src/dlgautodj.cpp" line="242"/>
-        <source>%Ln second(s)</source>
-        <comment>duration_seconds</comment>
-        <translation>
-            <numerusform>1 second</numerusform>
-            <numerusform>%n seconds</numerusform>
-        </translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgautodj.cpp" line="246"/>
-        <source>0 seconds</source>
-        <translation>less than a second</translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../../src/dlgautodj.cpp" line="250"/>
-        <source>(%Ln track(s))</source>
-        <comment>track_count</comment>
-        <translation>
-            <numerusform>(1 track)</numerusform>
-            <numerusform>(%n tracks)</numerusform>
-        </translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgautodj.cpp" line="253"/>
-        <source>%1h%2m%3s in selection</source>
-        <translation>%1h%2m%3s in selection</translation>
-    </message>
     <message>
         <location filename="../../src/dlgautodj.ui" line="14"/>
         <source>Auto DJ</source>
@@ -2914,14 +2868,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgautodj.ui" line="137"/>
+        <location filename="../../src/dlgautodj.ui" line="144"/>
         <source>Turn Auto DJ on or off.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgautodj.ui" line="140"/>
-        <location filename="../../src/dlgautodj.cpp" line="169"/>
-        <location filename="../../src/dlgautodj.cpp" line="170"/>
+        <location filename="../../src/dlgautodj.ui" line="147"/>
+        <location filename="../../src/dlgautodj.cpp" line="175"/>
+        <location filename="../../src/dlgautodj.cpp" line="176"/>
         <source>Enable Auto DJ</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3200,17 +3154,27 @@ You tried to learn: %1,%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="75"/>
+        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="46"/>
+        <source>Dumps all ControlObject values to a csv-file saved in the settings path (e.g. ~/.mixxx)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="49"/>
+        <source>Dump to csv</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="85"/>
         <source>Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="97"/>
+        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="94"/>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="125"/>
+        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="135"/>
         <source>Stats</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3592,11 +3556,6 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="20"/>
         <source>Controllers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="32"/>
-        <source>Controllers allow you to control Mixxx with physical devices (for example USB MIDI or HID controllers). Controllers that Mixxx recognizes are shown in the &quot;Controllers&quot; section in the sidebar.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

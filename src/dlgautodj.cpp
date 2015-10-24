@@ -5,6 +5,7 @@
 #include "library/playlisttablemodel.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
+#include "util/time.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      ConfigObject<ConfigValue>* pConfig,
@@ -206,56 +207,22 @@ void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
 void DlgAutoDJ::updateSelectionInfo()
 {
     int duration = 0;
-    
+
     QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
 
-    for(int i=0;i!= indices.size();i++) {
-      TrackPointer pTrack = m_pAutoDJTableModel->getTrack(indices.at(i));
+    for (int i = 0; i < indices.size(); ++i) {
+        TrackPointer pTrack = m_pAutoDJTableModel->getTrack(indices.at(i));
       if (pTrack) {
         duration += pTrack->getDuration();
       }
     }
 
-    QString label = QString();
-    QString tooltip = QString();
-    
-    if (!indices.isEmpty()) {
-    	
-      	int hours = duration / 3600;
-	int minutes = (duration - (hours*3600)) / 60;
-	int seconds = duration - (hours * 3600) - (minutes*60);
+    QString label;
 
-	if (hours > 0) {
-	  label.append(tr("%Ln hour(s)", "duration_hours", hours));
-	}
-	
-	if (minutes > 0) {
-	  if (hours > 0) { 
-	    label.append(", ");
-	  }
-	  label.append(tr("%Ln minute(s)","duration_minutes", minutes));
-	}
-	
-	if (hours == 0 && seconds > 0) {
-	  if (minutes > 0) {
-	    label.append(", ");
-	  }
-	  label.append(tr("%Ln second(s)","duration_seconds", seconds));
-	}
-	
-	if (hours == 0 && minutes == 0 && seconds == 0) {
-	  label.append(tr("0 seconds"));
-	}
-	
-	label.append(" ");
-	label.append(tr("(%Ln track(s))","track_count", indices.size()));
-	
-	tooltip = QString(tr("%1h%2m%3s in selection")).arg(hours)
-	.arg(minutes,2,10,QChar('0'))
-	.arg(seconds,2,10,QChar('0'));
-	
+    if (!indices.isEmpty()) {
+        label.append(Time::formatSeconds(duration, false));
+        label.append(QString(" (%1)").arg(indices.size()));           
     }
     
-    labelSelectionInfo->setToolTip(tooltip);
     labelSelectionInfo->setText(label);
 }
