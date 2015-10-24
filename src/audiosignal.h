@@ -64,6 +64,10 @@ public:
     // Returns the sampling rate in Hz. The sampling rate is defined as the
     // number of samples per second for each channel. Please not that this
     // does not equal the total number of samples per second in the stream!
+    //
+    // NOTE(uklotzde): I consciously avoided the term "sample rate", because
+    // that sounds like "number of samples per second" which is wrong for
+    // signals with more than a single channel and might be misleading!
     SINT getSamplingRate() const {
         return m_samplingRate;
     }

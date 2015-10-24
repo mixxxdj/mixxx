@@ -31,7 +31,7 @@ private:
 } // anonymous namespace
 
 // Decoded output of opusfile has a fixed sample rate of 48 kHz
-const SINT SoundSourceOpus::kFrameRate = 48000;
+const SINT SoundSourceOpus::kSamplingRate = 48000;
 
 SoundSourceOpus::SoundSourceOpus(QUrl url)
         : SoundSource(url, "opus"),
@@ -81,7 +81,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
 
     pTrackMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
-    pTrackMetadata->setSampleRate(Mixxx::SoundSourceOpus::kFrameRate);
+    pTrackMetadata->setSampleRate(Mixxx::SoundSourceOpus::kSamplingRate);
     pTrackMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
     pTrackMetadata->setDuration(
             op_pcm_total(l_ptrOpusFile, -1) / pTrackMetadata->getSampleRate());
@@ -184,7 +184,7 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         return ERR;
     }
 
-    setFrameRate(kFrameRate);
+    setSamplingRate(kSamplingRate);
 
     m_curFrameIndex = getMinFrameIndex();
 

@@ -17,7 +17,7 @@ struct AudioSourceConfig;
 
 // Common interface and base class for audio sources.
 //
-// Both the number of channels and the frame rate must
+// Both the number of channels and the sampling rate must
 // be constant and are not allowed to change over time.
 //
 // The length of audio data is measured in frames. A frame
@@ -33,15 +33,7 @@ struct AudioSourceConfig;
 // closed upon destruction.
 class AudioSource: public UrlResource, public AudioSignal {
 public:
-    // Returns the number of frames per second. This equals
-    // the number samples for each channel per second, which
-    // must be uniform among all channels. The frame rate
-    // must be constant over time.
-    inline SINT getFrameRate() const {
-        return getSamplingRate();
-    }
-
-    // Returns the total number of frames.
+    // Returns the total number of sample frames.
     inline SINT getFrameCount() const {
         return m_frameCount;
     }
@@ -57,7 +49,7 @@ public:
     }
     inline SINT getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero
-        return getFrameCount() / getFrameRate();
+        return getFrameCount() / getSamplingRate();
     }
 
     // The bitrate is measured in kbit/s (kbps).
@@ -97,7 +89,7 @@ public:
     // - Precondition: isValidFrameIndex(frameIndex) == true
     //   - Index of first frame: frameIndex = 0
     //   - Index of last frame: frameIndex = getFrameCount() - 1
-    // - The seek position in seconds is frameIndex / frameRate()
+    // - The seek position in seconds is frameIndex / getSamplingRate()
     // Returns the actual current frame index which may differ from the
     // requested index if the source does not support accurate seeking.
     virtual SINT seekSampleFrame(SINT frameIndex) = 0;
@@ -192,16 +184,6 @@ public:
 
 protected:
     explicit AudioSource(const QUrl& url);
-
-    inline static bool isValidFrameRate(SINT frameRate) {
-        return isValidSamplingRate(frameRate);
-    }
-    inline bool hasFrameRate() const {
-        return hasSamplingRate();
-    }
-    void setFrameRate(SINT frameRate) {
-        setSamplingRate(frameRate);
-    }
 
     inline static bool isValidFrameCount(SINT frameCount) {
         return kFrameCountZero <= frameCount;

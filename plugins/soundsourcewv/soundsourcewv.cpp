@@ -56,7 +56,7 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     }
 
     setChannelCount(WavpackGetReducedChannels(m_wpc));
-    setFrameRate(WavpackGetSampleRate(m_wpc));
+    setSamplingRate(WavpackGetSampleRate(m_wpc));
     setFrameCount(WavpackGetNumSamples(m_wpc));
 
     if (WavpackGetMode(m_wpc) & MODE_FLOAT) {

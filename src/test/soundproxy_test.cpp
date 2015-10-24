@@ -65,7 +65,7 @@ TEST_F(SoundSourceProxyTest, open) {
         Mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
         ASSERT_TRUE(!pAudioSource.isNull());
         EXPECT_LT(0, pAudioSource->getChannelCount());
-        EXPECT_LT(0, pAudioSource->getFrameRate());
+        EXPECT_LT(0, pAudioSource->getSamplingRate());
         EXPECT_LT(0, pAudioSource->getFrameCount());
     }
 }
