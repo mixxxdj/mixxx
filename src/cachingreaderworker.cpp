@@ -131,7 +131,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     }
 
     Mixxx::AudioSourceConfig audioSrcCfg;
-    audioSrcCfg.channelCountHint = CachingReaderChunk::kChannels;
+    audioSrcCfg.setChannelCount(CachingReaderChunk::kChannels);
     m_pAudioSource = openAudioSourceForReading(pTrack, audioSrcCfg);
     if (m_pAudioSource.isNull()) {
         m_maxReadableFrameIndex = Mixxx::AudioSource::getMinFrameIndex();

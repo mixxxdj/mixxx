@@ -232,14 +232,22 @@ private:
 };
 
 // Parameters for configuring audio sources
-struct AudioSourceConfig {
-    AudioSourceConfig()
-        : channelCountHint(AudioSignal::kChannelCountDefault),
-          frameRateHint(AudioSignal::kSamplingRateDefault){
-    }
+class AudioSourceConfig: public AudioSignal {
+public:
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+    // NOTE(uklotzde): Inheriting constructors are supported since VS2015.
+    AudioSourceConfig() {}
+    AudioSignal(SINT channelCount, SINT samplingRate): AudioSignal(channelCount, samplingRate) {}
+#else
+    // Inherit constructors from base class
+    using AudioSignal::AudioSignal;
+#endif
 
-    SINT channelCountHint;
-    SINT frameRateHint;
+    using AudioSignal::setChannelCount;
+    using AudioSignal::resetChannelCount;
+
+    using AudioSignal::setSamplingRate;
+    using AudioSignal::resetSamplingRate;
 };
 
 typedef QSharedPointer<AudioSource> AudioSourcePointer;
