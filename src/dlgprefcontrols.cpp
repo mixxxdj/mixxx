@@ -231,9 +231,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     ComboBoxCueDefault->addItem(tr("Pioneer mode"), 1);
     ComboBoxCueDefault->addItem(tr("Denon mode"), 2);
     ComboBoxCueDefault->addItem(tr("Numark mode"), 3);
-    ComboBoxCueDefault->setCurrentIndex(cueDefaultValue);
-
-    slotSetCueDefault(cueDefaultValue);
+    const int cueDefaultIndex = cueDefaultIndexByData(cueDefaultValue);
+    ComboBoxCueDefault->setCurrentIndex(cueDefaultIndex);
+    slotSetCueDefault(cueDefaultIndex);
     connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
 
     // Cue recall
@@ -726,4 +726,15 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
 
 void DlgPrefControls::slotUpdateSpeedAutoReset(int i) {
     m_speedAutoReset = i;
+}
+
+int DlgPrefControls::cueDefaultIndexByData(int userData) const {
+    for (int i = 0; i < ComboBoxCueDefault->count(); ++i) {
+        if (ComboBoxCueDefault->itemData(i).toInt() == userData) {
+            return i;
+        }
+    }
+    qWarning() << "No default cue behavior found for value" << userData
+               << "returning default";
+    return 0;
 }
