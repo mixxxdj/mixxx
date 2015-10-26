@@ -113,8 +113,8 @@ void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
     setDuration(trackMetadata.getDuration());
     setBitrate(trackMetadata.getBitrate());
 
-    if (trackMetadata.isReplayGainValid()) {
-        setReplayGain(trackMetadata.getReplayGain());
+    if (trackMetadata.getReplayGain().hasRatio()) {
+        setReplayGain(trackMetadata.getReplayGain().getRatio());
     }
 
     // Need to set BPM after sample rate since beat grid creation depends on
@@ -147,7 +147,9 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
     pTrackMetadata->setSampleRate(getSampleRate());
     pTrackMetadata->setDuration(getDuration());
     pTrackMetadata->setBitrate(getBitrate());
-    pTrackMetadata->setReplayGain(getReplayGain());
+    Mixxx::ReplayGain trackGain(pTrackMetadata->getReplayGain());
+    trackGain.setRatio(getReplayGain());
+    pTrackMetadata->setReplayGain(trackGain);
     pTrackMetadata->setBpm(getBpm());
     pTrackMetadata->setKey(getKeyText());
 }

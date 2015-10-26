@@ -116,7 +116,13 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
         } else if (!l_STag.compare("TITLE")) {
             pTrackMetadata->setTitle(l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            pTrackMetadata->setReplayGain(Mixxx::TrackMetadata::parseReplayGain(l_SPayload));
+            bool trackGainRatioValid = false;
+            double trackGainRatio = ReplayGain::parseGain2Ratio(l_SPayload, &trackGainRatioValid);
+            if (trackGainRatioValid) {
+                ReplayGain trackGain(pTrackMetadata->getReplayGain());
+                trackGain.setRatio(trackGainRatio);
+                pTrackMetadata->setReplayGain(trackGain);
+            }
         }
 
         // This is left fot debug reasons!!
