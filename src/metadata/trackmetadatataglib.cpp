@@ -202,6 +202,15 @@ bool parseTrackGain(TrackMetadata* pTrackMetadata, QString dbGain) {
     bool trackGainRatioValid = false;
     double trackGainRatio = ReplayGain::parseGain2Ratio(dbGain, &trackGainRatioValid);
     if (trackGainRatioValid) {
+        // Some applications (e.g. Rapid Evolution 3) write a replay gain
+        // of 0 dB even if the replay gain is undefined. To be safe we
+        // ignore this special value and instead prefer to recalculate
+        // the replay gain.
+        if (trackGainRatio == ReplayGain::kRatio0dB) {
+            // special case
+            qDebug() << "Ignoring possibly undefined gain:" << ReplayGain::formatRatio2Gain(trackGainRatio);
+            trackGainRatio = ReplayGain::kRatioUndefined;
+        }
         ReplayGain trackGain(pTrackMetadata->getReplayGain());
         trackGain.setRatio(trackGainRatio);
         pTrackMetadata->setReplayGain(trackGain);

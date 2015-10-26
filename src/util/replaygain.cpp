@@ -38,18 +38,6 @@ double ReplayGain::parseGain2Ratio(QString dbGain, bool* pValid) {
     if (isValid) {
         const double ratio = db2ratio(replayGainDb);
         DEBUG_ASSERT(kRatioUndefined != ratio);
-        // Some applications (e.g. Rapid Evolution 3) write a replay gain
-        // of 0 dB even if the replay gain is undefined. To be safe we
-        // ignore this special value and instead prefer to recalculate
-        // the replay gain.
-        if (kRatio0dB == ratio) {
-            // special case
-            qDebug() << "ReplayGain: Ignoring possibly undefined gain:" << formatRatio2Gain(ratio);
-            if (pValid) {
-                *pValid = true;
-            }
-            return kRatioUndefined;
-        }
         if (isValidRatio(ratio)) {
             if (pValid) {
                 *pValid = true;
@@ -73,7 +61,7 @@ QString ReplayGain::formatRatio2Gain(double ratio) {
 }
 
 double ReplayGain::normalizeRatio(double ratio) {
-    if (isValidRatio(ratio) && (kRatio0dB != ratio)) {
+    if (isValidRatio(ratio)) {
         const double normalizedRatio = parseGain2Ratio(formatRatio2Gain(ratio));
         // NOTE(uklotzde): Subsequently formatting and parsing the
         // normalized value should not alter it anymore!

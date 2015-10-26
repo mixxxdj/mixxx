@@ -45,13 +45,7 @@ TEST_F(ReplayGainTest, ParseReplayGainDbValidRange) {
                 QString("  %1db ").arg(replayGainDb)
         };
         float expectedValue;
-        if (0 != replayGainDb) {
-            // regular case
-            expectedValue = db2ratio(double(replayGainDb));
-        } else {
-            // special case: 0 dB -> undefined
-            expectedValue = Mixxx::ReplayGain::kRatioUndefined;
-        }
+        expectedValue = db2ratio(double(replayGainDb));
         for (size_t i = 0; i < sizeof(inputValues) / sizeof(inputValues[0]); ++i) {
             parseGain2Ratio(inputValues[i], true, expectedValue);
             if (0 <= replayGainDb) {
