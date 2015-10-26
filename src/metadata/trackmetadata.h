@@ -3,7 +3,7 @@
 
 #include <QDateTime>
 
-#include <cmath>
+#include "util/replaygain.h"
 
 namespace Mixxx {
 
@@ -147,23 +147,14 @@ public:
         m_bpm = kBpmUndefined;
     }
 
-    static const double kReplayGainUndefined;
-    static const double kReplayGainMin; // lower bound (exclusive)
-    static const double kReplayGain0dB;
-    inline double getReplayGain() const {
+    const ReplayGain& getReplayGain() const {
         return m_replayGain;
     }
-    inline static bool isReplayGainValid(double replayGain) {
-        return kReplayGainMin < replayGain;
-    }
-    inline bool isReplayGainValid() const {
-        return isReplayGainValid(getReplayGain());
-    }
-    inline void setReplayGain(double replayGain) {
+    void setReplayGain(const ReplayGain& replayGain) {
         m_replayGain = replayGain;
     }
-    inline void resetReplayGain() {
-        m_replayGain = kReplayGainUndefined;
+    void resetReplayGain() {
+        m_replayGain = ReplayGain();
     }
 
     // Parse and format BPM metadata
@@ -171,13 +162,6 @@ public:
     static QString formatBpm(double bpm);
     static QString formatBpm(int bpm);
     static double normalizeBpm(double bpm);
-
-    // Parse and format replay gain metadata according to the
-    // ReplayGain 1.0 specification.
-    // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_1.0_specification
-    static double parseReplayGain(QString sReplayGain, bool* pValid = 0);
-    static QString formatReplayGain(double replayGain);
-    static double normalizeReplayGain(double replayGain);
 
     // Parse an format date/time values according to ISO 8601
     inline static QDate parseDate(QString str) {
@@ -214,9 +198,10 @@ private:
     QString m_trackNumber;
     QString m_year;
 
+    ReplayGain m_replayGain;
+
     // Floating-point fields (in alphabetical order)
     double m_bpm;
-    double m_replayGain;
 
     // Integer fields (in alphabetical order)
     int m_bitrate; // kbit/s

@@ -1,6 +1,5 @@
 #include "metadata/trackmetadata.h"
 
-#include "util/math.h"
 #include "util/time.h"
 
 namespace Mixxx {
@@ -8,10 +7,6 @@ namespace Mixxx {
 /*static*/ const double TrackMetadata::kBpmUndefined = 0.0;
 /*static*/ const double TrackMetadata::kBpmMin = 0.0; // lower bound (exclusive)
 /*static*/ const double TrackMetadata::kBpmMax = 300.0; // upper bound (inclusive)
-
-/*static*/ const double TrackMetadata::kReplayGainUndefined = 0.0;
-/*static*/ const double TrackMetadata::kReplayGainMin = 0.0; // lower bound (inclusive)
-/*static*/ const double TrackMetadata::kReplayGain0dB = 1.0;
 
 /*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
 
@@ -78,82 +73,6 @@ double TrackMetadata::normalizeBpm(double bpm) {
         return normalizedBpm;
     } else {
         return bpm;
-    }
-}
-
-namespace {
-
-const QString kReplayGainUnit("dB");
-const QString kReplayGainSuffix(" " + kReplayGainUnit);
-
-} // anonymous namespace
-
-double TrackMetadata::parseReplayGain(QString sReplayGain, bool* pValid) {
-    if (pValid) {
-        *pValid = false;
-    }
-    QString normalizedReplayGain(sReplayGain.trimmed());
-    const int plusIndex = normalizedReplayGain.indexOf('+');
-    if (0 == plusIndex) {
-        // strip leading "+"
-        normalizedReplayGain = normalizedReplayGain.mid(plusIndex + 1).trimmed();
-    }
-    const int unitIndex = normalizedReplayGain.lastIndexOf(kReplayGainUnit, -1, Qt::CaseInsensitive);
-    if ((0 <= unitIndex) && ((normalizedReplayGain.length() - 2) == unitIndex)) {
-        // strip trailing unit suffix
-        normalizedReplayGain = normalizedReplayGain.left(unitIndex).trimmed();
-    }
-    if (normalizedReplayGain.isEmpty()) {
-        return kReplayGainUndefined;
-    }
-    bool replayGainValid = false;
-    const double replayGainDb = normalizedReplayGain.toDouble(&replayGainValid);
-    if (replayGainValid) {
-        const double replayGain = db2ratio(replayGainDb);
-        DEBUG_ASSERT(kReplayGainUndefined != replayGain);
-        // Some applications (e.g. Rapid Evolution 3) write a replay gain
-        // of 0 dB even if the replay gain is undefined. To be safe we
-        // ignore this special value and instead prefer to recalculate
-        // the replay gain.
-        if (kReplayGain0dB == replayGain) {
-            // special case
-            qDebug() << "Ignoring possibly undefined replay gain:" << formatReplayGain(replayGain);
-            if (pValid) {
-                *pValid = true;
-            }
-            return kReplayGainUndefined;
-        }
-        if (TrackMetadata::isReplayGainValid(replayGain)) {
-            if (pValid) {
-                *pValid = true;
-            }
-            return replayGain;
-        } else {
-            qDebug() << "Invalid replay gain value:" << sReplayGain << " -> "<< replayGain;
-        }
-    } else {
-        qDebug() << "Failed to parse replay gain:" << sReplayGain;
-    }
-    return kReplayGainUndefined;
-}
-
-QString TrackMetadata::formatReplayGain(double replayGain) {
-    if (isReplayGainValid(replayGain)) {
-        return QString::number(ratio2db(replayGain)) + kReplayGainSuffix;
-    } else {
-        return QString();
-    }
-}
-
-double TrackMetadata::normalizeReplayGain(double replayGain) {
-    if (isReplayGainValid(replayGain) && (kReplayGain0dB != replayGain)) {
-        const double normalizedReplayGain = parseReplayGain(formatReplayGain(replayGain));
-        // NOTE(uklotzde): Subsequently formatting and parsing the
-        // normalized value should not alter it anymore!
-        DEBUG_ASSERT(normalizedReplayGain == parseReplayGain(formatReplayGain(normalizedReplayGain)));
-        return normalizedReplayGain;
-    } else {
-        return replayGain;
     }
 }
 
@@ -225,7 +144,6 @@ QString TrackMetadata::formatDuration(int duration) {
 
 TrackMetadata::TrackMetadata()
     : m_bpm(kBpmUndefined),
-      m_replayGain(kReplayGainUndefined),
       m_bitrate(0),
       m_channels(0),
       m_duration(0),
