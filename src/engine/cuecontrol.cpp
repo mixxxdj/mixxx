@@ -21,9 +21,7 @@ static const double CUE_MODE_NUMARK = 3.0;
 CueControl::CueControl(QString group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(group, _config),
-        m_bHotcueCancel(false),
         m_bPreviewing(false),
-        m_bPreviewingHotcue(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(group, "play"))),
         m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
         m_iCurrentlyPreviewingHotcues(0),
@@ -459,11 +457,10 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
 
     if (pCue) {
         if (v) {
-            m_bHotcueCancel = false;
             if (pCue->getPosition() == -1) {
                 hotcueSet(pControl, v);
             } else {
-                if (!m_bPreviewingHotcue && m_pPlayButton->toBool()) {
+                if (!m_iCurrentlyPreviewingHotcues && m_pPlayButton->toBool()) {
                     hotcueGoto(pControl, v);
                 } else {
                     hotcueActivatePreview(pControl, v);
@@ -477,9 +474,8 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
     } else {
         if (v) {
             // just in case
-            m_bHotcueCancel = false;
             hotcueSet(pControl, v);
-        } else if (m_bPreviewingHotcue) {
+        } else if (m_iCurrentlyPreviewingHotcues) {
             // The cue is non-existent, yet we got a release for it and are
             // currently previewing a hotcue. This is indicative of a corner
             // case where the cue was detached while we were pressing it. Let
@@ -500,7 +496,6 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
         if (pCue && pCue->getPosition() != -1) {
             m_iCurrentlyPreviewingHotcues++;
             int iPosition = pCue->getPosition();
-            m_bPreviewingHotcue = true;
             m_pPlayButton->set(1.0);
             pControl->setPreviewing(true);
             pControl->setPreviewingPosition(iPosition);
@@ -510,7 +505,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
 
             seekAbs(iPosition);
         }
-    } else if (m_bPreviewingHotcue) {
+    } else if (m_iCurrentlyPreviewingHotcues) {
         // This is a activate release and we are previewing at least one
         // hotcue. If this hotcue is previewing:
         if (pControl->isPreviewing()) {
@@ -521,17 +516,10 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
 
             // If this is the last hotcue to leave preview.
             if (--m_iCurrentlyPreviewingHotcues == 0) {
-                bool bHotcueCancel = m_bHotcueCancel;
-                m_bPreviewingHotcue = false;
-                m_bHotcueCancel = false;
-                // If hotcue cancel was not marked then snap back to the
-                // hotcue and stop.
-                if (!bHotcueCancel) {
-                    m_pPlayButton->set(0.0);
-                    // Need to unlock before emitting any signals to prevent deadlock.
-                    lock.unlock();
-                    seekExact(iPosition);
-                }
+                m_pPlayButton->set(0.0);
+                // Need to unlock before emitting any signals to prevent deadlock.
+                lock.unlock();
+                seekExact(iPosition);
             }
         }
     }
@@ -817,6 +805,7 @@ void CueControl::playStutter(double v) {
 }
 
 bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) {
+    qDebug() << "updateIndicatorsAndModifyPlay" << newPlay << playPossible;
     QMutexLocker lock(&m_mutex);
     double cueMode = m_pCueMode->get();
 
@@ -833,11 +822,11 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
     // when previewing, "play" was set by cue button, a following toggle request
     // (play = 0.0) is used for latching play.
     bool previewing = false;
-    if (m_bPreviewing || m_bPreviewingHotcue) {
+    if (m_bPreviewing || m_iCurrentlyPreviewingHotcues) {
         if (!newPlay) {
             // play latch request: stop previewing and go into normal play mode.
             m_bPreviewing = false;
-            m_bHotcueCancel = true;
+            m_iCurrentlyPreviewingHotcues = 0;
             newPlay = true;
         } else {
             previewing = true;
@@ -890,6 +879,8 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
         }
     }
     m_pPlayStutter->set(newPlay ? 1.0 : 0.0);
+
+    qDebug() << newPlay;
 
     return newPlay;
 }

@@ -128,9 +128,7 @@ class CueControl : public EngineControl {
     void detachCue(int hotcueNumber);
     void saveCuePoint(double cuePoint);
 
-    bool m_bHotcueCancel;
     bool m_bPreviewing;
-    bool m_bPreviewingHotcue;
     ControlObject* m_pPlayButton;
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
