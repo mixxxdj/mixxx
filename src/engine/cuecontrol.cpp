@@ -866,7 +866,7 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
         // Pause:
         m_pStopButton->set(1.0);
         if (cueMode == CUE_MODE_DENON) {
-            if (isTrackAtCue()) {
+            if (isTrackAtCue() || previewing) {
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
             } else {
                 // Flashing indicates that a following play would move cue point
