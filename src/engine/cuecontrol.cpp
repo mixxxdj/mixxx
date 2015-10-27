@@ -515,7 +515,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             pControl->setPreviewingPosition(-1);
 
             // If this is the last hotcue to leave preview.
-            if (--m_iCurrentlyPreviewingHotcues == 0) {
+            if (--m_iCurrentlyPreviewingHotcues == 0 && !m_bPreviewing) {
                 m_pPlayButton->set(0.0);
                 // Need to unlock before emitting any signals to prevent deadlock.
                 lock.unlock();
@@ -667,15 +667,19 @@ void CueControl::cuePreview(double v)
         m_pPlayButton->set(1.0);
     } else if (!v && m_bPreviewing) {
         m_bPreviewing = false;
-        m_pPlayButton->set(0.0);
+        if (!m_iCurrentlyPreviewingHotcues) {
+            m_pPlayButton->set(0.0);
+        } else {
+            return;
+        }
+    } else {
+        return;
     }
-
-    double cuePoint = m_pCuePoint->get();
 
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    seekAbs(cuePoint);
+    seekAbs(m_pCuePoint->get());
 }
 
 void CueControl::cueCDJ(double v) {
@@ -689,7 +693,13 @@ void CueControl::cueCDJ(double v) {
     bool playing = m_pPlayButton->toBool();
 
     if (v) {
-        if (playing || atEndPosition()) {
+        if (m_iCurrentlyPreviewingHotcues) {
+            // we are already previewing by hotcues
+            // just jump to cue point and continue previewing
+            m_bPreviewing = true;
+            lock.unlock();
+            seekAbs(m_pCuePoint->get());
+        } else if (playing || atEndPosition()) {
             // Jump to cue when playing or when at end position
 
             // Just in case.
@@ -720,12 +730,14 @@ void CueControl::cueCDJ(double v) {
         }
     } else if (m_bPreviewing) {
         m_bPreviewing = false;
-        m_pPlayButton->set(0.0);
+        if (!m_iCurrentlyPreviewingHotcues) {
+            m_pPlayButton->set(0.0);
 
-        // Need to unlock before emitting any signals to prevent deadlock.
-        lock.unlock();
+            // Need to unlock before emitting any signals to prevent deadlock.
+            lock.unlock();
 
-        seekAbs(m_pCuePoint->get());
+            seekAbs(m_pCuePoint->get());
+        }
     }
     // indicator may flash because the delayed adoption of seekAbs
     // Correct the Indicator set via play
@@ -746,7 +758,13 @@ void CueControl::cueDenon(double v) {
     bool playing = (m_pPlayButton->toBool());
 
     if (v) {
-        if (!playing && isTrackAtCue()) {
+        if (m_iCurrentlyPreviewingHotcues) {
+            // we are already previewing by hotcues
+            // just jump to cue point and continue previewing
+            m_bPreviewing = true;
+            lock.unlock();
+            seekAbs(m_pCuePoint->get());
+        } else if (!playing && isTrackAtCue()) {
             // pause at cue point
             m_bPreviewing = true;
             m_pPlayButton->set(1.0);
@@ -762,12 +780,14 @@ void CueControl::cueDenon(double v) {
         }
     } else if (m_bPreviewing) {
         m_bPreviewing = false;
-        m_pPlayButton->set(0.0);
+        if (!m_iCurrentlyPreviewingHotcues) {
+            m_pPlayButton->set(0.0);
 
-        // Need to unlock before emitting any signals to prevent deadlock.
-        lock.unlock();
+            // Need to unlock before emitting any signals to prevent deadlock.
+            lock.unlock();
 
-        seekAbs(m_pCuePoint->get());
+            seekAbs(m_pCuePoint->get());
+        }
     }
 }
 
