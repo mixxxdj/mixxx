@@ -1,22 +1,6 @@
-////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                               //
-////////////////////////////////////////////////////////////////////////
-/* global engine                                                      */
-/* global script                                                      */
-/* global print                                                       */
-/* global midi                                                        */
-////////////////////////////////////////////////////////////////////////
 /***********************************************************************
- * Reloop Beatpad controller script
- * Author: Chloé AVRILLON (DJ Chloé)
- *
- * Key features
- * ------------
- * - Light and Jog wheel light handling
- *-  shift+wheelturn in "Jog Scratch" mode do automatic cut of the fader while scratching
- * - press/double press/long press handling
- * *********************************************************************
  * ==============             User Options             =================
+ * TrackEndWarning
  * ---------------
  * By default, when you reach the end of the track, the jog wheel are flashing.
  * set this variable just below to "false" instead of "true"
@@ -25,7 +9,27 @@
  * (idea by be.ing, member of the Mixxx team)
  **************************/
 var TrackEndWarning = true;
- /**********************************************************************
+/**************************
+ *  scriptpause
+ * ---------------
+ * period (in ms) while the script will be paused when sending messages
+ * to the controller in order to avoid too much data flow at once in the same time.
+ *  - default value : 5 ms
+ *  - To disable : 0;
+ **************************/
+var scriptpause = 5;
+
+
+/************************  GPL v2 licence  *****************************
+ * Reloop Beatpad controller script
+ * Author: Chloé AVRILLON (DJ Chloé)
+ *
+ * Key features
+ * ------------
+ * - Light and Jog wheel light handling
+ *-  shift+wheelturn in "Jog Scratch" mode do automatic cut of the fader while scratching
+ * - press/double press/long press handling
+ **********************************************************************
  * User References
  * ---------------
  * Wiki/manual : http://www.mixxx.org/wiki/doku.php/reloop_beatpad
@@ -63,6 +67,15 @@ var TrackEndWarning = true;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ***********************************************************************/
+////////////////////////////////////////////////////////////////////////
+// JSHint configuration                                               //
+////////////////////////////////////////////////////////////////////////
+/* global engine                                                      */
+/* global script                                                      */
+/* global print                                                       */
+/* global midi                                                        */
+////////////////////////////////////////////////////////////////////////
+
 function ReloopBeatpad() {}
 
 ReloopBeatpad(); // Very important ! Initializes the declared function, yep
@@ -95,18 +108,16 @@ var ON = 0x7F,
     SIMPLE = 1,
     ROLL = 2,
     ControllerStatusSysex = [0xF0, 0x26, 0x2D, 0x65, 0x22, 0xF7],
-    HardwareLight = false,
-    // scriptpause :
-    // period (in ms) while the script will be paused when sending messages
-    // to the controller in order to avoid too much data flow at once in the same time
-    scriptpause = 5;
+    HardwareLight = false;
 
 // Utilities
 function pauseScript(ms) {
-    var startDate = new Date();
-    var currentDate = null;
-    while (currentDate - startDate < ms) {
-        currentDate = new Date();
+    if (ms>0) {
+        var startDate = new Date();
+        var currentDate = null;
+        while (currentDate - startDate < ms) {
+            currentDate = new Date();
+        }
     }
 }
 
@@ -126,7 +137,7 @@ function intpart(n) {
     }
 }
 
-//  Constants
+// Constants
 ReloopBeatpad.MIDI = {
     rec: 0x41,
     Trackpush: 0x46,
@@ -425,7 +436,7 @@ ReloopBeatpad.deck = function(deckNum) {
 
     // *****************************************************************
     // "Hydra" buttons (Load, sync and pfl) :
-    // these buttons behave differently wether you do
+    // these buttons behave differently whether you do
     // a long press, a quick press or a double quick press
     // three flavors you can put in your own mappings.
 
@@ -555,14 +566,11 @@ ReloopBeatpad.deck = function(deckNum) {
             } else {
                 if (this.SYNCcount == 2) {
                     // Double press : Sync and play
-                    engine.setValue(this.group, 'sync_enabled', false);
                     engine.setValue(this.group, 'play', true);
                     engine.setValue(this.group, 'beatsync', true);
 
                 } else { // We pressed sync only once
-                    engine.setValue(this.group, 'sync_enabled', false);
                     engine.setValue(this.group, 'beatsync', true);
-
                 }
             }
         }
@@ -641,7 +649,7 @@ ReloopBeatpad.deck = function(deckNum) {
     this.pitchTimer = 0;
     // The alternative mode to scratching for the jog wheel.
     this.pitchBend = function(forwards) {
-        // For some reason the ramping pitchbend option in Mixx menu together with temp_rate_up/down doesn't seem
+        // For some reason the ramping pitchbend option in Mixxx menu together with temp_rate_up/down doesn't seem
         // to work for the jog wheel. So this function allows the pitch bend to ramp the faster/more
         // revolutions of the wheel.
         if (this.pitchTimer !== 0) {
@@ -780,7 +788,7 @@ ReloopBeatpad.deck = function(deckNum) {
 
     };
 
-    //  for the deck--buttons, sliders, etc--are associated with
+    // for the deck--buttons, sliders, etc--are associated with
     // the deck using this array.
     this.control = [];
     this.status = [];
@@ -810,8 +818,8 @@ ReloopBeatpad.deck = function(deckNum) {
 // Control class for control objects, e.g. play button. Objects for the
 // two jog wheels are not created this way, instead they are
 // represented directly by the deck objects. This was just an easier
-//  way to do it, and there will only ever be one jog wheel
-//  per deck anyway.
+// way to do it, and there will only ever be one jog wheel
+// per deck anyway.
 ReloopBeatpad.control = function(key, control, midino, group) {
     this.key = key;
     this.control = control;
