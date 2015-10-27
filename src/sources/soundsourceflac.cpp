@@ -343,10 +343,10 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
                 << frame->header.channels << "<>" << getChannelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    if (getSamplingRate() != SINT(frame->header.sample_rate)) {
+    if (getFrameRate() != SINT(frame->header.sample_rate)) {
         qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid sample rate in FLAC frame header"
-                << frame->header.sample_rate << "<>" << getSamplingRate();
+                << frame->header.sample_rate << "<>" << getFrameRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     const SINT numReadableFrames = frame->header.blocksize;
@@ -429,21 +429,21 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
             qWarning() << "Invalid channel count:"
                     << channelCount;
         }
-        const SINT samplingRate = metadata->data.stream_info.sample_rate;
-        if (isValidSamplingRate(samplingRate)) {
-            if (hasSamplingRate()) {
+        const SINT frameRate = metadata->data.stream_info.sample_rate;
+        if (isValidFrameRate(frameRate)) {
+            if (hasFrameRate()) {
                 // already set before -> check for consistency
-                if (getSamplingRate() != samplingRate) {
-                    qWarning() << "Unexpected sampling rate:"
-                            << samplingRate << " <> " << getSamplingRate();
+                if (getFrameRate() != frameRate) {
+                    qWarning() << "Unexpected frame/sample rate:"
+                            << frameRate << " <> " << getFrameRate();
                 }
             } else {
                 // not set before
-                setSamplingRate(samplingRate);
+                setFrameRate(frameRate);
             }
         } else {
-            qWarning() << "Invalid sampling rate:"
-                    << samplingRate;
+            qWarning() << "Invalid frame/sample rate:"
+                    << frameRate;
         }
         const SINT frameCount = metadata->data.stream_info.total_samples;
         DEBUG_ASSERT(isValidFrameCount(frameCount));

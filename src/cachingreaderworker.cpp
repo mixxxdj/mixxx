@@ -131,7 +131,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     }
 
     Mixxx::AudioSourceConfig audioSrcCfg;
-    audioSrcCfg.setChannelCount(CachingReaderChunk::kChannels);
+    audioSrcCfg.channelCountHint = CachingReaderChunk::kChannels;
     m_pAudioSource = openAudioSourceForReading(pTrack, audioSrcCfg);
     if (m_pAudioSource.isNull()) {
         m_maxReadableFrameIndex = Mixxx::AudioSource::getMinFrameIndex();
@@ -166,7 +166,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     const SINT sampleCount =
             CachingReaderChunk::frames2samples(
                     m_pAudioSource->getFrameCount());
-    emit(trackLoaded(pTrack, m_pAudioSource->getSamplingRate(), sampleCount));
+    emit(trackLoaded(pTrack, m_pAudioSource->getFrameRate(), sampleCount));
 }
 
 void CachingReaderWorker::quitWait() {

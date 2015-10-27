@@ -969,7 +969,6 @@ class MixxxCore(Feature):
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
                    "util/dbid.cpp",
-                   "util/replaygain.cpp",
 
                    '#res/mixxx.qrc'
                    ]

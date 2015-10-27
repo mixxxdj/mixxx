@@ -31,7 +31,7 @@ private:
 } // anonymous namespace
 
 // Decoded output of opusfile has a fixed sample rate of 48 kHz
-const SINT SoundSourceOpus::kSamplingRate = 48000;
+const SINT SoundSourceOpus::kFrameRate = 48000;
 
 SoundSourceOpus::SoundSourceOpus(QUrl url)
         : SoundSource(url, "opus"),
@@ -81,7 +81,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
 
     pTrackMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
-    pTrackMetadata->setSampleRate(Mixxx::SoundSourceOpus::kSamplingRate);
+    pTrackMetadata->setSampleRate(Mixxx::SoundSourceOpus::kFrameRate);
     pTrackMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
     pTrackMetadata->setDuration(
             op_pcm_total(l_ptrOpusFile, -1) / pTrackMetadata->getSampleRate());
@@ -116,13 +116,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
         } else if (!l_STag.compare("TITLE")) {
             pTrackMetadata->setTitle(l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            bool trackGainRatioValid = false;
-            double trackGainRatio = ReplayGain::parseGain2Ratio(l_SPayload, &trackGainRatioValid);
-            if (trackGainRatioValid) {
-                ReplayGain trackGain(pTrackMetadata->getReplayGain());
-                trackGain.setRatio(trackGainRatio);
-                pTrackMetadata->setReplayGain(trackGain);
-            }
+            pTrackMetadata->setReplayGain(Mixxx::TrackMetadata::parseReplayGain(l_SPayload));
         }
 
         // This is left fot debug reasons!!
@@ -184,7 +178,7 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         return ERR;
     }
 
-    setSamplingRate(kSamplingRate);
+    setFrameRate(kFrameRate);
 
     m_curFrameIndex = getMinFrameIndex();
 

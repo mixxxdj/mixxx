@@ -37,7 +37,7 @@ Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     }
 
     setChannelCount(sfInfo.channels);
-    setSamplingRate(sfInfo.samplerate);
+    setFrameRate(sfInfo.samplerate);
     setFrameCount(sfInfo.frames);
 
     return OK;
