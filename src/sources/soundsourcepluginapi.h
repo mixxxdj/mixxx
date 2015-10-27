@@ -11,6 +11,7 @@
  6 - Mixxx 1.12.0 Pre (added cover art suppport)
  7 - Mixxx 1.13.0 New SoundSource/AudioSource API
  8 - Mixxx 1.13.0 New SoundSource Plugin API
+ 9 - Mixxx 1.13.0 New classes AudioSignal and ReplayGain
  */
 
 #include <QtGlobal>
