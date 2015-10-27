@@ -9,7 +9,7 @@
 
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2015-10-18
+// description: 2015-11-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 var VCI102 = {};
@@ -118,14 +118,43 @@ VCI102.jog = function(ch, midino, value, status, group) {
     }
 };
 
-VCI102.rate = [0, 0, 0, 0];
+VCI102.rate7 = [64, 64, 64, 64];
+
+VCI102.rateEnable = [true, true, true, true];
 
 VCI102.rateMSB = function(ch, midino, value, status, group) {
-    VCI102.rate[ch] = (64 - value) * 128;
+    if (!VCI102.rateEnable[ch]) {
+        if (Math.abs(value - VCI102.rate7[ch]) > 1) {
+            VCI102.rateEnable[ch] = true;
+        } else {
+            return;
+        }
+    }
+    VCI102.rate7[ch] = value;
+};
+
+VCI102.rateMSB2 = function(ch, midino, value, status, group) {
+    if (VCI102.rateEnable[ch]) {
+        VCI102.rateEnable[ch] = false;
+    }
+    VCI102.rate7[ch] = value;
+};
+
+VCI102.rate = function(ch, lsb) {
+    return ((64 - VCI102.rate7[ch]) * 128 - lsb) / 8192;
 };
 
 VCI102.rateLSB = function(ch, midino, value, status, group) {
-    engine.setValue(group, "rate", (VCI102.rate[ch] - value) / 8192);
+    if (VCI102.rateEnable[ch]) {
+        engine.setValue(group, "rate", VCI102.rate(ch, value));
+    }
+};
+
+VCI102.rateLSB2 = function(ch, midino, value, status, group) {
+    engine.setValue(
+        group, "bpm", Math.round(
+            (VCI102.rate(ch, value) * engine.getValue(group, "rateRange") + 1
+            ) * engine.getValue(group, "file_bpm")));
 };
 
 VCI102.pitch = function(ch, midino, value, status, group) {
