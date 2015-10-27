@@ -58,7 +58,7 @@ Result SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         return ERR;
     }
     setChannelCount(vi->channels);
-    setFrameRate(vi->rate);
+    setSamplingRate(vi->rate);
     if (0 < vi->bitrate_nominal) {
         setBitrate(vi->bitrate_nominal / 1000);
     } else {

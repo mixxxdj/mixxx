@@ -32,8 +32,8 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if ((kChannelCountMono == audioSrcCfg.channelCountHint) ||
-            (kChannelCountStereo == audioSrcCfg.channelCountHint)) {
+    if ((kChannelCountMono == audioSrcCfg.getChannelCount()) ||
+            (kChannelCountStereo == audioSrcCfg.getChannelCount())) {
         openFlags |= OPEN_2CH_MAX;
     }
 
@@ -56,7 +56,7 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     }
 
     setChannelCount(WavpackGetReducedChannels(m_wpc));
-    setFrameRate(WavpackGetSampleRate(m_wpc));
+    setSamplingRate(WavpackGetSampleRate(m_wpc));
     setFrameCount(WavpackGetNumSamples(m_wpc));
 
     if (WavpackGetMode(m_wpc) & MODE_FLOAT) {
