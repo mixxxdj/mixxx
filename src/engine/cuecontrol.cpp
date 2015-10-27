@@ -498,6 +498,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
         if (pCue && pCue->getPosition() != -1) {
             m_iCurrentlyPreviewingHotcues++;
             int iPosition = pCue->getPosition();
+            m_bypassCueSetByPlay = true;
             m_pPlayButton->set(1.0);
             pControl->setPreviewing(true);
             pControl->setPreviewingPosition(iPosition);
@@ -666,6 +667,7 @@ void CueControl::cuePreview(double v)
 
     if (v) {
         m_bPreviewing = true;
+        m_bypassCueSetByPlay = true;
         m_pPlayButton->set(1.0);
     } else if (!v && m_bPreviewing) {
         m_bPreviewing = false;
