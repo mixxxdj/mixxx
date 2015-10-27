@@ -212,8 +212,8 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
-    if ((kChannelCountMono == audioSrcCfg.getChannelCount()) ||
-            (kChannelCountStereo == audioSrcCfg.getChannelCount())) {
+    if ((kChannelCountMono == audioSrcCfg.channelCountHint) ||
+            (kChannelCountStereo == audioSrcCfg.channelCountHint)) {
         pDecoderConfig->downMatrix = 1;
     } else {
         pDecoderConfig->downMatrix = 0;
@@ -236,10 +236,10 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
                 << "Continuing with default values.";
     }
 
-    SAMPLERATE_TYPE samplingRate;
+    SAMPLERATE_TYPE sampleRate;
     unsigned char channelCount;
     if (0 > NeAACDecInit2(m_hDecoder, configBuffer, configBufferSize,
-                    &samplingRate, &channelCount)) {
+                    &sampleRate, &channelCount)) {
         free(configBuffer);
         qWarning() << "Failed to initialize the AAC decoder!";
         return ERR;
@@ -254,7 +254,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
                                       (m_framesPerSampleBlock - 1)) / m_framesPerSampleBlock;
 
     setChannelCount(channelCount);
-    setSamplingRate(samplingRate);
+    setFrameRate(sampleRate);
     setFrameCount(((m_maxSampleBlockId - kSampleBlockIdMin) + 1) * m_framesPerSampleBlock);
 
     // Resize temporary buffer for decoded sample data
@@ -460,10 +460,10 @@ SINT SoundSourceM4A::readSampleFrames(
                     << "<>" << getChannelCount();
             break; // abort
         }
-        if (getSamplingRate() != SINT(decFrameInfo.samplerate)) {
+        if (getFrameRate() != SINT(decFrameInfo.samplerate)) {
             qWarning() << "Corrupt or unsupported AAC file:"
-                    << "Unexpected sampling rate" << decFrameInfo.samplerate
-                    << "<>" << getSamplingRate();
+                    << "Unexpected sample rate" << decFrameInfo.samplerate
+                    << "<>" << getFrameRate();
             break; // abort
         }
 

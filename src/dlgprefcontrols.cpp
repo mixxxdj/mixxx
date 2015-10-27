@@ -237,16 +237,13 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     int cueDefaultValue = cueDefault.toInt();
 
     // Update combo box
-    // The itemData values are out of order to avoid breaking configurations
-    // when Mixxx mode (no blinking) was introduced.
-    ComboBoxCueDefault->addItem(tr("Mixxx mode"), 0);
-    ComboBoxCueDefault->addItem(tr("Mixxx mode (no blinking)"), 4);
-    ComboBoxCueDefault->addItem(tr("Pioneer mode"), 1);
-    ComboBoxCueDefault->addItem(tr("Denon mode"), 2);
-    ComboBoxCueDefault->addItem(tr("Numark mode"), 3);
-    const int cueDefaultIndex = cueDefaultIndexByData(cueDefaultValue);
-    ComboBoxCueDefault->setCurrentIndex(cueDefaultIndex);
-    slotSetCueDefault(cueDefaultIndex);
+    ComboBoxCueDefault->addItem(tr("Mixxx mode"));
+    ComboBoxCueDefault->addItem(tr("Pioneer mode"));
+    ComboBoxCueDefault->addItem(tr("Denon mode"));
+    ComboBoxCueDefault->addItem(tr("Numark mode"));
+    ComboBoxCueDefault->setCurrentIndex(cueDefaultValue);
+
+    slotSetCueDefault(cueDefaultValue);
     connect(ComboBoxCueDefault, SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
 
     // Cue recall
@@ -518,14 +515,14 @@ void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
                    ConfigValue(ComboBoxAllowTrackLoadToPlayingDeck->currentIndex()));
 }
 
-void DlgPrefControls::slotSetCueDefault(int index)
+void DlgPrefControls::slotSetCueDefault(int)
 {
-    int cueMode = ComboBoxCueDefault->itemData(index).toInt();
-    m_pConfig->set(ConfigKey("[Controls]", "CueDefault"), ConfigValue(cueMode));
+    int cueIndex = ComboBoxCueDefault->currentIndex();
+    m_pConfig->set(ConfigKey("[Controls]", "CueDefault"), ConfigValue(cueIndex));
 
     // Set cue behavior for every group
     foreach (ControlObjectThread* pControl, m_cueControls) {
-        pControl->slotSet(cueMode);
+        pControl->slotSet(cueIndex);
     }
 }
 
@@ -735,15 +732,4 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
 
 void DlgPrefControls::slotUpdateSpeedAutoReset(int i) {
     m_speedAutoReset = i;
-}
-
-int DlgPrefControls::cueDefaultIndexByData(int userData) const {
-    for (int i = 0; i < ComboBoxCueDefault->count(); ++i) {
-        if (ComboBoxCueDefault->itemData(i).toInt() == userData) {
-            return i;
-        }
-    }
-    qWarning() << "No default cue behavior found for value" << userData
-               << "returning default";
-    return 0;
 }

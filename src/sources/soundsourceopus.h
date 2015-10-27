@@ -10,7 +10,7 @@ namespace Mixxx {
 
 class SoundSourceOpus: public Mixxx::SoundSource {
 public:
-    static const SINT kSamplingRate;
+    static const SINT kFrameRate;
 
     explicit SoundSourceOpus(QUrl url);
     ~SoundSourceOpus();

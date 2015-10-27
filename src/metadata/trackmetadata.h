@@ -1,9 +1,9 @@
-#ifndef MIXXX_TRACKMETADATA_H
-#define MIXXX_TRACKMETADATA_H
+#ifndef TRACKMETADATA_H
+#define TRACKMETADATA_H
 
 #include <QDateTime>
 
-#include "util/replaygain.h"
+#include <cmath>
 
 namespace Mixxx {
 
@@ -121,8 +121,6 @@ public:
     inline void setDuration(int duration) {
         m_duration = duration;
     }
-    // Returns the duration as a string: H:MM:SS
-    static QString formatDuration(int duration);
 
     // beats / minute
     static const double kBpmUndefined;
@@ -147,21 +145,35 @@ public:
         m_bpm = kBpmUndefined;
     }
 
-    const ReplayGain& getReplayGain() const {
+    static const double kReplayGainUndefined;
+    static const double kReplayGainMin; // lower bound (exclusive)
+    static const double kReplayGain0dB;
+    inline double getReplayGain() const {
         return m_replayGain;
     }
-    void setReplayGain(const ReplayGain& replayGain) {
+    inline static bool isReplayGainValid(double replayGain) {
+        return kReplayGainMin < replayGain;
+    }
+    inline bool isReplayGainValid() const {
+        return isReplayGainValid(getReplayGain());
+    }
+    inline void setReplayGain(double replayGain) {
         m_replayGain = replayGain;
     }
-    void resetReplayGain() {
-        m_replayGain = ReplayGain();
+    inline void resetReplayGain() {
+        m_replayGain = kReplayGainUndefined;
     }
 
     // Parse and format BPM metadata
     static double parseBpm(const QString& sBpm, bool* pValid = 0);
     static QString formatBpm(double bpm);
     static QString formatBpm(int bpm);
-    static double normalizeBpm(double bpm);
+
+    // Parse and format replay gain metadata according to the
+    // ReplayGain 1.0 specification.
+    // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_1.0_specification
+    static double parseReplayGain(QString sReplayGain, bool* pValid = 0);
+    static QString formatReplayGain(double replayGain);
 
     // Parse an format date/time values according to ISO 8601
     inline static QDate parseDate(QString str) {
@@ -185,38 +197,29 @@ public:
     static QString reformatYear(QString year);
 
 private:
-    // String fields (in alphabetical order)
+    QString m_artist;
+    QString m_title;
     QString m_album;
     QString m_albumArtist;
-    QString m_artist;
-    QString m_comment;
-    QString m_composer;
     QString m_genre;
+    QString m_comment;
+    QString m_year;
+    QString m_trackNumber;
+    QString m_composer;
     QString m_grouping;
     QString m_key;
-    QString m_title;
-    QString m_trackNumber;
-    QString m_year;
 
-    ReplayGain m_replayGain;
-
-    // Floating-point fields (in alphabetical order)
-    double m_bpm;
-
-    // Integer fields (in alphabetical order)
-    int m_bitrate; // kbit/s
+    // The following members need to be initialized
+    // explicitly in the constructor! Otherwise their
+    // value is undefined.
     int m_channels;
-    int m_duration; // seconds
-    int m_sampleRate; // Hz
+    int m_sampleRate;
+    int m_bitrate;
+    int m_duration;
+    double m_bpm;
+    double m_replayGain;
 };
 
-bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs);
-
-inline
-bool operator!=(const TrackMetadata& lhs, const TrackMetadata& rhs) {
-    return !(lhs == rhs);
 }
 
-}
-
-#endif // MIXXX_TRACKMETADATA_H
+#endif
