@@ -460,7 +460,9 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
             if (pCue->getPosition() == -1) {
                 hotcueSet(pControl, v);
             } else {
-                if (!m_iCurrentlyPreviewingHotcues && m_pPlayButton->toBool()) {
+                if (!m_iCurrentlyPreviewingHotcues &&
+                        !m_bPreviewing &&
+                        m_pPlayButton->toBool()) {
                     hotcueGoto(pControl, v);
                 } else {
                     hotcueActivatePreview(pControl, v);
@@ -825,14 +827,14 @@ void CueControl::playStutter(double v) {
 }
 
 bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) {
-    qDebug() << "updateIndicatorsAndModifyPlay" << newPlay << playPossible;
+    //qDebug() << "updateIndicatorsAndModifyPlay" << newPlay << playPossible
+    //        << m_iCurrentlyPreviewingHotcues << m_bPreviewing;
     QMutexLocker lock(&m_mutex);
     double cueMode = m_pCueMode->get();
-
     if ((cueMode == CUE_MODE_DENON || cueMode == CUE_MODE_NUMARK) &&
-            newPlay && playPossible &&
-            !m_pPlayButton->toBool() &&
-            !m_bypassCueSetByPlay) {
+        newPlay && playPossible &&
+        !m_pPlayButton->toBool() &&
+        !m_bypassCueSetByPlay) {
         // in Denon mode each play from pause moves the cue point
         // if not previewing
         cueSet(1.0);
