@@ -403,7 +403,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // Write the position before the seek type, to reduce a possible race
     // condition effect
     DEBUG_ASSERT_AND_HANDLE(seekType != SEEK_PHASE) {
-        // SEEK_PASE with a position is not supported
+        // SEEK_PHASE with a position is not supported
         // use SEEK_STANDARD for that
         seekType = SEEK_STANDARD;
     }
