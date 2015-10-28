@@ -70,6 +70,8 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     float maxHigh[2];
     float meanIndex;
 
+#ifndef __OPENGLES__
+
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
@@ -198,5 +200,8 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
+
+#endif
+
     painter->endNativePainting();
 }

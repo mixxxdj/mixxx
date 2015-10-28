@@ -47,7 +47,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // access methods on a BaseSqlTableModel which is not initialized is likely
     // to cause instability / crashes.
     bool initialized() const { return m_bInitialized; }
-    int getTrackId(const QModelIndex& index) const;
+    TrackId getTrackId(const QModelIndex& index) const;
     void search(const QString& searchText, const QString& extraFilter = QString());
     void setSearch(const QString& searchText, const QString& extraFilter = QString());
     const QString currentSearch() const;
@@ -78,7 +78,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
   protected:
     // Returns the row of trackId in this result set. If trackId is not present,
     // returns -1.
-    const QLinkedList<int> getTrackRows(int trackId) const;
+    const QLinkedList<int> getTrackRows(TrackId trackId) const;
     void setTable(const QString& tableName, const QString& trackIdColumn,
                   const QStringList& tableColumns,
                   QSharedPointer<BaseTrackCache> trackSource);
@@ -94,10 +94,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QSqlDatabase m_database;
 
     QString m_previewDeckGroup;
-    int m_iPreviewDeckTrackId;
+    TrackId m_previewDeckTrackId;
 
   private slots:
-    virtual void tracksChanged(QSet<int> trackIds);
+    virtual void tracksChanged(QSet<TrackId> trackIds);
     virtual void trackLoaded(QString group, TrackPointer pTrack);
     void refreshCell(int row, int column);
 
@@ -115,9 +115,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QSqlDatabase database() const;
 
     struct RowInfo {
-        int trackId;
+        TrackId trackId;
         int order;
-        QHash<int, QVariant> metadata;
+        QVector<QVariant> metadata;
 
         bool operator<(const RowInfo& other) const {
             // -1 is greater than anything
@@ -129,6 +129,17 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
             return order < other.order;
         }
     };
+
+    class SortColumn {
+      public:
+        SortColumn(int column, Qt::SortOrder order)
+            : m_column(column),
+              m_order(order) {
+        }
+        int m_column;
+        Qt::SortOrder m_order;
+    };
+
     QVector<RowInfo> m_rowInfo;
 
     QString m_tableName;
@@ -137,15 +148,18 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QStringList m_tableColumns;
     QString m_tableColumnsJoined;
     ColumnCache m_tableColumnCache;
-    int m_iSortColumn;
-    Qt::SortOrder m_eSortOrder;
+    QList<SortColumn> m_sortColumns;
     bool m_bInitialized;
     QSqlRecord m_queryRecord;
-    QHash<int, int> m_trackSortOrder;
-    QHash<int, QLinkedList<int> > m_trackIdToRows;
+    QHash<TrackId, int> m_trackSortOrder;
+    QHash<TrackId, QLinkedList<int> > m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant> > m_headerInfo;
+    QString m_trackSourceOrderBy;
+    QString m_tableOrderBy;
+    int m_trackSourceSortColumn;
+    Qt::SortOrder m_trackSourceSortOrder;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };

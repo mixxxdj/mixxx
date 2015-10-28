@@ -26,6 +26,7 @@
 #include "playermanager.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#include "defs_urls.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            ConfigObject<ConfigValue> * _config)
@@ -88,6 +89,10 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     ComboBoxVinylSpeed3->addItem(MIXXX_VINYL_SPEED_45);
     ComboBoxVinylSpeed4->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed4->addItem(MIXXX_VINYL_SPEED_45);
+
+    TroubleshootingLink->setText(QString("<a href='%1%2'>Troubleshooting</a>")
+                                         .arg(MIXXX_MANUAL_URL)
+                                         .arg("/chapters/vinyl_control.html#troubleshooting"));
 
     connect(VinylGain, SIGNAL(sliderReleased()),
             this, SLOT(slotVinylGainApply()));
@@ -340,9 +345,9 @@ void DlgPrefVinyl::VinylTypeSlotApply()
     switch (m_COSpeeds.length()) {
     case 4:
         if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_33) {
-            m_COSpeeds[3]->slotSet(MIXXX_VINYL_SPEED_33_NUM);
+            m_COSpeeds[3]->set(MIXXX_VINYL_SPEED_33_NUM);
         } else if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_45) {
-            m_COSpeeds[3]->slotSet(MIXXX_VINYL_SPEED_45_NUM);
+            m_COSpeeds[3]->set(MIXXX_VINYL_SPEED_45_NUM);
         }
         // fallthrough intended
     case 3:

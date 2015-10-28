@@ -523,12 +523,13 @@ void BeatMap::translate(double dNumSamples) {
 
     double dNumFrames = samplesToFrames(dNumSamples);
     for (BeatList::iterator it = m_beats.begin();
-         it != m_beats.end(); ++it) {
+         it != m_beats.end(); ) {
         double newpos = it->frame_position() + dNumFrames;
         if (newpos >= 0) {
             it->set_frame_position(newpos);
+            ++it;
         } else {
-            m_beats.erase(it);
+            it = m_beats.erase(it);
         }
     }
     onBeatlistChanged();

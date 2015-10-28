@@ -224,7 +224,7 @@ class EngineBuffer : public EngineObject {
     void processSyncRequests();
     void processSeek();
 
-    double updateIndicatorsAndModifyPlay(double v);
+    bool updateIndicatorsAndModifyPlay(bool newPlay);
     void verifyPlay();
 
     // Holds the name of the control group
@@ -234,6 +234,7 @@ class EngineBuffer : public EngineObject {
     LoopingControl* m_pLoopingControl;
     FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
+    FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
@@ -317,7 +318,6 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_backButton;
     ControlPushButton* m_pSlipButton;
 
-    ControlObject* m_rateEngine;
     ControlObject* m_visualBpm;
     ControlObject* m_visualKey;
     ControlObject* m_pQuantize;
@@ -326,7 +326,11 @@ class EngineBuffer : public EngineObject {
     ControlObjectSlave* m_pSampleRate;
     ControlObjectSlave* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
-    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
+
+    // This ControlObjectSlaves is created as parent to this and deleted by
+    // the Qt object tree. This helps that they are deleted by the creating
+    // thread, which is required to avoid segfaults.
+    ControlObjectSlave* m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
 

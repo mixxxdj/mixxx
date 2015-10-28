@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=Mixxx
+Name[de]=Mixxx
+GenericName=Digital DJ interface
+GenericName[de]=Digitales DJ-System
+Comment=A digital DJ interface
+Comment[de]=Ein digitales DJ-System
+Exec=sh -c "pasuspender mixxx || mixxx"
+Terminal=false
+Icon=mixxx-icon
+Type=Application
+StartupNotify=true
+Categories=Qt;AudioVideo;Audio;Midi;Mixer;Player;Recorder;Sequencer;

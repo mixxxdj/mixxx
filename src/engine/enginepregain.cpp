@@ -1,18 +1,3 @@
-/***************************************************************************
-                          enginepregain.cpp  -  description
-                             -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 
 #include <QtDebug>
 
@@ -29,9 +14,6 @@ ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
 ControlPotmeter* EnginePregain::s_pDefaultBoost = NULL;
 ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
 
-/*----------------------------------------------------------------
-   A pregaincontrol is ... a pregain.
-   ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(QString group)
         : m_dSpeed(1.0),
           m_dOldSpeed(1.0),

@@ -48,60 +48,74 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>CrossfadeContainer</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
+        <ObjectName>CrossfaderContainer</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
-          <SliderComposed>
-            <TooltipId>crossfader</TooltipId>
+          <WidgetGroup>
+            <ObjectName>Crossfader</ObjectName>
             <SizePolicy>me,min</SizePolicy>
-            <MinimumSize>-1,40</MinimumSize>
-            <MaximumSize>-1,40</MaximumSize>
-            <Slider scalemode="STRETCH">slider-horizontal.svg</Slider>
-            <Handle scalemode="STRETCH_ASPECT">handle-horizontal.svg</Handle>
-            <Horizontal>true</Horizontal>
+            <Layout>horizontal</Layout>
+            <Children>
+              <SliderComposed>
+                <TooltipId>crossfader</TooltipId>
+                <SizePolicy>me,min</SizePolicy>
+                <MinimumSize>-1,40</MinimumSize>
+                <MaximumSize>-1,40</MaximumSize>
+                <Slider scalemode="STRETCH">slider-horizontal.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">handle-horizontal.svg</Handle>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],crossfader</ConfigKey>
+                  <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+              </SliderComposed>
+            </Children>
             <Connection>
-              <ConfigKey>[Master],crossfader</ConfigKey>
-              <EmitOnDownPress>false</EmitOnDownPress>
+              <ConfigKey>[AutoDJ],enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
             </Connection>
-          </SliderComposed>
-        </Children>
-        <Connection>
-          <ConfigKey>[AutoDJ],enabled</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform>
-            <Not/>
-          </Transform>
-        </Connection>
+          </WidgetGroup>
+
+          <!-- Change crossfader background color if AutoDj is active,
+               https://bugs.launchpad.net/mixxx/+bug/995955 -->
+          <WidgetGroup>
+            <ObjectName>CrossfaderAutoDjActive</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <SliderComposed>
+                <TooltipId>crossfader</TooltipId>
+                <SizePolicy>me,min</SizePolicy>
+                <MinimumSize>-1,40</MinimumSize>
+                <MaximumSize>-1,40</MaximumSize>
+                <Slider scalemode="STRETCH">slider-horizontal.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">handle-horizontal.svg</Handle>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],crossfader</ConfigKey>
+                  <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+              </SliderComposed>
+            </Children>
+            <Connection>
+              <ConfigKey>[AutoDJ],enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          </Children>
+          <Connection>
+            <ConfigKey>[Deere],hide_crossfader</ConfigKey>
+            <BindProperty>visible</BindProperty>
+            <Transform>
+              <Not/>
+            </Transform>
+          </Connection>
       </WidgetGroup>
 
-      <!-- Change crossfader background color if AutoDj is active,
-           https://bugs.launchpad.net/mixxx/+bug/995955 -->
-      <WidgetGroup>
-        <ObjectName>CrossfadeContainer</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
-        <Layout>horizontal</Layout>
-        <Children>
-          <SliderComposed>
-            <Style>QWidget {background-color: #006BA2;}</Style>
-            <TooltipId>crossfader</TooltipId>
-            <SizePolicy>me,min</SizePolicy>
-            <MinimumSize>-1,40</MinimumSize>
-            <MaximumSize>-1,40</MaximumSize>
-            <Slider scalemode="STRETCH">slider-horizontal.svg</Slider>
-            <Handle scalemode="STRETCH_ASPECT">handle-horizontal.svg</Handle>
-            <Horizontal>true</Horizontal>
-            <Connection>
-              <ConfigKey>[Master],crossfader</ConfigKey>
-              <EmitOnDownPress>false</EmitOnDownPress>
-            </Connection>
-          </SliderComposed>
-        </Children>
-        <Connection>
-          <ConfigKey>[AutoDJ],enabled</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
     </Children>
     <Connection>
       <ConfigKey>[Master],hide_mixer</ConfigKey>

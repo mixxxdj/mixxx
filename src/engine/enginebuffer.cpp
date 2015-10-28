@@ -1,19 +1,3 @@
-/***************************************************************************
-                          enginebuffer.cpp  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
 
 #include <QtDebug>
 
@@ -163,9 +147,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
             this, SLOT(slotControlSlip(double)),
             Qt::DirectConnection);
 
-    // Actual rate (used in visuals, not for control)
-    m_rateEngine = new ControlObject(ConfigKey(m_group, "rateEngine"));
-
     // BPM to display in the UI (updated more slowly than the actual bpm)
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
     m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
@@ -186,16 +167,14 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
 
     m_pKeylockEngine = new ControlObjectSlave("[Master]", "keylock_engine", this);
-    m_pKeylockEngine->connectValueChanged(this,
-                                          SLOT(slotKeylockEngineChanged(double)),
+    m_pKeylockEngine->connectValueChanged(SLOT(slotKeylockEngineChanged(double)),
                                           Qt::DirectConnection);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
 
-    m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
+    m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
-    m_pKeylock->set(false);
 
     m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
     connect(m_pEject, SIGNAL(valueChanged(double)),
@@ -269,11 +248,10 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pScale->clear();
     m_bScalerChanged = true;
 
-    m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
-    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
+    m_pPassthroughEnabled = new ControlObjectSlave(group, "passthrough", this);
+    m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
-    //m_iRampIter = 0;
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
     df.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -302,7 +280,6 @@ EngineBuffer::~EngineBuffer() {
     delete m_startButton;
     delete m_endButton;
     delete m_stopButton;
-    delete m_rateEngine;
     delete m_playposSlider;
     delete m_visualBpm;
     delete m_visualKey;
@@ -349,12 +326,21 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     EngineBufferScale* vinyl_scale = m_pScaleVinyl;
 
     if (bEnable && m_pScale != keylock_scale) {
-        readToCrossfadeBuffer(iBufferSize);
+        if (m_speed_old != 0.0) {
+            // Crossfade if we are not paused.
+            // If we start from zero a ramping gain is
+            // applied later
+            readToCrossfadeBuffer(iBufferSize);
+        }
         m_pScale = keylock_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
     } else if (!bEnable && m_pScale != vinyl_scale) {
-        readToCrossfadeBuffer(iBufferSize);
+        if (m_speed_old != 0.0) {
+            // Crossfade if we are not paused
+            // (for slow speeds below 0.1 the vinyl_scale is used)
+            readToCrossfadeBuffer(iBufferSize);
+        }
         m_pScale = vinyl_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
@@ -473,7 +459,6 @@ bool EngineBuffer::getScratching() {
     return m_scratching_old;
 }
 
-
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoading() {
     // Pause EngineBuffer from processing frames
@@ -530,9 +515,6 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     m_iTrackLoading = 0;
-    // NOTE(rryan) ejectTrack will not eject a playing track so set playing
-    // false before calling.
-    m_playButton->set(0.0);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -542,12 +524,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 }
 
 void EngineBuffer::ejectTrack() {
-    // Don't allow ejections while playing a track. We don't need to lock to
-    // call ControlObject::get() so this is fine.
-    if (m_playButton->get() > 0 || !m_pCurrentTrack) {
-        return;
-    }
-
+    // clear track values in any case, this may fix Bug #1450424
     m_pause.lock();
     m_iTrackLoading = 0;
     m_pTrackSamples->set(0);
@@ -559,10 +536,12 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
-    doSeekFractional(0., SEEK_EXACT);
+    doSeekFractional(0.0, SEEK_EXACT);
     m_pause.unlock();
 
-    emit(trackUnloaded(pTrack));
+    if (pTrack) {
+        emit(trackUnloaded(pTrack));
+    }
 }
 
 void EngineBuffer::slotPassthroughChanged(double enabled) {
@@ -619,7 +598,7 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     queueNewPlaypos(new_playpos, seekType);
 }
 
-double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
+bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
@@ -632,21 +611,21 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
         playPossible = false;
     }
 
-    return m_pCueControl->updateIndicatorsAndModifyPlay(v, playPossible);
+    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, playPossible);
 }
 
 void EngineBuffer::verifyPlay() {
-    double play = m_playButton->get();
-    double verifiedPlay = updateIndicatorsAndModifyPlay(play);
+    bool play = m_playButton->toBool();
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(play);
     if (play != verifiedPlay) {
-        m_playButton->setAndConfirm(verifiedPlay);
+        m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
     }
 }
 
 void EngineBuffer::slotControlPlayRequest(double v) {
-    double verifiedPlay = updateIndicatorsAndModifyPlay(v);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
     // set and confirm must be called here in any case to update the widget toggle state
-    m_playButton->setAndConfirm(verifiedPlay);
+    m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
 }
 
 void EngineBuffer::slotControlStart(double v)
@@ -784,9 +763,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
             // This is for the natural speed pitch found on turn tables
-        } else if (fabs(speed) < 0.1 && m_pKeylockEngine->get() == RUBBERBAND) {
-            // At very slow speeds, Rubberband performs memory allocations which
-            // can cause underruns.  Disable keylock under these conditions.
+        } else if (fabs(speed) < 0.1) {
+            // We have pre-allocated big buffers in Rubberband and Soundtouch for
+            // a minimum speed of 0.1. Slower speeds will re-allocate much bigger
+            // buffers which may cause underruns.
+            // Disable keylock under these conditions.
 
             // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
@@ -1226,14 +1207,10 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
         m_iSamplesCalculated = 0;
     }
 
-    if (speed != m_rateEngine->get()) {
-        m_rateEngine->set(speed);
-    }
-
     // Update visual control object, this needs to be done more often than the
     // playpos slider
-    m_visualPlayPos->set(fFractionalPlaypos, speed,
-            (double)iBufferSize/m_trackSamplesOld,
+    m_visualPlayPos->set(fFractionalPlaypos, speed * m_baserate_old,
+            (double)iBufferSize / m_trackSamplesOld,
             fractionalPlayposFromAbsolute(m_dSlipPosition));
 }
 
@@ -1291,6 +1268,11 @@ bool EngineBuffer::isTrackLoaded() {
 
 void EngineBuffer::slotEjectTrack(double v) {
     if (v > 0) {
+        // Don't allow rejections while playing a track. We don't need to lock to
+        // call ControlObject::get() so this is fine.
+        if (m_playButton->get() > 0) {
+            return;
+        }
         ejectTrack();
     }
 }

@@ -31,19 +31,6 @@ extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 
-#ifndef __FFMPEGOLDAPI__
-
-// Thank you macports not providing libavresample for FFMPEG!
-#ifdef __LIBAVRESAMPLE__
-#include <libavresample/avresample.h>
-#else
-#include <libswresample/swresample.h>
-#endif
-
-#include <libavutil/avutil.h>
-#include <libavutil/opt.h>
-#endif
-
 // Compability
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
@@ -51,32 +38,17 @@ extern "C" {
 }
 
 class EncoderFfmpegResample {
-public:
+  public:
     EncoderFfmpegResample(AVCodecContext *codecCtx);
     ~EncoderFfmpegResample();
-    int open(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt);
+    int openMixxx(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt);
 
-    unsigned int reSample(AVFrame *inframe, quint8 **outbuffer);
+    unsigned int reSampleMixxx(AVFrame *inframe, quint8 **outbuffer);
 
-private:
+  private:
     AVCodecContext *m_pCodecCtx;
     enum AVSampleFormat m_pOutSampleFmt;
     enum AVSampleFormat m_pInSampleFmt;
-
-#ifndef __FFMPEGOLDAPI__
-
-// Please choose to use libavresample.. people
-// Compile it now.. but because macports doesn't
-// Support both.. damn!
-#ifdef __LIBAVRESAMPLE__
-    AVAudioResampleContext *m_pSwrCtx;
-#else
-    SwrContext *m_pSwrCtx;
-#endif
-
-#else
-    ReSampleContext *m_pSwrCtx;
-#endif
 
 };
 

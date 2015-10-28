@@ -5,16 +5,16 @@
 #include <QMutex>
 #include <QHash>
 #include <QList>
+#include <QScopedPointer>
 
 #include "ui_dlgtrackinfo.h"
 #include "trackinfoobject.h"
 #include "dlgtagfetcher.h"
 #include "library/coverart.h"
+#include "util/tapfilter.h"
 #include "util/types.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
-
-const int kFilterLength = 5;
 
 class Cue;
 
@@ -49,7 +49,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmHalve();
     void slotBpmTwoThirds();
     void slotBpmThreeFourth();
-    void slotBpmTap();
+    void slotBpmTap(double averageLength, int numSamples);
 
     void reloadTrackMetadata();
     void updateTrackMetadata();
@@ -67,12 +67,11 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void unloadTrack(bool save);
     void clear();
     void init();
-
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
 
-    CSAMPLE m_bpmTapFilter[kFilterLength];
-    QTime m_bpmTapTimer;
+    QScopedPointer<TapFilter> m_pTapFilter;
+    double m_dLastBpm;
 
     DlgTagFetcher& m_DlgTagFetcher;
 

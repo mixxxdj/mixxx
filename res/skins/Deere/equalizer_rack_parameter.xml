@@ -6,6 +6,7 @@
   Variables:
     group: the group
     parameter: the parameter number
+    color: the notch color. red, green, yellow, blue or light_blue.
 -->
 <Template>
   <SetVariable name="EqualizerNumber">1</SetVariable>
@@ -14,39 +15,67 @@
   <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>]</SetVariable>
   <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
   <WidgetGroup>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <Children>
-      <Template src="skin:knob.xml">
-        <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
-        <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
-      </Template>
       <WidgetGroup>
-        <Layout>horizontal</Layout>
+        <Layout>vertical</Layout>
         <Children>
-          <EffectPushButton>
-            <TooltipId><Variable name="TooltipId"/></TooltipId>
-            <Size>10f,10f</Size>
-            <ObjectName>KillButton</ObjectName>
+          <WidgetGroup>
+            <Size>15f,21f</Size>
+            <Children>
+              <EffectPushButton>
+                <TooltipId><Variable name="TooltipId"/></TooltipId>
+                <Size>15f,15f</Size>
+                <ObjectName>MixerButton</ObjectName>
+                <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+                <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+                <Effect><Variable name="EffectNumber"/></Effect>
+                <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text></Text>
+                  <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text></Text>
+                  <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </EffectPushButton>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Button parameter names for the eqs are too long.
+               Commented out until we have short parameter names -->
+<!--
+          <EffectButtonParameterName>
+            <Size>30f,10f</Size>
+            <ObjectName>KnobLabel</ObjectName>
             <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
             <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
             <Effect><Variable name="EffectNumber"/></Effect>
             <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>O</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>K</Text>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-          </EffectPushButton>
+          </EffectButtonParameterName>
+-->
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
+            <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
+            <SetVariable name="color"><Variable name="color"/></SetVariable>
+          </Template>
           <EffectParameterName>
-            <Size>30f,10f</Size>
+            <Size>40f,10f</Size>
             <ObjectName>KnobLabel</ObjectName>
             <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
             <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>

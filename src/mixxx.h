@@ -44,13 +44,16 @@ class DlgPreferences;
 class SoundManager;
 class ControlPushButton;
 class DlgDeveloperTools;
+class Upgrade;
+class LaunchImage;
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
 class ControlObjectSlave;
-class ControlObjectThread;
+class ControlObject;
 class QTranslator;
 
 // This Class is the base class for Mixxx. It sets up the main
@@ -64,16 +67,27 @@ class MixxxMainWindow : public QMainWindow {
     // Construtor. files is a list of command line arguments
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
     virtual ~MixxxMainWindow();
+
+    void initalize(QApplication *app, const CmdlineArgs& args);
+    void finalize();
+
     // initializes all QActions of the application
     void initActions();
-    // initMenuBar creates the menu_bar and inserts the menuitems
+    // creates the menu_bar and inserts the file Menu
     void initMenuBar();
+    // creates the menu_bar and inserts the file Menu
+    // after it was inited
+    void populateMenuBar();
 
     void setToolTipsCfg(int tt);
     inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
+
+    // progresses the launch image progress bar
+    // this must be called from the GUi thread only
+    void launchProgress(int progress);
 
   public slots:
 
@@ -103,7 +117,9 @@ class MixxxMainWindow : public QMainWindow {
     void slotHelpFeedback();
     // Open the manual.
     void slotHelpManual();
-    // Visits translation interface on launchpad.net
+    // Open the keyboard mapping table in the manual.
+    void slotHelpShortcuts();
+    // Visits translation interface on www.transifex.com
     void slotHelpTranslation();
     // Scan or rescan the music library directory
     void slotScanLibrary();
@@ -118,6 +134,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowPreviewDeck(bool);
     void slotViewShowEffects(bool);
     void slotViewShowCoverArt(bool);
+    void slotViewMaximizeLibrary(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
     // Reload the skin.
@@ -141,7 +158,14 @@ class MixxxMainWindow : public QMainWindow {
     // can alert the user if a mic is not configured.
     void slotTalkoverChanged(int);
 
-    void toggleCheckedSamplers();
+    void slotUpdateWindowTitle(TrackPointer pTrack);
+
+    void slotToggleCheckedVinylControl();
+    void slotToggleCheckedSamplers();
+    void slotToggleCheckedMicrophone();
+    void slotToggleCheckedPreviewDeck();
+    void slotToggleCheckedEffects();
+    void slotToggleCheckedCoverArt();
 
   signals:
     void newSkinLoaded();
@@ -168,12 +192,13 @@ class MixxxMainWindow : public QMainWindow {
                           const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
-
     void linkSkinWidget(ControlObjectSlave** pCOS,
                         ConfigKey key, const char* slot);
+    void updateCheckedMenuAction(QAction* menuAction, ConfigKey key);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
+    LaunchImage* m_pLaunchImage;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;
@@ -208,6 +233,9 @@ class MixxxMainWindow : public QMainWindow {
     // The library management object
     Library* m_pLibrary;
 
+    Upgrade* m_pUpgrader;
+
+    QMenuBar* m_pMenuBar;
     // file_menu contains all items of the menubar entry "File"
     QMenu* m_pFileMenu;
     // edit_menu contains all items of the menubar entry "Edit"
@@ -246,12 +274,14 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewShowPreviewDeck;
     QAction* m_pViewShowEffects;
     QAction* m_pViewShowCoverArt;
+    QAction* m_pViewMaximizeLibrary;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;
     QAction* m_pHelpSupport;
     QAction* m_pHelpFeedback;
-    QAction* m_pHelpTranslation;
     QAction* m_pHelpManual;
+    QAction* m_pHelpShortcuts;
+    QAction* m_pHelpTranslation;
 
     QAction* m_pDeveloperReloadSkin;
     QAction* m_pDeveloperTools;
@@ -260,7 +290,13 @@ class MixxxMainWindow : public QMainWindow {
     DlgDeveloperTools* m_pDeveloperToolsDlg;
     QAction* m_pDeveloperDebugger;
 
+    ControlObjectSlave* m_pShowVinylControl;
     ControlObjectSlave* m_pShowSamplers;
+    ControlObjectSlave* m_pShowMicrophone;
+    ControlObjectSlave* m_pShowPreviewDeck;
+    ControlObjectSlave* m_pShowEffects;
+    ControlObjectSlave* m_pShowCoverArt;
+    ControlObject* m_pNumAuxiliaries;
 
     int m_iNoPlaylists;
 
@@ -286,7 +322,7 @@ class MixxxMainWindow : public QMainWindow {
     QList<ControlObjectSlave*> m_pVinylControlEnabled;
     QList<ControlObjectSlave*> m_pPassthroughEnabled;
     QList<ControlObjectSlave*> m_pAuxiliaryPassthrough;
-    ControlObjectThread* m_pNumDecks;
+    ControlObjectSlave* m_pNumDecks;
     int m_iNumConfiguredDecks;
     QList<ControlObjectSlave*> m_micTalkoverControls;
     QSignalMapper* m_VCControlMapper;

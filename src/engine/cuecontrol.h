@@ -9,6 +9,7 @@
 
 #include "engine/enginecontrol.h"
 #include "configobject.h"
+#include "controlobjectslave.h"
 #include "trackinfoobject.h"
 
 #define NUM_HOT_CUES 37
@@ -88,7 +89,7 @@ class CueControl : public EngineControl {
     virtual ~CueControl();
 
     virtual void hintReader(HintVector* pHintList);
-    double updateIndicatorsAndModifyPlay(double play, bool playPossible);
+    bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtCue();
     bool getPlayFlashingAtPause();
@@ -153,6 +154,8 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
+    ControlObjectSlave* m_pVinylControlEnabled;
+    ControlObjectSlave* m_pVinylControlMode;
 
     TrackPointer m_pLoadedTrack;
 

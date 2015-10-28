@@ -4,7 +4,7 @@
         <SizePolicy>me,max</SizePolicy>
         <MinimumSize>0,0</MinimumSize>
         <Children>
-            <WidgetStack currentpage="[Master],small_view_curpage" persist="true">
+            <WidgetStack currentpage="[Master],view_curpage" persist="true">
                 <Children>
                     <WidgetGroup trigger="[Library],show_library_tab_small" persist="true">
                         <Layout>vertical</Layout>
@@ -14,19 +14,32 @@
                             </SingletonContainer>
                         </Children>
                     </WidgetGroup>
-                    <WidgetGroup trigger="[EffectRack1],show_tab_small" persist="true">
+                    <WidgetGroup trigger="[Microphone],show_microphone" persist="true">
+                        <Layout>vertical</Layout>
+                        <Children>
+                            <Template src="skin:microphone_rack.xml"/>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup trigger="[EffectRack1],show" persist="true">
                         <Layout>vertical</Layout>
                         <Children>
                             <Template src="skin:effect_rack.xml"/>
                         </Children>
                     </WidgetGroup>
-                    <WidgetGroup trigger="[Samplers],show_samplers_tab_small" persist="true">
+                    <WidgetGroup trigger="[Samplers],show_samplers" persist="true">
                         <Layout>vertical</Layout>
                         <Children>
                             <Template src="skin:sampler_decks.xml"/>
                         </Children>
                     </WidgetGroup>
                 </Children>
+                <Connection>
+                  <ConfigKey>[Master],maximize_library</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform>
+                    <Not/>
+                  </Transform>
+                </Connection>
             </WidgetStack>
         </Children>
     </WidgetGroup>

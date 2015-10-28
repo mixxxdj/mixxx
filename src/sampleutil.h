@@ -4,10 +4,12 @@
 #ifndef SAMPLEUTIL_H
 #define SAMPLEUTIL_H
 
-#include "util/types.h"
-
 #include <algorithm>
 #include <cstring> // memset
+
+#include <QFlags>
+
+#include "util/types.h"
 
 // MSVC does this
 // __declspec(align(16))
@@ -43,6 +45,15 @@
 // A group of utilities for working with samples.
 class SampleUtil {
   public:
+    // If more audio channels are added in the future, this can be used
+    // as bitflags, e.g CLIPPING_CH3 = 4
+    enum CLIP_FLAG {
+        NO_CLIPPING = 0,
+        CLIPPING_LEFT = 1,
+        CLIPPING_RIGHT = 2,
+    };
+    Q_DECLARE_FLAGS(CLIP_STATUS, CLIP_FLAG);
+
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
     static CSAMPLE* alloc(int size);
@@ -160,16 +171,19 @@ class SampleUtil {
 
     // Convert and normalize a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX]
     // to a buffer of CSAMPLEs in the range [-1.0, 1.0].
-    // NOTE(uklotzde): This conversion is deprecated and will be removed
-    // with the introduction of the new SoundSourceAPI.
     static void convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
             int iNumSamples);
+
+    // Convert and normalize a buffer of CSAMPLEs in the range [-1.0, 1.0]
+    // to a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX].
+    static void convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
+            unsigned int iNumSamples);
 
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
     // absolute values of l in pfAbsL, and the sum of the absolute values of r
     // in pfAbsR.
-    // returns true in case of clipping > +-1
-    static bool sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+    // The return value tells whether there is clipping in pBuffer or not.
+    static CLIP_STATUS sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
             const CSAMPLE* pBuffer, int iNumSamples);
 
     // Copies every sample in pSrc to pDest, limiting the values in pDest
@@ -210,11 +224,6 @@ class SampleUtil {
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer
     // (numFrames * 2) samples will be written into pBuffer
-    static void doubleMonoToDualMono(SAMPLE* pBuffer, int numFrames);
-
-    // In-place doubles the mono samples in pBuffer to dual mono samples.
-    // (numFrames) samples will be read from pBuffer
-    // (numFrames * 2) samples will be written into pBuffer
     static void doubleMonoToDualMono(CSAMPLE* pBuffer, int numFrames);
 
     // Copies and doubles the mono samples in pSrc to dual mono samples
@@ -249,5 +258,7 @@ class SampleUtil {
     // etc.)
 #include "sampleutil_autogen.h"
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(SampleUtil::CLIP_STATUS);
 
 #endif /* SAMPLEUTIL_H */

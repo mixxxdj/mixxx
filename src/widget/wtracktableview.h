@@ -13,7 +13,7 @@
 #include "widget/wlibrarytableview.h"
 #include "dlgtagfetcher.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 class DlgTrackInfo;
 class TrackCollection;
 class WCoverArtMenu;
@@ -49,6 +49,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotPurge();
     void onSearchStarting();
     void onSearchCleared();
+    void slotSendToAutoDJ();
+    void slotSendToAutoDJTop();
 
   private slots:
     void slotRemove();
@@ -60,8 +62,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotNextDlgTagFetcher();
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
-    void slotSendToAutoDJ();
-    void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
@@ -110,9 +110,9 @@ class WTrackTableView : public WLibraryTableView {
     QModelIndex currentTrackInfoIndex;
 
 
-    ControlObjectThread* m_pNumSamplers;
-    ControlObjectThread* m_pNumDecks;
-    ControlObjectThread* m_pNumPreviewDecks;
+    ControlObjectSlave* m_pNumSamplers;
+    ControlObjectSlave* m_pNumDecks;
+    ControlObjectSlave* m_pNumPreviewDecks;
 
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;

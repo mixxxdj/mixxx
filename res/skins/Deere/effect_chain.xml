@@ -11,7 +11,7 @@
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
-    <MinimumSize>200,100</MinimumSize>
+    <MinimumSize>200,150</MinimumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitNameRow</ObjectName>
@@ -35,181 +35,360 @@
             <Layout>horizontal</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>⏏</Text>
-                </State>
-                <Connection>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ConfigKey><Variable name="group"/>,clear</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_2state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,enabled</SetVariable>
+              </Template>
 
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>E</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>E</Text>
-                </State>
-                <Connection>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,clear</SetVariable>
+              </Template>
 
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>◀</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,prev_chain</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_chevron_left_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_chevron_left_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,prev_chain</SetVariable>
+              </Template>
 
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>▶</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,next_chain</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_chevron_right_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_chevron_right_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,next_chain</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
         </Children>
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>EffectUnitControlRow</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>EffectUnitParameters</ObjectName>
-            <SizePolicy>me,max</SizePolicy>
-            <Layout>horizontal</Layout>
+            <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:effect_selector_buttons.xml">
-                <SetVariable name="Effect">1</SetVariable>
-              </Template>
-              <Template src="skin:effect_parameter_knob.xml">
-                <SetVariable name="Effect">1</SetVariable>
-                <SetVariable name="EffectParameter">1</SetVariable>
-              </Template>
-              <Template src="skin:effect_button_parameter.xml">
-                <SetVariable name="Effect">1</SetVariable>
-                <SetVariable name="EffectButtonParameter">1</SetVariable>
-              </Template>
-              <Template src="skin:effect_parameter_knob.xml">
-                <SetVariable name="Effect">1</SetVariable>
-                <SetVariable name="EffectParameter">2</SetVariable>
-              </Template>
-              <Template src="skin:effect_button_parameter.xml">
-                <SetVariable name="Effect">1</SetVariable>
-                <SetVariable name="EffectButtonParameter">2</SetVariable>
-              </Template>
-              <Template src="skin:effect_parameter_knob.xml">
-                <SetVariable name="Effect">1</SetVariable>
-                <SetVariable name="EffectParameter">3</SetVariable>
-              </Template>
-              <Template src="skin:effect_button_parameter.xml">
-                <SetVariable name="Effect">1</SetVariable>
-                <SetVariable name="EffectButtonParameter">3</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <ObjectName>EffectUnitControlRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>EffectUnitParameters</ObjectName>
+                    <SizePolicy>me,max</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <!-- Allow up to 8 parameters, needed to control the graphic eq effect-->
+                      <Template src="skin:effect_selector_buttons.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectParameter">1</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectButtonParameter">1</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectParameter">2</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectButtonParameter">2</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectParameter">3</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectButtonParameter">3</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectParameter">4</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectButtonParameter">4</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectParameter">5</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectButtonParameter">5</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectParameter">6</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectButtonParameter">6</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectParameter">7</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectButtonParameter">7</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectParameter">8</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">1</SetVariable>
+                        <SetVariable name="EffectButtonParameter">8</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>EffectUnitControlRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>EffectUnitParameters</ObjectName>
+                    <SizePolicy>me,max</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <!-- Allow up to 8 parameters, needed to control the graphic eq effect-->
+                      <Template src="skin:effect_selector_buttons.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectParameter">1</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectButtonParameter">1</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectParameter">2</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectButtonParameter">2</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectParameter">3</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectButtonParameter">3</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectParameter">4</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectButtonParameter">4</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectParameter">5</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectButtonParameter">5</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectParameter">6</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectButtonParameter">6</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectParameter">7</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectButtonParameter">7</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectParameter">8</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">2</SetVariable>
+                        <SetVariable name="EffectButtonParameter">8</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>EffectUnitControlRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>EffectUnitParameters</ObjectName>
+                    <SizePolicy>me,max</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <!-- Allow up to 8 parameters, needed to control the graphic eq effect-->
+                      <Template src="skin:effect_selector_buttons.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectParameter">1</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectButtonParameter">1</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectParameter">2</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectButtonParameter">2</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectParameter">3</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectButtonParameter">3</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectParameter">4</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectButtonParameter">4</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectParameter">5</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectButtonParameter">5</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectParameter">6</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectButtonParameter">6</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectParameter">7</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectButtonParameter">7</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_parameter_knob.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectParameter">8</SetVariable>
+                        <SetVariable name="color">blue</SetVariable>
+                      </Template>
+                      <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="Effect">3</SetVariable>
+                        <SetVariable name="EffectButtonParameter">8</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
-
           <WidgetGroup>
             <ObjectName>EffectUnitControls</ObjectName>
-            <Layout>horizontal</Layout>
+            <Layout>vertical</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <Template src="skin:knob_with_label.xml">
                 <SetVariable name="control">super1</SetVariable>
-                <SetVariable name="label">SuperKnob</SetVariable>
+                <SetVariable name="label">Super</SetVariable>
+                <SetVariable name="color">yellow</SetVariable>
               </Template>
 
               <Template src="skin:knob_with_label.xml">
                 <SetVariable name="control">mix</SetVariable>
                 <SetVariable name="label">Mix</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-        </Children>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <ObjectName>EffectUnitControlRow</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <WidgetGroup>
-            <ObjectName>EffectUnitParameters</ObjectName>
-            <SizePolicy>me,max</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:effect_selector_buttons.xml">
-                <SetVariable name="Effect">2</SetVariable>
-              </Template>
-              <Template src="skin:effect_parameter_knob.xml">
-                <SetVariable name="Effect">2</SetVariable>
-                <SetVariable name="EffectParameter">1</SetVariable>
-              </Template>
-              <Template src="skin:effect_parameter_knob.xml">
-                <SetVariable name="Effect">2</SetVariable>
-                <SetVariable name="EffectParameter">2</SetVariable>
-              </Template>
-              <Template src="skin:effect_parameter_knob.xml">
-                <SetVariable name="Effect">2</SetVariable>
-                <SetVariable name="EffectParameter">3</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
-        </Children>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <ObjectName>EffectUnitControlRow</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <WidgetGroup>
-            <ObjectName>EffectUnitParameters</ObjectName>
-            <SizePolicy>me,max</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:effect_selector_buttons.xml">
-                <SetVariable name="Effect">3</SetVariable>
-              </Template>
-              <Template src="skin:effect_parameter_knob.xml">
-                <SetVariable name="Effect">3</SetVariable>
-                <SetVariable name="EffectParameter">1</SetVariable>
-              </Template>
-              <Template src="skin:effect_parameter_knob.xml">
-                <SetVariable name="Effect">3</SetVariable>
-                <SetVariable name="EffectParameter">2</SetVariable>
-              </Template>
-              <Template src="skin:effect_parameter_knob.xml">
-                <SetVariable name="Effect">3</SetVariable>
-                <SetVariable name="EffectParameter">3</SetVariable>
+                <SetVariable name="color">blue</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -250,6 +429,130 @@
             <SetVariable name="group_name">CH4</SetVariable>
             <SetVariable name="group_group">[Channel4]</SetVariable>
           </Template>
+
+          <!-- Optionally display Mic 1-4 and Aux 1-4 FX arm buttons if these
+               channels are configured in the Sound Hardware preferences.
+                We have to use WidgetGroups here, because we can't connect
+               <BindProperty> directly to templates. -->
+          <WidgetGroup>
+            <ObjectName>EffectUnitGroupControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">MIC1</SetVariable>
+                    <SetVariable name="group_group">[Microphone]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Microphone],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">MIC2</SetVariable>
+                    <SetVariable name="group_group">[Microphone2]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Microphone2],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">MIC3</SetVariable>
+                    <SetVariable name="group_group">[Microphone3]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Microphone3],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">MIC4</SetVariable>
+                    <SetVariable name="group_group">[Microphone4]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Microphone4],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                  <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">Aux1</SetVariable>
+                    <SetVariable name="group_group">[Auxiliary1]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary1],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                  <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">Aux2</SetVariable>
+                    <SetVariable name="group_group">[Auxiliary2]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary2],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                  <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">Aux3</SetVariable>
+                    <SetVariable name="group_group">[Auxiliary3]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary3],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                  <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">Aux4</SetVariable>
+                    <SetVariable name="group_group">[Auxiliary4]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary4],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
     </Children>

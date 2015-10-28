@@ -15,15 +15,15 @@ VisualPlayPosition::VisualPlayPosition(const QString& key)
         : m_valid(false),
           m_key(key),
           m_invalidTimeInfoWarned(false) {
-    m_audioBufferSize = new ControlObjectSlave("[Master]", "audio_buffer_size");
+    m_audioBufferSize = new ControlObjectSlave(
+            "[Master]", "audio_buffer_size", this);
     m_audioBufferSize->connectValueChanged(
-            this, SLOT(slotAudioBufferSizeChanged(double)));
+            SLOT(slotAudioBufferSizeChanged(double)));
     m_dAudioBufferSize = m_audioBufferSize->get();
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
     m_listVisualPlayPosition.remove(m_key);
-    delete m_audioBufferSize;
 }
 
 void VisualPlayPosition::set(double playPos, double rate,
