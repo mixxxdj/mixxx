@@ -18,6 +18,7 @@
 #include <QtDebug>
 
 #include <signal.h>
+#include <sys/types.h>
 #include <shout/shout.h>
 
 #include "engine/sidechain/engineshoutcast.h"
