@@ -24,25 +24,34 @@ VCI102.volume = function(ch, midino, value, status, group) {
 
 VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
 
-VCI102.shift = [0, 0];
+VCI102.fxButton = [
+    ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"],
+    ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"]
+];
 
-VCI102.setShift = function(ch, value) {
+VCI102.setFxButton = function(ch, value) {
     var i, j, enabled;
-    VCI102.shift[ch] = value * 2 / 127;
+    if (value) {
+        VCI102.fxButton[ch] =
+            ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
+    } else {
+        VCI102.fxButton[ch] =
+            ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
+    }
     for (i = ch; i < 4; i += 2) {
         enabled = "group_" + VCI102.deck[i] + "_enable";
-        for (j = VCI102.shift[ch] + 1; j <= VCI102.shift[ch] + 2; j++) {
-            engine.trigger("[EffectRack1_EffectUnit" + j + "]", enabled);
+        for (j = 0; j < 2; j++) {
+            engine.trigger(VCI102.fxButton[ch % 2][j], enabled);
         }
     }
 };
 
 VCI102.shiftL = function(ch, midino, value, status, group) {
-    VCI102.setShift(0, value);
+    VCI102.setFxButton(0, value);
 };
 
 VCI102.shiftR = function(ch, midino, value, status, group) {
-    VCI102.setShift(1, value);
+    VCI102.setFxButton(1, value);
 };
 
 VCI102.selectTimer = 0;
@@ -280,9 +289,9 @@ VCI102.init = function() {
         };
     }
 
-    function makeLFX(ch, midino, shift) {
+    function makeLFX(ch, midino, fx) {
         return function(value, group, key) {
-            if (VCI102.shift[ch % 2] == shift) {
+            if (group == VCI102.fxButton[ch % 2][fx]) {
                 midi.sendShortMsg(0x90 + ch, midino, value * 127);
             }
         };
@@ -294,11 +303,10 @@ VCI102.init = function() {
         engine.connectControl(VCI102.deck[i], "pfl", headMix);
         enabled = "group_" + VCI102.deck[i] + "_enable";
         for (j = 0; j < 2; j++) {
-            for (k = 0; k < 4; k += 2) {
+            led = makeLFX(i, LFX[j], j);
+            for (k = j + 1; k <= 4; k += 2) {
                 engine.connectControl(
-                    "[EffectRack1_EffectUnit" + (j + k + 1) + "]",
-                    enabled,
-                    makeLFX(i, LFX[j], k));
+                    "[EffectRack1_EffectUnit" + k + "]", enabled, led);
             }
         }
         engine.softTakeover(VCI102.deck[i], "rate", true);
