@@ -37,6 +37,8 @@ enum SoundDeviceError {
     SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL,
 };
 
+const QString kNetworkDeviceInternalName = "Network stream";
+
 class SoundDevice {
   public:
     SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm);
@@ -51,7 +53,6 @@ class SoundDevice {
     inline const QString& getHostAPI() const {
         return m_hostAPI;
     }
-    void setHostAPI(QString api);
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
     virtual Result open(bool isClkRefDevice, int syncBuffers) = 0;

@@ -612,8 +612,39 @@
 								<ConfigKey>[Master],audio_latency_usage</ConfigKey>
 							</Connection>
 						</VuMeter>
-
-
+						
+					    <PushButton>
+							<Style></Style>
+							<NumberStates>4</NumberStates>
+							<State>
+								<Number>0</Number>
+								<Pressed>btn_broadcast_unconnected.png</Pressed>
+								<Unpressed>btn_broadcast_unconnected.png</Unpressed>
+							</State>
+							<State>
+								<Number>1</Number>
+								<Pressed>btn_broadcast_connecting.png</Pressed>
+								<Unpressed>btn_broadcast_connecting.png</Unpressed>
+							</State>
+							<State>
+								<Number>2</Number>
+								<Pressed>btn_broadcast_connected.png</Pressed>
+								<Unpressed>btn_broadcast_connected.png</Unpressed>
+							</State>
+							<State>
+								<Number>3</Number>
+								<Pressed>btn_broadcast_failure.png</Pressed>
+								<Unpressed>btn_broadcast_failure.png</Unpressed>
+							</State>
+							<Pos>113,30</Pos>
+							<Connection>
+								<ConfigKey>[Shoutcast],enabled</ConfigKey>
+								<ButtonState>LeftButton</ButtonState>
+							</Connection>
+							<Connection>
+								<ConfigKey>[Shoutcast],status</ConfigKey>
+							</Connection>
+						</PushButton>
 
 						<!--
 						**********************************************

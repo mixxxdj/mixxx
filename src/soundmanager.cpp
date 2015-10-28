@@ -25,6 +25,7 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
+#include "sounddevicenetwork.h"
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
 #include "soundmanagerutil.h"
@@ -32,6 +33,7 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "sampleutil.h"
 #include "util/cmdlineargs.h"
+#include "engine/sidechain/enginenetworkstream.h"
 
 #ifdef __PORTAUDIO__
 typedef PaError (*SetJackClientName)(const char *name);
@@ -62,6 +64,9 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
     m_samplerates.push_back(44100);
     m_samplerates.push_back(48000);
     m_samplerates.push_back(96000);
+
+    m_pNetworkStream = QSharedPointer<EngineNetworkStream>(
+            new EngineNetworkStream(2, 0));
 
     queryDevices(); // initializes PortAudio so SMConfig:loadDefaults can do
                     // its thing if it needs to
@@ -219,6 +224,14 @@ void SoundManager::queryDevices() {
     //qDebug() << "SoundManager::queryDevices()";
     clearDeviceList();
 
+    queryDevicesPortaudio();
+    queryDevicesMixxx();
+
+    // now tell the prefs that we updated the device list -- bkgood
+    emit(devicesUpdated());
+}
+
+void SoundManager::queryDevicesPortaudio() {
 #ifdef __PORTAUDIO__
     PaError err = paNoError;
     if (!m_paInitialized) {
@@ -243,8 +256,9 @@ void SoundManager::queryDevices() {
     const PaDeviceInfo* deviceInfo;
     for (int i = 0; i < iNumDevices; i++) {
         deviceInfo = Pa_GetDeviceInfo(i);
-        if (!deviceInfo)
+        if (!deviceInfo) {
             continue;
+        }
         /* deviceInfo fields for quick reference:
             int     structVersion
             const char *    name
@@ -257,7 +271,8 @@ void SoundManager::queryDevices() {
             PaTime  defaultHighOutputLatency
             double  defaultSampleRate
          */
-        SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
+        SoundDevicePortAudio* currentDevice = new SoundDevicePortAudio(
+                m_pConfig, this, deviceInfo, i);
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {
@@ -265,8 +280,12 @@ void SoundManager::queryDevices() {
         }
     }
 #endif
-    // now tell the prefs that we updated the device list -- bkgood
-    emit(devicesUpdated());
+}
+
+void SoundManager::queryDevicesMixxx() {
+    SoundDeviceNetwork* currentDevice = new SoundDeviceNetwork(
+            m_pConfig, this, m_pNetworkStream);
+    m_devices.push_back(currentDevice);
 }
 
 Result SoundManager::setupDevices() {
@@ -322,7 +341,8 @@ Result SoundManager::setupDevices() {
         device->clearInputs();
         device->clearOutputs();
         m_pErrorDevice = device;
-        foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
+        foreach (AudioInput in,
+                 m_config.getInputs().values(device->getInternalName())) {
             isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
@@ -343,7 +363,16 @@ Result SoundManager::setupDevices() {
                 it.value()->onInputConfigured(in);
             }
         }
-        foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
+        QList<AudioOutput> outputs =
+                m_config.getOutputs().values(device->getInternalName());
+
+        // Statically connect the Network Device to the Sidechain
+        if (device->getInternalName() == kNetworkDeviceInternalName) {
+            AudioOutput out(AudioPath::SIDECHAIN, 0, 2, 0);
+            outputs.append(out);
+        }
+
+        foreach (AudioOutput out, outputs) {
             isOutput = true;
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
@@ -372,6 +401,7 @@ Result SoundManager::setupDevices() {
                 it.value()->onOutputConnected(out);
             }
         }
+
         if (isInput || isOutput) {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
@@ -422,7 +452,8 @@ Result SoundManager::setupDevices() {
     qDebug() << inputDevicesOpened << "input  sound devices opened";
 
     m_pControlObjectSoundStatusCO->set(
-        outputDevicesOpened > 0 ? SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
+            outputDevicesOpened > 0 ?
+                    SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
 
     // returns OK if we were able to open all the devices the user wanted
     if (devicesAttempted == devicesOpened) {
