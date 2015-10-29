@@ -21,11 +21,11 @@
 
 // shout.h checks for WIN32 to see if we are on Windows.
 #ifdef WIN64
-#define WIN23
+#define WIN32
 #endif
 #include <shout/shout.h>
 #ifdef WIN64
-#undef WIN23
+#undef WIN32
 #endif
 
 #include "engine/sidechain/engineshoutcast.h"
