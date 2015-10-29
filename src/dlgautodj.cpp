@@ -34,7 +34,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-	    this, SLOT(updateSelectionInfo()));
+            this, SLOT(updateSelectionInfo()));
 
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
@@ -86,7 +86,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(m_pAutoDJProcessor, SIGNAL(autoDJStateChanged(AutoDJProcessor::AutoDJState)),
             this, SLOT(autoDJStateChanged(AutoDJProcessor::AutoDJState)));
     autoDJStateChanged(m_pAutoDJProcessor->getState());
-    
+
     updateSelectionInfo();
 }
 
@@ -204,17 +204,16 @@ void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
     m_pTrackTableView->setTrackTableRowHeight(rowHeight);
 }
 
-void DlgAutoDJ::updateSelectionInfo()
-{
+void DlgAutoDJ::updateSelectionInfo() {
     int duration = 0;
 
     QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
 
     for (int i = 0; i < indices.size(); ++i) {
         TrackPointer pTrack = m_pAutoDJTableModel->getTrack(indices.at(i));
-      if (pTrack) {
-        duration += pTrack->getDuration();
-      }
+        if (pTrack) {
+            duration += pTrack->getDuration();
+        }
     }
 
     QString label;
@@ -223,6 +222,6 @@ void DlgAutoDJ::updateSelectionInfo()
         label.append(Time::formatSeconds(duration, false));
         label.append(QString(" (%1)").arg(indices.size()));           
     }
-    
+
     labelSelectionInfo->setText(label);
 }
