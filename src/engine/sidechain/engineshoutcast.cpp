@@ -18,8 +18,15 @@
 #include <QtDebug>
 
 #include <signal.h>
-#include <sys/types.h>
+
+// shout.h checks for WIN32 to see if we are on Windows.
+#ifdef WIN64
+#define WIN23
+#endif
 #include <shout/shout.h>
+#ifdef WIN64
+#undef WIN23
+#endif
 
 #include "engine/sidechain/engineshoutcast.h"
 #include "configobject.h"
@@ -715,7 +722,9 @@ void EngineShoutcast::run() {
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
 
+#ifndef __WINDOWS__
     ignoreSigpipe();
+#endif
 
     DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
         qDebug() << "EngineShoutcast::run: Shoutcast FIFO handle is not available. Aborting";
@@ -761,6 +770,7 @@ bool EngineShoutcast::threadWaiting() {
     return m_threadWaiting;
 }
 
+#ifndef __WINDOWS__
 void EngineShoutcast::ignoreSigpipe()
 {
     // shout_send_raw() can cause SIGPIPE, which is passed to this theread
@@ -776,7 +786,7 @@ void EngineShoutcast::ignoreSigpipe()
         qDebug() << "EngineShoutcast::ignoreSigpipe() failed";
     }
 }
-
+#endif
 
 void EngineShoutcast::slotStatusCO(double v) {
     // Ignore external sets "status"
