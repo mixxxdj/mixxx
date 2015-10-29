@@ -189,7 +189,8 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
     m_pEffectsManager = new EffectsManager(this, m_pConfig);
 
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager, true, true);
+    m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager,
+                                 true, true);
 
     // Create effect backends. We do this after creating EngineMaster to allow
     // effect backends to refer to controls that are produced by the engine.
@@ -201,16 +202,16 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(8);
 
-    m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
-#ifdef __SHOUTCAST__
-    m_pShoutcastManager = new ShoutcastManager(m_pConfig, m_pEngine);
-#endif
-
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime
     // after the players are added to the engine (as is done currently) -- bkgood
     // (long)
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
+
+    m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
+#ifdef __SHOUTCAST__
+    m_pShoutcastManager = new ShoutcastManager(m_pConfig, m_pSoundManager);
+#endif
 
     launchProgress(11);
     // TODO(rryan): Fold microphone and aux creation into a manager
@@ -1387,9 +1388,10 @@ void MixxxMainWindow::initActions()
     QString shoutcastText = tr("Stream your mixes to a shoutcast or icecast server");
     m_pOptionsShoutcast = new QAction(shoutcastTitle, this);
     m_pOptionsShoutcast->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "OptionsMenu_EnableLiveBroadcasting"),
-                                                  tr("Ctrl+L"))));
+            QKeySequence(m_pKbdConfig->getValueString(
+                    ConfigKey("[KeyboardShortcuts]",
+                              "OptionsMenu_EnableLiveBroadcasting"),
+                    tr("Ctrl+L"))));
     m_pOptionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsShoutcast->setCheckable(true);
     m_pOptionsShoutcast->setChecked(m_pShoutcastManager->isEnabled());

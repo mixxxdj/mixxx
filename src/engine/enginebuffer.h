@@ -104,11 +104,12 @@ class EngineBuffer : public EngineObject {
     };
   public:
     enum SeekRequest {
-        NO_SEEK,
-        SEEK_STANDARD,
-        SEEK_EXACT,
-        SEEK_PHASE
+        SEEK_NONE = 0x00,
+        SEEK_PHASE = 0x01,
+        SEEK_EXACT = 0x02,
+        SEEK_STANDARD = 0x03, // = (SEEK_EXACT | SEEK_PHASE)
     };
+    Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
     enum KeylockEngine {
         SOUNDTOUCH,
@@ -132,6 +133,7 @@ class EngineBuffer : public EngineObject {
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
+    // Queues a new seek position. Use SEEK_EXACT or SEEK_STANDARD as seekType
     void queueNewPlaypos(double newpos, enum SeekRequest seekType);
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
@@ -234,7 +236,7 @@ class EngineBuffer : public EngineObject {
     void setNewPlaypos(double playpos);
 
     void processSyncRequests();
-    void processSeek();
+    void processSeek(bool paused);
 
     bool updateIndicatorsAndModifyPlay(bool newPlay);
     void verifyPlay();
@@ -377,9 +379,10 @@ class EngineBuffer : public EngineObject {
     bool m_bScalerOverride;
 
     QAtomicInt m_iSeekQueued;
+    QAtomicInt m_iSeekPhaseQueued;
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
-    ControlValueAtomic<double> m_queuedPosition;
+    ControlValueAtomic<double> m_queuedSeekPosition;
 
     // Holds the last sample value of the previous buffer. This is used when ramping to
     // zero in case of an immediate stop of the playback
@@ -410,5 +413,7 @@ class EngineBuffer : public EngineObject {
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(EngineBuffer::SeekRequests)
 
 #endif

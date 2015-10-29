@@ -67,6 +67,11 @@ class FIFO {
     int releaseReadRegions(int count) {
         return PaUtil_AdvanceRingBufferReadIndex(&m_ringBuffer, count);
     }
+    int flushReadData(int count) {
+        int flush = math_min(readAvailable(), count);
+        return PaUtil_AdvanceRingBufferReadIndex(&m_ringBuffer, flush);
+    }
+
   private:
     DataType* m_data;
     PaUtilRingBuffer m_ringBuffer;

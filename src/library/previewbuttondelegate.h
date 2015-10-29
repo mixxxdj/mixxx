@@ -42,6 +42,7 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
   private:
     QTableView* m_pTableView;
     ControlObjectSlave* m_pPreviewDeckPlay;
+    ControlObjectSlave* m_pCueGotoAndPlay;
     QPushButton* m_pButton;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;

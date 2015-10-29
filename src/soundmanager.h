@@ -26,6 +26,7 @@
 #include "util/defs.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
+#include "engine/sidechain/enginenetworkstream.h"
 
 class SoundDevice;
 class EngineMaster;
@@ -66,8 +67,10 @@ class SoundManager : public QObject {
     // Closes all the devices and empties the list of devices we have.
     void clearDeviceList();
 
-    // Creates a list of sound devices that PortAudio sees.
+    // Creates a list of sound devices
     void queryDevices();
+    void queryDevicesPortaudio();
+    void queryDevicesMixxx();
 
     // Opens all the devices chosen by the user in the preferences dialog, and
     // establishes the proper connections between them and the mixing engine.
@@ -107,6 +110,10 @@ class SoundManager : public QObject {
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
+    QSharedPointer<EngineNetworkStream> getNetworkStream() const {
+        return m_pNetworkStream;
+    }
+
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
@@ -132,6 +139,8 @@ class SoundManager : public QObject {
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
+
+    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
 };
 
 #endif
