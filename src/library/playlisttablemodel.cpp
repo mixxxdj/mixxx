@@ -92,7 +92,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
         }
     }
 
-    QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_trackDAO.addTracks(fileInfoList, true);
 
     int tracksAdded = m_playlistDao.insertTracksIntoPlaylist(
         trackIds, m_iPlaylistId, position);
@@ -105,8 +105,8 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     return tracksAdded;
 }
 
-bool PlaylistTableModel::appendTrack(int trackId) {
-    if (trackId < 0) {
+bool PlaylistTableModel::appendTrack(TrackId trackId) {
+    if (!trackId.isValid()) {
         return false;
     }
     return m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
@@ -170,7 +170,7 @@ bool PlaylistTableModel::isLocked() {
 
 void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude) {
     QList<int> positions;
-    QHash<int,int> allIds;
+    QHash<int,TrackId> allIds;
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     const int idColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID);
     int excludePos = -1;
@@ -200,8 +200,8 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     int numOfTracks = rowCount();
     for (int i = 0; i < numOfTracks; i++) {
         int position = index(i, positionColumn).data().toInt();
-        int id = index(i, idColumn).data().toInt();
-        allIds.insert(position, id);
+        TrackId trackId(index(i, idColumn).data());
+        allIds.insert(position, trackId);
     }
     m_playlistDao.shuffleTracks(m_iPlaylistId, positions, allIds);
 }

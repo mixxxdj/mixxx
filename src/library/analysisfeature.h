@@ -45,7 +45,7 @@ class AnalysisFeature : public LibraryFeature {
 
   public slots:
     void activate();
-    void analyzeTracks(QList<int> trackIds);
+    void analyzeTracks(QList<TrackId> trackIds);
 
   private slots:
     void slotProgressUpdate(int num_left);
