@@ -18,6 +18,9 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
             PlayerManager::groupForPreviewDeck(0), "play", this);
     m_pPreviewDeckPlay->connectValueChanged(SLOT(previewDeckPlayChanged(double)));
 
+    m_pCueGotoAndPlay = new ControlObjectSlave(
+            PlayerManager::groupForPreviewDeck(0), "cue_gotoandplay", this);
+
     // This assumes that the parent is wtracktableview
     connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
@@ -153,9 +156,12 @@ void PreviewButtonDelegate::buttonClicked() {
     if (pTrack && pTrack != pOldTrack) {
         emit(loadTrackToPlayer(pTrack, group, true));
     } else if (pTrack == pOldTrack && !playing) {
-        m_pPreviewDeckPlay->set(1.0);
+        // Since the Preview deck might be hidden
+        // Starting at cue is a predictable behavior
+        m_pCueGotoAndPlay->set(1.0);
     } else {
         m_pPreviewDeckPlay->set(0.0);
+
     }
 }
 

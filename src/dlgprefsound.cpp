@@ -231,7 +231,9 @@ void DlgPrefSound::slotApply() {
  */
 void DlgPrefSound::initializePaths() {
     foreach (AudioOutput out, m_pSoundManager->registeredOutputs()) {
-        addPath(out);
+        if (!out.isHidden()) {
+            addPath(out);
+        }
     }
     foreach (AudioInput in, m_pSoundManager->registeredInputs()) {
         addPath(in);
