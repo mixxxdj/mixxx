@@ -694,6 +694,13 @@ SCS3D.Agent = function(device) {
 		}
 	}
 
+	function invert(handler) {
+		return function(value) {
+			return handler(1 - value);
+		}
+	}
+
+
 	// absolute control
 	function set(channel, control) {
 		return function(value) {
@@ -1282,8 +1289,19 @@ SCS3D.Agent = function(device) {
 		// The four buttons select pitch slider mode when vinyl is held
 		if (held) {
 			pitchModeSelect();
+
+			// Needledrop into track
+			expect(device.slider.circle.slide.abs, circleset(channel, "playposition"));
+			watch(channel, "playposition", invert(Bar(device.slider.circle.meter)));
 		} else {
 			deckLights();
+
+			expect(device.slider.circle.slide.rel, function(value) {
+			var playing = engine.getValue(channel, 'play');
+				var amount = (value - 64) / 64;
+				var jogAmount = playing ? amount * 10 : amount;
+				engine.setValue(channel, 'jog', jogAmount);
+			});
 		}
 
 		Autocancel('temprate', function(engage, cancel) {
@@ -1308,12 +1326,6 @@ SCS3D.Agent = function(device) {
 			Centerbar(device.slider.right.meter)(dir-0.1);
 		});
 
-		expect(device.slider.circle.slide.rel, function(value) {
-			var playing = engine.getValue(channel, 'play');
-			var amount = (value - 64) / 64;
-			var jogAmount = playing ? amount * 10 : amount;
-			engine.setValue(channel, 'jog', jogAmount);
-		});
 
 
 		expect(device.top.left.touch, setConst(channel, 'beatjump_1_backward', 1));
