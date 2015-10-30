@@ -4,8 +4,6 @@
 // - On FX-EQ, gain should reset pregain, crossfader should drop needle at beginning of track
 // - blink EQ when not zeroed?
 // - blink FX when one is engaged?
-// - Having needledrop on the crossfader can cause inadvertent skips when
-//   FX is used to change other settings and the crossfader is held
 
 // manually test messages
 // amidi -p hw:1 -S F00001601501F7 # flat mode
@@ -660,12 +658,6 @@ StantonSCS3m.Agent = function(device) {
 			watch(channel, 'pfl', binarylight(part.phones.light.blue, part.phones.light.red));
 			expect(part.phones.touch, toggle(channel, 'pfl'));
 
-			// Needledrop into track
-			if (fxsideheld.engaged()) {
-				expect(device.crossfader.slide, set(channel, "playposition"));
-				tell(device.crossfader.meter.bar(0));
-				watch(channel, "playposition", patch(device.crossfader.meter.needle));
-			}
 			if (!master.engaged()) {
 				watch(channel, 'VuMeter', vupatch(part.meter.bar));
 			}
@@ -716,12 +708,8 @@ StantonSCS3m.Agent = function(device) {
 			watch("[Master]", "VuMeterR", vupatch(device.right.meter.bar));
 		}
 
-		if (fxheld.left.engaged() || fxheld.right.engaged()) {
-			// Handled in Side()
-		} else {
-			expect(device.crossfader.slide, set("[Master]", "crossfader"));
-			watch("[Master]", "crossfader", patch(device.crossfader.meter.centerbar));
-		}
+		expect(device.crossfader.slide, set("[Master]", "crossfader"));
+		watch("[Master]", "crossfader", patch(device.crossfader.meter.centerbar));
 
 		// Communicate currently selected channel of each deck so SCS3d can read it
 		// THIS USES A CONTROL FOR ULTERIOR PURPOSES AND IS VERY NAUGHTY INDEED
