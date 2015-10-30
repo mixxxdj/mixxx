@@ -96,9 +96,26 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
 }
 
 EngineShoutcast::~EngineShoutcast() {
+    int l_iTime = 0;
     m_pShoutcastEnabled->set(0);
     m_readSema.release();
-    wait(); // until the thread ends.
+
+    // Because Thread QThread msec doesn't blocking
+    // If we can believe this:
+    // http://stackoverflow.com/questions/1950160/what-can-i-use-to-replace-sleep-and-usleep-in-my-qt-app
+    while(l_iTime < 100) {
+        // If Thread has exited then just break out
+        if(!isRunning()) {
+            break;
+        }
+        l_iTime ++;
+        QThread::msleep(100);
+    }
+
+    // Signal user if thread doesn't die
+    if(isRunning()) {
+        qDebug() << "EngineShoutcast::~EngineShoutcast(): Thread didn't die. Ignored but add this to bug report if problems rise!";
+    }
 
     delete m_pStatusCO;
     delete m_pMasterSamplerate;
