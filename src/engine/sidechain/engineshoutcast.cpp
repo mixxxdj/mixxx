@@ -418,7 +418,7 @@ bool EngineShoutcast::processConnect() {
 
         m_iShoutFailures++;
         qDebug() << "Streaming server failed connect. Failures:" << shout_get_error(m_pShout);
-        sleep(1);
+        QThread::msleep(100);
     }
 
     if (m_iShoutFailures < kMaxShoutFailures) {
@@ -429,7 +429,7 @@ bool EngineShoutcast::processConnect() {
                 m_pShoutcastEnabled->toBool()) {
             setState(NETWORKSTREAMWORKER_STATE_WAITING);
             qDebug() << "Connection pending. Sleeping...";
-            sleep(1);
+            QThread::msleep(100);
             m_iShoutStatus = shout_get_connected(m_pShout);
             ++ timeout;
         }
