@@ -12,6 +12,10 @@ public:
     static const double kRatioMin; // lower bound (exclusive)
     static const double kRatio0dB;
 
+    static const CSAMPLE kPeakUndefined;
+    static const CSAMPLE kPeakMin; // lower bound (inclusive)
+    static const CSAMPLE kPeakClip; // upper bound (inclusive) without clipping
+
     ReplayGain()
         : m_ratio(kRatioUndefined)
         , m_peak(CSAMPLE_PEAK) {

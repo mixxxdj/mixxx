@@ -8,6 +8,10 @@ namespace Mixxx {
 /*static*/ const double ReplayGain::kRatioMin = 0.0;
 /*static*/ const double ReplayGain::kRatio0dB = 1.0;
 
+/*static*/ const CSAMPLE ReplayGain::kPeakUndefined = -CSAMPLE_PEAK;
+/*static*/ const CSAMPLE ReplayGain::kPeakMin = CSAMPLE_ZERO;
+/*static*/ const CSAMPLE ReplayGain::kPeakClip = CSAMPLE_PEAK;
+
 namespace {
 
 const QString kGainUnit("dB");
