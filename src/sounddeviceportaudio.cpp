@@ -16,6 +16,7 @@
 ***************************************************************************/
 
 #include <portaudio.h>
+#include <float.h>
 
 #include <QtDebug>
 #include <QThread>
@@ -825,6 +826,12 @@ int SoundDevicePortAudio::callbackProcessClkRef(
             _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
         } else {
              qDebug() << "SSE: Flush to zero mode already enabled";
+        }
+        // verify if flush to zero or denormals to zero works
+        // test passes if one of the two flag is set.
+        volatile double doubleMin = DBL_MIN; // the smallest normalized double
+        DEBUG_ASSERT_AND_HANDLE(doubleMin / 2 == 0.0) {
+            qWarning() << "SSE: Flush to zero mode not working";
         }
 #endif
     }
