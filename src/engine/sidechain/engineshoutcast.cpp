@@ -63,6 +63,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
+          m_stream_autoreconnect(false),
           m_threadWaiting(false),
           m_pOutputFifo(NULL) {
     const bool persist = true;
@@ -145,6 +146,7 @@ void EngineShoutcast::updateFromPreferences() {
     m_protocol_is_icecast2 = false;
     m_protocol_is_shoutcast = false;
     m_ogg_dynamic_update = false;
+    m_stream_autoreconnect = false;
 
     // Convert a bunch of QStrings to QByteArrays so we can get regular C char*
     // strings to pass to libshout.
@@ -197,6 +199,10 @@ void EngineShoutcast::updateFromPreferences() {
     // Dynamic Ogg metadata update
     m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
+
+    // Dynamic Ogg metadata update
+    m_stream_autoreconnect = (bool)m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY,"stream_autoreconnect")).toInt();
 
     m_custom_metadata = (bool)m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
@@ -367,6 +373,7 @@ bool EngineShoutcast::serverConnect() {
 
 bool EngineShoutcast::processConnect() {
     m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
+    setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
     m_iShoutFailures = 0;
     // set to a high number to automatically update the metadata
     // on the first change
@@ -437,6 +444,14 @@ bool EngineShoutcast::processConnect() {
             qDebug() << "EngineShoutcast::processConnect() error:"
                      << m_iShoutStatus << shout_get_error(m_pShout);
         }
+        // If we get this far we didn't get connection but we try
+        // again..
+        if(m_stream_autoreconnect) {
+            qDebug() << "EngineShoutcast::processConnect(): Still trying to reconnect";
+            m_iShoutFailures = SHOUTERR_NOCONNECT;
+            setState(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
+            return false;
+        }
     } else {
         // no connection
 
@@ -457,6 +472,7 @@ bool EngineShoutcast::processConnect() {
 }
 
 void EngineShoutcast::processDisconnect() {
+    setState(NETWORKSTREAMWORKER_STATE_DISCONNECTING);
     qDebug() << "EngineShoutcast::processDisconnect()";
     if (isConnected()) {
         m_threadWaiting = false;
@@ -464,7 +480,16 @@ void EngineShoutcast::processDisconnect() {
         shout_close(m_pShout);
         infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
         m_iShoutStatus = SHOUTERR_UNCONNECTED;
+        setState(NETWORKSTREAMWORKER_STATE_DISCONNECTED);
         emit(shoutcastDisconnected());
+    } else {
+        // Handle situation when we are still connected
+        if(m_iShoutStatus == SHOUTERR_CONNECTED) {
+            setState(NETWORKSTREAMWORKER_STATE_CONNECTED);
+            return;
+        } else {
+            setState(NETWORKSTREAMWORKER_STATE_ERROR);
+        }
     }
 
     if (m_encoder) {
@@ -498,7 +523,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             if (queuelen > kMaxNetworkCache) {
                 m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
                 processDisconnect();
-                if (!processConnect()) {
+                if (!processConnect() && !m_stream_autoreconnect) {
                     errorDialog(tr("Lost connection to streaming server"),
                                 tr("Please check your connection to the Internet and verify that your username and password are correct."));
                 }
@@ -517,7 +542,7 @@ bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
         if (m_iShoutFailures > kMaxShoutFailures) {
             m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
             processDisconnect();
-            if (!processConnect()) {
+            if (!processConnect() && !m_stream_autoreconnect) {
                 errorDialog(tr("Lost connection to streaming server"),
                             tr("Please check your connection to the Internet and verify that your username and password are correct."));
             }
@@ -533,13 +558,39 @@ bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
 
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
-    setState(NETWORKSTREAMWORKER_STATE_BUSY);
     // If we are here then the user wants to be connected (shoutcast is enabled
     // in the preferences).
 
-    // If we aren't connected, bail.
-    if (m_iShoutStatus != SHOUTERR_CONNECTED)
+    // If we aren't connected, bail and autoreconnect is off.
+    if (m_iShoutStatus != SHOUTERR_CONNECTED
+        && !m_stream_autoreconnect) {
         return;
+    } else if (m_iShoutStatus != SHOUTERR_CONNECTED
+               && m_stream_autoreconnect
+               && getState() != NETWORKSTREAMWORKER_STATE_CONNECTING) {
+        bool l_bConnectionSuccess = false;
+        // Trying to connect to server
+        // If autoreconnect is on we just keep trying until
+        // the end of universe or Shoutcast is not enabled anymore
+        while (true) {
+            l_bConnectionSuccess = processConnect();
+            qDebug() << "EngineShoutcast::process: Trying to reconnect to Shoutcast server";
+            if(l_bConnectionSuccess)
+            {
+                break;
+            }
+            if (!m_pShoutcastEnabled->toBool()) {
+                qDebug() << "EngineShoutcast::process: Shoutcast is not enabled";
+                return;
+            }
+        }
+
+    } else if(getState() == NETWORKSTREAMWORKER_STATE_DISCONNECTING) {
+        qDebug() << "EngineShoutcast::process: Disconnecting.. wait until that is not the issue";
+        return;
+    }
+
+    setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
     // If we are connected, encode the samples.
     if (iBufferSize > 0 && m_encoder) {
@@ -719,6 +770,7 @@ void EngineShoutcast::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
 
 void EngineShoutcast::run() {
     unsigned static id = 0;
+    bool l_bConnectionSuccess = false;
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
 
@@ -732,12 +784,24 @@ void EngineShoutcast::run() {
     }
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
-    if (!processConnect()) {
-        errorDialog(tr("Can't connect to streaming server"),
-                    tr("Please check your connection to the Internet and verify that your username and password are correct."));
-        return;
-    }
 
+    // Trying to connect to server
+    // If autoreconnect is on we just keep trying until
+    // the end of universe or Shoutcast is not enabled anymore
+    while (true) {
+        l_bConnectionSuccess = processConnect();
+        if(l_bConnectionSuccess)
+        {
+            break;
+        } else if (!l_bConnectionSuccess && !m_stream_autoreconnect) {
+            errorDialog(tr("Can't connect to streaming server"),
+                        tr("Please check your connection to the Internet and verify that your username and password are correct."));
+            return;
+        }
+        if (!m_pShoutcastEnabled->toBool()) {
+            return;
+        }
+    }
     while(true) {
         m_readSema.acquire();
         // Check to see if Shoutcast is enabled, and pass the samples off to be
