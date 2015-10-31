@@ -39,7 +39,6 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
-    m_fReplayGain = 0.;
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
@@ -112,10 +111,7 @@ void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
     setSampleRate(trackMetadata.getSampleRate());
     setDuration(trackMetadata.getDuration());
     setBitrate(trackMetadata.getBitrate());
-
-    if (trackMetadata.getReplayGain().hasRatio()) {
-        setReplayGain(trackMetadata.getReplayGain().getRatio());
-    }
+    setReplayGain(trackMetadata.getReplayGain());
 
     // Need to set BPM after sample rate since beat grid creation depends on
     // knowing the sample rate. Bug #1020438.
@@ -147,9 +143,7 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
     pTrackMetadata->setSampleRate(getSampleRate());
     pTrackMetadata->setDuration(getDuration());
     pTrackMetadata->setBitrate(getBitrate());
-    Mixxx::ReplayGain trackGain(pTrackMetadata->getReplayGain());
-    trackGain.setRatio(getReplayGain());
-    pTrackMetadata->setReplayGain(trackGain);
+    pTrackMetadata->setReplayGain(getReplayGain());
     pTrackMetadata->setBpm(getBpm());
     pTrackMetadata->setKey(getKeyText());
 }
@@ -291,20 +285,20 @@ bool TrackInfoObject::exists() const {
     return QFile::exists(m_fileInfo.absoluteFilePath());
 }
 
-float TrackInfoObject::getReplayGain() const {
+Mixxx::ReplayGain TrackInfoObject::getReplayGain() const {
     QMutexLocker lock(&m_qMutex);
-    return m_fReplayGain;
+    return m_replayGain;
 }
 
-void TrackInfoObject::setReplayGain(float f) {
+void TrackInfoObject::setReplayGain(const Mixxx::ReplayGain& replayGain) {
     QMutexLocker lock(&m_qMutex);
     //qDebug() << "Reported ReplayGain value: " << m_fReplayGain;
-    if (m_fReplayGain != f) {
-        m_fReplayGain = f;
+    if (m_replayGain != replayGain) {
+        m_replayGain = replayGain;
         setDirty(true);
     }
     lock.unlock();
-    emit(ReplayGainUpdated(f));
+    emit(ReplayGainUpdated(replayGain));
 }
 
 double TrackInfoObject::getBpm() const {

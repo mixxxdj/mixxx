@@ -402,7 +402,8 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":samplerate", pTrack->getSampleRate());
     m_pQueryLibraryInsert->bindValue(":cuepoint", pTrack->getCuePoint());
     m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
-    m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain());
+    m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain().getRatio());
+    m_pQueryLibraryInsert->bindValue(":replaygain_peak", pTrack->getReplayGain().getPeak());
 
     // We no longer store the wavesummary in the library table.
     m_pQueryLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
@@ -490,7 +491,7 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
             "(artist, title, album, album_artist, year, genre, tracknumber, composer, "
             "grouping, filetype, location, comment, url, duration, rating, key, key_id, "
-            "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
+            "bitrate, samplerate, cuepoint, bpm, replaygain, replaygain_peak, wavesummaryhex, "
             "timesplayed, channels, mixxx_deleted, header_parsed, "
             "beats_version, beats_sub_version, beats, bpm_lock, "
             "keys_version, keys_sub_version, keys, "
@@ -498,7 +499,7 @@ void TrackDAO::addTracksPrepare() {
             "VALUES ("
             ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
-            ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
+            ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :replaygain_peak, :wavesummaryhex, "
             ":timesplayed, :channels, :mixxx_deleted, :header_parsed, "
             ":beats_version, :beats_sub_version, :beats, :bpm_lock, "
             ":keys_version, :keys_sub_version, :keys, "
@@ -1062,9 +1063,19 @@ bool setTrackCuePoint(const QSqlRecord& record, const int column,
     return false;
 }
 
-bool setTrackReplayGain(const QSqlRecord& record, const int column,
+bool setTrackReplayGainRatio(const QSqlRecord& record, const int column,
                         TrackPointer pTrack) {
-    pTrack->setReplayGain(record.value(column).toDouble());
+    Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+    replayGain.setRatio(record.value(column).toDouble());
+    pTrack->setReplayGain(replayGain);
+    return false;
+}
+
+bool setTrackReplayGainPeak(const QSqlRecord& record, const int column,
+                        TrackPointer pTrack) {
+    Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+    replayGain.setPeak(record.value(column).toDouble());
+    pTrack->setReplayGain(replayGain);
     return false;
 }
 
@@ -1194,7 +1205,8 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         { "bitrate", setTrackBitrate },
         { "samplerate", setTrackSampleRate },
         { "cuepoint", setTrackCuePoint },
-        { "replaygain", setTrackReplayGain },
+        { "replaygain", setTrackReplayGainRatio },
+        { "replaygain_peak", setTrackReplayGainPeak },
         { "channels", setTrackChannels },
         { "timesplayed", setTrackTimesPlayed },
         { "played", setTrackPlayed },
@@ -1428,7 +1440,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "duration=:duration, rating=:rating, "
                   "key=:key, key_id=:key_id, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
-                  "bpm=:bpm, replaygain=:replaygain, "
+                  "bpm=:bpm, replaygain=:replaygain, replaygain_peak=:replaygain_peak, "
                   "timesplayed=:timesplayed, played=:played, "
                   "channels=:channels, header_parsed=:header_parsed, "
                   "beats_version=:beats_version, beats_sub_version=:beats_sub_version, beats=:beats, "
@@ -1454,7 +1466,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
 
-    query.bindValue(":replaygain", pTrack->getReplayGain());
+    query.bindValue(":replaygain", pTrack->getReplayGain().getRatio());
+    query.bindValue(":replaygain_peak", pTrack->getReplayGain().getPeak());
     query.bindValue(":rating", pTrack->getRating());
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     query.bindValue(":played", pTrack->getPlayed() ? 1 : 0);

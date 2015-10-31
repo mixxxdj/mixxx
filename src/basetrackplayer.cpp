@@ -168,8 +168,8 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
                 m_pKey, SLOT(slotSet(double)));
 
         // Listen for updates to the file's Replay Gain
-        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(double)),
-                this, SLOT(slotSetReplayGain(double)));
+        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(Mixxx::ReplayGain)),
+                this, SLOT(slotSetReplayGain(Mixxx::ReplayGain)));
     }
 
     // Request a new track from the reader
@@ -231,7 +231,7 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
     m_pDuration->set(m_pLoadedTrack->getDuration());
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
     m_pKey->slotSet(m_pLoadedTrack->getKey());
-    m_pReplayGain->set(m_pLoadedTrack->getReplayGain());
+    m_pReplayGain->set(m_pLoadedTrack->getReplayGain().getRatio());
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
@@ -298,11 +298,11 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
 
-void BaseTrackPlayerImpl::slotSetReplayGain(double replayGain) {
+void BaseTrackPlayerImpl::slotSetReplayGain(Mixxx::ReplayGain replayGain) {
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change
     if (m_pPlay->get() == 0.0) {
-        m_pReplayGain->set(replayGain);
+        m_pReplayGain->set(replayGain.getRatio());
     } else {
         m_replaygainPending = true;
     }
@@ -310,7 +310,7 @@ void BaseTrackPlayerImpl::slotSetReplayGain(double replayGain) {
 
 void BaseTrackPlayerImpl::slotPlayToggled(double v) {
     if (!v && m_replaygainPending) {
-        m_pReplayGain->set(m_pLoadedTrack->getReplayGain());
+        m_pReplayGain->set(m_pLoadedTrack->getReplayGain().getRatio());
         m_replaygainPending = false;
     }
 }

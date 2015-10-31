@@ -98,4 +98,6 @@ bool operator!=(const ReplayGain& lhs, const ReplayGain& rhs) {
 
 }
 
+Q_DECLARE_METATYPE(Mixxx::ReplayGain)
+
 #endif // MIXXX_REPLAYGAIN_H
