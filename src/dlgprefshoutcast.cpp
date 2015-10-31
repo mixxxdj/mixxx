@@ -108,6 +108,10 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     ogg_dynamicupdate->setChecked((bool)m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt());
 
+    // OGG "dynamicupdate" checkbox
+    stream_autoreconnect->setChecked((bool)m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY,"stream_autoreconnect")).toInt());
+
     // Encoding bitrate combobox
     QString kbps_pattern = QString("%1 kbps");
     QList<int> valid_kpbs;
@@ -201,6 +205,7 @@ void DlgPrefShoutcast::slotResetToDefaults() {
     stream_genre->setText(tr("Live Mix"));
     stream_public->setChecked(false);
     ogg_dynamicupdate->setChecked(false);
+    stream_autoreconnect->setChecked(false);
     comboBoxEncodingBitrate->setCurrentIndex(comboBoxEncodingBitrate->findData(
             SHOUTCAST_BITRATE_128KBPS));
     comboBoxEncodingFormat->setCurrentIndex(0);
@@ -273,6 +278,8 @@ void DlgPrefShoutcast::slotApply()
             ConfigValue(stream_public->isChecked()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "ogg_dynamicupdate"),
             ConfigValue(ogg_dynamicupdate->isChecked()));
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "stream_autoreconnect"),
+            ConfigValue(stream_autoreconnect->isChecked()));
 
     QString charset = "";
     if (enableUtf8Metadata->isChecked()) {
