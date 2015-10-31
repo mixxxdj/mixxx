@@ -47,7 +47,7 @@ public:
 
     // The peak amplitude of the track or signal.
     CSAMPLE getPeak() const {
-        return m_ratio;
+        return m_peak;
     }
     void setPeak(CSAMPLE peak) {
         m_peak = peak;
