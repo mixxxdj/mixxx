@@ -13,28 +13,62 @@ namespace {
 const QString kGainUnit("dB");
 const QString kGainSuffix(" " + kGainUnit);
 
+QString stripLeadingSign(const QString& trimmed, char sign) {
+    const int signIndex = trimmed.indexOf(sign);
+    if (0 == signIndex) {
+        return trimmed.mid(signIndex + 1).trimmed();
+    } else {
+        return trimmed;
+    }
+}
+
+QString normalizeNumberString(const QString& number, bool* pValid) {
+    if (pValid) {
+        *pValid = false;
+    }
+    const QString trimmed(number.trimmed());
+    QString normalized(stripLeadingSign(trimmed, '+'));
+    if (normalized == trimmed) {
+        // no leading '+' sign found
+        if (pValid) {
+            *pValid = true;
+        }
+        return normalized;
+    } else {
+        // stripped leading '+' sign -> no more leading signs '+'/'-' allowed
+        if ((normalized == stripLeadingSign(normalized, '+')) &&
+            (normalized == stripLeadingSign(normalized, '-'))) {
+            if (pValid) {
+                *pValid = true;
+            }
+            return normalized;
+        }
+    }
+    // normalization failed
+    return number;
+}
+
 } // anonymous namespace
 
 double ReplayGain::parseGain2Ratio(QString dbGain, bool* pValid) {
     if (pValid) {
         *pValid = false;
     }
-    QString trimmedGain(dbGain.trimmed());
-    const int plusIndex = trimmedGain.indexOf('+');
-    if (0 == plusIndex) {
-        // strip leading "+"
-        trimmedGain = trimmedGain.mid(plusIndex + 1).trimmed();
-    }
-    const int unitIndex = trimmedGain.lastIndexOf(kGainUnit, -1, Qt::CaseInsensitive);
-    if ((0 <= unitIndex) && ((trimmedGain.length() - 2) == unitIndex)) {
-        // strip trailing unit suffix
-        trimmedGain = trimmedGain.left(unitIndex).trimmed();
-    }
-    if (trimmedGain.isEmpty()) {
+    bool isValid = false;
+    QString normalizedGain(normalizeNumberString(dbGain, &isValid));
+    if (!isValid) {
         return kRatioUndefined;
     }
-    bool isValid = false;
-    const double replayGainDb = trimmedGain.toDouble(&isValid);
+    const int unitIndex = normalizedGain.lastIndexOf(kGainUnit, -1, Qt::CaseInsensitive);
+    if ((0 <= unitIndex) && ((normalizedGain.length() - 2) == unitIndex)) {
+        // strip trailing unit suffix
+        normalizedGain = normalizedGain.left(unitIndex).trimmed();
+    }
+    if (normalizedGain.isEmpty()) {
+        return kRatioUndefined;
+    }
+    isValid = false;
+    const double replayGainDb = normalizedGain.toDouble(&isValid);
     if (isValid) {
         const double ratio = db2ratio(replayGainDb);
         DEBUG_ASSERT(kRatioUndefined != ratio);
@@ -68,7 +102,7 @@ double ReplayGain::normalizeRatio(double ratio) {
         DEBUG_ASSERT(normalizedRatio == parseGain2Ratio(formatRatio2Gain(normalizedRatio)));
         return normalizedRatio;
     } else {
-        return ratio;
+        return kRatioUndefined;
     }
 }
 

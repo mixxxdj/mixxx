@@ -41,8 +41,8 @@ public:
     static QString formatRatio2Gain(double ratio);
 
     // After normalization formatting and parsing the ratio repeatedly will
-    // always lead to the same value. This is required to reliably store the
-    // dB gain as a string in track metadata.
+    // always result in the same value. This is required to reliably store
+    // the dB gain as a string in track metadata.
     static double normalizeRatio(double ratio);
 
     // The peak amplitude of the track or signal.

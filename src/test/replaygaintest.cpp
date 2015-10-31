@@ -18,7 +18,7 @@ class ReplayGainTest : public testing::Test {
     virtual void TearDown() {
     }
 
-    double parseGain2Ratio(QString inputValue, bool expectedResult, float expectedValue) {
+    double parseGain2Ratio(QString inputValue, bool expectedResult, double expectedValue) {
         //qDebug() << "parseGain2Ratio" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
@@ -32,11 +32,15 @@ class ReplayGainTest : public testing::Test {
 
     void normalizeRatio(double expectedResult) {
         const double actualResult = Mixxx::ReplayGain::normalizeRatio(expectedResult);
-        EXPECT_EQ(expectedResult, actualResult);
+        if (Mixxx::ReplayGain::isValidRatio(expectedResult)) {
+            EXPECT_EQ(expectedResult, actualResult);
+        } else {
+            EXPECT_EQ(Mixxx::ReplayGain::kRatioUndefined, actualResult);
+        }
     }
 };
 
-TEST_F(ReplayGainTest, ParseReplayGainDbValidRange) {
+TEST_F(ReplayGainTest, ParseGain2RatioValidRange) {
     for (int replayGainDb = -100; 100 >= replayGainDb; ++replayGainDb) {
         const QString inputValues[] = {
                 QString("%1 ").arg(replayGainDb),
@@ -55,13 +59,17 @@ TEST_F(ReplayGainTest, ParseReplayGainDbValidRange) {
     }
 }
 
-TEST_F(ReplayGainTest, ParseReplayGainDbInvalid) {
+TEST_F(ReplayGainTest, ParseGain2RatioInvalid) {
     parseGain2Ratio("", false, Mixxx::ReplayGain::kRatioUndefined);
     parseGain2Ratio("abcde", false, Mixxx::ReplayGain::kRatioUndefined);
     parseGain2Ratio("0 dBA", false, Mixxx::ReplayGain::kRatioUndefined);
+    parseGain2Ratio("--2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
+    parseGain2Ratio("+-2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
+    parseGain2Ratio("-+2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
+    parseGain2Ratio("++2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
 }
 
-TEST_F(ReplayGainTest, NormalizeReplayGain) {
+TEST_F(ReplayGainTest, NormalizeRatio) {
     normalizeRatio(Mixxx::ReplayGain::kRatioUndefined);
     normalizeRatio(Mixxx::ReplayGain::kRatioMin);
     normalizeRatio(-Mixxx::ReplayGain::kRatioMin);
