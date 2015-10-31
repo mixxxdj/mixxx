@@ -5,7 +5,7 @@
 namespace Mixxx {
 
 /*static*/ const double ReplayGain::kRatioUndefined = 0.0;
-/*static*/ const double ReplayGain::kRatioMin = 0.0; // lower bound (inclusive)
+/*static*/ const double ReplayGain::kRatioMin = 0.0;
 /*static*/ const double ReplayGain::kRatio0dB = 1.0;
 
 namespace {
