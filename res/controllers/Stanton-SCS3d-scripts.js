@@ -1016,6 +1016,7 @@ SCS3D.Agent = function(device) {
 				tell(rolling ? device.mode.loop.light.blue : device.mode.loop.light.red);
 				pitchPatch(channel);
 				deckLights();
+				beatJump(channel);
 
 				// Available loop lengths are powers of two in the range [-5..6]
 				var lengths = ['0.03125', '0.0625', '0.125', '0.25', '0.5', '1', '2', '4', '8', '16', '32', '64'];
@@ -1232,6 +1233,11 @@ SCS3D.Agent = function(device) {
 		watch(channel, "playposition", invert(Bar(device.slider.circle.meter)));
 	}
 
+	function beatJump(channel) {
+		expect(device.top.left.touch, setConst(channel, 'beatjump_1_backward', 1));
+		expect(device.top.right.touch, setConst(channel, 'beatjump_1_forward', 1));
+	}
+
 	function scratchpatch(channel, held) {
 		comm.sysex(device.modeset.circle);
 		tell(device.mode.vinyl.light.blue);
@@ -1294,6 +1300,7 @@ SCS3D.Agent = function(device) {
 	function vinylpatch(channel, held) {
 		comm.sysex(device.modeset.circle);
 		pitchPatch(channel);
+		beatJump();
 
 		// The four buttons select pitch slider mode when vinyl is held
 		if (held) {
@@ -1331,11 +1338,6 @@ SCS3D.Agent = function(device) {
 			Centerbar(device.slider.middle.meter)(dir+0.1);
 			Centerbar(device.slider.right.meter)(dir-0.1);
 		});
-
-
-
-		expect(device.top.left.touch, setConst(channel, 'beatjump_1_backward', 1));
-		expect(device.top.right.touch, setConst(channel, 'beatjump_1_forward', 1));
 
 		Autocancel('fast', function(engage, cancel) {
 			expect(device.bottom.left.touch, both(engage, setConst(channel, 'back', 1)));
