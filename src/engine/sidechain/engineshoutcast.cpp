@@ -101,9 +101,9 @@ EngineShoutcast::~EngineShoutcast() {
     m_readSema.release();
 
     // Because Thread QThread msec doesn't blocking
-    // If we can believe this:
-    // http://stackoverflow.com/questions/1950160/what-can-i-use-to-replace-sleep-and-usleep-in-my-qt-app
-    while(l_iTime < 100) {
+    // Wait 20 * 100 msec which is ~2 seconds for disconnection. If anything ain't happening
+    // it's not going to happen!
+    while(l_iTime < 20) {
         // If Thread has exited then just break out
         if(!isRunning()) {
             break;
