@@ -17,8 +17,11 @@ public:
     static const CSAMPLE kPeakClip; // upper bound (inclusive) without clipping
 
     ReplayGain()
-        : m_ratio(kRatioUndefined)
-        , m_peak(CSAMPLE_PEAK) {
+        : ReplayGain(kRatioUndefined, kPeakUndefined) {
+    }
+    ReplayGain(double ratio, CSAMPLE peak)
+        : m_ratio(ratio)
+        , m_peak(peak) {
     }
 
     static bool isValidRatio(double ratio) {
