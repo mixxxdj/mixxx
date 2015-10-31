@@ -103,9 +103,9 @@ EngineShoutcast::~EngineShoutcast() {
     // Because Thread QThread msec doesn't blocking
     // Wait 20 * 100 msec which is ~2 seconds for disconnection. If anything ain't happening
     // it's not going to happen!
-    while(l_iTime < 20) {
+    while (l_iTime < 20) {
         // If Thread has exited then just break out
-        if(!isRunning()) {
+        if (!isRunning()) {
             break;
         }
         l_iTime ++;
@@ -113,7 +113,7 @@ EngineShoutcast::~EngineShoutcast() {
     }
 
     // Signal user if thread doesn't die
-    if(isRunning()) {
+    if (isRunning()) {
         qDebug() << "EngineShoutcast::~EngineShoutcast(): Thread didn't die. Ignored but add this to bug report if problems rise!";
     }
 
