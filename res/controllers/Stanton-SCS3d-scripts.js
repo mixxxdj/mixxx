@@ -1226,6 +1226,11 @@ SCS3D.Agent = function(device) {
 		setup(engage, cancelIfEngaged);
 	}
 
+	function needleDrop(channel) {
+		// Needledrop into track
+		expect(device.slider.circle.slide.abs, circleset(channel, "playposition"));
+		watch(channel, "playposition", invert(Bar(device.slider.circle.meter)));
+	}
 
 	function scratchpatch(channel, held) {
 		comm.sysex(device.modeset.circle);
@@ -1235,6 +1240,7 @@ SCS3D.Agent = function(device) {
 		// The four buttons select pitch slider mode when vinyl is held
 		if (held) {
 			pitchModeSelect();
+			needleDrop(channel);
 		} else {
 			deckLights();
 		}
@@ -1251,6 +1257,9 @@ SCS3D.Agent = function(device) {
 			], 1);
 		}
 		lights(true);
+
+		// HACK ugly logic to avoid restructuring
+		if (held) return;
 
 		var channelno = parseInt(channel[8], 10); // Extract channelno to integer
 		Autocancel('scratch', function(engage, cancelIfEngaged) {
@@ -1289,10 +1298,7 @@ SCS3D.Agent = function(device) {
 		// The four buttons select pitch slider mode when vinyl is held
 		if (held) {
 			pitchModeSelect();
-
-			// Needledrop into track
-			expect(device.slider.circle.slide.abs, circleset(channel, "playposition"));
-			watch(channel, "playposition", invert(Bar(device.slider.circle.meter)));
+			needleDrop(channel);
 		} else {
 			deckLights();
 
