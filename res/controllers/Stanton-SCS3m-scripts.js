@@ -1,7 +1,6 @@
 "use strict";
 
 // issues:
-// - On FX-EQ, gain should reset pregain, crossfader should drop needle at beginning of track
 // - blink EQ when not zeroed?
 // - blink FX when one is engaged?
 
@@ -643,7 +642,10 @@ StantonSCS3m.Agent = function(device) {
 						part.gain.mode.relative,
 						part.gain.mode.end
 					]);
-					expect(part.gain.slide, budge(channel, 'pregain'));
+					expect(part.gain.slide, eqsideheld.choose(
+						budge(channel, 'pregain'),
+						reset(channel, 'pregain')
+					));
 					watch(channel, 'pregain', patch(offcenter(part.gain.meter.needle)));
 				} else {
 					tellslowly([
