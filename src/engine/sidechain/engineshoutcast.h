@@ -149,6 +149,7 @@ class EngineShoutcast :
     bool m_protocol_is_icecast2;
     bool m_protocol_is_shoutcast;
     bool m_ogg_dynamic_update;
+    bool m_stream_autoreconnect;
     QVector<struct shoutcastCacheObject  *> m_pShoutcastCache;
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;

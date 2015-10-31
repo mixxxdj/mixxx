@@ -63,6 +63,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
           m_ogg_dynamic_update(false),
+          m_stream_autoreconnect(false),
           m_threadWaiting(false),
           m_pOutputFifo(NULL) {
     const bool persist = true;
@@ -145,6 +146,7 @@ void EngineShoutcast::updateFromPreferences() {
     m_protocol_is_icecast2 = false;
     m_protocol_is_shoutcast = false;
     m_ogg_dynamic_update = false;
+    m_stream_autoreconnect = false;
 
     // Convert a bunch of QStrings to QByteArrays so we can get regular C char*
     // strings to pass to libshout.
@@ -197,6 +199,10 @@ void EngineShoutcast::updateFromPreferences() {
     // Dynamic Ogg metadata update
     m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
+
+    // Dynamic Ogg metadata update
+    m_stream_autoreconnect = (bool)m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY,"stream_autoreconnect")).toInt();
 
     m_custom_metadata = (bool)m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
