@@ -17,12 +17,15 @@
 #include "soundsourceoggvorbis.h"
 #include "soundsourcetaglib.h"
 #include "sampleutil.h"
+#include "util/math.h"
 
 #include <taglib/vorbisfile.h>
 
 #include <vorbis/codec.h>
 
 #include <QtDebug>
+#include <QFile>
+
 
 #ifdef __WINDOWS__
 #include <io.h>
@@ -50,11 +53,21 @@ inline int getByteOrder() {
    Class for reading Ogg Vorbis
  */
 
+
+//static
+ov_callbacks SoundSourceOggVorbis::s_callbacks = {
+    SoundSourceOggVorbis::ReadCallback,
+    SoundSourceOggVorbis::SeekCallback,
+    SoundSourceOggVorbis::CloseCallback,
+    SoundSourceOggVorbis::TellCallback
+};
+
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
         : Mixxx::SoundSource(qFilename),
           channels(0),
           filelength(0),
-          current_section(0) {
+          current_section(0),
+          m_pFile(NULL) {
     setType("ogg");
     vf.datasource = NULL;
     vf.seekable = 0;
@@ -85,30 +98,21 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis()
     if (filelength > 0) {
         ov_clear(&vf);
     }
+    delete m_pFile;
 }
 
 Result SoundSourceOggVorbis::open() {
-    const QByteArray qBAFilename(getFilename().toLocal8Bit());
-#ifdef __WINDOWS__
-    if(ov_fopen(qBAFilename.constData(), &vf) < 0) {
-        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
-        filelength = 0;
-        return ERR;
-    }
-#else
-    FILE *vorbisfile =  fopen(qBAFilename.constData(), "r");
-
-    if (!vorbisfile) {
+    m_pFile = new QFile(getFilename());
+    if(!m_pFile->open(QFile::ReadOnly)) {
         qDebug() << "oggvorbis: cannot open" << getFilename();
+        filelength = 0;
         return ERR;
     }
-
-    if(ov_open(vorbisfile, &vf, NULL, 0) < 0) {
+    if (ov_open_callbacks(m_pFile, &vf, NULL, 0, s_callbacks) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
         filelength = 0;
         return ERR;
     }
-#endif
 
     // lookup the ogg's channels and samplerate
     vorbis_info * vi = ov_info(&vf, -1);
@@ -245,9 +249,11 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
    Parse the the file to get metadata
  */
 Result SoundSourceOggVorbis::parseHeader() {
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
-    TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
-
+#ifdef _WIN32
+    TagLib::Ogg::Vorbis::File f(getFilename().toStdWString().data());
+#else
+    TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
+#endif
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -269,7 +275,11 @@ Result SoundSourceOggVorbis::parseHeader() {
 }
 
 QImage SoundSourceOggVorbis::parseCoverArt() {
+#ifdef _WIN32
+    TagLib::Ogg::Vorbis::File f(getFilename().toStdWString().data());
+#else
     TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
+#endif
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
         return Mixxx::getCoverInXiphComment(*xiph);
@@ -293,3 +303,59 @@ QList<QString> SoundSourceOggVorbis::supportedFileExtensions()
     list.push_back("ogg");
     return list;
 }
+
+//static
+size_t SoundSourceOggVorbis::ReadCallback(void *ptr, size_t size, size_t nmemb,
+        void *datasource) {
+    if (!size || !nmemb) {
+        return 0;
+    }
+    QFile* pFile = static_cast<QFile*>(datasource);
+    if (!pFile) {
+        return 0;
+    }
+
+    nmemb = math_min<size_t>((pFile->size() - pFile->pos()) / size, nmemb);
+    pFile->read((char*)ptr, nmemb * size);
+    return nmemb;
+}
+
+//static
+int SoundSourceOggVorbis::SeekCallback(void *datasource, ogg_int64_t offset,
+        int whence) {
+    QFile* pFile = static_cast<QFile*>(datasource);
+    if (!pFile) {
+        return 0;
+    }
+
+    switch(whence) {
+    case SEEK_SET:
+        return pFile->seek(offset) ? 0 : -1;
+    case SEEK_CUR:
+        return pFile->seek(pFile->pos() + offset) ? 0 : -1;
+    case SEEK_END:
+        return pFile->seek(pFile->size() + offset) ? 0 : -1;
+    default:
+        return -1;
+    }
+}
+
+//static
+int SoundSourceOggVorbis::CloseCallback(void* datasource) {
+    QFile* pFile = static_cast<QFile*>(datasource);
+    if (!pFile) {
+        return 0;
+    }
+    pFile->close();
+    return 0;
+}
+
+//static
+long SoundSourceOggVorbis::TellCallback(void* datasource) {
+    QFile* pFile = static_cast<QFile*>(datasource);
+    if (!pFile) {
+        return 0;
+    }
+    return pFile->pos();
+}
+

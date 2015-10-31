@@ -170,9 +170,9 @@ static int mp4_open(struct input_plugin_data *ip_data)
 
     /* open mpeg-4 file, check for >= ver 1.9.1 */
 #if MP4V2_PROJECT_version_hex <= 0x00010901
-    priv->mp4.handle = MP4Read(ip_data->filename, 0);
+    priv->mp4.handle = MP4Read(ip_data->filenameUtf8, 0);
 #else
-    priv->mp4.handle = MP4Read(ip_data->filename);
+    priv->mp4.handle = MP4Read(ip_data->filenameUtf8);
 #endif
     if (!priv->mp4.handle) {
         qDebug() << "MP4Read failed";
@@ -207,7 +207,7 @@ static int mp4_open(struct input_plugin_data *ip_data)
 
     /* init decoder according to mpeg-4 audio config */
     if (faacDecInit2(priv->decoder, buf, buf_size,
-            (SAMPLERATE_TYPE*)&priv->sample_rate, &priv->channels) < 0) {
+            &priv->sample_rate, &priv->channels) < 0) {
         free(buf);
         goto out;
     }

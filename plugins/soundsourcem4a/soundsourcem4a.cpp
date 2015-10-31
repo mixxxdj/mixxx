@@ -48,10 +48,8 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName)
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
-    if (ipd.filename) {
-        delete [] ipd.filename;
-        ipd.filename = NULL;
-    }
+    delete [] ipd.filenameUtf8;
+    ipd.filenameUtf8 = NULL;
 
     if (mp4file != MP4_INVALID_FILE_HANDLE) {
         mp4_close(&ipd);
@@ -73,11 +71,16 @@ Result SoundSourceM4A::open()
 int SoundSourceM4A::initializeDecoder()
 {
     // Copy QString to char[] buffer for mp4_open to read from later
-    const QByteArray qbaFileName(getFilename().toLocal8Bit());
+    // From mp4v2/file.h:
+    //  * On Windows, this should be a UTF-8 encoded string.
+    //  * On other platforms, it should be an 8-bit encoding that is
+    //  * appropriate for the platform, locale, file system, etc.
+    //  * (prefer to use UTF-8 when possible).
+    const QByteArray qbaFileName(getFilename().toUtf8());
     int bytes = qbaFileName.length() + 1;
-    ipd.filename = new char[bytes];
-    strncpy(ipd.filename, qbaFileName.constData(), bytes);
-    ipd.filename[bytes-1] = '\0';
+    ipd.filenameUtf8 = new char[bytes];
+    strncpy(ipd.filenameUtf8, qbaFileName.constData(), bytes);
+    ipd.filenameUtf8[bytes-1] = '\0';
     ipd.remote = false; // File is not an stream
     // The file was loading and failing erratically because
     // ipd.remote was an in an uninitialized state, it needed to be
@@ -178,8 +181,11 @@ inline long unsigned SoundSourceM4A::length(){
 }
 
 Result SoundSourceM4A::parseHeader(){
+#ifdef _WIN32
+    TagLib::MP4::File f(getFilename().toStdWString().data());
+#else
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-
+#endif
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -201,7 +207,11 @@ Result SoundSourceM4A::parseHeader(){
 }
 
 QImage SoundSourceM4A::parseCoverArt() {
+#ifdef _WIN32
+    TagLib::MP4::File f(getFilename().toStdWString().data());
+#else
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+#endif
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
         return getCoverInMP4Tag(*mp4);

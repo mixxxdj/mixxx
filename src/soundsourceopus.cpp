@@ -53,8 +53,17 @@ SoundSourceOpus::~SoundSourceOpus() {
 
 Result SoundSourceOpus::open() {
     int error = 0;
-    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
+    // From opus/opusfile.h
+    // On Windows, this string must be UTF-8 (to allow access to
+    // files whose names cannot be represented in the current
+    // MBCS code page).
+    // All other systems use the native character encoding.
+#ifdef _WIN32
+    QByteArray qBAFilename = getFilename().toUtf8();
+#else
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
+#endif
     m_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
     if (m_ptrOpusFile == NULL) {
         qDebug() << "opus: Input does not appear to be an Opus bitstream.";
@@ -176,9 +185,16 @@ unsigned SoundSourceOpus::read(volatile unsigned long size, const SAMPLE * desti
  */
 Result SoundSourceOpus::parseHeader() {
     int error = 0;
-
+    // From opus/opusfile.h
+    // On Windows, this string must be UTF-8 (to allow access to
+    // files whose names cannot be represented in the current
+    // MBCS code page).
+    // All other systems use the native character encoding.
+#ifdef _WIN32
+    QByteArray qBAFilename = getFilename().toUtf8();
+#else
     QByteArray qBAFilename = getFilename().toLocal8Bit();
-
+#endif
     OggOpusFile *l_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
     this->setBitrate((int)op_bitrate(l_ptrOpusFile, -1) / 1000);
     this->setSampleRate(48000);
@@ -188,8 +204,11 @@ Result SoundSourceOpus::parseHeader() {
 
 // If we don't have new enough Taglib we use libopusfile parser!
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+#ifdef _WIN32
+    TagLib::Ogg::Opus::File f(getFilename().toStdWString().data());
+#else
     TagLib::Ogg::Opus::File f(qBAFilename.constData());
-
+#endif
     if (!readFileHeader(this, f)) {
         return ERR;
     }
@@ -272,7 +291,11 @@ QList<QString> SoundSourceOpus::supportedFileExtensions() {
 
 QImage SoundSourceOpus::parseCoverArt() {
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+#ifdef _WIN32
+    TagLib::Ogg::Opus::File f(getFilename().toStdWString().data());
+#else
     TagLib::Ogg::Opus::File f(getFilename().toLocal8Bit().constData());
+#endif
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
         return Mixxx::getCoverInXiphComment(*xiph);
