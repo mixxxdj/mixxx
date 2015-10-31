@@ -110,4 +110,50 @@ double ReplayGain::normalizeRatio(double ratio) {
     }
 }
 
+CSAMPLE ReplayGain::parsePeak(QString strPeak, bool* pValid) {
+    if (pValid) {
+        *pValid = false;
+    }
+    bool isValid = false;
+    QString normalizedPeak(normalizeNumberString(strPeak, &isValid));
+    if (!isValid || normalizedPeak.isEmpty()) {
+        return kPeakUndefined;
+    }
+    isValid = false;
+    const CSAMPLE peak = normalizedPeak.toDouble(&isValid);
+    if (isValid) {
+        if (isValidPeak(peak)) {
+            if (pValid) {
+                *pValid = true;
+            }
+            return peak;
+        } else {
+            qDebug() << "ReplayGain: Invalid peak value:" << strPeak << " -> "<< peak;
+        }
+    } else {
+        qDebug() << "ReplayGain: Failed to parse peak:" << strPeak;
+    }
+    return kPeakUndefined;
+}
+
+QString ReplayGain::formatPeak(CSAMPLE peak) {
+    if (isValidPeak(peak)) {
+        return QString::number(peak);
+    } else {
+        return QString();
+    }
+}
+
+CSAMPLE ReplayGain::normalizePeak(CSAMPLE peak) {
+    if (isValidPeak(peak)) {
+        const CSAMPLE normalizedPeak = parsePeak(formatPeak(peak));
+        // NOTE(uklotzde): Subsequently formatting and parsing the
+        // normalized value should not alter it anymore!
+        DEBUG_ASSERT(normalizedPeak == parsePeak(formatPeak(normalizedPeak)));
+        return normalizedPeak;
+    } else {
+        return kPeakUndefined;
+    }
+}
+
 } //namespace Mixxx

@@ -66,6 +66,18 @@ public:
         m_peak = CSAMPLE_PEAK;
     }
 
+    // Parse and format the peak value metadata according to the ReplayGain
+    // 1.0/2.0 specification.
+    // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_1.0_specification
+    // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_2.0_specification
+    static CSAMPLE parsePeak(QString strPeak, bool* pValid = 0);
+    static QString formatPeak(CSAMPLE peak);
+
+    // After normalization formatting and parsing the peak repeatedly will
+    // always result in the same value. This is required to reliably store
+    // the peak value as a string in track metadata.
+    static CSAMPLE normalizePeak(CSAMPLE peak);
+
 private:
     double m_ratio;
     CSAMPLE m_peak;
