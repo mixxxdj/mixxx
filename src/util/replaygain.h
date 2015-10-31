@@ -50,6 +50,12 @@ public:
     static double normalizeRatio(double ratio);
 
     // The peak amplitude of the track or signal.
+    static bool isValidPeak(CSAMPLE peak) {
+        return kPeakMin <= peak;
+    }
+    bool hasPeak() const {
+        return isValidPeak(m_peak);
+    }
     CSAMPLE getPeak() const {
         return m_peak;
     }
