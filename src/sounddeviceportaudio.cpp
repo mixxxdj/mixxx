@@ -831,10 +831,23 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
         DEBUG_ASSERT_AND_HANDLE(doubleMin / 2 == 0.0) {
-            qWarning() << "SSE: Flush to zero mode not working";
+            qWarning() << "SSE: Denormals to zero mode is not working. EQs and effects will suffer high CPU load";
+        } else {
+            qDebug() << "SSE: Denormals to zero mode is working";
         }
+#else
+        qWarning() << "No SSE: No denormals to zero mode available. EQs and effects will suffer high CPU load";
 #endif
     }
+
+#ifdef __SSE__
+    // We need to refresh the denormals flags every callback since some
+    // driver + API combinations will reset them (known: DirectSound + Realtec)
+    // Fixes Bug #1495047
+    // (Both calls are very fast)
+    _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+#endif
 
     VisualPlayPosition::setTimeInfo(timeInfo);
 
