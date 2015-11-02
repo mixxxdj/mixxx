@@ -716,6 +716,13 @@ SCS3D.Agent = function(device) {
 		}
 	}
 
+	function invert(handler) {
+		return function(value) {
+			return handler(1 - value);
+		}
+	}
+
+
 	// absolute control
 	function set(channel, control) {
 		return function(value) {
@@ -1066,6 +1073,7 @@ SCS3D.Agent = function(device) {
 				tell(rolling ? device.mode.loop.light.blue : device.mode.loop.light.red);
 				pitchPatch(channel);
 				deckLights();
+				beatJump(channel);
 
 				// Available loop lengths are powers of two in the range [-5..6]
 				var lengths = ['0.03125', '0.0625', '0.125', '0.25', '0.5', '1', '2', '4', '8', '16', '32', '64'];
@@ -1276,6 +1284,16 @@ SCS3D.Agent = function(device) {
 		setup(engage, cancelIfEngaged);
 	}
 
+	function needleDrop(channel) {
+		// Needledrop into track
+		expect(device.slider.circle.slide.abs, circleset(channel, "playposition"));
+		watch(channel, "playposition", invert(Bar(device.slider.circle.meter)));
+	}
+
+	function beatJump(channel) {
+		expect(device.top.left.touch, setConst(channel, 'beatjump_1_backward', 1));
+		expect(device.top.right.touch, setConst(channel, 'beatjump_1_forward', 1));
+	}
 
 	function scratchpatch(channel, held) {
 		comm.sysex(device.modeset.circle);
@@ -1285,6 +1303,7 @@ SCS3D.Agent = function(device) {
 		// The four buttons select pitch slider mode when vinyl is held
 		if (held) {
 			pitchModeSelect();
+			needleDrop(channel);
 		} else {
 			deckLights();
 		}
@@ -1301,6 +1320,9 @@ SCS3D.Agent = function(device) {
 			], 1);
 		}
 		lights(true);
+
+		// HACK ugly logic to avoid restructuring
+		if (held) return;
 
 		var channelno = parseInt(channel[8], 10); // Extract channelno to integer
 		Autocancel('scratch', function(engage, cancelIfEngaged) {
@@ -1335,12 +1357,21 @@ SCS3D.Agent = function(device) {
 	function vinylpatch(channel, held) {
 		comm.sysex(device.modeset.circle);
 		pitchPatch(channel);
+		beatJump();
 
 		// The four buttons select pitch slider mode when vinyl is held
 		if (held) {
 			pitchModeSelect();
+			needleDrop(channel);
 		} else {
 			deckLights();
+
+			expect(device.slider.circle.slide.rel, function(value) {
+			var playing = engine.getValue(channel, 'play');
+				var amount = (value - 64) / 64;
+				var jogAmount = playing ? amount * 10 : amount;
+				engine.setValue(channel, 'jog', jogAmount);
+			});
 		}
 
 		Autocancel('temprate', function(engage, cancel) {
@@ -1364,17 +1395,6 @@ SCS3D.Agent = function(device) {
 			Centerbar(device.slider.middle.meter)(dir+0.1);
 			Centerbar(device.slider.right.meter)(dir-0.1);
 		});
-
-		expect(device.slider.circle.slide.rel, function(value) {
-			var playing = engine.getValue(channel, 'play');
-			var amount = (value - 64) / 64;
-			var jogAmount = playing ? amount * 10 : amount;
-			engine.setValue(channel, 'jog', jogAmount);
-		});
-
-
-		expect(device.top.left.touch, setConst(channel, 'beatjump_1_backward', 1));
-		expect(device.top.right.touch, setConst(channel, 'beatjump_1_forward', 1));
 
 		Autocancel('fast', function(engage, cancel) {
 			expect(device.bottom.left.touch, both(engage, setConst(channel, 'back', 1)));
