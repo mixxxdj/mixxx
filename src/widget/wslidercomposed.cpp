@@ -64,6 +64,12 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
+ControlWidgetConnection::EmitOption WSliderComposed::getDefaultEmitOption(
+        Qt::MouseButton state) {
+    Q_UNUSED(state);
+    return ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
+}
+
 void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
     m_pSlider = WPixmapStore::getPaintable(filenameSlider,
                                            Paintable::STRETCH);
@@ -85,7 +91,7 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameH
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        onConnectedControlValueChanged(getControlParameterLeft());
+        onConnectedControlValueChanged(getControlParameter());
         update();
     }
 }
@@ -129,7 +135,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
-            setControlParameterLeftUp(newValue);
+            setControlParameterUp(newValue);
         }
 
         // Update display

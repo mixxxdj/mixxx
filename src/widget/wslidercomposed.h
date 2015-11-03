@@ -45,6 +45,10 @@ class WSliderComposed : public WWidget  {
     void setSliderPixmap(const QString& filenameSlider);
     void setHandlePixmap(bool bHorizontal, const QString& filenameHandle);
     inline bool isHorizontal() const { return m_bHorizontal; };
+
+    virtual ControlWidgetConnection::EmitOption getDefaultEmitOption(
+            Qt::MouseButton state);
+
   public slots:
     void onConnectedControlValueChanged(double);
     void fillDebugTooltip(QStringList* debug);

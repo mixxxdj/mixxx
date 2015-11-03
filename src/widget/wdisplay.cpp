@@ -40,7 +40,7 @@ void WDisplay::setup(QDomNode node, const SkinContext& context) {
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
-                context.selectElement(node, "BackPath"), "mode", "TILE");
+                context.selectElement(node, "BackPath"), "scalemode", "TILE");
         setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),
                             Paintable::DrawModeFromString(mode_str));
     }

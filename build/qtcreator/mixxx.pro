@@ -1,5 +1,4 @@
 CONFIG += debug link_pkgconfig portmidi script vinylcontrol m4a autodjcrates
-# ladspa
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
     __PORTAUDIO__ \
     __SNDFILE__ \
@@ -114,7 +113,6 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
 
 INCLUDEPATH += src \
     lib/replaygain \
-    lib/ladspa \
     /sw/include \
     $$UI_DIR
 
@@ -123,8 +121,7 @@ INCLUDEPATH += src \
 # EXCLUDE_STUDIO=/script/
 # EXCLUDE_FFMPEG=ffmpeg
 # EXCLUDE_TONAL=tonal
-# EXCLUDE_LADSPA=ladspa
-# FIND_EXCLUDE=~|unused|patch|diff|/test/|/lib/|.scon|${EXCLUDE_SHOUTCAST}|${EXCLUDE_STUDIO}|${EXCLUDE_FFMPEG}|${EXCLUDE_TONAL}|${EXCLUDE_LADSPA}
+# FIND_EXCLUDE=~|unused|patch|diff|/test/|/lib/|.scon|${EXCLUDE_SHOUTCAST}|${EXCLUDE_STUDIO}|${EXCLUDE_FFMPEG}|${EXCLUDE_TONAL}
 # for FILE_EXT in h cpp ui; do
 #   find . | egrep -ive "${FIND_EXCLUDE}" | grep \\.${FILE_EXT} | sort -ui | sed -e "s=./=\$\$BASE_DIR/=" -e "s=\.${FILE_EXT}=\.${FILE_EXT} \\\="
 # done
@@ -159,7 +156,6 @@ $$BASE_DIR/src/defs_urls.h \
 $$BASE_DIR/src/defs_version.h \
 $$BASE_DIR/src/dlgabout.h \
 $$BASE_DIR/src/dlgautodj.h \
-$$BASE_DIR/src/dlgladspa.h \
 $$BASE_DIR/src/dlgmidilearning.h \
 $$BASE_DIR/src/dlgprefcontrols.h \
 $$BASE_DIR/src/dlgprefcrossfader.h \
@@ -192,7 +188,6 @@ $$BASE_DIR/src/engine/enginefilterbutterworth8.h \
 $$BASE_DIR/src/engine/enginefilter.h \
 $$BASE_DIR/src/engine/enginefilteriir.h \
 $$BASE_DIR/src/engine/engineflanger.h \
-$$BASE_DIR/src/engine/engineladspa.h \
 $$BASE_DIR/src/engine/enginemaster.h \
 $$BASE_DIR/src/engine/engineobject.h \
 $$BASE_DIR/src/engine/enginepregain.h \
@@ -212,19 +207,6 @@ $$BASE_DIR/src/imginvert.h \
 $$BASE_DIR/src/imgloader.h \
 $$BASE_DIR/src/imgsource.h \
 $$BASE_DIR/src/input.h \
-$$BASE_DIR/src/ladspa/ladspacontrol.h \
-$$BASE_DIR/src/ladspa/ladspainstance.h \
-$$BASE_DIR/src/ladspa/ladspainstancemono.h \
-$$BASE_DIR/src/ladspa/ladspainstancestereo.h \
-$$BASE_DIR/src/ladspa/ladspalibrary.h \
-$$BASE_DIR/src/ladspa/ladspaloader.h \
-$$BASE_DIR/src/ladspa/ladspaplugin.h \
-$$BASE_DIR/src/ladspa/ladspapreset.h \
-$$BASE_DIR/src/ladspa/ladspapresetinstance.h \
-$$BASE_DIR/src/ladspa/ladspapresetknob.h \
-$$BASE_DIR/src/ladspa/ladspapresetmanager.h \
-$$BASE_DIR/src/ladspa/ladspapresetslot.h \
-$$BASE_DIR/src/ladspaview.h \
 $$BASE_DIR/src/library/abstractxmltrackmodel.h \
 $$BASE_DIR/src/library/autodjfeature.h \
 $$BASE_DIR/src/library/browsefeature.h \
@@ -390,7 +372,6 @@ $$BASE_DIR/src/controlttrotary.cpp \
 $$BASE_DIR/src/controlvaluedelegate.cpp \
 $$BASE_DIR/src/dlgabout.cpp \
 $$BASE_DIR/src/dlgautodj.cpp \
-$$BASE_DIR/src/dlgladspa.cpp \
 $$BASE_DIR/src/dlgmidilearning.cpp \
 $$BASE_DIR/src/dlgprefcontrols.cpp \
 $$BASE_DIR/src/dlgprefcrossfader.cpp \
@@ -422,7 +403,6 @@ $$BASE_DIR/src/engine/enginefilterbutterworth8.cpp \
 $$BASE_DIR/src/engine/enginefilter.cpp \
 $$BASE_DIR/src/engine/enginefilteriir.cpp \
 $$BASE_DIR/src/engine/engineflanger.cpp \
-$$BASE_DIR/src/engine/engineladspa.cpp \
 $$BASE_DIR/src/engine/enginemaster.cpp \
 $$BASE_DIR/src/engine/engineobject.cpp \
 $$BASE_DIR/src/engine/enginepregain.cpp \
@@ -441,19 +421,6 @@ $$BASE_DIR/src/imgcolor.cpp \
 $$BASE_DIR/src/imginvert.cpp \
 $$BASE_DIR/src/imgloader.cpp \
 $$BASE_DIR/src/input.cpp \
-$$BASE_DIR/src/ladspa/ladspacontrol.cpp \
-$$BASE_DIR/src/ladspa/ladspainstance.cpp \
-$$BASE_DIR/src/ladspa/ladspainstancemono.cpp \
-$$BASE_DIR/src/ladspa/ladspainstancestereo.cpp \
-$$BASE_DIR/src/ladspa/ladspalibrary.cpp \
-$$BASE_DIR/src/ladspa/ladspaloader.cpp \
-$$BASE_DIR/src/ladspa/ladspaplugin.cpp \
-$$BASE_DIR/src/ladspa/ladspapreset.cpp \
-$$BASE_DIR/src/ladspa/ladspapresetinstance.cpp \
-$$BASE_DIR/src/ladspa/ladspapresetknob.cpp \
-$$BASE_DIR/src/ladspa/ladspapresetmanager.cpp \
-$$BASE_DIR/src/ladspa/ladspapresetslot.cpp \
-$$BASE_DIR/src/ladspaview.cpp \
 $$BASE_DIR/src/library/abstractxmltrackmodel.cpp \
 $$BASE_DIR/src/library/autodjfeature.cpp \
 $$BASE_DIR/src/library/browsefeature.cpp \
@@ -688,42 +655,6 @@ win32 {
         $$BASE_DIR/../mixxx-winlib/libogg.dll \
         -lwinmm
     INCLUDEPATH += $$BASE_DIR/../mixxx-winlib
-}
-CONFIG(ladspa) {
-    DEFINES += __LADSPA__
-    HEADERS += $$BASE_DIR/src/engine/engineladspa.h \
-        $$BASE_DIR/src/dlgladspa.h \
-        $$BASE_DIR/src/ladspaview.h \
-        $$BASE_DIR/src/ladspa/ladspacontrol.h \
-        $$BASE_DIR/src/ladspa/ladspainstance.h \
-        $$BASE_DIR/src/ladspa/ladspainstancemono.h \
-        $$BASE_DIR/src/ladspa/ladspainstancestereo.h \
-        $$BASE_DIR/src/ladspa/ladspalibrary.h \
-        $$BASE_DIR/src/ladspa/ladspaloader.h \
-        $$BASE_DIR/src/ladspa/ladspaplugin.h \
-        $$BASE_DIR/src/ladspa/ladspapreset.h \
-        $$BASE_DIR/src/ladspa/ladspapresetinstance.h \
-        $$BASE_DIR/src/ladspa/ladspapresetknob.h \
-        $$BASE_DIR/src/ladspa/ladspapresetmanager.h \
-        $$BASE_DIR/src/ladspa/ladspapresetslot.h
-    SOURCES += $$BASE_DIR/src/engine/engineladspa.cpp \
-        $$BASE_DIR/src/dlgladspa.cpp \
-        $$BASE_DIR/src/ladspaview.cpp \
-        $$BASE_DIR/src/ladspa/ladspacontrol.cpp \
-        $$BASE_DIR/src/ladspa/ladspainstance.cpp \
-        $$BASE_DIR/src/ladspa/ladspainstancemono.cpp \
-        $$BASE_DIR/src/ladspa/ladspainstancestereo.cpp \
-        $$BASE_DIR/src/ladspa/ladspalibrary.cpp \
-        $$BASE_DIR/src/ladspa/ladspaloader.cpp \
-        $$BASE_DIR/src/ladspa/ladspaplugin.cpp \
-        $$BASE_DIR/src/ladspa/ladspapreset.cpp \
-        $$BASE_DIR/src/ladspa/ladspapresetinstance.cpp \
-        $$BASE_DIR/src/ladspa/ladspapresetknob.cpp \
-        $$BASE_DIR/src/ladspa/ladspapresetmanager.cpp \
-        $$BASE_DIR/src/ladspa/ladspapresetslot.cpp
-    win32{
-        INCLUDEPATH += lib\ladspa
-    }
 }
 CONFIG(script) {
     DEFINES += __MIDISCRIPT__
