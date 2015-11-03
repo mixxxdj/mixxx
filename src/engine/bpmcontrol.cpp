@@ -157,7 +157,9 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 void BpmControl::slotControlPlay(double v) {
     if (v > 0.0) {
         if (m_pQuantize->get() > 0.0) {
-            syncPhase();
+            // Since Quantize is on we can directly seek
+            // SEEK_STANDARD will do the sync job in this case
+            seekAbs(getCurrentSample());
         }
     }
 }

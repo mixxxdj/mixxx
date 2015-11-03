@@ -86,8 +86,9 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
 }
 
 bool BaseExternalPlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex("track_id") ||
-            (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
+    if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+            (PlayerManager::numPreviewDecks() == 0 &&
+             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
         return true;
     }
     return false;
@@ -162,7 +163,8 @@ bool BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
 }
 
 void BaseExternalPlaylistModel::setPlaylistUI() {
-    setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+                   Qt::AscendingOrder);
     initHeaderData();
 }
 

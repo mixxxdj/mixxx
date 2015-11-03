@@ -425,6 +425,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
             [this, file_location](TrackCollectionPrivate* pTrackCollectionPrivate) {
+        // Update the import/export playlist directory
         QString fileLocation(file_location);
         QFileInfo fileName(file_location); 
         m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
@@ -436,17 +437,19 @@ void BasePlaylistFeature::slotExportPlaylist() {
                         "mixxx.db.model.playlist_export"));
 
         pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
-        pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+        pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
+                ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
         pPlaylistTableModel->select(pTrackCollectionPrivate);
 
         // check config if relative paths are desired
         bool useRelativePath = static_cast<bool>(m_pConfig->getValueString(
-                                                     ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
+                ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
 
         if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
             ParserCsv::writeCSVFile(fileLocation, pPlaylistTableModel.data(), useRelativePath);
         } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
-            if (pTrackCollectionPrivate->getPlaylistDAO().getHiddenType(pPlaylistTableModel->getPlaylist()) == PlaylistDAO::PLHT_SET_LOG) {
+            if (pTrackCollectionPrivate->getPlaylistDAO().getHiddenType(
+                    pPlaylistTableModel->getPlaylist()) == PlaylistDAO::PLHT_SET_LOG) {
                 ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.data(), true);
             } else {
                 ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.data(), false);

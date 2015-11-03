@@ -15,6 +15,7 @@
 
 #include "library/dao/trackdao.h"
 #include "library/trackcollectionprivate.h"
+#include "library/columncache.h"
 #include "trackinfoobject.h"
 #include "util.h"
 
@@ -49,7 +50,8 @@ class BaseTrackCache : public QObject {
 
     virtual QVariant data(int trackId, int column) const;
     virtual int columnCount() const;
-    virtual int fieldIndex(const QString column) const;
+    virtual int fieldIndex(const QString& column) const;
+    int fieldIndex(ColumnCache::Column column) const;
     virtual void filterAndSort(const QSet<int>& trackIds,
                                QString query, QString extraFilter,
                                int sortColumn, Qt::SortOrder sortOrder,
@@ -102,7 +104,8 @@ class BaseTrackCache : public QObject {
     const QString m_idColumn;
     const int m_columnCount;
     const QString m_columnsJoined;
-    const QHash<QString, int> m_columnIndex;
+
+    ColumnCache m_columnCache;
 
     QStringList m_searchColumns;
     QVector<int> m_searchColumnIndices;

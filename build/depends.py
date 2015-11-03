@@ -669,6 +669,7 @@ class MixxxCore(Feature):
                    "library/trackcollectionprivate.cpp",
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
+                   "library/columncache.cpp",
                    "library/librarytablemodel.cpp",
                    "library/searchquery.cpp",
                    "library/searchqueryparser.cpp",

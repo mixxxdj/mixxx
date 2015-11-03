@@ -133,7 +133,7 @@ LibraryScanner::~LibraryScanner() {
 void LibraryScanner::run() {
     Trace trace("LibraryScanner");
     unsigned static id = 0; // the id of this thread, for debugging purposes
-            //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
     //m_pProgress->slotStartTiming();
 
@@ -212,10 +212,10 @@ void LibraryScanner::run() {
     // Recursivly scan each directory in the directories table.
     foreach (const QString& dir, dirs) {
         bScanFinishedCleanly = recursiveScan(dir, verifiedDirectories);
-        if (!bScanFinishedCleanly) {
-            qDebug() << "Recursive scaning (" << dir << ") interrupted.";
+        if (bScanFinishedCleanly) {
+            qDebug() << "Recursive scanning (" << dir << ") finished cleanly.";
         } else {
-            qDebug() << "Recursive scaning (" << dir << ") finished cleanly.";
+            qDebug() << "Recursive scanning (" << dir << ") interrupted.";
         }
     }
 
@@ -230,7 +230,8 @@ void LibraryScanner::run() {
     // Clean up and commit or rollback the transaction depending on
     // bScanFinishedCleanly.
     // MK: is done in addChunkToDB
-    //m_trackDao.addTracksFinish(!bScanFinishedCleanly);
+    // bScanFinishedCleanly or if the scan was canceled..
+    //m_trackDao.addTracksFinish(!(m_bCancelLibraryScan || bScanFinishedCleanly));
 
     // At the end of a scan, mark all tracks and directories that
     // weren't "verified" as "deleted" (as long as the scan wasn't canceled
@@ -468,21 +469,22 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
 
     // Compare the hashes, and if they don't match, rescan the files in that directory!
     if (prevHash != newHash) {
-        //If we didn't know about this directory before...
-        if (!prevHashExists) {
-            m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
-        } else {
-            // Contents of a known directory have changed. Just need to update
-            // the old hash in the database and then rescan it.
-            qDebug() << "old hash was" << prevHash << "and new hash is" << newHash;
-            m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
-        }
-
         // Rescan that mofo! If importing fails then the scan was cancelled so                                          
         // we return immediately.                                                                                       
         foreach (const QString& file, filesToImport) {
             addTrackToChunk(file);
         }
+        // If we didn't know about this directory before...
+        // save the hash after we imported everything in it
+        if (!prevHashExists) {
+            m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
+        } else {
+            // Contents of a known directory have changed. Just need to update
+            // the old hash in the database
+            qDebug() << "old hash was" << prevHash << "and new hash is" << newHash;
+            m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
+        }
+
     } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
         // (and the tracks inside them) will be marked as verified
