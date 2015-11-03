@@ -61,6 +61,14 @@ class ReplayGainTest : public testing::Test {
     }
 };
 
+TEST_F(ReplayGainTest, RatioFromString0dB) {
+    ratioFromString("0 dB", true, Mixxx::ReplayGain::kRatio0dB);
+    ratioFromString("0.0dB", true, Mixxx::ReplayGain::kRatio0dB);
+    ratioFromString("0 DB", true, Mixxx::ReplayGain::kRatio0dB);
+    ratioFromString("-0 Db", true, Mixxx::ReplayGain::kRatio0dB);
+    ratioFromString("+0db", true, Mixxx::ReplayGain::kRatio0dB);
+}
+
 TEST_F(ReplayGainTest, RatioFromStringValidRange) {
     for (int replayGainDb = -100; 100 >= replayGainDb; ++replayGainDb) {
         const QString inputValues[] = {
