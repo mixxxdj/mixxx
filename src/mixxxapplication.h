@@ -11,7 +11,9 @@ class MixxxApplication : public QApplication {
   public:
     MixxxApplication(int& argc, char** argv);
     virtual ~MixxxApplication();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     virtual bool notify(QObject*, QEvent*);
+#endif
 
   private:
     bool touchIsRightButton();

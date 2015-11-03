@@ -11,7 +11,9 @@
 #elif defined(__WINDOWS__)
 
 #else
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     #include <qx11info_x11.h>
+#endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
 
 #include "util/performancetimer.h"

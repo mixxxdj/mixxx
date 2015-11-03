@@ -6,7 +6,11 @@
 #include <QTime>
 
 #include "util/performancetimer.h"
+#include "util/threadcputimer.h"
 #include "util/timer.h"
+
+#define LLTIMER PerformanceTimer
+//#define LLTIMER ThreadCpuTimer
 
 class Time {
   public:
@@ -38,7 +42,7 @@ class Time {
     }
 
   private:
-    static PerformanceTimer s_timer;
+    static LLTIMER s_timer;
 };
 
 #endif /* TIME_H */
