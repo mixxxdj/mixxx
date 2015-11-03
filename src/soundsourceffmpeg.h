@@ -60,7 +60,6 @@ public:
     unsigned int read(unsigned long size, const SAMPLE*);
     int parseHeader();
     inline long unsigned length();
-    //static int ParseHeader(TrackInfoObject * );
     bool readInput();
     static QList<QString> supportedFileExtensions();
     AVCodecContext *getCodecContext();

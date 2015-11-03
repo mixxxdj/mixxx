@@ -328,7 +328,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
                 if (device->getNumOutputChannels() < 2) {
                     continue;
                 }
-                AudioOutput masterOut(AudioPath::MASTER, 0);
+                AudioOutput masterOut(AudioPath::MASTER, 0, 2, 0);
                 addOutput(device->getInternalName(), masterOut);
                 defaultSampleRate = device->getDefaultSampleRate();
                 break;

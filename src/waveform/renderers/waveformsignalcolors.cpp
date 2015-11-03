@@ -68,14 +68,16 @@ void WaveformSignalColors::fallBackFromSignalColor()
     qWarning() << "WaveformSignalColors::fallBackFromSignalColor - " \
                   "skin do not provide low/mid/high signal colors";
 
-    double h,s,l,a;
+    // NOTE(rryan): On ARM, qreal is float so it's important we use qreal here
+    // and not double or float or else we will get build failures on ARM.
+    qreal h, s, l, a;
     m_signalColor.getHslF(&h,&s,&l,&a);
 
     const double analogousAngle = 1.0/12.0;
 
     if( s < 0.1) // gray
     {
-        const double sMax = 1.0 - h;
+        const qreal sMax = 1.0 - h;
         m_lowColor.setHslF(h,s,l);
         m_midColor.setHslF(h,s+sMax*0.2,l);
         m_highColor.setHslF(h,s+sMax*0.4,l);
@@ -84,28 +86,28 @@ void WaveformSignalColors::fallBackFromSignalColor()
     {
         if( l < 0.1) // ~white
         {
-            const double lMax = 1.0 - l;
+            const qreal lMax = 1.0 - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(h,s,l+lMax*0.2);
             m_highColor.setHslF(h,s,l+lMax*0.4);
         }
         else if( l < 0.5)
         {
-            const double lMax = 1.0 - l;
+            const qreal lMax = 1.0 - l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l+lMax*0.1);
             m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l+lMax*0.4);
         }
         else if ( l < 0.9)
         {
-            const double lMin = l;
+            const qreal lMin = l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l-lMin*0.1);
             m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l-lMin*0.4);
         }
         else // ~black
         {
-            const double lMin = l;
+            const qreal lMin = l;
             m_lowColor.setHslF(h,s,l);
             m_midColor.setHslF(h,s,l-lMin*0.2);
             m_highColor.setHslF(h,s,l-lMin*0.4);

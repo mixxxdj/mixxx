@@ -91,8 +91,7 @@ class HID(Feature):
         elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
             raise Exception('Did not find the setupapi library, exiting.')
         elif build.platform_is_osx:
-            build.env.Append(LINKFLAGS='-framework IOKit')
-            build.env.Append(LINKFLAGS='-framework CoreFoundation')
+            build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
 
         build.env.Append(CPPDEFINES='__HID__')
 
@@ -215,11 +214,8 @@ class CoreAudio(Feature):
         if not build.platform_is_osx:
             raise Exception('CoreAudio is only supported on OS X!')
 
-        build.env.Append(
-            CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
         build.env.Append(CPPPATH='#lib/apple/')
-        build.env.Append(
-            LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
+        build.env.AppendUnique(FRAMEWORKS=['AudioToolbox', 'CoreFoundation'])
         build.env.Append(CPPDEFINES='__COREAUDIO__')
 
     def sources(self, build):

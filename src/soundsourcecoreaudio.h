@@ -19,7 +19,6 @@
 #ifndef SOUNDSOURCECOREAUDIO_H
 #define SOUNDSOURCECOREAUDIO_H
 
-#include <QFile>
 #include <QString>
 #include <AudioToolbox/AudioToolbox.h>
 //In our tree at lib/apple/
@@ -53,7 +52,6 @@ public:
     int parseHeader();
     static QList<QString> supportedFileExtensions();
 private:
-    QFile m_file;
     unsigned int m_samples; // total number of samples
     SInt64 m_headerFrames;
     ExtAudioFileRef m_audioFile;

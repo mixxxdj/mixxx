@@ -49,10 +49,14 @@ public:
     unsigned read(unsigned long size, const SAMPLE*);
     long unsigned length();
     int parseHeader();
-    static int ParseHeader(TrackInfoObject* p);
     unsigned int getSampleRate();
     /** Returns filename */
     QString getFilename();
+
+    SoundSource* getProxiedSoundSource() {
+        return m_pSoundSource;
+    }
+
     static QStringList supportedFileExtensions();
     static QStringList supportedFileExtensionsByPlugins();
     static QString supportedFileExtensionsString();

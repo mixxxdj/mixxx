@@ -26,6 +26,9 @@
 #include <QWidget>
 #include <QSqlDatabase>
 #include <QStringList>
+#include <QRegExp>
+#include <QFileInfo>
+#include <QLinkedList>
 
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -50,7 +53,6 @@ class LibraryScanner : public QThread {
     void scan(QWidget* parent);
 
     void scan();
-    bool importDirectory(const QString &directory, const QStringList &nameFilters, volatile bool *cancel);
     void addTrackToChunk(const QString filePath);
     void addChunkToDatabase();
 
@@ -63,18 +65,26 @@ class LibraryScanner : public QThread {
     void updateProgress();
   signals:
     void startedLoading();
-    void progressLoading(QString path);
     void finishedLoading();
     void scanFinished();
     void progressHashing(QString);
+    void progressLoading(QString path);
 
   private:
-    bool recursiveScan(const QString& dirPath, QStringList& verifiedDirectories);
+    // Recursively scan a music library. Doesn't import tracks for any
+    // directories that have already been scanned and have not changed. Changes
+    // are tracked by performing a hash of the directory's file list, and those
+    // hashes are stored in the database.
+    bool recursiveScan(const QDir& dir, QStringList& verifiedDirectories);
 
-    TrackCollection* m_pTrackCollection; // The library trackcollection
-    QSqlDatabase m_database; // Hang on to a different DB connection
-                             // since we run in a different thread
-    LibraryScannerDlg* m_pProgress; // The library scanning window
+    bool importDirectory(const QString& directory, volatile bool* cancel);
+
+    // The library trackcollection
+    TrackCollection* m_pTrackCollection;
+    // Hang on to a different DB connection since we run in a different thread
+    QSqlDatabase m_database;
+    // The library scanning window
+    LibraryScannerDlg* m_pProgress;
     LibraryHashDAO m_libraryHashDao;
     CueDAO m_cueDao;
     PlaylistDAO m_playlistDao;
@@ -82,7 +92,7 @@ class LibraryScanner : public QThread {
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
-    QStringList m_nameFilters;
+    QRegExp m_extensionFilter;
     volatile bool m_bCancelLibraryScan;
     QStringList m_directoriesBlacklist;
     QStringList m_tracksListInCnunk;
