@@ -54,7 +54,7 @@ QString normalizeNumberString(const QString& number, bool* pValid) {
 
 } // anonymous namespace
 
-double ReplayGain::parseGain2Ratio(QString dbGain, bool* pValid) {
+double ReplayGain::ratioFromString(QString dbGain, bool* pValid) {
     if (pValid) {
         *pValid = false;
     }
@@ -90,7 +90,7 @@ double ReplayGain::parseGain2Ratio(QString dbGain, bool* pValid) {
     return kRatioUndefined;
 }
 
-QString ReplayGain::formatRatio2Gain(double ratio) {
+QString ReplayGain::ratioToString(double ratio) {
     if (isValidRatio(ratio)) {
         return QString::number(ratio2db(ratio)) + kGainSuffix;
     } else {
@@ -100,17 +100,17 @@ QString ReplayGain::formatRatio2Gain(double ratio) {
 
 double ReplayGain::normalizeRatio(double ratio) {
     if (isValidRatio(ratio)) {
-        const double normalizedRatio = parseGain2Ratio(formatRatio2Gain(ratio));
+        const double normalizedRatio = ratioFromString(ratioToString(ratio));
         // NOTE(uklotzde): Subsequently formatting and parsing the
         // normalized value should not alter it anymore!
-        DEBUG_ASSERT(normalizedRatio == parseGain2Ratio(formatRatio2Gain(normalizedRatio)));
+        DEBUG_ASSERT(normalizedRatio == ratioFromString(ratioToString(normalizedRatio)));
         return normalizedRatio;
     } else {
         return kRatioUndefined;
     }
 }
 
-CSAMPLE ReplayGain::parsePeak(QString strPeak, bool* pValid) {
+CSAMPLE ReplayGain::peakFromString(QString strPeak, bool* pValid) {
     if (pValid) {
         *pValid = false;
     }
@@ -136,7 +136,7 @@ CSAMPLE ReplayGain::parsePeak(QString strPeak, bool* pValid) {
     return kPeakUndefined;
 }
 
-QString ReplayGain::formatPeak(CSAMPLE peak) {
+QString ReplayGain::peakToString(CSAMPLE peak) {
     if (isValidPeak(peak)) {
         return QString::number(peak);
     } else {
@@ -146,10 +146,10 @@ QString ReplayGain::formatPeak(CSAMPLE peak) {
 
 CSAMPLE ReplayGain::normalizePeak(CSAMPLE peak) {
     if (isValidPeak(peak)) {
-        const CSAMPLE normalizedPeak = parsePeak(formatPeak(peak));
+        const CSAMPLE normalizedPeak = peakFromString(peakToString(peak));
         // NOTE(uklotzde): Subsequently formatting and parsing the
         // normalized value should not alter it anymore!
-        DEBUG_ASSERT(normalizedPeak == parsePeak(formatPeak(normalizedPeak)));
+        DEBUG_ASSERT(normalizedPeak == peakFromString(peakToString(normalizedPeak)));
         return normalizedPeak;
     } else {
         return kPeakUndefined;

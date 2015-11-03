@@ -117,7 +117,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
             pTrackMetadata->setTitle(l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
             bool trackGainRatioValid = false;
-            double trackGainRatio = ReplayGain::parseGain2Ratio(l_SPayload, &trackGainRatioValid);
+            double trackGainRatio = ReplayGain::ratioFromString(l_SPayload, &trackGainRatioValid);
             if (trackGainRatioValid) {
                 ReplayGain trackGain(pTrackMetadata->getReplayGain());
                 trackGain.setRatio(trackGainRatio);

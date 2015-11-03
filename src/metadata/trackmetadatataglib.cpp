@@ -193,7 +193,7 @@ inline bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
 
 inline QString formatTrackGain(const TrackMetadata& trackMetadata) {
     const double trackGainRatio(trackMetadata.getReplayGain().getRatio());
-    return ReplayGain::formatRatio2Gain(trackGainRatio);
+    return ReplayGain::ratioToString(trackGainRatio);
 }
 
 void parseTrackGain(
@@ -202,7 +202,7 @@ void parseTrackGain(
     DEBUG_ASSERT(pTrackMetadata);
 
     bool isRatioValid = false;
-    double ratio = ReplayGain::parseGain2Ratio(dbGain, &isRatioValid);
+    double ratio = ReplayGain::ratioFromString(dbGain, &isRatioValid);
     if (isRatioValid) {
         // Some applications (e.g. Rapid Evolution 3) write a replay gain
         // of 0 dB even if the replay gain is undefined. To be safe we
@@ -221,7 +221,7 @@ void parseTrackGain(
 
 inline QString formatTrackPeak(const TrackMetadata& trackMetadata) {
     const CSAMPLE trackGainPeak(trackMetadata.getReplayGain().getPeak());
-    return ReplayGain::formatPeak(trackGainPeak);
+    return ReplayGain::peakToString(trackGainPeak);
 }
 
 void parseTrackPeak(
@@ -230,7 +230,7 @@ void parseTrackPeak(
     DEBUG_ASSERT(pTrackMetadata);
 
     bool isPeakValid = false;
-    const CSAMPLE peak = ReplayGain::parsePeak(strPeak, &isPeakValid);
+    const CSAMPLE peak = ReplayGain::peakFromString(strPeak, &isPeakValid);
     if (isPeakValid) {
         ReplayGain replayGain(pTrackMetadata->getReplayGain());
         replayGain.setPeak(peak);

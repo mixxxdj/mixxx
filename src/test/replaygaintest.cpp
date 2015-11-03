@@ -18,11 +18,11 @@ class ReplayGainTest : public testing::Test {
     virtual void TearDown() {
     }
 
-    double parseGain2Ratio(QString inputValue, bool expectedResult, double expectedValue) {
-        //qDebug() << "parseGain2Ratio" << inputValue << expectedResult << expectedValue;
+    double ratioFromString(QString inputValue, bool expectedResult, double expectedValue) {
+        //qDebug() << "ratioFromString" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
-        const double actualValue = Mixxx::ReplayGain::parseGain2Ratio(inputValue, &actualResult);
+        const double actualValue = Mixxx::ReplayGain::ratioFromString(inputValue, &actualResult);
 
         EXPECT_EQ(expectedResult, actualResult);
         EXPECT_FLOAT_EQ(expectedValue, actualValue);
@@ -39,11 +39,11 @@ class ReplayGainTest : public testing::Test {
         }
     }
 
-    CSAMPLE parsePeak(QString inputValue, bool expectedResult, CSAMPLE expectedValue) {
-        //qDebug() << "parsePeak" << inputValue << expectedResult << expectedValue;
+    CSAMPLE peakFromString(QString inputValue, bool expectedResult, CSAMPLE expectedValue) {
+        //qDebug() << "peakFromString" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
-        const CSAMPLE actualValue = Mixxx::ReplayGain::parsePeak(inputValue, &actualResult);
+        const CSAMPLE actualValue = Mixxx::ReplayGain::peakFromString(inputValue, &actualResult);
 
         EXPECT_EQ(expectedResult, actualResult);
         EXPECT_FLOAT_EQ(expectedValue, actualValue);
@@ -61,7 +61,7 @@ class ReplayGainTest : public testing::Test {
     }
 };
 
-TEST_F(ReplayGainTest, ParseGain2RatioValidRange) {
+TEST_F(ReplayGainTest, RatioFromStringValidRange) {
     for (int replayGainDb = -100; 100 >= replayGainDb; ++replayGainDb) {
         const QString inputValues[] = {
                 QString("%1 ").arg(replayGainDb),
@@ -72,22 +72,22 @@ TEST_F(ReplayGainTest, ParseGain2RatioValidRange) {
         float expectedValue;
         expectedValue = db2ratio(double(replayGainDb));
         for (size_t i = 0; i < sizeof(inputValues) / sizeof(inputValues[0]); ++i) {
-            parseGain2Ratio(inputValues[i], true, expectedValue);
+            ratioFromString(inputValues[i], true, expectedValue);
             if (0 <= replayGainDb) {
-                parseGain2Ratio(QString("  + ") + inputValues[i], true, expectedValue);
+                ratioFromString(QString("  + ") + inputValues[i], true, expectedValue);
             }
         }
     }
 }
 
-TEST_F(ReplayGainTest, ParseGain2RatioInvalid) {
-    parseGain2Ratio("", false, Mixxx::ReplayGain::kRatioUndefined);
-    parseGain2Ratio("abcde", false, Mixxx::ReplayGain::kRatioUndefined);
-    parseGain2Ratio("0 dBA", false, Mixxx::ReplayGain::kRatioUndefined);
-    parseGain2Ratio("--2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
-    parseGain2Ratio("+-2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
-    parseGain2Ratio("-+2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
-    parseGain2Ratio("++2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
+TEST_F(ReplayGainTest, RatioFromStringInvalid) {
+    ratioFromString("", false, Mixxx::ReplayGain::kRatioUndefined);
+    ratioFromString("abcde", false, Mixxx::ReplayGain::kRatioUndefined);
+    ratioFromString("0 dBA", false, Mixxx::ReplayGain::kRatioUndefined);
+    ratioFromString("--2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
+    ratioFromString("+-2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
+    ratioFromString("-+2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
+    ratioFromString("++2 dB", false, Mixxx::ReplayGain::kRatioUndefined);
 }
 
 TEST_F(ReplayGainTest, NormalizeRatio) {
@@ -98,30 +98,30 @@ TEST_F(ReplayGainTest, NormalizeRatio) {
     normalizeRatio(-Mixxx::ReplayGain::kRatio0dB);
 }
 
-TEST_F(ReplayGainTest, ParsePeakValid) {
-    parsePeak("0", true, Mixxx::ReplayGain::kPeakMin);
-    parsePeak("+0", true, Mixxx::ReplayGain::kPeakMin);
-    parsePeak("-0", true, Mixxx::ReplayGain::kPeakMin);
-    parsePeak("0.0", true, Mixxx::ReplayGain::kPeakMin);
-    parsePeak("+0.0", true, Mixxx::ReplayGain::kPeakMin);
-    parsePeak("-0.0", true, Mixxx::ReplayGain::kPeakMin);
-    parsePeak("1", true, Mixxx::ReplayGain::kPeakClip);
-    parsePeak("+1", true, Mixxx::ReplayGain::kPeakClip);
-    parsePeak("1.0", true, Mixxx::ReplayGain::kPeakClip);
-    parsePeak("+1.0", true, Mixxx::ReplayGain::kPeakClip);
-    parsePeak("  0.12345  ", true, 0.12345);
-    parsePeak("  1.2345", true, 1.2345);
+TEST_F(ReplayGainTest, PeakFromStringValid) {
+    peakFromString("0", true, Mixxx::ReplayGain::kPeakMin);
+    peakFromString("+0", true, Mixxx::ReplayGain::kPeakMin);
+    peakFromString("-0", true, Mixxx::ReplayGain::kPeakMin);
+    peakFromString("0.0", true, Mixxx::ReplayGain::kPeakMin);
+    peakFromString("+0.0", true, Mixxx::ReplayGain::kPeakMin);
+    peakFromString("-0.0", true, Mixxx::ReplayGain::kPeakMin);
+    peakFromString("1", true, Mixxx::ReplayGain::kPeakClip);
+    peakFromString("+1", true, Mixxx::ReplayGain::kPeakClip);
+    peakFromString("1.0", true, Mixxx::ReplayGain::kPeakClip);
+    peakFromString("+1.0", true, Mixxx::ReplayGain::kPeakClip);
+    peakFromString("  0.12345  ", true, 0.12345);
+    peakFromString("  1.2345", true, 1.2345);
 }
 
-TEST_F(ReplayGainTest, ParsePeakInvalid) {
-    parsePeak("", false, Mixxx::ReplayGain::kPeakUndefined);
-    parsePeak("-1", false, Mixxx::ReplayGain::kPeakUndefined);
-    parsePeak("-0.12345", false, Mixxx::ReplayGain::kPeakUndefined);
-    parsePeak("--1.0", false, Mixxx::ReplayGain::kPeakUndefined);
-    parsePeak("+-1.0", false, Mixxx::ReplayGain::kPeakUndefined);
-    parsePeak("-+1.0", false, Mixxx::ReplayGain::kPeakUndefined);
-    parsePeak("++1.0", false, Mixxx::ReplayGain::kPeakUndefined);
-    parsePeak("+abcde", false, Mixxx::ReplayGain::kPeakUndefined);
+TEST_F(ReplayGainTest, PeakFromStringInvalid) {
+    peakFromString("", false, Mixxx::ReplayGain::kPeakUndefined);
+    peakFromString("-1", false, Mixxx::ReplayGain::kPeakUndefined);
+    peakFromString("-0.12345", false, Mixxx::ReplayGain::kPeakUndefined);
+    peakFromString("--1.0", false, Mixxx::ReplayGain::kPeakUndefined);
+    peakFromString("+-1.0", false, Mixxx::ReplayGain::kPeakUndefined);
+    peakFromString("-+1.0", false, Mixxx::ReplayGain::kPeakUndefined);
+    peakFromString("++1.0", false, Mixxx::ReplayGain::kPeakUndefined);
+    peakFromString("+abcde", false, Mixxx::ReplayGain::kPeakUndefined);
 }
 
 TEST_F(ReplayGainTest, NormalizePeak) {

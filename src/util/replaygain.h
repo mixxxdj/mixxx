@@ -60,8 +60,10 @@ public:
         m_ratio = kRatioUndefined;
     }
 
-    static double parseGain2Ratio(QString dBGain, bool* pValid = 0);
-    static QString formatRatio2Gain(double ratio);
+    // Parsing and formatting of gain values according to the
+    // ReplayGain 1.0/2.0 specification.
+    static double ratioFromString(QString dBGain, bool* pValid = 0);
+    static QString ratioToString(double ratio);
 
     static double normalizeRatio(double ratio);
 
@@ -82,8 +84,10 @@ public:
         m_peak = CSAMPLE_PEAK;
     }
 
-    static CSAMPLE parsePeak(QString strPeak, bool* pValid = 0);
-    static QString formatPeak(CSAMPLE peak);
+    // Parsing and formatting of peak amplitude values according to
+    // the ReplayGain 1.0/2.0 specification.
+    static CSAMPLE peakFromString(QString strPeak, bool* pValid = 0);
+    static QString peakToString(CSAMPLE peak);
 
     static CSAMPLE normalizePeak(CSAMPLE peak);
 
