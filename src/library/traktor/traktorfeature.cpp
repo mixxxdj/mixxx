@@ -15,6 +15,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
+#include "util/sandbox.h"
 
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
@@ -569,7 +570,13 @@ QString TraktorFeature::getTraktorMusicDatabase() {
     //Let's try to detect the latest Traktor version and its collection.nml
     QString myDocuments = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
     QDir ni_directory(myDocuments +"/Native Instruments/");
-    ni_directory.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks) ;
+    ni_directory.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+
+    // We may not have access to this directory since it is in the user's
+    // Documents folder. Ask for access if we don't have it.
+    if (ni_directory.exists()) {
+        Sandbox::askForAccess(ni_directory.canonicalPath());
+    }
 
     //Iterate over the subfolders
     QFileInfoList list = ni_directory.entryInfoList();

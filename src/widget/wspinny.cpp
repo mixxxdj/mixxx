@@ -15,6 +15,7 @@
 #include "widget/wspinny.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "vinylcontrol/vinylcontrol.h"
+#include "util/dnd.h"
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
         : QGLWidget(parent, SharedGLContext::getWidget()),
@@ -498,19 +499,15 @@ void WSpinny::dragEnterEvent(QDragEnterEvent * event)
     }
 }
 
-void WSpinny::dropEvent(QDropEvent * event)
-{
+void WSpinny::dropEvent(QDropEvent * event) {
     if (event->mimeData()->hasUrls()) {
-        QList<QUrl> urls(event->mimeData()->urls());
-        QUrl url = urls.first();
-        QString name = url.toLocalFile();
-        //If the file is on a network share, try just converting the URL to a string...
-        if (name == "")
-            name = url.toString();
-
-        event->accept();
-        emit(trackDropped(name, m_group));
-    } else {
-        event->ignore();
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            return;
+        }
     }
+    event->ignore();
 }

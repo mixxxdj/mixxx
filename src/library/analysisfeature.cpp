@@ -12,6 +12,7 @@
 #include "mixxxkeyboard.h"
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
+#include "util/dnd.h"
 
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
@@ -141,23 +142,15 @@ void AnalysisFeature::cleanupAnalyser() {
 // Must be called from Main thread
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
-    QList<QFileInfo> files;
-    foreach (QUrl url, urls) {
-        // XXX: Possible WTF alert - Previously we thought we needed toString() here
-        // but what you actually want in any case when converting a QUrl to a file
-        // system path is QUrl::toLocalFile(). This is the second time we have
-        // flip-flopped on this, but I think toLocalFile() should work in any
-        // case. toString() absolutely does not work when you pass the result to a
-        files.append(url.toLocalFile());
-    }
 
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     QList<int> trackIds;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
             [this, &files, &trackIds] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        // Adds track, does not insert duplicates, handles unremoving logic.
         trackIds = pTrackCollectionPrivate->getTrackDAO().addTracks(files, true);
     }, __PRETTY_FUNCTION__);
-    // Adds track, does not insert duplicates, handles unremoving logic.
 
     analyzeTracks(trackIds);
     return trackIds.size() > 0;

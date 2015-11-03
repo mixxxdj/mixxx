@@ -18,6 +18,8 @@
 #ifndef SOUNDSOURCE_H
 #define SOUNDSOURCE_H
 
+#include <QString>
+
 #include <taglib/tfile.h>
 #include <taglib/apetag.h>
 #include <taglib/id3v2tag.h>
@@ -25,7 +27,6 @@
 #include <taglib/mp4tag.h>
 
 #include "defs.h"
-#include <QString>
 
 #define MIXXX_SOUNDSOURCE_API_VERSION 5
 /** @note SoundSource API Version history:

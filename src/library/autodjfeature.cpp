@@ -15,6 +15,7 @@
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
 #include "soundsourceproxy.h"
+#include "util/dnd.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 
@@ -114,15 +115,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
-    QList<QFileInfo> files;
-    foreach (QUrl url, urls) {
-        //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toLocalFile()
-        //     instead of toString()
-        QFileInfo file = url.toLocalFile();
-        if (SoundSourceProxy::isFilenameSupported(file.fileName())) {
-            files.append(file);
-        }
-    }
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
     bool result = false;
     const bool is_pSource = pSource;

@@ -21,6 +21,7 @@
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
 #include "soundsourceproxy.h"
+#include "util/dnd.h"
 
 CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection,
@@ -116,12 +117,7 @@ QIcon CrateFeature::getIcon() {
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     QString crateName = index.data().toString();
-    QList<QFileInfo> files;
-    foreach (QUrl url, urls) {
-        //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
-        //     QUrl::toLocalFile() vs. QUrl::toString() usage.
-        files.append(url.toLocalFile());
-    }
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
     bool result = false;
     const bool is_pSource = pSource;
@@ -593,7 +589,12 @@ void CrateFeature::slotImportPlaylist() {
     // Update the import/export crate directory
     QFileInfo fileName(playlist_file);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
-                ConfigValue(fileName.dir().absolutePath()));
+                   ConfigValue(fileName.dir().absolutePath()));
+
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
 
     Parser* playlist_parser = NULL;
 
@@ -659,6 +660,11 @@ void CrateFeature::slotExportPlaylist() {
     QFileInfo fileName(file_location);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
+
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
 
     // check config if relative paths are desired
     bool useRelativePath = static_cast<bool>(

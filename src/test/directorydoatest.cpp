@@ -143,10 +143,14 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
-    trackDAO.addTracksAdd(new TrackInfoObject(testdir + "/a", false), false);
-    trackDAO.addTracksAdd(new TrackInfoObject(testdir + "/b", false), false);
-    trackDAO.addTracksAdd(new TrackInfoObject(test2 + "/c", false), false);
-    trackDAO.addTracksAdd(new TrackInfoObject(test2 + "/d", false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject(
+            testdir + "/a", SecurityTokenPointer(), false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject(
+            testdir + "/b", SecurityTokenPointer(), false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject(
+            test2 + "/c", SecurityTokenPointer(), false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject(
+            test2 + "/d", SecurityTokenPointer(), false), false);
     trackDAO.addTracksFinish(false);
 
     QSet<int> ids = directoryDao.relocateDirectory(testdir, testnew);

@@ -27,6 +27,7 @@
 #include "library/queryutil.h"
 #include "trackinfoobject.h"
 #include "util/trace.h"
+#include "util/file.h"
 
 #define MAX_CHUNK_SIZE 50
 
@@ -210,12 +211,19 @@ void LibraryScanner::run() {
     QStringList dirs = m_directoryDao.getDirs();
     bool bScanFinishedCleanly = false;
     // Recursivly scan each directory in the directories table.
-    foreach (const QString& dir, dirs) {
-        bScanFinishedCleanly = recursiveScan(dir, verifiedDirectories);
+    foreach (const QString& dirPath, dirs) {
+        // Acquire a security bookmark for this directory if we are in a
+        // sandbox. For speed we avoid opening security bookmarks when recursive
+        // scanning so that relies on having an open bookmark for the containing
+        // directory.
+        MDir dir(dirPath);
+
+        bScanFinishedCleanly = recursiveScan(dirPath, verifiedDirectories,
+                                             dir.token());
         if (bScanFinishedCleanly) {
-            qDebug() << "Recursive scanning (" << dir << ") finished cleanly.";
+            qDebug() << "Recursive scanning (" << dirPath << ") finished cleanly.";
         } else {
-            qDebug() << "Recursive scanning (" << dir << ") interrupted.";
+            qDebug() << "Recursive scanning (" << dirPath << ") interrupted.";
         }
     }
 
@@ -353,6 +361,7 @@ void LibraryScanner::scan() {
 //    We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
 //    @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 //
+/*
 bool LibraryScanner::importDirectory(const QString& directory,
                                      volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
@@ -374,18 +383,19 @@ bool LibraryScanner::importDirectory(const QString& directory,
     emit(finishedLoading());
     return true;
 }
+*/
 
-void LibraryScanner::addTrackToChunk(const QString filePath) {
+void LibraryScanner::addTrackToChunk(const QString filePath, SecurityTokenPointer pToken) {
     //Todo: isn't that throwing away the current 'filePath' if the chunk is full?
     if (m_tracksListInCnunk.count() < MAX_CHUNK_SIZE) {
         m_tracksListInCnunk.append(filePath);
     } else {
         //No Lambda here, because only working on local DAOs?
-        addChunkToDatabase();
+        addChunkToDatabase(pToken);
     }
 }
 
-void LibraryScanner::addChunkToDatabase() {
+void LibraryScanner::addChunkToDatabase(SecurityTokenPointer pToken) {
     DBG() << "Adding chunk to DB: " << m_tracksListInCnunk;
     m_trackDao.addTracksPrepare();
     foreach (m_tmpTrackPath, m_tracksListInCnunk) {
@@ -404,7 +414,9 @@ void LibraryScanner::addChunkToDatabase() {
         if (!m_trackDao.trackExistsInDatabase(m_tmpTrackPath)) {
             //qDebug() << "Loading" << it.fileName();
             emit(progressLoading(m_tmpTrackPath));
-            TrackPointer pTrack = TrackPointer(new TrackInfoObject(m_tmpTrackPath), &QObject::deleteLater);
+            TrackPointer pTrack = TrackPointer(
+                    new TrackInfoObject(m_tmpTrackPath, pToken),
+                    &QObject::deleteLater);
             if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
@@ -425,7 +437,8 @@ void LibraryScanner::addChunkToDatabase() {
 // Recursively scan a music library. Doesn't import tracks for any directories that
 // have already been scanned and have not changed. Changes are tracked by performing
 // a hash of the directory's file list, and those hashes are stored in the database.
-bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirectories) {
+bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirectories,
+                                   SecurityTokenPointer pToken) {
     QDirIterator it(dir.path(), QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
     QFileInfo currentFileInfo;
@@ -453,7 +466,6 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
             // Skip the iTunes Album Art Folder since it is probably a waste of
             // time.
             if (!m_directoriesBlacklist.contains(currentFile)) {
-                qDebug() << " ####### Sending "<<currentFile<< "to dirsToScan";
                 dirsToScan.append(QDir(currentFile));
             }
         }
@@ -472,8 +484,9 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
         // Rescan that mofo! If importing fails then the scan was cancelled so                                          
         // we return immediately.                                                                                       
         foreach (const QString& file, filesToImport) {
-            addTrackToChunk(file);
+            addTrackToChunk(file, pToken);
         }
+
         // If we didn't know about this directory before...
         // save the hash after we imported everything in it
         if (!prevHashExists) {
@@ -500,7 +513,7 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
 
     // Process all of the sub-directories.
     foreach (const QDir& nextDir, dirsToScan) {
-        if (!recursiveScan(nextDir, verifiedDirectories)) {
+        if (!recursiveScan(nextDir, verifiedDirectories, pToken)) {
             return false;
         }
     }

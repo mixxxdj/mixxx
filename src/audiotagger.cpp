@@ -21,8 +21,10 @@
 #include <taglib/wavfile.h>
 #include <taglib/textidentificationframe.h>
 
-AudioTagger::AudioTagger(QString file)
-    : m_file(file) {
+AudioTagger::AudioTagger(const QString& file, SecurityTokenPointer pToken)
+        : m_file(file),
+          m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
+                  m_file, true) : pToken) {
 }
 
 AudioTagger::~AudioTagger() {
@@ -79,8 +81,11 @@ void AudioTagger::setTracknumber(QString tracknumber) {
 bool AudioTagger::save() {
     TagLib::File* file = NULL;
 
-    if (m_file.endsWith(".mp3", Qt::CaseInsensitive)) {
-        file = new TagLib::MPEG::File(m_file.toLocal8Bit().constData());
+    const QString& filePath = m_file.canonicalFilePath();
+    QByteArray fileBA = filePath.toLocal8Bit();
+
+    if (filePath.endsWith(".mp3", Qt::CaseInsensitive)) {
+        file = new TagLib::MPEG::File(fileBA.constData());
         // process special ID3 fields, APEv2 fiels, etc
 
         // If the mp3 has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
@@ -89,26 +94,26 @@ bool AudioTagger::save() {
         addAPETag(((TagLib::MPEG::File*) file)->APETag(false));
     }
 
-    if (m_file.endsWith(".m4a", Qt::CaseInsensitive)) {
-        file = new TagLib::MP4::File(m_file.toLocal8Bit().constData());
+    if (filePath.endsWith(".m4a", Qt::CaseInsensitive)) {
+        file = new TagLib::MP4::File(fileBA.constData());
         // process special ID3 fields, APEv2 fiels, etc
         processMP4Tag(((TagLib::MP4::File*) file)->tag());
 
     }
-    if (m_file.endsWith(".ogg", Qt::CaseInsensitive)) {
-        file = new TagLib::Ogg::Vorbis::File(m_file.toLocal8Bit().constData());
+    if (filePath.endsWith(".ogg", Qt::CaseInsensitive)) {
+        file = new TagLib::Ogg::Vorbis::File(fileBA.constData());
         // process special ID3 fields, APEv2 fiels, etc
         addXiphComment(((TagLib::Ogg::Vorbis::File*)file)->tag());
 
     }
-    if (m_file.endsWith(".wav", Qt::CaseInsensitive)) {
-        file = new TagLib::RIFF::WAV::File(m_file.toLocal8Bit().constData());
+    if (filePath.endsWith(".wav", Qt::CaseInsensitive)) {
+        file = new TagLib::RIFF::WAV::File(fileBA.constData());
         //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
         addID3v2Tag(((TagLib::RIFF::WAV::File*)file)->tag());
 
     }
-    if (m_file.endsWith(".flac", Qt::CaseInsensitive)) {
-        file = new TagLib::FLAC::File(m_file.toLocal8Bit().constData());
+    if (filePath.endsWith(".flac", Qt::CaseInsensitive)) {
+        file = new TagLib::FLAC::File(fileBA.constData());
 
         //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
         addID3v2Tag(((TagLib::FLAC::File*)file)->ID3v2Tag(true) );
@@ -116,8 +121,9 @@ bool AudioTagger::save() {
         addXiphComment(((TagLib::FLAC::File*) file)->xiphComment(true));
 
     }
-    if (m_file.endsWith(".aif", Qt::CaseInsensitive) || m_file.endsWith(".aiff", Qt::CaseInsensitive)) {
-        file =  new TagLib::RIFF::AIFF::File(m_file.toLocal8Bit().constData());
+    if (filePath.endsWith(".aif", Qt::CaseInsensitive) ||
+            filePath.endsWith(".aiff", Qt::CaseInsensitive)) {
+        file = new TagLib::RIFF::AIFF::File(fileBA.constData());
         //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
         addID3v2Tag(((TagLib::RIFF::AIFF::File*)file)->tag());
 
@@ -143,9 +149,9 @@ bool AudioTagger::save() {
         //write audio tags to file
         int success = file->save();
         if (success) {
-            qDebug() << "Successfully updated metadata of track " << m_file;
+            qDebug() << "Successfully updated metadata of track " << filePath;
         } else {
-             qDebug() << "Could not update metadata of track " << m_file;
+            qDebug() << "Could not update metadata of track " << filePath;
         }
         //delete file and return
         delete file;

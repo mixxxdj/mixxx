@@ -111,7 +111,6 @@ void WLibrarySidebar::timerEvent(QTimerEvent *event) {
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
 void WLibrarySidebar::dropEvent(QDropEvent * event) {
     if (event->mimeData()->hasUrls()) {
-        QList<QUrl> urls(event->mimeData()->urls());
         // Drag and drop within this widget
         if ((event->source() == this)
                 && (event->possibleActions() & Qt::MoveAction)) {
@@ -127,6 +126,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
                 QModelIndex destIndex = indexAt(event->pos());
                 // event->source() will return NULL if something is droped from
                 // a different application
+                QList<QUrl> urls(event->mimeData()->urls());
                 if (sidebarModel->dropAccept(destIndex, urls, event->source())) {
                     event->acceptProposedAction();
                 } else {

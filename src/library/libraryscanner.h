@@ -39,6 +39,7 @@
 #include "library/dao/analysisdao.h"
 #include "libraryscannerdlg.h"
 #include "trackcollection.h"
+#include "util/sandbox.h"
 
 class TrackInfoObject;
 
@@ -53,8 +54,8 @@ class LibraryScanner : public QThread {
     void scan(QWidget* parent);
 
     void scan();
-    void addTrackToChunk(const QString filePath);
-    void addChunkToDatabase();
+    void addTrackToChunk(const QString filePath, SecurityTokenPointer pToken);
+    void addChunkToDatabase(SecurityTokenPointer pToken);
 
     QMutex m_pauseMutex;
   public slots:
@@ -75,7 +76,8 @@ class LibraryScanner : public QThread {
     // directories that have already been scanned and have not changed. Changes
     // are tracked by performing a hash of the directory's file list, and those
     // hashes are stored in the database.
-    bool recursiveScan(const QDir& dir, QStringList& verifiedDirectories);
+    bool recursiveScan(const QDir& dirPath, QStringList& verifiedDirectories,
+                       SecurityTokenPointer pToken);
 
     bool importDirectory(const QString& directory, volatile bool* cancel);
 

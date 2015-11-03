@@ -25,6 +25,7 @@
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
+#include "util/sandbox.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
@@ -93,6 +94,21 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
     if (TraktorFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
+    }
+
+    // On startup we need to check if all of the user's library folders are
+    // accessible to us. If the user is using a database from <1.12.0 with
+    // sandboxing then we will need them to give us permission.
+    QStringList directories;
+    m_pTrackCollection->callSync( [this, &directories] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        directories = pTrackCollectionPrivate->getDirectoryDAO().getDirs();
+    }, __PRETTY_FUNCTION__);
+
+    qDebug() << "Checking for access to user's library directories:";
+    foreach (QString directoryPath, directories) {
+        QFileInfo directory(directoryPath);
+        bool hasAccess = Sandbox::askForAccess(directory.canonicalFilePath());
+        qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
     }
 }
 
@@ -251,6 +267,15 @@ QList<TrackPointer> Library::getTracksToAutoLoad() {
 }
 
 void Library::slotRequestAddDir(QString dir) {
+    // We only call this method if the user has picked a new directory via a
+    // file dialog. This means the system sandboxer (if we are sandboxed) has
+    // granted us permission to this folder. Create a security bookmark while we
+    // have permission so that we can access the folder on future runs. We need
+    // to canonicalize the path so we first wrap the directory string with a
+    // QDir.
+    QDir directory(dir);
+    Sandbox::createSecurityToken(directory);
+
     m_pTrackCollection->callSync( [this, &dir] (TrackCollectionPrivate* pTrackCollectionPrivate){
         if (!pTrackCollectionPrivate->getDirectoryDAO().addDirectory(dir)) {
             MainExecuter::callSync( [this] () {
@@ -313,6 +338,15 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
 }
 
 void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
+    // We only call this method if the user has picked a relocated directory via
+    // a file dialog. This means the system sandboxer (if we are sandboxed) has
+    // granted us permission to this folder. Create a security bookmark while we
+    // have permission so that we can access the folder on future runs. We need
+    // to canonicalize the path so we first wrap the directory string with a
+    // QDir.
+    QDir directory(newDir);
+    Sandbox::createSecurityToken(directory);
+
     QSet<int> movedIds;
     m_pTrackCollection->callSync( [this, &oldDir,&newDir,&movedIds] (TrackCollectionPrivate* pTrackCollectionPrivate){
         movedIds = pTrackCollectionPrivate->getDirectoryDAO().relocateDirectory(oldDir, newDir);

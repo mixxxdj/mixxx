@@ -4,6 +4,7 @@
 
 #include "controlobject.h"
 #include "widget/wtracktext.h"
+#include "util/dnd.h"
 
 WTrackText::WTrackText(const char *group, ConfigObject<ConfigValue> *pConfig, QWidget* pParent)
         : WLabel(pParent),
@@ -41,16 +42,7 @@ void WTrackText::updateLabel(TrackInfoObject*) {
 
 void WTrackText::mouseMoveEvent(QMouseEvent *event) {
     if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
-        QList<QUrl> locationUrls;
-        locationUrls.append(QUrl::fromLocalFile(m_pCurrentTrack->getLocation()));
-
-        QMimeData* mimeData = new QMimeData();
-        mimeData->setUrls(locationUrls);
-
-        QDrag* drag = new QDrag(this);
-        drag->setMimeData(mimeData);
-        drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
-        drag->exec(Qt::CopyAction);
+        DragAndDropHelper::dragTrack(m_pCurrentTrack, this);
     }
 }
 
@@ -68,17 +60,14 @@ void WTrackText::dragEnterEvent(QDragEnterEvent *event) {
 }
 
 void WTrackText::dropEvent(QDropEvent *event) {
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        QUrl url = event->mimeData()->urls().first();
-        QString fileName = url.toLocalFile();
-        // If the file is on a network share, try just converting the URL to a string
-        if (fileName == "") {
-            fileName = url.toString();
+    if (event->mimeData()->hasUrls()) {
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_pGroup));
+            return;
         }
-        event->accept();
-        emit(trackDropped(fileName, m_pGroup));
-    } else {
-        event->ignore();
     }
+    event->ignore();
 }
