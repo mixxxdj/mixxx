@@ -627,6 +627,7 @@ class MixxxCore(Feature):
 
                    "main.cpp",
                    "mixxx.cpp",
+                   "mixxxapplication.cpp",
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
 

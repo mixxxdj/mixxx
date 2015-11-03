@@ -22,6 +22,7 @@
 #include <QPixmap>
 #include <QtDebug>
 #include <QMouseEvent>
+#include <QTouchEvent>
 #include <QPaintEvent>
 #include <QApplication>
 
@@ -176,6 +177,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
 void WPushButton::setStates(int iStates) {
     m_bPressed = false;
     m_iNoStates = iStates;
+    m_activeTouchButton = Qt::NoButton;
 
     m_pressedPixmaps.resize(iStates);
     m_unpressedPixmaps.resize(iStates);
@@ -311,8 +313,13 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
 
 void WPushButton::focusOutEvent(QFocusEvent* e) {
     Q_UNUSED(e);
-    m_bPressed = false;
-    update();
+    if (e->reason() != Qt::MouseFocusReason) {
+        // Since we support multi touch there is no reason to reset
+        // the pressed flag if the Primary touch point is moved to an
+        // other widget
+        m_bPressed = false;
+        update();
+    }
 }
 
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {

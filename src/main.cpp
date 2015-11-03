@@ -29,6 +29,7 @@
 #include <math.h>
 
 #include "mixxx.h"
+#include "mixxxapplication.h"
 #include "soundsourceproxy.h"
 #include "errordialoghandler.h"
 #include "util/cmdlineargs.h"
@@ -244,7 +245,7 @@ int main(int argc, char * argv[])
     //  so if you change it here, change it also in:
     //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
-    QApplication a(argc, argv);
+    MixxxApplication a(argc, argv);
 
     // Support utf-8 for all translation strings. Not supported in Qt 5.
     // TODO(rryan): Is this needed when we switch to qt5? Some sources claim it

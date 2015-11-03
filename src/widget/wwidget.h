@@ -25,6 +25,8 @@
 #include "configobject.h"
 #include "widget/wbasewidget.h"
 
+class ControlObjectSlave;
+
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
   * widgets can implement the signal and slot for manipulating the widgets
@@ -37,7 +39,7 @@
 
 class WWidget : public QWidget, public WBaseWidget {
    Q_OBJECT
-public:
+  public:
     WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
     virtual ~WWidget();
 
@@ -46,7 +48,13 @@ public:
     virtual void onConnectedControlValueChanged(double value);
 
   protected:
-    bool event(QEvent* pEvent);
+    bool touchIsRightButton();
+    bool event(QEvent* e);
+
+    enum Qt::MouseButton m_activeTouchButton;
+
+  private:
+    ControlObjectSlave* m_pTouchShift;
 };
 
 #endif

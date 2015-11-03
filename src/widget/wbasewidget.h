@@ -19,6 +19,16 @@ class WBaseWidget {
         return m_pWidget;
     }
 
+    void appendBaseTooltip(const QString& tooltip) {
+        m_baseTooltip.append(tooltip);
+        m_pWidget->setToolTip(m_baseTooltip);
+    }
+
+    void prependBaseTooltip(const QString& tooltip) {
+        m_baseTooltip.prepend(tooltip);
+        m_pWidget->setToolTip(m_baseTooltip);
+    }
+
     void setBaseTooltip(const QString& tooltip) {
         m_baseTooltip = tooltip;
         m_pWidget->setToolTip(tooltip);
