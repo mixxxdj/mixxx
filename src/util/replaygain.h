@@ -5,7 +5,23 @@
 
 namespace Mixxx {
 
-// DTO for replay gain. Must not be subclassed (no virtual destructor)!
+// DTO for storing replay gain information. This class cannot be subclassed,
+// because the destructor is not virtual!
+//
+// Parsing & Formatting
+// --------------------
+// This class includes functions for formatting and parsing replay gain
+// metadata according to the ReplayGain 1.0/2.0 specification:
+// http://wiki.hydrogenaud.io/index.php?title=ReplayGain_1.0_specification
+// http://wiki.hydrogenaud.io/index.php?title=ReplayGain_2.0_specification
+//
+// Normalization
+// -------------
+// Formatting a floating point value as a string and parsing it later
+// might cause rounding errors. In order to avoid "jittering" caused
+// by subsequently formatting and parsing a floating point value the
+// ratio and peak values need to be normalized before writing them
+// as a string into file tags.
 class ReplayGain {
 public:
     static const double kRatioUndefined;
@@ -40,16 +56,9 @@ public:
         m_ratio = kRatioUndefined;
     }
 
-    // Parse and format replay gain metadata according to the ReplayGain
-    // 1.0/2.0 specification.
-    // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_1.0_specification
-    // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_2.0_specification
     static double parseGain2Ratio(QString dBGain, bool* pValid = 0);
     static QString formatRatio2Gain(double ratio);
 
-    // After normalization formatting and parsing the ratio repeatedly will
-    // always result in the same value. This is required to reliably store
-    // the dB gain as a string in track metadata.
     static double normalizeRatio(double ratio);
 
     // The peak amplitude of the track or signal.
@@ -69,16 +78,9 @@ public:
         m_peak = CSAMPLE_PEAK;
     }
 
-    // Parse and format the peak value metadata according to the ReplayGain
-    // 1.0/2.0 specification.
-    // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_1.0_specification
-    // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_2.0_specification
     static CSAMPLE parsePeak(QString strPeak, bool* pValid = 0);
     static QString formatPeak(CSAMPLE peak);
 
-    // After normalization formatting and parsing the peak repeatedly will
-    // always result in the same value. This is required to reliably store
-    // the peak value as a string in track metadata.
     static CSAMPLE normalizePeak(CSAMPLE peak);
 
 private:
