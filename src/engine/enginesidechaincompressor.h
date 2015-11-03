@@ -41,6 +41,11 @@ class EngineSideChainCompressor {
         calculateRates();
     }
 
+
+    // Before calling processKey on multiple channels, first call clearKeys to
+    // clear state from the last round of compressor gain calculation.
+    void clearKeys();
+
     // Every loop, before calling process, first call processKey to feed
     // the compressor the input key signal.  It is safe to call this function
     // multiple times for multiple keys, however they will not be summed together

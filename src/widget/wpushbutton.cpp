@@ -30,6 +30,7 @@
 #include "controlpushbutton.h"
 #include "control/controlbehavior.h"
 #include "util/debug.h"
+#include "skin/legacyskinparser.h"
 
 const int PB_SHORTKLICKTIME = 200;
 
@@ -60,7 +61,10 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")));
+        QString mode_str = context.selectAttributeString(
+                context.selectElement(node, "BackPath"), "mode", "TILE");
+        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),
+                            Paintable::DrawModeFromString(mode_str));
     }
 
     // Load pixmaps for associated states
@@ -92,20 +96,11 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     while (!con.isNull()) {
         // Get ConfigKey
         QString key = context.selectString(con, "ConfigKey");
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
 
-        ConfigKey configKey;
-        configKey.group = key.left(key.indexOf(","));
-        configKey.item = key.mid(key.indexOf(",")+1);
-
-        bool isLeftButton = false;
-        bool isRightButton = false;
-        if (context.hasNode(con, "ButtonState")) {
-            if (context.selectString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
-                isLeftButton = true;
-            } else if (context.selectString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
-                isRightButton = true;
-            }
-        }
+        Qt::MouseButton button = LegacySkinParser::parseButtonState(con, context);
+        bool isLeftButton = button == Qt::LeftButton;
+        bool isRightButton = button == Qt::RightButton;
 
         ControlPushButton* p = dynamic_cast<ControlPushButton*>(
                 ControlObject::getControl(configKey));
@@ -221,7 +216,8 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) 
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
+                                                          Paintable::STRETCH);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << "WPushButton: Error loading pixmap:" << filename;
@@ -232,9 +228,10 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) 
     pixmaps.replace(iState, pPixmap);
 }
 
-void WPushButton::setPixmapBackground(const QString &filename) {
+void WPushButton::setPixmapBackground(const QString &filename,
+                                      Paintable::DrawMode mode) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << "WPushButton: Error loading background pixmap:" << filename;
     }

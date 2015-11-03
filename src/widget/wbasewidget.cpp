@@ -24,6 +24,19 @@ WBaseWidget::~WBaseWidget() {
     }
 }
 
+ControlWidgetConnection::EmitOption WBaseWidget::getDefaultEmitOption(
+        Qt::MouseButton state) {
+    Q_UNUSED(state);
+    return ControlWidgetConnection::EMIT_ON_PRESS;
+}
+
+ControlWidgetConnection::DirectionOption WBaseWidget::getDefaultDirectionOption(
+        Qt::MouseButton state) {
+    Q_UNUSED(state);
+    return ControlWidgetConnection::DIR_FROM_AND_TO_WIDGET;
+}
+
+
 void WBaseWidget::setDisplayConnection(ControlWidgetConnection* pConnection) {
     //qDebug() << "WBaseWidget::setDisplayConnection()" << pConnection->toDebugString();
     m_pDisplayConnection = pConnection;
@@ -82,12 +95,24 @@ double WBaseWidget::getControlParameterDisplay() const {
 }
 
 void WBaseWidget::resetControlParameter() {
+    foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
+        pControlConnection->resetControl();
+    }
+    foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
+        pControlConnection->resetControl();
+    }
     foreach (ControlWidgetConnection* pControlConnection, m_connections) {
         pControlConnection->resetControl();
     }
 }
 
 void WBaseWidget::setControlParameter(double v) {
+    foreach (ControlWidgetConnection* pControlConnection, m_leftConnections) {
+        pControlConnection->setControlParameter(v);
+    }
+    foreach (ControlWidgetConnection* pControlConnection, m_rightConnections) {
+        pControlConnection->setControlParameter(v);
+    }
     foreach (ControlWidgetConnection* pControlConnection, m_connections) {
         pControlConnection->setControlParameter(v);
     }

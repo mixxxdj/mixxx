@@ -72,7 +72,8 @@ void WStatusLight::setPixmap(int iState, const QString& filename) {
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
+                                                          Paintable::STRETCH);
 
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
         m_pixmaps[iState] = pPixmap;

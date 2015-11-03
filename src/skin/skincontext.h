@@ -55,6 +55,9 @@ class SkinContext {
     bool selectAttributeBool(const QDomElement& element,
                              const QString& attributeName,
                              bool defaultValue) const;
+    QString selectAttributeString(const QDomElement& element,
+                                  const QString& attributeName,
+                                  QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
 
   private:
