@@ -96,25 +96,16 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
 }
 
 EngineShoutcast::~EngineShoutcast() {
-    int l_iTime = 0;
     m_pShoutcastEnabled->set(0);
     m_readSema.release();
 
-    // Because Thread QThread msec doesn't blocking
-    // Wait 20 * 100 msec which is ~2 seconds for disconnection. If anything ain't happening
-    // it's not going to happen!
-    while (l_iTime < 20) {
-        // If Thread has exited then just break out
-        if (!isRunning()) {
-            break;
-        }
-        l_iTime ++;
-        QThread::msleep(100);
-    }
+    // Wait maximum ~4 seconds. User will get annoyed but
+    // if there is some network problems we let them settle
+    wait(4000);
 
     // Signal user if thread doesn't die
     if (isRunning()) {
-        qDebug() << "EngineShoutcast::~EngineShoutcast(): Thread didn't die. Ignored but add this to bug report if problems rise!";
+        qDebug() << "EngineShoutcast:~EngineShoutcast(): Thread didn't die. Ignored but add this to bug report if problems rise!";
     }
 
     delete m_pStatusCO;
