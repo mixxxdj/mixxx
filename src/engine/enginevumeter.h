@@ -37,6 +37,8 @@ class EngineVuMeter : public EngineObject {
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
+    void reset();
+
   private:
     ControlPotmeter* m_ctrlVuMeter;
     ControlPotmeter* m_ctrlVuMeterL;

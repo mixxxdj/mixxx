@@ -1,5 +1,7 @@
 #include "engine/sync/basesyncablelistener.h"
 
+#include <QMetaType>
+
 #include "engine/sync/internalclock.h"
 
 static const char* kInternalClockGroup = "[InternalClock]";

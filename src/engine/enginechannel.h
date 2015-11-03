@@ -47,7 +47,7 @@ class EngineChannel : public EngineObject {
     virtual ChannelOrientation getOrientation() const;
     virtual const QString& getGroup() const;
 
-    virtual bool isActive() const = 0;
+    virtual bool isActive() = 0;
     void setPFL(bool enabled);
     virtual bool isPFL() const;
     void setMaster(bool enabled);
