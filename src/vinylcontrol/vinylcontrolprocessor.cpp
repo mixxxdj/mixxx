@@ -153,7 +153,7 @@ void VinylControlProcessor::reloadConfig() {
     }
 }
 
-void VinylControlProcessor::onInputConnected(AudioInput input) {
+void VinylControlProcessor::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
@@ -177,7 +177,7 @@ void VinylControlProcessor::onInputConnected(AudioInput input) {
     delete pCurrent;
 }
 
-void VinylControlProcessor::onInputDisconnected(AudioInput input) {
+void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;

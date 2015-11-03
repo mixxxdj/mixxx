@@ -39,8 +39,8 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     }
 
   public slots:
-    virtual void onInputConnected(AudioInput input);
-    virtual void onInputDisconnected(AudioInput input);
+    virtual void onInputConfigured(AudioInput input);
+    virtual void onInputUnconfigured(AudioInput input);
 
     // Called by the engine callback. Must not touch any state in
     // VinylControlProcessor except for m_samplePipes.

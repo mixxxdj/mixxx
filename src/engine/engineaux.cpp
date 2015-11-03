@@ -47,7 +47,7 @@ bool EngineAux::isActive() {
     return m_wasActive;
 }
 
-void EngineAux::onInputConnected(AudioInput input) {
+void EngineAux::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioPath::AUXILLIARY) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-passthrough type!";
@@ -57,7 +57,7 @@ void EngineAux::onInputConnected(AudioInput input) {
     m_pConfigured->set(1.0);
 }
 
-void EngineAux::onInputDisconnected(AudioInput input) {
+void EngineAux::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioPath::AUXILLIARY) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-passthrough type!";

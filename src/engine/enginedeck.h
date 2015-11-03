@@ -59,11 +59,11 @@ class EngineDeck : public EngineChannel, public AudioDestination {
 
     // Called by SoundManager whenever the passthrough input is connected to a
     // soundcard input.
-    virtual void onInputConnected(AudioInput input);
+    virtual void onInputConfigured(AudioInput input);
 
     // Called by SoundManager whenever the passthrough input is disconnected
     // from a soundcard input.
-    virtual void onInputDisconnected(AudioInput input);
+    virtual void onInputUnconfigured(AudioInput input);
 
     // Return whether or not passthrough is active
     bool isPassthroughActive() const;

@@ -31,11 +31,11 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
 
     // Called by SoundManager whenever the microphone input is connected to a
     // soundcard input.
-    virtual void onInputConnected(AudioInput input);
+    virtual void onInputConfigured(AudioInput input);
 
     // Called by SoundManager whenever the microphone input is disconnected from
     // a soundcard input.
-    virtual void onInputDisconnected(AudioInput input);
+    virtual void onInputUnconfigured(AudioInput input);
 
     bool isSolo();
     double getSoloDamping();

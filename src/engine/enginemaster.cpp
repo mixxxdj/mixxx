@@ -29,6 +29,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
+#include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
 #include "engine/enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
@@ -114,6 +115,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Headphone Clipping
     m_pHeadClipping = new EngineClipping("");
 
+    m_pTalkoverDucking = new EngineTalkoverDucking(_config, group);
+
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -147,6 +150,7 @@ EngineMaster::~EngineMaster() {
     delete m_pHeadMix;
     delete m_pMasterVolume;
     delete m_pHeadVolume;
+    delete m_pTalkoverDucking;
     delete m_pClipping;
     delete m_pVumeter;
     delete m_pHeadClipping;
@@ -267,6 +271,11 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             needsProcessing = true;
         }
 
+        if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                pChannel->isTalkover()) {
+            m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
+        }
+
         // Process the buffer if necessary
         if (needsProcessing) {
             pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
@@ -327,7 +336,11 @@ void EngineMaster::process(const int iBufferSize) {
 
     // And mix the 3 buses into the master.
     CSAMPLE master_gain = m_pMasterVolume->get();
-    m_masterGain.setGains(master_gain, c1_gain, 1.0, c2_gain);
+
+    // Channels with the talkover flag should be mixed with the master signal at
+    // full master volume.  All other channels should be adjusted by ducking gain.
+    m_masterGain.setGains(master_gain * m_pTalkoverDucking->getGain(iBufferSize / 2),
+                          c1_gain, 1.0, c2_gain, master_gain);
 
     // Make the mix for each output bus. m_masterGain takes care of applying the
     // master volume, the channel volume, and the orientation gain.
