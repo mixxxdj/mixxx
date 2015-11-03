@@ -255,7 +255,9 @@ void Library::slotRequestAddDir(QString dir) {
         if (!pTrackCollectionPrivate->getDirectoryDAO().addDirectory(dir)) {
             MainExecuter::callSync( [this] () {
                 QMessageBox::information(0, tr("Add Directory to Library"),
-                    tr("This directory is already in your library."));
+                        tr("Could not add the directory to your library. Either this "
+                            "directory is already in your library or you are currently "
+                            "rescanning your library."));
             });
         }
     }, __PRETTY_FUNCTION__);
