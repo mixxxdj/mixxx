@@ -78,7 +78,7 @@ Loading all work like in the original VMS4 script.
       <control>
 	<!-- on -->
 	<group>[Channel1]</group>
-	<key>rate_temp_down</key>
+	<key>rate_temp_up</key>
 	<status>0x90</status>
 	<midino>0x0F</midino>
 	<options>
@@ -88,7 +88,7 @@ Loading all work like in the original VMS4 script.
       <control>
 	<!-- off -->
 	<group>[Channel1]</group>
-	<key>rate_temp_down</key>
+	<key>rate_temp_up</key>
 	<status>0x80</status>
 	<midino>0x0F</midino>
 	<options>
@@ -98,7 +98,7 @@ Loading all work like in the original VMS4 script.
       <control>
 	<!-- on -->
 	<group>[Channel1]</group>
-	<key>rate_temp_up</key>
+	<key>rate_temp_down</key>
 	<status>0x90</status>
 	<midino>0x10</midino>
 	<options>
@@ -108,7 +108,7 @@ Loading all work like in the original VMS4 script.
       <control>
 	<!-- off -->
 	<group>[Channel1]</group>
-	<key>rate_temp_up</key>
+	<key>rate_temp_down</key>
 	<status>0x80</status>
 	<midino>0x10</midino>
 	<options>
@@ -665,7 +665,7 @@ Loading all work like in the original VMS4 script.
       <control>
 	<!-- on -->
 	<group>[Channel2]</group>
-	<key>rate_temp_down</key>
+	<key>rate_temp_up</key>
 	<status>0x90</status>
 	<midino>0x31</midino>
 	<options>
@@ -675,7 +675,7 @@ Loading all work like in the original VMS4 script.
       <control>
 	<!-- off -->
 	<group>[Channel2]</group>
-	<key>rate_temp_down</key>
+	<key>rate_temp_up</key>
 	<status>0x80</status>
 	<midino>0x31</midino>
 	<options>
@@ -685,7 +685,7 @@ Loading all work like in the original VMS4 script.
       <control>
 	<!-- on -->
 	<group>[Channel2]</group>
-	<key>rate_temp_up</key>
+	<key>rate_temp_down</key>
 	<status>0x90</status>
 	<midino>0x32</midino>
 	<options>
@@ -695,7 +695,7 @@ Loading all work like in the original VMS4 script.
       <control>
 	<!-- off -->
 	<group>[Channel2]</group>
-	<key>rate_temp_up</key>
+	<key>rate_temp_down</key>
 	<status>0x80</status>
 	<midino>0x32</midino>
 	<options>
