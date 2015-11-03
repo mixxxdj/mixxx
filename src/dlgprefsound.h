@@ -26,7 +26,7 @@ class PlayerManager;
 class ControlObject;
 class SoundDevice;
 class DlgPrefSoundItem;
-class ControlObjectThread;
+class ControlObjectSlave;
 
 /*
  * TODO(bkgood) (n-decks) establish a signal/slot connection with a signal
@@ -59,6 +59,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void forceApply(); // called by DlgPrefVinyl to make slotApply call setupDevices
     void bufferUnderflow(double count);
     void masterLatencyChanged(double latency);
+    void headDelayChanged(double value);
+    void masterDelayChanged(double value);
 
   private slots:
     void addPath(AudioOutput output);
@@ -83,8 +85,10 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
     ConfigObject<ConfigValue> *m_pConfig;
-    ControlObjectThread* m_pMasterUnderflowCount;
-    ControlObjectThread* m_pMasterLatency;
+    ControlObjectSlave* m_pMasterUnderflowCount;
+    ControlObjectSlave* m_pMasterLatency;
+    ControlObjectSlave* m_pHeadDelay;
+    ControlObjectSlave* m_pMasterDelay;
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;

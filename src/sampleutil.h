@@ -36,13 +36,16 @@ class SampleUtil {
 
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
-    static CSAMPLE* alloc(int size);
+    static CSAMPLE* alloc(unsigned int size);
 
     // Frees a 16-byte aligned buffer allocated by SampleUtil::alloc()
     static void free(CSAMPLE* pBuffer);
 
     // Multiply every sample in pBuffer by gain
-    static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain, int iNumSamples);
+    static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain, unsigned int iNumSamples);
+
+    // Multiply every sample in pBuffer by gain
+    static void clear(CSAMPLE* pBuffer, unsigned int iNumSamples);
 
     // Apply a different gain to every other sample.
     static void applyAlternatingGain(CSAMPLE* pBuffer,

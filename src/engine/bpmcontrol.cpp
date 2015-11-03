@@ -117,6 +117,8 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     if (getSyncMode() == SYNC_NONE) {
         slotAdjustRateSlider();
     }
+    m_dUserOffset = 0.0;
+    m_dSyncAdjustment = 1.0;
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {
@@ -375,7 +377,7 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
-    /*double sample_offset = beat_length * shortest_distance;
+    /*double sample_offset = dBeatLength * shortest_distance;
     qDebug() << "master beat distance:" << master_percentage;
     qDebug() << "my     beat distance:" << my_percentage;
     qDebug() << m_sGroup << sample_offset << m_dUserOffset;*/
@@ -659,6 +661,8 @@ void BpmControl::trackUnloaded(TrackPointer pTrack) {
 void BpmControl::slotUpdatedTrackBeats()
 {
     if (m_pTrack) {
+        m_dUserOffset = 0.0;
+        m_dSyncAdjustment = 1.0;
         m_pBeats = m_pTrack->getBeats();
     }
 }

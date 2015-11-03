@@ -67,7 +67,7 @@ CachingReader::CachingReader(const char* group,
             this, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             Qt::DirectConnection);
 
-    m_pWorker->start();
+    m_pWorker->start(QThread::HighPriority);
 }
 
 

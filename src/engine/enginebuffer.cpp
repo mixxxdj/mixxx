@@ -107,12 +107,12 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     // SHRT_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
     // normalize engine samples to the range [-1.0, 1.0] we divide by SHRT_MAX
     // to preserve the previous behavior.
-    for (int i = 0; i < MAX_BUFFER_LEN; ++i) {
+    for (unsigned int i = 0; i < MAX_BUFFER_LEN; ++i) {
         m_pDitherBuffer[i] = (static_cast<CSAMPLE>(rand() % RAND_MAX) / RAND_MAX - 0.5) / SHRT_MAX;
     }
 
     // zero out crossfade buffer
-    SampleUtil::applyGain(m_pCrossFadeBuffer, 0.0, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pCrossFadeBuffer, MAX_BUFFER_LEN);
 
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
@@ -928,7 +928,7 @@ void EngineBuffer::process(const CSAMPLE*, CSAMPLE* pOutput, const int iBufferSi
             }
         }
     } else if (m_fRampValue == 0.0) {
-        SampleUtil::applyGain(pOutput, 0.0, iBufferSize);
+        SampleUtil::clear(pOutput, iBufferSize);
     }
 
     if ((!bCurBufferPaused && m_iRampState == ENGINE_RAMP_NONE) ||

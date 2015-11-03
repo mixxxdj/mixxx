@@ -53,7 +53,10 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     virtual bool isActive();
 
     // This is called by SoundManager whenever there are new samples from the
-    // deck to be processed.
+    // configured input to be processed. This is run in the callback thread of
+    // the soundcard this AudioDestination was registered for! Beware, in the
+    // case of multiple soundcards, this method is not re-entrant but it may be
+    // concurrent with EngineMaster processing.
     virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                unsigned int nFrames);
 

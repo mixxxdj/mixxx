@@ -51,7 +51,6 @@ bool VinylControl::isEnabled() {
 }
 
 void VinylControl::toggleVinylControl(bool enable) {
-    m_bIsEnabled = enable;
     if (m_pConfig) {
         m_pConfig->set(ConfigKey(m_group,"vinylcontrol_enabled"), ConfigValue((int)enable));
     }

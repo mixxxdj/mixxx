@@ -41,14 +41,18 @@ class SoundDevice {
     SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm);
     virtual ~SoundDevice();
 
-    QString getInternalName() const;
+    inline QString getInternalName() const {
+        return m_strInternalName;
+    }
     QString getDisplayName() const;
     QString getHostAPI() const;
     void setHostAPI(QString api);
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual int open() = 0;
+    virtual int open(bool registerCallback) = 0;
     virtual int close() = 0;
+    virtual void readProcess() = 0;
+    virtual void writeProcess() = 0;
     virtual QString getError() const = 0;
     virtual unsigned int getDefaultSampleRate() const = 0;
     int getNumOutputChannels() const;
@@ -67,10 +71,16 @@ class SoundDevice {
     bool operator==(const SoundDevice &other) const;
     bool operator==(const QString &other) const;
 
+    void onOutputBuffersReady(const unsigned long iFramesPerBuffer);
+
   protected:
+    void composeOutputBuffer(CSAMPLE* outputBuffer,
+                             const unsigned long iFramesPerBuffer,
+                             const unsigned int iFrameSize);
+
     ConfigObject<ConfigValue> *m_pConfig;
     // Pointer to the SoundManager object which we'll request audio from.
-    SoundManager *m_pSoundManager;
+    SoundManager* m_pSoundManager;
     // The name of the soundcard, used internally (may include the device ID)
     QString m_strInternalName;
     // The name of the soundcard, as displayed to the user
@@ -86,6 +96,7 @@ class SoundDevice {
     unsigned int m_framesPerBuffer;
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
+    CSAMPLE* m_pRenderBuffer;
 };
 
 #endif

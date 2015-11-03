@@ -15,7 +15,7 @@ ReadAheadManager::ReadAheadManager(CachingReader* pReader) :
     m_pReader(pReader),
     m_pCrossFadeBuffer(new CSAMPLE[MAX_BUFFER_LEN]) {
     // zero out crossfade buffer
-    SampleUtil::applyGain(m_pCrossFadeBuffer, 0.0, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pCrossFadeBuffer, MAX_BUFFER_LEN);
 }
 
 ReadAheadManager::~ReadAheadManager() {

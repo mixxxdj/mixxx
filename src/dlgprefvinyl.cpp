@@ -218,7 +218,7 @@ void DlgPrefVinyl::slotUpdate()
     VinylGain->setValue( config->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        m_signalWidgets[i]->setVinylActive(m_pVCManager->vinylInputEnabled(i));
+        m_signalWidgets[i]->setVinylActive(m_pVCManager->vinylInputConnected(i));
     }
 }
 
