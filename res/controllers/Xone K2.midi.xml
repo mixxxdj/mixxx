@@ -31,6 +31,24 @@
                 </options>
             </control>
             <control>
+                <group>[Channel3]</group>
+                <key>XoneK2.encoderJog3</key>
+                <status>0xBF</status>
+                <midino>0x2</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>XoneK2.encoderJog4</key>
+                <status>0xBF</status>
+                <midino>0x3</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>filterHigh</key>
                 <status>0xBF</status>
@@ -103,63 +121,171 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>beatsync</key>
-                <status>0x9F</status>
-                <midino>0x34</midino>
+                <group>[Channel3]</group>
+                <key>filterHigh</key>
+                <status>0xBF</status>
+                <midino>0x6</midino>
                 <options>
-                    <button/>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>volume</key>
+                <status>0xBF</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>filterLow</key>
+                <status>0xBF</status>
+                <midino>0xe</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>filterMid</key>
+                <status>0xBF</status>
+                <midino>0xa</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>filterHigh</key>
+                <status>0xBF</status>
+                <midino>0x7</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>volume</key>
+                <status>0xBF</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>filterLow</key>
+                <status>0xBF</status>
+                <midino>0xf</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>filterMid</key>
+                <status>0xBF</status>
+                <midino>0xb</midino>
+                <options>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatsync</key>
+                <key>XoneK2.encoderButton1</key>
+                <status>0x9F</status>
+                <midino>0x34</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>XoneK2.encoderButton1</key>
                 <status>0x8F</status>
                 <midino>0x34</midino>
                 <options>
-                    <button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatsync</key>
+                <key>XoneK2.encoderButton2</key>
                 <status>0x9F</status>
                 <midino>0x35</midino>
                 <options>
-                    <button/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatsync</key>
+                <key>XoneK2.encoderButton2</key>
                 <status>0x8F</status>
                 <midino>0x35</midino>
                 <options>
-                    <button/>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>XoneK2.encoderButton3</key>
+                <status>0x9F</status>
+                <midino>0x36</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>XoneK2.encoderButton3</key>
+                <status>0x8F</status>
+                <midino>0x36</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>XoneK2.encoderButton4</key>
+                <status>0x9F</status>
+                <midino>0x37</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>XoneK2.encoderButton4</key>
+                <status>0x8F</status>
+                <midino>0x37</midino>
+                <options>
+                    <Script-Binding/>
                 </options>
             </control>
 <!-- Upper Buttons -->
             <control>
                 <group>[Channel1]</group>
-                <key>filterHighKill</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x30</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterHighKill</key>
+                <key>pfl</key>
                 <status>0x8F</status>
                 <midino>0x30</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterMidKill</key>
+                <key>quantize</key>
                 <status>0x9F</status>
                 <midino>0x2c</midino>
                 <options>
@@ -168,7 +294,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>filterMidKill</key>
+                <key>quantize</key>
                 <status>0x8F</status>
                 <midino>0x2c</midino>
                 <options>
@@ -195,25 +321,25 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterHighKill</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x31</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterHighKill</key>
+                <key>pfl</key>
                 <status>0x8F</status>
                 <midino>0x31</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterMidKill</key>
+                <key>quantize</key>
                 <status>0x9F</status>
                 <midino>0x2d</midino>
                 <options>
@@ -222,7 +348,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>filterMidKill</key>
+                <key>quantize</key>
                 <status>0x8F</status>
                 <midino>0x2d</midino>
                 <options>
@@ -243,6 +369,114 @@
                 <key>filterLowKill</key>
                 <status>0x8F</status>
                 <midino>0x29</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <status>0x9F</status>
+                <midino>0x32</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <status>0x8F</status>
+                <midino>0x32</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>quantize</key>
+                <status>0x9F</status>
+                <midino>0x2e</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>quantize</key>
+                <status>0x8F</status>
+                <midino>0x2e</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>filterLowKill</key>
+                <status>0x9F</status>
+                <midino>0x2a</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>filterLowKill</key>
+                <status>0x8F</status>
+                <midino>0x2a</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <status>0x9F</status>
+                <midino>0x33</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <status>0x8F</status>
+                <midino>0x33</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>quantize</key>
+                <status>0x9F</status>
+                <midino>0x2f</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>quantize</key>
+                <status>0x8F</status>
+                <midino>0x2f</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>filterLowKill</key>
+                <status>0x9F</status>
+                <midino>0x2b</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>filterLowKill</key>
+                <status>0x8F</status>
+                <midino>0x2b</midino>
                 <options>
                     <normal/>
                 </options>
@@ -250,38 +484,38 @@
 <!-- Lower Button Grid -->
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>sync_master</key>
                 <status>0x9F</status>
                 <midino>0x24</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>sync_master</key>
                 <status>0x8F</status>
                 <midino>0x24</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>keylock</key>
+                <key>sync_enabled</key>
                 <status>0x9F</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>keylock</key>
+                <key>sync_enabled</key>
                 <status>0x8F</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
@@ -466,38 +700,38 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>sync_master</key>
                 <status>0x9F</status>
                 <midino>0x25</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>sync_master</key>
                 <status>0x8F</status>
                 <midino>0x25</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>keylock</key>
+                <key>sync_enabled</key>
                 <status>0x9F</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>keylock</key>
+                <key>sync_enabled</key>
                 <status>0x8F</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
@@ -676,6 +910,438 @@
                 <key>hotcue_4_activate</key>
                 <status>0x8F</status>
                 <midino>0x61</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>sync_master</key>
+                <status>0x9F</status>
+                <midino>0x26</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>sync_master</key>
+                <status>0x8F</status>
+                <midino>0x26</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>sync_enabled</key>
+                <status>0x9F</status>
+                <midino>0x22</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>sync_enabled</key>
+                <status>0x8F</status>
+                <midino>0x22</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>cue_default</key>
+                <status>0x9F</status>
+                <midino>0x1e</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>cue_default</key>
+                <status>0x8F</status>
+                <midino>0x1e</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>play</key>
+                <status>0x9F</status>
+                <midino>0x1A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>play</key>
+                <status>0x8F</status>
+                <midino>0x1A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>beatloop_4</key>
+                <status>0x9F</status>
+                <midino>0x4a</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>beatloop_4</key>
+                <status>0x8F</status>
+                <midino>0x4a</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>loop_double</key>
+                <status>0x9F</status>
+                <midino>0x46</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>loop_double</key>
+                <status>0x8F</status>
+                <midino>0x46</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>loop_halve</key>
+                <status>0x9F</status>
+                <midino>0x42</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>loop_halve</key>
+                <status>0x8F</status>
+                <midino>0x42</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>reloop_exit</key>
+                <status>0x9F</status>
+                <midino>0x3e</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>reloop_exit</key>
+                <status>0x8F</status>
+                <midino>0x3e</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>hotcue_1_activate</key>
+                <status>0x9F</status>
+                <midino>0x6e</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>hotcue_1_activate</key>
+                <status>0x8F</status>
+                <midino>0x6e</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>hotcue_2_activate</key>
+                <status>0x9F</status>
+                <midino>0x6a</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>hotcue_2_activate</key>
+                <status>0x8F</status>
+                <midino>0x6a</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>hotcue_3_activate</key>
+                <status>0x9F</status>
+                <midino>0x66</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>hotcue_3_activate</key>
+                <status>0x8F</status>
+                <midino>0x66</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>hotcue_4_activate</key>
+                <status>0x9F</status>
+                <midino>0x62</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>hotcue_4_activate</key>
+                <status>0x8F</status>
+                <midino>0x62</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>sync_master</key>
+                <status>0x9F</status>
+                <midino>0x27</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>sync_master</key>
+                <status>0x8F</status>
+                <midino>0x27</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>sync_enabled</key>
+                <status>0x9F</status>
+                <midino>0x23</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>sync_enabled</key>
+                <status>0x8F</status>
+                <midino>0x23</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>cue_default</key>
+                <status>0x9F</status>
+                <midino>0x1f</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>cue_default</key>
+                <status>0x8F</status>
+                <midino>0x1f</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>play</key>
+                <status>0x9F</status>
+                <midino>0x1b</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>play</key>
+                <status>0x8F</status>
+                <midino>0x1b</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>beatloop_4</key>
+                <status>0x9F</status>
+                <midino>0x4b</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>beatloop_4</key>
+                <status>0x8F</status>
+                <midino>0x4b</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>loop_double</key>
+                <status>0x9F</status>
+                <midino>0x47</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>loop_double</key>
+                <status>0x8F</status>
+                <midino>0x47</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>loop_halve</key>
+                <status>0x9F</status>
+                <midino>0x43</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>loop_halve</key>
+                <status>0x8F</status>
+                <midino>0x43</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>reloop_exit</key>
+                <status>0x9F</status>
+                <midino>0x3f</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>reloop_exit</key>
+                <status>0x8F</status>
+                <midino>0x3f</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>hotcue_1_activate</key>
+                <status>0x9F</status>
+                <midino>0x6f</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>hotcue_1_activate</key>
+                <status>0x8F</status>
+                <midino>0x6f</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>hotcue_2_activate</key>
+                <status>0x9F</status>
+                <midino>0x6b</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>hotcue_2_activate</key>
+                <status>0x8F</status>
+                <midino>0x6b</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>hotcue_3_activate</key>
+                <status>0x9F</status>
+                <midino>0x67</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>hotcue_3_activate</key>
+                <status>0x8F</status>
+                <midino>0x67</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>hotcue_4_activate</key>
+                <status>0x9F</status>
+                <midino>0x63</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>hotcue_4_activate</key>
+                <status>0x8F</status>
+                <midino>0x63</midino>
                 <options>
                     <button/>
                 </options>
@@ -690,11 +1356,20 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <control>
+             <control>
                 <group>[Playlist]</group>
                 <key>LoadSelectedIntoFirstStopped</key>
                 <status>0x9F</status>
                 <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>sync_master</key>
+                <status>0x9F</status>
+                <midino>0x0D</midino>
                 <options>
                     <normal/>
                 </options>
@@ -731,14 +1406,14 @@
 <!-- Knob lights -->
             <output>
                 <group>[Channel1]</group>
-                <key>filterHighKill</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x30</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>filterMidKill</key>
+                <key>quantize</key>
                 <status>0x9F</status>
                 <midino>0x2c</midino>
                 <minimum>0.5</minimum>
@@ -752,14 +1427,14 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>filterHighKill</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x31</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>filterMidKill</key>
+                <key>quantize</key>
                 <status>0x9F</status>
                 <midino>0x2d</midino>
                 <minimum>0.5</minimum>
@@ -771,17 +1446,59 @@
                 <midino>0x29</midino>
                 <minimum>0.5</minimum>
             </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <status>0x9F</status>
+                <midino>0x32</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>quantize</key>
+                <status>0x9F</status>
+                <midino>0x2e</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>filterLowKill</key>
+                <status>0x9F</status>
+                <midino>0x2a</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <status>0x9F</status>
+                <midino>0x33</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>quantize</key>
+                <status>0x9F</status>
+                <midino>0x2f</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>filterLowKill</key>
+                <status>0x9F</status>
+                <midino>0x2b</midino>
+                <minimum>0.5</minimum>
+            </output>
 <!-- Button lights -->
             <output>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>sync_master</key>
                 <status>0x9F</status>
                 <midino>0x24</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>keylock</key>
+                <key>sync_enabled</key>
                 <status>0x9F</status>
                 <midino>0x20</midino>
                 <minimum>0.5</minimum>
@@ -858,14 +1575,14 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>sync_master</key>
                 <status>0x9F</status>
                 <midino>0x25</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>keylock</key>
+                <key>sync_enabled</key>
                 <status>0x9F</status>
                 <midino>0x21</midino>
                 <minimum>0.5</minimum>
@@ -938,6 +1655,174 @@
                 <key>hotcue_4_enabled</key>
                 <status>0x9F</status>
                 <midino>0x61</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>sync_master</key>
+                <status>0x9F</status>
+                <midino>0x26</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>sync_enabled</key>
+                <status>0x9F</status>
+                <midino>0x22</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>cue_default</key>
+                <status>0x9F</status>
+                <midino>0x1e</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>play</key>
+                <status>0x9F</status>
+                <midino>0x1A</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>beatloop_4</key>
+                <status>0x9F</status>
+                <midino>0x4a</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>loop_double</key>
+                <status>0x9F</status>
+                <midino>0x46</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>loop_halve</key>
+                <status>0x9F</status>
+                <midino>0x42</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>loop_enabled</key>
+                <status>0x9F</status>
+                <midino>0x3e</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_1_enabled</key>
+                <status>0x9F</status>
+                <midino>0x6e</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_2_enabled</key>
+                <status>0x9F</status>
+                <midino>0x6a</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_3_enabled</key>
+                <status>0x9F</status>
+                <midino>0x66</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_4_enabled</key>
+                <status>0x9F</status>
+                <midino>0x62</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>sync_master</key>
+                <status>0x9F</status>
+                <midino>0x27</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>sync_enabled</key>
+                <status>0x9F</status>
+                <midino>0x23</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>cue_default</key>
+                <status>0x9F</status>
+                <midino>0x1f</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>play</key>
+                <status>0x9F</status>
+                <midino>0x1b</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>beatloop_4</key>
+                <status>0x9F</status>
+                <midino>0x4b</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>loop_double</key>
+                <status>0x9F</status>
+                <midino>0x47</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>loop_halve</key>
+                <status>0x9F</status>
+                <midino>0x43</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>loop_enabled</key>
+                <status>0x9F</status>
+                <midino>0x3f</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_1_enabled</key>
+                <status>0x9F</status>
+                <midino>0x6f</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_2_enabled</key>
+                <status>0x9F</status>
+                <midino>0x6b</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_3_enabled</key>
+                <status>0x9F</status>
+                <midino>0x67</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_4_enabled</key>
+                <status>0x9F</status>
+                <midino>0x63</midino>
                 <minimum>0.5</minimum>
             </output>
         </outputs>

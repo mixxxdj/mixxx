@@ -15,7 +15,7 @@
 
 #include "util/performancetimer.h"
 
-QtSimpleWaveformWidget::QtSimpleWaveformWidget( const char* group, QWidget* parent)
+QtSimpleWaveformWidget::QtSimpleWaveformWidget(const char* group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
@@ -70,4 +70,3 @@ int QtSimpleWaveformWidget::render() {
     //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
     return t1 / 1000; // return timer for painter setup
 }
-

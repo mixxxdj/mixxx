@@ -268,19 +268,19 @@ class MixxxBuild(object):
             # By default use old gcc C++ library version
             osx_stdlib = Script.ARGUMENTS.get('stdlib', 'libstdc++')
             if osx_stdlib not in valid_cpp_lib_versions:
-                raise Exception('Unsupportd C++ stdlib version')
+                raise Exception('Unsupported C++ stdlib version')
 
             if osx_stdlib == 'libc++':
                 sdk_version_default = '10.9'
             else:
                 sdk_version_default = '10.5'
 
-            min_sdk_version = Script.ARGUMENTS.get('macosx-version-min', sdk_version_default)
+            min_sdk_version = Script.ARGUMENTS.get('osx_sdk_version_min', sdk_version_default)
             if min_sdk_version not in sdk_versions:
-                raise Exception('Unsupported macosx-version-min value')
+                raise Exception('Unsupported osx_sdk_version_min value')
 
             if osx_stdlib == 'libc++' and min_sdk_version not in clang_sdk_versions:
-                raise Exception('stdlib=libc++ requires macosx-version-min > 10.7')
+                raise Exception('stdlib=libc++ requires osx_sdk_version_min >= 10.7')
 
             print "XCode developer directory:", os.popen('xcode-select -p').readline().strip()
             for sdk in sdk_versions:

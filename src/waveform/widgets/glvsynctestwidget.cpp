@@ -15,7 +15,7 @@
 
 #include "util/performancetimer.h"
 
-GLVSyncTestWidget::GLVSyncTestWidget( const char* group, QWidget* parent)
+GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
     : QGLWidget(parent, SharedGLContext::getWidget()),
       WaveformWidgetAbstract(group) {
 
@@ -49,7 +49,7 @@ void GLVSyncTestWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
 }
 
-void GLVSyncTestWidget::paintEvent( QPaintEvent* event) {
+void GLVSyncTestWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 
@@ -69,4 +69,3 @@ int GLVSyncTestWidget::render() {
     //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
     return t1 / 1000; // return timer for painter setup
 }
-

@@ -2,6 +2,7 @@ from SCons import Script
 import os
 import os.path
 import re
+import stat
 
 CURRENT_VCS = None
 
@@ -189,3 +190,4 @@ def write_build_header(path):
                                                 '+' if modified else ''))
     finally:
         f.close()
+        os.chmod(path, stat.S_IRWXU | stat.S_IRWXG |stat.S_IRWXO)

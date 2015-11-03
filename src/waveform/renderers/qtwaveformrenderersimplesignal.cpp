@@ -9,8 +9,8 @@
 
 #include <QLinearGradient>
 
-QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal( WaveformWidgetRenderer* waveformWidgetRenderer) :
-    WaveformRendererSignalBase( waveformWidgetRenderer) {
+QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer) :
+    WaveformRendererSignalBase(waveformWidgetRenderer) {
 
 }
 
@@ -78,7 +78,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     }
 
     //draw reference line
-    if( m_alignment == Qt::AlignCenter) {
+    if (m_alignment == Qt::AlignCenter) {
         painter->setPen(m_axesColor);
         painter->drawLine(0,0,m_waveformRenderer->getWidth(),0);
     }
