@@ -52,16 +52,17 @@ ControlParameterWidgetConnection::ControlParameterWidgetConnection(WBaseWidget* 
         : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
           m_directionOption(directionOption),
           m_emitOption(emitOption) {
-    if (directionOption & DIR_TO_WIDGET) {
-        slotControlValueChanged(m_pControl->get());
-    }
 }
 
 ControlParameterWidgetConnection::~ControlParameterWidgetConnection() {
 }
 
+void ControlParameterWidgetConnection::Init() {
+    slotControlValueChanged(m_pControl->get());
+}
+
 QString ControlParameterWidgetConnection::toDebugString() const {
-    const ConfigKey& key = m_pControl->getKey();
+    const ConfigKey& key = getKey();
     return QString("%1,%2 Parameter: %3 Direction: %4 Emit: %5")
             .arg(key.group, key.item,
                  QString::number(m_pControl->getParameter()),
@@ -84,19 +85,19 @@ void ControlParameterWidgetConnection::resetControl() {
 
 void ControlParameterWidgetConnection::setControlParameter(double v) {
     if (m_directionOption & DIR_FROM_WIDGET) {
-        m_pControl->setParameter(v);
+        ControlWidgetConnection::setControlParameter(v);
     }
 }
 
 void ControlParameterWidgetConnection::setControlParameterDown(double v) {
     if ((m_directionOption & DIR_FROM_WIDGET) && (m_emitOption & EMIT_ON_PRESS)) {
-        m_pControl->setParameter(v);
+        ControlWidgetConnection::setControlParameter(v);
     }
 }
 
 void ControlParameterWidgetConnection::setControlParameterUp(double v) {
     if ((m_directionOption & DIR_FROM_WIDGET) && (m_emitOption & EMIT_ON_RELEASE)) {
-        m_pControl->setParameter(v);
+        ControlWidgetConnection::setControlParameter(v);
     }
 }
 
@@ -113,7 +114,7 @@ ControlWidgetPropertyConnection::~ControlWidgetPropertyConnection() {
 }
 
 QString ControlWidgetPropertyConnection::toDebugString() const {
-    const ConfigKey& key = m_pControl->getKey();
+    const ConfigKey& key = getKey();
     return QString("%1,%2 Parameter: %3 Property: %4 Value: %5").arg(
         key.group, key.item, QString::number(m_pControl->getParameter()), m_propertyName,
         m_pWidget->toQWidget()->property(
@@ -128,23 +129,4 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
         qDebug() << "Setting property" << m_propertyName
                  << "to widget failed. Value:" << dParameter;
     }
-}
-
-void ControlWidgetPropertyConnection::resetControl() {
-    // Do nothing.
-}
-
-void ControlWidgetPropertyConnection::setControlParameter(double v) {
-    // Do nothing.
-    Q_UNUSED(v);
-}
-
-void ControlWidgetPropertyConnection::setControlParameterDown(double v) {
-    // Do nothing.
-    Q_UNUSED(v);
-}
-
-void ControlWidgetPropertyConnection::setControlParameterUp(double v) {
-    // Do nothing.
-    Q_UNUSED(v);
 }

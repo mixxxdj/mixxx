@@ -5,12 +5,15 @@
 #include <QWidget>
 #include <QList>
 
-#include "widget/controlwidgetconnection.h"
+class ControlWidgetPropertyConnection;
+class ControlParameterWidgetConnection;
 
 class WBaseWidget {
   public:
     WBaseWidget(QWidget* pWidget);
     virtual ~WBaseWidget();
+
+    void Init();
 
     QWidget* toQWidget() {
         return m_pWidget;
@@ -25,24 +28,21 @@ class WBaseWidget {
         return m_baseTooltip;
     }
 
-    void addLeftConnection(ControlWidgetConnection* pConnection);
-    void addRightConnection(ControlWidgetConnection* pConnection);
-    void addConnection(ControlWidgetConnection* pConnection);
+    void addLeftConnection(ControlParameterWidgetConnection* pConnection);
+    void addRightConnection(ControlParameterWidgetConnection* pConnection);
+    void addConnection(ControlParameterWidgetConnection* pConnection);
+
+    void addPropertyConnection(ControlWidgetPropertyConnection* pConnection);
 
     // Set a ControlWidgetConnection to be the display connection for the
     // widget. The connection should also be added via an addConnection method
     // or it will not be deleted or receive updates.
-    void setDisplayConnection(ControlWidgetConnection* pConnection);
+    void setDisplayConnection(ControlParameterWidgetConnection* pConnection);
 
     double getControlParameter() const;
     double getControlParameterLeft() const;
     double getControlParameterRight() const;
     double getControlParameterDisplay() const;
-
-    virtual ControlWidgetConnection::EmitOption getDefaultEmitOption(
-        Qt::MouseButton state);
-    virtual ControlWidgetConnection::DirectionOption getDefaultDirectionOption(
-        Qt::MouseButton state);
 
   protected:
     virtual void onConnectedControlValueChanged(double v) {
@@ -65,13 +65,17 @@ class WBaseWidget {
     void updateTooltip();
     virtual void fillDebugTooltip(QStringList* debug);
 
+  protected:
+    QList<ControlParameterWidgetConnection*> m_connections;
+    ControlParameterWidgetConnection* m_pDisplayConnection;
+    QList<ControlParameterWidgetConnection*> m_leftConnections;
+    QList<ControlParameterWidgetConnection*> m_rightConnections;
+
+    QList<ControlWidgetPropertyConnection*> m_propertyConnections;
+
   private:
     QWidget* m_pWidget;
     QString m_baseTooltip;
-    QList<ControlWidgetConnection*> m_connections;
-    ControlWidgetConnection* m_pDisplayConnection;
-    QList<ControlWidgetConnection*> m_leftConnections;
-    QList<ControlWidgetConnection*> m_rightConnections;
 
     friend class ControlParameterWidgetConnection;
 };
