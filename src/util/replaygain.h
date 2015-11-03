@@ -5,8 +5,7 @@
 
 namespace Mixxx {
 
-// DTO for storing replay gain information. This class cannot be subclassed,
-// because the destructor is not virtual!
+// DTO for storing replay gain information.
 //
 // Parsing & Formatting
 // --------------------
@@ -24,13 +23,18 @@ namespace Mixxx {
 // as a string into file tags.
 class ReplayGain final {
 public:
-    static const double kRatioUndefined;
-    static const double kRatioMin; // lower bound (exclusive)
-    static const double kRatio0dB;
+    static constexpr double kRatioUndefined = 0.0;
+    static constexpr double kRatioMin = 0.0; // lower bound (exclusive)
+    static constexpr double kRatio0dB = 1.0;
 
-    static const CSAMPLE kPeakUndefined;
-    static const CSAMPLE kPeakMin; // lower bound (inclusive)
-    static const CSAMPLE kPeakClip; // upper bound (inclusive) without clipping
+    static constexpr CSAMPLE kPeakUndefined = -CSAMPLE_PEAK;
+    static constexpr CSAMPLE kPeakMin = CSAMPLE_ZERO; // lower bound (inclusive)
+    static constexpr CSAMPLE kPeakClip = CSAMPLE_PEAK; // upper bound (inclusive) represents digital full scale without clipping
+
+    static_assert(ReplayGain::kPeakClip == 1.0,
+            "http://wiki.hydrogenaud.io/index.php?title=ReplayGain_2.0_specification#Peak_amplitude: "
+            "The maximum peak amplitude value is stored as a floating number, "
+            "where 1.0 represents digital full scale");
 
     ReplayGain()
         : ReplayGain(kRatioUndefined, kPeakUndefined) {
