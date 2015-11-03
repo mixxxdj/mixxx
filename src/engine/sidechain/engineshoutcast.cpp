@@ -407,12 +407,27 @@ bool EngineShoutcast::processConnect() {
             break;
         }
 
+        // SHOUTERR_INSANE self is corrupt or incorrect
+        // SHOUTERR_UNSUPPORTED The protocol/format combination is unsupported
+        // SHOUTERR_NOLOGIN The server refused login
+        // SHOUTERR_MALLOC There wasn't enough memory to complete the operation
+        if (m_iShoutStatus == SHOUTERR_INSANE ||
+            m_iShoutStatus == SHOUTERR_UNSUPPORTED ||
+            m_iShoutStatus == SHOUTERR_NOLOGIN ||
+            m_iShoutStatus == SHOUTERR_MALLOC) {
+            qDebug() << "Streaming server made fatal error. Can't continue connecting:" << shout_get_error(m_pShout);
+            break;
+        }
+
         m_iShoutFailures++;
-        qDebug() << "Streaming server failed connect. Failures:" << shout_get_error(m_pShout);
-        QThread::msleep(100);
+        qDebug() << m_iShoutFailures << "/" << kMaxShoutFailures << "Streaming server failed connect. Failures:" << shout_get_error(m_pShout);
     }
 
-    if (m_iShoutFailures < kMaxShoutFailures) {
+    // If we don't have any fatal errors let's try to connect
+    if ((m_iShoutStatus == SHOUTERR_BUSY ||
+         m_iShoutStatus == SHOUTERR_CONNECTED ||
+         m_iShoutStatus == SHOUTERR_SUCCESS) &&
+         m_iShoutFailures < kMaxShoutFailures) {
         m_iShoutFailures = 0;
         int timeout = 0;
         while (m_iShoutStatus == SHOUTERR_BUSY &&
