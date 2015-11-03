@@ -91,8 +91,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
 
-    m_pMasterDelay = new EngineDelay(group, false);
-    m_pHeadDelay = new EngineDelay(group, true);
+    m_pMasterDelay = new EngineDelay(group, ConfigKey(group, "delay"));
+    m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
 
     // Headphone volume
     m_pHeadVolume = new ControlLogpotmeter(ConfigKey(group, "headVolume"), 5.);
@@ -181,6 +181,7 @@ EngineMaster::~EngineMaster() {
         SampleUtil::free(pChannelInfo->m_pBuffer);
         delete pChannelInfo->m_pChannel;
         delete pChannelInfo->m_pVolumeControl;
+        delete pChannelInfo->m_pMuteControl;
         delete pChannelInfo;
     }
 }
@@ -234,14 +235,14 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                     needsProcessing = true;
                 }
 
-                if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
-                        pChannel->isTalkover()) {
-                    m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
-                }
-
                 // Process the buffer if necessary, which it damn well better be
                 if (needsProcessing) {
                     pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+
+                    if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                            pChannel->isTalkover()) {
+                        m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
+                    }
                 }
                 break;
             }
@@ -277,14 +278,14 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             needsProcessing = true;
         }
 
-        if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
-                pChannel->isTalkover()) {
-            m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
-        }
-
         // Process the buffer if necessary
         if (needsProcessing) {
             pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+
+            if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
+                    pChannel->isTalkover()) {
+                m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
+            }
         }
     }
 }
@@ -450,6 +451,9 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
             ConfigKey(pChannel->getGroup(), "volume"), 1.0);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
+    pChannelInfo->m_pMuteControl = new ControlPushButton(
+        ConfigKey(pChannel->getGroup(), "mute"));
+    pChannelInfo->m_pMuteControl->setButtonMode(ControlPushButton::POWERWINDOW);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);

@@ -38,10 +38,8 @@ class SoundDevicePortAudio : public SoundDevice {
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();
 
-    virtual int open(bool registerCallback);
+    virtual int open();
     virtual int close();
-    virtual void readProcess();
-    virtual void writeProcess();
     virtual QString getError() const;
 
     // This callback function gets called everytime the sound device runs out of
@@ -57,13 +55,8 @@ class SoundDevicePortAudio : public SoundDevice {
     }
 
   private:
-
-    inline CSAMPLE* getOutputBufferFrame(unsigned int frame) { return &m_pOutputBuffer[m_outputParams.channelCount * frame]; };
-    inline CSAMPLE* getInputBufferFrame(unsigned int frame) { return &m_pInputBuffer[m_inputParams.channelCount * frame]; };
-
-
     // PortAudio stream for this device.
-    PaStream* volatile m_pStream;
+    PaStream* m_pStream;
     // PortAudio device index for this device.
     PaDeviceIndex m_devId;
     // Struct containing information about this device. Don't free() it, it
@@ -73,17 +66,12 @@ class SoundDevicePortAudio : public SoundDevice {
     PaStreamParameters m_outputParams;
     // Description of the input stream coming from the soundcard.
     PaStreamParameters m_inputParams;
-    CSAMPLE* m_pOutputBuffer;
-    unsigned int m_pOutputBufferReadFrame;
-    CSAMPLE* m_pInputBuffer;
     // A string describing the last PortAudio error to occur.
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
     ControlObject* m_pMasterUnderflowCount;
     int m_underflowUpdateCount;
-
-
 };
 
 // Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by

@@ -63,6 +63,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("reverseroll", tr("Reverse roll (Censor) button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Gain knob"), transportMenu, true);
     addDeckAndSamplerControl("pfl", tr("Headphone listen button"), transportMenu);
+    addDeckAndSamplerControl("mute", tr("Mute button"), transportMenu);
     addDeckAndSamplerControl("repeat", tr("Toggle repeat mode"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject track"), transportMenu);
     addSamplerControl("orientation", tr("Mix orientation (e.g. left, right, center)"), transportMenu);
@@ -169,6 +170,35 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("beatlooproll_16_activate", beatLoopRoll.arg("16"), beatLoopMenu);
     addDeckControl("beatlooproll_32_activate", beatLoopRoll.arg("32"), beatLoopMenu);
     addDeckControl("beatlooproll_64_activate", beatLoopRoll.arg("64"), beatLoopMenu);
+
+    // Beatloops
+    QMenu* beatJumpMenu = addSubmenu(tr("Beat-Jump"));
+    QString beatJumpForward = tr("Jump forward by %1 beats");
+    QString beatJumpBackward = tr("Jump backward by %1 beats");
+    addDeckControl("beatjump_0.03125_forward",  beatJumpForward.arg(tr("1/32th")), beatJumpMenu);
+    addDeckControl("beatjump_0.0625_forward",  beatJumpForward.arg(tr("1/16th")), beatJumpMenu);
+    addDeckControl("beatjump_0.125_forward", beatJumpForward.arg(tr("1/8th")), beatJumpMenu);
+    addDeckControl("beatjump_0.25_forward", beatJumpForward.arg(tr("1/4th")), beatJumpMenu);
+    addDeckControl("beatjump_0.5_forward", beatJumpForward.arg("1/2"), beatJumpMenu);
+    addDeckControl("beatjump_1_forward", beatJumpForward.arg("1"), beatJumpMenu);
+    addDeckControl("beatjump_2_forward", beatJumpForward.arg("2"), beatJumpMenu);
+    addDeckControl("beatjump_4_forward", beatJumpForward.arg("4"), beatJumpMenu);
+    addDeckControl("beatjump_8_forward", beatJumpForward.arg("8"), beatJumpMenu);
+    addDeckControl("beatjump_16_forward", beatJumpForward.arg("16"), beatJumpMenu);
+    addDeckControl("beatjump_32_forward", beatJumpForward.arg("32"), beatJumpMenu);
+    addDeckControl("beatjump_64_forward", beatJumpForward.arg("64"), beatJumpMenu);
+    addDeckControl("beatjump_0.03125_backward",  beatJumpBackward.arg(tr("1/32th")), beatJumpMenu);
+    addDeckControl("beatjump_0.0625_backward",  beatJumpBackward.arg(tr("1/16th")), beatJumpMenu);
+    addDeckControl("beatjump_0.125_backward", beatJumpBackward.arg(tr("1/8th")), beatJumpMenu);
+    addDeckControl("beatjump_0.25_backward", beatJumpBackward.arg(tr("1/4th")), beatJumpMenu);
+    addDeckControl("beatjump_0.5_backward", beatJumpBackward.arg("1/2"), beatJumpMenu);
+    addDeckControl("beatjump_1_backward", beatJumpBackward.arg("1"), beatJumpMenu);
+    addDeckControl("beatjump_2_backward", beatJumpBackward.arg("2"), beatJumpMenu);
+    addDeckControl("beatjump_4_backward", beatJumpBackward.arg("4"), beatJumpMenu);
+    addDeckControl("beatjump_8_backward", beatJumpBackward.arg("8"), beatJumpMenu);
+    addDeckControl("beatjump_16_backward", beatJumpBackward.arg("16"), beatJumpMenu);
+    addDeckControl("beatjump_32_backward", beatJumpBackward.arg("32"), beatJumpMenu);
+    addDeckControl("beatjump_64_backward", beatJumpBackward.arg("64"), beatJumpMenu);
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));

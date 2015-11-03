@@ -268,6 +268,10 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
     enablePitchAndTimeScaling(false);
 
+    m_pPassthroughEnabled.reset(new ControlObjectSlave(_group, "passthrough", this));
+    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
+                                               Qt::DirectConnection);
+
     //m_iRampIter = 0;
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
@@ -374,8 +378,8 @@ void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
 
 void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
-    // Write the position before the seek type, to reduce a possible race 
-    // condition effect 
+    // Write the position before the seek type, to reduce a possible race
+    // condition effect
     m_queuedPosition.setValue(newpos);
     m_iSeekQueued.fetchAndStoreRelease(seekType);
 }
@@ -512,6 +516,13 @@ void EngineBuffer::ejectTrack() {
     m_pause.unlock();
 
     emit(trackUnloaded(pTrack));
+}
+
+void EngineBuffer::slotPassthroughChanged(double enabled) {
+    if (enabled) {
+        // If passthrough was enabled, stop playing the current track.
+        slotControlStop(1.0);
+    }
 }
 
 // WARNING: This method runs in both the GUI thread and the Engine Thread
@@ -969,7 +980,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
 void EngineBuffer::processSeek() {
     // We need to read position just after reading seekType, to ensure that we read
     // the matching poition to seek_typ or a position from a new seek just queued from an other thread
-    // the later case is ok, because we will pocess the new seek in the next call anyway. 
+    // the later case is ok, because we will pocess the new seek in the next call anyway.
     SeekRequest seekType =
             static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
     double position = m_queuedPosition.getValue();

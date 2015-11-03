@@ -18,6 +18,7 @@
 #define ENGINEDELAY_H
 
 #include "engine/engineobject.h"
+#include "configobject.h"
 
 class ControlPotmeter;
 class ControlObjectSlave;
@@ -25,7 +26,7 @@ class ControlObjectSlave;
 class EngineDelay : public EngineObject {
     Q_OBJECT
   public:
-    EngineDelay(const char* group, bool head);
+    EngineDelay(const char* group, ConfigKey delayControl);
     virtual ~EngineDelay();
 
     void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);

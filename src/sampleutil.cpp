@@ -39,7 +39,7 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer,
 // static
 void SampleUtil::clear(CSAMPLE* pBuffer, unsigned int iNumSamples) {
     // this works, because (float)0 == (int)0
-    memset(pBuffer, 0, sizeof (CSAMPLE) * iNumSamples);
+    memset(pBuffer, 0, sizeof(pBuffer[0]) * iNumSamples);
 }
 
 // static

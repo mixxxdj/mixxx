@@ -395,7 +395,7 @@ int SoundManager::setupDevices() {
         bool isOutput = mode.second;
         ++devicesAttempted;
         m_pErrorDevice = device;
-        err = device->open(true); // (pNewMasterClockRef == device);
+        err = device->open();
         if (err != OK) {
             goto closeAndError;
         } else {
@@ -574,27 +574,6 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMP
         }
     }
 }
-
-void SoundManager::writeProcess() {
-    QListIterator<SoundDevice*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        SoundDevice* device = dev_it.next();
-        if (device && device != m_pClkRefDevice) {
-            device->writeProcess();
-        }
-    }
-}
-
-void SoundManager::readProcess() {
-    QListIterator<SoundDevice*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        SoundDevice* device = dev_it.next();
-        if (device && device != m_pClkRefDevice) {
-            device->readProcess();
-        }
-    }
-}
-
 
 void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
     if (m_registeredSources.contains(output)) {

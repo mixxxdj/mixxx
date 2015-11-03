@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>686</width>
-    <height>446</height>
+    <height>494</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,27 +16,7 @@
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="2" column="0">
-      <widget class="QLabel" name="apiLabel">
-       <property name="text">
-        <string>Sound API</string>
-       </property>
-       <property name="buddy">
-        <cstring>apiComboBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="headdelayLable">
-       <property name="text">
-        <string>Headphone Delay [ms]</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="apiComboBox"/>
-     </item>
-     <item row="3" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="sampleRateLabel">
        <property name="text">
         <string>Sample Rate</string>
@@ -46,36 +26,43 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QComboBox" name="sampleRateComboBox"/>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="apiComboBox"/>
      </item>
-     <item row="7" column="1">
-      <widget class="QDoubleSpinBox" name="headDelaySpinBox">
-       <property name="maximum">
-        <double>100.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="latencyLabel">
-       <property name="text">
-        <string>Known Latency</string>
-       </property>
-       <property name="buddy">
-        <cstring>audioBufferComboBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QComboBox" name="audioBufferComboBox"/>
-     </item>
-     <item row="4" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="audioBufferLabel">
        <property name="text">
         <string>Audio Buffer</string>
        </property>
        <property name="buddy">
         <cstring>audioBufferComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="headDelayLabel">
+       <property name="text">
+        <string>Headphone Delay</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="masterDelaySpinBox">
+       <property name="suffix">
+        <string extracomment="milliseconds"> ms</string>
+       </property>
+       <property name="decimals">
+        <number>2</number>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLabel" name="currentLatency">
+       <property name="text">
+        <string>20 ms</string>
        </property>
       </widget>
      </item>
@@ -96,26 +83,64 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
-      <widget class="QLabel" name="currentLatency">
+     <item row="0" column="0">
+      <widget class="QLabel" name="apiLabel">
        <property name="text">
-        <string>20 ms</string>
+        <string>Sound API</string>
+       </property>
+       <property name="buddy">
+        <cstring>apiComboBox</cstring>
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="masterDelayLable">
+     <item row="5" column="0">
+      <widget class="QLabel" name="latencyLabel">
        <property name="text">
-        <string>Master Delay [ms]</string>
+        <string>Known Latency</string>
+       </property>
+       <property name="buddy">
+        <cstring>audioBufferComboBox</cstring>
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
-      <widget class="QDoubleSpinBox" name="masterDelaySpinBox">
+     <item row="2" column="1">
+      <widget class="QComboBox" name="audioBufferComboBox"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="sampleRateComboBox"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="masterDelayLabel">
+       <property name="text">
+        <string>Master Delay</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="headDelaySpinBox">
+       <property name="suffix">
+        <string extracomment="milliseconds"> ms</string>
+       </property>
+       <property name="decimals">
+        <number>2</number>
+       </property>
        <property name="maximum">
         <double>100.000000000000000</double>
        </property>
       </widget>
+     </item>
+     <item row="7" column="0">
+      <spacer name="outputVSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>

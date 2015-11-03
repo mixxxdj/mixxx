@@ -19,12 +19,13 @@
 #include "controlpotmeter.h"
 #include "controlobjectthread.h"
 
-ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue)
+ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
+                                 bool allowOutOfBounds)
         : ControlObject(key),
           m_controls(key) {
-    setRange(dMinValue, dMaxValue);
-    setStep(m_dValueRange / 10.f);
-    setSmallStep(m_dValueRange / 100.f);
+    setRange(dMinValue, dMaxValue, allowOutOfBounds);
+    setStep(m_dValueRange / 10.0);
+    setSmallStep(m_dValueRange / 100.0);
 }
 
 ControlPotmeter::~ControlPotmeter() {
@@ -46,15 +47,17 @@ void ControlPotmeter::setSmallStep(double dValue) {
     m_controls.setSmallStep(dValue);
 }
 
-void ControlPotmeter::setRange(double dMinValue, double dMaxValue) {
+void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
+                               bool allowOutOfBounds) {
     m_dMinValue = dMinValue;
     m_dMaxValue = dMaxValue;
     m_dValueRange = m_dMaxValue - m_dMinValue;
+    m_bAllowOutOfBounds = allowOutOfBounds;
     double default_value = m_dMinValue + 0.5 * m_dValueRange;
 
     if (m_pControl) {
         m_pControl->setBehavior(
-                new ControlPotmeterBehavior(dMinValue, dMaxValue));
+                new ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds));
     }
 
     setDefaultValue(default_value);
@@ -204,4 +207,3 @@ void PotmeterControls::toggleMinusValue(double v) {
         m_pControl->set(value > 0.0 ? -1.0 : 1.0);
     }
 }
-

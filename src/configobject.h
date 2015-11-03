@@ -61,6 +61,10 @@ inline uint qHash(const ConfigKey &key) {
     return qHash(key.group) ^ qHash(key.item);
 }
 
+inline uint qHash(const QKeySequence &key) {
+    return qHash(key.toString());
+}
+
 /*
   The value corresponding to a key. The basic value is a string, but can be
   subclassed to more specific needs.
@@ -117,6 +121,7 @@ template <class ValueType> class ConfigObject {
     ConfigKey *get(ValueType v);
     QString getValueString(ConfigKey k);
     QString getValueString(ConfigKey k, const QString& default_string);
+    QHash<ConfigKey, ValueType> toHash() const;
 
     void clear();
     void reopen(QString file);

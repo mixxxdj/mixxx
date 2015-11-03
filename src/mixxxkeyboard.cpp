@@ -24,11 +24,14 @@
 #include "controlobject.h"
 #include "util/cmdlineargs.h"
 
+
+
 MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
                              QObject* parent, const char* name)
         : QObject(parent),
-          m_pKbdConfigObject(pKbdConfigObject) {
+          m_pKbdConfigObject(NULL) {
     setObjectName(name);
+    setKeyboardConfig(pKbdConfigObject);
 }
 
 MixxxKeyboard::~MixxxKeyboard() {
@@ -60,22 +63,27 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
         QKeySequence ks = getKeySeq(ke);
         if (!ks.isEmpty()) {
             // Check if a shortcut is defined
-            ConfigKey* pConfigKey = m_pKbdConfigObject->get(ConfigValueKbd(ks));
-            if (pConfigKey && pConfigKey->group != "[KeyboardShortcuts]") {
-                ControlObject* control = ControlObject::getControl(*pConfigKey);
-                if (control) {
-                    //qDebug() << pConfigKey->group << pConfigKey->item << "MIDI_NOTE_ON" << 1;
-                    control->setValueFromMidi(MIDI_NOTE_ON, 1);
-                    // Add key to active key list
-                    m_qActiveKeyList.append(KeyDownInformation(
-                        keyId, ke->modifiers(), pConfigKey));
-                    return true;
-                } else {
-                    qDebug() << "Warning: Keyboard key is configured for nonexistent control: "
-                             << pConfigKey->group << " " << pConfigKey->item;
-                    return false;
+            bool result = false;
+            for (QMultiHash<QKeySequence, ConfigKey>::const_iterator it =
+                         m_keySequenceToControlHash.find(ks);
+                 it != m_keySequenceToControlHash.end() && it.key() == ks; ++it) {
+                const ConfigKey& configKey = it.value();
+                if (configKey.group != "[KeyboardShortcuts]") {
+                    ControlObject* control = ControlObject::getControl(configKey);
+                    if (control) {
+                        //qDebug() << pConfigKey->group << pConfigKey->item << "MIDI_NOTE_ON" << 1;
+                        control->setValueFromMidi(MIDI_NOTE_ON, 1);
+                        // Add key to active key list
+                        m_qActiveKeyList.append(KeyDownInformation(
+                            keyId, ke->modifiers(), control));
+                        result = true;
+                    } else {
+                        qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
+                                 << configKey.group << configKey.item;
+                    }
                 }
             }
+            return result;
         }
     } else if (e->type()==QEvent::KeyRelease) {
         QKeyEvent* ke = (QKeyEvent*)e;
@@ -104,12 +112,12 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
         // Run through list of active keys to see if the released key is active
         for (int i = m_qActiveKeyList.size() - 1; i >= 0; i--) {
             const KeyDownInformation& keyDownInfo = m_qActiveKeyList[i];
-            ConfigKey* pConfigKey = keyDownInfo.pConfigKey;
+            ControlObject* pControl = keyDownInfo.pControl;
             if (keyDownInfo.keyId == keyId ||
                     (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
                     //qDebug() << pConfigKey->group << pConfigKey->item << "MIDI_NOTE_OFF" << 0;
-                    ControlObject::getControl(*pConfigKey)->setValueFromMidi(MIDI_NOTE_OFF, 0);
+                    pControl->setValueFromMidi(MIDI_NOTE_OFF, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
                 // Due to the modifier clearing workaround we might match multiple keys for
@@ -162,6 +170,18 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent* e) {
 }
 
 void MixxxKeyboard::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
+    // Keyboard configs are a surjection from ConfigKey to key sequence. We
+    // invert the mapping to create an injection from key sequence to
+    // ConfigKey. This allows a key sequence to trigger multiple controls in
+    // Mixxx.
+    QHash<ConfigKey, ConfigValueKbd> keyboardConfig =
+            pKbdConfigObject->toHash();
+
+    m_keySequenceToControlHash.clear();
+    for (QHash<ConfigKey, ConfigValueKbd>::const_iterator it =
+                 keyboardConfig.begin(); it != keyboardConfig.end(); ++it) {
+        m_keySequenceToControlHash.insert(it.value().m_qKey, it.key());
+    }
     m_pKbdConfigObject = pKbdConfigObject;
 }
 

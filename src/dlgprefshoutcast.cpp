@@ -38,7 +38,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
 
     //Server type combobox
     comboBoxServerType->addItem(tr("Icecast 2"), SHOUTCAST_SERVER_ICECAST2);
-    comboBoxServerType->addItem(tr("Shoutcast"), SHOUTCAST_SERVER_SHOUTCAST);
+    comboBoxServerType->addItem(tr("Shoutcast 1"), SHOUTCAST_SERVER_SHOUTCAST);
     comboBoxServerType->addItem(tr("Icecast 1"), SHOUTCAST_SERVER_ICECAST1);
 
     int tmp_index = comboBoxServerType->findData(m_pConfig->getValueString(

@@ -432,7 +432,6 @@ AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
         ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
-    ret->addAnalyser(new AnalyserWaveform(pConfig));
     ret->addAnalyser(new AnalyserGain(pConfig));
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(pConfig));
