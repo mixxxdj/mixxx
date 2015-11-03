@@ -434,9 +434,14 @@ bool EngineShoutcast::processConnect() {
                 timeout < kConnectRetries &&
                 m_pShoutcastEnabled->toBool()) {
             setState(NETWORKSTREAMWORKER_STATE_WAITING);
-            qDebug() << "Connection pending. Sleeping...";
-            QThread::msleep(100);
+            qDebug() << "Connection pending. Waiting...";
             m_iShoutStatus = shout_get_connected(m_pShout);
+
+            if (m_iShoutStatus != SHOUTERR_BUSY ||
+                m_iShoutStatus != SHOUTERR_SUCCESS) {
+                qDebug() << "Streaming server made error:" << shout_get_error(m_pShout);
+            }
+
             ++ timeout;
         }
         if (m_iShoutStatus == SHOUTERR_CONNECTED) {
