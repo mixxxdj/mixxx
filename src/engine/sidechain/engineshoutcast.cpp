@@ -549,6 +549,8 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 bool EngineShoutcast::metaDataHasChanged() {
     TrackPointer pTrack;
 
+    // TODO(rryan): This is latency and buffer size dependent. Should be based
+    // on time.
     if (m_iMetaDataLife < 16) {
         m_iMetaDataLife++;
         return false;
