@@ -437,9 +437,16 @@ bool EngineShoutcast::processConnect() {
             qDebug() << "Connection pending. Waiting...";
             m_iShoutStatus = shout_get_connected(m_pShout);
 
-            if (m_iShoutStatus != SHOUTERR_BUSY ||
-                m_iShoutStatus != SHOUTERR_SUCCESS) {
+            if (m_iShoutStatus != SHOUTERR_BUSY &&
+                m_iShoutStatus != SHOUTERR_SUCCESS &&
+                m_iShoutStatus != SHOUTERR_CONNECTED) {
                 qDebug() << "Streaming server made error:" << shout_get_error(m_pShout);
+            }
+
+            // If socket is busy then we wait half second
+            if(m_iShoutStatus == SHOUTERR_BUSY)
+            {
+               QThread::msleep(500);
             }
 
             ++ timeout;
