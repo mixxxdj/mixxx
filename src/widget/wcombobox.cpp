@@ -47,6 +47,5 @@ void WComboBox::onConnectedControlValueChanged(double v) {
 }
 
 void WComboBox::slotCurrentIndexChanged(int index) {
-    setControlParameterLeftDown(index);
-    setControlParameterLeftUp(index);
+    setControlParameter(index);
 }

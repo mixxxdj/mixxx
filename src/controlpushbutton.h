@@ -34,6 +34,7 @@ class ControlPushButton : public ControlObject {
          TOGGLE,
          POWERWINDOW,
          LONGPRESSLATCHING,
+         TRIGGER,
     };
 
     static QString buttonModeToString(int mode) {
@@ -46,6 +47,8 @@ class ControlPushButton : public ControlObject {
                 return "POWERWINDOW";
             case ControlPushButton::LONGPRESSLATCHING:
                 return "LONGPRESSLATCHING";
+            case ControlPushButton::TRIGGER:
+                return "TRIGGER";
             default:
                 return "UNKNOWN";
         }

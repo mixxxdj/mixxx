@@ -148,6 +148,7 @@ EngineMaster::~EngineMaster() {
     delete m_pCrossfader;
     delete m_pBalance;
     delete m_pHeadMix;
+    delete m_pHeadSplitEnabled;
     delete m_pMasterVolume;
     delete m_pHeadVolume;
     delete m_pTalkoverDucking;

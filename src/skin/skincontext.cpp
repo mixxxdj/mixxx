@@ -112,11 +112,23 @@ int SkinContext::selectInt(const QDomNode& node,
 bool SkinContext::selectBool(const QDomNode& node,
                              const QString& nodeName,
                              bool defaultValue) const {
-    if (hasNode(node, nodeName)) {
-        QString stringValue = selectString(node, nodeName);
+    QDomNode child = selectNode(node, nodeName);
+    if (!child.isNull()) {
+         QString stringValue = nodeToString(child);
         return stringValue.contains("true", Qt::CaseInsensitive);
     }
     return defaultValue;
+}
+
+bool SkinContext::hasNodeSelectBool(const QDomNode& node,
+                             const QString& nodeName, bool *value) const {
+    QDomNode child = selectNode(node, nodeName);
+    if (!child.isNull()) {
+         QString stringValue = nodeToString(child);
+        *value = stringValue.contains("true", Qt::CaseInsensitive);
+        return true;
+    }
+    return false;
 }
 
 bool SkinContext::selectAttributeBool(const QDomElement& element,

@@ -1842,7 +1842,6 @@
 								<Horizontal>false</Horizontal>
 								<Connection>
 									<ConfigKey>[Sampler4],rate</ConfigKey>
-									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
 							</SliderComposed>
 

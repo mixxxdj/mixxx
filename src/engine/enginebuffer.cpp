@@ -155,6 +155,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
 
     // Start button
     m_startButton = new ControlPushButton(ConfigKey(m_group, "start"));
+    m_startButton->setButtonMode(ControlPushButton::TRIGGER);
     connect(m_startButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlStart(double)),
             Qt::DirectConnection);
@@ -549,7 +550,7 @@ void EngineBuffer::doSeek(double change, enum SeekRequest seekType) {
     // Notify the vinyl control that a seek has taken place in case it is in
     // absolute mode and needs be switched to relative.
     if (m_pVinylControlControl) {
-        m_pVinylControlControl->notifySeek();
+        m_pVinylControlControl->notifySeekQueued();
     }
 
     queueNewPlaypos(new_playpos, seekType);
