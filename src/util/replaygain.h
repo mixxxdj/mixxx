@@ -22,7 +22,7 @@ namespace Mixxx {
 // by subsequently formatting and parsing a floating point value the
 // ratio and peak values need to be normalized before writing them
 // as a string into file tags.
-class ReplayGain {
+class ReplayGain final {
 public:
     static const double kRatioUndefined;
     static const double kRatioMin; // lower bound (exclusive)
