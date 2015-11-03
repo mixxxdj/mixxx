@@ -166,7 +166,7 @@ void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigne
         pWriteBuffer = pBuffer;
         samplesToWrite = nFrames * iChannels;
     } else {
-        qWarning() << "EnginePassthrough got greater than stereo input. Not currently handled.";
+        qWarning() << "EngineAux got greater than stereo input. Not currently handled.";
     }
 
     if (pWriteBuffer != NULL) {

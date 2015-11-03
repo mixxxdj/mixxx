@@ -162,8 +162,8 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QString::fromAscii("Vinyl Control");
     case MICROPHONE:
         return QString::fromAscii("Microphone");
-    case EXTPASSTHROUGH:
-        return QString::fromAscii("Passthrough");
+    case AUXILLIARY:
+        return QString::fromAscii("Auxilliary");
     }
     return QString::fromAscii("Unknown path type %1").arg(type);
 }
@@ -201,8 +201,8 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
                                     QString::number(index + 1));
     case MICROPHONE:
         return QObject::tr("Microphone");
-    case EXTPASSTHROUGH:
-        return QString("%1 %2").arg(QObject::tr("Passthrough"),
+    case AUXILLIARY:
+        return QString("%1 %2").arg(QObject::tr("Auxilliary"),
                                     QString::number(index + 1));
     }
     return QObject::tr("Unknown path type %1").arg(type);
@@ -226,8 +226,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
         return AudioPath::VINYLCONTROL;
     } else if (string == AudioPath::getStringFromType(AudioPath::MICROPHONE).toLower()) {
         return AudioPath::MICROPHONE;
-    } else if (string == AudioPath::getStringFromType(AudioPath::EXTPASSTHROUGH).toLower()) {
-        return AudioPath::EXTPASSTHROUGH;
+    } else if (string == AudioPath::getStringFromType(AudioPath::AUXILLIARY).toLower()) {
+        return AudioPath::AUXILLIARY;
     } else {
         return AudioPath::INVALID;
     }
@@ -242,7 +242,7 @@ bool AudioPath::isIndexed(AudioPathType type) {
     case BUS:
     case DECK:
     case VINYLCONTROL:
-    case EXTPASSTHROUGH:
+    case AUXILLIARY:
         return true;
     case MICROPHONE:
     default:
@@ -421,7 +421,7 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
     // (prefs, etc), minimal ifdefs :) -- bkgood
     types.append(VINYLCONTROL);
 #endif
-    types.append(EXTPASSTHROUGH);
+    types.append(AUXILLIARY);
     types.append(MICROPHONE);
     return types;
 }
