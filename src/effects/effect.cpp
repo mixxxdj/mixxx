@@ -27,6 +27,16 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
         }
         m_parametersById[parameter.id()] = pParameter;
     }
+
+    foreach (const EffectManifestParameter& parameter, m_manifest.buttonParameters()) {
+        EffectParameter* pParameter = new EffectParameter(
+            this, pEffectsManager, m_buttonParameters.size(), parameter);
+        m_buttonParameters.append(pParameter);
+        if (m_buttonParametersById.contains(parameter.id())) {
+            qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
+        }
+        m_buttonParametersById[parameter.id()] = pParameter;
+    }
 }
 
 Effect::~Effect() {
@@ -35,6 +45,11 @@ Effect::~Effect() {
     for (int i = 0; i < m_parameters.size(); ++i) {
         EffectParameter* pParameter = m_parameters.at(i);
         m_parameters[i] = NULL;
+        delete pParameter;
+    }
+    for (int i = 0; i < m_buttonParameters.size(); ++i) {
+        EffectParameter* pParameter = m_buttonParameters.at(i);
+        m_buttonParameters[i] = NULL;
         delete pParameter;
     }
 }
@@ -50,6 +65,10 @@ void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
     foreach (EffectParameter* pParameter, m_parameters) {
         pParameter->addToEngine();
     }
+
+    foreach (EffectParameter* pParameter, m_buttonParameters) {
+        pParameter->addToEngine();
+    }
 }
 
 void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
@@ -63,6 +82,10 @@ void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
     foreach (EffectParameter* pParameter, m_parameters) {
         pParameter->removeFromEngine();
     }
+
+    foreach (EffectParameter* pParameter, m_buttonParameters) {
+        pParameter->removeFromEngine();
+    }
 }
 
 void Effect::updateEngineState() {
@@ -71,6 +94,10 @@ void Effect::updateEngineState() {
     }
     sendParameterUpdate();
     foreach (EffectParameter* pParameter, m_parameters) {
+        pParameter->updateEngineState();
+    }
+
+    foreach (EffectParameter* pParameter, m_buttonParameters) {
         pParameter->updateEngineState();
     }
 }
@@ -110,8 +137,21 @@ unsigned int Effect::numParameters() const {
     return m_parameters.size();
 }
 
+unsigned int Effect::numButtonParameters() const {
+    return m_buttonParameters.size();
+}
+
 EffectParameter* Effect::getParameterById(const QString& id) const {
     EffectParameter* pParameter = m_parametersById.value(id, NULL);
+    if (pParameter == NULL) {
+        qWarning() << debugString() << "getParameterById"
+                   << "WARNING: parameter for id does not exist:" << id;
+    }
+    return pParameter;
+}
+
+EffectParameter* Effect::getButtonParameterById(const QString& id) const {
+    EffectParameter* pParameter = m_buttonParametersById.value(id, NULL);
     if (pParameter == NULL) {
         qWarning() << debugString() << "getParameterById"
                    << "WARNING: parameter for id does not exist:" << id;
@@ -123,6 +163,12 @@ EffectParameter* Effect::getParameter(unsigned int parameterNumber) {
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
     return m_parameters.value(parameterNumber, NULL);
+}
+
+EffectParameter* Effect::getButtonParameter(unsigned int parameterNumber) {
+    // It's normal to ask for a parameter that doesn't exist. Callers must check
+    // for NULL.
+    return m_buttonParameters.value(parameterNumber, NULL);
 }
 
 QDomElement Effect::toXML(QDomDocument* doc) const {
@@ -143,6 +189,20 @@ QDomElement Effect::toXML(QDomDocument* doc) const {
         parameters.appendChild(parameter);
     }
     element.appendChild(parameters);
+
+    QDomElement buttonParameters = doc->createElement("ButtonParameters");
+    foreach (EffectParameter* pParameter, m_buttonParameters) {
+        const EffectManifestParameter& parameterManifest =
+                pParameter->manifest();
+        QDomElement parameter = doc->createElement("ButtonParameter");
+        XmlParse::addElement(*doc, parameter, "Id", parameterManifest.id());
+        // TODO(rryan): Do smarter QVariant formatting?
+        XmlParse::addElement(*doc, parameter, "Value",
+                             pParameter->getValue().toString());
+        // TODO(rryan): Output link state, etc.
+        buttonParameters.appendChild(parameter);
+    }
+    element.appendChild(buttonParameters);
 
     return element;
 }

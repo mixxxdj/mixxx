@@ -34,6 +34,7 @@ struct EffectsRequest {
         // Messages for EngineEffect
         SET_EFFECT_PARAMETERS,
         SET_PARAMETER_PARAMETERS,
+        SET_PARAMETER_BUTTON_PARAMETERS,
 
         // Must come last.
         NUM_REQUEST_TYPES

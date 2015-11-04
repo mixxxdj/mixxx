@@ -1,26 +1,11 @@
-/***************************************************************************
-                          enginefilteriir.cpp  -  description
-                             -------------------
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
 
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "util/counter.h"
 #include "util/math.h"
 #define MIXXX
 #include "fidlib.h"
 
-EngineFilterIIR::EngineFilterIIR(int bufSize)
+EngineFilterBessel4::EngineFilterBessel4(int bufSize)
         : m_sampleRate(44100),
           m_bufSize(bufSize),
           m_doRamping(false){
@@ -28,7 +13,7 @@ EngineFilterIIR::EngineFilterIIR(int bufSize)
     initBuffers();
 }
 
-void EngineFilterIIR::initBuffers() {
+void EngineFilterBessel4::initBuffers() {
     // Copy the current buffers into the old buffers
     memcpy(m_oldBuf1, m_buf1, m_bufSize * sizeof(double));
     memcpy(m_oldBuf2, m_buf2, m_bufSize * sizeof(double));
@@ -37,7 +22,7 @@ void EngineFilterIIR::initBuffers() {
     memset(m_buf2, 0, m_bufSize * sizeof(double));
 }
 
-EngineFilterIIR::~EngineFilterIIR() {
+EngineFilterBessel4::~EngineFilterBessel4() {
 }
 
 inline double _processLowpass(double* coef, double* buf, register double val) {
@@ -99,12 +84,12 @@ inline double _processHighpass(double* coef, double* buf, register double val) {
     return val;
 }
 
-EngineFilterIIRLow::EngineFilterIIRLow(int sampleRate, double freqCorner1)
-        : EngineFilterIIR(4) {
+EngineFilterBessel4Low::EngineFilterBessel4Low(int sampleRate, double freqCorner1)
+        : EngineFilterBessel4(4) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
-void EngineFilterIIRLow::setFrequencyCorners(int sampleRate,
+void EngineFilterBessel4Low::setFrequencyCorners(int sampleRate,
                                              double freqCorner1) {
     m_sampleRate = sampleRate;
     // Copy the old coefficients into m_oldCoef
@@ -115,7 +100,7 @@ void EngineFilterIIRLow::setFrequencyCorners(int sampleRate,
     m_doRamping = true;
 }
 
-void EngineFilterIIRLow::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
+void EngineFilterBessel4Low::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                                  const int iBufferSize) {
     double tmp1, tmp2;
     double cross_mix = 0.0;
@@ -137,13 +122,13 @@ void EngineFilterIIRLow::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
     m_doRamping = false;
 }
 
-EngineFilterIIRBand::EngineFilterIIRBand(int sampleRate, double freqCorner1,
+EngineFilterBessel4Band::EngineFilterBessel4Band(int sampleRate, double freqCorner1,
                                          double freqCorner2)
-        : EngineFilterIIR(16) {
+        : EngineFilterBessel4(16) {
     setFrequencyCorners(sampleRate, freqCorner1, freqCorner2);
 }
 
-void EngineFilterIIRBand::setFrequencyCorners(int sampleRate,
+void EngineFilterBessel4Band::setFrequencyCorners(int sampleRate,
                                              double freqCorner1,
                                              double freqCorner2) {
     m_sampleRate = sampleRate;
@@ -155,7 +140,7 @@ void EngineFilterIIRBand::setFrequencyCorners(int sampleRate,
     m_doRamping = true;
 }
 
-void EngineFilterIIRBand::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
+void EngineFilterBessel4Band::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                                  const int iBufferSize) {
     double tmp1, tmp2;
     double cross_mix = 0.0;
@@ -177,12 +162,12 @@ void EngineFilterIIRBand::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
     m_doRamping = false;
 }
 
-EngineFilterIIRHigh::EngineFilterIIRHigh(int sampleRate, double freqCorner1)
-        : EngineFilterIIR(4) {
+EngineFilterBessel4High::EngineFilterBessel4High(int sampleRate, double freqCorner1)
+        : EngineFilterBessel4(4) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
-void EngineFilterIIRHigh::setFrequencyCorners(int sampleRate,
+void EngineFilterBessel4High::setFrequencyCorners(int sampleRate,
                                              double freqCorner1) {
     m_sampleRate = sampleRate;
     // Copy the old coefficients into m_oldCoef
@@ -193,7 +178,7 @@ void EngineFilterIIRHigh::setFrequencyCorners(int sampleRate,
     m_doRamping = true;
 }
 
-void EngineFilterIIRHigh::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
+void EngineFilterBessel4High::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                                  const int iBufferSize) {
     double tmp1, tmp2;
     double cross_mix = 0.0;

@@ -18,7 +18,7 @@
 #include <QtDebug>
 
 #include "dlgprefcrossfader.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "controlobject.h"
 #include "engine/enginexfader.h"
 

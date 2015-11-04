@@ -19,7 +19,7 @@
 #define ENGINEFILTERBLOCK_H
 
 #include "engine/engineobject.h"
-#include "engine/enginefilteriir.h"
+#include "engine/enginefilterbessel4.h"
 #include "engine/enginefilterbutterworth8.h"
 
 class ControlObjectSlave;
@@ -50,9 +50,9 @@ class EngineFilterBlock : public EngineObject {
     void setFilters();
 
     CSAMPLE *m_pLowBuf, *m_pBandBuf, *m_pHighBuf;
-    EngineFilterIIRLow* lowLight;
-    EngineFilterIIRBand* bandLight;
-    EngineFilterIIRHigh* highLight;
+    EngineFilterBessel4Low* lowLight;
+    EngineFilterBessel4Band* bandLight;
+    EngineFilterBessel4High* highLight;
     EngineFilterButterworth8Low* lowDef;
     EngineFilterButterworth8Band* bandDef;
     EngineFilterButterworth8High* highDef;

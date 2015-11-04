@@ -1,11 +1,11 @@
 #include <QtDebug>
 
 #include "controleffectknob.h"
-#include "effects/effectparameterslot.h"
+#include "effects/effectbuttonparameterslot.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
 
-EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
+EffectButtonParameterSlot::EffectButtonParameterSlot(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
                                          const unsigned int iSlotNumber,
                                          const unsigned int iParameterNumber)
@@ -18,8 +18,9 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
         ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
-    m_pControlValue = new ControlEffectKnob(
+    m_pControlValue = new ControlPushButton(
         ConfigKey(m_group, itemPrefix));
+    m_pControlValue->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pControlType = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_type")));
 
@@ -37,18 +38,18 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     clear();
 }
 
-EffectParameterSlot::~EffectParameterSlot() {
+EffectButtonParameterSlot::~EffectButtonParameterSlot() {
     //qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
 }
 
-void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
+void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
     //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     clear();
     if (pEffect) {
         m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getParameter(m_iParameterNumber);
+        m_pEffectParameter = pEffect->getButtonParameter(m_iParameterNumber);
 
         if (m_pEffectParameter) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
@@ -69,11 +70,9 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
             //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
-            m_pControlValue->setRange(dMinimum, dMaximum, false);
-            EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
-            m_pControlValue->setType(type);
-            m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->set(dValue);
+            m_pControlValue->setDefaultValue(dDefault);
+            EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
             // TODO(rryan) expose this from EffectParameter
             m_pControlType->setAndConfirm(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
@@ -91,7 +90,7 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     emit(updated());
 }
 
-void EffectParameterSlot::clear() {
+void EffectButtonParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
@@ -107,12 +106,12 @@ void EffectParameterSlot::clear() {
     emit(updated());
 }
 
-void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
+void EffectButtonParameterSlot::slotParameterValueChanged(QVariant value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value.toDouble());
 }
 
-void EffectParameterSlot::onChainParameterChanged(double parameter) {
+void EffectButtonParameterSlot::onChainParameterChanged(double parameter) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != NULL) {
         switch (m_pEffectParameter->getLinkType()) {

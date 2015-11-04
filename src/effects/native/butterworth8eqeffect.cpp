@@ -1,22 +1,21 @@
-#include "effects/native/butterwortheqeffect.h"
+#include "effects/native/butterworth8eqeffect.h"
 #include "util/math.h"
 
 // static
-QString ButterworthEQEffect::getId() {
+QString Butterworth8EQEffect::getId() {
     return "org.mixxx.effects.butterwortheq";
 }
 
 // static
-EffectManifest ButterworthEQEffect::getManifest() {
+EffectManifest Butterworth8EQEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Butterworth EQ"));
+    manifest.setName(QObject::tr("Butterworth8 EQ"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Butterworth filter equalizer (the default high-quality filter "
-        "included with Mixxx). To adjust frequency shelves see the "
-        "Equalizer preferences."));
+        "A Butterworth 8th order filter equalizer (flat responds, roll-off -48 db/Oct)"
+        "To adjust frequency shelves see the Equalizer preferences."));
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId("low");
@@ -87,7 +86,7 @@ void ButterworthEQEffectGroupState::setFilters(int sampleRate, int lowFreq,
     high->setFrequencyCorners(sampleRate, highFreq);
 }
 
-ButterworthEQEffect::ButterworthEQEffect(EngineEffect* pEffect,
+Butterworth8EQEffect::Butterworth8EQEffect(EngineEffect* pEffect,
                                          const EffectManifest& manifest)
         : m_pPotLow(pEffect->getParameterById("low")),
           m_pPotMid(pEffect->getParameterById("mid")),
@@ -98,12 +97,12 @@ ButterworthEQEffect::ButterworthEQEffect(EngineEffect* pEffect,
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
 }
 
-ButterworthEQEffect::~ButterworthEQEffect() {
+Butterworth8EQEffect::~Butterworth8EQEffect() {
     delete m_pLoFreqCorner;
     delete m_pHiFreqCorner;
 }
 
-void ButterworthEQEffect::processGroup(const QString& group,
+void Butterworth8EQEffect::processGroup(const QString& group,
                                        ButterworthEQEffectGroupState* pState,
                                        const CSAMPLE* pInput, CSAMPLE* pOutput,
                                        const unsigned int numSamples,

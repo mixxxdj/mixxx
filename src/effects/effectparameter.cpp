@@ -200,7 +200,7 @@ QVariant EffectParameter::getValue() const {
     return m_value;
 }
 
-void EffectParameter::setValue(QVariant value) {
+void EffectParameter::setValue(QVariant value, int type) {
     if (!checkType(value)) {
         qWarning() << debugString() << "WARNING: Value cannot be converted to suitable value, ignoring.";
         return;
@@ -226,7 +226,7 @@ void EffectParameter::setValue(QVariant value) {
     if (clampValue()) {
         qWarning() << debugString() << "WARNING: Value was outside of limits, clamped.";
     }
-    updateEngineState();
+    updateEngineState(type);
     emit(valueChanged(m_value));
 }
 
@@ -425,12 +425,12 @@ void EffectParameter::removeFromEngine() {
     m_bAddedToEngine = false;
 }
 
-void EffectParameter::updateEngineState() {
+void EffectParameter::updateEngineState(int type) {
     if (!m_bAddedToEngine) {
         return;
     }
     EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
+    pRequest->type = static_cast<EffectsRequest::MessageType>(type);
     pRequest->pTargetEffect = m_pEffect->getEngineEffect();
     pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
     pRequest->value = m_value;
