@@ -28,8 +28,10 @@
 /*
    Class for reading files using libsndfile
  */
-SoundSourceSndFile::SoundSourceSndFile(QString qFilename) :
-    Mixxx::SoundSource(qFilename)
+SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
+    : Mixxx::SoundSource(qFilename),
+      channels(0),
+      fh(NULL)
 {
     m_bOpened = false;
     info = new SF_INFO;

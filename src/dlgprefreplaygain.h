@@ -29,7 +29,7 @@ class DlgPrefReplayGain: public DlgPreferencePage, public Ui::DlgPrefReplayGainD
 
     void slotApply();
     void slotUpdate();
-    void setDefaults();
+    void slotResetToDefaults();
 
   signals:
     void apply(const QString &);

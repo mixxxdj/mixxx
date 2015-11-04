@@ -75,6 +75,8 @@ class DlgPrefController : public DlgPreferencePage {
 
   private:
     QString presetShortName(const ControllerPresetPointer pPreset) const;
+    QString presetName(const ControllerPresetPointer pPreset) const;
+    QString presetAuthor(const ControllerPresetPointer pPreset) const;
     QString presetDescription(const ControllerPresetPointer pPreset) const;
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;

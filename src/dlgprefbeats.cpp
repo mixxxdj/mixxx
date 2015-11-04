@@ -40,7 +40,6 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
             this, SLOT(fixedtempoEnabled(int)));
     connect(boffset, SIGNAL(stateChanged(int)),
             this, SLOT(offsetEnabled(int)));
-    connect(reset, SIGNAL(clicked(bool)),     this, SLOT(setDefaults()));
 
     connect(bFastAnalysis, SIGNAL(stateChanged(int)),
             this, SLOT(fastAnalysisEnabled(int)));
@@ -60,7 +59,7 @@ DlgPrefBeats::~DlgPrefBeats() {
 void DlgPrefBeats::loadSettings(){
     if(m_pconfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID))==QString("")) {
-        setDefaults();
+        slotResetToDefaults();
         slotApply();    // Write to config file so AnalyzerBeats can get the data
         return;
     }
@@ -85,7 +84,7 @@ void DlgPrefBeats::loadSettings(){
         ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
 
     if (!m_listIdentifier.contains(pluginid)) {
-        setDefaults();
+        slotResetToDefaults();
     }
     m_minBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
     m_maxBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
@@ -93,27 +92,26 @@ void DlgPrefBeats::loadSettings(){
     slotUpdate();
 }
 
-void DlgPrefBeats::setDefaults() {
-    if (m_listIdentifier.size()==0) {
-        qDebug() << "DlgPrefBeats:No Vamp plugin not found";
-        return;
-    }
-    if (m_listIdentifier.contains("qm-tempotracker:0")) {
-        m_selectedAnalyser = "qm-tempotracker:0";
+void DlgPrefBeats::slotResetToDefaults() {
+    if (!m_listIdentifier.isEmpty()) {
+        if (m_listIdentifier.contains("qm-tempotracker:0")) {
+            m_selectedAnalyser = "qm-tempotracker:0";
+        } else {
+            // the first one will always be the soundtouch one. defined in
+            // vamp-plugins/libmain.cpp
+            m_selectedAnalyser = m_listIdentifier.at(0);
+        }
     } else {
-        // the first one will always be the soundtouch one. defined in
-        // vamp-plugins/libmain.cpp
-        m_selectedAnalyser = m_listIdentifier.at(0);
+        qDebug() << "DlgPrefBeats:No Vamp plugin not found";
     }
+
     m_banalyserEnabled = true;
     m_bfixedtempoEnabled = true;
     m_boffsetEnabled = true;
     m_FastAnalysisEnabled = false;
     m_bReanalyze = false;
-
     m_minBpm = 70;
     m_maxBpm = 140;
-    //slotApply();
     slotUpdate();
 }
 

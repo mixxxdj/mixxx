@@ -361,7 +361,11 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
         }
     }
 #endif
+#else
+    Q_UNUSED(canonicalPath);
+    Q_UNUSED(bookmarkBase64);
 #endif
+
     return SecurityTokenPointer();
 }
 

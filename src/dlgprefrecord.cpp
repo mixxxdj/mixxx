@@ -54,8 +54,10 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
     }
     LineEditRecordings->setText(recordingsPath);
 
-    connect(PushButtonBrowseRecordings, SIGNAL(clicked()), this, SLOT(slotBrowseRecordingsDir()));
-    connect(LineEditRecordings, SIGNAL(returnPressed()), this, SLOT(slotApply()));
+    connect(PushButtonBrowseRecordings, SIGNAL(clicked()),
+            this, SLOT(slotBrowseRecordingsDir()));
+    connect(LineEditRecordings, SIGNAL(returnPressed()),
+            this, SLOT(slotApply()));
 
     connect(m_pRadioOgg, SIGNAL(clicked()),
             this, SLOT(slotApply()));
@@ -102,11 +104,16 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
 
     loadMetaData();
 
-    connect(SliderQuality, SIGNAL(valueChanged(int)), this, SLOT(slotSliderQuality()));
-    connect(SliderQuality, SIGNAL(sliderMoved(int)), this, SLOT(slotSliderQuality()));
-    connect(SliderQuality, SIGNAL(sliderReleased()), this, SLOT(slotSliderQuality()));
-    connect(CheckBoxRecordCueFile, SIGNAL(stateChanged(int)), this, SLOT(slotEnableCueFile(int)));
-    connect(comboBoxSplitting, SIGNAL(activated(int)), this, SLOT(slotChangeSplitSize()));
+    connect(SliderQuality, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSliderQuality()));
+    connect(SliderQuality, SIGNAL(sliderMoved(int)),
+            this, SLOT(slotSliderQuality()));
+    connect(SliderQuality, SIGNAL(sliderReleased()),
+            this, SLOT(slotSliderQuality()));
+    connect(CheckBoxRecordCueFile, SIGNAL(stateChanged(int)),
+            this, SLOT(slotEnableCueFile(int)));
+    connect(comboBoxSplitting, SIGNAL(activated(int)),
+            this, SLOT(slotChangeSplitSize()));
 
     slotApply();
     // Make sure a corrupt config file won't cause us to record constantly.
@@ -209,6 +216,20 @@ DlgPrefRecord::~DlgPrefRecord() {
 void DlgPrefRecord::slotRecordPathChange() {
     m_bConfirmOverwrite = false;
     slotApply();
+}
+
+void DlgPrefRecord::slotResetToDefaults() {
+    m_pRadioWav->setChecked(true);
+    CheckBoxRecordCueFile->setChecked(false);
+    // 650MB splitting is the default
+    comboBoxSplitting->setCurrentIndex(0);
+
+    LineEditTitle->setText("");
+    LineEditAlbum->setText("");
+    LineEditAuthor->setText("");
+
+    // 6 corresponds to 128kbps (only used by MP3 and Ogg though)
+    SliderQuality->setValue(6);
 }
 
 // This function updates/refreshes the contents of this dialog.

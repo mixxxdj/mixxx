@@ -25,6 +25,10 @@ class DlgPreferencePage : public QWidget {
     // slotUpdate.
     virtual void slotCancel() {}
 
+    // Called when the user clicks the global "Reset to Defaults" button. The
+    // preference dialog should revert settings to their default values.
+    virtual void slotResetToDefaults() {}
+
     // Called when the preferences dialog is shown to the user (not necessarily
     // when this PreferencePage is shown to the user).
     virtual void slotShow() {}

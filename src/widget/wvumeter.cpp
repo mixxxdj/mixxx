@@ -33,9 +33,13 @@
 
 WVuMeter::WVuMeter(QWidget* parent) :
         WWidget(parent),
+        m_iPos(0),
         m_iNoPos(0),
         m_bHorizontal(false),
         m_iPeakHoldSize(0),
+        m_iPeakFallStep(0),
+        m_iPeakHoldTime(0),
+        m_iPeakFallTime(0),
         m_iPeakPos(0),
         m_iPeakHoldCountdown(0),
         m_iLastPos(0),

@@ -22,15 +22,14 @@
 #include <math.h>
 
 SteadyPitch::SteadyPitch(double threshold)
-{
-    m_dPitchThreshold = threshold; //variation above which we say we aren't steady
-    m_dOldSteadyPitch = 1.0;   //last-known steady pitch value
-    m_dSteadyPitchTime = 0.0;  //last track location we had a steady pitch
-    m_dLastSteadyDur = 0.0;    //last known duration of steadiness
-    m_dLastTime = 0.0;         //track location of previous call
-    m_iPlayDirection = 1;      //1=forward, -1=backward
+    : m_dSteadyPitch(0.0),
+      m_dOldSteadyPitch(1.0),       // last-known steady pitch value
+      m_dSteadyPitchTime(0.0),      // last track location we had a steady pitch
+      m_dLastSteadyDur(0.0),        // last known duration of steadiness
+      m_dLastTime(0.0),             // track location of previous call
+      m_dPitchThreshold(threshold), // variation above which we say we aren't steady
+      m_iPlayDirection(1) {         // 1=forward, -1=backward
 }
-
 
 void SteadyPitch::reset(double pitch, double time)
 {

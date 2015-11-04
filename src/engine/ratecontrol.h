@@ -124,7 +124,6 @@ public:
     // For Master Sync
     BpmControl* m_pBpmControl;
 
-    ControlPushButton *m_pSyncMasterEnabled, *m_pSyncEnabled;
     ControlObjectSlave* m_pSyncMode;
     ControlObjectSlave* m_pSlipEnabled;
 

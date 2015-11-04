@@ -17,7 +17,6 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue>
     connect(EnableAnalyser,  SIGNAL(stateChanged(int)), this, SLOT(slotSetRGAnalyserEnabled()));
     connect(SliderBoost,     SIGNAL(valueChanged(int)), this, SLOT(slotUpdateBoost()));
     connect(SliderBoost,     SIGNAL(sliderReleased()),  this, SLOT(slotApply()));
-    connect(PushButtonReset, SIGNAL(clicked(bool)),     this, SLOT(setDefaults()));
 
     loadSettings();
 }
@@ -27,7 +26,7 @@ DlgPrefReplayGain::~DlgPrefReplayGain() {
 
 void DlgPrefReplayGain::loadSettings() {
     if(config->getValueString(ConfigKey(CONFIG_KEY,"ReplayGainEnabled"))==QString("")) {
-        setDefaults();
+        slotResetToDefaults();
     } else {
         int iReplayGainBoost =
                 config->getValueString(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost")).toInt();
@@ -46,7 +45,7 @@ void DlgPrefReplayGain::loadSettings() {
     slotUpdateBoost();
 }
 
-void DlgPrefReplayGain::setDefaults() {
+void DlgPrefReplayGain::slotResetToDefaults() {
     EnableGain->setChecked(true);
     // Turn ReplayGain Analyser on by default as it does not give appreciable
     // delay on recent hardware (<5 years old).

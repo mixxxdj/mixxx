@@ -10,6 +10,8 @@ WKey::WKey(const char* group, QWidget* pParent)
     setValue(m_dOldValue);
     connect(&m_preferencesUpdated, SIGNAL(valueChanged(double)),
             this, SLOT(preferencesUpdated(double)));
+    connect(&m_engineKeyDistance, SIGNAL(valueChanged(double)),
+            this, SLOT(setCents()));
 }
 
 WKey::~WKey() {
@@ -37,13 +39,22 @@ void WKey::setValue(double dValue) {
         if (m_displayCents) {
             double diff_cents = m_engineKeyDistance.get();
             int cents_to_display = static_cast<int>(diff_cents * 100);
-            char sign = diff_cents < 0 ? '-' : '+';
+            char sign = ' ';
+            if (diff_cents < 0) {
+                sign = '-';
+            } else if (diff_cents > 0) {
+                sign = '+';
+            }
             keyStr.append(QString(" %1%2c").arg(sign).arg(qAbs(cents_to_display)));
         }
         setText(keyStr);
     } else {
         setText("");
     }
+}
+
+void WKey::setCents() {
+    setValue(m_dOldValue);
 }
 
 void WKey::preferencesUpdated(double dValue) {

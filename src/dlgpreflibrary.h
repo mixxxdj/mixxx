@@ -44,15 +44,15 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     virtual ~DlgPrefLibrary();
 
   public slots:
-    // Update widget
+    // Common preference page slots.
     void slotUpdate();
+    void slotResetToDefaults();
+    void slotApply();
+
     // Dialog to browse for music file directory
     void slotAddDir();
     void slotRemoveDir();
     void slotRelocateDir();
-    // Apply changes to widget
-    void slotApply();
-
     void slotExtraPlugins();
 
   signals:

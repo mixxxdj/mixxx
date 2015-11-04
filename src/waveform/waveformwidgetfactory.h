@@ -102,6 +102,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void notifyZoomChange(WWaveformViewer *viewer);
 
+    WaveformWidgetType::Type autoChooseWidgetType() const;
+
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int rtErrorCnt);
@@ -117,7 +119,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void swap();
 
   private:
-    WaveformWidgetType::Type autoChooseWidgetType() const;
     void evaluateWidgets();
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
@@ -135,7 +136,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool m_skipRender;
     int m_frameRate;
-    int m_mainTimerId;
     int m_defaultZoom;
     bool m_zoomSync;
     double m_visualGain[FilterCount];
@@ -149,12 +149,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     //Debug
     QTime m_time;
-    QTime m_delayTime;
     float m_frameCnt;
-    int m_lastRenderDuration;
     double m_actualFrameRate;
-    double m_minimumFrameRate;
-    double m_maximumlFrameRate;
     int m_vSyncType;
 };
 

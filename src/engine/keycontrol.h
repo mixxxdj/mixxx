@@ -39,7 +39,6 @@ class KeyControl : public EngineControl {
     double m_dPitchCompensationOldPitch;
 
     // ControlObjects that come from EngineBuffer
-    ControlObject* m_pPlayButton;
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;

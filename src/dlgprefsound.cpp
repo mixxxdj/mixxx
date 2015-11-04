@@ -35,16 +35,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
           m_pPlayerManager(pPlayerManager),
           m_pConfig(pConfig),
           m_settingsModified(false),
-          m_loading(false),
-          m_forceApply(false) {
+          m_loading(false) {
     setupUi(this);
 
     connect(m_pSoundManager, SIGNAL(devicesUpdated()),
             this, SLOT(refreshDevices()));
-
-    applyButton->setEnabled(false);
-    connect(applyButton, SIGNAL(clicked()),
-            this, SLOT(slotApply()));
 
     apiComboBox->clear();
     apiComboBox->addItem(tr("None"), "None");
@@ -68,9 +63,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(audioBufferChanged(int)));
 
     deviceSyncComboBox->clear();
-    deviceSyncComboBox->addItem(tr("0: Polling (experimental)"));
-    deviceSyncComboBox->addItem(tr("1: No synchronization"));
-    deviceSyncComboBox->addItem(tr("2: Drift and jitter correction"));
+    deviceSyncComboBox->addItem(tr("Default (long delay)"));
+    deviceSyncComboBox->addItem(tr("Experimental (no delay)"));
+    deviceSyncComboBox->addItem(tr("Disabled (short delay)"));
     deviceSyncComboBox->setCurrentIndex(2);
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(syncBuffersChanged(int)));
@@ -89,8 +84,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 
     connect(queryButton, SIGNAL(clicked()),
             this, SLOT(queryClicked()));
-    connect(resetButton, SIGNAL(clicked()),
-            this, SLOT(resetClicked()));
 
     connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
             this, SLOT(addPath(AudioOutput)));
@@ -150,17 +143,15 @@ void DlgPrefSound::slotUpdate() {
     // for a prefs rewrite -- bkgood
     loadSettings();
     m_settingsModified = false;
-    applyButton->setEnabled(false);
 }
 
 /**
  * Slot called when the Apply or OK button is pressed.
  */
 void DlgPrefSound::slotApply() {
-    if (!m_settingsModified && !m_forceApply) {
+    if (!m_settingsModified) {
         return;
     }
-    m_forceApply = false;
     m_config.clearInputs();
     m_config.clearOutputs();
     emit(writePaths(&m_config));
@@ -185,18 +176,7 @@ void DlgPrefSound::slotApply() {
         QMessageBox::warning(NULL, tr("Configuration error"), error);
     }
     m_settingsModified = false;
-    applyButton->setEnabled(false);
     loadSettings(); // in case SM decided to change anything it didn't like
-}
-
-/**
- * Slot called by DlgPrefVinyl when it needs slotApply here to call setupDevices.
- * We're graced with this kludge because VC proxies are only initialized in
- * SoundManager::setupDevices and reinit is the only way to make them reread
- * their config.
- */
-void DlgPrefSound::forceApply() {
-    m_forceApply = true;
 }
 
 /**
@@ -340,8 +320,17 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         audioBufferComboBox->setCurrentIndex(sizeIndex);
     }
 
-    int syncIndex = m_config.getSyncBuffers();
-    deviceSyncComboBox->setCurrentIndex(syncIndex);
+    int syncBuffers = m_config.getSyncBuffers();
+    if (syncBuffers == 0) {
+        // "Experimental (no delay)"))
+        deviceSyncComboBox->setCurrentIndex(1);
+    } else if (syncBuffers == 1) {
+        // "Disabled (short delay)")) = 1 buffer
+        deviceSyncComboBox->setCurrentIndex(2);
+    } else {
+        // "Default (long delay)" = 2 buffer
+        deviceSyncComboBox->setCurrentIndex(0);
+    }
 
     emit(loadPaths(m_config));
     m_loading = false;
@@ -405,7 +394,16 @@ void DlgPrefSound::audioBufferChanged(int index) {
 }
 
 void DlgPrefSound::syncBuffersChanged(int index) {
-    m_config.setSyncBuffers(index);
+    if (index == 0) {
+        // "Default (long delay)" = 2 buffer
+        m_config.setSyncBuffers(2);
+    } else if (index == 1) {
+        // "Experimental (no delay)")) = 0 buffer
+        m_config.setSyncBuffers(0);
+    } else {
+        // "Disabled (short delay)")) = 1 buffer
+        m_config.setSyncBuffers(1);
+    }
 }
 
 // Slot called whenever the selected sample rate is changed. Populates the
@@ -467,9 +465,6 @@ void DlgPrefSound::refreshDevices() {
 void DlgPrefSound::settingChanged() {
     if (m_loading) return; // doesn't count if we're just loading prefs
     m_settingsModified = true;
-    if (!applyButton->isEnabled()) {
-        applyButton->setEnabled(true);
-    }
 }
 
 /**
@@ -483,7 +478,7 @@ void DlgPrefSound::queryClicked() {
 /**
  * Slot called when the "Reset to Defaults" button is clicked.
  */
-void DlgPrefSound::resetClicked() {
+void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig;
     newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
     loadSettings(newConfig);
@@ -507,4 +502,3 @@ void DlgPrefSound::headDelayChanged(double value) {
 void DlgPrefSound::masterDelayChanged(double value) {
     m_pMasterDelay->set(value);
 }
-

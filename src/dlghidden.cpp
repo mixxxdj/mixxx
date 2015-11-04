@@ -53,7 +53,7 @@ void DlgHidden::init() {
 
 void DlgHidden::onShow() {
     // no buttons can be selected
-    slotActivateButtons(false);
+    activateButtons(false);
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
             [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
@@ -74,7 +74,7 @@ void DlgHidden::selectAll() {
     m_pTrackTableView->selectAll();
 }
 
-void DlgHidden::slotActivateButtons(bool enable) {
+void DlgHidden::activateButtons(bool enable) {
     btnPurge->setEnabled(enable);
     btnUnhide->setEnabled(enable);
 }
@@ -82,5 +82,5 @@ void DlgHidden::slotActivateButtons(bool enable) {
 void DlgHidden::selectionChanged(const QItemSelection &selected,
                                  const QItemSelection &deselected) {
     Q_UNUSED(deselected);
-    slotActivateButtons(!selected.indexes().isEmpty());
+    activateButtons(!selected.indexes().isEmpty());
 }

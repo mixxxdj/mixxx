@@ -56,7 +56,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
   public slots:
     void slotUpdate(); // called on show
     void slotApply();  // called on ok button
-    void forceApply(); // called by DlgPrefVinyl to make slotApply call setupDevices
+    void slotResetToDefaults();
     void bufferUnderflow(double count);
     void masterLatencyChanged(double latency);
     void headDelayChanged(double value);
@@ -75,7 +75,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void refreshDevices();
     void settingChanged();
     void queryClicked();
-    void resetClicked();
 
   private:
     void initializePaths();
@@ -95,7 +94,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool m_settingsModified;
     SoundManagerConfig m_config;
     bool m_loading;
-    bool m_forceApply;
 };
 
 #endif

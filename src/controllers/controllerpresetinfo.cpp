@@ -20,7 +20,8 @@ PresetInfo::PresetInfo()
         : m_valid(false) {
 }
 
-PresetInfo::PresetInfo(const QString preset_path) {
+PresetInfo::PresetInfo(const QString preset_path)
+        : m_valid(false) {
     // Parse <info> header section from a controller description XML file
     // Contents parsed by xml path:
     // info.name        Preset name, used for drop down menus in dialogs

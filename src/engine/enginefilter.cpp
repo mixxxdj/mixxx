@@ -20,6 +20,12 @@
 
 
 EngineFilter::EngineFilter(char * conf, int predefinedType)
+        : iir(0),
+          fir(0),
+          tmp(0),
+          ff(NULL),
+          funcp(NULL),
+          run(NULL)
 {
     switch(predefinedType)
     {
