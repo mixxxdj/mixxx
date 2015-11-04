@@ -131,11 +131,11 @@ void EngineEffectsManager::onCallbackStart() {
 }
 
 void EngineEffectsManager::process(const QString& group,
-                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                   CSAMPLE* pInOut,
                                    const unsigned int numSamples,
                                    const GroupFeatureState& groupFeatures) {
     foreach (EngineEffectRack* pRack, m_racks) {
-        pRack->process(group, pInput, pOutput, numSamples, groupFeatures);
+        pRack->process(group, pInOut, numSamples, groupFeatures);
     }
 }
 

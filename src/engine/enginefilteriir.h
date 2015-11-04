@@ -20,7 +20,7 @@
 #include "engine/engineobject.h"
 #include "defs.h"
 
-class EngineFilterIIR : public EngineObject {
+class EngineFilterIIR : public EngineObjectConstIn {
     Q_OBJECT
   public:
     EngineFilterIIR(const double* pCoefs, int iOrder);

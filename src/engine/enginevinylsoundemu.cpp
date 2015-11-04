@@ -49,7 +49,7 @@ void EngineVinylSoundEmu::setSpeed(double speed) {
     m_dSpeed = speed;
 }
 
-void EngineVinylSoundEmu::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
+void EngineVinylSoundEmu::process(CSAMPLE* pInOut, const int iBufferSize) {
     const double thresholdSpeed = 0.070; //Scale volume if playback speed is below 7%.
     const double ditherSpeed = 0.85; //Dither if playback speed is below 85%.
 
@@ -60,17 +60,6 @@ void EngineVinylSoundEmu::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const in
     const CSAMPLE curQuieting =
             fabs(m_dSpeed) < thresholdSpeed ? fabs(m_dSpeed) / thresholdSpeed : 1.;
 
-    // First process with the current parameter state.
-    for (int i = 0; i < iBufferSize; i += 2) {
-        CSAMPLE dither = 0;
-        if (isDithering) {
-            dither = m_fNoise[m_iNoisePos];
-            m_iNoisePos = (m_iNoisePos + 1) % NOISE_BUFFER_SIZE;
-        }
-        pOutput[i] = curQuieting * pIn[i] + dither;
-        pOutput[i+1] = curQuieting * pIn[i+1] + dither;
-    }
-
     // If necessary, process with the old parameters and crossfade.
     if (wasDithering != isDithering || prevQuieting != curQuieting) {
         for (int i = 0; i < iBufferSize; i += 2) {
@@ -79,10 +68,25 @@ void EngineVinylSoundEmu::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const in
                 dither = m_fNoise[m_iNoisePos];
                 m_iNoisePos = (m_iNoisePos + 1) % NOISE_BUFFER_SIZE;
             }
-            m_crossfadeBuffer[i] = prevQuieting * pIn[i] + dither;
-            m_crossfadeBuffer[i+1] = prevQuieting * pIn[i+1] + dither;
+            m_crossfadeBuffer[i] = prevQuieting * pInOut[i] + dither;
+            m_crossfadeBuffer[i+1] = prevQuieting * pInOut[i+1] + dither;
         }
-        SampleUtil::linearCrossfadeBuffers(pOutput, m_crossfadeBuffer, pOutput, iBufferSize);
     }
+
+    // First process with the current parameter state.
+    for (int i = 0; i < iBufferSize; i += 2) {
+        CSAMPLE dither = 0;
+        if (isDithering) {
+            dither = m_fNoise[m_iNoisePos];
+            m_iNoisePos = (m_iNoisePos + 1) % NOISE_BUFFER_SIZE;
+        }
+        pInOut[i] = curQuieting * pInOut[i] + dither;
+        pInOut[i+1] = curQuieting * pInOut[i+1] + dither;
+    }
+
+    if (wasDithering != isDithering || prevQuieting != curQuieting) {
+        SampleUtil::linearCrossfadeBuffers(pInOut, m_crossfadeBuffer, pInOut, iBufferSize);
+    }
+
     m_dOldSpeed = m_dSpeed;
 }

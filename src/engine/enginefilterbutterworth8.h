@@ -6,7 +6,7 @@
 
 #include "engine/enginefilter.h"
 
-class EngineFilterButterworth8 : public EngineObject {
+class EngineFilterButterworth8 : public EngineObjectConstIn {
     Q_OBJECT
   public:
     EngineFilterButterworth8(int sampleRate, int bufSize);

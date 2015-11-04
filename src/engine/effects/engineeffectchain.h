@@ -23,7 +23,7 @@ class EngineEffectChain : public EffectsRequestHandler {
         EffectsResponsePipe* pResponsePipe);
 
     void process(const QString& group,
-                 const CSAMPLE* pInput, CSAMPLE* pOutput,
+                 CSAMPLE* pInOut,
                  const unsigned int numSamples,
                  const GroupFeatureState& groupFeatures);
 

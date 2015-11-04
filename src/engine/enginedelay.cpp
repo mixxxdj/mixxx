@@ -57,7 +57,7 @@ void EngineDelay::slotDelayChanged() {
 }
 
 
-void EngineDelay::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize) {
+void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
     if (m_iDelay > 0) {
         int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
 
@@ -66,15 +66,12 @@ void EngineDelay::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBuffe
 
         for (int i = 0; i < iBufferSize; ++i) {
             // put sample into delay buffer:
-            m_pDelayBuffer[m_iDelayPos] = pIn[i];
+            m_pDelayBuffer[m_iDelayPos] = pInOut[i];
             m_iDelayPos = (m_iDelayPos + 1) % kiMaxDelay;
 
             // Take delayed sample from delay buffer and copy it to dest buffer:
-            pOutput[i] = m_pDelayBuffer[iDelaySourcePos];
+            pInOut[i] = m_pDelayBuffer[iDelaySourcePos];
             iDelaySourcePos = (iDelaySourcePos + 1) % kiMaxDelay;
         }
-    } else {
-        // Does nothing in case of pOutput == pIn
-        SampleUtil::copyWithGain(pOutput, pIn, 1.0, iBufferSize);
     }
 }

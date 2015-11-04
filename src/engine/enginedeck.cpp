@@ -72,7 +72,7 @@ EngineDeck::~EngineDeck() {
     delete m_pVUMeter;
 }
 
-void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
+void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     GroupFeatureState features;
     // Feed the incoming audio through if passthrough is active
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
@@ -89,28 +89,28 @@ void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
         }
 
         // Process the raw audio
-        m_pBuffer->process(0, pOut, iBufferSize);
+        m_pBuffer->process(pOut, iBufferSize);
         m_pBuffer->collectFeatures(&features);
         // Emulate vinyl sounds
         m_pVinylSoundEmu->setSpeed(m_pBuffer->getSpeed());
-        m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
+        m_pVinylSoundEmu->process(pOut, iBufferSize);
         m_bPassthroughWasActive = false;
     }
 
     // Apply pregain
-    m_pPregain->process(pOut, pOut, iBufferSize);
+    m_pPregain->process(pOut, iBufferSize);
     // Filter the channel with EQs
-    m_pFilter->process(pOut, pOut, iBufferSize);
+    m_pFilter->process(pOut, iBufferSize);
     // Process effects enabled for this channel
     if (m_pEngineEffectsManager != NULL) {
         // This is out of date by a callback but some effects will want the RMS
         // volume.
         m_pVUMeter->collectFeatures(&features);
-        m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
+        m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
                                          features);
     }
     // Update VU meter
-    m_pVUMeter->process(pOut, pOut, iBufferSize);
+    m_pVUMeter->process(pOut, iBufferSize);
 }
 
 EngineBuffer* EngineDeck::getEngineBuffer() {

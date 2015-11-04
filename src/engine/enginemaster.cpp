@@ -253,7 +253,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
 
                 // Process the buffer if necessary, which it damn well better be
                 if (needsProcessing) {
-                    pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+                    pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
 
                     if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
                             pChannel->isTalkover()) {
@@ -296,7 +296,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
 
         // Process the buffer if necessary
         if (needsProcessing) {
-            pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+            pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
 
             if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
                     pChannel->isTalkover()) {
@@ -407,7 +407,7 @@ void EngineMaster::process(const int iBufferSize) {
             if (m_pVumeter != NULL) {
                 m_pVumeter->collectFeatures(&masterFeatures);
             }
-            m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster, m_pMaster,
+            m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster,
                                              iBufferSize, masterFeatures);
         }
 
@@ -437,7 +437,7 @@ void EngineMaster::process(const int iBufferSize) {
         // Update VU meter (it does not return anything). Needs to be here so that
         // master balance is reflected in the VU meter.
         if (m_pVumeter != NULL) {
-            m_pVumeter->process(m_pMaster, m_pMaster, iBufferSize);
+            m_pVumeter->process(m_pMaster, iBufferSize);
         }
         // Submit master samples to the side chain to do shoutcasting, recording,
         // etc. (cpu intensive non-realtime tasks)
@@ -463,7 +463,7 @@ void EngineMaster::process(const int iBufferSize) {
         // Process headphone channel effects
         if (m_pEngineEffectsManager) {
             GroupFeatureState headphoneFeatures;
-            m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead, m_pHead,
+            m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead,
                                              iBufferSize, headphoneFeatures);
         }
         // Head volume
@@ -490,12 +490,12 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     if (masterEnabled) {
-        m_pMasterDelay->process(m_pMaster, m_pMaster, iBufferSize);
+        m_pMasterDelay->process(m_pMaster, iBufferSize);
     } else {
         SampleUtil::clear(m_pMaster, iBufferSize);
     }
     if (headphoneEnabled) {
-        m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
+        m_pHeadDelay->process(m_pHead, iBufferSize);
     }
 
     // We're close to the end of the callback. Wake up the engine worker
