@@ -28,7 +28,7 @@
 class ControlLogpotmeter : public ControlPotmeter {
     Q_OBJECT
   public:
-    ControlLogpotmeter(ConfigKey key, double dMaxValue=5.);
+    ControlLogpotmeter(ConfigKey key, double dMaxValue, double minDB);
 };
 
 #endif

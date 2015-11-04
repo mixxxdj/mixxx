@@ -8,6 +8,7 @@
 #include "effects/native/bessel4lvmixeqeffect.h"
 #include "effects/native/graphiceqeffect.h"
 #include "effects/native/filtereffect.h"
+#include "effects/native/moogladder4filtereffect.h"
 #ifndef __MACAPPSTORE__
 #include "effects/native/reverbeffect.h"
 #endif
@@ -18,6 +19,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     registerEffect<FlangerEffect>();
     registerEffect<BitCrusherEffect>();
     registerEffect<FilterEffect>();
+    registerEffect<MoogLadder4FilterEffect>();
 #ifndef __MACAPPSTORE__
     registerEffect<ReverbEffect>();
 #endif

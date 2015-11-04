@@ -117,8 +117,8 @@ class EffectManifestParameter {
     virtual LinkType defaultLinkType() const {
         return m_defaultLinkType;
     }
-    virtual void setDefaultLinkType(LinkType linkHint) {
-        m_defaultLinkType = linkHint;
+    virtual void setDefaultLinkType(LinkType linkType) {
+        m_defaultLinkType = linkType;
     }
 
     // Neutral Point On Scale is the parameter in the range 0 .. 1 on the knob that
