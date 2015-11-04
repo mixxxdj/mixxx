@@ -76,23 +76,23 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
             QString strQuery("CREATE TEMP TABLE IF NOT EXISTS " BANSHEE_TABLE
                 " (" CLM_VIEW_ORDER " INTEGER, "
                      CLM_ARTIST " TEXT, "
-                    CLM_TITLE " TEXT, "
-                    CLM_DURATION " INTEGER, "
-                    CLM_URI " TEXT, "
-                    CLM_ALBUM " TEXT, "
-                    CLM_ALBUM_ARTIST " TEXT, "
-                    CLM_YEAR " INTEGER, "
-                    CLM_RATING " INTEGER, "
-                    CLM_GENRE " TEXT, "
-                    CLM_GROUPING " TEXT, "
-                    CLM_TRACKNUMBER " INTEGER, "
-                    CLM_DATEADDED " INTEGER, "
-                    CLM_BPM " INTEGER, "
-                    CLM_BITRATE " INTEGER, "
-                    CLM_COMMENT " TEXT, "
-                    CLM_PLAYCOUNT" INTEGER, "
-                    CLM_COMPOSER " TEXT, "
-                    CLM_PREVIEW " TEXT)");
+                     CLM_TITLE " TEXT, "
+                     CLM_DURATION " INTEGER, "
+                     CLM_URI " TEXT, "
+                     CLM_ALBUM " TEXT, "
+                     CLM_ALBUM_ARTIST " TEXT, "
+                     CLM_YEAR " INTEGER, "
+                     CLM_RATING " INTEGER, "
+                     CLM_GENRE " TEXT, "
+                     CLM_GROUPING " TEXT, "
+                     CLM_TRACKNUMBER " INTEGER, "
+                     CLM_DATEADDED " INTEGER, "
+                     CLM_BPM " INTEGER, "
+                     CLM_BITRATE " INTEGER, "
+                     CLM_COMMENT " TEXT, "
+                     CLM_PLAYCOUNT" INTEGER, "
+                     CLM_COMPOSER " TEXT, "
+                     CLM_PREVIEW " TEXT)");
             if (!query.exec(strQuery)) {
                 LOG_FAILED_QUERY(query);
             }
@@ -140,38 +140,40 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
             QList<struct BansheeDbConnection::PlaylistEntry> list =
                     m_pConnection->getPlaylistEntries(playlistId);
 
-            beginInsertRows(QModelIndex(), 0, list.size() - 1);
+            if (!list.isEmpty()) {
+                beginInsertRows(QModelIndex(), 0, list.size() - 1);
 
-            foreach (struct BansheeDbConnection::PlaylistEntry entry, list){
-                query.bindValue(":" CLM_VIEW_ORDER, entry.viewOrder + 1);
-                query.bindValue(":" CLM_ARTIST, entry.pArtist->name);
-                query.bindValue(":" CLM_TITLE, entry.pTrack->title);
-                query.bindValue(":" CLM_DURATION, entry.pTrack->duration / 1000);
-                query.bindValue(":" CLM_URI, entry.pTrack->uri);
-                query.bindValue(":" CLM_ALBUM, entry.pAlbum->title);
-                query.bindValue(":" CLM_ALBUM_ARTIST, entry.pAlbumArtist->name);
-                query.bindValue(":" CLM_YEAR, entry.pTrack->year);
-                query.bindValue(":" CLM_RATING, entry.pTrack->rating);
-                query.bindValue(":" CLM_GENRE, entry.pTrack->genre);
-                query.bindValue(":" CLM_GROUPING, entry.pTrack->grouping);
-                query.bindValue(":" CLM_TRACKNUMBER, entry.pTrack->tracknumber);
-                QDateTime timeAdded;
-                timeAdded.setTime_t(entry.pTrack->dateadded);
-                query.bindValue(":" CLM_DATEADDED, timeAdded.toString(Qt::ISODate));
-                query.bindValue(":" CLM_BPM, entry.pTrack->bpm);
-                query.bindValue(":" CLM_BITRATE, entry.pTrack->bitrate);
-                query.bindValue(":" CLM_COMMENT, entry.pTrack->comment);
-                query.bindValue(":" CLM_PLAYCOUNT, entry.pTrack->playcount);
-                query.bindValue(":" CLM_COMPOSER, entry.pTrack->composer);
+                foreach (struct BansheeDbConnection::PlaylistEntry entry, list){
+                    query.bindValue(":" CLM_VIEW_ORDER, entry.viewOrder + 1);
+                    query.bindValue(":" CLM_ARTIST, entry.pArtist->name);
+                    query.bindValue(":" CLM_TITLE, entry.pTrack->title);
+                    query.bindValue(":" CLM_DURATION, entry.pTrack->duration / 1000);
+                    query.bindValue(":" CLM_URI, entry.pTrack->uri);
+                    query.bindValue(":" CLM_ALBUM, entry.pAlbum->title);
+                    query.bindValue(":" CLM_ALBUM_ARTIST, entry.pAlbumArtist->name);
+                    query.bindValue(":" CLM_YEAR, entry.pTrack->year);
+                    query.bindValue(":" CLM_RATING, entry.pTrack->rating);
+                    query.bindValue(":" CLM_GENRE, entry.pTrack->genre);
+                    query.bindValue(":" CLM_GROUPING, entry.pTrack->grouping);
+                    query.bindValue(":" CLM_TRACKNUMBER, entry.pTrack->tracknumber);
+                    QDateTime timeAdded;
+                    timeAdded.setTime_t(entry.pTrack->dateadded);
+                    query.bindValue(":" CLM_DATEADDED, timeAdded.toString(Qt::ISODate));
+                    query.bindValue(":" CLM_BPM, entry.pTrack->bpm);
+                    query.bindValue(":" CLM_BITRATE, entry.pTrack->bitrate);
+                    query.bindValue(":" CLM_COMMENT, entry.pTrack->comment);
+                    query.bindValue(":" CLM_PLAYCOUNT, entry.pTrack->playcount);
+                    query.bindValue(":" CLM_COMPOSER, entry.pTrack->composer);
 
-                if (!query.exec()) {
-                    LOG_FAILED_QUERY(query);
+                    if (!query.exec()) {
+                        LOG_FAILED_QUERY(query);
+                    }
+                    // qDebug() << "-----" << entry.pTrack->title << query.executedQuery();
                 }
-                // qDebug() << "-----" << entry.pTrack->title << query.executedQuery();
+
+                endInsertRows();
             }
         }, __PRETTY_FUNCTION__);
-
-        endInsertRows();
     }
 
     QStringList tableColumns;

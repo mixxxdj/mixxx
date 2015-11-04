@@ -79,8 +79,11 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
             (value_histogram.contains(0x00) || value_histogram.contains(0x7F));
     bool multiple_one_or_7f_values = value_histogram.value(0x01, 0) > 1 ||
             value_histogram.value(0x7F, 0) > 1;
+    bool under_8_distinct_values = value_histogram.size() < 8;
+    bool no_0x00_value = !value_histogram.contains(0x00);
+    bool no_0x40_value = !value_histogram.contains(0x40);
     bool multiple_values_around_0x40 = value_histogram.value(0x41, 0) > 1 &&
-            value_histogram.value(0x3F, 0) > 1 && !value_histogram.contains(0x40);
+            value_histogram.value(0x3F, 0) > 1 && no_0x40_value;
 
     // QMap keys are sorted so we can check this easily by checking the last key
     // is <= 0x7F.
@@ -135,8 +138,10 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         note_on.control = *controls.begin();
         mappings.append(MidiInputMapping(note_on, options));
     } else if (one_control && one_channel &&
-               only_cc && only_7bit_values && (abs_differences_above_60 ||
-                                               multiple_one_or_7f_values)) {
+               only_cc && only_7bit_values &&
+               no_0x00_value && (abs_differences_above_60 ||
+                                 (under_8_distinct_values &&
+                                  multiple_one_or_7f_values))) {
         // A two's complement +/- ticker (e.g. selector knobs and some jog
         // wheels). Values are typically +1 (0x01) and -1 (0x7F) but rapid
         // changes on some controllers can produce multiple ticks per

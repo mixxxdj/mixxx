@@ -246,19 +246,26 @@ void WPushButton::paintEvent(QPaintEvent* e) {
         return;
     }
 
+    if (m_pPixmapBack) {
+        m_pPixmapBack->draw(0, 0, &p);
+    }
+
     const QVector<PaintablePointer>& pixmaps = m_bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
+
+    // m_text, m_pressedPixmaps and m_unpressedPixmaps are all the same size (as
+    // per setup()) so if one is empty, all are empty.
+    if (pixmaps.isEmpty()) {
+        return;
+    }
+
     int idx = static_cast<int>(value) % m_iNoStates;
     // Just in case m_iNoStates is somehow different from pixmaps.size().
-    if (idx < 0){
+    if (idx < 0) {
         idx = 0;
     } else if (idx >= pixmaps.size()) {
         idx = pixmaps.size() - 1;
-    }
-
-    if (m_pPixmapBack) {
-        m_pPixmapBack->draw(0, 0, &p);
     }
 
     PaintablePointer pPixmap = pixmaps.at(idx);

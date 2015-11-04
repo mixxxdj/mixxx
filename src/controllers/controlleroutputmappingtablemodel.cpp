@@ -43,17 +43,21 @@ void ControllerOutputMappingTableModel::onPresetLoaded() {
         setHeaderData(MIDI_COLUMN_MAX, Qt::Horizontal, tr("On Range Max"));
         setHeaderData(MIDI_COLUMN_COMMENT, Qt::Horizontal, tr("Comment"));
 
-        beginInsertRows(QModelIndex(), 0, m_pMidiPreset->outputMappings.size() - 1);
-        m_midiOutputMappings = m_pMidiPreset->outputMappings.values();
-        endInsertRows();
+        if (!m_pMidiPreset->outputMappings.isEmpty()) {
+            beginInsertRows(QModelIndex(), 0, m_pMidiPreset->outputMappings.size() - 1);
+            m_midiOutputMappings = m_pMidiPreset->outputMappings.values();
+            endInsertRows();
+        }
     }
 }
 
 void ControllerOutputMappingTableModel::clear() {
     if (m_pMidiPreset != NULL) {
-        beginRemoveRows(QModelIndex(), 0, m_midiOutputMappings.size() - 1);
-        m_midiOutputMappings.clear();
-        endRemoveRows();
+        if (!m_midiOutputMappings.isEmpty()) {
+            beginRemoveRows(QModelIndex(), 0, m_midiOutputMappings.size() - 1);
+            m_midiOutputMappings.clear();
+            endRemoveRows();
+        }
     }
 }
 

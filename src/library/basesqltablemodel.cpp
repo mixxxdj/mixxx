@@ -191,6 +191,17 @@ void BaseSqlTableModel::select(TrackCollectionPrivate* pTrackCollectionPrivate) 
         return;
     }
 
+    // Remove all the rows from the table. We wait to do this until after the
+    // table query has succeeded. See Bug #1090888.
+    // TODO(rryan) we could edit the table in place instead of clearing it?
+    // TODO(MK) check if m_pRowInfo is correct here (due to merging)
+    if (!m_pRowInfo->isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_pRowInfo->size() - 1);
+        m_pRowInfo->clear();
+        m_trackIdToRows.clear();
+        endRemoveRows();
+    }
+
     QSqlRecord record = selectQuery.record();
     int idColumn = record.indexOf(m_idColumn);
 
@@ -304,13 +315,17 @@ void BaseSqlTableModel::slotPopulateQueryResult() {
     }
 
     // We're done! Issue the update signals and replace the master maps.
-    beginInsertRows(QModelIndex(), 0, m_pNewRowInfo->size()-1);
+    // ToDo(MK): Check that m_pNewRowInfo is correct here (due to merging).
+    //           Is it even ok to do the condition after reworking? Or should it be removed
+    if (!m_pNewRowInfo->isEmpty()) {
+        beginInsertRows(QModelIndex(), 0, m_pNewRowInfo->size()-1);
 
-    QVector<RowInfo>* pOldRowInfo = m_pRowInfo;
-    m_pRowInfo = m_pNewRowInfo;
-    m_pNewRowInfo = pOldRowInfo;
+        QVector<RowInfo>* pOldRowInfo = m_pRowInfo;
+        m_pRowInfo = m_pNewRowInfo;
+        m_pNewRowInfo = pOldRowInfo;
+        endInsertRows();
+    }
 
-    endInsertRows();
     //int elapsed = time.elapsed();
     qDebug() << this << "select() finished"; //took" << elapsed << "ms" << rowInfo.size();
 }

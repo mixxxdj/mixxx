@@ -1,4 +1,3 @@
-
 #include "skin/tooltips.h"
 
 Tooltips::Tooltips() {
