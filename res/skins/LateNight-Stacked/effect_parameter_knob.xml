@@ -1,0 +1,44 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect parameter knob.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the unit
+    Effect: the effect
+    EffectParameter: the parameter
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <ObjectName>EffectKnob</ObjectName>
+        <Children>
+		     <Knob>
+		         <NumberStates>64</NumberStates>
+		         <Path>knobs/knob_rotary_s%1.png</Path>
+		         <Connection>
+		             <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
+		         </Connection>
+		     </Knob>
+	     </Children>
+      </WidgetGroup>
+      <EffectParameterName>
+        <Size>1me,12f</Size>
+        <ObjectName>KnobLabel</ObjectName>
+        <EffectRack><Variable name="EffectRack"/></EffectRack>
+        <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+        <Effect><Variable name="Effect"/></Effect>
+        <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
+        <Alignment>center</Alignment>
+      </EffectParameterName>
+    </Children>
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

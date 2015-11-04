@@ -9,6 +9,7 @@
 #include <QString>
 #include "soundsource.h"
 #include "defs_version.h"
+#include "util/defs.h"
 
 #include "wavpack/wavpack.h"
 
@@ -26,11 +27,11 @@ class SoundSourceWV : public SoundSource {
  public:
   SoundSourceWV(QString qFilename);
   ~SoundSourceWV();
-  int open();
+  Result open();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
   inline long unsigned length();
-  int parseHeader();
+  Result parseHeader();
   static QList<QString> supportedFileExtensions();
  private:
   int Bps;

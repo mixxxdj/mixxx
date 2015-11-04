@@ -1,0 +1,20 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>SpinnyContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <MinimumSize>20,20</MinimumSize>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <Spinny>
+        <Group>[Channel<Variable name="channum"/>]</Group>
+        <PathBackground>vinyl_spinny2_background-s.png</PathBackground>
+        <PathForeground>vinyl_spinny2_foreground-s.png</PathForeground>
+        <PathGhost>vinyl_spinny2_foreground_ghost-s.png</PathGhost>
+      </Spinny>
+    </Children>
+    <Connection>
+			<ConfigKey persist="true">[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
+			<BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

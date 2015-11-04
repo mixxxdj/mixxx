@@ -25,7 +25,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setLinkHint(EffectManifestParameter::LINK_INVERSE);
     depth->setDefault(16);
-    depth->setMinimum(1);
+    depth->setMinimum(4);
     depth->setMaximum(16);
 
     EffectManifestParameter* frequency = manifest.addParameter();
@@ -38,7 +38,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
     frequency->setLinkHint(EffectManifestParameter::LINK_INVERSE);
     frequency->setDefault(1.0);
-    frequency->setMinimum(0.0);
+    frequency->setMinimum(0.02);
     frequency->setMaximum(1.0);
 
     return manifest;

@@ -55,7 +55,7 @@ SoundSourceM4A::~SoundSourceM4A() {
     }
 }
 
-int SoundSourceM4A::open()
+Result SoundSourceM4A::open()
 {
     //Initialize the FAAD2 decoder...
     initializeDecoder();
@@ -175,7 +175,7 @@ inline long unsigned SoundSourceM4A::length(){
     //return m_iChannels * mp4_duration(&ipd) * m_iSampleRate;
 }
 
-int SoundSourceM4A::parseHeader(){
+Result SoundSourceM4A::parseHeader(){
     setType("m4a");
 
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());

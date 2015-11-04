@@ -285,9 +285,11 @@ class TrackInfoObject : public QObject {
     // Common initialization function between all TIO constructors.
     void initialize(bool parseHeader);
 
-    // Method for parsing information from knowing only the file name.  It
+    // Methods for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"
     void parseFilename();
+    void parseArtist();
+    void parseTitle();
 
     // Set whether the TIO is dirty not. This should never be called except by
     // TIO local methods or the TrackDAO.
