@@ -14,26 +14,20 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const unsigned int iRackNum
     QString itemPrefix = formatItemPrefix(iParameterNumber);
     m_pControlLoaded = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_loaded")));
-    m_pControlLinkType = new ControlPushButton(
-        ConfigKey(m_group, itemPrefix + QString("_link_type")));
-    m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
     m_pControlValue = new ControlPushButton(
         ConfigKey(m_group, itemPrefix));
     m_pControlValue->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pControlType = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_type")));
 
-    connect(m_pControlLinkType, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLinkType(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
 
     // Read-only controls.
     m_pControlType->connectValueChangeRequest(
-        this, SLOT(slotValueType(double)), Qt::AutoConnection);
+        this, SLOT(slotValueType(double)));
     m_pControlLoaded->connectValueChangeRequest(
-        this, SLOT(slotLoaded(double)), Qt::AutoConnection);
+        this, SLOT(slotLoaded(double)));
 
     clear();
 }
@@ -77,15 +71,10 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlType->setAndConfirm(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
-            m_pControlLinkType->set(m_pEffectParameter->getLinkType());
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
                     this, SLOT(slotParameterValueChanged(QVariant)));
         }
-
-        // Update the newly loaded parameter to match the current chain
-        // superknob if it is linked.
-        onChainParameterChanged(m_dChainParameter);
     }
     emit(updated());
 }
@@ -102,31 +91,10 @@ void EffectButtonParameterSlot::clear() {
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->setAndConfirm(0.0);
-    m_pControlLinkType->set(EffectManifestParameter::LINK_NONE);
     emit(updated());
 }
 
 void EffectButtonParameterSlot::slotParameterValueChanged(QVariant value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value.toDouble());
-}
-
-void EffectButtonParameterSlot::onChainParameterChanged(double parameter) {
-    m_dChainParameter = parameter;
-    if (m_pEffectParameter != NULL) {
-        switch (m_pEffectParameter->getLinkType()) {
-            case EffectManifestParameter::LINK_INVERSE:
-                parameter = 1.0 - parameter;
-                // Intentional fall-through.
-            case EffectManifestParameter::LINK_LINKED:
-                if (parameter < 0.0 || parameter > 1.0) {
-                    return;
-                }
-                m_pControlValue->setParameterFrom(parameter, NULL);
-                break;
-            case EffectManifestParameter::LINK_NONE:
-            default:
-                break;
-        }
-    }
 }

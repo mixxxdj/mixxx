@@ -38,8 +38,8 @@ class EffectParameter : public QObject {
     // Value Settings
     ///////////////////////////////////////////////////////////////////////////
 
-    EffectManifestParameter::LinkType getLinkType() const;
-    void setLinkType(EffectManifestParameter::LinkType linkType);
+    EffectManifestParameter::LinkType getDefaultLinkType() const;
+    double getNeutralPointOnScale() const;
 
     QVariant getValue() const;
     // Default type is EffectsRequest::SET_PARAMETER_PARAMETERS
@@ -67,10 +67,9 @@ class EffectParameter : public QObject {
         return QString("EffectParameter(%1)").arg(m_parameter.name());
     }
 
-    static bool clampValue(EffectManifestParameter::ValueHint valueHint, QVariant& value,
+    static bool clampValue(EffectManifestParameter::ValueHint valueHint, QVariant* pValue,
                            const QVariant& minimum, const QVariant& maximum);
-    bool clampValue();
-    bool clampDefault();
+    bool clampValue(QVariant* pValue);
     bool clampRanges();
     bool checkType(const QVariant& value) const;
 
@@ -78,7 +77,6 @@ class EffectParameter : public QObject {
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
     EffectManifestParameter m_parameter;
-    EffectManifestParameter::LinkType m_linkType;
     QVariant m_minimum;
     QVariant m_maximum;
     QVariant m_default;

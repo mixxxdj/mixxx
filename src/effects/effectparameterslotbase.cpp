@@ -24,7 +24,6 @@ EffectParameterSlotBase::~EffectParameterSlotBase() {
     m_pEffectParameter = NULL;
     m_pEffect.clear();
     delete m_pControlLoaded;
-    delete m_pControlLinkType;
     delete m_pControlType;
 }
 
@@ -46,15 +45,6 @@ void EffectParameterSlotBase::slotLoaded(double v) {
     Q_UNUSED(v);
     //qDebug() << debugString() << "slotLoaded" << v;
     qWarning() << "WARNING: loaded is a read-only control.";
-}
-
-void EffectParameterSlotBase::slotLinkType(double v) {
-    //qDebug() << debugString() << "slotLinkType" << v;
-    if (m_pEffectParameter) {
-        // Intermediate cast to integer is needed for VC++.
-        m_pEffectParameter->setLinkType(
-            static_cast<EffectManifestParameter::LinkType>(int(v)));
-    }
 }
 
 void EffectParameterSlotBase::slotValueChanged(double v) {

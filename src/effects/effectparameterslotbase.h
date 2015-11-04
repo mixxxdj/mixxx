@@ -43,7 +43,6 @@ class EffectParameterSlotBase : public QObject {
   protected slots:
     // Solely for handling control changes
     void slotLoaded(double v);
-    void slotLinkType(double v);
     void slotValueChanged(double v);
     void slotValueType(double v);
 
@@ -58,7 +57,6 @@ class EffectParameterSlotBase : public QObject {
 
     // Controls exposed to the rest of Mixxx
     ControlObject* m_pControlLoaded;
-    ControlPushButton* m_pControlLinkType;
     ControlObject* m_pControlType;
     double m_dChainParameter;
 

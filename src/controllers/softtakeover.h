@@ -18,6 +18,7 @@ class SoftTakeover {
   public:
     SoftTakeover();
     bool ignore(ControlObject* control, double newParameter);
+    void ignoreNext();
 
   private:
     // If a new value is received within this amount of time, jump to it

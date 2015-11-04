@@ -109,3 +109,6 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
     return ignore;
 }
 
+void SoftTakeover::ignoreNext() {
+    m_time = 0;
+}

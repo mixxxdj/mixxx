@@ -17,7 +17,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
     connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
             this, SLOT(slotClearRack(double)));
     m_controlNumEffectChainSlots.connectValueChangeRequest(
-            this, SLOT(slotNumEffectChainSlots(double)), Qt::AutoConnection);
+            this, SLOT(slotNumEffectChainSlots(double)));
     addToEngine();
 }
 

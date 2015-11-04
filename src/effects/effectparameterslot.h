@@ -34,14 +34,20 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     // Load the parameter of the given effect into this EffectParameterSlot
     void loadEffect(EffectPointer pEffect);
 
-    EffectManifestParameter::LinkType getLinkType() const;
     double getValueParameter() const;
 
     void onChainParameterChanged(double parameter);
 
+    // Syncs the Super button with the parameter, that the following
+    // super button change will be passed to the effect parameter
+    // used during test
+    void syncSofttakeover();
+
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(QVariant value);
+    void slotLinkTypeChanged(double v);
+    void slotLinkInverseChanged(double v);
 
   private:
     QString debugString() const {
@@ -55,6 +61,8 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     // Control exposed to the rest of Mixxx
     ControlEffectKnob* m_pControlValue;
+    ControlPushButton* m_pControlLinkType;
+    ControlPushButton* m_pControlLinkInverse;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };

@@ -23,7 +23,8 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setLinkHint(EffectManifestParameter::LINK_INVERSE);
+    depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    depth->setNeutralPointOnScale(1.0);
     depth->setDefault(16);
     // for values -1 0 +1
     // we do not allow a 1 bit version because this causes a distortion because of the missing sign bit
@@ -38,7 +39,8 @@ EffectManifest BitCrusherEffect::getManifest() {
     frequency->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    frequency->setLinkHint(EffectManifestParameter::LINK_INVERSE);
+    frequency->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
+    frequency->setNeutralPointOnScale(1.0);
     frequency->setDefault(1.0);
     frequency->setMinimum(0.02);
     frequency->setMaximum(1.0);

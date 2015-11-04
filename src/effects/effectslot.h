@@ -48,6 +48,10 @@ class EffectSlot : public QObject {
 
     void onChainParameterChanged(double parameter);
 
+    // ensures that Softtakover is bypassed for the following
+    // ChainParameterChange. Uses for testing only
+    void syncSofttakeover();
+
   public slots:
     // Request that this EffectSlot load the given Effect
     void loadEffect(EffectPointer pEffect);
