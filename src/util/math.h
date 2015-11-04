@@ -17,6 +17,7 @@ using std::fabs;
 
 template <typename T>
 inline T math_clamp(const T& value, const T& min, const T& max) {
+    // XXX: If max < min, behavior is undefined.
     if (value > max) {
         return max;
     }
