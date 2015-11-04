@@ -122,11 +122,17 @@ QString ControlWidgetPropertyConnection::toDebugString() const {
 }
 
 void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
-    double dParameter = getControlParameterForValue(v);
+    QVariant parameter;
+    QWidget* pWidget = m_pWidget->toQWidget();
+    QVariant property = pWidget->property(m_propertyName.constData());
+    if (property.type() == QMetaType::Bool) {
+        parameter = getControlParameterForValue(v) > 0;
+    } else {
+        parameter = getControlParameterForValue(v);
+    }
 
-    if (!m_pWidget->toQWidget()->setProperty(m_propertyName.constData(),
-                                             QVariant(dParameter))) {
+    if (!pWidget->setProperty(m_propertyName.constData(),parameter)) {
         qDebug() << "Setting property" << m_propertyName
-                 << "to widget failed. Value:" << dParameter;
+                << "to widget failed. Value:" << parameter;
     }
 }

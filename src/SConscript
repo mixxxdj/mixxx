@@ -147,11 +147,13 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                 return "%s-%s" % (mixxx_version, ubuntu_version)
         elif branch_name.startswith('release-'):
                 return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number and
-        # don't include the Mixxx version.
-        return "%s~%s~%s%s" % (ubuntu_version, branch_name, vcs_name,
-                               vcs_revision)
-
+        # In a debug build, we must include the Mixxx version since it is the
+        # base "upstream" version in the Debian version number. Also include the
+        # branch name and VCS version so we know where the build came from.
+        # See: https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version
+        # e.g. 1.12.0-alpha~master-gitXXXX~ppa1~trusty1
+        return "%s~%s-%s%s-%s" % (mixxx_version, branch_name, vcs_name,
+                                  vcs_revision, ubuntu_version)
 
 def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
         # In release mode, we only use the version and revision number

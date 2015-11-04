@@ -459,6 +459,16 @@ void TrackInfoObject::setDateAdded(const QDateTime& dateAdded) {
     m_dateAdded = dateAdded;
 }
 
+QDateTime TrackInfoObject::getFileModifiedTime() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_fileInfo.lastModified();
+}
+
+QDateTime TrackInfoObject::getFileCreationTime() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_fileInfo.created();
+}
+
 int TrackInfoObject::getDuration()  const {
     QMutexLocker lock(&m_qMutex);
     return m_iDuration;
