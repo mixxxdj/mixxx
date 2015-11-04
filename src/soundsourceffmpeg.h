@@ -23,6 +23,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QList>
+#include <QVector>
 
 #include "soundsource.h"
 extern "C" {
@@ -50,6 +51,17 @@ extern "C" {
 
 class TrackInfoObject;
 
+struct ffmpegLocationObject {
+    quint64 pos;
+    qint64 pts;
+    quint64 startByte;
+};
+
+struct ffmpegCacheObject {
+    quint64 startByte;
+    quint32 length;
+    quint8 *bytes;
+};
 
 class SoundSourceFFmpeg : public Mixxx::SoundSource {
 public:
@@ -65,37 +77,40 @@ public:
     AVCodecContext *getCodecContext();
     AVFormatContext *getFormatContext();
     int getAudioStreamIndex();
-    double convertPtsToByteOffset(double pts, const AVRational &ffmpegtime);
-    double convertByteOffsetToPts(double byteoffset, const AVRational &ffmpegtime);
+
 
 protected:
-    int64_t convertPtsToByteOffsetOld(int64_t pos, const AVRational &time_base);
-    int64_t convertByteOffsetToPtsOld(int64_t pos, const AVRational &time_base);
     void lock();
     void unlock();
 
+    bool readFramesToCache(unsigned int count, qint64 offset);
+    bool getBytesFromCache(char *buffer, quint64 offset, quint64 size);
+    quint64 getSizeofCache();
+    bool clearCache();
+
 private:
     int m_iAudioStream;
-    uint64_t filelength;
+    quint64 filelength;
     QString m_qFilename;
     AVFormatContext *m_pFormatCtx;
     AVInputFormat *m_pIformat;
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
 
+    qint64 m_iCurrentMixxTs;
+
     EncoderFfmpegResample *m_pResample;
 
-    int64_t m_iOffset;
-    int64_t m_iSeekOffset;
-    int64_t m_iCurrentMixxTs;
-    int64_t m_iLastFirstFfmpegByteOffset;
-    int64_t m_iNextMixxxPCMPoint;
     bool m_bIsSeeked;
-    int64_t m_iReadedBytes;
-    QByteArray m_strBuffer;
 
-    double_t m_fMixxBytePosition;
-
+    quint64 m_lCacheBytePos;
+    quint64 m_lCacheStartByte;
+    quint64 m_lCacheEndByte;
+    quint32 m_lCacheLastPos;
+    QVector<struct ffmpegCacheObject  *> m_SCache;
+    QVector<struct ffmpegLocationObject  *> m_SJumpPoints;
+    quint64 m_lLastStoredPos;
+    qint64 m_lStoredSeekPoint;
 };
 
 #endif
