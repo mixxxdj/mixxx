@@ -101,6 +101,8 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
     QLineEdit::focusInEvent(event);
     if (m_place) {
+        // This gets rid of the blue mac highlight.
+        setAttribute(Qt::WA_MacShowFocusRect, false);
         //Must block signals here so that we don't emit a search() signal via
         //textChanged().
         blockSignals(true);
