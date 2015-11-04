@@ -200,7 +200,8 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
                                     QString::number(index + 1));
     case MICROPHONE:
-        return QObject::tr("Microphone");
+        return QString("%1 %2").arg(QObject::tr("Microphone"),
+                                    QString::number(index + 1));
     case AUXILIARY:
         return QString("%1 %2").arg(QObject::tr("Auxiliary"),
                                     QString::number(index + 1));
@@ -243,8 +244,8 @@ bool AudioPath::isIndexed(AudioPathType type) {
     case DECK:
     case VINYLCONTROL:
     case AUXILIARY:
-        return true;
     case MICROPHONE:
+        return true;
     default:
         break;
     }

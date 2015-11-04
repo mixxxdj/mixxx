@@ -30,6 +30,8 @@ CueControl::CueControl(const char* _group,
         m_iNumHotCues(NUM_HOT_CUES),
         m_pLoadedTrack(),
         m_mutex(QMutex::Recursive) {
+    // To silence a compiler warning about CUE_MODE_PIONEER.
+    Q_UNUSED(CUE_MODE_PIONEER);
     createControls();
 
     m_pTrackSamples = ControlObject::getControl(ConfigKey(_group, "track_samples"));

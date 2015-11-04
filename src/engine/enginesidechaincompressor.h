@@ -2,11 +2,10 @@
 #define ENGINECOMPRESSOR_H
 
 #include "defs.h"
-#include "configobject.h"
 
 class EngineSideChainCompressor {
   public:
-    EngineSideChainCompressor(ConfigObject<ConfigValue>* pConfig, const char* group);
+    EngineSideChainCompressor(const char* group);
     virtual ~EngineSideChainCompressor() { };
 
     void setParameters(CSAMPLE threshold, CSAMPLE strength,
@@ -60,8 +59,6 @@ class EngineSideChainCompressor {
   private:
     // Update the attack and decay rates.
     void calculateRates();
-
-    ConfigObject<ConfigValue>* m_pConfig;
 
     // The current ratio the signal is being compressed.  This is the same as m_strength
     // when the compressor is at maximum engagement (not attacking or decaying).

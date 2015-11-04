@@ -18,8 +18,7 @@ typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
 class EffectParameterSlot : public QObject {
     Q_OBJECT
   public:
-    EffectParameterSlot(QObject* pParent,
-                        const unsigned int iRackNumber,
+    EffectParameterSlot(const unsigned int iRackNumber,
                         const unsigned int iChainNumber,
                         const unsigned int iSlotNumber,
                         const unsigned int iParameterNumber);

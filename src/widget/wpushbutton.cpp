@@ -32,8 +32,6 @@
 #include "control/controlbehavior.h"
 #include "util/debug.h"
 
-const int PB_SHORTKLICKTIME = 200;
-
 WPushButton::WPushButton(QWidget* pParent)
         : WWidget(pParent),
           m_leftButtonMode(ControlPushButton::PUSH),

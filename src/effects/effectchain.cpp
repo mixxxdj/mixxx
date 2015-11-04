@@ -231,7 +231,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
 void EffectChain::replaceEffect(unsigned int iEffectNumber,
                                 EffectPointer pEffect) {
     qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
-    while (iEffectNumber >= m_effects.size()) {
+    while (iEffectNumber >= static_cast<unsigned int>(m_effects.size())) {
         m_effects.append(EffectPointer());
     }
 
@@ -274,7 +274,7 @@ const QList<EffectPointer>& EffectChain::effects() const {
 }
 
 EffectPointer EffectChain::getEffect(unsigned int effectNumber) const {
-    if (effectNumber >= m_effects.size()) {
+    if (effectNumber >= static_cast<unsigned int>(m_effects.size())) {
         qDebug() << debugString() << "WARNING: list index out of bounds for getEffect";
     }
     return m_effects[effectNumber];

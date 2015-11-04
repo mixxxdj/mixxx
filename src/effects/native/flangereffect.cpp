@@ -66,6 +66,7 @@ FlangerEffect::FlangerEffect(EngineEffect* pEffect,
         : m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pDepthParameter(pEffect->getParameterById("depth")),
           m_pDelayParameter(pEffect->getParameterById("delay")) {
+    Q_UNUSED(manifest);
 }
 
 FlangerEffect::~FlangerEffect() {
@@ -76,13 +77,14 @@ void FlangerEffect::processGroup(const QString& group,
                                  FlangerGroupState* pState,
                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                                  const unsigned int numSamples) {
+    Q_UNUSED(group);
     CSAMPLE lfoPeriod = m_pPeriodParameter ?
             m_pPeriodParameter->value().toDouble() : 0.0f;
     CSAMPLE lfoDepth = m_pDepthParameter ?
             m_pDepthParameter->value().toDouble() : 0.0f;
     // Unused in EngineFlanger
-    CSAMPLE lfoDelay = m_pDelayParameter ?
-            m_pDelayParameter->value().toDouble() : 0.0f;
+    // CSAMPLE lfoDelay = m_pDelayParameter ?
+    //         m_pDelayParameter->value().toDouble() : 0.0f;
 
     // TODO(rryan) check ranges
     // period needs to be >=0
@@ -93,7 +95,7 @@ void FlangerEffect::processGroup(const QString& group,
     CSAMPLE* delayRight = pState->delayRight;
 
     const int kChannels = 2;
-    for (int i = 0; i < numSamples; i += kChannels) {
+    for (unsigned int i = 0; i < numSamples; i += kChannels) {
         delayLeft[pState->delayPos] = pInput[i];
         delayRight[pState->delayPos] = pInput[i+1];
 

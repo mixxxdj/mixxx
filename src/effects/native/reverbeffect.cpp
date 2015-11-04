@@ -57,6 +57,7 @@ ReverbEffect::ReverbEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
         : m_pBandWidthParameter(pEffect->getParameterById("bandwidth")),
           m_pDampingParameter(pEffect->getParameterById("damping")) {
+    Q_UNUSED(manifest);
 }
 
 ReverbEffect::~ReverbEffect() {
@@ -67,6 +68,7 @@ void ReverbEffect::processGroup(const QString& group,
                                 ReverbGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples) {
+    Q_UNUSED(group);
     CSAMPLE bandwidth = m_pBandWidthParameter ?
             m_pBandWidthParameter->value().toDouble() : 1.0f;
     CSAMPLE damping = m_pDampingParameter ?

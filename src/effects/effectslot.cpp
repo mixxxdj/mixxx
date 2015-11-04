@@ -5,11 +5,10 @@
 // The maximum number of effect parameters we're going to support.
 const unsigned int kDefaultMaxParameters = 32;
 
-EffectSlot::EffectSlot(QObject* pParent, const unsigned int iRackNumber,
+EffectSlot::EffectSlot(const unsigned int iRackNumber,
                        const unsigned int iChainNumber,
                        const unsigned int iEffectnumber)
-        : QObject(),
-          m_iRackNumber(iRackNumber),
+        : m_iRackNumber(iRackNumber),
           m_iChainNumber(iChainNumber),
           m_iEffectNumber(iEffectnumber),
           // The control group names are 1-indexed while internally everything
@@ -75,7 +74,7 @@ EffectSlot::~EffectSlot() {
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
     EffectParameterSlotPointer pParameter = EffectParameterSlotPointer(
-        new EffectParameterSlot(this, m_iRackNumber, m_iChainNumber, m_iEffectNumber,
+        new EffectParameterSlot(m_iRackNumber, m_iChainNumber, m_iEffectNumber,
                                 m_parameters.size()));
     m_parameters.append(pParameter);
     m_pControlNumParameterSlots->setAndConfirm(
@@ -119,7 +118,7 @@ void EffectSlot::slotEffectEnabledChanged(bool enabled) {
 
 EffectParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
     qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
-    if (slotNumber >= m_parameters.size()) {
+    if (slotNumber >= static_cast<unsigned int>(m_parameters.size())) {
         qDebug() << "WARNING: slotNumber out of range";
         return EffectParameterSlotPointer();
     }
@@ -141,7 +140,7 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         connect(m_pEffect.data(), SIGNAL(enabledChanged(bool)),
                 this, SLOT(slotEffectEnabledChanged(bool)));
 
-        while (m_parameters.size() < m_pEffect->numParameters()) {
+        while (static_cast<unsigned int>(m_parameters.size()) < m_pEffect->numParameters()) {
             addEffectParameterSlot();
         }
 

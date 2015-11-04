@@ -47,6 +47,7 @@ BitCrusherEffect::BitCrusherEffect(EngineEffect* pEffect,
                                    const EffectManifest& manifest)
         : m_pBitDepthParameter(pEffect->getParameterById("bit_depth")),
           m_pDownsampleParameter(pEffect->getParameterById("downsample")) {
+    Q_UNUSED(manifest);
 }
 
 BitCrusherEffect::~BitCrusherEffect() {
@@ -57,6 +58,7 @@ void BitCrusherEffect::processGroup(const QString& group,
                                     BitCrusherGroupState* pState,
                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
                                     const unsigned int numSamples) {
+    Q_UNUSED(group);
     // TODO(rryan) this is broken. it needs to take into account the sample
     // rate.
     const CSAMPLE downsample = m_pDownsampleParameter ?
@@ -70,7 +72,7 @@ void BitCrusherEffect::processGroup(const QString& group,
     const CSAMPLE scale = 1 << (bit_depth-1);
 
     const int kChannels = 2;
-    for (int i = 0; i < numSamples; i += kChannels) {
+    for (unsigned int i = 0; i < numSamples; i += kChannels) {
         pState->accumulator += accumulate;
 
         if (pState->accumulator >= 1.0) {

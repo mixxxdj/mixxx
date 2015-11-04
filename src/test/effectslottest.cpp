@@ -45,7 +45,7 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     EffectManifest manifest;
     manifest.setId("org.mixxx.test.effect");
     manifest.setName("Test Effect");
-    EffectManifestParameter* pParameter = manifest.addParameter();
+    manifest.addParameter();
     registerTestEffect(manifest);
 
     // Check the controls reflect the state of their loaded effect.
