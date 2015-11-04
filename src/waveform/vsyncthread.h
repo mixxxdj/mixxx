@@ -60,7 +60,7 @@ class VSyncThread : public QThread {
     int usToNextSync();
     void setUsSyncIntervalTime(int usSyncTimer);
     void setVSyncType(int mode);
-    int rtErrorCnt();
+    int droppedFrames();
     void setSwapWait(int sw);
     int usFromTimerToNextSync(PerformanceTimer* timer);
     void vsyncSlotFinished();
@@ -112,7 +112,7 @@ class VSyncThread : public QThread {
     int m_usWaitToSwap;
     enum VSyncMode m_vSyncMode;
     bool m_syncOk;
-    int m_rtErrorCnt;
+    int m_droppedFrames;
     int m_swapWait;
     PerformanceTimer m_timer;
     QSemaphore m_semaVsyncSlot;
