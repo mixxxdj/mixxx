@@ -53,7 +53,9 @@
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"/>
 
-  <MinimumSize>1280,768</MinimumSize>
+  <!-- MinimumSize should not be an exact monitor resolution. There needs
+  to be space for the title bar or other chrome at full screen -->
+  <MinimumSize>1280,700</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 

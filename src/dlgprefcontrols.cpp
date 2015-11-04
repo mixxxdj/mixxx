@@ -258,12 +258,20 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     {
         if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
         {
-            checkSkinResolution(list.at(i).fileName())
-                    ? ComboBoxSkinconf->insertItem(i, list.at(i).fileName())
-                    : ComboBoxSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list.at(i).fileName());
+            bool size_ok = checkSkinResolution(list.at(i).filePath());
+            if (size_ok) {
+                ComboBoxSkinconf->insertItem(i, list.at(i).fileName());
+            } else {
+                ComboBoxSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list.at(i).fileName());
+            }
 
             if (list.at(i).filePath() == configuredSkinPath) {
                 ComboBoxSkinconf->setCurrentIndex(j);
+                if (size_ok) {
+                    warningLabel->hide();
+                } else {
+                    warningLabel->show();
+                }
             }
             ++j;
         }
@@ -273,8 +281,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
 
-    checkSkinResolution(ComboBoxSkinconf->currentText())
-             ? warningLabel->hide() : warningLabel->show();
     slotUpdateSchemes();
 
     //
@@ -448,7 +454,7 @@ void DlgPrefControls::slotSetRateDir(int index) {
     foreach (ControlObjectThread* pControl, m_rateDirControls) {
         pControl->slotSet(dir);
     }
-    
+
     // If the setting was changed, ie the old direction is not equal to the new one,
     // multiply the rate by -1 so the current sound does not change.
     if(fabs(dir - oldDir) > 0.1) {
@@ -456,7 +462,7 @@ void DlgPrefControls::slotSetRateDir(int index) {
             pControl->slotSet(-1 * pControl->get());
         }
     }
-    
+
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
@@ -594,12 +600,29 @@ bool DlgPrefControls::checkSkinResolution(QString skin)
     int screenWidth = QApplication::desktop()->width();
     int screenHeight = QApplication::desktop()->height();
 
+    const QRegExp min_size_regex("<MinimumSize>(\\d+), *(\\d+)<");
+    QFile skinfile(skin + "/skin.xml");
+    if (skinfile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&skinfile);
+        bool found_size = false;
+        while (!in.atEnd()) {
+            if (min_size_regex.indexIn(in.readLine()) != -1) {
+                found_size = true;
+                break;
+            }
+        }
+        if (found_size) {
+            return !(min_size_regex.cap(1).toInt() > screenWidth ||
+                     min_size_regex.cap(2).toInt() > screenHeight);
+        }
+    }
+
+    // If regex failed, fall back to skin name parsing.
     QString skinName = skin.left(skin.indexOf(QRegExp("\\d")));
     QString resName = skin.right(skin.count()-skinName.count());
     QString res = resName.left(resName.lastIndexOf(QRegExp("\\d"))+1);
     QString skinWidth = res.left(res.indexOf("x"));
     QString skinHeight = res.right(res.count()-skinWidth.count()-1);
-
     return !(skinWidth.toInt() > screenWidth || skinHeight.toInt() > screenHeight);
 }
 
