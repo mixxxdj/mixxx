@@ -202,6 +202,7 @@ TreeItemModel* CrateFeature::getChildModel() {
 void CrateFeature::activate() {
     emit(switchToView("CRATEHOME"));
     emit(restoreSearch(QString())); //disable search on crate home
+    emit(enableCoverArtDisplay(true));
 }
 
 // Must be called from Main thread
@@ -214,6 +215,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     }
     m_crateTableModel.setTableModel(crateId);
     emit(showTrackModel(&m_crateTableModel));
+    emit(enableCoverArtDisplay(true));
 }
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {

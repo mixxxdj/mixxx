@@ -39,6 +39,7 @@
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"
 #include "engine/engineaux.h"
+#include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryscanner.h"
@@ -289,6 +290,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     pModplugPrefs->applySettings();
     delete pModplugPrefs; // not needed anymore
 #endif
+    CoverArtCache::create();
 
     initializeTrackCollection();
 
@@ -318,6 +320,13 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             hasChanged_MusicDir = true;
         }
     }
+
+    m_pLibrary->getTrackCollection()->callSync( [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        CoverArtCache::instance()->setCoverArtDAO(
+                    &pTrackCollectionPrivate->getCoverArtDAO());
+        CoverArtCache::instance()->setTrackDAO(
+                    &pTrackCollectionPrivate->getTrackDAO());
+    }, __PRETTY_FUNCTION__);
 
     // Call inits to invoke all other construction parts
 
@@ -551,6 +560,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     // the data models.
     qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
+    CoverArtCache::destroy();
 
     // RecordingManager depends on config, engine
     qDebug() << "delete RecordingManager " << qTime.elapsed();

@@ -71,6 +71,7 @@ class BaseTrackCache : public QObject {
     void slotTrackClean(int trackId);
     void slotTrackChanged(int trackId);
     void slotDbTrackAdded(TrackPointer pTrack);
+    void slotUpdateTrack(int trackId);
 
   private:
     TrackPointer lookupCachedTrack(int trackId) const;

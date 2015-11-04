@@ -718,6 +718,7 @@ class MixxxCore(Feature):
                    "widget/wkey.cpp",
                    "widget/wcombobox.cpp",
                    "widget/wsplitter.cpp",
+		   "widget/wcoverart.cpp",
 
                    "network.cpp",
                    "musicbrainz/tagfetcher.cpp",
@@ -748,6 +749,7 @@ class MixxxCore(Feature):
                    "library/missingtablemodel.cpp",
                    "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
+		   "library/coverartcache.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
@@ -798,6 +800,7 @@ class MixxxCore(Feature):
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
                    "library/dao/analysisdao.cpp",
+                   "library/dao/coverartdao.cpp",
 
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",

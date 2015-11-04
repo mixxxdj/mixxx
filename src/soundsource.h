@@ -18,6 +18,7 @@
 #ifndef SOUNDSOURCE_H
 #define SOUNDSOURCE_H
 
+#include <QImage>
 #include <QString>
 
 #include <taglib/tfile.h>
@@ -90,6 +91,7 @@ public:
     virtual int getBitrate();
     virtual unsigned int getSampleRate();
     virtual int getChannels();
+    virtual QImage getCoverArt();
 
     virtual void setArtist(QString);
     virtual void setTitle(QString);
@@ -109,8 +111,9 @@ public:
     virtual void setBitrate(int);
     virtual void setSampleRate(unsigned int);
     virtual void setChannels(int);
-protected:
+    virtual void setCoverArt(QImage);
 
+protected:
     // Automatically collects generic data from a TagLib File: title, artist,
     // album, comment, genre, year, tracknumber, duration, bitrate, samplerate,
     // and channels.
@@ -121,6 +124,10 @@ protected:
     bool processMP4Tag(TagLib::MP4::Tag* mp4);
     void processBpmString(QString tagName, QString sBpm);
     void parseReplayGainString(QString sReplayGain);
+
+    // Taglib strings can be NULL and using it could cause some segfaults,
+    // so in this case it will return a QString()
+    QString toQString(TagLib::String tstring) const;
 
     /** File name */
     QString m_qFilename;
@@ -136,6 +143,7 @@ protected:
     QString m_sComposer;
     QString m_sGrouping;
     QString m_sTrackNumber;
+    QImage m_coverArt;
     float m_fReplayGain;
     QString m_sKey;
     float m_fBPM;

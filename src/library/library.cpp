@@ -160,6 +160,9 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
 
+    connect(pTrackTableView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
+            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
+
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
@@ -183,6 +186,10 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
+    connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
+            this, SIGNAL(enableCoverArtDisplay(bool)));
+    connect(feature, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
+            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {

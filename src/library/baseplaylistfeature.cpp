@@ -125,6 +125,7 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 void BasePlaylistFeature::activate() {
     emit(switchToView(m_rootViewName));
     emit(restoreSearch(QString())); // Null String disables search box
+    emit(enableCoverArtDisplay(true));
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
@@ -136,6 +137,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     if (m_pPlaylistTableModel) {
         emit(showTrackModel(m_pPlaylistTableModel));
     }
+    emit(enableCoverArtDisplay(true));
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {

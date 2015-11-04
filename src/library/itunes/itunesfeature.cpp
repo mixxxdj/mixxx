@@ -119,6 +119,7 @@ QIcon ITunesFeature::getIcon() {
 
 void ITunesFeature::activate() {
     activate(false);
+    emit(enableCoverArtDisplay(false));
 }
 
 // Must be called from Main thread
@@ -192,6 +193,7 @@ void ITunesFeature::activate(bool forceReload) {
     }
 
     emit(showTrackModel(m_pITunesTrackModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 void ITunesFeature::activateChild(const QModelIndex& index) {
@@ -201,6 +203,7 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     m_pITunesPlaylistModel->setPlaylist(playlist);
     m_pITunesPlaylistModel->setPlaylistUI();
     emit(showTrackModel(m_pITunesPlaylistModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 TreeItemModel* ITunesFeature::getChildModel() {

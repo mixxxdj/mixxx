@@ -38,6 +38,9 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     connect(this, SIGNAL(activateButtons(bool)),
             this, SLOT(slotActivateButtons(bool)), Qt::QueuedConnection);
+
+    connect(m_pTrackTableView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
+            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
 }
 
 DlgMissing::~DlgMissing() {

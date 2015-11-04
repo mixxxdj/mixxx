@@ -90,6 +90,11 @@ public:
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
+    // emit this signal to enable/disable the cover art widget
+    void enableCoverArtDisplay(bool);
+    void loadCoverArt(const QString& coverLocation,
+                      const QString& md5Hash,
+                      int trackId);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

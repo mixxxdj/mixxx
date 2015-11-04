@@ -19,20 +19,21 @@
 #define TRACKINFOOBJECT_H
 
 #include <QAtomicInt>
-#include <QList>
 #include <QDateTime>
-#include <QObject>
-#include <QFileInfo>
-#include <QMutex>
-#include <QSharedPointer>
-#include <QWeakPointer>
-#include <QString>
 #include <QDomNode>
+#include <QFileInfo>
+#include <QList>
+#include <QMutex>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
+#include <QWeakPointer>
+#include <taglib/tfile.h>
 
+#include "library/dao/cue.h"
+#include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
-#include "proto/keys.pb.h"
-#include "library/dao/cue.h"
 #include "util/sandbox.h"
 
 class Cue;
@@ -331,6 +332,7 @@ class TrackInfoObject : public QObject {
     QString m_sYear;
     // Track Number
     QString m_sTrackNumber;
+
 
     // File type
     QString m_sType;

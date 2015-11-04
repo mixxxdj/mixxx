@@ -30,6 +30,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 }
 
 void MixxxLibraryFeature::init() {
+    QString COVERART_LOCATION = COVERART_TABLE + "." + COVERARTTABLE_LOCATION
+                                + " AS " + LIBRARYTABLE_COVERART_LOCATION;
     QStringList columns = QStringList()
             << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -56,7 +58,9 @@ void MixxxLibraryFeature::init() {
             << "track_locations.location"
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED;
+            << "library." + LIBRARYTABLE_MIXXXDELETED
+            << COVERART_LOCATION
+            << COVERART_TABLE + "." + COVERARTTABLE_MD5;
 
     QString tableName = "library_cache_view";
 
@@ -67,7 +71,8 @@ void MixxxLibraryFeature::init() {
         QString queryString = QString(
                     "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                     "SELECT %2 FROM library "
-                    "INNER JOIN track_locations ON library.location = track_locations.id")
+                    "INNER JOIN track_locations ON library.location = track_locations.id "
+                    "LEFT JOIN cover_art ON library.cover_art = cover_art.id")
                 .arg(tableName, columns.join(","));
         query.prepare(queryString);
         if (!query.exec()) {
@@ -75,13 +80,17 @@ void MixxxLibraryFeature::init() {
         }
     }, __PRETTY_FUNCTION__);
 
-    // Strip out library. and track_locations.
+    // Strip out library. track_locations. and cover_art.
     for (QStringList::iterator it = columns.begin();
          it != columns.end(); ++it) {
         if (it->startsWith("library.")) {
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
             *it = it->replace("track_locations.", "");
+        } else if (it->operator==(COVERART_LOCATION)) {
+            *it = LIBRARYTABLE_COVERART_LOCATION;
+        } else if (it->startsWith(COVERART_TABLE + ".")) {
+            *it = it->replace(COVERART_TABLE + ".", "");
         }
     }
 
@@ -110,6 +119,9 @@ void MixxxLibraryFeature::init() {
                 Qt::DirectConnection);
         connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(dbTrackAdded(TrackPointer)),
                 pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)),
+                Qt::DirectConnection);
+        connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(updateTrackInBTC(int)),
+                pBaseTrackCache, SLOT(slotUpdateTrack(int)),
                 Qt::DirectConnection);
     }, __PRETTY_FUNCTION__);
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
@@ -149,10 +161,15 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
     m_pHiddenView->init();
 
     pLibrary->registerView(kHiddenTitle, m_pHiddenView);
+    connect(m_pHiddenView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
+            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
+
     m_pMissingView = new DlgMissing(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
     pLibrary->registerView(kMissingTitle, m_pMissingView);
+    connect(m_pMissingView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
+            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -186,11 +203,13 @@ void MixxxLibraryFeature::refreshLibraryModels() {
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
     emit(showTrackModel(m_pLibraryTableModel));
+    emit(enableCoverArtDisplay(true));
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
     emit(switchToView(itemName));
+    emit(enableCoverArtDisplay(true));
 }
 
 // Must be called from Main thread

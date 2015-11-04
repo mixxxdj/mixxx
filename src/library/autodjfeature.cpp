@@ -87,6 +87,9 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
     connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
+    connect(m_pAutoDJView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
+            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
+
 #ifdef __AUTODJCRATES__
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
@@ -107,6 +110,7 @@ void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
     emit(switchToView(m_sAutoDJViewName));
     emit(restoreSearch(QString())); //Null String disables search box
+    emit(enableCoverArtDisplay(true));
 }
 
 // Must be called from Main thread

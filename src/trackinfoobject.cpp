@@ -25,10 +25,9 @@
 
 #include "trackinfoobject.h"
 
+#include "controlobject.h"
 #include "soundsourceproxy.h"
 #include "xmlparse.h"
-#include "controlobject.h"
-#include "waveform/waveform.h"
 #include "track/beatfactory.h"
 #include "library/trackcollection.h"
 #include "track/keyfactory.h"
@@ -37,6 +36,7 @@
 #include "util/cmdlineargs.h"
 #include "util/time.h"
 #include "util/math.h"
+#include "waveform/waveform.h"
 
 TrackInfoObject::TrackInfoObject(const QString& file,
                                  SecurityTokenPointer pToken,

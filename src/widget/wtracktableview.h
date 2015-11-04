@@ -69,6 +69,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnlockBpm();
     void slotScaleBpm(int); 
     void slotClearBeats();
+    void slotGuiTickTime(double);
 
   private:
     void sendToAutoDJ(bool bTop);
@@ -79,6 +80,10 @@ class WTrackTableView : public WLibraryTableView {
     void dragEnterEvent(QDragEnterEvent * event);
     void dropEvent(QDropEvent * event);
     void lockBpm(bool lock);
+
+    void slotLoadCoverArt();
+    void selectionChanged(const QItemSelection &selected,
+                          const QItemSelection &deselected);
 
     // Mouse move event, implemented to hide the text and show an icon instead
     // when dragging.
@@ -143,6 +148,11 @@ class WTrackTableView : public WLibraryTableView {
     QAction* m_pClearBeatsAction;
 
     bool m_sorting;
+
+    // Control the delay to load a cover art.
+    double m_lastSelection;
+    bool m_bLastCoverLoaded;
+    ControlObjectThread* m_pCOTGuiTickTime;
 };
 
 #endif

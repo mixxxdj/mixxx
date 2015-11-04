@@ -2231,6 +2231,9 @@
 				WSearchLineEdit { padding: 2px; border: 1px solid #656565; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC; }
 				WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: rgba(255, 102, 0,50); color: #D6D6D6;}
 
+                                <!--Cover Art-->
+                                WCoverArt { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC; }
+
 				<!--splitter between treeview and library-->
 				QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
 				QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
@@ -2494,6 +2497,8 @@
 									<SearchBox></SearchBox>
 									<!--Library Tree View-->
 									<LibrarySidebar></LibrarySidebar>
+									<!--Cover Art-->
+									<CoverArt></CoverArt>
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>

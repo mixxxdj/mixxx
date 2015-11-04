@@ -49,6 +49,9 @@ void DlgHidden::init() {
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+
+    connect(m_pTrackTableView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
+            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
 }
 
 void DlgHidden::onShow() {

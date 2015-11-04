@@ -65,4 +65,5 @@ void RecordingFeature::activate() {
     emit(switchToView(m_sRecordingViewName));
     // Ask the view to emit a restoreSearch signal.
     emit(requestRestoreSearch());
+    emit(enableCoverArtDisplay(false));
 }

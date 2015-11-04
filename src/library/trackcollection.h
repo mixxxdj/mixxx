@@ -23,6 +23,7 @@
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cratedao.h"
+#include "library/dao/coverartdao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"

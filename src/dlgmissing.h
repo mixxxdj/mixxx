@@ -28,6 +28,11 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
   private slots:
     void slotActivateButtons(bool enable);
 
+  signals:
+    void loadCoverArt(const QString& coverLocation,
+                      const QString& md5Hash,
+                      int trackId);
+
   private:
     void activateButtons(bool enable);
     TrackCollection* m_pTrackCollection;

@@ -83,7 +83,9 @@ bool MissingTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
-            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED)) {
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_MD5)) {
         return true;
     }
     return false;

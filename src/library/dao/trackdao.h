@@ -50,6 +50,8 @@ const QString LIBRARYTABLE_KEY = "key";
 const QString LIBRARYTABLE_KEY_ID = "key_id";
 const QString LIBRARYTABLE_BPM_LOCK = "bpm_lock";
 const QString LIBRARYTABLE_PREVIEW = "preview";
+const QString LIBRARYTABLE_COVERART_LOCATION = "cover_art";
+const QString LIBRARYTABLE_COVERART_MD5 = "md5";
 
 const QString TRACKLOCATIONSTABLE_ID = "id";
 const QString TRACKLOCATIONSTABLE_LOCATION = "location";
@@ -62,6 +64,7 @@ const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
 class ScopedTransaction;
 class PlaylistDAO;
 class AnalysisDao;
+class CoverArtDAO;
 class CueDAO;
 class CrateDAO;
 class DirectoryDAO;
@@ -71,7 +74,7 @@ class TrackDAO : public QObject, public virtual DAO {
   public:
     // The 'config object' is necessary because users decide ID3 tags get
     // synchronized on track metadata change
-    TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
+    TrackDAO(QSqlDatabase& database, CoverArtDAO& coverArtDao, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
              AnalysisDao& analysisDao, DirectoryDAO& directoryDao,
              ConfigObject<ConfigValue>* pConfig = NULL);
@@ -110,6 +113,9 @@ class TrackDAO : public QObject, public virtual DAO {
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
     bool verifyRemainingTracks(volatile bool* pCancel);
 
+    // it will update the Library.cover_art column in DB
+    bool updateCoverArt(int trackId, int coverId);
+
   signals:
     void trackDirty(int trackId);
     void trackClean(int trackId);
@@ -118,6 +124,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void tracksRemoved(QSet<int> trackIds);
     void dbTrackAdded(TrackPointer pTrack);
     void progressVerifyTracksOutside(QString path);
+    void updateTrackInBTC(int trackId);
 
   public slots:
     // The public interface to the TrackDAO requires a TrackPointer so that we
@@ -145,6 +152,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void addTrack(TrackInfoObject* pTrack, bool unremove);
     TrackPointer getTrackFromDB(const int id) const;
     QString absoluteFilePath(QString location);
+    int getCoverArtId(int trackId);
 
     void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack);
     void bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocationId);
@@ -154,6 +162,7 @@ class TrackDAO : public QObject, public virtual DAO {
     static void deleteTrack(TrackInfoObject* pTrack);
 
     QSqlDatabase& m_database;
+    CoverArtDAO& m_coverArtDao;
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;
     CrateDAO& m_crateDao;

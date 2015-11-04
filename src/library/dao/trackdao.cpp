@@ -11,6 +11,7 @@
 #include "track/beats.h"
 #include "track/keyfactory.h"
 #include "trackinfoobject.h"
+#include "library/dao/coverartdao.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
@@ -30,6 +31,7 @@ enum { UndefinedRecordIndex = -2 };
 #define TRACK_CACHE_SIZE 5
 
 TrackDAO::TrackDAO(QSqlDatabase& database,
+                   CoverArtDAO& coverArtDao,
                    CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
                    CrateDAO& crateDao,
@@ -37,6 +39,7 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
                    DirectoryDAO& directoryDao,
                    ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
+          m_coverArtDao(coverArtDao),
           m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_crateDao(crateDao),
@@ -314,7 +317,6 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":samplerate", pTrack->getSampleRate());
     m_pQueryLibraryInsert->bindValue(":cuepoint", pTrack->getCuePoint());
     m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
-
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain());
 
     // We no longer store the wavesummary in the library table.
@@ -396,14 +398,14 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryTrackLocationSelect->prepare("SELECT id FROM track_locations WHERE location=:location");
 
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
-            "(artist, title, album, album_artist, year, genre, tracknumber, composer, "
+            "(artist, title, album, album_artist, cover_art, year, genre, tracknumber, composer, "
             "grouping, filetype, location, comment, url, duration, rating, key, key_id, "
             "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
             "timesplayed, channels, mixxx_deleted, header_parsed, "
             "beats_version, beats_sub_version, beats, bpm_lock, "
             "keys_version, keys_sub_version, keys) "
             "VALUES ("
-            ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
+            ":artist, :title, :album, :album_artist, :cover_art, :year, :genre, :tracknumber, :composer, :grouping, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
             ":timesplayed, :channels, :mixxx_deleted, :header_parsed, "
@@ -808,6 +810,7 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     m_playlistDao.removeTracksFromPlaylists(ids);
     m_crateDao.removeTracksFromCrates(ids);
     m_analysisDao.deleteAnalysises(ids);
+    m_coverArtDao.deleteUnusedCoverArts();
 
     QSet<int> tracksRemovedSet = QSet<int>::fromList(ids);
     emit(tracksRemoved(tracksRemovedSet));
@@ -839,7 +842,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     QSqlQuery query(m_database);
 
     query.prepare(
-        "SELECT library.id, artist, title, album, album_artist, year, genre, composer, "
+        "SELECT library.id, artist, title, album, album_artist, cover_art, year, genre, composer, "
         "grouping, tracknumber, filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
@@ -858,6 +861,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int titleColumn = queryRecord.indexOf("title");
         const int albumColumn = queryRecord.indexOf("album");
         const int albumArtistColumn = queryRecord.indexOf("album_artist");
+        const int coverArtColumn = queryRecord.indexOf("cover_art");
         const int yearColumn = queryRecord.indexOf("year");
         const int genreColumn = queryRecord.indexOf("genre");
         const int composerColumn = queryRecord.indexOf("composer");
@@ -893,6 +897,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             QString title = query.value(titleColumn).toString();
             QString album = query.value(albumColumn).toString();
             QString albumArtist = query.value(albumArtistColumn).toString();
+            int coverArtId = query.value(coverArtColumn).toInt();
             QString year = query.value(yearColumn).toString();
             QString genre = query.value(genreColumn).toString();
             QString composer = query.value(composerColumn).toString();
@@ -1095,7 +1100,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
-                  "title=:title, album=:album, album_artist=:album_artist, "
+                  "title=:title, album=:album, "
+                  "album_artist=:album_artist, "
                   "year=:year, genre=:genre, composer=:composer, "
                   "grouping=:grouping, filetype=:filetype, "
                   "tracknumber=:tracknumber, comment=:comment, url=:url, "
@@ -1198,6 +1204,47 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     time.start();
     pTrack->setDirty(false);
     //qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
+}
+
+int TrackDAO::getCoverArtId(int trackId) {
+    QSqlQuery query(m_database);
+    query.prepare(QString("SELECT cover_art FROM library WHERE id=:trackId"));
+    query.bindValue(":trackId", trackId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return -1;
+    }
+
+    if (query.next()) {
+        return query.value(0).toInt();
+    }
+
+    return -1;
+}
+
+// we load and handle covers in CoverArtCache class and
+// it needs update this column for future cover loadings
+bool TrackDAO::updateCoverArt(int trackId, int coverId) {
+    if (trackId < 1) {
+        return false;
+    }
+
+    if (coverId == getCoverArtId(trackId)) {
+        return true;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE library SET cover_art=:coverId WHERE id=:trackId");
+    query.bindValue(":coverId", coverId);
+    query.bindValue(":trackId", trackId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't update library.cover_art";
+        return false;
+    }
+    // we also need to update the cover_art column in the tablemodel.
+    emit(updateTrackInBTC(trackId));
+    return true;
 }
 
 // Mark all the tracks in the library as invalid.

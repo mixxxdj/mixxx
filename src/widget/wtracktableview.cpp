@@ -27,7 +27,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_DlgTagFetcher(NULL) ,
+          m_DlgTagFetcher(NULL),
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
@@ -85,6 +85,13 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToPlaylist(int)));
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
+
+    // control the delay to load the next cover art
+    m_lastSelection = 0.0;
+    m_bLastCoverLoaded = true;
+    m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTick50ms");
+    connect(m_pCOTGuiTickTime, SIGNAL(valueChanged(double)),
+            this, SLOT(slotGuiTickTime(double)));
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -123,6 +130,52 @@ WTrackTableView::~WTrackTableView() {
     delete m_pFileBrowserAct;
     delete m_pResetPlayedAct;
     delete m_pSamplerMenu;
+    delete m_pCOTGuiTickTime;
+}
+
+void WTrackTableView::selectionChanged(const QItemSelection &selected,
+                                       const QItemSelection &deselected) {
+    Q_UNUSED(selected);
+    Q_UNUSED(deselected);
+
+    if (m_bLastCoverLoaded) {
+        // load default cover art
+        emit(loadCoverArt("", "", 0));
+    }
+    m_bLastCoverLoaded = false;
+    m_lastSelection = m_pCOTGuiTickTime->get();
+    update();
+}
+
+void WTrackTableView::slotGuiTickTime(double cpuTime) {
+    // if the user is stoped in the same row for more than 0.1s,
+    // we load the cover art once.
+    if (!m_bLastCoverLoaded) {
+        if (cpuTime >= m_lastSelection + 0.1) {
+            slotLoadCoverArt();
+            m_bLastCoverLoaded = true;
+        }
+    }
+}
+
+void WTrackTableView::slotLoadCoverArt() {
+    QString coverLocation;
+    QString md5Hash;
+    int trackId = 0;
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    if ((indices.size() == 1) && (indices[0].isValid())) {
+        QModelIndex idx = indices[0];
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            coverLocation = idx.sibling(idx.row(), trackModel->fieldIndex(
+                            LIBRARYTABLE_COVERART_LOCATION)).data().toString();
+            md5Hash = idx.sibling(idx.row(), trackModel->fieldIndex(
+                            LIBRARYTABLE_COVERART_MD5)).data().toString();
+            trackId = trackModel->getTrackId(idx);
+        }
+    }
+    emit(loadCoverArt(coverLocation, md5Hash, trackId));
+    update();
 }
 
 // slot
@@ -518,6 +571,14 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     // NULL is fine.
     m_pTrackInfo->loadTrack(pTrack);
     currentTrackInfoIndex = index;
+
+    QString coverLocation = index.sibling(index.row(),
+        trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION)).data().toString();
+    QString md5Hash = index.sibling(index.row(),
+        trackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5)).data().toString();
+    int trackId = trackModel->getTrackId(index);
+    m_pTrackInfo->slotLoadCoverArt(coverLocation, md5Hash, trackId);
+
     m_pTrackInfo->show();
 }
 

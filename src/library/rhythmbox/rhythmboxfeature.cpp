@@ -128,6 +128,7 @@ void RhythmboxFeature::activate() {
     }
 
     emit(showTrackModel(m_pRhythmboxTrackModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {
@@ -137,6 +138,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
     m_pRhythmboxPlaylistModel->setPlaylistUI();
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 TreeItem* RhythmboxFeature::importMusicCollection() {
