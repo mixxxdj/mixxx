@@ -1,6 +1,7 @@
 #include <QtDebug>
 #include <QStringList>
 #include <QScriptValue>
+#include <QTemporaryFile>
 
 #include "skin/skincontext.h"
 
@@ -204,4 +205,110 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
         child = child.nextSibling();
     }
     return result.join("");
+}
+
+
+// look for the document of a node
+QDomDocument SkinContext::getDocument(const QDomNode& node) const {
+    
+    QDomDocument document;
+    QDomNode parentNode = node;
+    while( !parentNode.isNull() ){
+        if( parentNode.isDocument() )
+            document = parentNode.toDocument();
+        parentNode = parentNode.parentNode();
+    }
+    
+    return document;
+}
+
+
+// replaces Variables nodes in an svg dom tree
+QString SkinContext::setVariablesInSvg(const QDomNode& svgSkinNode) const {
+    
+    // clone svg to don't alter xml input
+    QDomNode svgNode = svgSkinNode.cloneNode(true);
+    QDomDocument document = getDocument(svgNode);
+    QDomElement svgElement = svgNode.toElement();
+    
+    // replace variables
+    QDomNodeList variablesElements = svgElement.elementsByTagName("Variable");
+    uint variableIndex;
+    QDomElement varElement;
+    QString varName, varValue;
+    QDomNode varNode, varParentNode, oldChild;
+    QDomText varValueNode;
+    
+    for (variableIndex=0; variableIndex < variablesElements.length(); variableIndex++){
+        
+        // retrieve value
+        varNode = variablesElements.item(variableIndex);
+        varElement = varNode.toElement();
+        varName = varElement.attribute("name");
+        varValue = variable(varName);
+        
+        // replace node by its value
+        varParentNode = varNode.parentNode();
+        varValueNode = document.createTextNode(varValue);
+        oldChild = varParentNode.replaceChild( varValueNode, varNode );
+        
+        if( oldChild.isNull() ){
+            // replaceChild has a really weird behaviour so I add this check
+            qDebug() << "SVG : unable to replace dom node changed. \n";
+        }
+    }
+    
+    // Save the new svg in a temp file to use it with setPixmap
+    QTemporaryFile svgFile;
+    svgFile.setFileTemplate(QDir::temp().filePath("qt_temp.XXXXXX.svg"));
+    
+    // the file will be removed before being parsed in skin if set to true
+    svgFile.setAutoRemove( false );
+    
+    QString svgTempFileName;
+    if( svgFile.open() ){
+        // qWarning() << "SVG : Temp filename" << svgFile.fileName() << " \n";
+        QTextStream out(&svgFile);
+        svgNode.save( out, -1 );
+        svgFile.close();
+        svgTempFileName = svgFile.fileName();
+    } else {
+        qDebug() << "Unable to open temp file for inline svg \n";
+    }
+    
+    return svgTempFileName;
+}
+
+QString SkinContext::getPixmapPath(const QDomNode& pixmapNode) const {
+    QString pixmapPath, pixmapName;
+    
+    if (!pixmapNode.isNull()) {
+        QDomNode svgNode = selectNode(pixmapNode, "svg");
+        if (!svgNode.isNull()) {
+            // inline svg
+            pixmapPath = setVariablesInSvg(svgNode);
+        } else {
+            // filename
+            pixmapName = nodeToString(pixmapNode);
+            if (!pixmapName.isEmpty()) {
+                pixmapName = getSkinPath(pixmapName);
+                if (pixmapName.endsWith(".svg", Qt::CaseInsensitive)) {
+                    
+                    QFile* file = new QFile(pixmapName);
+                    if(file->open(QIODevice::ReadWrite | QIODevice::Text)){
+                        QDomDocument document;
+                        document.setContent(file);
+                        QDomNode svgNode = document.elementsByTagName("svg").item(0);
+                        
+                        pixmapPath = setVariablesInSvg(svgNode);
+                        file->close();
+                    }
+                } else {
+                    pixmapPath = pixmapName;
+                }
+            }
+        }
+    }
+    
+    return pixmapPath;
 }

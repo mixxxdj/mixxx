@@ -20,13 +20,13 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")),
+        setPixmapBackground(context.getPixmapPath(context.selectNode(node, "BackPath")),
                             Paintable::DrawModeFromString(mode_str));
     }
 
     // Set background pixmap if available
     if (context.hasNode(node, "Knob")) {
-        setPixmapKnob(context.getSkinPath(context.selectString(node, "Knob")));
+        setPixmapKnob(context.getPixmapPath(context.selectNode(node, "Knob")));
     }
 
     if (context.hasNode(node, "MinAngle")) {
