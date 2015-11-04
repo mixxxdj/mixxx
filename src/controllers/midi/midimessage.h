@@ -126,15 +126,8 @@ struct MidiOutput {
 };
 
 struct MidiKey {
-    MidiKey()
-            : status(0),
-              control(0) {
-    }
-
-    MidiKey(unsigned char status, unsigned char control)
-            : status(status),
-              control(control) {
-    }
+    MidiKey();
+    MidiKey(unsigned char status, unsigned char control);
 
     bool operator==(const MidiKey& other) const {
         return key == other.key;

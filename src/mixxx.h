@@ -43,6 +43,7 @@ class GuiTick;
 class DlgPreferences;
 class SoundManager;
 class ControlPushButton;
+class DlgDeveloperTools;
 
 class TrackCollection;
 
@@ -121,6 +122,9 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewFullScreen(bool toggle);
     // Reload the skin.
     void slotDeveloperReloadSkin(bool toggle);
+    // Open the developer tools dialog.
+    void slotDeveloperTools();
+    void slotDeveloperToolsClosed();
 
     void slotToCenterOfPrimaryScreen();
 
@@ -234,6 +238,8 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pHelpManual;
 
     QAction* m_pDeveloperReloadSkin;
+    QAction* m_pDeveloperTools;
+    DlgDeveloperTools* m_pDeveloperToolsDlg;
 
     int m_iNoPlaylists;
 

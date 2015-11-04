@@ -109,6 +109,7 @@ class MidiController : public Controller {
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;
+    friend class MidiControllerTest;
 };
 
 #endif

@@ -92,7 +92,7 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
         mapping.control = ConfigKey(controlGroup, controlKey);
         mapping.description = controlDescription;
         mapping.options = options;
-        mapping.key = MidiUtils::makeMidiKey(midiStatusByte, midiControl);
+        mapping.key = MidiKey(midiStatusByte, midiControl);
 
         // qDebug() << "New mapping:" << QString::number(mapping.key.key, 16).toUpper()
         //          << QString::number(mapping.key.status, 16).toUpper()

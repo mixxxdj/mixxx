@@ -7,14 +7,11 @@
 #include <QFont>
 #include <QShortcut>
 
-WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
-                                 QWidget* pParent)
+WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         : QLineEdit(pParent),
           WBaseWidget(this) {
-
-    QString skinpath = pConfig->getResourcePath();
     m_clearButton = new QToolButton(this);
-    QPixmap pixmap(skinpath.append("/skins/cross.png"));
+    QPixmap pixmap(":/skins/cross.png");
     m_clearButton->setIcon(QIcon(pixmap));
     m_clearButton->setIconSize(pixmap.size());
     m_clearButton->setCursor(Qt::ArrowCursor);
@@ -86,7 +83,6 @@ void WSearchLineEdit::setup(QDomNode node, const SkinContext& context) {
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
     pal.setBrush(foregroundRole(), m_fgc);
     setPalette(pal);
-
 }
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
