@@ -170,7 +170,7 @@ void ControllerEngine::gracefulShutdown() {
         ConfigKey key = *it;
         ControlObjectThread *cot = m_controlCache.take(key);
         delete cot;
-        it++;
+        ++it;
     }
 
     delete m_pBaClass;

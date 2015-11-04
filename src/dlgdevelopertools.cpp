@@ -15,7 +15,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     ControlDoublePrivate::getControls(&controlsList);
 
     for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
-         it != controlsList.end(); it++) {
+         it != controlsList.end(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             m_controlModel.addControl(pControl->getKey(), pControl->name(),

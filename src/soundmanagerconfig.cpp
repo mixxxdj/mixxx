@@ -26,6 +26,7 @@ const unsigned int SoundManagerConfig::kMaxAudioBufferSizeIndex = 7;
 const QString SoundManagerConfig::kDefaultAPI = QString("None");
 // Sample Rate even the cheap sound Devices will support most likely
 const unsigned int SoundManagerConfig::kFallbackSampleRate = 48000;
+const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
 // audioBufferSizeIndex=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
 const int SoundManagerConfig::kDefaultAudioBufferSizeIndex = 5;
 
@@ -34,6 +35,7 @@ const int SoundManagerConfig::kDefaultSyncBuffers = 2;
 SoundManagerConfig::SoundManagerConfig()
     : m_api("None"),
       m_sampleRate(kFallbackSampleRate),
+      m_deckCount(kDefaultDeckCount),
       m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
       m_syncBuffers(2) {
     m_configFile = QFileInfo(CmdlineArgs::Instance().getSettingsPath() + SOUNDMANAGERCONFIG_FILENAME);
@@ -67,6 +69,8 @@ bool SoundManagerConfig::readFromDisk() {
     // audioBufferSizeIndex is refereed as "latency" in the config file
     setAudioBufferSizeIndex(rootElement.attribute("latency", "0").toUInt());
     setSyncBuffers(rootElement.attribute("sync_buffers", "2").toUInt());
+    setDeckCount(rootElement.attribute("deck_count",
+                                       QString(kDefaultDeckCount)).toUInt());
     clearOutputs();
     clearInputs();
     QDomNodeList devElements(rootElement.elementsByTagName("SoundDevice"));
@@ -121,7 +125,9 @@ bool SoundManagerConfig::writeToDisk() const {
     // audioBufferSizeIndex is refereed as "latency" in the config file
     docElement.setAttribute("latency", m_audioBufferSizeIndex);
     docElement.setAttribute("sync_buffers", m_syncBuffers);
+    docElement.setAttribute("deck_count", m_deckCount);
     doc.appendChild(docElement);
+
     foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
         QDomElement devElement(doc.createElement("SoundDevice"));
         devElement.setAttribute("name", device);
@@ -137,6 +143,7 @@ bool SoundManagerConfig::writeToDisk() const {
         }
         docElement.appendChild(devElement);
     }
+
     QFile file(m_configFile.absoluteFilePath());
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
         return false;
@@ -199,6 +206,43 @@ bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
         return false;
     }
     return true;
+}
+
+unsigned int SoundManagerConfig::getDeckCount() const {
+    return m_deckCount;
+}
+
+void SoundManagerConfig::setDeckCount(unsigned int deckCount) {
+    m_deckCount = deckCount;
+}
+
+void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
+    int minimum_deck_count = 0;
+
+    foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
+        foreach (AudioInput in, m_inputs.values(device)) {
+            if ((in.getType() == AudioInput::DECK ||
+                 in.getType() == AudioInput::VINYLCONTROL ||
+                 in.getType() == AudioInput::AUXILIARY) &&
+                in.getIndex() + 1 > minimum_deck_count) {
+                qDebug() << "Found an input connection above current deck count";
+                minimum_deck_count = in.getIndex() + 1;
+            }
+        }
+        foreach (AudioOutput out, m_outputs.values(device)) {
+            if (out.getType() == AudioOutput::DECK &&
+                    out.getIndex() + 1 > minimum_deck_count) {
+                qDebug() << "Found an output connection above current deck count";
+                minimum_deck_count = out.getIndex() + 1;
+            }
+        }
+    }
+
+    if (minimum_deck_count > configuredDeckCount) {
+        m_deckCount = minimum_deck_count;
+    } else {
+        m_deckCount = configuredDeckCount;
+    }
 }
 
 unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {

@@ -150,7 +150,7 @@ PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue>* pConfig)
 PresetInfoEnumerator::~PresetInfoEnumerator() {
     for (QMap<QString, ControllerPresetFileHandler*>::iterator it =
                  m_presetFileHandlersByExtension.begin();
-         it != m_presetFileHandlersByExtension.end(); it++) {
+         it != m_presetFileHandlersByExtension.end(); ++it) {
         delete it.value();
         it = m_presetFileHandlersByExtension.erase(it);
     }

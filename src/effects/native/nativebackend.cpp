@@ -4,6 +4,7 @@
 #include "effects/native/flangereffect.h"
 #include "effects/native/bitcrushereffect.h"
 #include "effects/native/butterworth8eqeffect.h"
+#include "effects/native/graphiceqeffect.h"
 #include "effects/native/filtereffect.h"
 #ifndef __MACAPPSTORE__
 #include "effects/native/reverbeffect.h"
@@ -20,6 +21,7 @@ NativeBackend::NativeBackend(QObject* pParent)
 #endif
     registerEffect<EchoEffect>();
     registerEffect<Butterworth8EQEffect>();
+    registerEffect<GraphicEQEffect>();
 }
 
 NativeBackend::~NativeBackend() {
