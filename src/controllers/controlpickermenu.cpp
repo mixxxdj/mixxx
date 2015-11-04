@@ -30,7 +30,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Master Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
-    addControl("[Master]", "crossfader", tr("Crossfader"), tr("Master Crossfader"), mixerMenu, true);
+    addControl("[Master]", "crossfader", tr("Crossfader"), tr("Master crossfader"), mixerMenu, true);
     addControl("[Master]", "volume", tr("Master Volume"), tr("Master volume"), mixerMenu, true);
     addControl("[Master]", "balance", tr("Master Balance"), tr("Master balance"), mixerMenu, true);
     addControl("[Master]", "delay", tr("Master Delay"), tr("Master delay"), mixerMenu, true);
@@ -251,8 +251,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     humanBeatSizes[64] = tr("64");
 
     // Loop moving
-    QString loopMoveForwardTitle = tr("Move Loop +%1 beats");
-    QString loopMoveBackwardTitle = tr("Move Loop -%1 beats");
+    QString loopMoveForwardTitle = tr("Move Loop +%1 Beats");
+    QString loopMoveBackwardTitle = tr("Move Loop -%1 Beats");
     QString loopMoveForwardDescription = tr("Move loop forward by %1 beats");
     QString loopMoveBackwardDescription = tr("Move loop backward by %1 beats");
 
@@ -272,8 +272,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Beatloops
     QMenu* beatLoopMenu = addSubmenu(tr("Beat-Looping"));
-    QString beatLoopTitle = tr("Loop %1-beats");
-    QString beatLoopRollTitle = tr("Loop Roll %1-beats");
+    QString beatLoopTitle = tr("Loop %1 Beats");
+    QString beatLoopRollTitle = tr("Loop Roll %1 Beats");
     QString beatLoopDescription = tr("Create %1-beat loop");
     QString beatLoopRollDescription = tr("Create temporary %1-beat loop roll");
 
@@ -398,7 +398,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                effectUnitMenu, true);
             addPrefixedControl(effectUnitGroup, "parameter",
                                tr("Super Knob"),
-                               tr("Super Knob (Control Linked Effect Parameters)"),
+                               tr("Super Knob (control linked effect parameters)"),
                                descriptionPrefix,
                                effectUnitMenu, true);
             addPrefixedControl(effectUnitGroup, "insertion_type",
