@@ -695,6 +695,7 @@ class MixxxCore(Feature):
                    "widget/woverview.cpp",
                    "widget/woverviewlmh.cpp",
                    "widget/woverviewhsv.cpp",
+                   "widget/woverviewrgb.cpp",
                    "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
                    "widget/wsearchlineedit.cpp",
@@ -832,12 +833,14 @@ class MixxxCore(Feature):
 
                    "waveform/renderers/waveformrendererfilteredsignal.cpp",
                    "waveform/renderers/waveformrendererhsv.cpp",
+                   "waveform/renderers/waveformrendererrgb.cpp",
                    "waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
                    "waveform/renderers/qtwaveformrenderersimplesignal.cpp",
                    "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
                    "waveform/renderers/glwaveformrenderersimplesignal.cpp",
                    "waveform/renderers/glslwaveformrenderersignal.cpp",
                    "waveform/renderers/glvsynctestrenderer.cpp",
+                   "waveform/renderers/glwaveformrendererrgb.cpp",
 
                    "waveform/renderers/waveformsignalcolors.cpp",
 
@@ -850,6 +853,7 @@ class MixxxCore(Feature):
                    "waveform/widgets/emptywaveformwidget.cpp",
                    "waveform/widgets/softwarewaveformwidget.cpp",
                    "waveform/widgets/hsvwaveformwidget.cpp",
+                   "waveform/widgets/rgbwaveformwidget.cpp",
                    "waveform/widgets/qtwaveformwidget.cpp",
                    "waveform/widgets/qtsimplewaveformwidget.cpp",
                    "waveform/widgets/glwaveformwidget.cpp",
@@ -857,6 +861,8 @@ class MixxxCore(Feature):
                    "waveform/widgets/glvsynctestwidget.cpp",
 
                    "waveform/widgets/glslwaveformwidget.cpp",
+
+                   "waveform/widgets/glrgbwaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",
