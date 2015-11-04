@@ -5,6 +5,10 @@
 #ifndef TRACKCOLLECTION_H
 #define TRACKCOLLECTION_H
 
+#ifdef __SQLITE3__
+#include <sqlite3.h>
+#endif
+
 #include <QtSql>
 #include <QList>
 #include <QQueue>
@@ -29,6 +33,11 @@
 #include "library/dao/analysisdao.h"
 #include "library/queryutil.h"
 #include "library/dao/directorydao.h"
+
+#ifdef __SQLITE3__
+typedef struct sqlite3_context sqlite3_context;
+typedef struct Mem sqlite3_value;
+#endif
 
 class TrackInfoObject;
 
@@ -149,4 +158,4 @@ class TrackCollection : public QThread {
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;
 };
 
-#endif
+#endif // TRACKCOLLECTION_H

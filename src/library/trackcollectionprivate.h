@@ -5,6 +5,10 @@
 #ifndef TRACKCOLLECTIONPRIVATE_H
 #define TRACKCOLLECTIONPRIVATE_H
 
+#ifdef __SQLITE3__
+#include <sqlite3.h>
+#endif
+
 #include <QtSql>
 #include <QList>
 #include <QQueue>
@@ -72,6 +76,28 @@ class TrackCollectionPrivate : public QObject {
 
   signals:
     void initialized();
+
+  protected:
+#ifdef __SQLITE3__
+    void installSorting(QSqlDatabase &db);
+    static int sqliteLocaleAwareCompare(void* pArg,
+                                        int len1, const void* data1,
+                                        int len2, const void* data2);
+    static void sqliteLike(sqlite3_context *p,
+                          int aArgc,
+                          sqlite3_value **aArgv);
+    static void makeLatinLow(QChar* c, int count);
+    static int likeCompareLatinLow(
+            QString* pattern,
+            QString* string,
+            const QChar esc);
+    static int likeCompareInner(
+            const QChar* pattern,
+            int patterenSize,
+            const QChar* string,
+            int stringSize,
+            const QChar esc);
+#endif // __SQLITE3__
 
   private:
     void createAndPopulateDbConnection();

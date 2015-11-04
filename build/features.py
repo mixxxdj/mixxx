@@ -1207,3 +1207,34 @@ class MacAppStoreException(Feature):
         if not self.enabled(build):
             return
         build.env.Append(CPPDEFINES='__MACAPPSTORE__')
+
+class LocaleCompare(Feature):
+    def description(self):
+        return "Locale Aware Compare for Sqlite"
+
+    def default(self, build):
+        if build.platform_is_linux:
+            return 1
+        return 0    
+
+    def enabled(self, build):
+        build.flags['localecompare'] = util.get_flags(build.env, 'localecompare',
+                                            self.default(build))
+        if int(build.flags['localecompare']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('localecompare', 'Set to 1 to enable Locale Aware Compare support for Sqlite.',
+                 self.default(build))
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not conf.CheckLib(['sqlite3']):
+            raise Exception(
+                'Missing libsqlite3.- exiting!')
+        build.env.Append(CPPDEFINES='__SQLITE3__')
+
+
+
