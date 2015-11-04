@@ -46,6 +46,10 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
 
   private slots:
     void slotNumDecksChanged(double);
+    void slotVinylType1Changed(QString);
+    void slotVinylType2Changed(QString);
+    void slotVinylType3Changed(QString);
+    void slotVinylType4Changed(QString);
 
   private:
     void setDeckWidgetsVisible(int deck, bool visible);
@@ -53,6 +57,9 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     void setDeck2WidgetsVisible(bool visible);
     void setDeck3WidgetsVisible(bool visible);
     void setDeck4WidgetsVisible(bool visible);
+    void verifyAndSaveLeadInTime(QLineEdit* widget, QString group, QString vinyl_type);
+    int getDefaultLeadIn(QString vinyl_type) const;
+
 
     QList<VinylControlSignalWidget*> m_signalWidgets;
 
