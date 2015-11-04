@@ -55,9 +55,10 @@ class ControlPickerMenu : public QMenu {
                                     QString helpText, QMenu* pMenu,
                                     bool microhoneControls, bool auxControls,
                                     bool addReset=false);
-    void addEffectControl(QString group, QString control, QString title,
-                          QString menuDescription, QString descriptionPrefix,
-                          QMenu* pMenu, bool addReset=false);
+    void addPrefixedControl(QString group, QString control, QString title,
+                            QString menuDescription, QString descriptionPrefix,
+                            QMenu* pMenu, bool addReset=false);
+
     void addAvailableControl(ConfigKey key, QString title, QString description);
 
     QString m_effectMasterOutputStr;
@@ -72,6 +73,7 @@ class ControlPickerMenu : public QMenu {
     QString m_effectUnitStr;
     QString m_effectStr;
     QString m_parameterStr;
+    QString m_libraryStr;
 
     QSignalMapper m_actionMapper;
     QList<ConfigKey> m_controlsAvailable;

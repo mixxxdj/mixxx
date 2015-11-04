@@ -469,7 +469,7 @@ TEST_F(LearningUtilsTest, CC7BitTicker_SingleDirection) {
               mappings.at(0));
 }
 
-TEST_F(LearningUtilsTest, SingleMessageSwitchMode) {
+TEST_F(LearningUtilsTest, SingleMessageSwitchMode_NoteOn) {
     // If we only get one NOTE_ON message that is either 0x7F or 0x00 then we
     // assume this is a binary toggle switch.
 
@@ -499,6 +499,38 @@ TEST_F(LearningUtilsTest, SingleMessageSwitchMode) {
                                options, control),
               mappings.at(0));
 }
+
+TEST_F(LearningUtilsTest, SingleMessageSwitchMode_CC) {
+    // If we only get one CC message that is either 0x7F or 0x00 then we
+    // assume this is a binary toggle switch.
+
+    // Status: 0xB1 Control: 0x10
+    addMessage(MIDI_CC | 0x01, 0x10, 0x7F);
+
+    ConfigKey control("[Test]", "SomeControl");
+    MidiInputMappings mappings =
+            LearningUtils::guessMidiInputMappings(control, m_messages);
+
+    ASSERT_EQ(1, mappings.size());
+    MidiOptions options;
+    options.sw = true;
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
+                               options, control),
+              mappings.at(0));
+
+    m_messages.clear();
+
+    // Status: 0x91 Control: 0x10
+    addMessage(MIDI_CC | 0x01, 0x10, 0x00);
+
+    mappings = LearningUtils::guessMidiInputMappings(control, m_messages);
+
+    ASSERT_EQ(1, mappings.size());
+    EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
+                               options, control),
+              mappings.at(0));
+}
+
 
 TEST_F(LearningUtilsTest, MultipleControlsUnrecognized_BindsFirst) {
     // Status 0x91, Control 0x10

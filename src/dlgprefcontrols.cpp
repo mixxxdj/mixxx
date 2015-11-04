@@ -299,6 +299,16 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     slotUpdateSchemes();
 
     //
+    // Starts in fullscreen mode
+    //
+    ComboBoxStartInFullscreen->addItem(tr("Off")); // 0
+    ComboBoxStartInFullscreen->addItem(tr("On")); // 1
+    ComboBoxStartInFullscreen->setCurrentIndex(m_pConfig->getValueString(
+                       ConfigKey("[Config]","StartInFullscreen"),"0").toInt());
+    connect(ComboBoxStartInFullscreen, SIGNAL(activated(int)),
+            this, SLOT(slotSetStartInFullscreen(int)));
+
+    //
     // Tooltip configuration
     //
     ComboBoxTooltips->addItem(tr("On")); // 1
@@ -496,6 +506,10 @@ void DlgPrefControls::slotSetAutoDjIgnoreTime(const QTime &a_rTime) {
     QString str = a_rTime.toString(autoDjIgnoreTimeEdit->displayFormat());
     m_pConfig->set(ConfigKey("[Auto DJ]", "IgnoreTime"),str);
 #endif // __AUTODJCRATES__
+}
+
+void DlgPrefControls::slotSetStartInFullscreen(int index) {
+    m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"), index);
 }
 
 void DlgPrefControls::slotSetTooltips(int) {
