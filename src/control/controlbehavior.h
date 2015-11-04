@@ -64,7 +64,8 @@ class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
 
 class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLinPotmeterBehavior(double dMinValue, double dMaxValue);
+    ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
+                               bool allowOutOfBounds);
     virtual ~ControlLinPotmeterBehavior();
 
     virtual double valueToMidiParameter(double dValue);

@@ -47,7 +47,7 @@ class WSliderComposed : public WWidget  {
     inline bool isHorizontal() const { return m_bHorizontal; };
 
   public slots:
-    void onConnectedControlValueChanged(double);
+    void onConnectedControlChanged(double dParameter, double dValue);
     void fillDebugTooltip(QStringList* debug);
 
   protected:

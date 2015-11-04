@@ -47,8 +47,10 @@ void WNumber::setup(QDomNode node, const SkinContext& context) {
     setValue(0.);
 }
 
-void WNumber::onConnectedControlValueChanged(double v) {
-    setValue(v);
+void WNumber::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dParameter);
+    // We show the actual control value instead of its parameter.
+    setValue(dValue);
 }
 
 void WNumber::setValue(double dValue) {

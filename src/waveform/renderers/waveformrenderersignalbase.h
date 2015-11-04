@@ -32,7 +32,12 @@ protected:
     ControlObjectThread* m_pHighKillControlObject;
 
     const WaveformSignalColors* m_pColors;
-    QColor m_axesColor;
+    qreal m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a;
+    qreal m_signalColor_r, m_signalColor_g, m_signalColor_b;
+    qreal m_lowColor_r, m_lowColor_g, m_lowColor_b;
+    qreal m_midColor_r, m_midColor_g, m_midColor_b;
+    qreal m_highColor_r, m_highColor_g, m_highColor_b;
+
     Qt::Alignment m_alignment;
 };
 

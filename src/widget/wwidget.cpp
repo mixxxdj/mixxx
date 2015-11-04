@@ -23,7 +23,7 @@
 
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
-          WBaseWidget(this), 
+          WBaseWidget(this),
           m_activeTouchButton(Qt::NoButton) {
     m_pTouchShift = new ControlObjectSlave("[Controls]", "touch_shift");
     setAttribute(Qt::WA_StaticContents);
@@ -35,8 +35,9 @@ WWidget::~WWidget() {
     delete m_pTouchShift;
 }
 
-void WWidget::onConnectedControlValueChanged(double value) {
-    Q_UNUSED(value);
+void WWidget::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dParameter);
+    Q_UNUSED(dValue);
     update();
 }
 

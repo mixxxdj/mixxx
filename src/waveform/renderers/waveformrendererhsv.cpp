@@ -82,7 +82,7 @@ void WaveformRendererHSV::draw(QPainter* painter,
     const float heightFactor = allGain*halfHeight/255.0;
 
     //draw reference line
-    painter->setPen(m_axesColor);
+    painter->setPen(m_pColors->getAxesColor());
     painter->drawLine(0,halfHeight,m_waveformRenderer->getWidth(),halfHeight);
 
     for (int x = 0; x < m_waveformRenderer->getWidth(); ++x) {

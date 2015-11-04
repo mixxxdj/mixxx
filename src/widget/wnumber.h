@@ -31,7 +31,7 @@ class WNumber : public WLabel  {
 
     virtual void setup(QDomNode node, const SkinContext& context);
 
-    virtual void onConnectedControlValueChanged(double v);
+    virtual void onConnectedControlChanged(double dParameter, double dValue);
 
   public slots:
     virtual void setValue(double dValue);

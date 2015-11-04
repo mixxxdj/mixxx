@@ -88,7 +88,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
-        painter->setPen(m_axesColor);
+        painter->setPen(m_pColors->getAxesColor());
         painter->drawLine(0,halfHeight,m_waveformRenderer->getWidth(),halfHeight);
     }
 

@@ -18,6 +18,8 @@ ControlDelegate::~ControlDelegate() {
 QWidget* ControlDelegate::createEditor(QWidget* parent,
                                        const QStyleOptionViewItem& option,
                                        const QModelIndex& index) const {
+    Q_UNUSED(option);
+    Q_UNUSED(index);
     QLineEdit* pLineEdit = new QLineEdit(parent);
     return pLineEdit;
 }
@@ -38,6 +40,7 @@ void ControlDelegate::paint(QPainter* painter,
 
 QString ControlDelegate::displayText(const QVariant& value,
                                      const QLocale& locale) const {
+    Q_UNUSED(locale);
     ConfigKey key = qVariantValue<ConfigKey>(value);
 
     if (key.group.isEmpty() && key.item.isEmpty()) {

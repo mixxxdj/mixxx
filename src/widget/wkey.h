@@ -12,7 +12,7 @@ class WKey : public WLabel  {
     WKey(QWidget* pParent=NULL);
     virtual ~WKey();
 
-    virtual void onConnectedControlValueChanged(double v);
+    virtual void onConnectedControlChanged(double dParameter, double dValue);
 
   private slots:
     void setValue(double dValue);

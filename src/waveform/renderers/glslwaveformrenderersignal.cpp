@@ -396,7 +396,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     /*
     //TODO: (vrince) make this line work sometime
     glBegin(GL_LINES); {
-        glColor4f(m_axesColor.redF(),m_axesColor.greenF(),m_axesColor.blueF(),m_axesColor.alphaF());
+        glColor4f(m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a);
         glVertex2f(0,0);
         glVertex2f(m_waveformRenderer->getWidth(),0);
     }

@@ -15,8 +15,11 @@ WKey::WKey(QWidget* pParent)
 WKey::~WKey() {
 }
 
-void WKey::onConnectedControlValueChanged(double v) {
-    setValue(v);
+void WKey::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dParameter);
+    // Enums are not currently represented using parameter space so it doesn't
+    // make sense to use the parameter here yet.
+    setValue(dValue);
 }
 
 void WKey::setValue(double dValue) {

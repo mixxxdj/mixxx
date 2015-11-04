@@ -311,7 +311,7 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
-        painter->setPen(m_axesColor);
+        painter->setPen(m_pColors->getAxesColor());
         painter->drawLine(0,0,m_waveformRenderer->getWidth(),0);
     }
 

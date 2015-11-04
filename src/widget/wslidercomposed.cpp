@@ -97,7 +97,8 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameH
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();
 
-        onConnectedControlValueChanged(getControlParameter());
+        // Value is unused in WSliderComposed.
+        onConnectedControlChanged(getControlParameter(), 0);
         update();
     }
 }
@@ -136,7 +137,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
         }
 
         // If we don't change this, then updates might be rejected in
-        // onConnectedControlValueChanged.
+        // onConnectedControlChanged.
         m_dOldValue = newValue;
 
         // Emit valueChanged signal
@@ -158,7 +159,8 @@ void WSliderComposed::wheelEvent(QWheelEvent *e) {
     newValue = math_max(0.0, math_min(1.0, newValue));
 
     setControlParameter(newValue);
-    onConnectedControlValueChanged(newValue);
+    // Value is unused in WSliderComposed.
+    onConnectedControlChanged(newValue, 0);
     update();
 
     e->accept();
@@ -216,16 +218,19 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 }
 
-void WSliderComposed::onConnectedControlValueChanged(double dValue) {
-    if (!m_bDrag && m_dOldValue != dValue) {
-        m_dOldValue = dValue;
+void WSliderComposed::onConnectedControlChanged(double dParameter, double) {
+    // WARNING: The second parameter to this method is unused and called with
+    // invalid values in parts of WSliderComposed. Do not use it unless you fix
+    // this.
+    if (!m_bDrag && m_dOldValue != dParameter) {
+        m_dOldValue = dParameter;
 
         // Calculate handle position
         if (!m_bHorizontal) {
-            dValue = 1.0 - dValue;
+            dParameter = 1.0 - dParameter;
         }
         int sliderLength = m_bHorizontal ? width() : height();
-        m_iPos = static_cast<int>(dValue * (sliderLength - m_iHandleLength));
+        m_iPos = static_cast<int>(dParameter * (sliderLength - m_iHandleLength));
 
         if (m_iPos > (sliderLength - m_iHandleLength)) {
             m_iPos = sliderLength - m_iHandleLength;

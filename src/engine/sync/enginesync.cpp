@@ -101,6 +101,10 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                     // skip this deck
                     continue;
                 }
+                if (!other_deck->getChannel()->isMaster()) {
+                    // skip non-master decks, like preview decks.
+                    continue;
+                }
 
                 double otherDeckBpm = other_deck->getBpm();
                 if (otherDeckBpm > 0.0) {

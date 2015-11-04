@@ -80,8 +80,8 @@ void VinylControlControl::notifySeekQueued() {
 }
 
 void VinylControlControl::slotControlVinylSeek(double change) {
-    if (isnan(change) || change > 1.14 || change < -0.14) {
-        // This seek is ridiculous.
+    // Prevent NaN's from sneaking into the engine.
+    if (isnan(change)) {
         return;
     }
 

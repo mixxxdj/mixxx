@@ -39,7 +39,7 @@ class WVuMeter : public WWidget  {
     void setPixmapBackground(const QString& filename);
     void setPixmaps(const QString &vuFilename,
                     bool bHorizontal=false);
-    void onConnectedControlValueChanged(double fValue);
+    void onConnectedControlChanged(double dParameter, double dValue);
 
   protected slots:
     void updateState(int msecsElapsed);

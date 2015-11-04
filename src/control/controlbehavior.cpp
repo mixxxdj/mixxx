@@ -142,8 +142,9 @@ double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
     }
 }
 
-ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
+ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
+                                                       bool allowOutOfBounds)
+        : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
 }
 
 ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {

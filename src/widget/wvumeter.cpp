@@ -105,15 +105,16 @@ void WVuMeter::setPixmaps(const QString &vuFilename,
     }
 }
 
-void WVuMeter::onConnectedControlValueChanged(double dValue) {
-    int idx = static_cast<int>(dValue * m_iNoPos);
+void WVuMeter::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dValue);
+    int idx = static_cast<int>(dParameter * m_iNoPos);
     // Range check
     if (idx > m_iNoPos)
         idx = m_iNoPos;
     else if (idx < 0)
         idx = 0;
 
-    if (dValue > 0.) {
+    if (dParameter > 0.) {
         setPeak(idx);
     } else {
         // A 0.0 value is very unlikely except when the VU Meter is disabled

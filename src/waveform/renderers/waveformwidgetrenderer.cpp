@@ -253,15 +253,6 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
     m_zoomFactor = math_max(s_waveformMinZoom, math_min(m_zoomFactor, s_waveformMaxZoom));
 }
 
-double WaveformWidgetRenderer::transformSampleIndexInRendererWorld(int sampleIndex) const {
-    const double relativePosition = (double)sampleIndex / (double)m_trackSamples;
-    return transformPositionInRendererWorld(relativePosition);
-}
-
-double WaveformWidgetRenderer::transformPositionInRendererWorld(double position) const {
-    return m_trackPixelCount * (position - m_firstDisplayedPosition);
-}
-
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_trackInfoObject = track;
     //used to postpone first display until track sample is actually available
