@@ -46,6 +46,29 @@
 							<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/></ConfigKey>
 						</Connection>
 					</Knob>
+					<PushButton>
+		        		<Size>38f,8f</Size>
+		        		<NumberStates>3</NumberStates>
+		        		<State>
+		          			<Number>0</Number>
+		          			<Pressed>btn_link_type/btn_link_type_none.png</Pressed>
+							<Unpressed>btn_link_type/btn_link_type_none.png</Unpressed>
+		        		</State>
+		        		<State>
+		          			<Number>1</Number>
+		          			<Pressed>btn_link_type/btn_link_type_linked.png</Pressed>
+							<Unpressed>btn_link_type/btn_link_type_linked.png</Unpressed>
+		        		</State>
+		           		<State>
+		          			<Number>2</Number>
+		          			<Pressed>btn_link_type/btn_link_type_inverse.png</Pressed>
+							<Unpressed>btn_link_type/btn_link_type_inverse.png</Unpressed>
+		        		</State>
+		        		<Connection>
+							<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/>_link_type</ConfigKey>
+		          			<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
 				</Children>
 			</WidgetGroup>
     	</Children>
