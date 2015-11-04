@@ -130,6 +130,16 @@
       </widget>
      </item>
      <item row="8" column="0">
+      <widget class="QLabel" name="keylockLabel">
+       <property name="text">
+        <string>Keylock / Pitch-Bending Engine</string>
+       </property>
+       <property name="buddy">
+        <cstring>keylockComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
       <spacer name="outputVSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -151,6 +161,9 @@
      </item>
      <item row="3" column="1">
       <widget class="QComboBox" name="deviceSyncComboBox"/>
+     </item>
+     <item row="8" column="1">
+      <widget class="QComboBox" name="keylockComboBox"/>
      </item>
     </layout>
    </item>

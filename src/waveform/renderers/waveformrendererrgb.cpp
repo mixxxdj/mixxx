@@ -85,10 +85,7 @@ void WaveformRendererRGB::draw(QPainter* painter,
             (double)m_waveformRenderer->getWidth();
 
     float allGain(1.0);
-    allGain = m_waveformRenderer->getGain();
-
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
+    getGains(&allGain, NULL, NULL, NULL);
 
     QColor color;
 

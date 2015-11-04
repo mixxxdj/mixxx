@@ -59,7 +59,7 @@ EngineDeck::EngineDeck(const char* group,
     m_pFilter = new EngineFilterBlock(group);
     m_pVUMeter = new EngineVuMeter(group);
     m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
-    m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
+    m_pVinylSoundEmu = new EngineVinylSoundEmu(group);
 }
 
 EngineDeck::~EngineDeck() {
@@ -92,6 +92,7 @@ void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
         m_pBuffer->process(0, pOut, iBufferSize);
         m_pBuffer->collectFeatures(&features);
         // Emulate vinyl sounds
+        m_pVinylSoundEmu->setSpeed(m_pBuffer->getSpeed());
         m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
         m_bPassthroughWasActive = false;
     }

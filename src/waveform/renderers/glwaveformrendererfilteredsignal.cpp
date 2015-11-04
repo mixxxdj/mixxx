@@ -62,37 +62,12 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Per-band gain from the EQ knobs.
-    float lowGain(1.0), midGain(1.0), highGain(1.0);
-    if (m_pLowFilterControlObject &&
-            m_pMidFilterControlObject &&
-            m_pHighFilterControlObject) {
-        lowGain = m_pLowFilterControlObject->get();
-        midGain = m_pMidFilterControlObject->get();
-        highGain = m_pHighFilterControlObject->get();
-    }
-
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
-    lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
-    midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
-    highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
+    float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     float maxLow[2];
     float maxMid[2];
     float maxHigh[2];
-
-    if (m_pLowKillControlObject && m_pLowKillControlObject->get() == 1.0) {
-        lowGain = 0;
-    }
-
-    if (m_pMidKillControlObject && m_pMidKillControlObject->get() == 1.0) {
-        midGain = 0;
-    }
-
-    if (m_pHighKillControlObject && m_pHighKillControlObject->get() == 1.0) {
-        highGain = 0;
-    }
-
     float meanIndex;
 
     if (m_alignment == Qt::AlignCenter) {
@@ -105,7 +80,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glPushMatrix();
         glLoadIdentity();
 
-        glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
+        glScalef(1.f,allGain,1.f);
 
         glLineWidth(1.0);
         glDisable(GL_LINE_SMOOTH);
@@ -169,7 +144,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glPushMatrix();
         glLoadIdentity();
 
-        glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
+        glScalef(1.f,allGain,1.f);
 
         glLineWidth(1.1);
         glEnable(GL_LINE_SMOOTH);

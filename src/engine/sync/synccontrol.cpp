@@ -242,6 +242,10 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
             // Already master.
             return;
         }
+        if (m_pPassthroughEnabled->get()) {
+            qDebug() << "Disallowing enabling of sync mode when passthrough active";
+            return;
+        }
         m_pEngineSync->requestSyncMode(this, SYNC_MASTER);
     } else {
         // Turning off master goes back to follower mode.
@@ -261,6 +265,10 @@ void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
     // If we are not already in the enabled state requested, request a
     // transition.
     if (bEnabled != syncEnabled) {
+        if (bEnabled && m_pPassthroughEnabled->get()) {
+            qDebug() << "Disallowing enabling of sync mode when passthrough active";
+            return;
+        }
         m_pEngineSync->requestEnableSync(this, bEnabled);
     }
 }

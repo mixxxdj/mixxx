@@ -30,6 +30,10 @@ class ControlObject : public QObject {
     Q_OBJECT
   public:
     ControlObject();
+
+    // bIgnoreNops: Don't emit a signal if the CO is set to its current value.
+    // bTrack: Record statistics about this control.
+    // bPersist: Store value on exit, load on startup.
     ControlObject(ConfigKey key,
                   bool bIgnoreNops=true, bool bTrack=false,
                   bool bPersist=false);
