@@ -1297,3 +1297,51 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     EXPECT_GT(0.7, ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                        "beat_distance"))->get());
 }
+
+TEST_F(EngineSyncTest, UserTweakBeatDistance) {
+    // If a deck has a user tweak, and another deck stops such that the first
+    // is used to reseed the master beat distance, make sure the user offset
+    // is taken in to account.  Sigh.
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(128.0);
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm2->set(128.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 128, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 128, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    // Spin the wheel, causing the useroffset for group1 to get set.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0.2);
+    for (int i = 0; i < 10; ++i) {
+        ProcessBuffer();
+    }
+    // Play some more buffers with the wheel at 0.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0);
+    for (int i = 0; i < 10; ++i) {
+        ProcessBuffer();
+    }
+
+    // Stop the second deck.  This causes the master beat distance to get
+    // seeded with the beta distance from deck 1.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+
+    // Play a buffer, which is enough to see if the beat distances align.
+    ProcessBuffer();
+
+    // Ah, floating point.
+    double difference = fabs(ControlObject::getControl(ConfigKey(m_sGroup1,
+                                                        "beat_distance"))->get()
+                             - ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                              "beat_distance"))->get());
+    EXPECT_LT(difference, .00001);
+}

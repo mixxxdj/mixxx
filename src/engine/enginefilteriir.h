@@ -7,6 +7,12 @@
 #define MIXXX
 #include <fidlib.h>
 
+// set to 1 to print some analysis data using qDebug()
+// It prints the resulting delay after 50 % of impulse have passed
+// and the gain and phase shift at some sample frequencies
+// You may also use the app fiview for analysis
+#define IIR_ANALYSIS 0
+
 enum IIRPass {
     IIR_LP,
     IIR_BP,
@@ -64,8 +70,97 @@ class EngineFilterIIR : public EngineObjectConstIn {
                     spec_d, sampleRate, freq0, freq1, adj);
 
             initBuffers();
+
+#if(IIR_ANALYSIS)
+            char* desc;
+            FidFilter* filt = fid_design(spec_d, sampleRate, freq0, freq1, adj, &desc);
+            int delay = fid_calc_delay(filt);
+            qDebug() << QString().fromAscii(desc) << "delay:" << delay;
+            double resp0, phase0;
+            resp0 = fid_response_pha(filt, freq0 / sampleRate, &phase0);
+            qDebug() << "freq0:" << freq0 << resp0 << phase0;
+            if (freq1) {
+                double resp1, phase1;
+                resp1 = fid_response_pha(filt, freq1 / sampleRate, &phase1);
+                qDebug() << "freq1:" << freq1 << resp1 << phase1;
+            }
+            double resp2, phase2;
+            resp2 = fid_response_pha(filt, freq0 / sampleRate / 2, &phase2);
+            qDebug() << "freq2:" << freq0 / 2 << resp2 << phase0;
+            double resp3, phase3;
+            resp3 = fid_response_pha(filt, freq0 / sampleRate * 2, &phase3);
+            qDebug() << "freq3:" << freq0 * 2 << resp3 << phase0;
+            double resp4, phase4;
+            resp4 = fid_response_pha(filt, freq0 / sampleRate / 2.2, &phase4);
+            qDebug() << "freq4:" << freq0 / 2.2 << resp2 << phase0;
+            double resp5, phase5;
+            resp5 = fid_response_pha(filt, freq0 / sampleRate * 2.2, &phase5);
+            qDebug() << "freq5:" << freq0 * 2.2 << resp3 << phase0;
+            free(filt);
+#endif
         }
     }
+
+    void setCoefs2(double sampleRate, int n_coef1,
+            const char* spec1, double freq01, double freq11, int adj1,
+            const char* spec2, double freq02, double freq12, int adj2) {
+        char spec1_d[FIDSPEC_LENGTH];
+        char spec2_d[FIDSPEC_LENGTH];
+        if (strlen(spec1) < sizeof(spec1_d) &&
+                strlen(spec2) < sizeof(spec2_d)) {
+            // Copy to dynamic-ish memory to prevent fidlib API breakage.
+            strcpy(spec1_d, spec1);
+            strcpy(spec2_d, spec2);
+
+            // Copy the old coefficients into m_oldCoef
+            memcpy(m_oldCoef, m_coef, sizeof(m_coef));
+            m_coef[0] = fid_design_coef(m_coef + 1, n_coef1,
+                    spec1, sampleRate, freq01, freq11, adj1) *
+                        fid_design_coef(m_coef + 1 + n_coef1, SIZE - n_coef1,
+                    spec2, sampleRate, freq02, freq12, adj2);
+
+            initBuffers();
+
+#if(IIR_ANALYSIS)
+            char* desc1;
+            char* desc2;
+            FidFilter* filt1 = fid_design(spec1, sampleRate, freq01, freq11, adj1, &desc1);
+            FidFilter* filt2 = fid_design(spec2, sampleRate, freq02, freq12, adj2, &desc2);
+            FidFilter* filt = fid_cat(1, filt1, filt2, NULL);
+            int delay = fid_calc_delay(filt);
+            qDebug() << QString().fromAscii(desc1) << "X" << QString().fromAscii(desc2) << "delay:" << delay;
+            double resp0, phase0;
+            resp0 = fid_response_pha(filt, freq01 / sampleRate, &phase0);
+            qDebug() << "freq01:" << freq01 << resp0 << phase0;
+            resp0 = fid_response_pha(filt, freq01 / sampleRate, &phase0);
+            qDebug() << "freq02:" << freq02 << resp0 << phase0;
+            if (freq11) {
+                double resp1, phase1;
+                resp1 = fid_response_pha(filt, freq11 / sampleRate, &phase1);
+                qDebug() << "freq1:" << freq11 << resp1 << phase1;
+            }
+            if (freq12) {
+                double resp1, phase1;
+                resp1 = fid_response_pha(filt, freq12 / sampleRate, &phase1);
+                qDebug() << "freq1:" << freq12 << resp1 << phase1;
+            }
+            double resp2, phase2;
+            resp2 = fid_response_pha(filt, freq01 / sampleRate / 2, &phase2);
+            qDebug() << "freq2:" << freq01 / 2 << resp2 << phase0;
+            double resp3, phase3;
+            resp3 = fid_response_pha(filt, freq01 / sampleRate * 2, &phase3);
+            qDebug() << "freq3:" << freq01 * 2 << resp3 << phase0;
+            double resp4, phase4;
+            resp4 = fid_response_pha(filt, freq01 / sampleRate / 2.2, &phase4);
+            qDebug() << "freq4:" << freq01 / 2.2 << resp2 << phase0;
+            double resp5, phase5;
+            resp5 = fid_response_pha(filt, freq01 / sampleRate * 2.2, &phase5);
+            qDebug() << "freq5:" << freq01 * 2.2 << resp3 << phase0;
+            free(filt);
+#endif
+        }   
+    }   
+
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {
