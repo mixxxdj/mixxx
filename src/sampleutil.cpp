@@ -196,18 +196,29 @@ void SampleUtil::convert(CSAMPLE* pDest, const SAMPLE* pSrc,
 }
 
 // static
-void SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+bool SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
                                   const CSAMPLE* pBuffer, int iNumSamples) {
     CSAMPLE fAbsL = 0.0f;
     CSAMPLE fAbsR = 0.0f;
+    bool clipped = false;
 
     for (int i = 0; i < iNumSamples; i += 2) {
-        fAbsL += fabs(pBuffer[i]);
-        fAbsR += fabs(pBuffer[i+1]);
+        CSAMPLE absl = fabs(pBuffer[i]);
+        if (absl > 1.0) {
+            clipped = true;
+        }
+        fAbsL += absl;
+
+        CSAMPLE absr = fabs(pBuffer[i+1]);
+        if (absr > 1.0) {
+            clipped = true;
+        }
+        fAbsR += absr;
     }
 
     *pfAbsL = fAbsL;
     *pfAbsR = fAbsR;
+    return clipped;
 }
 
 // static

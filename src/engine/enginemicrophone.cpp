@@ -13,7 +13,6 @@
 EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsManager)
         : EngineChannel(pGroup, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_clipping(pGroup),
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
@@ -152,8 +151,6 @@ void EngineMicrophone::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int i
         m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
                                          features);
     }
-    // Apply clipping
-    m_clipping.process(pOut, pOut, iBufferSize);
     // Update VU meter
     m_vuMeter.process(pOut, pOut, iBufferSize);
 }

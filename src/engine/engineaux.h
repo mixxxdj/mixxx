@@ -8,7 +8,6 @@
 #include "util/circularbuffer.h"
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
-#include "engine/engineclipping.h"
 #include "engine/enginevumeter.h"
 #include "soundmanagerutil.h"
 
@@ -46,7 +45,6 @@ class EngineAux : public EngineChannel, public AudioDestination {
 
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
-    EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
     ControlObject* m_pEnabled;
     ControlPushButton* m_pPassing;

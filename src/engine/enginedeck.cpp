@@ -21,7 +21,6 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginevinylsoundemu.h"
 #include "engine/enginedeck.h"
-#include "engine/engineclipping.h"
 #include "engine/enginepregain.h"
 #include "engine/enginefilterblock.h"
 #include "engine/enginevumeter.h"
@@ -59,10 +58,9 @@ EngineDeck::EngineDeck(const char* group,
     // Set up additional engines
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
-    m_pClipping = new EngineClipping(group);
+    m_pVUMeter = new EngineVuMeter(group);
     m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
-    m_pVUMeter = new EngineVuMeter(group);
 }
 
 EngineDeck::~EngineDeck() {
@@ -70,7 +68,6 @@ EngineDeck::~EngineDeck() {
     delete m_pPassing;
 
     delete m_pBuffer;
-    delete m_pClipping;
     delete m_pFilter;
     delete m_pPregain;
     delete m_pVinylSoundEmu;
@@ -119,8 +116,6 @@ void EngineDeck::process(const CSAMPLE*, CSAMPLE* pOut, const int iBufferSize) {
         m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
                                          features);
     }
-    // Apply clipping
-    m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter
     m_pVUMeter->process(pOut, pOut, iBufferSize);
 }

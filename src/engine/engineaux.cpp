@@ -14,7 +14,6 @@
 EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
         : EngineChannel(pGroup, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_clipping(pGroup),
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
           m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough"))),
@@ -149,8 +148,6 @@ void EngineAux::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferS
         m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
                                          features);
     }
-    // Apply clipping
-    m_clipping.process(pOut, pOut, iBufferSize);
     // Update VU meter
     m_vuMeter.process(pOut, pOut, iBufferSize);
 }

@@ -96,7 +96,8 @@ class SampleUtil {
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
     // absolute values of l in pfAbsL, and the sum of the absolute values of r
     // in pfAbsR.
-    static void sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+    // returns true in case of clipping > +-1
+    static bool sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
                                  const CSAMPLE* pBuffer, int iNumSamples);
 
     // Returns true if the buffer contains any samples outside of the range

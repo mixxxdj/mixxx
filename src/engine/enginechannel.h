@@ -25,7 +25,6 @@ class ControlObject;
 class EngineBuffer;
 class EnginePregain;
 class EngineFilterBlock;
-class EngineClipping;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
 class ControlPushButton;
