@@ -10,6 +10,7 @@
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
 #include "widget/wbasewidget.h"
+#include "widget/wcoverartmenu.h"
 
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
@@ -37,7 +38,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void leaveEvent(QEvent*);
 
   private:
-    void setToDefault();
     QPixmap scaledCoverArt(QPixmap normal);
 
     ConfigObject<ConfigValue>* m_pConfig;
@@ -45,19 +45,16 @@ class WCoverArt : public QWidget, public WBaseWidget {
     bool m_bEnableWidget;
     bool m_bCoverIsHovered;
     bool m_bCoverIsVisible;
-    bool m_bDefaultCover;
 
-    QString m_sCoverTitle;
-    QPixmap m_currentCover;
-    QPixmap m_currentScaledCover;
+    WCoverArtMenu* m_pMenu;
+
+    QPixmap m_loadedCover;
 
     QPixmap m_iconHide;
     QPixmap m_iconShow;
-    QCursor m_zoomCursor;
 
     int m_lastRequestedTrackId;
-    QString m_lastRequestedCoverLocation;
-    QString m_lastRequestedMd5Hash;
+    QPair<QString, QString> m_lastRequestedCover;
 };
 
 #endif // WCOVERART_H

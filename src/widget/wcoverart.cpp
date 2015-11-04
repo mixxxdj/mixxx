@@ -1,11 +1,14 @@
+#include <QAction>
 #include <QApplication>
 #include <QBitmap>
 #include <QLabel>
+#include <QIcon>
 #include <QPainter>
 
-#include "library/coverartcache.h"
+#include "dlgcoverartfullsize.h"
 #include "wcoverart.h"
 #include "wskincolor.h"
+#include "library/coverartcache.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
                      ConfigObject<ConfigValue>* pConfig)
@@ -15,7 +18,9 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_bEnableWidget(true),
           m_bCoverIsHovered(false),
           m_bCoverIsVisible(false),
-          m_bDefaultCover(true) {
+          m_pMenu(new WCoverArtMenu(this)),
+          m_loadedCover(CoverArtCache::instance()->getDefaultCoverArt()),
+          m_lastRequestedTrackId(-1) {
     // load icon to hide cover
     m_iconHide = QPixmap(":/images/library/ic_library_cover_hide.png");
     m_iconHide = m_iconHide.scaled(20,
@@ -30,16 +35,12 @@ WCoverArt::WCoverArt(QWidget* parent,
                                    Qt::KeepAspectRatioByExpanding,
                                    Qt::SmoothTransformation);
 
-    // load zoom cursor
-    QPixmap zoomImg(":/images/library/ic_library_zoom_in.png");
-    zoomImg = zoomImg.scaled(24, 24);
-    m_zoomCursor = QCursor(zoomImg);
-
     connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
             this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
 }
 
 WCoverArt::~WCoverArt() {
+    delete m_pMenu;
 }
 
 void WCoverArt::setup(QDomNode node, const SkinContext& context) {
@@ -72,37 +73,23 @@ void WCoverArt::slotEnableWidget(bool enable) {
     update();
 }
 
-void WCoverArt::setToDefault() {
-    m_sCoverTitle = "Cover Art";
-    m_bDefaultCover = true;
-    update();
-}
-
 void WCoverArt::slotResetWidget() {
-    m_lastRequestedTrackId = 0;
-    m_lastRequestedCoverLocation.clear();
-    m_lastRequestedMd5Hash.clear();
+    m_lastRequestedTrackId = -1;
+    m_lastRequestedCover = qMakePair(QString(), QString());
     m_bCoverIsVisible = false;
     m_bCoverIsHovered = false;
+    m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
+    m_loadedCover = scaledCoverArt(m_loadedCover);
     setMinimumSize(0, 20);
-    setToDefault();
+    update();
 }
 
 void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
     if (!m_bEnableWidget) {
         return;
     }
-
     if (m_lastRequestedTrackId == trackId) {
-        if (m_lastRequestedCoverLocation == CoverArtCache::instance()
-                                            ->getDefaultCoverLocation()) {
-            setToDefault();
-            return;
-        }
-        m_sCoverTitle = QFileInfo(m_lastRequestedCoverLocation).baseName();
-        m_currentCover = pixmap;
-        m_currentScaledCover = scaledCoverArt(pixmap);
-        m_bDefaultCover = false;
+        m_loadedCover = scaledCoverArt(pixmap);
         update();
     }
 }
@@ -115,15 +102,20 @@ void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
     }
 
     m_lastRequestedTrackId = trackId;
-    m_lastRequestedCoverLocation = coverLocation;
-    m_lastRequestedMd5Hash = md5Hash;
+    m_lastRequestedCover = qMakePair(coverLocation, md5Hash);
+
     if (!m_bCoverIsVisible) {
         return;
     }
-    setToDefault();
-    CoverArtCache::instance()->requestPixmap(trackId,
-                                             coverLocation,
-                                             md5Hash);
+
+    m_loadedCover = CoverArtCache::instance()->requestPixmap(trackId,
+                                                             coverLocation,
+                                                             md5Hash);
+    if (m_loadedCover.isNull()) {
+        m_loadedCover = CoverArtCache::instance()->getDefaultCoverLocation();
+    }
+    m_loadedCover = scaledCoverArt(m_loadedCover);
+    update();
 }
 
 QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
@@ -144,12 +136,7 @@ void WCoverArt::paintEvent(QPaintEvent*) {
     if (m_bCoverIsVisible) {
         int x = width() / 2 - height() / 2 + 4;
         int y = 6;
-        if (m_bDefaultCover) {
-            painter.drawPixmap(x, y,
-                              CoverArtCache::instance()->getDefaultCoverArt());
-        } else {
-            painter.drawPixmap(x, y, m_currentScaledCover);
-        }
+        painter.drawPixmap(x, y, m_loadedCover);
     } else {
         painter.drawPixmap(1, 2 ,m_iconShow);
         painter.drawText(25, 15, tr("Show Cover Art"));
@@ -168,12 +155,13 @@ void WCoverArt::resizeEvent(QResizeEvent*) {
 
     if (m_bCoverIsVisible) {
         setMinimumSize(0, parentWidget()->height() / 3);
-        slotLoadCoverArt(m_lastRequestedCoverLocation,
-                         m_lastRequestedMd5Hash,
+        slotLoadCoverArt(m_lastRequestedCover.first,
+                         m_lastRequestedCover.second,
                          m_lastRequestedTrackId);
      } else {
+        m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
         setMinimumSize(0, 20);
-        setToDefault();
+        DlgCoverArtFullSize::instance()->close();
     }
 }
 
@@ -182,71 +170,26 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         return;
     }
 
-    QPoint lastPoint;
-    lastPoint = event->pos();
-    if (m_bCoverIsVisible) {
-        if(lastPoint.x() > width() - (height() / 5)
-                && lastPoint.y() < (height() / 5) + 5) {
-            m_bCoverIsVisible = false;
-            resize(sizeHint());
-        } else {
-            // When the current cover is not a default one,
-            // it'll show the cover in a full size
-            // (in a new window - by left click)
-            if (!m_bDefaultCover) {
-                QLabel *lb = new QLabel(this, Qt::Popup |
-                                              Qt::Tool |
-                                              Qt::CustomizeWindowHint |
-                                              Qt::WindowCloseButtonHint);
-                lb->setWindowModality(Qt::ApplicationModal);
-                lb->setWindowTitle(m_sCoverTitle);
-
-                QSize sz = QApplication::activeWindow()->size();
-                if (m_currentCover.height() > sz.height() / 1.2) {
-                    m_currentCover = m_currentCover.scaledToHeight(
-                                                     sz.height() / 1.2,
-                                                     Qt::SmoothTransformation);
-                }
-
-                lb->setPixmap(m_currentCover);
-                lb->setGeometry(sz.width() / 2 - m_currentCover.width() / 2,
-                                sz.height() / 2 - m_currentCover.height() / 2.2,
-                                m_currentCover.width(),
-                                m_currentCover.height());
-                lb->show();
-            }
-        }
-    } else {
+    if (!m_bCoverIsVisible) { // show widget
         m_bCoverIsVisible = true;
-        setCursor(Qt::ArrowCursor);
         resize(sizeHint());
+        return;
+    }
+
+    QPoint lastPoint(event->pos());
+    if(lastPoint.x() > width() - (height() / 5)
+            && lastPoint.y() < (height() / 5) + 5) { // hide widget
+        m_bCoverIsVisible = false;
+        resize(sizeHint());
+    } else if (event->button() == Qt::RightButton) { // show context-menu
+        m_pMenu->show(event->globalPos(),
+                      m_lastRequestedCover,
+                      m_lastRequestedTrackId);
     }
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
-    if (!m_bEnableWidget) {
-        return;
-    }
-
-    QPoint lastPoint;
-    lastPoint = event->pos();
-    if (event->HoverEnter) {
-        m_bCoverIsHovered  = true;
-        if (m_bCoverIsVisible) {
-            if (lastPoint.x() > width() - (height() / 5)
-                    && lastPoint.y() < (height() / 5) + 5) {
-                setCursor(Qt::ArrowCursor);
-            } else {
-                if (m_bDefaultCover) {
-                    setCursor(Qt::ArrowCursor);
-                } else {
-                    setCursor(m_zoomCursor);
-                }
-            }
-        } else {
-            setCursor(Qt::PointingHandCursor);
-        }
-    }
+    m_bCoverIsHovered  = event->HoverEnter;
     update();
 }
 

@@ -30,7 +30,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 }
 
 void MixxxLibraryFeature::init() {
-    QString COVERART_LOCATION = COVERART_TABLE + "." + COVERARTTABLE_LOCATION
+    QString coverartLocation = COVERART_TABLE + "." + COVERARTTABLE_LOCATION
                                 + " AS " + LIBRARYTABLE_COVERART_LOCATION;
     QStringList columns = QStringList()
             << "library." + LIBRARYTABLE_ID
@@ -59,7 +59,7 @@ void MixxxLibraryFeature::init() {
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED
-            << COVERART_LOCATION
+            << coverartLocation
             << COVERART_TABLE + "." + COVERARTTABLE_MD5;
 
     QString tableName = "library_cache_view";
@@ -87,7 +87,7 @@ void MixxxLibraryFeature::init() {
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
             *it = it->replace("track_locations.", "");
-        } else if (it->operator==(COVERART_LOCATION)) {
+        } else if (it->operator==(coverartLocation)) {
             *it = LIBRARYTABLE_COVERART_LOCATION;
         } else if (it->startsWith(COVERART_TABLE + ".")) {
             *it = it->replace(COVERART_TABLE + ".", "");

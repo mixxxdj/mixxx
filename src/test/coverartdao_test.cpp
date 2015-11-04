@@ -17,18 +17,24 @@ class CoverArtDAOTest : public MixxxTest {
         // make sure we clean up the db
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("DELETE FROM " % COVERART_TABLE);
-        query.exec();
+        ASSERT_TRUE(query.exec());
         query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
-        query.exec();
+        ASSERT_TRUE(query.exec());
         query.prepare("DELETE FROM library");
-        query.exec();
+        ASSERT_TRUE(query.exec());
         query.prepare("DELETE FROM track_locations");
-        query.exec();
+        ASSERT_TRUE(query.exec());
 
         delete m_pTrackCollection;
     }
 
     TrackCollection* m_pTrackCollection;
+
+    // this method gives support to saveCoverArts (only)
+    // it is just to make 'saveCoverArts' more readable and less repetitive
+    void iterateQHashAndQSet(QHash<int, QPair<QString, QString> > covers,
+                             QSet<QPair<int, int> > res,
+                             QList<int> invalidCoverKeys = QList<int>());
 };
 
 TEST_F(CoverArtDAOTest, saveCoverArt) {
@@ -57,12 +63,92 @@ TEST_F(CoverArtDAOTest, saveCoverArt) {
         " AND " % COVERARTTABLE_MD5 % "=:md5"));
     query.bindValue(":location", testCoverLoc);
     query.bindValue(":md5", testMd5Hash);
-    query.exec();
+    ASSERT_TRUE(query.exec());
     int testCoverId = -1;
     if (query.next()) {
         testCoverId = query.value(0).toInt();
     }
     ASSERT_EQ(coverId, testCoverId);
+}
+
+// saving many covers at once
+TEST_F(CoverArtDAOTest, saveCoverArts) {
+    CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();
+    // <trackId, <coverLoc, md5> >
+    QHash<int, QPair<QString, QString> > covers;
+    // <trackId, coverId>
+    QSet<QPair<int, int> > res;
+
+    // adding a empty hash
+    res = m_CoverArtDAO.saveCoverArt(covers);
+    ASSERT_TRUE(covers.isEmpty());
+    ASSERT_TRUE(res.isEmpty());
+
+    // adding new covers (all valid and new)
+    covers.insert(1, qMakePair(QString("/cover1.jpg"), QString("COVER1")));
+    covers.insert(2, qMakePair(QString("/cover2.jpg"), QString("COVER2")));
+    covers.insert(3, qMakePair(QString("/cover3.jpg"), QString("COVER3")));
+    res = m_CoverArtDAO.saveCoverArt(covers);
+    iterateQHashAndQSet(covers, res);
+
+    // adding existing covers
+    QSet<QPair<int, int> > resAux;
+    resAux = m_CoverArtDAO.saveCoverArt(covers);
+    EXPECT_TRUE(res == resAux);
+
+    // adding new and existing covers
+    // it trust that "QHash covers" has existing covers
+    covers.insert(4, qMakePair(QString("/cover4.jpg"), QString("COVER4")));
+    covers.insert(5, qMakePair(QString("/cover5.jpg"), QString("COVER5")));
+    covers.insert(6, qMakePair(QString("/cover6.jpg"), QString("COVER6")));
+    res = m_CoverArtDAO.saveCoverArt(covers);
+    iterateQHashAndQSet(covers, res);
+
+    // adding invalid covers (empty md5hash)
+    QHash<int, QPair<QString, QString> > invalidCovers;
+    QList<int> invalidCoverKeys;
+    invalidCoverKeys << 7 << 8;
+    invalidCovers.insert(invalidCoverKeys.at(0),
+                         qMakePair(QString(""), QString("")));
+    invalidCovers.insert(invalidCoverKeys.at(1),
+                         qMakePair(QString("/coverInv.jpg"), QString("")));
+    res = m_CoverArtDAO.saveCoverArt(invalidCovers);
+    iterateQHashAndQSet(invalidCovers, res, invalidCoverKeys);
+
+    // adding 'invalid', 'existing' and 'new' covers
+    // it trust that "QHash covers" has existing covers
+    covers.insert(9, qMakePair(QString("/newCover1.png"), QString("NEWCOVER")));
+    covers.insert(10, qMakePair(QString("/newCover2.jpg"), QString("NEWCOVER2")));
+    covers.unite(invalidCovers);
+    res = m_CoverArtDAO.saveCoverArt(covers);
+    iterateQHashAndQSet(covers, res, invalidCoverKeys);
+}
+
+// this method gives support to 'saveCoverArts' (only)
+// it is just to make 'saveCoverArts' more readable and less repetitive
+void CoverArtDAOTest::iterateQHashAndQSet(QHash<int, QPair<QString, QString> > covers,
+                                          QSet<QPair<int, int> > res,
+                                          QList<int> invalidCoverKeys)
+{
+    ASSERT_TRUE(res.size() <= covers.size());
+    QSetIterator<QPair<int, int> > set(res);
+    QHashIterator<int, QPair<QString, QString> > hash(covers);
+    while (hash.hasNext()) {
+        hash.next();
+        int trackId = hash.key();
+        bool hasTrackId = false;
+        set.toFront();
+        while (set.hasNext() && !hasTrackId) {
+            QPair<int, int> p = set.next();
+            hasTrackId = p.first == trackId;
+            if (invalidCoverKeys.contains(p.first)) {
+                EXPECT_TRUE(p.second == -1);
+            } else {
+                EXPECT_TRUE(p.second > 0);
+            }
+        }
+        EXPECT_TRUE(hasTrackId);
+    }
 }
 
 TEST_F(CoverArtDAOTest, getCoverArtId) {
@@ -161,7 +247,7 @@ TEST_F(CoverArtDAOTest, getCoverArtInfo) {
         "WHERE " % LIBRARYTABLE_ID % "=:trackId"));
     query.bindValue(":album", album);
     query.bindValue(":trackId", trackId);
-    query.exec();
+    ASSERT_TRUE(query.exec());
 
     // adding cover art
     CoverArtDAO m_CoverArtDAO = m_pTrackCollection->getCoverArtDAO();

@@ -563,6 +563,7 @@ class MixxxCore(Feature):
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
                    "dlgdevelopertools.cpp",
+                   "dlgcoverartfullsize.cpp",
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -722,7 +723,8 @@ class MixxxCore(Feature):
                    "widget/wkey.cpp",
                    "widget/wcombobox.cpp",
                    "widget/wsplitter.cpp",
-		   "widget/wcoverart.cpp",
+                   "widget/wcoverart.cpp",
+                   "widget/wcoverartmenu.cpp",
 
                    "network.cpp",
                    "musicbrainz/tagfetcher.cpp",
@@ -753,7 +755,7 @@ class MixxxCore(Feature):
                    "library/missingtablemodel.cpp",
                    "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
-		   "library/coverartcache.cpp",
+                   "library/coverartcache.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
@@ -815,7 +817,7 @@ class MixxxCore(Feature):
                    "library/bpmdelegate.cpp",
                    "library/bpmeditor.cpp",
                    "library/previewbuttondelegate.cpp",
-		   "library/coverartdelegate.cpp",
+                   "library/coverartdelegate.cpp",
                    "audiotagger.cpp",
 
                    "library/treeitemmodel.cpp",
@@ -958,6 +960,7 @@ class MixxxCore(Feature):
             'dlgaboutdlg.ui',
             'dlganalysis.ui',
             'dlgautodj.ui',
+            'dlgcoverartfullsize.ui',
             'dlgdevelopertoolsdlg.ui',
             'dlghidden.ui',
             'dlgmissing.ui',
@@ -1051,8 +1054,8 @@ class MixxxCore(Feature):
             build.env.Append(
                 CPPDEFINES='_ATL_MIN_CRT')  # Helps prevent duplicate symbols
             # Need this on Windows until we have UTF16 support in Mixxx
-	    # use stl min max defines
-	    # http://connect.microsoft.com/VisualStudio/feedback/details/553420/std-cpp-max-and-std-cpp-min-not-available-in-visual-c-2010
+            # use stl min max defines
+            # http://connect.microsoft.com/VisualStudio/feedback/details/553420/std-cpp-max-and-std-cpp-min-not-available-in-visual-c-2010
             build.env.Append(CPPDEFINES='NOMINMAX')
             build.env.Append(CPPDEFINES='UNICODE')
             build.env.Append(

@@ -2,15 +2,26 @@
 #include <QtDebug>
 #include <QThread>
 
+#include "library/coverartcache.h"
+#include "library/queryutil.h"
 #include "library/dao/coverartdao.h"
 #include "library/dao/trackdao.h"
-#include "library/queryutil.h"
 
 CoverArtDAO::CoverArtDAO(QSqlDatabase& database)
         : m_database(database) {
 }
 
 CoverArtDAO::~CoverArtDAO() {
+    qDebug() << "~CoverArtDAO()";
+}
+
+void CoverArtDAO::finish() {
+    // As CoverArtCache needs to have an available CoverArtDAO/TrackDAO,
+    // it must be destroyed BEFORE them.
+    // During the CoverArtCache destruction, some covers and tracks
+    // might be updated (queued).
+    CoverArtCache::destroy();
+
     deleteUnusedCoverArts();
 }
 
@@ -81,7 +92,7 @@ QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
 
     QSqlQuery query(m_database);
     if (!query.exec(sQuery)) {
-        LOG_FAILED_QUERY(query) << "Failed to save multiple covers!";
+        LOG_FAILED_QUERY(query) << sQuery << "Failed to save multiple covers!";
         return QSet<QPair<int, int> >();
     }
 
@@ -99,37 +110,18 @@ QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
     return res;
 }
 
-void CoverArtDAO::deleteUnusedCoverArts() {
+void CoverArtDAO::deleteUnusedCoverArts() {    
+    QString covers = "SELECT " % LIBRARYTABLE_COVERART_LOCATION %
+                     " FROM " % COVERART_TABLE % " INNER JOIN " LIBRARY_TABLE
+                     " ON " LIBRARY_TABLE "." % LIBRARYTABLE_COVERART_LOCATION %
+                     " = " % COVERART_TABLE % "." % COVERARTTABLE_ID %
+                     " GROUP BY " % LIBRARYTABLE_COVERART_LOCATION;
+
+    QString sQuery = "DELETE FROM " % COVERART_TABLE %
+                     " WHERE " % COVERARTTABLE_ID % " NOT IN (" % covers % ")";
+
     QSqlQuery query(m_database);
-
-    query.prepare("SELECT " % COVERARTTABLE_ID %
-                  " FROM " % COVERART_TABLE %
-                  " WHERE " % COVERARTTABLE_ID % " NOT IN "
-                      "(SELECT " % LIBRARYTABLE_COVERART_LOCATION %
-                      " FROM " % COVERART_TABLE % " INNER JOIN " LIBRARY_TABLE
-                      " ON " LIBRARY_TABLE "." % LIBRARYTABLE_COVERART_LOCATION %
-                      " = " % COVERART_TABLE % "." % COVERARTTABLE_ID %
-                      " GROUP BY " % LIBRARYTABLE_COVERART_LOCATION % ")");
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-
-    QStringList coverIdList;
-    QSqlRecord queryRecord = query.record();
-    const int coverIdColumn = queryRecord.indexOf("id");
-    while (query.next()) {
-        coverIdList << query.value(coverIdColumn).toString();
-    }
-
-    if (coverIdList.empty()) {
-        return;
-    }
-
-    query.prepare(QString("DELETE FROM " % COVERART_TABLE %
-                          " WHERE " % COVERARTTABLE_ID % " IN (%1)")
-                  .arg(coverIdList.join(",")));
-    if (!query.exec()) {
+    if (!query.exec(sQuery)) {
         LOG_FAILED_QUERY(query);
     }
 }
@@ -150,11 +142,12 @@ int CoverArtDAO::getCoverArtId(QString md5Hash) {
         return -1;
     }
 
+    int coverId = -1;
     if (query.next()) {
-        return query.value(0).toInt();
+        coverId = query.value(0).toInt();
     }
 
-    return -1;
+    return coverId;
 }
 
 // it'll get just the fields which are required for scanCover stuff

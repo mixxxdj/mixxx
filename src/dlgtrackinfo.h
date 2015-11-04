@@ -10,6 +10,7 @@
 #include "trackinfoobject.h"
 #include "dlgtagfetcher.h"
 #include "util/types.h"
+#include "widget/wcoverartmenu.h"
 
 const int kFilterLength = 5;
 
@@ -24,14 +25,14 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
-    void loadTrack(TrackPointer pTrack);
-    void slotLoadCoverArt(const QString& coverLocation,
-                          const QString& md5Hash,
-                          int trackId);
+    void loadTrack(TrackPointer pTrack, QString coverLocation, QString md5);
 
   signals:
     void next();
     void previous();
+
+  protected:
+    void closeEvent(QCloseEvent*);
 
   private slots:
     void slotNext();
@@ -52,8 +53,12 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmTap();
 
     void reloadTrackMetadata();
-    void slotOpenInFileBrowser();
     void updateTrackMetadata();
+    void slotOpenInFileBrowser();
+
+    void slotPixmapFound(int trackId, QPixmap pixmap);
+    void slotCoverLocationUpdated(const QString& newLoc, const QString& oldLoc);
+    void slotCoverMenu(const QPoint& pos);
 
   private:
     void populateFields(TrackPointer pTrack);
@@ -62,23 +67,23 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void unloadTrack(bool save);
     void clear();
     void init();
+    void setCoverArt(QPixmap original);
     QPixmap scaledCoverArt(QPixmap original);
 
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
-    QString m_sLoadedCoverLocation;
 
     CSAMPLE m_bpmTapFilter[kFilterLength];
     QTime m_bpmTapTimer;
 
-    QMutex m_mutex;
     DlgTagFetcher& m_DlgTagFetcher;
 
-    enum reloadCoverCases {
-        LOAD,
-        CHANGE,
-        UNSET
-    };
+    WCoverArtMenu* m_pCoverMenu;
+    QPair<QString, QString> m_loadedCover;
+
+    // Useful to handle cases when the user cancel the changes.
+    // In this case DlgTrackInfo must revert the cover
+    QString m_firstCoverLoc;
 };
 
 #endif /* DLGTRACKINFO_H */

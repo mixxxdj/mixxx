@@ -14,15 +14,33 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
 {
     Q_OBJECT
   public:
-    bool changeCoverArt(int trackId, const QString& newCoverLocation);
+    /* This method is used to request a cover art pixmap.
+     *
+     * @param croppedSize : QSize(finalCoverWidth, finalCoverHeight)
+     *      it determines the final cover size.
+     *      Use QSize() to get the original size.
+     *      NOTE!
+     *          the cover will be resized to 'finalCoverWidth' and
+     *          it'll be cropped from the top until the finalCoverHeight' pixel
+     *
+     * @param onlyCached : if it is 'true', the method will NOT try to load
+     *      covers from the given 'coverLocation' and it will also NOT run the
+     *      search algorithm.
+     *      In this way, the method will just look into CoverCache and return
+     *      a Pixmap if it is already loaded in the QPixmapCache.
+     */
     QPixmap requestPixmap(int trackId,
                           const QString& coverLocation = QString(),
-                          const QString& md5Hash = QString(),
-                          const bool tryLoadAndSearch = true,
-                          const bool croppedPixmap = false,
-                          const bool emitSignals = true);
+                          QString md5Hash = QString(),
+                          const QSize& croppedSize = QSize(0,0),
+                          const bool onlyCached = false,
+                          const bool issueRepaint = false);
+
+    bool changeCoverArt(int trackId, const QString& newCoverLocation="");
     void setCoverArtDAO(CoverArtDAO* coverdao);
     void setTrackDAO(TrackDAO* trackdao);
+    TrackPointer getTrack(int trackId);
+
     QString getDefaultCoverLocation() { return m_sDefaultCoverLocation; }
     QPixmap getDefaultCoverArt() { return m_defaultCover; }
 
@@ -31,10 +49,11 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     void imageLoaded();
 
   private slots:
-    void updateDB();
+    void updateDB(bool forceUpdate=false);
 
   signals:
     void pixmapFound(int trackId, QPixmap pixmap);
+    void requestRepaint();
 
   protected:
     CoverArtCache();
@@ -46,19 +65,19 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
         QString coverLocation;
         QString md5Hash;
         QImage img;
-        bool croppedImg;
-        bool emitSignals;
+        QSize croppedSize;
+        bool issueRepaint;
         bool newImgFound;
     };
 
     FutureResult searchImage(CoverArtDAO::CoverArtInfo coverInfo,
-                             const bool croppedPixmap = false,
-                             const bool emitSignals = true);
+                             const QSize& croppedSize,
+                             const bool emitSignals);
     FutureResult loadImage(int trackId,
                            const QString& coverLocation,
                            const QString& md5Hash,
-                           const bool croppedPixmap = false,
-                           const bool emitSignals = true);
+                           const QSize &croppedSize,
+                           const bool emitSignals);
 
   private:
     static CoverArtCache* m_instance;
@@ -66,12 +85,14 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache>
     TrackDAO* m_pTrackDAO;
     const QString m_sDefaultCoverLocation;
     const QPixmap m_defaultCover;
-    QTimer* m_timer;
     QSet<int> m_runningIds;
     QHash<int, QPair<QString, QString> > m_queueOfUpdates;
 
+    // @param img: image that will be cropped
+    // @param size: (desired cover width, cell height)
+    QImage cropImage(QImage img, const QSize& finalSize);
+
     QString calculateMD5(QImage img);
-    QImage cropImage(QImage img);
     QImage rescaleBigImage(QImage img);
     QImage extractEmbeddedCover(QString trackLocation);
     QString searchInTrackDirectory(QString directory,

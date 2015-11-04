@@ -8,17 +8,20 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
         : QStyledItemDelegate(parent),
           m_pTableView(NULL),
           m_pTrackModel(NULL),
-          m_bIsLocked(false),
+          m_bOnlyCachedCover(false),
           m_sDefaultCover(CoverArtCache::instance()->getDefaultCoverLocation()),
           m_iCoverLocationColumn(-1),
           m_iMd5Column(-1) {
     // This assumes that the parent is wtracktableview
-    connect(parent, SIGNAL(lockCoverArtDelegate(bool)),
-            this, SLOT(slotLock(bool)));
+    connect(parent, SIGNAL(onlyCachedCoverArt(bool)),
+            this, SLOT(slotOnlyCachedCoverArt(bool)));
 
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
         m_pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+    }
+
+    if (m_pTrackModel) {
         m_iMd5Column = m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_MD5);
         m_iCoverLocationColumn = m_pTrackModel->fieldIndex(
                                     LIBRARYTABLE_COVERART_LOCATION);
@@ -31,8 +34,8 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
 CoverArtDelegate::~CoverArtDelegate() {
 }
 
-void CoverArtDelegate::slotLock(bool lock) {
-    m_bIsLocked = lock;
+void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
+    m_bOnlyCachedCover = b;
 }
 
 void CoverArtDelegate::paint(QPainter *painter,
@@ -55,20 +58,23 @@ void CoverArtDelegate::paint(QPainter *painter,
                                           m_iCoverLocationColumn
                                           ).data().toString();
 
-    if (coverLocation != m_sDefaultCover) { // draw cover_art
+    // drawing only an existing cover_art,
+    // otherwise leave it blank...
+    if (coverLocation != m_sDefaultCover) {
 
         QString md5Hash = index.sibling(index.row(),
                                         m_iMd5Column
                                         ).data().toString();
+
+        QSize coverSize(100, option.rect.height());
 
         // If the CoverDelegate is locked, it must not try
         // to load (from coverLocation) and search covers.
         // It means that in this cases it will just draw
         // covers which are already in the pixmapcache.
         QPixmap pixmap = CoverArtCache::instance()->requestPixmap(
-                                            trackId, coverLocation, md5Hash,
-                                            !m_bIsLocked, true, false);
-
+                                        trackId, coverLocation, md5Hash,
+                                        coverSize, m_bOnlyCachedCover, true);
         if (!pixmap.isNull()) {
             // It already got a cropped pixmap (from covercache)
             // that fit to the cell.

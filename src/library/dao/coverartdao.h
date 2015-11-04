@@ -15,8 +15,9 @@ class CoverArtDAO : public DAO {
   public:
     CoverArtDAO(QSqlDatabase& database);
     virtual ~CoverArtDAO();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
 
+    void finish();
+    void setDatabase(QSqlDatabase& database) { m_database = database; }
     void initialize();
 
     void deleteUnusedCoverArts();
@@ -41,7 +42,6 @@ class CoverArtDAO : public DAO {
 
   private:
     QSqlDatabase& m_database;
-    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif // COVERARTDAO_H
