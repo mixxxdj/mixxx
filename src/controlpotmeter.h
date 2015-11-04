@@ -73,8 +73,8 @@ class PotmeterControls : public QObject {
 class ControlPotmeter : public ControlObject {
     Q_OBJECT
   public:
-    ControlPotmeter(ConfigKey key, double dMinValue=0.0, double dMaxValue=1.0,
-                    bool allowOutOfBounds=false);
+    ControlPotmeter(ConfigKey key, double dMinValue = 0.0, double dMaxValue = 1.0,
+                    bool allowOutOfBounds = false);
     virtual ~ControlPotmeter();
 
     // Returns the minimum allowed value.
@@ -86,11 +86,11 @@ class ControlPotmeter : public ControlObject {
     // Sets the small step size of the associated PushButtons.
     void setSmallStep(double);
 
-  protected:
     // Sets the minimum and maximum allowed value. The control value is reset
     // when calling this method
     void setRange(double dMinValue, double dMaxValue, bool allowOutOfBounds);
 
+  protected:
     double m_dMaxValue;
     double m_dMinValue;
     double m_dValueRange;

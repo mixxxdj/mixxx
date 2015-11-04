@@ -59,6 +59,9 @@ class ControlObjectThread : public QObject {
 
     double getParameterForValue(double value) const;
 
+    // Returns the normalized parameter of the object. Thread safe, non-blocking.
+    virtual double getDefault() const;
+
   public slots:
     // Set the control to a new value. Non-blocking.
     virtual void slotSet(double v);

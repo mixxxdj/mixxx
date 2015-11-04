@@ -79,6 +79,10 @@ double ControlObjectThread::getParameterForValue(double value) const {
     return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
 }
 
+double ControlObjectThread::getDefault() const {
+    return m_pControl ? m_pControl->defaultValue() : 0.0;
+}
+
 void ControlObjectThread::slotSet(double v) {
     set(v);
 }
