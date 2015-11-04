@@ -404,10 +404,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
 }
 
 void EngineBuffer::requestSyncPhase() {
-    if (m_playButton->get() > 0.0 && m_pQuantize->get() > 0.0) {
-        // Only honor phase syncing if quantize is on and playing.
-        m_iSeekQueued = SEEK_PHASE;
-    }
+    m_iSeekQueued = SEEK_PHASE;
 }
 
 void EngineBuffer::requestEnableSync(bool enabled) {
@@ -1125,12 +1122,17 @@ void EngineBuffer::processSeek() {
 }
 
 void EngineBuffer::postProcess(const int iBufferSize) {
+    // The order of events here is very delicate.  It's necessary to update
+    // some values before others, because the later updates may require
+    // values from the first update.
     double beat_distance = m_pBpmControl->updateBeatDistance();
-    if (m_pSyncControl->getSyncMode() == SYNC_MASTER) {
+    SyncMode mode = m_pSyncControl->getSyncMode();
+    if (mode == SYNC_MASTER) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
-    } else {
+    } else if (mode == SYNC_FOLLOWER) {
         // Report our speed to SyncControl.  If we are master, we already did this.
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
+        m_pSyncControl->setBeatDistance(beat_distance);
     }
 
     // Update all the indicators that EngineBuffer publishes to allow

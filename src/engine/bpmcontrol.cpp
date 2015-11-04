@@ -373,10 +373,8 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // If we are not quantized, or there are no beats, or we're master,
     // or we're in reverse, just return the rate as-is.
-    if (!m_pQuantize->get() ||
-        getSyncMode() == SYNC_MASTER ||
-        m_pBeats == NULL ||
-        m_pReverseButton->get()) {
+    if (!m_pQuantize->get() || getSyncMode() == SYNC_MASTER ||
+            m_pBeats == NULL || m_pReverseButton->get()) {
         m_resetSyncAdjustment = true;
         return rate;
     }
@@ -434,9 +432,9 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
         master_percentage, my_percentage);
 
     /*double sample_offset = dBeatLength * shortest_distance;
+    qDebug() << m_sGroup << sample_offset << m_dUserOffset;
     qDebug() << "master beat distance:" << master_percentage;
-    qDebug() << "my     beat distance:" << my_percentage;
-    qDebug() << m_sGroup << sample_offset << m_dUserOffset;*/
+    qDebug() << "my     beat distance:" << my_percentage;*/
 
     double adjustment = 1.0;
 
@@ -539,6 +537,10 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
     if (dpBeatPercentage != NULL) {
         *dpBeatPercentage = dBeatLength == 0.0 ? 0.0 :
                 (dPosition - dPrevBeat) / dBeatLength;
+        // Because findNext and findPrev have an epsilon built in, sometimes
+        // the beat percentage is out of range.  Fix it.
+        if (*dpBeatPercentage < 0) ++*dpBeatPercentage;
+        if (*dpBeatPercentage > 1) --*dpBeatPercentage;
     }
 
     return true;
@@ -547,6 +549,10 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
 double BpmControl::getPhaseOffset(double dThisPosition) {
     // Without a beatgrid, we don't know the phase offset.
     if (!m_pBeats) {
+        return 0;
+    }
+    // Master buffer is always in sync!
+    if (getSyncMode() == SYNC_MASTER) {
         return 0;
     }
 
@@ -743,6 +749,9 @@ double BpmControl::process(const double dRate,
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(m_dPreviousSample);
     m_pThisBeatDistance->set(beat_distance);
+    if (getSyncMode() == SYNC_NONE) {
+        m_dUserOffset = 0.0;
+    }
     return beat_distance;
 }
 

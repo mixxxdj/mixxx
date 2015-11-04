@@ -35,7 +35,8 @@ class MockScaler : public EngineBufferScale {
     }
     void clear() { }
     CSAMPLE *getScaled(unsigned long buf_size) {
-        m_samplesRead += buf_size;
+        m_samplesRead = round(buf_size * m_dSpeedAdjust);
+        if (static_cast<int>(m_samplesRead) % 2) { m_samplesRead--; }
         return m_buffer;
     }
 };
