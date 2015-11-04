@@ -16,6 +16,7 @@
 
 MidiController::MidiController()
         : Controller() {
+    setDeviceCategory(tr("MIDI Controller"));
 }
 
 MidiController::~MidiController() {

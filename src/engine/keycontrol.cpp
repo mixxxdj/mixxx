@@ -44,7 +44,8 @@ KeyControl::KeyControl(const char* pGroup,
             this, SLOT(slotSetEngineKey(double)),
             Qt::DirectConnection);
 
-    m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(pGroup, "visual_key_distance"), -0.5, 0.5);
+    m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(pGroup, "visual_key_distance"),
+                                               -0.5, 0.5);
 
     m_pRateSlider = ControlObject::getControl(ConfigKey(pGroup, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
@@ -84,6 +85,7 @@ KeyControl::~KeyControl() {
     delete m_pButtonSyncKey;
     delete m_pFileKey;
     delete m_pEngineKey;
+    delete m_pEngineKeyDistance;
 }
 
 double KeyControl::getPitchAdjustOctaves() {
@@ -151,7 +153,6 @@ void KeyControl::slotFileKeyChanged(double value) {
 
     QPair<mixxx::track::io::key::ChromaticKey, double> adjusted =
             KeyUtils::scaleKeyOctaves(key, pitch_adjust);
-
     m_pEngineKey->set(KeyUtils::keyToNumericValue(adjusted.first));
     m_pEngineKeyDistance->set(adjusted.second);
 }

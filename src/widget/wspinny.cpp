@@ -48,7 +48,6 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_dPrevTheta(0.),
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
-          m_bWasGhostPlayback(false),
           m_bWidgetDirty(false) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
@@ -162,6 +161,8 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
 
     m_pSlipEnabled = new ControlObjectThread(
             group, "slip_enabled");
+    connect(m_pSlipEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(updateSlipEnabled(double)));
     m_pSlipPosition = new ControlObjectThread(
             group, "slip_playposition");
 
@@ -201,10 +202,8 @@ void WSpinny::maybeUpdate() {
     m_pVisualPlayPos->getPlaySlipAt(0,
                                     &m_dAngleCurrentPlaypos,
                                     &m_dGhostAngleCurrentPlaypos);
-    bool m_bGhostPlayback = m_pSlipEnabled->get();
     if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos ||
             m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos ||
-            m_bGhostPlayback != m_bWasGhostPlayback ||
             m_bWidgetDirty) {
         repaint();
     }
@@ -250,8 +249,6 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         m_fGhostAngle = calculateAngle(m_dGhostAngleCurrentPlaypos);
         m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
     }
-
-    m_bWasGhostPlayback = m_bGhostPlayback;
 
     if (m_pFgImage && !m_pFgImage->isNull()) {
         // Now rotate the image and draw it on the screen.
@@ -388,6 +385,11 @@ void WSpinny::updateVinylControlSignalEnabled(double enabled) {
 
 void WSpinny::updateVinylControlEnabled(double enabled) {
     m_bVinylActive = enabled;
+    m_bWidgetDirty = true;
+}
+
+void WSpinny::updateSlipEnabled(double enabled) {
+    m_bGhostPlayback = static_cast<bool>(enabled);
     m_bWidgetDirty = true;
 }
 

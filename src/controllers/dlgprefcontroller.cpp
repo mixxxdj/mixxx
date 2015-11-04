@@ -256,13 +256,13 @@ void DlgPrefController::slotUpdate() {
     // Check/uncheck the "Enabled" box
     m_ui.chkEnabledDevice->setChecked(deviceOpen);
     // Enable/disable access to the preset and mapping pages.
-    m_ui.controllerToolbox->setEnabled(deviceOpen);
+    m_ui.controllerTabs->setEnabled(deviceOpen);
 
     // If the controller is not mappable, disable the input and output mapping
     // sections.
     bool isMappable = m_pController->isMappable();
-    m_ui.inputMappingsPage->setEnabled(isMappable);
-    m_ui.outputMappingsPage->setEnabled(isMappable);
+    m_ui.inputMappingsTab->setEnabled(isMappable);
+    m_ui.outputMappingsTab->setEnabled(isMappable);
 }
 
 void DlgPrefController::slotCancel() {
@@ -321,9 +321,6 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
 }
 
 void DlgPrefController::initTableView(QTableView* pTable) {
-    // Editing starts when clicking on an already selected item.
-    pTable->setEditTriggers(QAbstractItemView::SelectedClicked);
-
     // Enable selection by rows and extended selection (ctrl/shift click)
     pTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     pTable->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -347,19 +344,25 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetShortName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
     QStringList supportLinks;
+
     QString forumLink = presetForumLink(preset);
     if (forumLink.length() > 0) {
         supportLinks << forumLink;
     }
+
     QString wikiLink = presetWikiLink(preset);
     if (wikiLink.length() > 0) {
         supportLinks << wikiLink;
     }
+
+    // There is always at least one support link.
+    // TODO(rryan): This is a horrible general support link for MIDI!
+    QString troubleShooting = QString(
+        "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">%1</a>")
+            .arg(tr("Troubleshooting"));
+    supportLinks << troubleShooting;
+
     QString support = supportLinks.join("&nbsp;");
-    if (support.length() == 0) {
-        //: Shown when a MIDI controller has no links to support pages (e.g. Mixxx wiki or forums).
-        support = tr("No support available.");
-    }
     m_ui.labelLoadedPresetSupportLinks->setText(support);
 
     // We mutate this preset so keep a reference to it while we are using it.
@@ -425,7 +428,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 
 void DlgPrefController::slotEnableDevice(bool enable) {
     // Enable/disable preset info page and input/output mapping pages.
-    m_ui.controllerToolbox->setEnabled(enable);
+    m_ui.controllerTabs->setEnabled(enable);
     slotDirty();
 
     // Set tree item text to normal/bold.
