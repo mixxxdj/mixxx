@@ -499,11 +499,15 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
         if ((m_playControl->get() == 0.0 ||
             m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_group=="[PreviewDeck1]")) {
-            event->acceptProposedAction();
-        } else {
-            event->ignore();
+            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+            if (!files.isEmpty()) {
+                event->acceptProposedAction();
+                return;
+            }
         }
     }
+    event->ignore();
 }
 
 void WOverview::dropEvent(QDropEvent* event) {

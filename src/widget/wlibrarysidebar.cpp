@@ -1,11 +1,13 @@
 #include "widget/wlibrarysidebar.h"
 
+#include <QFileInfo>
 #include <QHeaderView>
 #include <QUrl>
 #include <QtDebug>
 #include <QMimeData>
 
 #include "library/sidebarmodel.h"
+#include "util/dnd.h"
 
 const int expand_time = 250;
 
@@ -42,8 +44,14 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
-        event->acceptProposedAction();
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->acceptProposedAction();
+            return;
+        }
     }
+    event->ignore();
     //QTreeView::dragEnterEvent(event);
 }
 
