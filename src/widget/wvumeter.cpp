@@ -109,15 +109,16 @@ void WVuMeter::setPixmaps(const QString &vuFilename,
 
 void WVuMeter::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dValue);
-    int idx = static_cast<int>(dParameter * m_iNoPos);
+    m_iPos = static_cast<int>(dParameter * m_iNoPos);
     // Range check
-    if (idx > m_iNoPos)
-        idx = m_iNoPos;
-    else if (idx < 0)
-        idx = 0;
+    if (m_iPos > m_iNoPos) {
+        m_iPos = m_iNoPos;
+    } else if (m_iPos < 0) {
+        m_iPos = 0;
+    }
 
     if (dParameter > 0.) {
-        setPeak(idx);
+        setPeak(m_iPos);
     } else {
         // A 0.0 value is very unlikely except when the VU Meter is disabled
         m_iPeakPos = 0;
@@ -175,23 +176,14 @@ void WVuMeter::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
-        int idx = static_cast<int>(getControlParameterDisplay() * m_iNoPos);
-
-        // Range check
-        if (idx > m_iNoPos)
-            idx = m_iNoPos;
-        else if (idx < 0)
-            idx = 0;
-
-
         // Draw (part of) vu
         if (m_bHorizontal) {
             // This is a hack to fix something weird with horizontal VU meters:
-            if (idx == 0)
-                idx = 1;
+            if (m_iPos == 0)
+                m_iPos = 1;
 
             QPointF targetPoint(0, 0);
-            QRectF sourceRect(0, 0, idx, m_pPixmapVu->height());
+            QRectF sourceRect(0, 0, m_iPos, m_pPixmapVu->height());
             m_pPixmapVu->draw(targetPoint, &p, sourceRect);
 
             if(m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
@@ -201,8 +193,8 @@ void WVuMeter::paintEvent(QPaintEvent *) {
                 m_pPixmapVu->draw(targetPoint, &p, sourceRect);
             }
         } else {
-            QPointF targetPoint(0, m_iNoPos - idx);
-            QRectF sourceRect(0, m_iNoPos - idx, m_pPixmapVu->width(), idx);
+            QPointF targetPoint(0, m_iNoPos - m_iPos);
+            QRectF sourceRect(0, m_iNoPos - m_iPos, m_pPixmapVu->width(), m_iPos);
             m_pPixmapVu->draw(targetPoint, &p, sourceRect);
 
             if (m_iPeakHoldSize > 0 && m_iPeakPos > 0) {

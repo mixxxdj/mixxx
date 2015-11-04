@@ -219,7 +219,7 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
 }
 
 void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
-
+    Q_UNUSED(pEvent);
     m_dOldValue = -1;
     m_iPos = -1;
     // Re-calculate m_iPos based on our new width/height.

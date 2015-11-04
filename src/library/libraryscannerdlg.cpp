@@ -50,6 +50,7 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f)
 
 
     QLabel* pCurrent = new QLabel(this);
+    pCurrent->setAlignment(Qt::AlignTop);
     pCurrent->setMaximumWidth(600);
     pCurrent->setMinimumHeight( pCurrent->fontMetrics().boundingRect("Gg").height()*2 );
     pCurrent->setMaximumHeight( pCurrent->fontMetrics().boundingRect("Gg").height() *3 );
