@@ -21,7 +21,7 @@ EffectManifest EchoEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr("Simple Echo.  Applies "
-            "decay and runs a simple low-pass filter to reduce high "
+            "feedback and runs a simple low-pass filter to reduce high "
             "frequencies"));
 
     EffectManifestParameter* time = manifest.addParameter();
@@ -33,13 +33,13 @@ EffectManifest EchoEffect::getManifest() {
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_TIME);
     time->setLinkHint(EffectManifestParameter::LINK_LINKED);
-    time->setMinimum(0.01);
+    time->setMinimum(0.1);
     time->setDefault(0.25);
     time->setMaximum(2.0);
 
     time = manifest.addParameter();
-    time->setId("decay_amount");
-    time->setName(QObject::tr("Decay"));
+    time->setId("feedback_amount");
+    time->setName(QObject::tr("Feedback"));
     time->setDescription(
             QObject::tr("Amount the echo fades each time it loops"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
@@ -47,9 +47,9 @@ EffectManifest EchoEffect::getManifest() {
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     time->setMinimum(0.00);
-    time->setDefault(0.25);
-    // Allow > 1.0 decay for DANGEROUS TESTING-ONLY feedback!
-    time->setMaximum(1.2);
+    time->setDefault(0.40);
+    // Allow > 1.0 feedback for DANGEROUS TESTING-ONLY feedback!
+    time->setMaximum(1.1);
 
     time = manifest.addParameter();
     time->setId("pingpong_amount");
@@ -71,7 +71,7 @@ EffectManifest EchoEffect::getManifest() {
 
 EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : m_pDelayParameter(pEffect->getParameterById("delay_time")),
-          m_pDecayParameter(pEffect->getParameterById("decay_amount")),
+          m_pFeedbackParameter(pEffect->getParameterById("feedback_amount")),
           m_pPingPongParameter(pEffect->getParameterById("pingpong_amount")) {
     Q_UNUSED(manifest);
 }
@@ -100,8 +100,8 @@ void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
     EchoGroupState& gs = *pGroupState;
     double delay_time =
             m_pDelayParameter ? m_pDelayParameter->value().toDouble() : 1.0f;
-    double decay_amount =
-            m_pDecayParameter ? m_pDecayParameter->value().toDouble() : 0.25f;
+    double feedback_amount =
+            m_pFeedbackParameter ? m_pFeedbackParameter->value().toDouble() : 0.25f;
     double pingpong_frac =
             m_pPingPongParameter ? m_pPingPongParameter->value().toDouble()
                                  : 0.25f;
@@ -129,12 +129,12 @@ void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
     gs.prev_delay_samples = delay_samples;
 
     // Lowpass the delay buffer to deaden it a bit.
-    gs.decay_lowpass->process(
+    gs.feedback_lowpass->process(
             gs.delay_buf, gs.delay_buf, numSamples);
 
-    // Decay the delay buffer and then add the new input.
+    // Feedback the delay buffer and then add the new input.
     for (unsigned int i = 0; i < numSamples; ++i) {
-        gs.delay_buf[gs.write_position] *= decay_amount;
+        gs.delay_buf[gs.write_position] *= feedback_amount;
         gs.delay_buf[gs.write_position] += pInput[i];
         INCREMENT_RING(gs.write_position, 1, delay_samples);
     }

@@ -81,6 +81,11 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
         connect(&pTrackCollectionPrivate->getPlaylistDAO(), SIGNAL(lockChanged(int)),
                 this, SLOT(slotPlaylistTableChanged(int)),
                 Qt::QueuedConnection);
+
+        connect(&pTrackCollectionPrivate->getPlaylistDAO(), SIGNAL(changed(int)),
+                this, SLOT(slotPlaylistTableChanged(int)),
+                Qt::QueuedConnection);
+
         }, __PRETTY_FUNCTION__);
 
     connect(this, SIGNAL(playlistTableChanged(int)),
@@ -102,6 +107,21 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pAnalyzePlaylistAction;
 }
 
+int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+    if (item == NULL) {
+        return -1;
+    }
+
+    QString dataPath = item->dataPath().toString();
+    bool ok = false;
+    int playlistId = dataPath.toInt(&ok);
+    if (!ok) {
+        return -1;
+    }
+    return playlistId;
+}
+
 void BasePlaylistFeature::activate() {
     emit(switchToView(m_rootViewName));
     emit(restoreSearch(QString())); // Null String disables search box
@@ -109,18 +129,8 @@ void BasePlaylistFeature::activate() {
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
-
-    // Switch the playlist table model's playlist.
-    QString playlistName = index.data().toString();
-    int playlistId = -1;
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-            [this, &playlistName, &playlistId] (
-                    TrackCollectionPrivate* pTrackCollectionPrivate) {
-        playlistId = pTrackCollectionPrivate->getPlaylistDAO()
-                .getPlaylistIdFromName(playlistName);
-    }, __PRETTY_FUNCTION__);
-    if (m_pPlaylistTableModel) {
+    int playlistId = playlistIdFromIndex(index);
+    if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
     }
     if (m_pPlaylistTableModel) {
@@ -129,15 +139,16 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {
-    QString oldName = m_lastRightClickedIndex.data().toString();
-
-    int playlistId = -1;
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == -1) {
+        return;
+    }
     bool locked = false;
-
+    QString oldName = "";
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
             [this, &oldName, &playlistId, &locked] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(oldName);
+        oldName = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistName(playlistId);
         locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(playlistId);
     }, __PRETTY_FUNCTION__);
 
@@ -194,16 +205,19 @@ void BasePlaylistFeature::slotPlaylistTableRenamed(int playlistId,
 }
 
 void BasePlaylistFeature::slotDuplicatePlaylist() {
-    QString oldName = m_lastRightClickedIndex.data().toString();
-    QString name;
-    bool validNameGiven = false;
-    int oldPlaylistId = -1;
-
+    int oldPlaylistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (oldPlaylistId == -1) {
+        return;
+    }
+    QString oldName = "";
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
                 [this, &oldName, &oldPlaylistId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        oldPlaylistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(oldName);
+        oldName = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistName(oldPlaylistId);
     },  __PRETTY_FUNCTION__);
+
+    QString name;
+    bool validNameGiven = false;
 
     while (!validNameGiven) {
         bool ok = false;
@@ -251,11 +265,13 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 }
 
 void BasePlaylistFeature::slotTogglePlaylistLock() {
-    const QString playlistName = m_lastRightClickedIndex.data().toString();
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == -1) {
+        return;
+    }
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, playlistName] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        int playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(playlistName);
+                [this, playlistId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         bool locked = !pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(playlistId);
 
         if (!pTrackCollectionPrivate->getPlaylistDAO().setPlaylistLocked(playlistId, locked)) {
@@ -321,20 +337,22 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 }
 
 void BasePlaylistFeature::slotDeletePlaylist() {
-    const QString lastClicked = m_lastRightClickedIndex.data().toString();
-    const bool isLastRightClickedIdxValid = m_lastRightClickedIndex.isValid();
+    //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == -1) {
+        return;
+    }
 
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &lastClicked, &isLastRightClickedIdxValid] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+                [this, &playlistId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
-        const int playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(lastClicked);
         bool locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(playlistId);
         if (locked) {
             qDebug() << "Skipping playlist deletion because playlist" << playlistId << "is locked.";
             return;
         }
-        if (isLastRightClickedIdxValid) {
+        if (m_lastRightClickedIndex.isValid()) {
             Q_ASSERT(playlistId >= 0);
             pTrackCollectionPrivate->getPlaylistDAO().deletePlaylist(playlistId);
         }
@@ -406,7 +424,17 @@ void BasePlaylistFeature::slotExportPlaylist() {
     if (!m_pPlaylistTableModel) {
         return;
     }
-    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == -1) {
+        return;
+    }
+    QString playlistName = "";
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callSync(
+            [this, &playlistName, &playlistId](TrackCollectionPrivate* pTrackCollectionPrivate) {
+        playlistName = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistName(playlistId);
+    }, __PRETTY_FUNCTION__);
+    qDebug() << "Export playlist" << playlistName;
 
     QString lastPlaylistDirectory = m_pConfig->getValueString(
                 ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
@@ -415,7 +443,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Open a dialog to let the user choose the file location for playlist export.
     // The location is set to the last used directory for import/export and the file
     // name to the playlist name.
-    QString playlist_filename = m_lastRightClickedIndex.data().toString();
+    QString playlist_filename = playlistName;
     QString file_location = QFileDialog::getSaveFileName(
             NULL,
             tr("Export Playlist"),
@@ -505,37 +533,34 @@ void BasePlaylistFeature::slotAddToAutoDJTop() {
 void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
-        const QString clicked = m_lastRightClickedIndex.data().toString();
-        // tro's lambda idea. This code calls asynchronously!
-        m_pTrackCollection->callAsync(
-                    [this, clicked, bTop] (
-                            TrackCollectionPrivate* pTrackCollectionPrivate) {
-            int playlistId = pTrackCollectionPrivate->getPlaylistDAO()
-                    .getPlaylistIdFromName(clicked);
-            if (playlistId >= 0) {
+        int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+        if (playlistId >= 0) {
+            // tro's lambda idea. This code calls asynchronously!
+            m_pTrackCollection->callAsync(
+                        [this, playlistId, bTop] (
+                                TrackCollectionPrivate* pTrackCollectionPrivate) {
                 // Insert this playlist
                 pTrackCollectionPrivate->getPlaylistDAO()
                         .addPlaylistToAutoDJQueue(playlistId, bTop);
-            }
-        }, __PRETTY_FUNCTION__);
+            }, __PRETTY_FUNCTION__);
+        }
     }
 }
 
 // Must be called from Main thread
 void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
-        const QString lastClicked = m_lastRightClickedIndex.data().toString();
-        // tro's lambda idea. This code calls Asynchronously!
-        m_pTrackCollection->callAsync(
-                    [this, lastClicked] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-            int playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(lastClicked);
-            if (playlistId >= 0) {
+        int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+        if (playlistId >= 0) {
+            // tro's lambda idea. This code calls Asynchronously!
+            m_pTrackCollection->callAsync(
+                        [this, playlistId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
                 QList<int> ids;
                 ids = pTrackCollectionPrivate->getPlaylistDAO().getTrackIds(playlistId);
                 emit(analyzeTracks(ids));
-            }
             }, __PRETTY_FUNCTION__);
         }
+    }
 }
 
 TreeItemModel* BasePlaylistFeature::getChildModel() {
@@ -586,7 +611,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root);
+        TreeItem* item = new TreeItem(playlist_name, QString::number(playlist_id), this, root);
         decorateChild(item, playlist_id);
         data_list.append(item);
     }

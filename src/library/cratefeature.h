@@ -67,6 +67,7 @@ class CrateFeature : public LibraryFeature {
     QModelIndex constructChildModel(int selected_id);
     void clearChildModel();
     void buildCrateList();
+    int crateIdFromIndex(QModelIndex index);
 
     TrackCollection* m_pTrackCollection;
     QAction *m_pCreateCrateAction;

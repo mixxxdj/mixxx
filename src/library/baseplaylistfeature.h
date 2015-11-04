@@ -66,6 +66,8 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void decorateChild(TreeItem *pChild, int playlist_id) = 0;
     virtual void addToAutoDJ(bool bTop);
 
+    int playlistIdFromIndex(QModelIndex index);
+
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     PlaylistTableModel* m_pPlaylistTableModel;

@@ -3924,6 +3924,7 @@
 					<Splitter>
 						<Size>me,me</Size>
 						<Style></Style>
+                                                <SplitSizesConfigKey>[DeereSamplegrid1280x800-WXGA],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<SplitSizes>1,10</SplitSizes>
 						<Children>
 							<WidgetGroup>

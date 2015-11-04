@@ -81,6 +81,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="toolTip">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>TextLabel</string>
      </property>
@@ -129,6 +132,9 @@
           <width>400</width>
           <height>0</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string notr="true"/>
         </property>
         <property name="text">
          <string notr="true">(preset name goes here)</string>
@@ -225,6 +231,9 @@
           <height>0</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string notr="true"/>
+        </property>
         <property name="text">
          <string notr="true">(preset description goes here) even when it is a damn long text which should wrap but does not</string>
         </property>
@@ -240,6 +249,9 @@
        <widget class="QLabel" name="labelLoadedPresetSupportLinks">
         <property name="focusPolicy">
          <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="toolTip">
+         <string notr="true"/>
         </property>
         <property name="inputMethodHints">
          <set>Qt::ImhUrlCharactersOnly</set>

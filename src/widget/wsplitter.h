@@ -1,23 +1,31 @@
 #ifndef WSPLITTER_H
 #define WSPLITTER_H
 
-#include <QSplitter>
-#include <QEvent>
 #include <QDomNode>
+#include <QEvent>
+#include <QSplitter>
 
-#include "widget/wbasewidget.h"
+#include "configobject.h"
 #include "skin/skincontext.h"
+#include "widget/wbasewidget.h"
 
 class WSplitter : public QSplitter, public WBaseWidget {
     Q_OBJECT
   public:
-    WSplitter(QWidget* pParent);
+    WSplitter(QWidget* pParent, ConfigObject<ConfigValue> *pConfig);
     virtual ~WSplitter();
 
     void setup(QDomNode node, const SkinContext& context);
 
   protected:
     bool event(QEvent* pEvent);
+
+  private slots:
+    void slotSplitterMoved();
+
+  private:
+    ConfigObject<ConfigValue>* m_pConfig;
+    ConfigKey m_configKey;
 };
 
 #endif /* WSPLITTER_H */

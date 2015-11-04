@@ -11,9 +11,11 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "library/treeitem.h"
+#include "library/queryutil.h"
 #include "mixxxkeyboard.h"
 #include "soundsourceproxy.h"
 #include "util/dnd.h"
+#include "util/time.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
@@ -52,14 +54,12 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
 void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
-    QString playlistName = index.data().toString();
-    int playlistId = -1;
+    int playlistId = playlistIdFromIndex(index);
     bool locked = false;
 
     // tro's lambda idea. This code calls synchronously!
      m_pTrackCollection->callSync(
-                 [this, &playlistName, &playlistId, &locked] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-         playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(playlistName);
+                 [this, &playlistId, &locked] (TrackCollectionPrivate* pTrackCollectionPrivate) {
          locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(playlistId);
      }, __PRETTY_FUNCTION__);
 
@@ -92,7 +92,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                       QObject* pSource){
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-    const QString playlistName = index.data().toString();
+    int playlistId = playlistIdFromIndex(index);
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
 
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
@@ -101,7 +101,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     const bool is_pSource = pSource;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &is_pSource, &playlistName, &files, &result] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+                [this, &is_pSource, &playlistId, &files, &result] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         QList<int> trackIds;
         if (is_pSource) {
             trackIds = pTrackCollectionPrivate->getTrackDAO().getTrackIds(files);
@@ -120,7 +120,6 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
             }
         }
 
-        const int playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(playlistName);
         // Return whether appendTracksToPlaylist succeeded.
         result = pTrackCollectionPrivate->getPlaylistDAO().appendTracksToPlaylist(trackIds, playlistId);
     }, __PRETTY_FUNCTION__);
@@ -131,9 +130,7 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url,
         TrackCollectionPrivate* pTrackCollectionPrivate) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
 
-    QString playlistName = index.data().toString();
-    int playlistId =
-        pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(playlistName);
+    int playlistId = playlistIdFromIndex(index);
     bool locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(playlistId);
 
     QFileInfo file(url.toLocalFile());
@@ -144,15 +141,32 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url,
 }
 
 void PlaylistFeature::buildPlaylistList() {
+    m_playlistList.clear();
+
     m_pTrackCollection->callSync(
                 [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        QSqlTableModel playlistTableModel(this, pTrackCollectionPrivate->getDatabase());
-        m_playlistList.clear();
-        // Setup the sidebar playlist model
+        QString queryString = QString(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
+            "AS SELECT "
+            "  Playlists.id as id, "
+            "  Playlists.name as name, "
+            "  COUNT(library.id) as count, "
+            "  SUM(library.duration) as durationSeconds "
+            "FROM Playlists "
+            "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
+            "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
+            "WHERE Playlists.hidden = 0 "
+            "GROUP BY Playlists.id;");
+        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
+        if (!query.exec(queryString)) {
+            LOG_FAILED_QUERY(query);
+        }
 
-        playlistTableModel.setTable("Playlists");
-        playlistTableModel.setFilter("hidden=0");
-        playlistTableModel.setSort(playlistTableModel.fieldIndex("name"), Qt::AscendingOrder);
+        // Setup the sidebar playlist model
+        QSqlTableModel playlistTableModel(this, pTrackCollectionPrivate->getDatabase());
+        playlistTableModel.setTable("PlaylistsCountsDurations");
+        playlistTableModel.setSort(playlistTableModel.fieldIndex("name"),
+                                   Qt::AscendingOrder);
         playlistTableModel.select();
         while (playlistTableModel.canFetchMore()) {
             playlistTableModel.fetchMore();
@@ -160,13 +174,21 @@ void PlaylistFeature::buildPlaylistList() {
         QSqlRecord record = playlistTableModel.record();
         int nameColumn = record.indexOf("name");
         int idColumn = record.indexOf("id");
+        int countColumn = record.indexOf("count");
+        int durationColumn = record.indexOf("durationSeconds");
 
         for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
             int id = playlistTableModel.data(
                 playlistTableModel.index(row, idColumn)).toInt();
             QString name = playlistTableModel.data(
                 playlistTableModel.index(row, nameColumn)).toString();
-            m_playlistList.append(qMakePair(id, name));
+            int count = playlistTableModel.data(
+                playlistTableModel.index(row, countColumn)).toInt();
+            int duration = playlistTableModel.data(
+                playlistTableModel.index(row, durationColumn)).toInt();
+            m_playlistList.append(qMakePair(id, QString("%1 (%2) %3")
+                                            .arg(name, QString::number(count),
+                                                 Time::formatSeconds(duration, false))));
         }
     }, __PRETTY_FUNCTION__);
 }

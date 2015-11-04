@@ -676,6 +676,7 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
 
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
+    // TODO(XXX): support soft takeover.
     if (cot != NULL) {
         cot->setParameter(newParameter);
     }
