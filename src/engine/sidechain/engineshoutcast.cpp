@@ -613,27 +613,31 @@ void EngineShoutcast::updateMetaData() {
                 // the references to $title and $artist by doing a single
                 // pass over the string
                 int replaceIndex = 0;
+                
+                // Make a copy so we don't overwrite the references only
+                // once per streaming session.
+                QString metadataFinal = m_metadataFormat;
                 do {
                     // find the next occurrence
-                    replaceIndex = m_metadataFormat.indexOf(
+                    replaceIndex = metadataFinal.indexOf(
                                       QRegExp("\\$artist|\\$title"),
                                       replaceIndex);
 
                     if (replaceIndex != -1) {
-                        if (m_metadataFormat.indexOf(
+                        if (metadataFinal.indexOf(
                                           QRegExp("\\$artist"), replaceIndex)
                                           == replaceIndex) {
-                            m_metadataFormat.replace(replaceIndex, 7, artist);
+                            metadataFinal.replace(replaceIndex, 7, artist);
                             // skip to the end of the replacement
                             replaceIndex += artist.length();
                         } else {
-                            m_metadataFormat.replace(replaceIndex, 6, title);
+                            metadataFinal.replace(replaceIndex, 6, title);
                             replaceIndex += title.length();
                         }
                     }
-               } while (replaceIndex != -1);
+                } while (replaceIndex != -1);
 
-                QByteArray baSong = encodeString(m_metadataFormat);
+                QByteArray baSong = encodeString(metadataFinal);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             }
             shout_set_metadata(m_pShout, m_pShoutMetaData);
