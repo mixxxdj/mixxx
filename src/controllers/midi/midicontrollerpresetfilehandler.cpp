@@ -76,6 +76,7 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
             if (strMidiOption == "button")   options.button = true;
             if (strMidiOption == "switch")   options.sw = true;
             if (strMidiOption == "hercjog")  options.herc_jog = true;
+            if (strMidiOption == "hercjogfast")  options.herc_jog_fast = true;
             if (strMidiOption == "spread64") options.spread64 = true;
             if (strMidiOption == "selectknob")options.selectknob = true;
             if (strMidiOption == "soft-takeover") options.soft_takeover = true;
@@ -303,6 +304,10 @@ QDomElement MidiControllerPresetFileHandler::inputMappingToXML(
         }
         if (mapping.options.herc_jog) {
             QDomElement singleOption = doc->createElement("hercjog");
+            optionsNode.appendChild(singleOption);
+        }
+        if (mapping.options.herc_jog_fast) {
+            QDomElement singleOption = doc->createElement("hercjogfast");
             optionsNode.appendChild(singleOption);
         }
         if (mapping.options.spread64) {

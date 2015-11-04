@@ -485,6 +485,13 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
         //if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << _prevmidivalue; }
     }
 
+    if (options.herc_jog_fast) {
+        if (_newmidivalue > 64.) {
+            _newmidivalue -= 128.;
+        }
+        _newmidivalue = _prevmidivalue + (_newmidivalue * 3);
+    }
+
     return _newmidivalue;
 }
 

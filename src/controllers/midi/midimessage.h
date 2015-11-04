@@ -83,7 +83,7 @@ struct MidiOptions {
             bool button        : 1;    // Button Down (!=00) and Button Up (00) events happen together
             bool sw            : 1;    // button down (!=00) and button up (00) events happen seperately
             bool spread64      : 1;    // accelerated difference from 64
-            bool herc_jog      : 1;    // generic Hercules wierd range correction
+            bool herc_jog      : 1;    // generic Hercules range correction 0x01 -> +1; 0x7f -> -1
             bool selectknob    : 1;    // relative knob which can be turned forever and outputs a signed value
             bool soft_takeover : 1;    // prevents sudden changes when hardware position differs from software value
             bool script        : 1;    // maps a MIDI control to a custom MixxxScript function
@@ -91,7 +91,8 @@ struct MidiOptions {
             bool fourteen_bit_msb : 1;
             // the message supplies the LSB of a 14-bit message
             bool fourteen_bit_lsb : 1;
-            // 20 more available for future expansion
+            bool herc_jog_fast    : 1;  // generic Hercules range correction 0x01 -> +5; 0x7f -> -5
+            // 19 more available for future expansion
         };
     };
 };
