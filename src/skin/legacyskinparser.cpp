@@ -44,6 +44,7 @@
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wnumber.h"
+#include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
 #include "widget/weffectchain.h"
@@ -425,6 +426,8 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
     } else if (nodeName == "Number" || nodeName == "NumberBpm") {
         // NumberBpm is deprecated, and is now the same as a Number
         result = wrapWidget(parseLabelWidget<WNumber>(node));
+    } else if (nodeName == "NumberDb") {
+        result = wrapWidget(parseLabelWidget<WNumberDb>(node));
     } else if (nodeName == "Label") {
         result = wrapWidget(parseLabelWidget<WLabel>(node));
     } else if (nodeName == "Knob") {

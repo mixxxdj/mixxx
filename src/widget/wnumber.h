@@ -26,7 +26,7 @@
 class WNumber : public WLabel  {
     Q_OBJECT
   public:
-    WNumber(QWidget* pParent=NULL);
+    WNumber(QWidget* pParent = NULL);
     virtual ~WNumber();
 
     virtual void setup(QDomNode node, const SkinContext& context);
@@ -39,9 +39,6 @@ class WNumber : public WLabel  {
   protected:
     // Number of digits to round to.
     int m_iNoDigits;
-
-    // Constant factor added to value.
-    double m_dConstFactor;
 };
 
 #endif
