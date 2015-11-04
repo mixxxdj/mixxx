@@ -16,11 +16,11 @@
                         <SizePolicy>max,min</SizePolicy>
                         <Children>
         					<TrackProperty>
+                                <ObjectName>TextColor<Variable name="channum" /></ObjectName>
                                 <Alignment>Left</Alignment>
         						<TooltipId>track_title</TooltipId>
         						<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
-        							Unicode, Arial, Verdana, sans-serif; text-align: left;
-        							color: #EECE33;}
+        							Unicode, Arial, Verdana, sans-serif; text-align: left;}
         						</Style>
         						<Property>title</Property>
         						<Channel>
@@ -43,11 +43,11 @@
                         <MaximumSize>100,</MaximumSize>
                         <Children>
                             <NumberPos>
+                                <ObjectName>TextColor<Variable name="channum" /></ObjectName>
                                 <TooltipId>track_time</TooltipId>
                                 <Alignment>right</Alignment>
                                 <Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
-                                    Unicode, Arial, Verdana, sans-serif;
-                                    color: #EECE33;}
+                                    Unicode, Arial, Verdana, sans-serif;}
                                 </Style>
                                 <Channel>
                                     <Variable name="channum" />
@@ -71,10 +71,10 @@
 						<SizePolicy>me,min</SizePolicy>
 						<Children>
 							<TrackProperty>
+                                <ObjectName>TextColor<Variable name="channum" /></ObjectName>
 								<TooltipId>track_artist</TooltipId>
 								<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
-									Unicode, Arial, Verdana, sans-serif;
-									color: #EECE33;}
+									Unicode, Arial, Verdana, sans-serif;}
 								</Style>
 								<Property>artist</Property>
 								<Channel>
@@ -89,10 +89,11 @@
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
                             <TrackProperty>
+                                <ObjectName>TextColor<Variable name="channum" /></ObjectName>
                                 <TooltipId>track_duration</TooltipId>
                                 <Style>QLabel { font: 13px/15px Lucida Grande, Lucida Sans
                                     Unicode,
-                                    Arial, Verdana, sans-serif; color: #EECE33;}
+                                    Arial, Verdana, sans-serif;}
                                 </Style>
                                 <Property>durationFormatted</Property>
                                 <Channel>

@@ -10,9 +10,9 @@
         <Children>
           <Spinny>
             <Group>[Channel<Variable name="channum"/>]</Group>
-            <PathBackground>vinyl_spinny2_background-s.png</PathBackground>
-            <PathForeground>vinyl_spinny2_foreground-s.png</PathForeground>
-            <PathGhost>vinyl_spinny2_foreground_ghost-s.png</PathGhost>
+            <PathBackground>vinyl_spinny<Variable name="color"/>_background-s.png</PathBackground>
+            <PathForeground>vinyl_spinny<Variable name="color"/>_foreground-s.png</PathForeground>
+            <PathGhost>vinyl_spinny<Variable name="color"/>_foreground_ghost-s.png</PathGhost>
           </Spinny>
         </Children>
       </WidgetGroup>
@@ -24,9 +24,9 @@
         <Children>
           <Spinny>
             <Group>[Channel<Variable name="channum"/>]</Group>
-            <PathBackground>vinyl_spinny2_background.png</PathBackground>
-            <PathForeground>vinyl_spinny2_foreground.png</PathForeground>
-            <PathGhost>vinyl_spinny2_foreground_ghost.png</PathGhost>
+            <PathBackground>vinyl_spinny<Variable name="color"/>_background.png</PathBackground>
+            <PathForeground>vinyl_spinny<Variable name="color"/>_foreground.png</PathForeground>
+            <PathGhost>vinyl_spinny<Variable name="color"/>_foreground_ghost.png</PathGhost>
           </Spinny>
         </Children>
       </WidgetGroup>

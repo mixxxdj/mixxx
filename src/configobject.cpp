@@ -62,7 +62,7 @@ ConfigValue::ConfigValue(int _value)
     value = QString::number(_value);
 }
 
-void ConfigValue::valCopy(const ConfigValue _value)
+void ConfigValue::valCopy(const ConfigValue& _value)
 {
     value = _value.value;
 }
@@ -87,7 +87,7 @@ ConfigValueKbd::ConfigValueKbd(QKeySequence key)
 //          qDebug() << "value" << value;
 }
 
-void ConfigValueKbd::valCopy(const ConfigValueKbd v)
+void ConfigValueKbd::valCopy(const ConfigValueKbd& v)
 {
     m_qKey = v.m_qKey;
     QTextStream(&value) << m_qKey.toString();

@@ -11,12 +11,14 @@
                 <Children>
                     <Template src="skin:deck.xml">
         	            <SetVariable name="channum">2</SetVariable>
+                        <SetVariable name="deck_color">#EECE33</SetVariable>
         	        </Template>
                     <WidgetGroup>
                         <Layout>horizontal</Layout>
                         <Children>
                             <Template src="skin:deck.xml">
                                 <SetVariable name="channum">4</SetVariable>
+                                <SetVariable name="deck_color">#09B2AE</SetVariable>
                             </Template>
                         </Children>
                         <Connection>
