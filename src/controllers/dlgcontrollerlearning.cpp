@@ -200,6 +200,10 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("beatjump_32_backward", beatJumpBackward.arg("32"), beatJumpMenu);
     addDeckControl("beatjump_64_backward", beatJumpBackward.arg("64"), beatJumpMenu);
 
+    QMenu* beatShiftMenu = addSubmenu(tr("Beat-Shift"));
+    addDeckControl("beatshift_forward",  tr("Move loop forward by 1 beat"), beatShiftMenu);
+    addDeckControl("beatshift_backward",  tr("Move loop backward by 1 beat"), beatShiftMenu);
+
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
     addControl("[Playlist]", "ToggleSelectedSidebarItem", tr("Expand/collapse the selected view (library, playlist..)"),
