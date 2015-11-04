@@ -3,6 +3,7 @@
 
 #include "util/stat.h"
 #include "util/performancetimer.h"
+#include "util/cmdlineargs.h"
 
 const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
         Stat::MAX | Stat::MIN | Stat::SAMPLE_VARIANCE;
@@ -45,23 +46,62 @@ class SuspendableTimer : public Timer {
     int m_leapTime;
 };
 
-class ScopedTimer : public Timer {
+class ScopedTimer {
   public:
-    ScopedTimer(const QString& key,
+    ScopedTimer(const char* key, int i,
                 Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : Timer(key, compute),
+            : m_pTimer(NULL),
               m_cancel(false) {
-        start();
-    }
-    virtual ~ScopedTimer() {
-        if (!m_cancel) {
-            elapsed(true);
+        if (CmdlineArgs::Instance().getDeveloper()) {
+            initalize(QString(key), QString::number(i), compute);
         }
     }
+
+    ScopedTimer(const char* key, const char *arg = NULL,
+                Stat::ComputeFlags compute = kDefaultComputeFlags)
+            : m_pTimer(NULL),
+              m_cancel(false) {
+        if (CmdlineArgs::Instance().getDeveloper()) {
+            initalize(QString(key), arg ? QString(arg) : QString(), compute);
+        }
+    }
+
+    ScopedTimer(const char* key, const QString& arg,
+                Stat::ComputeFlags compute = kDefaultComputeFlags)
+            : m_pTimer(NULL),
+              m_cancel(false) {
+        if (CmdlineArgs::Instance().getDeveloper()) {
+            initalize(QString(key), arg, compute);
+        }
+    }
+
+    virtual ~ScopedTimer() {
+        if (m_pTimer) {
+            if (!m_cancel) {
+                m_pTimer->elapsed(true);
+            }
+            m_pTimer->~Timer();
+        }
+    }
+
+    inline void initalize(const QString& key, const QString& arg,
+                Stat::ComputeFlags compute = kDefaultComputeFlags) {
+        QString strKey;
+        if (arg.isEmpty()) {
+            strKey = key;
+        } else {
+            strKey = key.arg(arg);
+        }
+        m_pTimer = new(m_timerMem) Timer(strKey, compute);
+        m_pTimer->start();
+    }
+
     void cancel() {
         m_cancel = true;
     }
   private:
+    Timer* m_pTimer;
+    char m_timerMem[sizeof(Timer)];
     bool m_cancel;
 };
 
