@@ -159,6 +159,8 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
     txtBpm->setText(pTrack->getBpmStr());
     txtKey->setText(pTrack->getKeyText());
+    const Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+    txtReplayGain->setText(Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
     BeatsPointer pBeats = pTrack->getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
     bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
@@ -434,6 +436,7 @@ void DlgTrackInfo::clear() {
     txtLocation->setPlainText("");
     txtBitrate->setText("");
     txtBpm->setText("");
+    txtReplayGain->setText("");
 
     m_cueMap.clear();
     cueTable->clearContents();
