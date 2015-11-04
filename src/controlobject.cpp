@@ -108,6 +108,20 @@ void ControlObject::setAndConfirm(double value) {
     }
 }
 
+double ControlObject::getParameter() const {
+    return m_pControl ? m_pControl->getParameter() : 0.0;
+}
+
+double ControlObject::getParameterForValue(double value) const {
+    return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
+}
+
+void ControlObject::setParameter(double v) {
+    if (m_pControl) {
+        m_pControl->setParameter(v, this);
+    }
+}
+
 // static
 void ControlObject::set(const ConfigKey& key, const double& value) {
     QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);

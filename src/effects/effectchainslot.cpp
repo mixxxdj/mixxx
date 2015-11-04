@@ -191,7 +191,6 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         // Mix, parameter, and enabled channels are persistent properties of the
         // chain slot, not of the chain. Propagate the current settings to the
         // chain.
-        m_pEffectChain->setParameter(m_pControlChainParameter->get());
         m_pEffectChain->setMix(m_pControlChainMix->get());
         m_pEffectChain->setEnabled(m_pControlChainEnabled->get() > 0.0);
         for (QMap<QString, ControlObject*>::iterator it = m_groupEnableControls.begin();
@@ -358,8 +357,8 @@ void EffectChainSlot::slotControlChainParameter(double v) {
         v = math_clamp(v, 0.0, 1.0);
         m_pControlChainParameter->set(v);
     }
-    if (m_pEffectChain) {
-        m_pEffectChain->setParameter(v);
+    for (int i = 0; i < m_slots.size(); ++i) {
+        m_slots[i]->onChainParameterChanged(v);
     }
 }
 

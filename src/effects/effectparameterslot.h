@@ -34,11 +34,17 @@ class EffectParameterSlot : public QObject {
                      QString::number(iSlotNumber+1));
     }
 
+    static QString formatItemPrefix(const unsigned int iParameterNumber) {
+        return QString("parameter%1").arg(iParameterNumber + 1);
+    }
+
     // Load the parameter of the given effect into this EffectParameterSlot
     void loadEffect(EffectPointer pEffect);
 
     QString name() const;
     QString description() const;
+
+    void onChainParameterChanged(double parameter);
 
   signals:
     // Signal that indicates that the EffectParameterSlot has been updated.
@@ -77,6 +83,7 @@ class EffectParameterSlot : public QObject {
     ControlPushButton* m_pControlLinkType;
     ControlEffectKnob* m_pControlValue;
     ControlObject* m_pControlType;
+    double m_dChainParameter;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };

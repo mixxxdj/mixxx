@@ -295,7 +295,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Dry/Wet"), descriptionPrefix,
                              effectUnitMenu, true);
             addEffectControl(effectUnitGroup, "parameter",
-                             tr("Super Knob"), descriptionPrefix,
+                             tr("Super Knob (Control Linked Effect Parameters)"),
+                             descriptionPrefix,
                              effectUnitMenu, true);
             addEffectControl(effectUnitGroup, "insertion_type",
                              tr("Insert / Send Toggle"), descriptionPrefix,
@@ -310,7 +311,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Next or previous chain preset"), descriptionPrefix,
                              effectUnitMenu);
 
-            QString enableOn = tr("Enable Effect Unit On");
+            QString enableOn = tr("Toggle Effect Unit");
             QMenu* effectUnitGroups = addSubmenu(enableOn,
                                                  effectUnitMenu);
 
@@ -416,8 +417,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                      ++iParameterSlotNumber) {
                     const QString parameterSlotGroup = EffectParameterSlot::formatGroupString(
                             iRackNumber - 1, iEffectUnitNumber - 1,
-                            iEffectSlotNumber - 1, iParameterSlotNumber - 1);
-
+                            iEffectSlotNumber - 1);
+                    const QString parameterSlotItemPrefix = EffectParameterSlot::formatItemPrefix(
+                            iParameterSlotNumber - 1);
                     QMenu* parameterSlotMenu = addSubmenu(
                         m_parameterStr.arg(iParameterSlotNumber),
                         effectSlotMenu);
@@ -426,11 +428,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                         m_parameterStr.arg(iParameterSlotNumber)));
 
                     // Likely to change soon.
-                    addEffectControl(parameterSlotGroup, "value_normalized",
+                    addEffectControl(parameterSlotGroup, parameterSlotItemPrefix,
                                      tr("Parameter value"), descriptionPrefix,
                                      parameterSlotMenu, true);
 
-                    addEffectControl(parameterSlotGroup, "link_type",
+                    addEffectControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
                                      tr("3-state Super Knob Link Toggle (unlinked, linear, inverse)"),
                                      descriptionPrefix, parameterSlotMenu);
 

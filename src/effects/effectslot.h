@@ -39,6 +39,7 @@ class EffectSlot : public QObject {
     unsigned int numParameterSlots() const;
     EffectParameterSlotPointer addEffectParameterSlot();
     EffectParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
+    void onChainParameterChanged(double parameter);
 
   public slots:
     // Request that this EffectSlot load the given Effect

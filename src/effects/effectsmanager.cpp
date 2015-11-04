@@ -154,7 +154,6 @@ void EffectsManager::setupDefaults() {
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));
-    pChain->setParameter(0.0f);
     EffectPointer pEffect = instantiateEffect(
         "org.mixxx.effects.flanger");
     pChain->addEffect(pEffect);
@@ -163,7 +162,6 @@ void EffectsManager::setupDefaults() {
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.bitcrusher"));
     pChain->setName(tr("BitCrusher"));
-    pChain->setParameter(0.0f);
     pEffect = instantiateEffect("org.mixxx.effects.bitcrusher");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
@@ -171,7 +169,6 @@ void EffectsManager::setupDefaults() {
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.filter"));
     pChain->setName(tr("Filter"));
-    pChain->setParameter(0.0f);
     pEffect = instantiateEffect("org.mixxx.effects.filter");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
@@ -179,7 +176,6 @@ void EffectsManager::setupDefaults() {
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.reverb"));
     pChain->setName(tr("Reverb"));
-    pChain->setParameter(0.0f);
     pEffect = instantiateEffect("org.mixxx.effects.reverb");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
@@ -187,7 +183,6 @@ void EffectsManager::setupDefaults() {
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.echo"));
     pChain->setName(tr("Echo"));
-    pChain->setParameter(0.0f);
     pEffect = instantiateEffect("org.mixxx.effects.echo");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);

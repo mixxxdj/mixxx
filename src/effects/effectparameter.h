@@ -57,8 +57,6 @@ class EffectParameter : public QObject {
 
     void updateEngineState();
 
-    void onChainParameterChanged(double chainParameter);
-
   signals:
     void valueChanged(QVariant value);
 

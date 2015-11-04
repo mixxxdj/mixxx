@@ -17,7 +17,6 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
           m_name(""),
           m_insertionType(EffectChain::INSERT),
           m_dMix(0),
-          m_dParameter(0),
           m_pEngineEffectChain(new EngineEffectChain(m_id)),
           m_bAddedToEngine(false) {
 }
@@ -88,7 +87,6 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
         pChain->m_pEffectsManager, pChain->id(), pChain);
     pClone->setEnabled(pChain->enabled());
     pClone->setName(pChain->name());
-    pClone->setParameter(pChain->parameter());
     pClone->setMix(pChain->mix());
     foreach (const QString& group, pChain->enabledGroups()) {
         pClone->enableForGroup(group);
@@ -171,23 +169,6 @@ void EffectChain::disableForGroup(const QString& group) {
     }
 }
 
-double EffectChain::parameter() const {
-    return m_dParameter;
-}
-
-void EffectChain::setParameter(const double& dParameter) {
-    m_dParameter = dParameter;
-    sendParameterUpdate();
-
-    foreach (EffectPointer pEffect, m_effects) {
-        if (pEffect) {
-            pEffect->onChainParameterChanged(m_dParameter);
-        }
-    }
-
-    emit(parameterChanged(dParameter));
-}
-
 double EffectChain::mix() const {
     return m_dMix;
 }
@@ -221,7 +202,6 @@ void EffectChain::addEffect(EffectPointer pEffect) {
         return;
     }
     m_effects.append(pEffect);
-    pEffect->onChainParameterChanged(m_dParameter);
     if (m_bAddedToEngine) {
         pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1);
     }
@@ -244,7 +224,6 @@ void EffectChain::replaceEffect(unsigned int iEffectNumber,
 
     m_effects.replace(iEffectNumber, pEffect);
     if (pEffect) {
-        pEffect->onChainParameterChanged(m_dParameter);
         if (m_bAddedToEngine) {
             pEffect->addToEngine(m_pEngineEffectChain, iEffectNumber);
         }
@@ -305,10 +284,6 @@ QDomElement EffectChain::toXML(QDomDocument* doc) const {
     XmlParse::addElement(*doc, element, "Description", m_description);
     XmlParse::addElement(*doc, element, "InsertionType",
                          insertionTypeToString(m_insertionType));
-    XmlParse::addElement(*doc, element, "Mix",
-                         QString::number(m_dMix));
-    XmlParse::addElement(*doc, element, "Parameter",
-                         QString::number(m_dParameter));
 
     QDomElement effectsNode = doc->createElement("Effects");
     foreach (EffectPointer pEffect, m_effects) {
@@ -329,8 +304,6 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
     QString name = XmlParse::selectNodeQString(element, "Name");
     QString description = XmlParse::selectNodeQString(element, "Description");
     QString insertionTypeStr = XmlParse::selectNodeQString(element, "InsertionType");
-    QString mixStr = XmlParse::selectNodeQString(element, "Mix");
-    QString parameterStr = XmlParse::selectNodeQString(element, "ParameterStr");
 
     EffectChain* pChain = new EffectChain(pEffectsManager, id);
     pChain->setName(name);
@@ -339,20 +312,8 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
     if (insertionType != NUM_INSERTION_TYPES) {
         pChain->setInsertionType(insertionType);
     }
-    bool ok = false;
-    double mix = mixStr.toDouble(&ok);
-    if (ok) {
-        pChain->setMix(mix);
-    }
-
-    ok = false;
-    double parameter = parameterStr.toDouble(&ok);
-    if (ok) {
-        pChain->setParameter(parameter);
-    }
 
     EffectChainPointer pChainWrapped(pChain);
-
     pEffectsManager->getEffectChainManager()->addEffectChain(pChainWrapped);
 
     QDomElement effects = XmlParse::selectElement(element, "Effects");

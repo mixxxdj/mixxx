@@ -16,8 +16,9 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
           m_iParameterNumber(iParameterNumber),
           m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
                                     m_iSlotNumber)),
-          m_pEffectParameter(NULL) {
-    QString itemPrefix = QString("parameter%1").arg(QString::number(iParameterNumber+1));
+          m_pEffectParameter(NULL),
+          m_dChainParameter(0.0) {
+    QString itemPrefix = formatItemPrefix(iParameterNumber);
     m_pControlLoaded = new ControlObject(
         ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlLinkType = new ControlPushButton(
@@ -97,10 +98,10 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlValue->set(dValue);
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->setRange(dMinimum, dMaximum, false);
-            double type = m_pEffectParameter->getControlHint();
+            EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
             m_pControlValue->setType(type);
             // TODO(rryan) expose this from EffectParameter
-            m_pControlType->setAndConfirm(type);
+            m_pControlType->setAndConfirm(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
             m_pControlLoaded->setAndConfirm(1.0);
             m_pControlLinkType->set(m_pEffectParameter->getLinkType());
@@ -108,6 +109,10 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
                     this, SLOT(slotParameterValueChanged(QVariant)));
         }
+
+        // Update the newly loaded parameter to match the current chain
+        // superknob if it is linked.
+        onChainParameterChanged(m_dChainParameter);
     }
     emit(updated());
 }
@@ -157,4 +162,24 @@ void EffectParameterSlot::slotValueType(double v) {
 void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
     qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value.toDouble());
+}
+
+void EffectParameterSlot::onChainParameterChanged(double parameter) {
+    m_dChainParameter = parameter;
+    if (m_pEffectParameter != NULL) {
+        switch (m_pEffectParameter->getLinkType()) {
+            case EffectManifestParameter::LINK_INVERSE:
+                parameter = 1.0 - parameter;
+                // Intentional fall-through.
+            case EffectManifestParameter::LINK_LINKED:
+                if (parameter < 0.0 || parameter > 1.0) {
+                    return;
+                }
+                m_pControlValue->setParameter(parameter);
+                break;
+            case EffectManifestParameter::LINK_NONE:
+            default:
+                break;
+        }
+    }
 }

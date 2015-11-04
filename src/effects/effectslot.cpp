@@ -196,3 +196,9 @@ void EffectSlot::slotClear(double v) {
         emit(clearEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
     }
 }
+
+void EffectSlot::onChainParameterChanged(double parameter) {
+    for (int i = 0; i < m_parameters.size(); ++i) {
+        m_parameters[i]->onChainParameterChanged(parameter);
+    }
+}

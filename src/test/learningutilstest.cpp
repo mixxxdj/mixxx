@@ -89,6 +89,28 @@ TEST_F(LearningUtilsTest, CC7BitTicker) {
               mappings.at(0));
 }
 
+TEST_F(LearningUtilsTest, Spread64Ticker) {
+    // A Spread64 ticker (select knob, jog wheel, etc.) shows up as a MIDI_CC
+    // message, single channel, single control and a variety of values centered
+    // around 0x40 but never including that value (since 0x40 means "not moving")
+    addMessage(MIDI_CC | 0x01, 0x10, 0x41);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x41);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x42);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x41);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x3F);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x3F);
+    addMessage(MIDI_CC | 0x01, 0x10, 0x3F);
+
+    MidiKeyAndOptionsList mappings =
+            LearningUtils::guessMidiInputMappings(m_messages);
+
+    ASSERT_EQ(1, mappings.size());
+    MidiOptions options;
+    options.spread64 = true;
+    EXPECT_EQ(qMakePair(MidiKey(MIDI_CC | 0x01, 0x10), options),
+              mappings.at(0));
+}
+
 TEST_F(LearningUtilsTest, CC7BitTicker_SingleDirection) {
     // A CC 7-bit ticker (select knob, jog wheel, etc.) shows up as a MIDI_CC
     // message, single channel, single control and a variety of values in two's

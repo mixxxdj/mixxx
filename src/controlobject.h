@@ -90,6 +90,15 @@ class ControlObject : public QObject {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
 
+    // Returns the parameterized value of the object. Thread safe, non-blocking.
+    virtual double getParameter() const;
+
+    // Returns the parameterized value of the object. Thread safe, non-blocking.
+    virtual double getParameterForValue(double value) const;
+
+    // Sets the control parameterized value to v. Thread safe, non-blocking.
+    virtual void setParameter(double v);
+
     // Connects a Qt slot to a signal that is delivered when a new value change
     // request arrives for this control.
     bool connectValueChangeRequest(const QObject* receiver,
