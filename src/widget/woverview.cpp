@@ -26,7 +26,7 @@
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
 #include "trackinfoobject.h"
-#include "mathstuff.h"
+#include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"
 
@@ -254,8 +254,7 @@ void WOverview::onMarkRangeChange(double /*v*/) {
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
-    m_iPos = e->x();
-    m_iPos = math_max(0, math_min(m_iPos,width() - 1));
+    m_iPos = math_clamp(e->x(), 0, width() - 1);
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
     update();
 }

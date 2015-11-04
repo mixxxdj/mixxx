@@ -9,7 +9,8 @@
 #include <QMutex>
 #include <QPair>
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/math.h"
 
 struct Hint;
 class EngineControl;

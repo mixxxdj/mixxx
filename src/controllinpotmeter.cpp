@@ -1,5 +1,4 @@
 #include "controllinpotmeter.h"
-#include "defs.h"
 
 ControlLinPotmeter::ControlLinPotmeter(ConfigKey key,
                                        double dMinValue, double dMaxValue,

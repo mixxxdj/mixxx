@@ -20,8 +20,8 @@
 
 #define MIXXX
 #include "engine/engineobject.h"
-#include "../lib/fidlib-0.9.10/fidlib.h"
-#include "defs.h"
+#include <fidlib.h>
+#include "util/types.h"
 
 #define PREDEF_HP 1
 #define PREDEF_BP 2

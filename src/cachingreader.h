@@ -10,7 +10,7 @@
 #include <QLinkedList>
 #include <QHash>
 
-#include "defs.h"
+#include "util/types.h"
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"

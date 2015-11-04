@@ -1,12 +1,9 @@
 #ifndef CONTROLBEHAVIOR_H
 #define CONTROLBEHAVIOR_H
 
-#include <math.h>
-
 #include <QTimer>
 
 #include "controllers/midi/midimessage.h"
-#include "mathstuff.h"
 
 class ControlDoublePrivate;
 

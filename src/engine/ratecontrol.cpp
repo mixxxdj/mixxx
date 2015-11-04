@@ -7,7 +7,7 @@
 #include "controlttrotary.h"
 #include "controlobjectslave.h"
 #include "rotary.h"
-#include "mathstuff.h"
+#include "util/math.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 #include "engine/bpmcontrol.h"

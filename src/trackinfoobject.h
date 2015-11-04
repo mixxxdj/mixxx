@@ -24,35 +24,27 @@
 #include <QObject>
 #include <QFileInfo>
 #include <QMutex>
-#include <QVector>
 #include <QSharedPointer>
 #include <QWeakPointer>
+#include <QString>
+#include <QDomNode>
 
-#include "defs.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "proto/keys.pb.h"
 #include "library/dao/cue.h"
 #include "util/sandbox.h"
 
-class QString;
-class QDomElement;
-class QDomDocument;
-class QDomNode;
-class ControlObject;
-class TrackPlaylist;
 class Cue;
 class Waveform;
 
 class TrackInfoObject;
-
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
-class TrackInfoObject : public QObject
-{
+class TrackInfoObject : public QObject {
     Q_OBJECT
-public:
+  public:
     // Initialize a new track with the filename.
     TrackInfoObject(const QString& file="",
                     SecurityTokenPointer pToken=SecurityTokenPointer(),

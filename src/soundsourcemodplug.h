@@ -26,7 +26,7 @@ class SoundSourceModPlug : public Mixxx::SoundSource
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
-    int parseHeader();
+    Result parseHeader();
     static QList<QString> supportedFileExtensions();
 
     // apply settings for decoding

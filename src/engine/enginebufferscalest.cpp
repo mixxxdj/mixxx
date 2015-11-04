@@ -20,12 +20,13 @@
 // Fixes redefinition warnings from SoundTouch.
 #undef TRUE
 #undef FALSE
-#include "SoundTouch.h"
-#include "mathstuff.h"
+#include <SoundTouch.h>
+
 #include "controlobject.h"
 #include "engine/readaheadmanager.h"
 #include "engine/engineobject.h"
 #include "track/keyutils.h"
+#include "util/math.h"
 
 using namespace soundtouch;
 

@@ -10,6 +10,8 @@
 #include "engine/enginefilterbutterworth8.h"
 #include "sampleutil.h"
 #include "util.h"
+#include "util/defs.h"
+#include "util/types.h"
 
 struct FilterGroupState {
     FilterGroupState()

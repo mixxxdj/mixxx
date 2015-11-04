@@ -10,7 +10,6 @@
 #include "cachingreader.h"
 #include "engine/quantizecontrol.h"
 #include "engine/enginecontrol.h"
-#include "mathstuff.h"
 
 QuantizeControl::QuantizeControl(const char* pGroup,
                                  ConfigObject<ConfigValue>* pConfig)
@@ -85,11 +84,10 @@ double QuantizeControl::process(const double dRate,
     double prevBeat = m_pCOPrevBeat->get();
     double nextBeat = m_pCONextBeat->get();
     double closestBeat = m_pCOClosestBeat->get();
-    double currentClosestBeat =
-            floorf(m_pBeats->findClosestBeat(iCurrentSample));
+    double currentClosestBeat = floor(m_pBeats->findClosestBeat(iCurrentSample));
 
     if (closestBeat != currentClosestBeat) {
-        if (!even(currentClosestBeat)) {
+        if (!even(static_cast<int>(currentClosestBeat))) {
             currentClosestBeat--;
         }
         m_pCOClosestBeat->set(currentClosestBeat);
@@ -98,12 +96,12 @@ double QuantizeControl::process(const double dRate,
     if (prevBeat == -1 || nextBeat == -1 ||
         currentSample >= nextBeat || currentSample <= prevBeat) {
         // TODO(XXX) are the floor and even checks necessary?
-        nextBeat = floorf(m_pBeats->findNextBeat(iCurrentSample));
-        prevBeat = floorf(m_pBeats->findPrevBeat(iCurrentSample));
+        nextBeat = floor(m_pBeats->findNextBeat(iCurrentSample));
+        prevBeat = floor(m_pBeats->findPrevBeat(iCurrentSample));
 
-        if (!even(nextBeat))
+        if (!even(static_cast<int>(nextBeat)))
             nextBeat--;
-        if (!even(prevBeat))
+        if (!even(static_cast<int>(prevBeat)))
             prevBeat--;
 
         m_pCONextBeat->set(nextBeat);

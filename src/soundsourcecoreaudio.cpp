@@ -18,6 +18,7 @@
 #include <taglib/mp4file.h>
 
 #include "soundsourcecoreaudio.h"
+#include "util/math.h"
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString filename)
         : Mixxx::SoundSource(filename),
@@ -30,7 +31,7 @@ SoundSourceCoreAudio::~SoundSourceCoreAudio() {
 }
 
 // soundsource overrides
-int SoundSourceCoreAudio::open() {
+Result SoundSourceCoreAudio::open() {
     //Open the audio file.
     OSStatus err;
 
@@ -160,7 +161,7 @@ unsigned int SoundSourceCoreAudio::read(unsigned long size, const SAMPLE *destin
         AudioBufferList fillBufList;
         fillBufList.mNumberBuffers = 1; //Decode a single track?
         fillBufList.mBuffers[0].mNumberChannels = m_outputFormat.mChannelsPerFrame;
-        fillBufList.mBuffers[0].mDataByteSize = math_min(1024, numFramesToRead*4);//numFramesToRead*sizeof(*destBuffer); // 2 = num bytes per SAMPLE
+        fillBufList.mBuffers[0].mDataByteSize = math_min<unsigned int>(1024, numFramesToRead*4);//numFramesToRead*sizeof(*destBuffer); // 2 = num bytes per SAMPLE
         fillBufList.mBuffers[0].mData = (void*)(&destBuffer[numFramesRead*2]);
 
         // client format is always linear PCM - so here we determine how many frames of lpcm
@@ -183,7 +184,7 @@ inline unsigned long SoundSourceCoreAudio::length() {
     return m_samples;
 }
 
-int SoundSourceCoreAudio::parseHeader() {
+Result SoundSourceCoreAudio::parseHeader() {
     if (getFilename().endsWith(".m4a"))
         setType("m4a");
     else if (getFilename().endsWith(".mp3"))

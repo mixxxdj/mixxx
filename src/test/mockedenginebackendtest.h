@@ -6,7 +6,8 @@
 
 #include <QtDebug>
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/defs.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include "deck.h"

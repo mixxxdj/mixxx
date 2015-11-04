@@ -16,16 +16,6 @@
 ***************************************************************************/
 #include "configobject.h"
 
-#ifdef __WINDOWS__
-#include <windows.h>
-#endif
-
-#ifdef __APPLE__
-#include <CoreFoundation/CoreFoundation.h>
-#endif
-
-#include <math.h>
-
 #include <QIODevice>
 #include <QTextStream>
 #include <QApplication>
@@ -371,23 +361,6 @@ QString ConfigObject<ValueType>::getResourcePath() {
         qResourcePath = QCoreApplication::applicationDirPath();
 #endif
 #ifdef __APPLE__
-        /*
-        // Set the path relative to the bundle directory
-        CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-        CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
-        char utf8path[256];
-        //Attempt to decode obtain the macPath string as UTF-8
-        if (CFStringGetCString(macPath, utf8path, sizeof(utf8path), kCFStringEncodingUTF8))
-        {
-        qConfigPath.fromUtf8(utf8path);
-        }
-        else {
-        //Fallback on the "system encoding"... (this is just our old code, which probably doesn't make any sense
-        //since it plays roullette with the type of text encoding)
-        qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
-        }
-        qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
-        */
         QDir mixxxDir(QCoreApplication::applicationDirPath());
 
         if (mixxxDir.absolutePath().endsWith("_build")) {

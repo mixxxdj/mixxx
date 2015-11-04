@@ -3,7 +3,7 @@
 #include "visualplayposition.h"
 #include "controlobjectslave.h"
 #include "controlobject.h"
-#include "mathstuff.h"
+#include "util/math.h"
 #include "waveform/vsyncthread.h"
 
 //static

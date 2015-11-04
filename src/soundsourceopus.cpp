@@ -48,7 +48,7 @@ SoundSourceOpus::~SoundSourceOpus() {
     }
 }
 
-int SoundSourceOpus::open() {
+Result SoundSourceOpus::open() {
     int error = 0;
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
 
@@ -173,7 +173,7 @@ unsigned SoundSourceOpus::read(volatile unsigned long size, const SAMPLE * desti
 /*
    Parse the the file to get metadata
  */
-int SoundSourceOpus::parseHeader() {
+Result SoundSourceOpus::parseHeader() {
     int error = 0;
 
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
@@ -203,7 +203,7 @@ int SoundSourceOpus::parseHeader() {
     // Before that we have parse tags by this code
     int i = 0;
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
-   
+
 
     // This is left for debug reasons !!
     // qDebug() << "opus: We have " << l_ptrOpusTags->comments;
@@ -211,7 +211,7 @@ int SoundSourceOpus::parseHeader() {
       QString l_SWholeTag = QString(l_ptrOpusTags->user_comments[i]);
       QString l_STag = l_SWholeTag.left(l_SWholeTag.indexOf("="));
       QString l_SPayload = l_SWholeTag.right((l_SWholeTag.length() - l_SWholeTag.indexOf("=")) - 1);
-      
+
       if (!l_STag.compare("ARTIST") ) {
             this->setArtist(l_SPayload);
       } else if (!l_STag.compare("ALBUM")) {
@@ -236,21 +236,21 @@ int SoundSourceOpus::parseHeader() {
       } else if (!l_STag.compare("REPLAYGAIN_ALBUM_PEAK")) {
       } else if (!l_STag.compare("REPLAYGAIN_ALBUM_GAIN")) {
       }
-      
+
       // This is left fot debug reasons!!
-      //qDebug() << "Comment" << i << l_ptrOpusTags->comment_lengths[i] << 
+      //qDebug() << "Comment" << i << l_ptrOpusTags->comment_lengths[i] <<
       //" (" << l_ptrOpusTags->user_comments[i] << ")" << l_STag << "*" << l_SPayload;
     }
 
     op_free(l_ptrOpusFile);
     return OK;
 #endif
-    
-    
+
+
 #if TAGLIB_MAJOR_VERSION >= 1 && TAGLIB_MINOR_VERSION >= 9
     return result ? OK : ERR;
 #endif
-  
+
 }
 
 /*

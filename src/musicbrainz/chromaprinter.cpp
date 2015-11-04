@@ -4,7 +4,6 @@
 
 #include "musicbrainz/chromaprinter.h"
 #include "soundsourceproxy.h"
-#include "defs.h"
 
 chromaprinter::chromaprinter(QObject* parent)
              : QObject(parent),

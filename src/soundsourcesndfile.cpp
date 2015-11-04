@@ -22,8 +22,9 @@
 #include <QString>
 #include <QtDebug>
 
-#include "trackinfoobject.h"
 #include "soundsourcesndfile.h"
+#include "trackinfoobject.h"
+#include "util/math.h"
 
 /*
    Class for reading files using libsndfile
@@ -57,8 +58,7 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions()
     return list;
 }
 
-int SoundSourceSndFile::open()
-{
+Result SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
     // Pointer valid until string changed
     LPCWSTR lpcwFilename = (LPCWSTR)m_qFilename.utf16();
@@ -70,12 +70,12 @@ int SoundSourceSndFile::open()
 
     if (fh == NULL) {   // sf_format_check is only for writes
         qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
-        return -1;
+        return ERR;
     }
 
     if (sf_error(fh)>0) {
         qWarning() << "libsndfile: Error opening file" << m_qFilename << sf_strerror(fh);
-        return -1;
+        return ERR;
     }
 
     channels = info->channels;
@@ -163,7 +163,7 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
     return 0;
 }
 
-int SoundSourceSndFile::parseHeader()
+Result SoundSourceSndFile::parseHeader()
 {
     QString location = getFilename();
     setType(location.section(".",-1).toLower());

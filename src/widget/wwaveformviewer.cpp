@@ -14,6 +14,7 @@
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "util/dnd.h"
+#include "util/math.h"
 
 WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
         : WWidget(parent),
@@ -109,7 +110,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         // where this value is handled.
         double v = 0.5 + (diff.x() / 1270.0);
         // clamp to [0.0, 1.0]
-        v = math_min(1.0, math_max(0.0, v));
+        v = math_clamp(v, 0.0, 1.0);
         m_pWheel->setParameter(v);
     }
 }

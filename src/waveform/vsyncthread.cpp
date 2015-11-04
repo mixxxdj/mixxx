@@ -7,17 +7,15 @@
 #include <QTime>
 
 #include "mixxx.h"
-#include "mathstuff.h"
 #include "vsyncthread.h"
 #include "util/performancetimer.h"
 #include "util/event.h"
 #include "util/counter.h"
+#include "util/math.h"
 #include "waveform/guitick.h"
 
 #if defined(__APPLE__)
-
 #elif defined(__WINDOWS__)
-
 #else
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
    extern const QX11Info *qt_x11Info(const QPaintDevice *pd);

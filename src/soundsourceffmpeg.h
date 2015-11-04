@@ -58,7 +58,7 @@ public:
     int open();
     long seek(long);
     unsigned int read(unsigned long size, const SAMPLE*);
-    int parseHeader();
+    Result parseHeader();
     inline long unsigned length();
     bool readInput();
     static QList<QString> supportedFileExtensions();

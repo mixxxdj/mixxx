@@ -1,6 +1,7 @@
 #include "dlgprefreplaygain.h"
 
 #include "controlobject.h"
+#include "util/math.h"
 
 #define CONFIG_KEY "[ReplayGain]"
 
@@ -96,7 +97,7 @@ void DlgPrefReplayGain::slotUpdate() {
 
 void DlgPrefReplayGain::slotApply() {
     double replayGainBoostDb = SliderBoost->value();
-    m_COTReplayGainBoost.set(pow(10, replayGainBoostDb / 20));
+    m_COTReplayGainBoost.set(pow(10.0, replayGainBoostDb / 20.0));
     int iRGenabled = 0;
     if (EnableGain->isChecked()) {
         iRGenabled = 1;

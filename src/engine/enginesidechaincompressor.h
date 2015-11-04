@@ -1,7 +1,7 @@
 #ifndef ENGINECOMPRESSOR_H
 #define ENGINECOMPRESSOR_H
 
-#include "defs.h"
+#include "util/types.h"
 
 class EngineSideChainCompressor {
   public:

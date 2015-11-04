@@ -44,7 +44,7 @@ extern "C" {
 
 #include <QLibrary>
 
-#include "defs.h"
+#include "util/types.h"
 #include "encoder/encoder.h"
 #include "trackinfoobject.h"
 

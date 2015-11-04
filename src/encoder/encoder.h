@@ -17,7 +17,7 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
-#include "defs.h"
+#include "util/types.h"
 
 class Encoder {
   public:

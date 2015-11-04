@@ -10,15 +10,9 @@
 #include "ui_dlgtrackinfo.h"
 #include "trackinfoobject.h"
 #include "dlgtagfetcher.h"
+#include "util/types.h"
 
-/** Minimum allowed Beat per minute (BPM) */
-const int minBPM = 30;
-/** Maximum allowed bpm */
-const int maxBPM = 240;
-/** Maximum allowed interval between beats in milli seconds (calculated from minBPM) */
-const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBPM));
-/** Filter length */
-const int filterLength = 5;
+const int kFilterLength = 5;
 
 class Cue;
 
@@ -68,7 +62,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
 
-    CSAMPLE m_bpmTapFilter[filterLength];
+    CSAMPLE m_bpmTapFilter[kFilterLength];
     QTime m_bpmTapTimer;
 
     QMutex m_mutex;
@@ -77,4 +71,3 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 };
 
 #endif /* DLGTRACKINFO_H */
-

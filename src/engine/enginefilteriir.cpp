@@ -16,7 +16,7 @@
 
 #include "engine/enginefilteriir.h"
 #include "util/counter.h"
-#include "mathstuff.h"
+#include "util/math.h"
 
 EngineFilterIIR::EngineFilterIIR(const double * pCoefs, int iOrder)
 {

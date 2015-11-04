@@ -4,7 +4,7 @@
 #include <QColor>
 
 #include "util/timer.h"
-
+#include "util/math.h"
 #include "waveform/waveform.h"
 
 WOverviewHSV::WOverviewHSV(const char* pGroup,

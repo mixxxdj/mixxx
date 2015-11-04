@@ -135,7 +135,7 @@ int64_t SoundSourceFFmpeg::convertByteOffsetToPtsOld(int64_t byteoffset,
     return l_lReturnValue + (l_lReturnValue % 2);
 }
 
-int SoundSourceFFmpeg::open() {
+Result SoundSourceFFmpeg::open() {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
@@ -631,7 +631,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
 
 }
 
-int SoundSourceFFmpeg::parseHeader() {
+Result SoundSourceFFmpeg::parseHeader() {
     qDebug() << "ffmpeg: SoundSourceFFmpeg::parseHeader" << m_qFilename;
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
 

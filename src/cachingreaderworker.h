@@ -10,6 +10,7 @@
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
 #include "util/fifo.h"
+#include "util/types.h"
 
 namespace Mixxx {
     class SoundSource;

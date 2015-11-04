@@ -31,7 +31,8 @@
 #include <QObject>
 #include <QFile>
 
-#include "defs.h"
+#include "util/defs.h"
+#include "util/types.h"
 #include "soundsource.h"
 
 #define READLENGTH 5000
@@ -51,13 +52,13 @@ class SoundSourceMp3 : public Mixxx::SoundSource {
 public:
     SoundSourceMp3(QString qFilename);
     ~SoundSourceMp3();
-    int open();
+    Result open();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     unsigned long discard(unsigned long size);
     /** Return the length of the file in samples. */
     inline long unsigned length();
-    int parseHeader();
+    Result parseHeader();
     static QList<QString> supportedFileExtensions();
 
 private:

@@ -3,7 +3,7 @@
 
 #include <QString>
 
-#include "defs.h"
+#include "util/types.h"
 #include "configobject.h"
 #include "vinylcontrol/vinylsignalquality.h"
 

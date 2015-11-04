@@ -8,6 +8,7 @@
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "util.h"
+#include "util/types.h"
 
 struct BitCrusherGroupState {
     // Default accumulator to 1 so we immediately pick an input value.

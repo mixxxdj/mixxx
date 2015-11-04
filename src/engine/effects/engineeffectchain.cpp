@@ -2,6 +2,7 @@
 
 #include "engine/effects/engineeffect.h"
 #include "sampleutil.h"
+#include "util/defs.h"
 
 EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),

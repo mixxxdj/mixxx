@@ -1,12 +1,11 @@
 // Tue Haste Andersen <haste@diku.dk>, (C) 2003
 
 #include <QTime>
-#include <math.h>
 
 #include "wnumberpos.h"
-#include "mathstuff.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
+#include "util/math.h"
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),

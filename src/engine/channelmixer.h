@@ -1,7 +1,7 @@
 #ifndef CHANNELMIXER_H
 #define CHANNELMIXER_H
 
-#include "defs.h"
+#include "util/types.h"
 #include "engine/enginemaster.h"
 
 class ChannelMixer {

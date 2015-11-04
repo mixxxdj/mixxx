@@ -45,7 +45,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "defs.h"
+#include "util/types.h"
 typedef CSAMPLE sample_t;
 
 // NOTE(rryan): 3/2014 Added these for the MSVC build.

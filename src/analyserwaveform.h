@@ -4,12 +4,12 @@
 #include <QTime>
 #include <QImage>
 #include <QSqlDatabase>
+#include <limits>
 
 #include "configobject.h"
 #include "analyser.h"
 #include "waveform/waveform.h"
-
-#include <limits>
+#include "util/math.h"
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP

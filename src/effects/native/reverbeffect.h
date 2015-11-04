@@ -6,8 +6,9 @@
 
 #include <QMap>
 
-#include "defs.h"
 #include "util.h"
+#include "util/types.h"
+#include "util/defs.h"
 #include "effects/effectprocessor.h"
 #include "effects/native/reverb/Reverb.h"
 #include "engine/effects/engineeffect.h"

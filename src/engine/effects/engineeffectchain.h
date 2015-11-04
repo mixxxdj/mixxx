@@ -5,8 +5,8 @@
 #include <QList>
 #include <QSet>
 
-#include "defs.h"
 #include "util.h"
+#include "util/types.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "effects/effectchain.h"

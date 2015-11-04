@@ -1,7 +1,3 @@
-
-#include <math.h>
-#include <limits.h>
-
 #include <QtDebug>
 #include <QFileInfo>
 
@@ -14,6 +10,7 @@
 #include "sampleutil.h"
 #include "util/compatibility.h"
 #include "util/event.h"
+#include "util/math.h"
 
 // There's a little math to this, but not much: 48khz stereo audio is 384kb/sec
 // if using float samples. We want the chunk size to be a power of 2 so it's

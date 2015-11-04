@@ -16,10 +16,10 @@
 ***************************************************************************/
 
 #include <QtDebug>
-#include <limits.h>
+
 #include "vinylcontrolxwax.h"
 #include "steadypitch.h"
-#include <math.h>
+#include "util/math.h"
 
 SteadyPitch::SteadyPitch(double threshold)
     : m_dSteadyPitch(0.0),

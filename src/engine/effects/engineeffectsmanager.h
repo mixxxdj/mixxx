@@ -3,7 +3,7 @@
 
 #include <QScopedPointer>
 
-#include "defs.h"
+#include "util/types.h"
 #include "util/fifo.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"

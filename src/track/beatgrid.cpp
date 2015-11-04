@@ -2,7 +2,7 @@
 #include <QtDebug>
 
 #include "track/beatgrid.h"
-#include "mathstuff.h"
+#include "util/math.h"
 
 static const int kFrameSize = 2;
 
@@ -144,8 +144,8 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     }
 
     double beatFraction = (dSamples - firstBeatSample()) / m_dBeatLength;
-    const double prevBeat = floorf(beatFraction);
-    const double nextBeat = ceilf(beatFraction);
+    const double prevBeat = floor(beatFraction);
+    const double nextBeat = ceil(beatFraction);
 
     // If the position is within 1/100th of the next or previous beat, treat it
     // as if it is that beat.
@@ -159,19 +159,19 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 
     double dClosestBeat;
     if (n > 0) {
-        // We're going forward, so use ceilf to round up to the next multiple of
+        // We're going forward, so use ceil to round up to the next multiple of
         // m_dBeatLength
         dClosestBeat = nextBeat * m_dBeatLength + firstBeatSample();
         n = n - 1;
     } else {
-        // We're going backward, so use floorf to round down to the next multiple
+        // We're going backward, so use floor to round down to the next multiple
         // of m_dBeatLength
         dClosestBeat = prevBeat * m_dBeatLength + firstBeatSample();
         n = n + 1;
     }
 
     double dResult = dClosestBeat + n * m_dBeatLength;
-    if (!even(dResult)) {
+    if (!even(static_cast<int>(dResult))) {
         dResult--;
     }
     return dResult;

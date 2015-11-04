@@ -9,6 +9,8 @@
 #include "sampleutil.h"
 #include "track/keyutils.h"
 #include "util/counter.h"
+#include "util/math.h"
+#include "util/defs.h"
 
 using RubberBand::RubberBandStretcher;
 

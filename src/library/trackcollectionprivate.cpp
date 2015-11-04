@@ -5,7 +5,6 @@
 
 #include "trackcollection.h"
 
-#include "defs.h"
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
 #include "library/queryutil.h"

@@ -20,7 +20,6 @@
 
 #include "controlobject.h"
 #include "controllers/midi/midimessage.h"
-#include "defs.h"
 
 /**
   *@author Tue and Ken Haste Andersen

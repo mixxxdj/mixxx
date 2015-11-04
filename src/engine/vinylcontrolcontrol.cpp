@@ -1,7 +1,8 @@
 #include "engine/vinylcontrolcontrol.h"
-#include "mathstuff.h"
+
 #include "vinylcontrol/vinylcontrol.h"
 #include "library/dao/cue.h"
+#include "util/math.h"
 
 VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig)
         : EngineControl(pGroup, pConfig),

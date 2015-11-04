@@ -10,7 +10,7 @@
 
 #include "controllers/softtakeover.h"
 #include "controlpotmeter.h"
-#include "mathstuff.h"
+#include "util/math.h"
 
 // static
 uint SoftTakeover::currentTimeMsecs() {

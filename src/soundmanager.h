@@ -22,7 +22,8 @@
 #include <QList>
 #include <QHash>
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/defs.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
 
@@ -70,7 +71,7 @@ class SoundManager : public QObject {
 
     // Opens all the devices chosen by the user in the preferences dialog, and
     // establishes the proper connections between them and the mixing engine.
-    int setupDevices();
+    Result setupDevices();
 
     SoundDevice* getErrorDevice() const;
 
@@ -83,7 +84,7 @@ class SoundManager : public QObject {
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
     SoundManagerConfig getConfig() const;
-    int setConfig(SoundManagerConfig config);
+    Result setConfig(SoundManagerConfig config);
     void checkConfig();
 
     void onDeviceOutputCallback(const unsigned int iFramesPerBuffer);

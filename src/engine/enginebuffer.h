@@ -22,7 +22,7 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "defs.h"
+#include "util/types.h"
 #include "engine/engineobject.h"
 #include "trackinfoobject.h"
 #include "configobject.h"

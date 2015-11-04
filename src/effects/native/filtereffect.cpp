@@ -1,4 +1,5 @@
 #include "effects/native/filtereffect.h"
+#include "util/math.h"
 
 // static
 QString FilterEffect::getId() {

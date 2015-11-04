@@ -18,7 +18,6 @@
 #include <QtDebug>
 
 #include "rotary.h"
-#include "mathstuff.h"
 #include "controlobject.h"
 
 Rotary::Rotary()

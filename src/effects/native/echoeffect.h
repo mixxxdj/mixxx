@@ -3,8 +3,9 @@
 
 #include <QMap>
 
-#include "defs.h"
 #include "util.h"
+#include "util/defs.h"
+#include "util/types.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbutterworth8.h"

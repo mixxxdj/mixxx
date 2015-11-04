@@ -11,7 +11,6 @@
 #include "trackinfoobject.h"
 #include "library/dao/cue.h"
 #include "cachingreader.h"
-#include "mathstuff.h"
 
 static const double CUE_MODE_MIXXX = 0.0;
 static const double CUE_MODE_PIONEER = 1.0;
@@ -332,8 +331,8 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     Cue* pCue = m_pLoadedTrack->addCue();
     double cuePosition =
             (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
-            floorf(m_pClosestBeat->get()) : floorf(getCurrentSample());
-    if (!even(cuePosition))
+            floor(m_pClosestBeat->get()) : floor(getCurrentSample());
+    if (!even(static_cast<int>(cuePosition)))
         cuePosition--;
     pCue->setPosition(cuePosition);
     pCue->setHotCue(hotcue);
@@ -593,8 +592,8 @@ void CueControl::cueSet(double v) {
 
     QMutexLocker lock(&m_mutex);
     double cue = (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
-            floorf(m_pClosestBeat->get()) : floorf(getCurrentSample());
-    if (!even(cue))
+            floor(m_pClosestBeat->get()) : floor(getCurrentSample());
+    if (!even(static_cast<int>(cue)))
         cue--;
     m_pCuePoint->set(cue);
     saveCuePoint(cue);

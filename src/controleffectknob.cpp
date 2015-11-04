@@ -1,5 +1,4 @@
 #include "controleffectknob.h"
-#include "defs.h"
 
 #include "effects/effectmanifestparameter.h"
 

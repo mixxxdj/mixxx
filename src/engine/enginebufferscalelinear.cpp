@@ -18,9 +18,9 @@
 #include <QtDebug>
 
 #include "engine/enginebufferscalelinear.h"
-#include "mathstuff.h"
 #include "sampleutil.h"
 #include "track/keyutils.h"
+#include "util/math.h"
 
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
@@ -271,7 +271,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     unscaled_samples_needed *= 2;
 
     // 0 is never the right answer
-    unscaled_samples_needed = math_max(2, unscaled_samples_needed);
+    unscaled_samples_needed = math_max<long>(2, unscaled_samples_needed);
 
     bool last_read_failed = false;
     CSAMPLE prev_sample[2];
@@ -322,8 +322,8 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
                 screwups++;
             }
 
-            int samples_to_read = math_min(kiLinearScaleReadAheadLength,
-                                           unscaled_samples_needed);
+            int samples_to_read = math_min<int>(kiLinearScaleReadAheadLength,
+                                                unscaled_samples_needed);
 
             buffer_int_size = m_pReadAheadManager->getNextSamples(
                 rate_add_new == 0 ? rate_add_old : rate_add_new,
@@ -337,7 +337,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
             unscaled_samples_needed -= buffer_int_size;
             //shift the index by the size of the old buffer
-            m_dCurSampleIndex -= old_bufsize / 2;
+            m_dCurSampleIndex -= old_bufsize / 2.;
         }
 
         // Now that the buffer is up to date, we can get the value of the sample

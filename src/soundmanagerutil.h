@@ -21,7 +21,7 @@
 #include <QDomElement>
 #include <QList>
 
-#include "defs.h" // for CSAMPLE (???)
+#include "util/types.h"
 #include "util/fifo.h"
 
 /**

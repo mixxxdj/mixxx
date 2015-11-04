@@ -18,6 +18,7 @@
 #include "sounddevice.h"
 #include "soundmanager.h"
 #include "util/cmdlineargs.h"
+#include "util/math.h"
 
 // this (7) represents latency values from 1 ms to about 80 ms -- bkgood
 const unsigned int SoundManagerConfig::kMaxAudioBufferSizeIndex = 7;

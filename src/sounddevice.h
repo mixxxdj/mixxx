@@ -22,6 +22,7 @@
 #include <QList>
 
 #include "soundmanager.h"
+#include "util/defs.h"
 
 //Forward declarations
 class SoundDevice;
@@ -49,8 +50,8 @@ class SoundDevice {
     void setHostAPI(QString api);
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual int open(bool isClkRefDevice, int syncBuffers) = 0;
-    virtual int close() = 0;
+    virtual Result open(bool isClkRefDevice, int syncBuffers) = 0;
+    virtual Result close() = 0;
     virtual void readProcess() = 0;
     virtual void writeProcess() = 0;
     virtual QString getError() const = 0;

@@ -22,7 +22,7 @@
 #include "controlpushbutton.h"
 #include "configobject.h"
 #include "controlobject.h"
-
+#include "util/math.h"
 #include "sampleutil.h"
 
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
@@ -111,7 +111,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // Clamp gain to within [0, 10.0] to prevent insane gains. This can happen
     // (some corrupt files get really high replay gain values).
     // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
-    fGain = fGain * math_max(0.0, math_min(10.0, fReplayGainCorrection));
+    fGain = fGain * math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(fGain);
 

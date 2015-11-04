@@ -10,13 +10,14 @@
 
 #include "track/beatmap.h"
 #include "track/beatutils.h"
+#include "util/math.h"
 
 using mixxx::track::io::Beat;
 
 const int kFrameSize = 2;
 
 inline double samplesToFrames(const double samples) {
-    return floorf(samples / kFrameSize);
+    return floor(samples / kFrameSize);
 }
 
 inline double framesToSamples(const double frames) {
@@ -122,7 +123,7 @@ void BeatMap::createFromBeatVector(QVector<double> beats) {
 
     foreach (double beatpos, beats) {
         // beatpos is in frames. Do not accept fractional frames.
-        beatpos = floorf(beatpos);
+        beatpos = floor(beatpos);
         if (beatpos <= previous_beatpos || beatpos < 0) {
             qDebug() << "BeatMap::createFromVector: beats not in increasing order or negative";
             qDebug() << "discarding beat " << beatpos;
@@ -378,7 +379,7 @@ void BeatMap::scale(double dScalePercentage) {
     for (BeatList::iterator it = m_beats.begin();
          it != m_beats.end(); ++it) {
         // Need to not accrue fractional frames.
-        double newFrame = floorf(
+        double newFrame = floor(
             (1 - dScalePercentage) * firstBeat.frame_position() +
             dScalePercentage * it->frame_position());
         it->set_frame_position(newFrame);
@@ -463,4 +464,3 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
 
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
 }
-

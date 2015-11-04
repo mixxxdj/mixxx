@@ -40,6 +40,7 @@
 #include "effects/effectsmanager.h"
 #include "util/timer.h"
 #include "util/trace.h"
+#include "util/defs.h"
 #include "playermanager.h"
 #include "engine/channelmixer.h"
 

@@ -19,16 +19,7 @@
 
 #include <signal.h>
 
-#ifdef __WINDOWS__
-#include <windows.h>
-//sleep on linux assumes seconds where as Sleep on Windows assumes milliseconds
-#define sleep(x) Sleep(x*1000)
-#else
-#include <unistd.h>
-#endif
-
 #include "engine/sidechain/engineshoutcast.h"
-
 #include "configobject.h"
 #include "playerinfo.h"
 #include "encoder/encoder.h"
@@ -36,6 +27,7 @@
 #include "encoder/encodervorbis.h"
 #include "shoutcast/defs_shoutcast.h"
 #include "trackinfoobject.h"
+#include "util/sleep.h"
 
 #define TIMEOUT 10
 
@@ -622,11 +614,11 @@ void EngineShoutcast::updateMetaData() {
                 // pass over the string
                 int replaceIndex = 0;
                 do {
-                    // find the next occurrence 
+                    // find the next occurrence
                     replaceIndex = m_metadataFormat.indexOf(
                                       QRegExp("\\$artist|\\$title"),
                                       replaceIndex);
-                  
+
                     if (replaceIndex != -1) {
                         if (m_metadataFormat.indexOf(
                                           QRegExp("\\$artist"), replaceIndex)

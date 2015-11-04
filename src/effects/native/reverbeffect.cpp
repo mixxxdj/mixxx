@@ -2,7 +2,6 @@
 
 #include "effects/native/reverbeffect.h"
 
-#include "mathstuff.h"
 #include "sampleutil.h"
 
 // static

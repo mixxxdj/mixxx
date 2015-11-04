@@ -4,7 +4,8 @@
 #ifndef SAMPLEUTIL_H
 #define SAMPLEUTIL_H
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/math.h"
 
 // MSVC does this
 // __declspec(align(16))
@@ -155,9 +156,9 @@ class SampleUtil {
 
     // Convert 0-1.0 range gain from linear to log value.
     static CSAMPLE linearToLog(CSAMPLE linear) {
-        linear = math_max(0.0, math_min(1.0, linear));
-        static const CSAMPLE dB = log10(2.0) / 1.0;
-        return log10(linear + 1.0) / dB;
+        linear = math_clamp(linear, 0.0f, 1.0f);
+        static const CSAMPLE dB = log10(2.0f) / 1.0f;
+        return log10(linear + 1.0f) / dB;
     }
 
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,

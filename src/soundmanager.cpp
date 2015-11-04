@@ -269,13 +269,13 @@ void SoundManager::queryDevices() {
     emit(devicesUpdated());
 }
 
-int SoundManager::setupDevices() {
+Result SoundManager::setupDevices() {
     // NOTE(rryan): Big warning: This function is concurrent with calls to
     // pushBuffer and onDeviceOutputCallback until closeDevices() below.
 
     qDebug() << "SoundManager::setupDevices()";
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
-    int err = 0;
+    Result err = OK;
     // NOTE(rryan): Do not clear m_pClkRefDevice here. If we didn't touch the
     // SoundDevice that is the clock reference, then it is safe to leave it as
     // it was. Clearing it causes the engine to stop being processed which
@@ -327,7 +327,7 @@ int SoundManager::setupDevices() {
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
             AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
-            err = device->addInput(aib);
+            err = device->addInput(aib) != SOUNDDEVICE_ERROR_OK ? ERR : OK;
             if (err != OK) {
                 delete [] aib.getBuffer();
                 goto closeAndError;
@@ -354,7 +354,7 @@ int SoundManager::setupDevices() {
             }
 
             AudioOutputBuffer aob(out, pBuffer);
-            err = device->addOutput(aob);
+            err = device->addOutput(aob) != SOUNDDEVICE_ERROR_OK ? ERR : OK;
             if (err != OK) goto closeAndError;
             if (out.getType() == AudioOutput::MASTER) {
                 pNewMasterClockRef = device;
@@ -444,8 +444,8 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-int SoundManager::setConfig(SoundManagerConfig config) {
-    int err = OK;
+Result SoundManager::setConfig(SoundManagerConfig config) {
+    Result err = OK;
     m_config = config;
     checkConfig();
 
