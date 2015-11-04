@@ -4,6 +4,7 @@
 #include "effects/effectparameterslot.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
+#include "controllers/softtakeover.h"
 
 EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
@@ -34,19 +35,22 @@ EffectParameterSlot::EffectParameterSlot(const unsigned int iRackNumber,
     m_pControlLoaded->connectValueChangeRequest(
         this, SLOT(slotLoaded(double)), Qt::AutoConnection);
 
+
+    m_pSoftTakeover = new SoftTakeover();
+
     clear();
 }
 
 EffectParameterSlot::~EffectParameterSlot() {
     //qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
+    delete m_pSoftTakeover;
 }
 
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     clear();
     if (pEffect) {
-        m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
         m_pEffectParameter = pEffect->getParameter(m_iParameterNumber);
 
@@ -83,10 +87,6 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             connect(m_pEffectParameter, SIGNAL(valueChanged(QVariant)),
                     this, SLOT(slotParameterValueChanged(QVariant)));
         }
-
-        // Update the newly loaded parameter to match the current chain
-        // superknob if it is linked.
-        onChainParameterChanged(m_dChainParameter);
     }
     emit(updated());
 }
@@ -98,13 +98,20 @@ void EffectParameterSlot::clear() {
         m_pEffectParameter = NULL;
     }
 
-    m_pEffect.clear();
     m_pControlLoaded->setAndConfirm(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->setAndConfirm(0.0);
     m_pControlLinkType->set(EffectManifestParameter::LINK_NONE);
     emit(updated());
+}
+
+EffectManifestParameter::LinkType EffectParameterSlot::getLinkType() const{
+    //qDebug() << debugString() << "slotLinkType" << v;
+    if (m_pEffectParameter) {
+        return m_pEffectParameter->getLinkType();
+    }
+    return EffectManifestParameter::LINK_NONE;
 }
 
 void EffectParameterSlot::slotParameterValueChanged(QVariant value) {
@@ -123,11 +130,17 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
                 if (parameter < 0.0 || parameter > 1.0) {
                     return;
                 }
-                m_pControlValue->setParameterFrom(parameter, NULL);
+                if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
+                    m_pControlValue->setParameterFrom(parameter, NULL);
+                }
                 break;
             case EffectManifestParameter::LINK_NONE:
             default:
                 break;
         }
     }
+}
+
+double EffectParameterSlot::getValueParameter() const {
+    return m_pControlValue->getParameter();
 }

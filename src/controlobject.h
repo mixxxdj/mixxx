@@ -120,6 +120,9 @@ class ControlObject : public QObject {
     // Returns the parameterized value of the object. Thread safe, non-blocking.
     virtual double getParameterForValue(double value) const;
 
+    // Returns the parameterized value of the object. Thread safe, non-blocking.
+    virtual double getParameterForMidiValue(double midiValue) const;
+
     // Sets the control parameterized value to v. Thread safe, non-blocking.
     virtual void setParameter(double v);
 

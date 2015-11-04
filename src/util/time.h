@@ -23,6 +23,10 @@ class Time {
         return s_timer.elapsed();
     }
 
+    static uint elapsedMsecs() {
+        return (uint)(s_timer.elapsed() / 1000);
+    }
+
     // The standard way of formatting a time in seconds. Used for display of
     // track duration, etc. showMillis indicates whether to include
     // millisecond-precision or to round to the nearest second.
