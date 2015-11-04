@@ -40,7 +40,7 @@ EnginePregain::EnginePregain(const char* group)
     m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough"));
 
     if (s_pReplayGainBoost == NULL) {
-        s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),0., 15.);
+        s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainBoost"), 1, 6);
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
     m_bSmoothFade = false;
@@ -63,10 +63,10 @@ EnginePregain::~EnginePregain()
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
     float fEnableReplayGain = s_pEnableReplayGain->get();
-    float fReplayGainBoost = s_pReplayGainBoost->get();
+    const float fReplayGainBoost = s_pReplayGainBoost->get();
     float fGain = potmeterPregain->get();
     float fReplayGain = m_pControlReplayGain->get();
-    float fReplayGainCorrection=1;
+    float fReplayGainCorrection = 1;
     float fPassing = m_pPassthroughEnabled->get();
     // TODO(XXX) Why do we do this? Removing it results in clipping at unity
     // gain so I think it was trying to compensate for some issue when we added
@@ -76,13 +76,13 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // Override replaygain value if passing through
     if (fPassing > 0) {
         fReplayGain = 1.0;
-    } else if (fReplayGain*fEnableReplayGain != 0) {
+    } else if (fReplayGain * fEnableReplayGain != 0) {
         // Here is the point, when ReplayGain Analyser takes its action, suggested gain changes from 0 to a nonzero value
         // We want to smoothly fade to this last.
         // Anyway we have some the problem that code cannot block the full process for one second.
         // So we need to alter gain each time ::process is called.
 
-        const float fullReplayGainBoost = fReplayGain*pow(10, fReplayGainBoost/20);
+        const float fullReplayGainBoost = fReplayGain * fReplayGainBoost;
 
         // This means that a ReplayGain value has been calculated after the track has been loaded
         const double kFadeSeconds = 1.0;
@@ -92,7 +92,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
             if (seconds < kFadeSeconds) {
                 // Fade smoothly
                 double fadeFrac = seconds / kFadeSeconds;
-                fReplayGainCorrection=(1.0-fadeFrac)+fadeFrac*fullReplayGainBoost;
+                fReplayGainCorrection = (1.0 - fadeFrac) + fadeFrac * fullReplayGainBoost;
             } else {
                 m_bSmoothFade = false;
                 fReplayGainCorrection = fullReplayGainBoost;
