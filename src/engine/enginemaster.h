@@ -68,6 +68,19 @@ class EngineMaster : public QObject, public AudioSource {
         return QString("[Headphone]");
     }
 
+    const QString getBusLeftGroup() const {
+        return QString("[BusLeft]");
+    }
+
+    const QString getBusCenterGroup() const {
+        return QString("[BusCenter]");
+    }
+
+    const QString getBusRightGroup() const {
+        return QString("[BusRight]");
+    }
+
+
     // WARNING: These methods are called by the main thread. They should only
     // touch the volatile bool connected indicators (see below). However, when
     // these methods are called the callback is guaranteed to be inactive

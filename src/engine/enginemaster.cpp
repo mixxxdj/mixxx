@@ -63,6 +63,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     if (pEffectsManager) {
         pEffectsManager->registerGroup(getMasterGroup());
         pEffectsManager->registerGroup(getHeadphoneGroup());
+        pEffectsManager->registerGroup(getBusLeftGroup());
+        pEffectsManager->registerGroup(getBusCenterGroup());
+        pEffectsManager->registerGroup(getBusRightGroup());
     }
 
     // Master sample rate
@@ -389,6 +392,17 @@ void EngineMaster::process(const int iBufferSize) {
                 &m_channelMasterGainCache,
                 m_pOutputBusBuffers[o], iBufferSize);
         }
+    }
+
+    // Process master channel effects
+    if (m_pEngineEffectsManager) {
+        GroupFeatureState busFeatures;
+        m_pEngineEffectsManager->process(getBusLeftGroup(), m_pOutputBusBuffers[0],
+                                             iBufferSize, busFeatures);
+        m_pEngineEffectsManager->process(getBusCenterGroup(), m_pOutputBusBuffers[1],
+                                             iBufferSize, busFeatures);
+        m_pEngineEffectsManager->process(getBusRightGroup(), m_pOutputBusBuffers[2],
+                                             iBufferSize, busFeatures);
     }
 
     if (masterEnabled) {
