@@ -140,20 +140,7 @@ def get_flags(env, argflag, default=0):
     return flags
 
 
-def get_mssdk_path():
-    """Look for the Microsoft SDK path checking the various environment
-    variables they set."""
-    path = os.getenv('SDKDIR', None)
-    if path is not None:
-        return path
-    path = os.getenv('MSSdk', None)
-    if path is not None:
-        return path
-    return ""
-
 # Checks for pkg-config on Linux
-
-
 def CheckForPKGConfig(context, version='0.0.0'):
     context.Message(
         "Checking for pkg-config (at least version %s)... " % version)
@@ -162,9 +149,8 @@ def CheckForPKGConfig(context, version='0.0.0'):
     context.Result(ret)
     return ret
 
+    
 # Uses pkg-config to check for a minimum version
-
-
 def CheckForPKG(context, name, version=""):
     if version == "":
         context.Message("Checking for %s... \t" % name)

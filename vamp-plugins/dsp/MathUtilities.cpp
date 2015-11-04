@@ -15,6 +15,7 @@
 
 #include "MathUtilities.h"
 
+#include <algorithm>
 #include <iostream>
 #include <cmath>
 

@@ -28,7 +28,11 @@ if int(build.flags['wv']):
 
     if build.platform_is_windows:
         env["LINKFLAGS"].remove("/entry:mainCRTStartup")
-        env["LINKFLAGS"].remove("/subsystem:windows")
+        # TODO(rryan): Why do we do this?
+        if build.machine_is_64bit:
+            env["LINKFLAGS"].remove("/subsystem:windows,5.02")
+        else:
+            env["LINKFLAGS"].remove("/subsystem:windows,5.01")
         sswv_bin = env.SharedLibrary('soundsourcewv', wv_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
     else:
         sswv_bin = env.SharedLibrary('soundsourcewv', wv_sources)

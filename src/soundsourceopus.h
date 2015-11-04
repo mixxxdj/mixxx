@@ -6,24 +6,27 @@
 #define SOUNDSOURCEOPUS_H
 
 #include <QString>
+#include <QtGlobal>
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <opus/opusfile.h>
 
 #include "soundsource.h"
 
 class SoundSourceOpus : public Mixxx::SoundSource {
-public:
+  public:
     SoundSourceOpus(QString qFilename);
-    ~SoundSourceOpus();
+    virtual ~SoundSourceOpus();
+	
     Result open();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     inline long unsigned length();
     Result parseHeader();
     static QList<QString> supportedFileExtensions();
-private:
+	
+  private:
     int m_iChannels;
-    uint64_t m_lFilelength;
+    quint64 m_lFilelength;
     OggOpusFile *m_ptrOpusFile;
 };
 

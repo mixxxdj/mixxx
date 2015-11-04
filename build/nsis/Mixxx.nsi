@@ -121,17 +121,12 @@ Function InstallVCRedist
   SetOutPath $TEMP
 
   ; Put the VC redist installer files there
-  File ${WINLIB_PATH}\VC_redist\vc_red.cab
-  File ${WINLIB_PATH}\VC_redist\vc_red.msi
-  File ${WINLIB_PATH}\VC_redist\msp_kb2565063.msp
+  File ${WINLIB_PATH}\vcredist_${ARCH}.exe
 
   ClearErrors
   ; Call it & wait for it to install
-  ExecWait 'msiexec /i $TEMP\vc_red.msi'
-  ExecWait 'msiexec /update $TEMP\msp_kb2565063.msp'
-  Delete "$TEMP\vc_red.cab"
-  Delete "$TEMP\vc_red.msi"
-  Delete "$TEMP\msp_kb2565063.msp"
+  ExecWait 'vcredist_${ARCH}.exe /quiet /install'
+  Delete "$TEMP\vc_redist_${ARCH}.exe"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
@@ -172,7 +167,7 @@ FunctionEnd
 Function CheckVCRedist
    Push $R0
    ClearErrors
-   ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\VisualStudio\10.0\VC\VCRedist\${ARCH}" "Installed"
+   ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\${ARCH}" "Installed"
    ; Old way:
    ;   x64
    ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}" "Version"

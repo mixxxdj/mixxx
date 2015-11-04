@@ -53,7 +53,11 @@ if int(build.flags['faad']):
     SHLIBPREFIX='lib' #Makes the filename "libsoundsourcem4a" consistently across platforms to make our lives easier.
     if build.platform_is_windows:
         env["LINKFLAGS"].remove("/entry:mainCRTStartup")
-        env["LINKFLAGS"].remove("/subsystem:windows")
+        # TODO(rryan): Why do we do this?
+        if build.machine_is_64bit:
+            env["LINKFLAGS"].remove("/subsystem:windows,5.02")
+        else:
+            env["LINKFLAGS"].remove("/subsystem:windows,5.01")
         ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
     else:
         ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources)

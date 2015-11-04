@@ -279,7 +279,11 @@ def build_app(target, source, env):
 
     print "Installing embedded libs:"
     for ref, (abs, embedded) in locals.iteritems():
-        Execute(Copy(embedded, abs))
+        real_abs = os.path.realpath(abs)
+        print "installing", real_abs, "to", embedded
+        # NOTE(rryan): abs can be a symlink. we want to copy the binary it is
+        # pointing to. os.path.realpath does this for us.
+        Execute(Copy(embedded, real_abs))
         if not os.access(embedded, os.W_OK):
             print "Adding write permissions to %s" % embedded_p
             mode = os.stat(embedded).st_mode
@@ -289,8 +293,11 @@ def build_app(target, source, env):
 
     print "Installing plugins:"
     for p, embedded_p in plugins_l:
-        print "installing", p,"to",embedded_p
-        Execute(Copy(embedded_p, p)) #:/
+        real_p = os.path.realpath(p)
+        print "installing", real_p, "to", embedded_p
+        # NOTE(rryan): p can be a symlink. we want to copy the binary it is
+        # pointing to. os.path.realpath does this for us.
+        Execute(Copy(embedded_p, real_p)) #:/
         patch_lib(str(embedded_p))
 
 
