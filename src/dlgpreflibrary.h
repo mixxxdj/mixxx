@@ -46,6 +46,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
   public slots:
     // Common preference page slots.
     void slotUpdate();
+    void slotShow();
+    void slotHide();
     void slotResetToDefaults();
     void slotApply();
 
@@ -57,6 +59,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
 
   signals:
     void apply();
+    void scanLibrary();
     void requestAddDir(QString dir);
     void requestRemoveDir(QString dir, Library::RemovalType removalType);
     void requestRelocateDir(QString currentDir, QString newDir);
@@ -66,6 +69,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     QStandardItemModel m_dirListModel;
     ConfigObject<ConfigValue>* m_pconfig;
     Library *m_pLibrary;
+    bool m_baddedDirectory;
 };
 
 #endif

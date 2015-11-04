@@ -1,0 +1,71 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Library widget (both collapsed and expanded).
+-->
+<Template>
+  <WidgetStack>
+    <ObjectName>LibraryContainer</ObjectName>
+    <!-- Fixed is interesting here. Ignore is the only thing that lets it shrink
+         to nothing. -->
+    <SizePolicy>me,i</SizePolicy>
+    <MinimumSize>0,0</MinimumSize>
+    <Children>
+      <!-- Main Library -->
+      <WidgetGroup trigger="[Library],show_library">
+        <ObjectName>LibraryExpanded</ObjectName>
+        <Layout>vertical</Layout>
+        <!-- Fixed is interesting here. Ignore is the only thing that lets it
+             shrink to nothing. -->
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>0,0</MinimumSize>
+        <Children>
+          <Splitter>
+            <ObjectName>LibrarySplitter</ObjectName>
+            <Orientation>horizontal</Orientation>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="object_name">LibraryToggle</SetVariable>
+                        <SetVariable name="control">[Library],show_library</SetVariable>
+                      </Template>
+                      <SearchBox>
+                      </SearchBox>
+                    </Children>
+                  </WidgetGroup>
+                  <LibrarySidebar>
+                  </LibrarySidebar>
+                </Children>
+              </WidgetGroup>
+              <Library>
+              </Library>
+            </Children>
+          </Splitter>
+        </Children>
+      </WidgetGroup>
+
+      <!-- Collapsed Library -->
+      <WidgetGroup>
+        <ObjectName>LibraryCollapsed</ObjectName>
+        <Layout>vertical</Layout>
+        <MinimumSize>-1,20</MinimumSize>
+        <MaximumSize>-1,20</MaximumSize>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:hide_show_button.xml">
+            <SetVariable name="object_name">LibraryToggle</SetVariable>
+            <SetVariable name="control">[Library],show_library</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetStack>
+
+</Template>

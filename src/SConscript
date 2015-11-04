@@ -249,6 +249,7 @@ else:
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
         dll_files.extend(qt_modules)
 
+sqldll_files = []
 if int(flags.get('qt_sqlite_plugin', 0)):
         if qt5:
                 # TODO(rryan): Add the SQLite DLL For Qt5.
@@ -478,7 +479,7 @@ if build.platform_is_windows:
         env.Alias('mixxx', binary)
 
         # QSQLite DLL
-        if 'sqldll_files' in locals():
+        if sqldll_files:
                 sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
                 env.Alias('mixxx', sql_dlls)
 

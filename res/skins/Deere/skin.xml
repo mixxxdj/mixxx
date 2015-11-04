@@ -1,0 +1,57 @@
+<!DOCTYPE skin>
+<skin>
+  <manifest>
+    <title>Deere</title>
+    <author>rryan</author>
+    <version>1.12.0.01</version>
+    <description>A test skin.</description>
+    <language>en</language>
+    <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+    <attributes>
+      <attribute config_key="[Master],num_decks">4</attribute>
+      <attribute config_key="[Master],num_samplers">8</attribute>
+      <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <!--Optionally, make elements visible on skin load-->
+      <attribute config_key="[Spinny1],show_spinny">1</attribute>
+      <attribute config_key="[Spinny2],show_spinny">1</attribute>
+      <attribute config_key="[Spinny3],show_spinny">1</attribute>
+      <attribute config_key="[Spinny4],show_spinny">1</attribute>
+      <attribute config_key="[Samplers],show_samplers">0</attribute>
+      <attribute config_key="[Microphone],show_microphone">0</attribute>
+      <attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute config_key="[Library],show_library">1</attribute>
+    </attributes>
+  </manifest>
+
+  <ObjectName>Mixxx</ObjectName>
+  <Style src="skin:style.qss"/>
+
+  <MinimumSize>800,-1</MinimumSize>
+  <SizePolicy>me,me</SizePolicy>
+  <Layout>vertical</Layout>
+
+  <Children>
+    <SetVariable name="SmallSquareButtonMinimumSize">15,15</SetVariable>
+    <SetVariable name="SmallSquareButtonMaximumSize">15,15</SetVariable>
+    <SetVariable name="SmallSquareButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="SmallWideButtonMinimumSize">30,15</SetVariable>
+    <SetVariable name="SmallWideButtonMaximumSize">30,15</SetVariable>
+    <SetVariable name="SmallWideButtonSizePolicy">me,me</SetVariable>
+
+    <SetVariable name="SmallHorizontalStretchButtonMinimumSize">-1,15</SetVariable>
+    <SetVariable name="SmallHorizontalStretchButtonMaximumSize">-1,15</SetVariable>
+    <SetVariable name="SmallHorizontalStretchButtonSizePolicy">me,f</SetVariable>
+
+    <SetVariable name="SmallVerticalStretchButtonMinimumSize">15,-1</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonMaximumSize">15,-1</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonSizePolicy">f,me</SetVariable>
+
+    <Template src="skin:tool_bar.xml"/>
+    <Template src="skin:main_decks.xml"/>
+    <Template src="skin:sample_decks.xml"/>
+    <Template src="skin:effect_rack.xml"/>
+    <Template src="skin:library.xml"/>
+  </Children>
+</skin>

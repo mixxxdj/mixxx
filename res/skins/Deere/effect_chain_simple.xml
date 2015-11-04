@@ -1,0 +1,149 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect chain widget.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <MinimumSize>-1,45</MinimumSize>
+    <MaximumSize>-1,45</MaximumSize>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectUnitNameRow</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>EffectUnitNameContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,max</SizePolicy>
+            <Children>
+              <EffectChainName>
+                <EffectRack><Variable name="EffectRack"/></EffectRack>
+                <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+              </EffectChainName>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitNextPrevContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,max</SizePolicy>
+            <Children>
+              <PushButton>
+                <Size>20f,20f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>⏏</Text>
+                </State>
+                <Connection>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ConfigKey><Variable name="group"/>,clear</ConfigKey>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <Size>20f,20f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>E</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>E</Text>
+                </State>
+                <Connection>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <Size>20f,20f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>◀</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,prev_chain</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <Size>20f,20f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>▶</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,next_chain</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+              <Template src="skin:small_knob.xml">
+                <SetVariable name="control">parameter</SetVariable>
+                <SetVariable name="label">Parameter</SetVariable>
+              </Template>
+
+              <Template src="skin:small_knob.xml">
+                <SetVariable name="control">mix</SetVariable>
+                <SetVariable name="label">Mix</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectUnitGroupControls</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">Head</SetVariable>
+            <SetVariable name="group_group">[Headphone]</SetVariable>
+          </Template>
+
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">Master</SetVariable>
+            <SetVariable name="group_group">[Master]</SetVariable>
+          </Template>
+
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">CH1</SetVariable>
+            <SetVariable name="group_group">[Channel1]</SetVariable>
+          </Template>
+
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">CH2</SetVariable>
+            <SetVariable name="group_group">[Channel2]</SetVariable>
+          </Template>
+
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">CH3</SetVariable>
+            <SetVariable name="group_group">[Channel3]</SetVariable>
+          </Template>
+
+          <Template src="skin:effect_chain_group_control_button.xml">
+            <SetVariable name="group_name">CH4</SetVariable>
+            <SetVariable name="group_group">[Channel4]</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

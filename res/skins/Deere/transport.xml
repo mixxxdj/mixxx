@@ -1,0 +1,63 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A grid of transport controls (play/rev/fwd/back).
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>TransportContainer</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="ObjectName">FastBack</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">&lt;&lt;</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,back</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,start</SetVariable>
+          </Template>
+
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="ObjectName">FastFwd</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">&gt;&gt;</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,fwd</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,end</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="ObjectName">ReverseButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallHorizontalStretchButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallHorizontalStretchButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallHorizontalStretchButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">◀</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,reverse</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,reverseroll</SetVariable>
+          </Template>
+
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

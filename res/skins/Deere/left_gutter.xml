@@ -1,0 +1,36 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The left gutter.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>LeftGutter</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <Template src="skin:spacer.xml"/>
+      <Template src="skin:deck_left.xml">
+        <SetVariable name="i">1</SetVariable>
+        <!-- Camo Green -->
+        <SetVariable name="DeckColor">#808000</SetVariable>
+      </Template>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:deck_left.xml">
+            <SetVariable name="i">3</SetVariable>
+            <!-- Violet -->
+            <SetVariable name="DeckColor">#EE82EE</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <Template src="skin:spacer.xml"/>
+    </Children>
+  </WidgetGroup>
+</Template>

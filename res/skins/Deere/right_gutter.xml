@@ -1,0 +1,36 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The right gutter.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>RightGutter</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <Template src="skin:spacer.xml"/>
+      <Template src="skin:deck_right.xml">
+        <SetVariable name="i">2</SetVariable>
+        <!-- Cyan -->
+        <SetVariable name="DeckColor">#00FFFF</SetVariable>
+      </Template>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:deck_right.xml">
+            <SetVariable name="i">4</SetVariable>
+            <!-- Pink -->
+            <SetVariable name="DeckColor">#FFC0CB</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <Template src="skin:spacer.xml"/>
+    </Children>
+  </WidgetGroup>
+</Template>

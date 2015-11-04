@@ -62,7 +62,15 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pCrateFeature);
-    addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
+    BrowseFeature* browseFeature = new BrowseFeature(
+        this, pConfig, m_pTrackCollection, m_pRecordingManager);
+    connect(browseFeature, SIGNAL(scanLibrary()),
+            parent, SLOT(slotScanLibrary()));
+    connect(parent, SIGNAL(libraryScanStarted()),
+            browseFeature, SLOT(slotLibraryScanStarted()));
+    connect(parent, SIGNAL(libraryScanFinished()),
+            browseFeature, SLOT(slotLibraryScanFinished()));
+    addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     m_pSetlogFeature = new SetlogFeature(this, pConfig, m_pTrackCollection);
     m_pSetlogFeature->init();

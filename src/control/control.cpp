@@ -89,6 +89,14 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         const ConfigKey& key, bool warn, ControlObject* pCreatorCO,
         bool bIgnoreNops, bool bTrack, bool bPersist) {
+    if (key.isNull()) {
+        if (warn) {
+            qWarning() << "ControlDoublePrivate::getControl returning NULL"
+                       << "for empty ConfigKey.";
+        }
+        return QSharedPointer<ControlDoublePrivate>();
+    }
+
     QMutexLocker locker(&s_qCOHashMutex);
     QSharedPointer<ControlDoublePrivate> pControl;
     QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.find(key);

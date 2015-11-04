@@ -1,0 +1,28 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The deck mixer controls.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckMixer<Variable name="i"/>_Column2</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <SliderComposed>
+        <SizePolicy>min,me</SizePolicy>
+        <MinimumSize>40,100</MinimumSize>
+        <MaximumSize>40,-1</MaximumSize>
+        <Handle>handle-vertical.svg</Handle>
+        <Horizontal>false</Horizontal>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+          <EmitOnDownPress>false</EmitOnDownPress>
+        </Connection>
+      </SliderComposed>
+
+    </Children>
+  </WidgetGroup>
+</Template>

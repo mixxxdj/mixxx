@@ -1,0 +1,97 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck inner column.
+  Variables:
+    group: The deck group.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckInnerColumn</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <PushButton>
+        <ObjectName>DeckSync</ObjectName>
+        <Size>40f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>Sync</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>Sync</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <ObjectName>DeckSyncMaster</ObjectName>
+        <Size>40f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>Master</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>Master</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,sync_master</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <SliderComposed>
+        <MinimumSize>40,50</MinimumSize>
+        <MaximumSize>40,-1</MaximumSize>
+        <SizePolicy>,me</SizePolicy>
+        <Handle>handle-vertical.svg</Handle>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+        </Connection>
+      </SliderComposed>
+
+      <PushButton>
+        <ObjectName>DeckCue</ObjectName>
+        <Size>40f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>CUE</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>CUE</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <Template src="skin:left_right_2state_button.xml">
+        <SetVariable name="ObjectName">PlayToggle</SetVariable>
+        <SetVariable name="MinimumSize">40,20</SetVariable>
+        <SetVariable name="MaximumSize">40,20</SetVariable>
+        <SetVariable name="SizePolicy">f,f,</SetVariable>
+        <SetVariable name="state_0_text">▶</SetVariable>
+        <SetVariable name="state_0_pressed"></SetVariable>
+        <SetVariable name="state_0_unpressed"></SetVariable>
+        <SetVariable name="state_1_text">▶</SetVariable>
+        <SetVariable name="state_1_pressed"></SetVariable>
+        <SetVariable name="state_1_unpressed"></SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
+        <SetVariable name="right_connection_control"><Variable name="group"/>,cue_set</SetVariable>
+      </Template>
+
+    </Children>
+  </WidgetGroup>
+</Template>
