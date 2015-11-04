@@ -140,26 +140,35 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     QDir translationsDir(translationsFolder);
     QStringList fileNames = translationsDir.entryList(QStringList("mixxx_*.qm"));
+    fileNames.push_back("mixxx_en_US.qm"); // add source language as a fake value
 
-    ComboBoxLocale->addItem("System", ""); // System default locale
-    ComboBoxLocale->setCurrentIndex(0);
-
+    bool indexFlag = false; // it'll indicate if the selected index changed.
     for (int i = 0; i < fileNames.size(); ++i) {
         // Extract locale from filename
         QString locale = fileNames[i];
         locale.truncate(locale.lastIndexOf('.'));
         locale.remove(0, locale.indexOf('_') + 1);
+        QLocale qlocale = QLocale(locale);
 
-        QString lang = QLocale::languageToString(QLocale(locale).language());
+        QString lang = QLocale::languageToString(qlocale.language());
+        QString country = QLocale::countryToString(qlocale.country());
         if (lang == "C") { // Ugly hack to remove the non-resolving locales
             continue;
         }
-
+        lang = QString("%1 (%2)").arg(lang).arg(country);
         ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
         if (locale == currentLocale) { // Set the currently selected locale
             ComboBoxLocale->setCurrentIndex(ComboBoxLocale->count() - 1);
+            indexFlag = true;
         }
     }
+    ComboBoxLocale->model()->sort(0); // Sort languages list
+
+    ComboBoxLocale->insertItem(0,"System", ""); // System default locale - insert at the top
+    if (!indexFlag) { // if selectedIndex didn't change - select system default
+        ComboBoxLocale->setCurrentIndex(0);
+    }
+
     connect(ComboBoxLocale, SIGNAL(activated(int)),
             this, SLOT(slotSetLocale(int)));
 
