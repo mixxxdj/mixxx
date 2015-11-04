@@ -105,6 +105,8 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Preview"), 50);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_COVERART,
                         tr("Cover Art"), 90);
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
+                        tr("Replay Gain"), 50);
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -172,7 +174,8 @@ bool BaseSqlTableModel::isColumnHiddenByDefault(int column) {
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION)) ||
-            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST))) {
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN))) {
         return true;
     }
     return false;
@@ -613,8 +616,9 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                         value = KeyUtils::keyToString(key);
                     }
                 }
-                // Otherwise, just use the column value.
-            }
+            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
+                value = Mixxx::ReplayGain::ratioToString(value.toDouble());
+            } // Otherwise, just use the column value.
 
             break;
         case Qt::EditRole:
@@ -722,7 +726,8 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
         return defaultFlags;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
