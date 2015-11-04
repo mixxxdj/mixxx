@@ -1,9 +1,17 @@
+#UIButtons {
+}
+
 #DecksSizer {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #UILowerHalf {
+}
+
+#HorizBorder {
+  border-bottom: 1px solid #585858;
+  background-color: #1e1e1e;
 }
 
 #DecksLeftContainer, #DecksRightContainer, #SkinContainer {
@@ -104,6 +112,7 @@
   border: 1px solid #585858;
   border-left: 0px;
   border-right: 0px;
+  border-top: 0px;
 }
 
 #ClockWidget {
@@ -312,6 +321,10 @@ qproperty-layoutAlignment: 'AlignCenter';
   background-color: #0f0f0f;
 }
 
+#UIButtonMargin {
+  background-color: #0f0f0f;
+}
+
 #Crossfader {
   qproperty-layoutAlignment: 'AlignCenter';
   background-color:#1e1e1e;
@@ -367,6 +380,7 @@ qproperty-layoutAlignment: 'AlignCenter';
 
 #AlignLeftTop {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  background-color: #fff;
 }
 
 #AlignRightTop {

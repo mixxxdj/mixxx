@@ -14,7 +14,7 @@
                    <WidgetGroup>
                        <ObjectName>RateAdjust</ObjectName>
                        <Layout>vertical</Layout>
-                       <SizePolicy>min,me</SizePolicy>
+                       <SizePolicy>min,min</SizePolicy>
 	                   <Children>
                            <Key>
                               <Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans
@@ -36,7 +36,7 @@
                               <Channel>
                                   <Variable name="channum" />
                               </Channel>
-                              <NumberOfDigits>1</NumberOfDigits>
+                              <NumberOfDigits>2</NumberOfDigits>
                               <Connection>
                                   <ConfigKey>[Channel<Variable name="channum" />],visual_bpm</ConfigKey>
                               </Connection>
@@ -50,7 +50,7 @@
 				                <Channel>
 				                    <Variable name="channum" />
 				                </Channel>
-				                <NumberOfDigits>1</NumberOfDigits>
+				                <NumberOfDigits>2</NumberOfDigits>
 				            </NumberRate>-->
 			            </Children>
 		            </WidgetGroup>
@@ -159,6 +159,59 @@
 		                    </WidgetGroup>
 		                </Children>
 		            </WidgetGroup>
+                    <WidgetGroup>
+                        <ObjectName>SyncControls</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <MinimumSize>48,</MinimumSize>
+                        <Children>
+                            <PushButton>
+                                <TooltipId>beatsync_beatsync_tempo</TooltipId>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                    <Number>0</Number>
+                                    <Pressed>btn_sync1_overdown.png</Pressed>
+                                    <Unpressed>btn_sync1.png</Unpressed>
+                                </State>
+                                <State>
+                                    <Number>1</Number>
+                                    <Pressed>btn_sync1_overdown.png</Pressed>
+                                    <Unpressed>btn_sync1_overdown.png</Unpressed>
+                                </State>
+                                <Connection>
+                                    <ConfigKey>[Channel<Variable name="channum" />],sync_enabled</ConfigKey>
+                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                    <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                                <Connection>
+                                    <ConfigKey>[Channel<Variable name="channum" />],beatsync_tempo</ConfigKey>
+                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                    <ButtonState>RightButton</ButtonState>
+                                </Connection>
+                            </PushButton>
+                            <!-- Disable explicit master for now. -->
+                            <!-- <PushButton>
+                                <TooltipId>sync_master</TooltipId>
+                                <Style></Style>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                    <Number>0</Number>
+                                    <Pressed>btn_mastersync_master_on.png</Pressed>
+                                    <Unpressed>btn_mastersync_master_off.png</Unpressed>
+                                </State>
+                                <State>
+                                    <Number>1</Number>
+                                    <Pressed>btn_mastersync_master_on.png</Pressed>
+                                    <Unpressed>btn_mastersync_master_on.png</Unpressed>
+                                </State>
+                                <Connection>
+                                    <ConfigKey>[Channel<Variable name="channum" />],sync_master</ConfigKey>
+                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                    <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                            </PushButton> -->
+                        </Children>
+                    </WidgetGroup>
 	            </Children>
             </WidgetGroup>
 			<WidgetGroup>  <!-- Deck Channel1 -->
