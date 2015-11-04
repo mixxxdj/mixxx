@@ -30,11 +30,16 @@ class ControllerManager : public QObject {
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
-    PresetInfoEnumerator* getPresetInfoManager();
+    PresetInfoEnumerator* getMainThreadPresetEnumerator();
 
     // Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() { emit(requestSetUpDevices()); };
     void savePresets(bool onlyActive=false) { emit(requestSave(onlyActive)); };
+
+    static QList<QString> getPresetPaths(ConfigObject<ConfigValue>* pConfig);
+
+    bool importScript(const QString& scriptPath, QString* newScriptFileName);
+    static bool checksumFile(const QString& filename, quint16* pChecksum);
 
   signals:
     void devicesChanged();
@@ -59,8 +64,6 @@ class ControllerManager : public QObject {
     void slotShutdown();
     bool loadPreset(Controller* pController,
                     ControllerPresetPointer preset);
-    bool loadPreset(Controller* pController, const QString &filename,
-                    const bool force);
     // Calls poll() on all devices that have isPolling() true.
     void pollDevices();
     void startPolling();
@@ -72,8 +75,6 @@ class ControllerManager : public QObject {
     }
 
   private:
-    QList<QString> getScriptPaths();
-
     ConfigObject<ConfigValue> *m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;
     QTimer m_pollTimer;
@@ -81,7 +82,7 @@ class ControllerManager : public QObject {
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
     QThread* m_pThread;
-    PresetInfoEnumerator* m_pPresetInfoManager;
+    PresetInfoEnumerator* m_pMainThreadPresetEnumerator;
 };
 
 #endif  // CONTROLLERMANAGER_H
