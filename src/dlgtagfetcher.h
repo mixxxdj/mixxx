@@ -17,7 +17,7 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
     DlgTagFetcher(QWidget *parent);
     virtual ~DlgTagFetcher();
 
-    void init(const TrackPointer track);
+    void init();
 
     enum networkError {
         NOERROR,
@@ -25,6 +25,9 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
         FTWERROR
     };
 
+  public slots:
+    void loadTrack(const TrackPointer track);
+    void updateTrackMetadata(TrackInfoObject* pTIO);
 
   signals:
     void next();

@@ -8,6 +8,13 @@ DlgTagFetcher::DlgTagFetcher(QWidget *parent)
           m_track(NULL),
           m_TagFetcher(parent),
           m_networkError(NOERROR) {
+    init();
+}
+
+DlgTagFetcher::~DlgTagFetcher() {
+}
+
+void DlgTagFetcher::init() {
     setupUi(this);
 
     connect(btnApply, SIGNAL(clicked()),
@@ -36,14 +43,24 @@ DlgTagFetcher::DlgTagFetcher(QWidget *parent)
     results->setColumnWidth(4, 160); // Album column
 }
 
-DlgTagFetcher::~DlgTagFetcher() {
-}
-
-void DlgTagFetcher::init(const TrackPointer track) {
+void DlgTagFetcher::loadTrack(const TrackPointer track) {
+    if (track == NULL) {
+        return;
+    }
     results->clear();
     m_track = track;
     m_data = Data();
     m_TagFetcher.startFetch(m_track);
+
+    disconnect(this, SLOT(updateTrackMetadata(TrackPointer)));
+    connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
+            this, SLOT(updateTrackMetadata(TrackInfoObject*)));
+
+    updateStack();
+}
+
+void DlgTagFetcher::updateTrackMetadata(TrackInfoObject* pTIO) {
+    Q_UNUSED(pTIO);
     updateStack();
 }
 

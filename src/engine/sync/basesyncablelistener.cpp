@@ -48,8 +48,7 @@ Syncable* BaseSyncableListener::getSyncableForGroup(const QString& group) {
 
 bool BaseSyncableListener::syncDeckExists() const {
     foreach (const Syncable* pSyncable, m_syncables) {
-        SyncMode sync_mode = pSyncable->getSyncMode();
-        if (sync_mode != SYNC_NONE) {
+        if (pSyncable->getSyncMode() != SYNC_NONE && pSyncable->getBpm() > 0) {
             return true;
         }
     }
