@@ -31,7 +31,7 @@ class SyncControl : public EngineControl, public Syncable {
     double getBeatDistance() const;
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
-    void setBeatDistance(double beatDistance);
+    void setMasterBeatDistance(double beatDistance);
 
     double getBpm() const;
     // Must never result in a call to
@@ -70,10 +70,6 @@ class SyncControl : public EngineControl, public Syncable {
 
     // Fired by changes in file_bpm.
     void slotFileBpmChanged();
-
-    // Fired by changed to beat_distance (typically only from BpmControl during
-    // BpmControl::process()).
-    void slotBeatDistanceChanged(double beatDistance);
 
     // Change request handlers for sync properties.
     void slotSyncModeChangeRequest(double state);

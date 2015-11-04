@@ -48,6 +48,7 @@ class ReverbEffect : public GroupEffectProcessor<ReverbGroupState> {
                       ReverbGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
+                      const unsigned int sampleRate,
                       const GroupFeatureState& groupFeatures);
 
   private:

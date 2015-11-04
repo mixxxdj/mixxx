@@ -170,6 +170,7 @@ TEST_F(LoopingControlTest, LoopInButton_QuantizeDisabled) {
     seekToSampleAndProcess(50);
     m_pButtonLoopIn->slotSet(1);
     m_pButtonLoopIn->slotSet(0);
+    ProcessBuffer();
     EXPECT_EQ(50, m_pLoopStartPoint->get());
 }
 

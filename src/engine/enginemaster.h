@@ -248,7 +248,11 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneVolumeOld;
 
+    // Produce the Master Mixxx, not Required if connected to left
+    // and right Bus and no recording and broadcast active
     ControlObject* m_pMasterEnabled;
+    // Mix two Mono channels. This is useful for outdoor gigs
+    ControlObject* m_pMasterMonoMixdown;
     ControlObject* m_pHeadphoneEnabled;
 
     volatile bool m_bBusOutputConnected[3];

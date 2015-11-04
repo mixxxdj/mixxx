@@ -175,7 +175,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
             }
         }
         if (playing_sync_decks == 1) {
-            m_pInternalClock->setBeatDistance(uniqueSyncable->getBeatDistance());
+            m_pInternalClock->setMasterBeatDistance(uniqueSyncable->getBeatDistance());
         }
     }
 }
@@ -233,7 +233,7 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
 
     pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
     pSyncable->setBpm(masterBpm());
-    pSyncable->setBeatDistance(masterBeatDistance());
+    pSyncable->setMasterBeatDistance(masterBeatDistance());
 }
 
 void EngineSync::activateMaster(Syncable* pSyncable) {

@@ -29,6 +29,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
     virtual void process(const QString& group,
                          CSAMPLE* pInOut,
                          const unsigned int numSamples,
+                         const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures);
 
     bool processEffectsRequest(

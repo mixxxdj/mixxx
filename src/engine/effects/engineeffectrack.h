@@ -20,6 +20,7 @@ class EngineEffectRack : public EffectsRequestHandler {
     void process(const QString& group,
                  CSAMPLE* pInOut,
                  const unsigned int numSamples,
+                 const unsigned int sampleRate,
                  const GroupFeatureState& groupFeatures);
 
     int number() const {

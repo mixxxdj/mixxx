@@ -44,10 +44,11 @@ bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
 void EngineEffectRack::process(const QString& group,
                                CSAMPLE* pInOut,
                                const unsigned int numSamples,
+                               const unsigned int sampleRate,
                                const GroupFeatureState& groupFeatures) {
     foreach (EngineEffectChain* pChain, m_chains) {
         if (pChain != NULL) {
-            pChain->process(group, pInOut, numSamples, groupFeatures);
+            pChain->process(group, pInOut, numSamples, sampleRate, groupFeatures);
         }
     }
 }

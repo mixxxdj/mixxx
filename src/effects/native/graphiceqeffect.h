@@ -44,6 +44,7 @@ class GraphicEQEffect : public GroupEffectProcessor<GraphicEQEffectGroupState> {
                       GraphicEQEffectGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,
+                      const unsigned int sampleRate,
                       const GroupFeatureState& groupFeatureState);
 
   private:
@@ -54,7 +55,7 @@ class GraphicEQEffect : public GroupEffectProcessor<GraphicEQEffectGroupState> {
     EngineEffectParameter* m_pPotLow;
     QList<EngineEffectParameter*> m_pPotMid;
     EngineEffectParameter* m_pPotHigh;
-    int m_oldSampleRate;
+    unsigned int m_oldSampleRate;
 
     DISALLOW_COPY_AND_ASSIGN(GraphicEQEffect);
 };

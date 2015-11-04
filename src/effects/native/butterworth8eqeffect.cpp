@@ -106,6 +106,7 @@ void Butterworth8EQEffect::processGroup(const QString& group,
                                         ButterworthEQEffectGroupState* pState,
                                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                                         const unsigned int numSamples,
+                                        const unsigned int sampleRate,
                                         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
@@ -115,7 +116,6 @@ void Butterworth8EQEffect::processGroup(const QString& group,
     fMid = m_pPotMid->value().toDouble();
     fHigh = m_pPotHigh->value().toDouble();
 
-    int sampleRate = getSampleRate();
     if (m_oldSampleRate != sampleRate ||
             (m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
             (m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {

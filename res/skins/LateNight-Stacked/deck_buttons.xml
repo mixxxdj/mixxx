@@ -404,6 +404,7 @@
                             <PushButton>
                                 <TooltipId>reverse</TooltipId>
                                 <NumberStates>1</NumberStates>
+                                <RightClickIsPushButton>true</RightClickIsPushButton>
                                 <State>
                                     <Number>0</Number>
                                     <Pressed>btn_reverse2_overdown.png</Pressed>

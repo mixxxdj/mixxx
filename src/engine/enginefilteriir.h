@@ -13,6 +13,9 @@ enum IIRPass {
     IIR_HP
 };
 
+// length of the 3rd argument to fid_design_coef
+#define FIDSPEC_LENGTH 40
+
 template<unsigned int SIZE, enum IIRPass PASS>
 class EngineFilterIIR : public EngineObjectConstIn {
   public:
@@ -49,7 +52,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
     void setCoefs(const char* spec, double sampleRate,
             double freq0, double freq1 = 0, int adj = 0) {
 
-        char spec_d[32];
+        char spec_d[FIDSPEC_LENGTH];
         if (strlen(spec) < sizeof(spec_d)) {
             // Copy to dynamic-ish memory to prevent fidlib API breakage.
             strcpy(spec_d, spec);
