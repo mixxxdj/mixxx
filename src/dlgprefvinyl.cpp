@@ -134,19 +134,19 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
 }
 
 void DlgPrefVinyl::slotVinylType1Changed(QString text) {
-    LeadinTime1->setText(QString(getDefaultLeadIn(text)));
+    LeadinTime1->setText(QString("%1").arg(getDefaultLeadIn(text)));
 }
 
 void DlgPrefVinyl::slotVinylType2Changed(QString text) {
-    LeadinTime2->setText(QString(getDefaultLeadIn(text)));
+    LeadinTime2->setText(QString("%1").arg(getDefaultLeadIn(text)));
 }
 
 void DlgPrefVinyl::slotVinylType3Changed(QString text) {
-    LeadinTime3->setText(QString(getDefaultLeadIn(text)));
+    LeadinTime3->setText(QString("%1").arg(getDefaultLeadIn(text)));
 }
 
 void DlgPrefVinyl::slotVinylType4Changed(QString text) {
-    LeadinTime4->setText(QString(getDefaultLeadIn(text)));
+    LeadinTime4->setText(QString("%1").arg(getDefaultLeadIn(text)));
 }
 
 /** @brief Performs any necessary actions that need to happen when the prefs dialog is opened */
@@ -183,10 +183,10 @@ void DlgPrefVinyl::slotResetToDefaults() {
     ComboBoxVinylSpeed2->setCurrentIndex(0);
     ComboBoxVinylSpeed3->setCurrentIndex(0);
     ComboBoxVinylSpeed4->setCurrentIndex(0);
-    LeadinTime1->setText(QString(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
-    LeadinTime2->setText(QString(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
-    LeadinTime3->setText(QString(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
-    LeadinTime4->setText(QString(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
+    LeadinTime1->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
+    LeadinTime2->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
+    LeadinTime3->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
+    LeadinTime4->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
     AbsoluteMode->setChecked(false);
     RelativeMode->setChecked(true);
     SignalQualityEnable->setChecked(true);

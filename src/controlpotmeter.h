@@ -74,7 +74,10 @@ class ControlPotmeter : public ControlObject {
     Q_OBJECT
   public:
     ControlPotmeter(ConfigKey key, double dMinValue = 0.0, double dMaxValue = 1.0,
-                    bool allowOutOfBounds = false);
+                    bool allowOutOfBounds = false,
+                    bool bIgnoreNops = true,
+                    bool bTrack = false,
+                    bool bPersist = false);
     virtual ~ControlPotmeter();
 
     // Returns the minimum allowed value.

@@ -27,15 +27,13 @@ EngineDelay::EngineDelay(const char* group, ConfigKey delayControl)
           m_iDelay(0) {
     m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);
     SampleUtil::clear(m_pDelayBuffer, kiMaxDelay);
-    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot);
+    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot, false, true, false, true);
     m_pDelayPot->setDefaultValue(0);
-    m_pDelayPot->set(0);
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
             SLOT(slotDelayChanged()), Qt::DirectConnection);
 
     m_pSampleRate = new ControlObjectSlave(group, "samplerate", this);
     m_pSampleRate->connectValueChanged(SLOT(slotDelayChanged()), Qt::DirectConnection);
-
 }
 
 EngineDelay::~EngineDelay() {
