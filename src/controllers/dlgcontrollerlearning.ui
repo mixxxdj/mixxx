@@ -212,14 +212,14 @@
        <item>
         <widget class="QPushButton" name="pushButtonFakeControl2">
          <property name="text">
-          <string>Debug Fake Pushbutton Control2</string>
+          <string notr="true">Debug Fake Pushbutton Control2</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonFakeControl">
          <property name="text">
-          <string>Debug Fake Pushbutton Control</string>
+          <string notr="true">Debug Fake Pushbutton Control</string>
          </property>
         </widget>
        </item>

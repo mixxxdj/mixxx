@@ -39,14 +39,14 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="headDelayLabel">
        <property name="text">
         <string>Headphone Delay</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QDoubleSpinBox" name="masterDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -55,25 +55,25 @@
         <number>2</number>
        </property>
        <property name="maximum">
-        <double>100.000000000000000</double>
+        <double>200.000000000000000</double>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QLabel" name="currentLatency">
        <property name="text">
         <string>20 ms</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QLabel" name="bufferUnderflowCount">
        <property name="text">
         <string>0</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="underflowLabel">
        <property name="text">
         <string>Buffer Underflow Count</string>
@@ -93,7 +93,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="latencyLabel">
        <property name="text">
         <string>Known Latency</string>
@@ -109,14 +109,14 @@
      <item row="1" column="1">
       <widget class="QComboBox" name="sampleRateComboBox"/>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="masterDelayLabel">
        <property name="text">
         <string>Master Delay</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QDoubleSpinBox" name="headDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -125,11 +125,11 @@
         <number>2</number>
        </property>
        <property name="maximum">
-        <double>100.000000000000000</double>
+        <double>200.000000000000000</double>
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <spacer name="outputVSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -141,6 +141,16 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="deviceSyncLabel">
+       <property name="text">
+        <string>Synchronization Buffers</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="deviceSyncComboBox"/>
      </item>
     </layout>
    </item>

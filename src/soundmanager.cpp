@@ -44,7 +44,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
           m_paInitialized(false),
           m_jackSampleRate(-1),
 #endif
-          m_pClkRefDevice(NULL),
           m_pErrorDevice(NULL) {
 
 #ifdef __PORTAUDIO__
@@ -140,7 +139,6 @@ void SoundManager::closeDevices() {
         dev_it.next()->close();
     }
 
-    m_pClkRefDevice = NULL;
     m_pErrorDevice = NULL;
 
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
@@ -174,12 +172,6 @@ void SoundManager::closeDevices() {
         }
     }
     m_inputBuffers.clear();
-
-    while (!m_outputFifos.isEmpty()) {
-        FIFO<CSAMPLE>* pFifo = m_outputFifos.takeLast();
-        delete pFifo;
-    }
-    m_outputFifos.clear();
 
     // Indicate to the rest of Mixxx that sound is disconnected.
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
@@ -360,10 +352,7 @@ int SoundManager::setupDevices() {
                 continue;
             }
 
-            // TODO(rryan): 1 << 20 is 6.6x MAX_BUFFER_LEN.
-            FIFO<CSAMPLE>* pFifo = new FIFO<CSAMPLE>(1 << 20);
-
-            AudioOutputBuffer aob(out, pBuffer, pFifo);
+            AudioOutputBuffer aob(out, pBuffer);
             err = device->addOutput(aob);
             if (err != OK) goto closeAndError;
             if (out.getType() == AudioOutput::MASTER) {
@@ -395,36 +384,28 @@ int SoundManager::setupDevices() {
         bool isOutput = mode.second;
         ++devicesAttempted;
         m_pErrorDevice = device;
-        err = device->open();
+        // If we have not yet set a clock source then we use the first
+        if (pNewMasterClockRef == NULL) {
+            pNewMasterClockRef = device;
+            qWarning() << "Output sound device clock reference not set! Using"
+                       << device->getDisplayName();
+        }
+        err = device->open(pNewMasterClockRef == device, m_config.getSyncBuffers());
         if (err != OK) {
             goto closeAndError;
         } else {
             ++devicesOpened;
-            if (isOutput)
+            if (isOutput) {
                 ++outputDevicesOpened;
-            if (isInput)
+            }
+            if (isInput) {
                 ++inputDevicesOpened;
-
-            // If we have not yet set a clock source then we use the first
-            // successfully opened SoundDevice.
-            if (pNewMasterClockRef == NULL) {
-                pNewMasterClockRef = device;
-                qWarning() << "Output sound device clock reference not set! Using"
-                           << device->getDisplayName();
             }
         }
     }
 
-    // NOTE(rryan): Atomically hand-off between the old master and the new
-    // one. Previously we set m_pClkRefDevice to NULL first and then picked a
-    // new master. Due to long time lags caused by SoundDevice::close() this
-    // lead to dozens, if not hundreds of callbacks where there was no
-    // m_pClkRefDevice so the engine was not processed and we buffer under-ran
-    // (causing stuttering / bleeps).
-    m_pClkRefDevice = pNewMasterClockRef;
-
-    if (m_pClkRefDevice) {
-        qDebug() << "Using" << m_pClkRefDevice->getDisplayName()
+    if (pNewMasterClockRef) {
+        qDebug() << "Using" << pNewMasterClockRef->getDisplayName()
                  << "as output sound device clock reference";
     } else {
         qDebug() << "No output devices opened, no clock reference device set";
@@ -486,87 +467,17 @@ void SoundManager::checkConfig() {
 }
 
 void SoundManager::onDeviceOutputCallback(const unsigned int iFramesPerBuffer) {
-    // Only generate a new buffer for the clock reference card
-    //qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
-
     // Produce a block of samples for output. EngineMaster expects stereo
     // samples so multiply iFramesPerBuffer by 2.
     m_pMaster->process(iFramesPerBuffer*2);
-
-    for (QList<SoundDevice*>::iterator it = m_devices.begin();
-         it != m_devices.end(); ++it) {
-        SoundDevice* pOtherDevice = *it;
-        if (pOtherDevice == m_pClkRefDevice) {
-            continue;
-         }
-         pOtherDevice->onOutputBuffersReady(iFramesPerBuffer);
-    }
 }
 
-void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMPLE* inputBuffer,
-                              const unsigned int iFramesPerBuffer, const unsigned int iFrameSize) {
-    // qDebug() << "SoundManager::pushBuffer" << pDevice->getInternalName()
-    //          << iFramesPerBuffer << iFrameSize;
-    //This function is called a *lot* and is a big source of CPU usage.
-    //It needs to be very fast.
-
-    // IMPORTANT -- Mixxx should ALWAYS be the owner of whatever input buffer we're using,
-    // otherwise we double-free (well, PortAudio frees and then we free) and everything
-    // goes to hell -- bkgood
-
-    /** If the framesize is only 2, then we only have one pair of input channels
-     *  That means we don't have to do any deinterlacing, and we can pass
-     *  the audio on to its intended destination. */
-    // this special casing is probably not worth keeping around. It had a speed
-    // advantage before because it just assigned a pointer instead of copying data,
-    // but this meant we couldn't free all the receiver buffer pointers, because some
-    // of them might potentially be owned by portaudio. Not freeing them means we leak
-    // memory in certain cases -- bkgood
-    if (iFrameSize == 1 && inputs.size() == 1 &&
-            inputs.at(0).getChannelGroup().getChannelCount() == 1) {
-        const AudioInputBuffer& in = inputs.at(0);
-        memcpy(in.getBuffer(), inputBuffer,
-               sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
-    } else if (iFrameSize == 2 && inputs.size() == 1 &&
-            inputs.at(0).getChannelGroup().getChannelCount() == 2) {
-        const AudioInputBuffer& in = inputs.at(0);
-        memcpy(in.getBuffer(), inputBuffer,
-               sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
-    } else { //More than two channels of input (iFrameSize > 2)
-        // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
-
-        for (QList<AudioInputBuffer>::const_iterator i = inputs.begin(),
-                     e = inputs.end(); i != e; ++i) {
-            const AudioInputBuffer& in = *i;
-            CSAMPLE* pInputBuffer = in.getBuffer();
-            ChannelGroup chanGroup = in.getChannelGroup();
-            int iChannelCount = chanGroup.getChannelCount();
-            int iChannelBase = chanGroup.getChannelBase();
-
-            for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
-                // iFrameBase is the "base sample" in a frame (ie. the first
-                // sample in a frame)
-                unsigned int iFrameBase = iFrameNo * iFrameSize;
-                unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
-
-                // this will make sure a sample from each channel is copied
-                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-                    //output[iFrameBase + src.channelBase + iChannel] +=
-                    //  outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-
-                    pInputBuffer[iLocalFrameBase + iChannel] =
-                            inputBuffer[iFrameBase + iChannelBase + iChannel];
-                }
-            }
-        }
-    }
-
-    for (QList<AudioInputBuffer>::ConstIterator i = inputs.begin(),
+void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
+                                    const unsigned int iFramesPerBuffer) {
+   for (QList<AudioInputBuffer>::ConstIterator i = inputs.begin(),
                  e = inputs.end(); i != e; ++i) {
         const AudioInputBuffer& in = *i;
-
         CSAMPLE* pInputBuffer = in.getBuffer();
-
         for (QHash<AudioInput, AudioDestination*>::const_iterator it =
                 m_registeredDestinations.find(in);
                 it != m_registeredDestinations.end() && it.key() == in; ++it) {
@@ -574,6 +485,27 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, const CSAMP
         }
     }
 }
+
+void SoundManager::writeProcess() {
+    QListIterator<SoundDevice*> dev_it(m_devices);
+    while (dev_it.hasNext()) {
+        SoundDevice* device = dev_it.next();
+        if (device) {
+            device->writeProcess();
+        }
+    }
+}
+
+void SoundManager::readProcess() {
+    QListIterator<SoundDevice*> dev_it(m_devices);
+    while (dev_it.hasNext()) {
+        SoundDevice* device = dev_it.next();
+        if (device) {
+            device->readProcess();
+        }
+    }
+}
+
 
 void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
     if (m_registeredSources.contains(output)) {
@@ -622,8 +554,4 @@ void SoundManager::setJACKName() const {
     }
 #endif
 #endif
-}
-
-bool SoundManager::isDeviceClkRef(SoundDevice* device) {
-    return device == m_pClkRefDevice;
 }

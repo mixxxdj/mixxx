@@ -35,6 +35,8 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
     choices.append(MIDI_OPTION_SELECTKNOB);
     choices.append(MIDI_OPTION_SOFT_TAKEOVER);
     choices.append(MIDI_OPTION_SCRIPT);
+    choices.append(MIDI_OPTION_14BIT_MSB);
+    choices.append(MIDI_OPTION_14BIT_LSB);
 
     for (int i = 0; i < choices.size(); ++i) {
         MidiOption choice = choices.at(i);

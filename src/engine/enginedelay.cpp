@@ -19,8 +19,8 @@
 #include "controlobjectslave.h"
 #include "sampleutil.h"
 
-const int kiMaxDelay = 20000; // 104 ms @ 96 kb/s
-const double kdMaxDelayPot = 100; // 100 ms
+const int kiMaxDelay = 40000; // 208 ms @ 96 kb/s
+const double kdMaxDelayPot = 200; // 200 ms
 
 EngineDelay::EngineDelay(const char* group, ConfigKey delayControl)
         : m_iDelayPos(0),

@@ -26,16 +26,12 @@
 #include "configobject.h"
 
 class ControlObject;
-class DlgPreferences;
-class MixxxMainWindow;
 
 // This class provides handling of keyboard events.
 class MixxxKeyboard : public QObject {
     Q_OBJECT
   public:
-    MixxxKeyboard(MixxxMainWindow *pMainWindow,
-                  DlgPreferences *pDlgPreferences,
-                  ConfigObject<ConfigValueKbd> *pKbdConfigObject,
+    MixxxKeyboard(ConfigObject<ConfigValueKbd> *pKbdConfigObject,
                   QObject *parent=NULL, const char* name=NULL);
     virtual ~MixxxKeyboard();
 
@@ -45,11 +41,6 @@ class MixxxKeyboard : public QObject {
     // pKbdConfigObject.
     void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
-
-  private slots:
-      // If dialogs are shown, we need to clear out the active key list
-      // because we might not get Key Release events.
-      void slotDialogShown();
 
   private:
     struct KeyDownInformation {

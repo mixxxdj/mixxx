@@ -49,8 +49,10 @@ class SoundDevice {
     void setHostAPI(QString api);
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual int open() = 0;
+    virtual int open(bool isClkRefDevice, int syncBuffers) = 0;
     virtual int close() = 0;
+    virtual void readProcess() = 0;
+    virtual void writeProcess() = 0;
     virtual QString getError() const = 0;
     virtual unsigned int getDefaultSampleRate() const = 0;
     int getNumOutputChannels() const;
@@ -69,12 +71,19 @@ class SoundDevice {
     bool operator==(const SoundDevice &other) const;
     bool operator==(const QString &other) const;
 
-    void onOutputBuffersReady(const unsigned long iFramesPerBuffer);
-
   protected:
     void composeOutputBuffer(CSAMPLE* outputBuffer,
-                             const unsigned long iFramesPerBuffer,
+                             const unsigned int iFramesPerBuffer,
+                             const unsigned int readOffset,
                              const unsigned int iFrameSize);
+
+    void composeInputBuffer(const CSAMPLE* inputBuffer,
+                            const unsigned int framesToPush,
+                            const unsigned int framesWriteOffset,
+                            const unsigned int iFrameSize);
+
+    void clearInputBuffer(const unsigned int framesToPush,
+                          const unsigned int framesWriteOffset);
 
     ConfigObject<ConfigValue> *m_pConfig;
     // Pointer to the SoundManager object which we'll request audio from.
@@ -94,7 +103,6 @@ class SoundDevice {
     unsigned int m_framesPerBuffer;
     QList<AudioOutputBuffer> m_audioOutputs;
     QList<AudioInputBuffer> m_audioInputs;
-    CSAMPLE* m_pRenderBuffer;
 };
 
 #endif
