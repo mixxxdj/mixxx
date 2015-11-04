@@ -43,7 +43,8 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
     connect(m_pControlPrevEffect, SIGNAL(valueChanged(double)),
             this, SLOT(slotPrevEffect(double)));
 
-    m_pControlEffectSelector = new ControlObject(ConfigKey(m_group, "effect_selector"));
+    // Ignoring no-ops is important since this is for +/- tickers.
+    m_pControlEffectSelector = new ControlObject(ConfigKey(m_group, "effect_selector"), false);
     connect(m_pControlEffectSelector, SIGNAL(valueChanged(double)),
             this, SLOT(slotEffectSelector(double)));
 

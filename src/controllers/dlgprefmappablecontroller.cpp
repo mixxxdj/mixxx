@@ -83,8 +83,8 @@ void DlgPrefMappableController::slotShowLearnDialog() {
     }
     slotApply();
 
-    // Note that DlgControllerLearning is set to delete itself on close using the
-    // Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
+    // Note that DlgControllerLearning is set to delete itself on close using
+    // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
     m_pDlgControllerLearning = new DlgControllerLearning(this, getController());
     m_pDlgControllerLearning->show();
     ControllerLearningEventFilter* pControllerLearning = getControllerManager()->getControllerLearningEventFilter();
@@ -95,11 +95,11 @@ void DlgPrefMappableController::slotShowLearnDialog() {
             pControllerLearning, SLOT(startListening()));
     connect(m_pDlgControllerLearning, SIGNAL(stopListeningForClicks()),
             pControllerLearning, SLOT(stopListening()));
-    connect(m_pDlgControllerLearning, SIGNAL(cancelLearning()),
+    connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
             this, SLOT(show()));
 
     emit(mappingStarted());
-    connect(m_pDlgControllerLearning, SIGNAL(cancelLearning()),
+    connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
             this, SIGNAL(mappingEnded()));
 }
 

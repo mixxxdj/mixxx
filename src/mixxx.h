@@ -50,6 +50,7 @@ class TrackCollection;
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
+class ControlObjectSlave;
 class ControlObjectThread;
 class QTranslator;
 
@@ -125,6 +126,10 @@ class MixxxMainWindow : public QMainWindow {
 
     // Activated when the number of decks changed, so we can update the UI.
     void slotNumDecksChanged(double);
+
+    // Activated when the talkover button is pushed on a microphone so we
+    // can alert the user if a mic is not configured.
+    void slotTalkoverChanged(int);
 
   signals:
     void newSkinLoaded();
@@ -253,8 +258,13 @@ class MixxxMainWindow : public QMainWindow {
     QList<ControlObjectThread*> m_pVinylControlEnabled;
     ControlObjectThread* m_pNumDecks;
     int m_iNumConfiguredDecks;
+    QList<ControlObjectSlave*> m_micTalkoverControls;
     QSignalMapper* m_VCControlMapper;
     QSignalMapper* m_VCCheckboxMapper;
+    QSignalMapper* m_TalkoverMapper;
+
+    static const int kMicrophoneCount;
+    static const int kAuxiliaryCount;
 };
 
 #endif
