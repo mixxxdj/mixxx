@@ -27,6 +27,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     inline const QString currentSearch() {
         return m_pAnalysisLibraryTableModel->currentSearch();
     }
+    int getNumTracks();
 
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,
