@@ -267,7 +267,7 @@
 <!-- Upper Buttons -->
             <control>
                 <group>[Channel3]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x9F</status>
                 <midino>0x30</midino>
                 <options>
@@ -276,7 +276,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x8F</status>
                 <midino>0x30</midino>
                 <options>
@@ -321,7 +321,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x9F</status>
                 <midino>0x31</midino>
                 <options>
@@ -330,7 +330,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x8F</status>
                 <midino>0x31</midino>
                 <options>
@@ -375,7 +375,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x9F</status>
                 <midino>0x32</midino>
                 <options>
@@ -384,7 +384,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x8F</status>
                 <midino>0x32</midino>
                 <options>
@@ -429,7 +429,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x9F</status>
                 <midino>0x33</midino>
                 <options>
@@ -438,7 +438,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x8F</status>
                 <midino>0x33</midino>
                 <options>
@@ -484,7 +484,7 @@
 <!-- Lower Button Grid -->
             <control>
                 <group>[Channel3]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x24</midino>
                 <options>
@@ -493,7 +493,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x8F</status>
                 <midino>0x24</midino>
                 <options>
@@ -700,7 +700,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x25</midino>
                 <options>
@@ -709,7 +709,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x8F</status>
                 <midino>0x25</midino>
                 <options>
@@ -916,7 +916,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x26</midino>
                 <options>
@@ -925,7 +925,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x8F</status>
                 <midino>0x26</midino>
                 <options>
@@ -1132,7 +1132,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x27</midino>
                 <options>
@@ -1141,7 +1141,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x8F</status>
                 <midino>0x27</midino>
                 <options>
@@ -1406,7 +1406,7 @@
 <!-- Knob lights -->
             <output>
                 <group>[Channel3]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x9F</status>
                 <midino>0x30</midino>
                 <minimum>0.5</minimum>
@@ -1427,7 +1427,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x9F</status>
                 <midino>0x31</midino>
                 <minimum>0.5</minimum>
@@ -1448,7 +1448,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x9F</status>
                 <midino>0x32</midino>
                 <minimum>0.5</minimum>
@@ -1469,7 +1469,7 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>pfl</key>
+                <key>keylock</key>
                 <status>0x9F</status>
                 <midino>0x33</midino>
                 <minimum>0.5</minimum>
@@ -1491,7 +1491,7 @@
 <!-- Button lights -->
             <output>
                 <group>[Channel3]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x24</midino>
                 <minimum>0.5</minimum>
@@ -1575,7 +1575,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x25</midino>
                 <minimum>0.5</minimum>
@@ -1659,7 +1659,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x26</midino>
                 <minimum>0.5</minimum>
@@ -1743,7 +1743,7 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>sync_master</key>
+                <key>pfl</key>
                 <status>0x9F</status>
                 <midino>0x27</midino>
                 <minimum>0.5</minimum>

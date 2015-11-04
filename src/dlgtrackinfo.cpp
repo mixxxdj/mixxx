@@ -207,16 +207,6 @@ QPixmap DlgTrackInfo::scaledCoverArt(QPixmap original) {
                             Qt::SmoothTransformation);
 }
 
-void DlgTrackInfo::slotPixmapFound(int trackId, QPixmap pixmap) {
-    if (m_pLoadedTrack == NULL)
-        return;
-
-    if (m_pLoadedTrack->getId() == trackId) {
-        coverArt->setIcon(scaledCoverArt(pixmap));
-        update();
-    }
-}
-
 void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
                                     const QString& md5Hash,
                                     int trackId) {
@@ -226,93 +216,27 @@ void DlgTrackInfo::slotLoadCoverArt(const QString& coverLocation,
                                              md5Hash);
 }
 
-void DlgTrackInfo::slotUnsetCoverArt() {
-    if (m_pLoadedTrack == NULL) {
-        return;
-    }
-    bool res = CoverArtCache::instance()->changeCoverArt(
-                    m_pLoadedTrack->getId(),
-                    CoverArtCache::instance()->getDefaultCoverLocation());
-    if (!res) {
-        QMessageBox::warning(this, tr("Unset Cover Art"),
-                             tr("Could not unset the cover art!"));
-    }
-}
-
-void DlgTrackInfo::slotChangeCoverArt() {
-    if (m_pLoadedTrack == NULL) {
-        return;
-    }
-
-    // get initial directory (trackdir or coverdir)
-    QString initialDir;
-    QString trackPath = m_pLoadedTrack->getDirectory();
-    if (m_sLoadedCoverLocation.isEmpty() ||
-        m_sLoadedCoverLocation == CoverArtCache::instance()
-                                  ->getDefaultCoverLocation()) {
-        initialDir = trackPath;
-    } else {
-        initialDir = m_sLoadedCoverLocation;
-    }
-
-    // open file dialog
-    QString selectedCover = QFileDialog::getOpenFileName(
-                this, tr("Change Cover Art"), initialDir,
-                tr("Image Files (*.png *.jpg *.jpeg *.bmp)"));
-
-    if (selectedCover.isEmpty()) {
-        return;
-    }
-
-    // if the cover comes from an external dir,
-    // we copy it to the track directory.
-    QString newCover;
-    QFileInfo coverInfo(selectedCover);
-    QString coverPath = coverInfo.absolutePath();
-    if (trackPath != coverPath) {
-        QString ext = coverInfo.suffix();
-        QStringList filepaths;
-        filepaths << trackPath % "/cover." % ext
-                  << trackPath % "/album." % ext
-                  << trackPath % "/mixxx-cover." % ext;
-
-        foreach (QString filepath, filepaths) {
-            if (QFile::copy(selectedCover, filepath)) {
-                newCover = filepath;
-                break;
-            }
-        }
-
-        if (newCover.isEmpty()) {
-            // overwrites "mixxx-cover"
-            QFile::remove(filepaths.last());
-            if (QFile::copy(selectedCover, filepaths.last())) {
-                newCover = filepaths.last();
-            }
-        }
-    } else {
-        newCover = selectedCover;
-    }
-
-    bool res = CoverArtCache::instance()->changeCoverArt(
-                m_pLoadedTrack->getId(), newCover);
-    if (res) {
-        m_sLoadedCoverLocation = newCover;
-    } else {
-        QMessageBox::warning(this, tr("Change Cover Art"),
-                             tr("Could not change the cover art!"));
-    }
-}
-
 void DlgTrackInfo::slotOpenInFileBrowser() {
     if (m_pLoadedTrack == NULL) {
         return;
     }
-    QDir directory(m_pLoadedTrack->getDirectory());
-    if (!directory.exists()) {
-        directory = QDir::home();
+
+    QDir dir;
+    QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
+    do {
+        dir = QDir(splittedPath.join("/"));
+        splittedPath.removeLast();
+    } while (!dir.exists() && splittedPath.size());
+
+    // This function does not work for a non-existent directory!
+    // so it is essential that in the worst case it try opening
+    // a valid directory, in this case, 'QDir::home()'.
+    // Otherwise nothing would happen...
+    if (!dir.exists()) {
+        // it ensures a valid dir for any OS (Windows)
+        dir = QDir::home();
     }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(directory.absolutePath()));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(dir.absolutePath()));
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
@@ -528,13 +452,6 @@ void DlgTrackInfo::reloadTrackMetadata() {
         TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
                                                 m_pLoadedTrack->getSecurityToken()));
         populateFields(pTrack);
-    }
-}
-
-void DlgTrackInfo::slotReloadCover() {
-    if (m_pLoadedTrack) {
-        m_sLoadedCoverLocation.clear();
-        CoverArtCache::instance()->requestPixmap(m_pLoadedTrack->getId());
     }
 }
 
