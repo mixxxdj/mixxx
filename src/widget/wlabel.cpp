@@ -60,6 +60,8 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
             setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         } else if (context.selectString(node, "Alignment") == "center") {
             setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        } else if (context.selectString(node, "Alignment") == "left") {
+            setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         }
     }
 }
