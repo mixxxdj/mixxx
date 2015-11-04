@@ -2,7 +2,7 @@
 	<WidgetGroup>
 	    <ObjectName>Mixer</ObjectName>
 		<SizePolicy>e,max</SizePolicy>
-        <MinimumSize>150,</MinimumSize>
+        <MinimumSize>450,</MinimumSize>
 		<MaximumSize>1000,</MaximumSize>
 		<Layout>horizontal</Layout>
 		<Children>

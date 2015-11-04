@@ -52,11 +52,11 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("rate_temp_down");
         m_channelControlValues.append("rate_temp_up");
         m_channelControlValues.append("rateRange");
-        m_channelControlValues.append("scratch");
         m_channelControlValues.append("scratch_enable");
         m_channelControlValues.append("volume");
         m_channelControlValues.append("wheel");
         m_channelControlValues.append("jog");
+        m_channelControlValues.append("vinylcontrol_rate");
         m_channelControlValues.append("vinylcontrol_enabled");
         m_channelControlValues.append("vinylcontrol_mode");
         m_channelControlValues.append("vinylcontrol_cueing");
