@@ -134,6 +134,10 @@
                     <SetVariable name="Effect">1</SetVariable>
                     <SetVariable name="EffectParameter">3</SetVariable>
                   </Template>
+                  <Template src="skin:effect_parameter_knob.xml">
+                    <SetVariable name="Effect">1</SetVariable>
+                    <SetVariable name="EffectParameter">4</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup>
             </Children>
