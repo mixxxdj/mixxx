@@ -100,13 +100,10 @@
                         </State>
                         <Connection>
                           <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                           <ButtonState>LeftButton</ButtonState>
-                          <ConnectValueToWidget>false</ConnectValueToWidget>
                         </Connection>
                         <Connection>
                           <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                         </Connection>
                     </PushButton>
                 </Children>
@@ -130,13 +127,10 @@
                         </State>
                         <Connection>
                           <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                           <ButtonState>LeftButton</ButtonState>
-                          <ConnectValueToWidget>false</ConnectValueToWidget>
                         </Connection>
                         <Connection>
                           <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                         </Connection>
                     </PushButton>
                 </Children>
@@ -160,13 +154,10 @@
                         </State>
                         <Connection>
                           <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                           <ButtonState>LeftButton</ButtonState>
-                          <ConnectValueToWidget>false</ConnectValueToWidget>
                         </Connection>
                         <Connection>
                           <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
-                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                         </Connection>
                     </PushButton>
                 </Children>

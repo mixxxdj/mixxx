@@ -96,19 +96,14 @@
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_1_activate</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>LeftButton</ButtonState>
-                                    <ConnectValueToWidget>false</ConnectValueToWidget>
                                 </Connection>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_1_clear</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>RightButton</ButtonState>
-                                    <ConnectValueToWidget>false</ConnectValueToWidget>
                                 </Connection>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_1_enabled</ConfigKey>
-                                    <ConnectValueFromWidget>false</ConnectValueFromWidget>
                                 </Connection>
                             </PushButton>
                             <PushButton>
@@ -128,19 +123,14 @@
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_2_activate</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>LeftButton</ButtonState>
-                                    <ConnectValueToWidget>false</ConnectValueToWidget>
                                 </Connection>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_2_clear</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>RightButton</ButtonState>
-                                    <ConnectValueToWidget>false</ConnectValueToWidget>
                                 </Connection>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_2_enabled</ConfigKey>
-                                    <ConnectValueFromWidget>false</ConnectValueFromWidget>
                                 </Connection>
                             </PushButton>
                         </Children>
@@ -167,19 +157,14 @@
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_3_activate</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>LeftButton</ButtonState>
-                                    <ConnectValueToWidget>false</ConnectValueToWidget>
                                 </Connection>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_3_clear</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>RightButton</ButtonState>
-                                    <ConnectValueToWidget>false</ConnectValueToWidget>
                                 </Connection>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_3_enabled</ConfigKey>
-                                    <ConnectValueFromWidget>false</ConnectValueFromWidget>
                                 </Connection>
                             </PushButton>
                             <PushButton>
@@ -199,19 +184,14 @@
                                 </State>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_4_activate</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>LeftButton</ButtonState>
-                                    <ConnectValueToWidget>false</ConnectValueToWidget>
                                 </Connection>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_4_clear</ConfigKey>
-                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                     <ButtonState>RightButton</ButtonState>
-                                    <ConnectValueToWidget>false</ConnectValueToWidget>
                                 </Connection>
                                 <Connection>
                                     <ConfigKey>[Channel<Variable name="channum" />],hotcue_4_enabled</ConfigKey>
-                                    <ConnectValueFromWidget>false</ConnectValueFromWidget>
                                 </Connection>
                             </PushButton>
                         </Children>

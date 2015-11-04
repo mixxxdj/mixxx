@@ -49,7 +49,6 @@
                                             <Pos>4,4</Pos>
                                             <Connection>
                                                 <ConfigKey>[InternalClock],sync_master</ConfigKey>
-                                                <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                                                 <ButtonState>LeftButton</ButtonState>
                                             </Connection>
                                         </PushButton>
@@ -163,7 +162,6 @@
 														<Horizontal>true</Horizontal>
 														<Connection>
 															<ConfigKey>[Master],crossfader</ConfigKey>
-															<EmitOnDownPress>false</EmitOnDownPress>
 														</Connection>
 													</SliderComposed>
 												</Children>

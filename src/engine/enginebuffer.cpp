@@ -588,7 +588,7 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     // asynchrony.
     bool playPossible = true;
     if ((!m_pCurrentTrack && deref(m_iTrackLoading) == 0) ||
-            (m_pCurrentTrack && m_filepos_play >= m_file_length_old )) {
+            (m_pCurrentTrack && m_filepos_play >= m_file_length_old && !m_iSeekQueued)) {
         // play not possible
         playPossible = false;
     }
@@ -1007,7 +1007,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
 void EngineBuffer::processSeek() {
     // We need to read position just after reading seekType, to ensure that we read
     // the matching poition to seek_typ or a position from a new seek just queued from an other thread
-    // the later case is ok, because we will pocess the new seek in the next call anyway.
+    // the later case is ok, because we will process the new seek in the next call anyway.
     SeekRequest seekType =
             static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
     double position = m_queuedPosition.getValue();
