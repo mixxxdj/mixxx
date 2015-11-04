@@ -24,7 +24,11 @@
 
 #include "sounddevice.h"
 
+#define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
+#define CPU_OVERLOAD_DURATION 500 // in ms
+
 class SoundManager;
+class ControlObjectSlave;
 
 /** Dynamically resolved function which allows us to enable a realtime-priority callback
     thread from ALSA/PortAudio. This must be dynamically resolved because PortAudio can't
@@ -87,9 +91,13 @@ class SoundDevicePortAudio : public SoundDevice {
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
-    ControlObject* m_pMasterUnderflowCount;
+    ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
+    ControlObjectSlave* m_pMasterAudioLatencyUsage;
+    ControlObjectSlave* m_pMasterAudioLatencyOverload;
     int m_underflowUpdateCount;
     static volatile int m_underflowHappend;
+    int m_nsInAudioCb;
+    int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
 };
 

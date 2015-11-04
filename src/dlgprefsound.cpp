@@ -106,9 +106,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(m_pSoundManager, SIGNAL(inputRegistered(AudioInput, AudioDestination*)),
             this, SLOT(loadSettings()));
 
-    m_pMasterUnderflowCount =
-            new ControlObjectSlave("[Master]", "underflow_count", this);
-    m_pMasterUnderflowCount->connectValueChanged(SLOT(bufferUnderflow(double)));
+    m_pMasterAudioLatencyOverloadCount =
+            new ControlObjectSlave("[Master]", "audio_latency_overload_count", this);
+    m_pMasterAudioLatencyOverloadCount->connectValueChanged(SLOT(bufferUnderflow(double)));
 
     m_pMasterLatency =
             new ControlObjectSlave("[Master]", "latency", this);
