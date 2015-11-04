@@ -652,15 +652,15 @@ class AsmLib(Feature):
         if build.platform_is_linux:
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='-fno-builtin')
-            build.env.Prepend(LIBS='":alibelf%so.a"' % build.bitwidth)
+            build.env.Prepend(LIBS='":libaelf%so.a"' % build.bitwidth)
         elif build.platform_is_osx:
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='-fno-builtin')
-            build.env.Prepend(LIBS='":alibmac%so.a"' % build.bitwidth)
+            build.env.Prepend(LIBS='":libamac%so.a"' % build.bitwidth)
         elif build.platform_is_windows:
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='/Oi-')
-            build.env.Prepend(LIBS='alibcof%so' % build.bitwidth)
+            build.env.Prepend(LIBS='libacof%so' % build.bitwidth)
 
 
 class QDebug(Feature):

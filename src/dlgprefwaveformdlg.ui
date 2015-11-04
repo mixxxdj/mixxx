@@ -171,7 +171,7 @@
         <string/>
        </property>
        <property name="text">
-        <string>Avarage frame rate</string>
+        <string>Average frame rate</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

@@ -206,6 +206,7 @@ class EngineMaster : public QObject, public AudioSource {
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
+    QList<ChannelInfo*> m_activeChannels;
     QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
