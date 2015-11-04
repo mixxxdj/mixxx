@@ -113,14 +113,14 @@ void FilterEffect::processGroup(const QString& group,
             // Freq from 2^5=32Hz to 2^(5+9)=16384
             double freq = getLowFrequencyCorner(depth + 1.0);
             double freq2 = getHighFrequencyCorner(depth + 1.0, bandpass_width);
-            pState->lowFilter.setFrequencyCorners(freq2);
-            pState->bandpassFilter.setFrequencyCorners(freq, freq2);
+            pState->lowFilter.setFrequencyCorners(44100, freq2);
+            pState->bandpassFilter.setFrequencyCorners(44100, freq, freq2);
         } else if (depth > 0.0) {
             // Highpass + bandpass
             double freq = getLowFrequencyCorner(depth);
             double freq2 = getHighFrequencyCorner(depth, bandpass_width);
-            pState->highFilter.setFrequencyCorners(freq);
-            pState->bandpassFilter.setFrequencyCorners(freq, freq2);
+            pState->highFilter.setFrequencyCorners(44100, freq);
+            pState->bandpassFilter.setFrequencyCorners(44100, freq, freq2);
         }
     }
 

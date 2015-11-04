@@ -1173,6 +1173,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
             playlistDao.insertTracksIntoPlaylist(trackIds, iAutoDJPlaylistId, 2);
         } else {
             // TODO(XXX): Care whether the append succeeded.
+            pTrackCollectionPrivate->getTrackDAO().unhideTracks(trackIds);
             playlistDao.appendTracksToPlaylist(trackIds, iAutoDJPlaylistId);
         }
     }, __PRETTY_FUNCTION__);
@@ -1292,6 +1293,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
             [this, trackIds, iPlaylistId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         if (trackIds.size() > 0) {
             // TODO(XXX): Care whether the append succeeded.
+            pTrackCollectionPrivate->getTrackDAO().unhideTracks(trackIds);
             pTrackCollectionPrivate->getPlaylistDAO().appendTracksToPlaylist(trackIds, iPlaylistId);
         }
     }, __PRETTY_FUNCTION__);
@@ -1371,6 +1373,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
     m_pTrackCollection->callSync(
             [this, &trackIds, &iCrateId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         if (trackIds.size() > 0) {
+            pTrackCollectionPrivate->getTrackDAO().unhideTracks(trackIds);
             CrateDAO& crateDao = pTrackCollectionPrivate->getCrateDAO();
             crateDao.addTracksToCrate(iCrateId, &trackIds);
         }
