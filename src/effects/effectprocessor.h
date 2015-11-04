@@ -5,6 +5,7 @@
 #include <QMap>
 
 #include "defs.h"
+#include "engine/effects/groupfeaturestate.h"
 
 class EngineEffect;
 
@@ -25,7 +26,8 @@ class EffectProcessor {
     // used to process the audio of multiple channels.
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const unsigned int numSamples) = 0;
+                         const unsigned int numSamples,
+                         const GroupFeatureState& groupFeatures) = 0;
 };
 
 // Helper class for automatically fetching group state parameters upon receipt
@@ -55,20 +57,22 @@ class GroupEffectProcessor : public EffectProcessor {
 
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const unsigned int numSamples) {
+                         const unsigned int numSamples,
+                         const GroupFeatureState& groupFeatures) {
         T* pState = m_groupState.value(group, NULL);
         if (pState == NULL) {
             pState = new T();
             m_groupState[group] = pState;
             qWarning() << "Allocated group state in the engine for" << group;
         }
-        processGroup(group, pState, pInput, pOutput, numSamples);
+        processGroup(group, pState, pInput, pOutput, numSamples, groupFeatures);
     }
 
     virtual void processGroup(const QString& group,
                               T* groupState,
                               const CSAMPLE* pInput, CSAMPLE* pOutput,
-                              const unsigned int numSamples) = 0;
+                              const unsigned int numSamples,
+                              const GroupFeatureState& groupFeatures) = 0;
 
   private:
     QMap<QString, T*> m_groupState;

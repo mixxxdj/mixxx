@@ -16,13 +16,13 @@ EffectChainManager::EffectChainManager(ConfigObject<ConfigValue>* pConfig,
 }
 
 EffectChainManager::~EffectChainManager() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 void EffectChainManager::registerGroup(const QString& group) {
     if (m_registeredGroups.contains(group)) {
-        qDebug() << debugString() << "WARNING: Group already registered:"
-                 << group;
+        qWarning() << debugString() << "WARNING: Group already registered:"
+                   << group;
         return;
     }
     m_registeredGroups.insert(group);
@@ -68,7 +68,7 @@ EffectChainPointer EffectChainManager::getNextEffectChain(EffectChainPointer pEf
 
     int indexOf = m_effectChains.lastIndexOf(pEffectChain);
     if (indexOf == -1) {
-        qDebug() << debugString() << "WARNING: getNextEffectChain called for an unmanaged EffectChain";
+        qWarning() << debugString() << "WARNING: getNextEffectChain called for an unmanaged EffectChain";
         return m_effectChains[0];
     }
 
@@ -85,7 +85,7 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
 
     int indexOf = m_effectChains.lastIndexOf(pEffectChain);
     if (indexOf == -1) {
-        qDebug() << debugString() << "WARNING: getPrevEffectChain called for an unmanaged EffectChain";
+        qWarning() << debugString() << "WARNING: getPrevEffectChain called for an unmanaged EffectChain";
         return m_effectChains[m_effectChains.size()-1];
     }
 
@@ -93,7 +93,7 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
 }
 
 bool EffectChainManager::saveEffectChains() {
-    qDebug() << debugString() << "saveEffectChains";
+    //qDebug() << debugString() << "saveEffectChains";
     QDomDocument doc("MixxxEffects");
 
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -130,7 +130,7 @@ bool EffectChainManager::saveEffectChains() {
 }
 
 bool EffectChainManager::loadEffectChains() {
-    qDebug() << debugString() << "loadEffectChains";
+    //qDebug() << debugString() << "loadEffectChains";
 
     QDir settingsPath(m_pConfig->getSettingsPath());
     QFile file(settingsPath.absoluteFilePath("effects.xml"));

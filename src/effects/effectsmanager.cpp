@@ -56,7 +56,7 @@ const QSet<QString> EffectsManager::getAvailableEffects() const {
         QSet<QString> backendEffects = pBackend->getEffectIds();
         foreach (QString effectId, backendEffects) {
             if (availableEffects.contains(effectId)) {
-                qDebug() << "WARNING: Duplicate effect ID" << effectId;
+                qWarning() << "WARNING: Duplicate effect ID" << effectId;
                 continue;
             }
             availableEffects.insert(effectId);
@@ -208,9 +208,9 @@ void EffectsManager::processEffectsResponses() {
                 m_activeRequests.find(response.request_id);
 
         if (it == m_activeRequests.end()) {
-            qDebug() << debugString()
-                     << "WARNING: EffectsResponse with an inactive request_id:"
-                     << response.request_id;
+            qWarning() << debugString()
+                       << "WARNING: EffectsResponse with an inactive request_id:"
+                       << response.request_id;
         }
 
         while (it != m_activeRequests.end() &&
@@ -218,8 +218,8 @@ void EffectsManager::processEffectsResponses() {
             EffectsRequest* pRequest = it.value();
 
             if (!response.success) {
-                qDebug() << debugString() << "WARNING: Failed EffectsRequest"
-                         << "type" << pRequest->type;
+                qWarning() << debugString() << "WARNING: Failed EffectsRequest"
+                           << "type" << pRequest->type;
             }
 
             delete pRequest;

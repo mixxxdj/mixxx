@@ -77,6 +77,10 @@ void EngineVuMeter::process(const CSAMPLE* pIn, CSAMPLE*, const int iBufferSize)
     }
 }
 
+void EngineVuMeter::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    pGroupFeatures->rms_volume_sum = (m_fRMSvolumeL + m_fRMSvolumeR) / 2.0;
+    pGroupFeatures->has_rms_volume_sum = true;
+}
 
 void EngineVuMeter::doSmooth(FLOAT_TYPE &currentVolume, FLOAT_TYPE newVolume)
 {
@@ -100,4 +104,3 @@ void EngineVuMeter::reset() {
     m_fRMSvolumeR = 0;
     m_fRMSvolumeSumR = 0;
 }
-

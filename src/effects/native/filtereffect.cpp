@@ -65,7 +65,7 @@ FilterEffect::FilterEffect(EngineEffect* pEffect,
 }
 
 FilterEffect::~FilterEffect() {
-    qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 double getLowFrequencyCorner(double depth) {
@@ -79,8 +79,10 @@ double getHighFrequencyCorner(double depth, double bandpassSize) {
 void FilterEffect::processGroup(const QString& group,
                                 FilterGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples) {
+                                const unsigned int numSamples,
+                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
+    Q_UNUSED(groupFeatures);
     double depth = m_pDepthParameter ?
             m_pDepthParameter->value().toDouble() : 0.0;
     double bandpass_width = m_pBandpassWidthParameter ?

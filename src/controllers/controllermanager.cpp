@@ -78,9 +78,7 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
     m_pPresetInfoManager = new PresetInfoEnumerator(m_pConfig);
 
     // Instantiate all enumerators
-#ifdef __PORTMIDI__
     m_enumerators.append(new PortMidiEnumerator());
-#endif // __PORTMIDI__
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator());
 #endif

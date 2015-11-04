@@ -388,7 +388,14 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Process master channel effects
     if (m_pEngineEffectsManager) {
-        m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster, m_pMaster, iBufferSize);
+        GroupFeatureState masterFeatures;
+        // Well, this is delayed by one buffer (it's dependent on the
+        // output). Oh well.
+        if (m_pVumeter != NULL) {
+            m_pVumeter->collectFeatures(&masterFeatures);
+        }
+        m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster, m_pMaster,
+                                         iBufferSize, masterFeatures);
     }
 
     // Apply master volume after effects.
@@ -440,7 +447,9 @@ void EngineMaster::process(const int iBufferSize) {
 
     // Process headphone channel effects
     if (m_pEngineEffectsManager) {
-        m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead, m_pHead, iBufferSize);
+        GroupFeatureState headphoneFeatures;
+        m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead, m_pHead,
+                                         iBufferSize, headphoneFeatures);
     }
 
     // Head volume and clipping

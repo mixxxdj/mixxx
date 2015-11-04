@@ -33,7 +33,8 @@ class BitCrusherEffect : public GroupEffectProcessor<BitCrusherGroupState> {
     void processGroup(const QString& group,
                       BitCrusherGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
-                      const unsigned int numSamples);
+                      const unsigned int numSamples,
+                      const GroupFeatureState& groupFeatureState);
 
   private:
     QString debugString() const {

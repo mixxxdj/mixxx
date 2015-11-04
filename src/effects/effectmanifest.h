@@ -23,7 +23,7 @@ class EffectManifest {
   public:
     EffectManifest() { }
     virtual ~EffectManifest() {
-        qDebug() << debugString() << "deleted";
+        //qDebug() << debugString() << "deleted";
     }
 
     virtual const QString& id() const {

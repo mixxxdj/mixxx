@@ -51,7 +51,7 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
 
     // numEffects is read-only. Sets to it should not do anything.
     ControlObject::set(ConfigKey(group, "num_effects"), 1);
-    EXPECT_EQ(0, pChain->numEffects());
+    EXPECT_EQ(0U, pChain->numEffects());
 
     pChain->setMix(1.0);
     EXPECT_DOUBLE_EQ(pChain->mix(),

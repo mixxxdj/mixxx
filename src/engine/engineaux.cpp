@@ -141,8 +141,13 @@ void EngineAux::process(const CSAMPLE* pInput, CSAMPLE* pOut, const int iBufferS
     }
 
     if (m_pEngineEffectsManager != NULL) {
+        GroupFeatureState features;
+        // This is out of date by a callback but some effects will want the RMS
+        // volume.
+        m_vuMeter.collectFeatures(&features);
         // Process effects enabled for this channel
-        m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize);
+        m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize,
+                                         features);
     }
     // Apply clipping
     m_clipping.process(pOut, pOut, iBufferSize);

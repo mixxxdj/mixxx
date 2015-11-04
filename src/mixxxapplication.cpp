@@ -36,7 +36,7 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         Qt::MouseButtons buttons = Qt::NoButton;
         QWidget* fakeMouseWidget = NULL;
 
-        qDebug() << "&" << touchEvent->type() << target;
+        //qDebug() << "&" << touchEvent->type() << target;
 
         if (touchEvent->deviceType() !=  QTouchEvent::TouchScreen) {
             break;
@@ -90,22 +90,22 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
              const QTouchEvent::TouchPoint& touchPoint = touchPoints.at(i);
              if (touchPoint.id() == m_fakeMouseSourcePointId) {
                  QMouseEvent mouseEvent(eventType,
-                         fakeMouseWidget->mapFromGlobal(touchPoint.screenPos().toPoint()),
-                         touchPoint.screenPos().toPoint(),
-                         m_activeTouchButton, // Button that causes the event
-                         buttons,
-                         touchEvent->modifiers());
+                                        fakeMouseWidget->mapFromGlobal(touchPoint.screenPos().toPoint()),
+                                        touchPoint.screenPos().toPoint(),
+                                        m_activeTouchButton, // Button that causes the event
+                                        buttons,
+                                        touchEvent->modifiers());
 
-                  qDebug() << "#" << mouseEvent.type() << mouseEvent.button() << mouseEvent.buttons() << mouseEvent.pos() << mouseEvent.globalPos();
+                 //qDebug() << "#" << mouseEvent.type() << mouseEvent.button() << mouseEvent.buttons() << mouseEvent.pos() << mouseEvent.globalPos();
 
-                  //if (m_fakeMouseWidget->focusPolicy() & Qt::ClickFocus) {
-                  //    fakeMouseWidget->setFocus();
-                  //}
-                  QApplication::notify(fakeMouseWidget, &mouseEvent);
-                  return true;
-            }
+                 //if (m_fakeMouseWidget->focusPolicy() & Qt::ClickFocus) {
+                 //    fakeMouseWidget->setFocus();
+                 //}
+                 QApplication::notify(fakeMouseWidget, &mouseEvent);
+                 return true;
+             }
         }
-        qDebug() << "return false";
+        //qDebug() << "return false";
         return false;
         break;
     }
@@ -144,4 +144,3 @@ bool MixxxApplication::touchIsRightButton() {
     }
     return (m_pTouchShift->get() != 0.0);
 }
-
