@@ -145,8 +145,13 @@ RateControl::RateControl(const char* _group,
     m_pOldScratch = new ControlTTRotary(ConfigKey(_group, "scratch"));  // Deprecated
 
     // Scratch enable toggle
-    m_pScratchToggle = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
-    m_pScratchToggle->set(0);
+    m_pScratchEnable = new ControlPushButton(ConfigKey(_group, "scratch2_enable"));
+    m_pScratchEnable->set(0);
+
+    m_pScratch2Scratching = new ControlPushButton(ConfigKey(_group, "scratch2_scratching"));
+    // Enable by default, because it was always scratching befor introducing this control.
+    m_pScratch2Scratching->set(1.0);
+
 
     m_pJog = new ControlObject(ConfigKey(_group, "jog"));
     m_pJogFilter = new Rotary();
@@ -190,7 +195,7 @@ RateControl::~RateControl() {
     delete m_pWheel;
     delete m_pScratch;
     delete m_pOldScratch;
-    delete m_pScratchToggle;
+    delete m_pScratchEnable;
     delete m_pJog;
     delete m_pJogFilter;
     delete m_pScratchController;
@@ -404,9 +409,10 @@ SyncMode RateControl::getSyncMode() const {
 }
 
 double RateControl::calculateRate(double baserate, bool paused,
-                                  int iSamplesPerBuffer, bool* isScratching) {
+                                  int iSamplesPerBuffer,
+                                  bool* reportScratching) {
+    *reportScratching = false;
     double rate = (paused ? 0 : 1.0);
-
     double searching = m_pRateSearch->get();
     if (searching) {
         // If searching is in progress, it overrides everything else
@@ -415,7 +421,15 @@ double RateControl::calculateRate(double baserate, bool paused,
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
-        bool scratchEnable = m_pScratchToggle->get() != 0 || bVinylControlEnabled;
+        bool useScratch2Value = m_pScratchEnable->get() != 0;
+
+        // By default scratch2_enable enough to determine if the user is
+        // scratching or not. Moving platter controllers have to disable
+        // "scratch2_scratching" if they are not scratching, to allow things
+        // like key-lock
+        if (useScratch2Value && m_pScratch2Scratching->get()) {
+            *reportScratching = true;
+        }
 
         double scratchFactor = m_pScratch->get();
         // Don't trust values from m_pScratch
@@ -423,55 +437,54 @@ double RateControl::calculateRate(double baserate, bool paused,
             scratchFactor = 0.0;
         }
 
-        // Old Scratch works without scratchEnable
+        // Old Scratch works without scratchToggle
         double oldScratchFactor = m_pOldScratch->get(); // Deprecated
         // Don't trust values from m_pScratch
         if (isnan(oldScratchFactor)) {
             oldScratchFactor = 0.0;
         }
 
-        // If vinyl control is enabled and scratching then also set isScratching
-        bool bVinylControlScratching = m_pVCScratching && m_pVCScratching->get() > 0.0;
-        if (bVinylControlEnabled && bVinylControlScratching) {
-            *isScratching = true;
-        }
-
-        if (paused) {
-            // Stopped. Wheel, jog and scratch controller all scrub through audio.
-            // New scratch behavior overrides old
-            if (scratchEnable) {
-                rate = scratchFactor + jogFactor + wheelFactor * 40.0;
-            } else {
-                // Just remove oldScratchFactor in future
-                rate = oldScratchFactor + jogFactor * 18 + wheelFactor;
+        if (bVinylControlEnabled) {
+            if (m_pVCScratching && m_pVCScratching->get() > 0.0) {
+                *reportScratching = true;
             }
+            rate = scratchFactor;
         } else {
-            // The buffer is playing, so calculate the buffer rate.
-
-            // There are four rate effects we apply: wheel, scratch, jog and temp.
-            // Wheel: a linear additive effect (no spring-back)
-            // Scratch: a rate multiplier
-            // Jog: a linear additive effect whose value is filtered (springs back)
-            // Temp: pitch bend
-
-            // New scratch behavior - overrides playback speed (and old behavior)
-            if (scratchEnable) {
-                rate = scratchFactor;
-            } else {
-
-                rate = 1. + getRawRate() + getTempRate();
-                rate += wheelFactor;
-
-                // Deprecated old scratch behavior
-                if (oldScratchFactor < 0.) {
-                    rate *= (oldScratchFactor - 1.);
-                } else if (oldScratchFactor > 0.) {
-                    rate *= (oldScratchFactor + 1.);
+            if (paused) {
+                // Stopped. Wheel, jog and scratch controller all scrub through audio.
+                // New scratch behavior overrides old
+                if (useScratch2Value) {
+                    rate = scratchFactor + jogFactor + wheelFactor * 40.0;
+                } else {
+                    // Just remove oldScratchFactor in future
+                    rate = oldScratchFactor + jogFactor * 18 + wheelFactor;
                 }
+            } else {
+                // The buffer is playing, so calculate the buffer rate.
+
+                // There are four rate effects we apply: wheel, scratch, jog and temp.
+                // Wheel: a linear additive effect (no spring-back)
+                // Scratch: a rate multiplier
+                // Jog: a linear additive effect whose value is filtered (springs back)
+                // Temp: pitch bend
+
+                // New scratch behavior - overrides playback speed (and old behavior)
+                if (useScratch2Value) {
+                    rate = scratchFactor;
+                } else {
+
+                    rate = 1. + getRawRate() + getTempRate();
+                    rate += wheelFactor;
+
+                    // Deprecated old scratch behavior
+                    if (oldScratchFactor < 0.) {
+                        rate *= (oldScratchFactor - 1.);
+                    } else if (oldScratchFactor > 0.) {
+                        rate *= (oldScratchFactor + 1.);
+                    }
+                }
+                rate += jogFactor;
             }
-
-            rate += jogFactor;
-
         }
 
         double currentSample = getCurrentSample();
@@ -480,31 +493,31 @@ double RateControl::calculateRate(double baserate, bool paused,
         // If waveform scratch is enabled, override all other controls
         if (m_pScratchController->isEnabled()) {
             rate = m_pScratchController->getRate();
-            *isScratching = true;
-        }
+            *reportScratching = true;
+        } else {
+            // If master sync is on, respond to it -- but vinyl and scratch mode always override.
+            if (getSyncMode() == SYNC_FOLLOWER && !paused &&
+                !bVinylControlEnabled && !useScratch2Value) {
+                if (m_pBpmControl == NULL) {
+                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
+                    return 1.0;
+                }
 
-        // If master sync is on, respond to it -- but vinyl and scratch mode always override.
-        if (getSyncMode() == SYNC_FOLLOWER && !paused &&
-            !bVinylControlEnabled && !*isScratching) {
-            if (m_pBpmControl == NULL) {
-                qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
-                return 1.0;
+                rate = m_pBpmControl->getSyncedRate();
+                double userTweak = getTempRate() + wheelFactor + jogFactor;
+                bool userTweakingSync = userTweak != 0.0;
+                rate += userTweak;
+
+                rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
             }
-
-            rate = m_pBpmControl->getSyncedRate();
-            double userTweak = getTempRate() + wheelFactor + jogFactor;
-            bool userTweakingSync = userTweak != 0.0;
-            rate += userTweak;
-
-            rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
-        }
-        // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
-        // Reverse with vinyl is only ok if absolute mode isn't on.
-        int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
-        if (m_pReverseButton->get()
-                && !m_pScratchToggle->get()
-                && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
-            rate = -rate;
+            // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
+            // Reverse with vinyl is only ok if absolute mode isn't on.
+            int vcmode = m_pVCMode ? m_pVCMode->get() : MIXXX_VCMODE_ABSOLUTE;
+            if (m_pReverseButton->get()
+                    && !m_pScratchEnable->get()
+                    && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
+                rate = -rate;
+            }
         }
     }
 

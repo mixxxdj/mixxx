@@ -106,7 +106,7 @@ VestaxSpin.handleEvent = function(channel, control, value, status, group) {
     var deck = VestaxSpin.GetDeck(group);
     if (deck != null) {
         deck.handleEvent(channel, control, value, status, group);
-    } 
+    }
     try {
         var buttons = VestaxSpin.controls[control];
     } catch (ex) {
@@ -320,8 +320,6 @@ VestaxSpin.Button.prototype.handleFF = function() {
 
 VestaxSpin.Button.prototype.handleWheelTouch = function() {
    if (this.parent.vinylMode && this.state == VestaxSpin.ButtonState.pressed) {
-       // disable keylock on scratch
-       //this.keylock = engine.getValue(this.group, "keylock");
         if (this.timer > 0) {
             engine.stopTimer(this.timer);
             this.timer = 0;
@@ -349,4 +347,3 @@ VestaxSpin.Button.prototype.handleWheel = function() {
         engine.setValue(this.group, "jog", this.state - 0x40);
     }
 }
-

@@ -56,9 +56,6 @@
  * Open issues / TODOs
  * -------------------
  * - Manipulating the crossfader curve does not seem to work as expected
- * - Keylock is turned off when starting to scratch to avoid unnatural
- *   noise. It remains turned off even when scratching is disabled,
- *   because otherwise the engine produces audible glitches.
  * - ITCH-like looping seems impossible with Mixxx 1.x controls(?)
  * - TODO: Blinking LEDs during reverse playback, ...
  * - TODO: Implement soft-takeover for "rate"
@@ -343,14 +340,12 @@ VestaxVCI300.Deck.prototype.resetScratchingTimer = function () {
 
 VestaxVCI300.Deck.prototype.enableScratching = function () {
 	this.resetScratchingTimer();
-	engine.setValue(this.group, "keylock", false);
 	engine.scratchEnable(this.number, VestaxVCI300.jogResolution, VestaxVCI300.scratchRPM, VestaxVCI300.scratchAlpha, VestaxVCI300.scratchBeta, /*ramp*/ true);
 };
 
 VestaxVCI300.Deck.prototype.disableScratching = function () {
 	this.resetScratchingTimer();
 	engine.scratchDisable(this.number, /*ramp*/ true);
-	// leave keylock turned off to avoid unnatural playback and glitches
 };
 
 VestaxVCI300.leftDeck.disableScratchingTimerCB = function () {
@@ -1390,4 +1385,3 @@ VestaxVCI300.leftDeck.onOutLoopValueCB[2] = function (value) {
 VestaxVCI300.rightDeck.onOutLoopValueCB[2] = function (value) {
 	VestaxVCI300.rightDeck.updateOutLoopState(2);
 };
-

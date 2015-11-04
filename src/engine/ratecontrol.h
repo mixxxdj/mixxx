@@ -41,8 +41,11 @@ public:
                    const double currentSample,
                    const double totalSamples,
                    const int bufferSamples);
-    // Returns the current engine rate.
-    double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
+    // Returns the current engine rate.  "reportScratching" is used to tell
+    // the caller that the user is currently scratching, and this is used to
+    // disable keylock.
+    double calculateRate(double baserate, bool paused,
+                         int iSamplesPerBuffer, bool* reportScratching);
     double getRawRate() const;
 
     // Set rate change when temp rate button is pressed
@@ -110,11 +113,12 @@ public:
     ControlTTRotary* m_pOldScratch;
     PositionScratchController* m_pScratchController;
 
-    ControlPushButton* m_pScratchToggle;
+    ControlPushButton* m_pScratchEnable;
     ControlObject* m_pJog;
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
     ControlObject* m_pVCMode;
+    ControlObject* m_pScratch2Scratching;
     Rotary* m_pJogFilter;
 
     ControlObject* m_pSampleRate;
