@@ -118,10 +118,10 @@ void DlgPrefEQ::setDefaultShelves()
 }
 
 void DlgPrefEQ::slotResetToDefaults() {
-    setDefaultShelves();
     radioButton_bypass->setChecked(false);
-    radioButton_bessel4->setChecked(true);
     radioButton_butterworth8->setChecked(false);
+    radioButton_bessel4->setChecked(true);
+    slotEqChanged();
     setDefaultShelves();
     loadSettings();
     slotUpdate();

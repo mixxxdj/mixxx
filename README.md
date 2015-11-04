@@ -47,6 +47,15 @@ For help using Mixxx, there are a variety of options:
 - [Hardware Compatibility]
 - [Creating Skins]
 
+## Translation
+
+Help to spread Mixxx with translations into more languages, as well as to update and ensure the accuracy of existing translations.
+
+- [Help translate content]
+- [Mixxx i18n wiki]
+- [Mixxx localization forum]
+- [Mixxx glossary]
+
 ## Community
 
 Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
@@ -85,4 +94,8 @@ license.
 [launchpad 1.12.0]: https://launchpad.net/mixxx/+milestone/1.12.0
 [easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
 [creating skins]: http://mixxx.org/wiki/doku.php/creating_skins
+[help translate content]: https://www.transifex.com/projects/p/mixxxdj
+[Mixxx i18n wiki]: http://mixxx.org/wiki/doku.php/internationalization
+[Mixxx localization forum]: http://mixxx.org/forums/viewforum.php?f=10
+[Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
 [hardware compatibility]: http://mixxx.org/wiki/doku.php/hardware_compatibility
