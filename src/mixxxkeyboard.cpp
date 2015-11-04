@@ -20,21 +20,33 @@
 #include <QKeyEvent>
 #include <QEvent>
 
+#include "dlgpreferences.h"
+#include "mixxx.h"
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
 #include "util/cmdlineargs.h"
 
 
 
-MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
+MixxxKeyboard::MixxxKeyboard(MixxxMainWindow *pMainWindow,
+                             DlgPreferences *pDlgPreferences,
+                             ConfigObject<ConfigValueKbd>* pKbdConfigObject,
                              QObject* parent, const char* name)
         : QObject(parent),
           m_pKbdConfigObject(NULL) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
+    connect(pMainWindow, SIGNAL(showDlg()),
+            this, SLOT(slotDialogShown()));
+    connect(pDlgPreferences, SIGNAL(showDlg()),
+            this, SLOT(slotDialogShown()));
 }
 
 MixxxKeyboard::~MixxxKeyboard() {
+}
+
+void MixxxKeyboard::slotDialogShown() {
+    m_qActiveKeyList.clear();
 }
 
 bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
@@ -71,11 +83,14 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
                     if (control) {
-                        //qDebug() << pConfigKey->group << pConfigKey->item << "MIDI_NOTE_ON" << 1;
-                        control->setValueFromMidi(MIDI_NOTE_ON, 1);
+                        //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
                             keyId, ke->modifiers(), control));
+                        // Since setting the value might cause us to go down
+                        // a route that would eventually clear the active
+                        // key list, do that last.
+                        control->setValueFromMidi(MIDI_NOTE_ON, 1);
                         result = true;
                     } else {
                         qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
@@ -116,7 +131,7 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
             if (keyDownInfo.keyId == keyId ||
                     (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
-                    //qDebug() << pConfigKey->group << pConfigKey->item << "MIDI_NOTE_OFF" << 0;
+                    //qDebug() << pControl->getKey() << "MIDI_NOTE_OFF" << 0;
                     pControl->setValueFromMidi(MIDI_NOTE_OFF, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
