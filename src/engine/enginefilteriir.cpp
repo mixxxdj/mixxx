@@ -17,108 +17,200 @@
 #include "engine/enginefilteriir.h"
 #include "util/counter.h"
 #include "util/math.h"
+#define MIXXX
+#include "fidlib.h"
 
-EngineFilterIIR::EngineFilterIIR(const double * pCoefs, int iOrder)
-{
-    order = iOrder;
-    coefs = pCoefs;
-
-
-    // Reset the yv's:
-    memset(yv1, 0, sizeof(yv1));
-    memset(yv2, 0, sizeof(yv2));
-    memset(xv1, 0, sizeof(xv1));
-    memset(xv2, 0, sizeof(xv2));
+EngineFilterIIR::EngineFilterIIR(int bufSize)
+        : m_sampleRate(44100),
+          m_bufSize(bufSize),
+          m_doRamping(false){
+    memset(m_coef, 0, MAX_COEFS * sizeof(double));
+    initBuffers();
 }
 
-EngineFilterIIR::~EngineFilterIIR()
-{
+void EngineFilterIIR::initBuffers() {
+    // Copy the current buffers into the old buffers
+    memcpy(m_oldBuf1, m_buf1, m_bufSize * sizeof(double));
+    memcpy(m_oldBuf2, m_buf2, m_bufSize * sizeof(double));
+    // Set the current buffers to 0
+    memset(m_buf1, 0, m_bufSize * sizeof(double));
+    memset(m_buf2, 0, m_bufSize * sizeof(double));
 }
 
-void EngineFilterIIR::process(const CSAMPLE* pIn, CSAMPLE* pOutput, const int iBufferSize)
-{
-    double GAIN =  coefs[0];
-    int i;
-    for (i=0; i<iBufferSize; i+=2)
-    {
-        if (order==8)
-        {
-            //8th order:
-            // Channel 1
-            xv1[0] = xv1[1]; xv1[1] = xv1[2]; xv1[2] = xv1[3]; xv1[3] = xv1[4];
-            xv1[4] = xv1[5]; xv1[5] = xv1[6]; xv1[6] = xv1[7]; xv1[7] = xv1[8];
-            xv1[8] = pIn[i]/GAIN;
-            yv1[0] = yv1[1]; yv1[1] = yv1[2]; yv1[2] = yv1[3]; yv1[3] = yv1[4];
-            yv1[4] = yv1[5]; yv1[5] = yv1[6]; yv1[6] = yv1[7]; yv1[7] = yv1[8];
-            yv1[8] =   (xv1[0] + xv1[8]) + coefs[1] * (xv1[1] + xv1[7]) +
-                     coefs[2] * (xv1[2] + xv1[6]) +
-                     coefs[3] * (xv1[3] + xv1[5]) + coefs[4] * xv1[4] +
-                     (coefs[5] * yv1[0]) + ( coefs[6] * yv1[1]) +
-                     (coefs[7] * yv1[2]) + ( coefs[8] * yv1[3]) +
-                     (coefs[9] * yv1[4]) + ( coefs[10] * yv1[5]) +
-                     (coefs[11] * yv1[6]) + ( coefs[12] * yv1[7]);
-            // Guard against nan.
-            if (isnan(yv1[8])) {
-                Counter count("EngineFilterIIR::process yv1[8] isnan");
-                count.increment();
-                yv1[8] = 0;
-            }
-            pOutput[i] = yv1[8];
+EngineFilterIIR::~EngineFilterIIR() {
+}
 
-            // Channel 2
-            xv2[0] = xv2[1]; xv2[1] = xv2[2]; xv2[2] = xv2[3]; xv2[3] = xv2[4];
-            xv2[4] = xv2[5]; xv2[5] = xv2[6]; xv2[6] = xv2[7]; xv2[7] = xv2[8];
-            xv2[8] = pIn[i+1]/GAIN;
-            yv2[0] = yv2[1]; yv2[1] = yv2[2]; yv2[2] = yv2[3]; yv2[3] = yv2[4];
-            yv2[4] = yv2[5]; yv2[5] = yv2[6]; yv2[6] = yv2[7]; yv2[7] = yv2[8];
-            yv2[8] =   (xv2[0] + xv2[8]) + coefs[1] * (xv2[1] + xv2[7]) +
-                     coefs[2] * (xv2[2] + xv2[6]) +
-                     coefs[3] * (xv2[3] + xv2[5]) + coefs[4] * xv2[4] +
-                     (coefs[5] * yv2[0]) + ( coefs[6] * yv2[1]) +
-                     (coefs[7] * yv2[2]) + ( coefs[8] * yv2[3]) +
-                     (coefs[9] * yv2[4]) + ( coefs[10] * yv2[5]) +
-                     (coefs[11] * yv2[6]) + ( coefs[12] * yv2[7]);
-            // Guard against nan.
-            if (isnan(yv2[8])) {
-                Counter count("EngineFilterIIR::process yv2[8] isnan");
-                count.increment();
-                yv2[8] = 0;
-            }
-            pOutput[i+1] = yv2[8];
-        }
-        else if (order==2)
-        {
-            // Second order
-            xv1[0] = xv1[1]; xv1[1] = xv1[2];
-            xv1[2] = pIn[i] / GAIN;
-            yv1[0] = yv1[1]; yv1[1] = yv1[2];
-            yv1[2] = (xv1[0] + xv1[2]) + coefs[1] * xv1[1] + ( coefs[2] * yv1[0]) + (coefs[3] * yv1[1]);
-            pOutput[i] = yv1[2];
+inline double _processLowpass(double* coef, double* buf, register double val) {
+    register double tmp, fir, iir;
+    tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
+    iir = val * coef[0];
+    iir -= coef[1] * tmp; fir = tmp;
+    iir -= coef[2] * buf[0]; fir += buf[0] + buf[0];
+    fir += iir;
+    tmp = buf[1]; buf[1] = iir; val = fir;
+    iir = val;
+    iir -= coef[3] * tmp; fir = tmp;
+    iir -= coef[4] * buf[2]; fir += buf[2] + buf[2];
+    fir += iir;
+    buf[3] = iir; val = fir;
+    return val;
+}
 
-            xv2[0] = xv2[1]; xv2[1] = xv2[2];
-            xv2[2] = pIn[i+1] / GAIN;
-            yv2[0] = yv2[1]; yv2[1] = yv2[2];
-            yv2[2] = (xv2[0] + xv2[2]) + coefs[1] * xv2[1] + ( coefs[2] * yv2[0]) + (coefs[3] * yv2[1]);
-            pOutput[i+1] = yv2[2];
-        }
-        else
-        {
-            // Fourth order
-            xv1[0] = xv1[1]; xv1[1] = xv1[2]; xv1[2] = xv1[3]; xv1[3] = xv1[4];
-            xv1[4] = pIn[i] / GAIN;
-            yv1[0] = yv1[1]; yv1[1] = yv1[2]; yv1[2] = yv1[3]; yv1[3] = yv1[4];
-            yv1[4] =   (xv1[0] + xv1[4]) + coefs[1]*(xv1[1]+xv1[3]) + coefs[2] * xv1[2]
-                     + ( coefs[3] * yv1[0]) + (  coefs[4] * yv1[1])
-                     + ( coefs[5] * yv1[2]) + (  coefs[6] * yv1[3]);
-            pOutput[i] = yv1[4];
+inline double _processBandpass(double* coef, double* buf, register double val) {
+    register double tmp, fir, iir;
+    tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
+    buf[3] = buf[4]; buf[4] = buf[5]; buf[5] = buf[6]; buf[6] = buf[7];
+    iir = val * coef[0];
+    iir -= coef[1] * tmp; fir = tmp;
+    iir -= coef[2] * buf[0]; fir += -buf[0] - buf[0];
+    fir += iir;
+    tmp = buf[1]; buf[1] = iir; val= fir;
+    iir = val;
+    iir -= coef[3] * tmp; fir = tmp;
+    iir -= coef[4] * buf[2]; fir += -buf[2] - buf[2];
+    fir += iir;
+    tmp = buf[3]; buf[3] = iir; val= fir;
+    iir = val;
+    iir -= coef[5] * tmp; fir = tmp;
+    iir -= coef[6] * buf[4]; fir += buf[4] + buf[4];
+    fir += iir;
+    tmp = buf[5]; buf[5] = iir; val= fir;
+    iir = val;
+    iir -= coef[7] * tmp; fir = tmp;
+    iir -= coef[8] * buf[6]; fir += buf[6] + buf[6];
+    fir += iir;
+    buf[7] = iir; val = fir;
+    return val;
+}
 
-            xv2[0] = xv2[1]; xv2[1] = xv2[2]; xv2[2] = xv2[3]; xv2[3] = xv2[4];
-            xv2[4] = pIn[i+1] / GAIN;
-            yv2[0] = yv2[1]; yv2[1] = yv2[2]; yv2[2] = yv2[3]; yv2[3] = yv2[4];
-            yv2[4] =   (xv2[0] + xv2[4]) + coefs[1]*(xv2[1]+xv2[3]) + coefs[2] * xv2[2]
-                     + ( coefs[3] * yv2[0]) + (  coefs[4] * yv2[1])
-                     + ( coefs[5] * yv2[2]) + (  coefs[6] * yv2[3]);
-            pOutput[i+1] = yv2[4];
+inline double _processHighpass(double* coef, double* buf, register double val) {
+    register double tmp, fir, iir;
+    tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
+    iir= val * coef[0];
+    iir -= coef[1] * tmp; fir = tmp;
+    iir -= coef[2] * buf[0]; fir += -buf[0] - buf[0];
+    fir += iir;
+    tmp = buf[1]; buf[1] = iir; val = fir;
+    iir = val;
+    iir -= coef[3] * tmp; fir = tmp;
+    iir -= coef[4] * buf[2]; fir += -buf[2] - buf[2];
+    fir += iir;
+    buf[3] = iir; val = fir;
+    return val;
+}
+
+EngineFilterIIRLow::EngineFilterIIRLow(int sampleRate, double freqCorner1)
+        : EngineFilterIIR(4) {
+    setFrequencyCorners(sampleRate, freqCorner1);
+}
+
+void EngineFilterIIRLow::setFrequencyCorners(int sampleRate,
+                                             double freqCorner1) {
+    m_sampleRate = sampleRate;
+    // Copy the old coefficients into m_oldCoef
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(double));
+    m_coef[0] = fid_design_coef(m_coef + 1, 4, "LpBe4", m_sampleRate,
+                               freqCorner1, 0, 0);
+    initBuffers();
+    m_doRamping = true;
+}
+
+void EngineFilterIIRLow::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
+                                 const int iBufferSize) {
+    double tmp1, tmp2;
+    double cross_mix = 0.0;
+    double cross_inc = 2.0 / static_cast<double>(iBufferSize);
+    for (int i = 0; i < iBufferSize; i += 2) {
+        pOutput[i] = _processLowpass(m_coef, m_buf1, pIn[i]);
+        pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i + 1]);
+        // Do a linear cross fade between the old samples and the new samples
+        if (m_doRamping) {
+            tmp1 = _processLowpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            tmp2 = _processLowpass(m_oldCoef, m_oldBuf2, pIn[i + 1]);
+            pOutput[i] = pOutput[i] * cross_mix +
+                         tmp1 * (1.0 - cross_mix);
+            pOutput[i + 1] = pOutput[i + 1] * cross_mix +
+                         tmp2 * (1.0 - cross_mix);
+            cross_mix += cross_inc;
         }
     }
+    m_doRamping = false;
+}
+
+EngineFilterIIRBand::EngineFilterIIRBand(int sampleRate, double freqCorner1,
+                                         double freqCorner2)
+        : EngineFilterIIR(16) {
+    setFrequencyCorners(sampleRate, freqCorner1, freqCorner2);
+}
+
+void EngineFilterIIRBand::setFrequencyCorners(int sampleRate,
+                                             double freqCorner1,
+                                             double freqCorner2) {
+    m_sampleRate = sampleRate;
+    // Copy the old coefficients into m_oldCoef
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(double));
+    m_coef[0] = fid_design_coef(m_coef + 1, 8, "BpBe4", m_sampleRate,
+                               freqCorner1, freqCorner2, 0);
+    initBuffers();
+    m_doRamping = true;
+}
+
+void EngineFilterIIRBand::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
+                                 const int iBufferSize) {
+    double tmp1, tmp2;
+    double cross_mix = 0.0;
+    double cross_inc = 2.0 / static_cast<double>(iBufferSize);
+    for (int i = 0; i < iBufferSize; i += 2) {
+        pOutput[i] = _processBandpass(m_coef, m_buf1, pIn[i]);
+        pOutput[i+1] = _processBandpass(m_coef, m_buf2, pIn[i+1]);
+        // Do a linear cross fade between the old samples and the new samples
+        if (m_doRamping) {
+            tmp1 = _processBandpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            tmp2 = _processBandpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+            pOutput[i] = pOutput[i] * cross_mix +
+                         tmp1 * (1.0 - cross_mix);
+            pOutput[i + 1] = pOutput[i + 1] * cross_mix +
+                         tmp2 * (1.0 - cross_mix);
+            cross_mix += cross_inc;
+        }
+    }
+    m_doRamping = false;
+}
+
+EngineFilterIIRHigh::EngineFilterIIRHigh(int sampleRate, double freqCorner1)
+        : EngineFilterIIR(4) {
+    setFrequencyCorners(sampleRate, freqCorner1);
+}
+
+void EngineFilterIIRHigh::setFrequencyCorners(int sampleRate,
+                                             double freqCorner1) {
+    m_sampleRate = sampleRate;
+    // Copy the old coefficients into m_oldCoef
+    memcpy(m_oldCoef, m_coef, MAX_COEFS * sizeof(double));
+    m_coef[0] = fid_design_coef(m_coef + 1, 4, "HpBe4", m_sampleRate,
+                               freqCorner1, 0, 0);
+    initBuffers();
+    m_doRamping = true;
+}
+
+void EngineFilterIIRHigh::process(const CSAMPLE* pIn, CSAMPLE* pOutput,
+                                 const int iBufferSize) {
+    double tmp1, tmp2;
+    double cross_mix = 0.0;
+    double cross_inc = 2.0 / static_cast<double>(iBufferSize);
+    for (int i = 0; i < iBufferSize; i += 2) {
+        pOutput[i] = _processHighpass(m_coef, m_buf1, pIn[i]);
+        pOutput[i+1] = _processHighpass(m_coef, m_buf2, pIn[i+1]);
+        // Do a linear cross fade between the old samples and the new samples
+        if (m_doRamping) {
+            tmp1 = _processHighpass(m_oldCoef, m_oldBuf1, pIn[i]);
+            tmp2 = _processHighpass(m_oldCoef, m_oldBuf2, pIn[i+1]);
+            pOutput[i] = pOutput[i] * cross_mix +
+                         tmp1 * (1.0 - cross_mix);
+            pOutput[i + 1] = pOutput[i + 1] * cross_mix +
+                         tmp2 * (1.0 - cross_mix);
+            cross_mix += cross_inc;
+        }
+    }
+    m_doRamping = false;
 }

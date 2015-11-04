@@ -35,7 +35,7 @@
         <string>Use this option if you prefer lower CPU utilization over better sound.</string>
        </property>
        <property name="text">
-        <string>Use Static Equalizers</string>
+        <string>Use Lightweight Equalizers</string>
        </property>
       </widget>
      </item>

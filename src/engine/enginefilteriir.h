@@ -17,96 +17,68 @@
 #ifndef ENGINEFILTERIIR_H
 #define ENGINEFILTERIIR_H
 
+#define MAX_COEFS 17
+#define MAX_INTERNAL_BUF 16
+
 #include "engine/engineobject.h"
 #include "util/types.h"
 
 class EngineFilterIIR : public EngineObjectConstIn {
     Q_OBJECT
   public:
-    EngineFilterIIR(const double* pCoefs, int iOrder);
+    EngineFilterIIR(int bufSize);
     virtual ~EngineFilterIIR();
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+
+    void initBuffers();
+    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut,
+                         const int iBufferSize) = 0;
 
   protected:
-    int order;
-    const double *coefs;
-    #define MAXNZEROS 8
-    #define MAXNPOLES 8
-    double xv1[MAXNZEROS+1], yv1[MAXNPOLES+1];
-    double xv2[MAXNZEROS+1], yv2[MAXNPOLES+1];
+    int m_sampleRate;
+
+    double m_coef[MAX_COEFS];
+    // Old coefficients needed for ramping
+    double m_oldCoef[MAX_COEFS];
+
+    int m_bufSize;
+    // Channel 1 state
+    double m_buf1[MAX_INTERNAL_BUF];
+    // Old channel 1 buffer needed for ramping
+    double m_oldBuf1[MAX_INTERNAL_BUF];
+
+    // Channel 2 state
+    double m_buf2[MAX_INTERNAL_BUF];
+    // Old channel 2 buffer needed for ramping
+    double m_oldBuf2[MAX_INTERNAL_BUF];
+
+    // Flag set to true if ramping needs to be done
+    bool m_doRamping;
 };
 
-//
-// Defines filter coefficients for IIR filters:
-//
+class EngineFilterIIRLow : public EngineFilterIIR {
+    Q_OBJECT
+  public:
+    EngineFilterIIRLow(int sampleRate, double freqCorner1);
+    void setFrequencyCorners(int sampleRate, double freqCorner1);
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+};
 
-// 8th order lowpass, corner at 600 Hz
-static const double bessel_lowpass[13] = {  7.444032197e+08,
-    8, 28, 56, 70,
-    -0.3800297563, 3.4120798629,
-    -13.4230504610, 30.2214248640,
-    -42.5938048390, 38.4826057150,
-    -21.7665031930, 7.0472774638};
+class EngineFilterIIRBand : public EngineFilterIIR {
+    Q_OBJECT
+  public:
+    EngineFilterIIRBand(int sampleRate, double freqCorner1,
+                        double freqCorner2);
+    void setFrequencyCorners(int sampleRate, double freqCorner1,
+                             double freqCorner2);
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+};
 
-// 4th order highpass, corner at 4000 Hz:
-static const double bessel_highpass[13] = {2.465837728e+00, // gain
-    - 8,+ 28, - 56, + 70,
-    -0.1552424571, 1.5489970216,
-    -6.7821376632,17.0223182510,
-    -26.7923322400,27.0856195480,
-    -17.1796384890, 6.2523870250};
+class EngineFilterIIRHigh : public EngineFilterIIR {
+    Q_OBJECT
+  public:
+    EngineFilterIIRHigh(int sampleRate, double freqCorner1);
+    void setFrequencyCorners(int sampleRate, double freqCorner1);
+    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+};
 
-// 8th order bandpass at 600 - 4000Hz:
-static const double bessel_bandpass[13] = {1.455078491e+02,
-    0,-4,0,6,
-    -0.1002852333, 1.0213655417,
-    -4.6272090652,  12.1726925480,
-    -20.3120761830, 21.9557125490,
-    -14.9560287020,  5.8458265249};
-
-
-// 2nd order lowpass, corner 600Hz
-static const double bessel_lowpass2[4] = {3.707141512e+02,
-    2, -0.8282366449, 1.8174466602};
-
-// 2nd order bandpass at 600 - 4000Hz:
-static const double bessel_bandpass2[7] = {1.596830813e+01, 0, -2,
-    -0.3374389990, 1.7280392126, -3.4124608099, 3.0203698354};
-
-// 2nd order highpass, corner at 4000 Hz:
-static const double bessel_highpass2[4] = {1.451889828e+00, -2, -0.4505643044,
-    1.3044656722};
-
-// 4th order lowpass, corner 600Hz
-static const double bessel_lowpass4[7] = {6.943736360e+04, 4, 6, -0.6673458737,
-    2.9444565421, -4.8814113588, 3.6040702669};
-
-// 4th order highpass, corner 4000Hz
-static const double bessel_highpass4[7] = {1.807553687e+00, -4, 6, -0.2898387148,
-    1.5497144728, -3.1422295239, 2.8699599032};
-
-
-/* Mixer Based EQ curves by John */
-
-/* Pioneer DJM-800 */
-// 4th order highpass, 13000Hz
-static const double bessel_highpass4_DJM800[7] = { 7.008002645e+00, -4,6,
-    -0.0055179324, 0.0231872663, -0.2820220774, 0.3036711584};
-
-//8th order bandpass, 70Hz - 1300Hz
-static const double bessel_bandpass8_DJM800[13] = {6.433626341e+00, 0,-4, 0, 6,
-    -0.0268312520, -0.0457103934, -0.1683239580, 1.0127019818, -1.4501742764, 2.2058243400, -3.8082264201, 3.2807399531};
-
-// 4th order lowpass, 70Hz
-static const double bessel_lowpass4_DJM800[7] = {1.638353272e+09, 4, 6,
-    -0.9742750319, 3.9224911601, -5.9221546753, 3.9739385374};
-
-
-/* Mackie D2 */
-// 4th order highpass, 4000Hz
-static const double bessel_highpass4D2[7] = {1.807553687e+00, -4, 6,
-    -0.2898387148, 1.5497144728, -3.1422295239, 2.8699599032};
-
-
-
-#endif
+#endif // ENGINEFILTERIIR_H
