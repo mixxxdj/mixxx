@@ -301,7 +301,7 @@ void Library::slotRequestAddDir(QString dir) {
             });
         }
     }, __PRETTY_FUNCTION__);
-    // set at least on directory in the config file so that it will be possible
+    // set at least one directory in the config file so that it will be possible
     // to downgrade from 1.12
     if (m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR).length() < 1){
         m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dir);
