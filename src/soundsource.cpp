@@ -233,10 +233,10 @@ void SoundSource::setKey(QString key){
 }
 
 QString SoundSource::toQString(TagLib::String tstring) const {
-    if (tstring != TagLib::String::null) {
-        return TStringToQString(tstring);
+    if (tstring == TagLib::String::null) {
+        return QString();
     }
-    return  QString();
+    return TStringToQString(tstring);
 }
 
 bool SoundSource::processTaglibFile(TagLib::File& f) {
@@ -401,21 +401,6 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
         for(TagLib::APE::ItemListMap::ConstIterator it = ape->itemListMap().begin();
                 it != ape->itemListMap().end(); ++it) {
                 qDebug() << "APE" << toQString((*it).first) << "-" << toQString((*it).second.toString());
-        }
-    }
-
-    // Get Cover Art
-    if (ape->itemListMap().contains("COVER ART (FRONT)"))
-    {
-        const TagLib::ByteVector nullStringTerminator(1, 0);
-        TagLib::ByteVector item = ape->itemListMap()["COVER ART (FRONT)"].value();
-        int pos = item.find(nullStringTerminator);	// skip the filename
-        if (++pos > 0) {
-            const TagLib::ByteVector& data = item.mid(pos);
-            QImage picture = QImage::fromData(reinterpret_cast<const uchar *>(
-                                                  data.data()),
-                                                  data.size());
-            setCoverArt(picture);
         }
     }
 
