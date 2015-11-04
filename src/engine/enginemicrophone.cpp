@@ -9,7 +9,7 @@
 #include "sampleutil.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
-#include "controllogpotmeter.h"
+#include "controlaudiotaperpot.h"
 
 
 EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsManager)
@@ -17,7 +17,7 @@ EngineMicrophone::EngineMicrophone(const char* pGroup, EffectsManager* pEffectsM
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
-          m_pPregain(new ControlLogpotmeter(ConfigKey(pGroup, "pregain"), 4)),
+          m_pPregain(new ControlAudioTaperPot(ConfigKey(pGroup, "pregain"), -12, 12, 0.5)),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {

@@ -70,8 +70,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                           WaveformWidgetRenderer::s_waveformMinZoom,
                                           WaveformWidgetRenderer::s_waveformMaxZoom);
     m_pWaveformZoom->set(1.0);
-    m_pWaveformZoom->setStep(1.0);
-    m_pWaveformZoom->setSmallStep(1.0);
+    m_pWaveformZoom->setStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
+            WaveformWidgetRenderer::s_waveformMinZoom);
+    m_pWaveformZoom->setSmallStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
+            WaveformWidgetRenderer::s_waveformMinZoom);
 
     m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);

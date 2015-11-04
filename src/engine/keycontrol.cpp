@@ -18,9 +18,9 @@ KeyControl::KeyControl(const char* pGroup,
           m_dPitchCompensationOldPitch(0.0) {
     m_pPitch = new ControlPotmeter(ConfigKey(pGroup, "pitch"), -1.f, 1.f);
     // Course adjust by full step.
-    m_pPitch->setStep(1.0 / 12.0);
+    m_pPitch->setStepCount(24);
     // Fine adjust by half-step / semitone.
-    m_pPitch->setSmallStep(1.0 / 24.0);
+    m_pPitch->setSmallStepCount(48);
 
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),

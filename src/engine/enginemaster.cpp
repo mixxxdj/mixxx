@@ -21,8 +21,9 @@
 
 #include "controlpushbutton.h"
 #include "configobject.h"
-#include "controllogpotmeter.h"
+#include "controlaudiotaperpot.h"
 #include "controlpotmeter.h"
+#include "controlaudiotaperpot.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
@@ -97,7 +98,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
 
     // Master volume
-    m_pMasterVolume = new ControlLogpotmeter(ConfigKey(group, "volume"), 5.);
+    m_pMasterVolume = new ControlAudioTaperPot(ConfigKey(group, "volume"), -14, 14, 0.5);
 
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
@@ -106,7 +107,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
 
     // Headphone volume
-    m_pHeadVolume = new ControlLogpotmeter(ConfigKey(group, "headVolume"), 5.);
+    m_pHeadVolume = new ControlAudioTaperPot(ConfigKey(group, "headVolume"), -14, 14, 0.5);
 
     // Headphone mix (left/right)
     m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
@@ -490,8 +491,8 @@ void EngineMaster::process(const int iBufferSize) {
 void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo();
     pChannelInfo->m_pChannel = pChannel;
-    pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
-            ConfigKey(pChannel->getGroup(), "volume"), 1.0);
+    pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
+            ConfigKey(pChannel->getGroup(), "volume"), -20, 0, 1);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pMuteControl = new ControlPushButton(

@@ -11,7 +11,7 @@
 #include "tapfilter.h"
 
 class ControlObject;
-class ControlPotmeter;
+class ControlLinPotmeter;
 class ControlObjectSlave;
 class ControlPushButton;
 class EngineBuffer;
@@ -104,7 +104,7 @@ class BpmControl : public EngineControl {
     ControlObject* m_pFileBpm;
 
     // The current effective BPM of the engine
-    ControlPotmeter* m_pEngineBpm;
+    ControlLinPotmeter* m_pEngineBpm;
 
     // Used for bpm tapping from GUI and MIDI
     ControlPushButton* m_pButtonTap;

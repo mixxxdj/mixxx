@@ -10,7 +10,7 @@
 #include "engine/enginechannel.h"
 
 class ControlObject;
-class ControlPotmeter;
+class ControlLinPotmeter;
 class ControlPushButton;
 class EngineSync;
 
@@ -58,7 +58,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
 
     QString m_group;
     SyncableListener* m_pEngineSync;
-    QScopedPointer<ControlPotmeter> m_pClockBpm;
+    QScopedPointer<ControlLinPotmeter> m_pClockBpm;
     QScopedPointer<ControlObject> m_pClockBeatDistance;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     SyncMode m_mode;

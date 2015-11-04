@@ -23,7 +23,7 @@
 #include "engine/enginefilterbutterworth8.h"
 
 class ControlObjectSlave;
-class ControlLogpotmeter;
+class ControlAudioTaperPot;
 class ControlPotmeter;
 class ControlPushButton;
 
@@ -57,7 +57,7 @@ class EngineFilterBlock : public EngineObject {
     EngineFilterButterworth8Band* bandDef;
     EngineFilterButterworth8High* highDef;
     EngineObjectConstIn *low, *band, *high;
-    ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
+    ControlAudioTaperPot *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
     ControlObjectSlave* m_pSampleRate;
 

@@ -18,7 +18,7 @@
 #include <QtDebug>
 
 #include "controlpushbutton.h"
-#include "controllogpotmeter.h"
+#include "controlaudiotaperpot.h"
 #include "controlobjectslave.h"
 #include "engine/enginefilterblock.h"
 #include "engine/enginefilterbessel4.h"
@@ -78,15 +78,15 @@ EngineFilterBlock::EngineFilterBlock(const char* group)
        highrbj->calc_filter_coeffs(1, 10000., 48000., 0.3., 0., false);
      */
 
-    filterpotLow = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 4.);
+    filterpotLow = new ControlAudioTaperPot(ConfigKey(group, "filterLow"), -12, 12, 0.5);
     filterKillLow = new ControlPushButton(ConfigKey(group, "filterLowKill"));
     filterKillLow->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    filterpotMid = new ControlLogpotmeter(ConfigKey(group, "filterMid"), 4.);
+    filterpotMid = new ControlAudioTaperPot(ConfigKey(group, "filterMid"), -12, 12, 0.5);
     filterKillMid = new ControlPushButton(ConfigKey(group, "filterMidKill"));
     filterKillMid->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    filterpotHigh = new ControlLogpotmeter(ConfigKey(group, "filterHigh"), 4.);
+    filterpotHigh = new ControlAudioTaperPot(ConfigKey(group, "filterHigh"), -12, 12, 0.5);
     filterKillHigh = new ControlPushButton(ConfigKey(group, "filterHighKill"));
     filterKillHigh->setButtonMode(ControlPushButton::POWERWINDOW);
 
