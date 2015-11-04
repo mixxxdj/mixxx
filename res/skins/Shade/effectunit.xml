@@ -1,0 +1,56 @@
+<Template>
+	<WidgetGroup>
+		<Pos>0,0</Pos>
+		<MinimumSize>508,104</MinimumSize>
+	    <MaximumSize>508,104</MaximumSize>
+  		<SizePolicy>f,f</SizePolicy>
+		<Children>
+			<WidgetGroup>
+				<Pos>1,0</Pos>
+				<Size>505,100</Size>
+				<Style>QGroupBox { 
+					border: 0px solid green;  
+					margin: 0px 0px 0px 0px;
+				} 
+				</Style>
+				<BackPath>style/style_bg_effectunit</BackPath>
+				<Children>
+					<WidgetGroup>
+						<Pos>9,5</Pos>
+						<Size>170,90</Size>
+						<Layout>vertical</Layout>
+						<Style>QGroupBox { 
+							background: url(); 
+						} 
+						</Style>
+						<Children>
+							<Template src="skin:effect_selector.xml">
+								<SetVariable name="effectnum">1</SetVariable>
+							</Template>	
+							<Template src="skin:effect_selector.xml">
+								<SetVariable name="effectnum">2</SetVariable>
+							</Template>
+						</Children>
+					</WidgetGroup>		
+					<WidgetGroup>
+						<Pos>170,5</Pos>
+						<Size>300,90</Size>
+						<Layout>vertical</Layout>
+						<Style>QGroupBox { 
+							background: url();
+						} 
+						</Style>
+						<Children>
+							<Template src="skin:effect_parameters.xml">
+								<SetVariable name="effectnum">1</SetVariable>
+							</Template>	
+							<Template src="skin:effect_parameters.xml">
+								<SetVariable name="effectnum">2</SetVariable>
+							</Template>
+						</Children>
+					</WidgetGroup>		
+				</Children>		
+			</WidgetGroup>	
+		</Children>		
+	</WidgetGroup>	
+</Template>

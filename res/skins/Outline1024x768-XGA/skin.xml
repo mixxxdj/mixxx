@@ -92,6 +92,10 @@
 	-->
 	<Schemes>
 		<Scheme>
+			<Name>5pm (Classic Mixxx)</Name>
+			<Filters/>
+		</Scheme>
+		<Scheme>
 			<Name>11pm (Dark Mixxx)</Name>
 			<Filters>
 				<Invert/>
@@ -138,10 +142,7 @@
 				</Add>
 			</Filters>
 		</Scheme>
-		<Scheme>
-			<Name>5pm (Classic Mixxx)</Name>
-			<Filters/>
-		</Scheme>
+
 		<Scheme>
 			<Name>8pm (Summer Sunset Mixxx)</Name>
 			<Filters>
