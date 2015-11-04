@@ -25,6 +25,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
   public slots:
     void slotUpdate();
     void slotApply();
+    void slotCancel();
 
   private slots:
     void rescanControllers();

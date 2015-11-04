@@ -37,20 +37,14 @@ void VampAnalyser::initializePluginPaths() {
     QStringList pathElements = vampPath.length() > 0 ? vampPath.split(PATH_SEPARATOR)
             : QStringList();
 
-    const QString homeLocation = QDesktopServices::storageLocation(
-            QDesktopServices::HomeLocation);
     const QString dataLocation = QDesktopServices::storageLocation(
             QDesktopServices::DataLocation);
     const QString applicationPath = QCoreApplication::applicationDirPath();
 
 #ifdef __WINDOWS__
     QDir winVampPath(applicationPath);
-    if (winVampPath.cd("plugins")) {
-        if (winVampPath.cd("vamp")) {
-            pathElements << winVampPath.absolutePath().replace("/","\\");
-        } else {
-            qDebug() << winVampPath.absolutePath() << "does not exist!";
-        }
+    if (winVampPath.cd("plugins") && winVampPath.cd("vamp")) {
+        pathElements << winVampPath.absolutePath().replace("/","\\");
     } else {
         qDebug() << winVampPath.absolutePath() << "does not exist!";
     }

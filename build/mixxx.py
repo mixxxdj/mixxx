@@ -319,6 +319,16 @@ class MixxxBuild(object):
         if 'LDFLAGS' in os.environ:
             self.env['LINKFLAGS'] += SCons.Util.CLVar(os.environ['LDFLAGS'])
 
+        # Allow installation directories to be specified.
+        prefix = Script.ARGUMENTS.get('prefix', '/usr/local')
+        if os.environ.has_key('LIBDIR'):
+            self.env['LIBDIR'] = os.path.relpath(os.environ['LIBDIR'], prefix)
+        if os.environ.has_key('BINDIR'):
+            self.env['BINDIR'] = os.path.relpath(os.environ['BINDIR'], prefix)
+        if os.environ.has_key('SHAREDIR'):
+            self.env['SHAREDIR'] = \
+                os.path.relpath(os.environ['SHAREDIR'], prefix)
+
         # Initialize this as a list, fixes a bug where first CPPDEFINE would get
         # mangled
         self.env['CPPDEFINES'] = []

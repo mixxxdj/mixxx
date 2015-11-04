@@ -3,6 +3,9 @@
 
 #include <QList>
 #include <QPair>
+#include <QMetaType>
+
+#include "configobject.h"
 
 typedef enum {
     MIDI_NOTE_OFF       = 0x80,
@@ -32,6 +35,24 @@ typedef enum {
 
 typedef unsigned int    uint32_t;
 typedef unsigned short  uint16_t;
+
+typedef enum {
+    MIDI_OPTION_NONE          = 0x0000,
+    MIDI_OPTION_INVERT        = 0x0001,
+    MIDI_OPTION_ROT64         = 0x0002,
+    MIDI_OPTION_ROT64_INV     = 0x0004,
+    MIDI_OPTION_ROT64_FAST    = 0x0008,
+    MIDI_OPTION_DIFF          = 0x0010,
+    MIDI_OPTION_BUTTON        = 0x0020,
+    MIDI_OPTION_SWITCH        = 0x0040,
+    MIDI_OPTION_SPREAD64      = 0x0080,
+    MIDI_OPTION_HERC_JOG      = 0x0100,
+    MIDI_OPTION_SELECTKNOB    = 0x0200,
+    MIDI_OPTION_SOFT_TAKEOVER = 0x0400,
+    MIDI_OPTION_SCRIPT        = 0x0800,
+    // Should mask all bits used.
+    MIDI_OPTION_MASK          = 0x0FFF,
+} MidiOption;
 
 struct MidiOptions {
     MidiOptions()
@@ -63,16 +84,23 @@ struct MidiOptions {
         };
     };
 };
+Q_DECLARE_METATYPE(MidiOptions);
 
 struct MidiOutput {
     MidiOutput()
-            : min(0),
-              max(0.0),
-              message(0) {
+            : message(0) {
+        // MSVC gets confused and thinks min/max are macros so they can't appear
+        // in the initializer list.
+        min = 0.0;
+        max = 0.0;
     }
 
-    float       min;
-    float       max;
+    bool operator==(const MidiOutput& other) const {
+        return min == other.min && max == other.max && message == other.message;
+    }
+
+    double min;
+    double max;
     union
     {
         uint32_t    message;
@@ -112,37 +140,37 @@ struct MidiKey {
     };
 };
 
-typedef QPair<MidiKey, MidiOptions> MidiKeyAndOptions;
-typedef QList<QPair<MidiKey, MidiOptions> > MidiKeyAndOptionsList;
-
-inline unsigned char channelFromStatus(unsigned char status) {
-    return status & 0x0F;
-}
-
-inline MidiOpCode opCodeFromStatus(unsigned char status) {
-    unsigned char opCode = status & 0xF0;
-    // MIDI_SYSEX and higher don't have a channel and occupy the entire byte.
-    if (opCode == 0xF0) {
-        opCode = status;
+struct MidiInputMapping {
+    MidiInputMapping() {
     }
-    return static_cast<MidiOpCode>(opCode);
-}
 
-inline bool isMessageTwoBytes(unsigned char opCode) {
-    switch (opCode) {
-        case MIDI_SONG:
-        case MIDI_NOTE_OFF:
-        case MIDI_NOTE_ON:
-        case MIDI_AFTERTOUCH:
-        case MIDI_CC:
-            return true;
-        default:
-            return false;
+    MidiInputMapping(MidiKey key, MidiOptions options)
+            : key(key),
+              options(options) {
     }
-}
 
-inline bool isClockSignal(const MidiKey& mappingKey) {
-    return (mappingKey.key & MIDI_TIMING_CLK) == MIDI_TIMING_CLK;
-}
+    bool operator==(const MidiInputMapping& other) const {
+        return key == other.key && options == other.options &&
+                control == other.control && description == other.description;
+    }
+
+    MidiKey key;
+    MidiOptions options;
+    ConfigKey control;
+    QString description;
+};
+typedef QList<MidiInputMapping> MidiInputMappings;
+
+struct MidiOutputMapping {
+    bool operator==(const MidiOutputMapping& other) const {
+        return output == other.output && control == other.control &&
+                description == other.description;
+    }
+
+    MidiOutput output;
+    ConfigKey control;
+    QString description;
+};
+typedef QList<MidiOutputMapping> MidiOutputMappings;
 
 #endif

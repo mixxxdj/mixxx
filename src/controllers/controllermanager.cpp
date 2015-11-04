@@ -78,7 +78,9 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
     m_pPresetInfoManager = new PresetInfoEnumerator(m_pConfig);
 
     // Instantiate all enumerators
+#ifdef __PORTMIDI__
     m_enumerators.append(new PortMidiEnumerator());
+#endif // __PORTMIDI__
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator());
 #endif
@@ -392,6 +394,9 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
     QList<Controller*> deviceList = getControllerList(false, true);
     QSet<QString> filenames;
 
+    // TODO(rryan): This should be split up somehow but the filename selection
+    // is dependent on all of the controllers to prevent over-writing each
+    // other. We need a better solution.
     foreach (Controller* pController, deviceList) {
         if (onlyActive && !pController->isOpen()) {
             continue;

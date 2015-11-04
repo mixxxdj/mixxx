@@ -3,11 +3,12 @@
 #include <QtDebug>
 
 #include "controllers/learningutils.h"
+#include "controllers/midi/midiutils.h"
 
 typedef QPair<MidiKey, unsigned char> MidiKeyAndValue;
 
 // static
-QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
+MidiInputMappings LearningUtils::guessMidiInputMappings(
     const QList<QPair<MidiKey, unsigned char> >& messages) {
 
     QSet<MidiOpCode> opcodes;
@@ -20,8 +21,8 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
     // Analyze the message
     unsigned char lastValue = !messages.isEmpty() ? messages.at(0).second : 0;
     foreach (const MidiKeyAndValue& message, messages) {
-        MidiOpCode opcode = opCodeFromStatus(message.first.status);
-        unsigned char channel = channelFromStatus(message.first.status);
+        MidiOpCode opcode = MidiUtils::opCodeFromStatus(message.first.status);
+        unsigned char channel = MidiUtils::channelFromStatus(message.first.status);
         opcodes.insert(opcode);
         channels.insert(channel);
         controls.insert(message.first.control);
@@ -62,7 +63,7 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
                  << "count" << it.value();
     }
 
-    QList<QPair<MidiKey, MidiOptions> > mappings;
+    MidiInputMappings mappings;
 
     bool one_control = controls.size() == 1;
     bool one_channel = channels.size() == 1;
@@ -103,12 +104,12 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
         MidiKey note_on;
         note_on.status = MIDI_NOTE_ON | *channels.begin();
         note_on.control = *controls.begin();
-        mappings.append(qMakePair(note_on, options));
+        mappings.append(MidiInputMapping(note_on, options));
 
         MidiKey note_off;
         note_off.status = MIDI_NOTE_OFF | *channels.begin();
         note_off.control = note_on.control;
-        mappings.append(qMakePair(note_off, options));
+        mappings.append(MidiInputMapping(note_off, options));
     } else if (one_control && one_channel &&
                two_values_7bit_max_and_min &&
                only_note_on) {
@@ -119,7 +120,7 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
         MidiKey note_on;
         note_on.status = MIDI_NOTE_ON | *channels.begin();
         note_on.control = *controls.begin();
-        mappings.append(qMakePair(note_on, options));
+        mappings.append(MidiInputMapping(note_on, options));
     } else if (one_control && one_channel &&
                one_value_7bit_max_or_min &&
                only_note_on) {
@@ -132,7 +133,7 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
         MidiKey note_on;
         note_on.status = MIDI_NOTE_ON | *channels.begin();
         note_on.control = *controls.begin();
-        mappings.append(qMakePair(note_on, options));
+        mappings.append(MidiInputMapping(note_on, options));
     } else if (one_control && one_channel &&
                only_cc && only_7bit_values && (abs_differences_above_60 ||
                                                multiple_one_or_7f_values)) {
@@ -151,7 +152,7 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
         MidiKey knob;
         knob.status = MIDI_CC | *channels.begin();
         knob.control = *controls.begin();
-        mappings.append(qMakePair(knob, options));
+        mappings.append(MidiInputMapping(knob, options));
     } else if (one_control && one_channel && multiple_values_around_0x40) {
         // A "spread 64" ticker, where 0x40 is zero, positive jog values are
         // 0x41 and above, and negative jog values are 0x3F and below.
@@ -161,7 +162,7 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
         MidiKey knob;
         knob.status = MIDI_CC | *channels.begin();
         knob.control = *controls.begin();
-        mappings.append(qMakePair(knob, options));
+        mappings.append(MidiInputMapping(knob, options));
     } else if (one_control && one_channel &&
                only_cc && only_7bit_values) {
         // A simple 7-bit knob.
@@ -170,7 +171,7 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
         MidiKey knob;
         knob.status = MIDI_CC | *channels.begin();
         knob.control = *controls.begin();
-        mappings.append(qMakePair(knob, options));
+        mappings.append(MidiInputMapping(knob, options));
     }
 
     if (mappings.isEmpty() && !messages.isEmpty()) {
@@ -181,7 +182,7 @@ QList<QPair<MidiKey, MidiOptions> > LearningUtils::guessMidiInputMappings(
 
         // TODO(rryan): Feedback to the user that we didn't do anything
         // intelligent here.
-        mappings.append(qMakePair(messages.first().first, options));
+        mappings.append(MidiInputMapping(messages.first().first, options));
     }
 
     return mappings;

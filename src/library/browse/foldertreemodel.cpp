@@ -1,7 +1,7 @@
 #if defined (__WINDOWS__)
 #include <windows.h>
 #include <Shellapi.h>
-#include <Shobjidl.h>
+#include <Shlobj.h>
 #else
 #include <sys/types.h>
 #include <sys/stat.h>

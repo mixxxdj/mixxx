@@ -373,7 +373,7 @@ class Qt(Dependence):
 
 class TestHeaders(Dependence):
     def configure(self, build, conf):
-        build.env.Append(CPPPATH="#lib/gtest-1.5.0/include")
+        build.env.Append(CPPPATH="#lib/gtest-1.7.0/include")
 
 class FidLib(Dependence):
 
@@ -543,7 +543,6 @@ class MixxxCore(Feature):
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
                    "controllers/dlgprefcontroller.cpp",
-                   "controllers/dlgprefmappablecontroller.cpp",
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontrollers.cpp",
                    "dlgpreflibrary.cpp",
@@ -648,12 +647,20 @@ class MixxxCore(Feature):
                    "controllers/controllerpresetfilehandler.cpp",
                    "controllers/controllerpresetinfo.cpp",
                    "controllers/controlpickermenu.cpp",
+                   "controllers/controllermappingtablemodel.cpp",
+                   "controllers/controllerinputmappingtablemodel.cpp",
+                   "controllers/controlleroutputmappingtablemodel.cpp",
+                   "controllers/delegates/controldelegate.cpp",
+                   "controllers/delegates/midichanneldelegate.cpp",
+                   "controllers/delegates/midiopcodedelegate.cpp",
+                   "controllers/delegates/midibytedelegate.cpp",
+                   "controllers/delegates/midioptionsdelegate.cpp",
                    "controllers/learningutils.cpp",
+                   "controllers/midi/midiutils.cpp",
                    "controllers/midi/midicontroller.cpp",
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midienumerator.cpp",
                    "controllers/midi/midioutputhandler.cpp",
-                   "controllers/mixxxcontrol.cpp",
                    "controllers/qtscript-bytearray/bytearrayclass.cpp",
                    "controllers/qtscript-bytearray/bytearrayprototype.cpp",
                    "controllers/softtakeover.cpp",
@@ -925,7 +932,6 @@ class MixxxCore(Feature):
         ui_files = [
             'controllers/dlgcontrollerlearning.ui',
             'controllers/dlgprefcontrollerdlg.ui',
-            'controllers/dlgprefmappablecontrollerdlg.ui',
             'controllers/dlgprefcontrollersdlg.ui',
             'dlgaboutdlg.ui',
             'dlganalysis.ui',
@@ -1001,6 +1007,9 @@ class MixxxCore(Feature):
             # Set include and library paths to work with this
             build.env.Append(CPPPATH=mixxx_lib_path)
             build.env.Append(LIBPATH=mixxx_lib_path)
+
+            # Find executables (e.g. protoc) in the winlib path
+            build.env.AppendENVPath('PATH', mixxx_lib_path)
 
             # Ugh, MSVC-only hack :( see
             # http://www.qtforum.org/article/17883/problem-using-qstring-
@@ -1091,10 +1100,12 @@ class MixxxCore(Feature):
         # RESOURCE_PATH that covers Win and OSX too:
         if build.platform_is_linux or build.platform_is_bsd:
             prefix = SCons.ARGUMENTS.get('prefix', '/usr/local')
-            share_path = os.path.join(prefix, 'share/mixxx')
+            share_path = os.path.join (prefix, build.env.get(
+                'SHAREDIR', default='share'), 'mixxx')
             build.env.Append(
                 CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
-            lib_path = os.path.join(prefix, 'lib/mixxx')
+            lib_path = os.path.join(prefix, build.env.get(
+                'LIBDIR', default='lib'), 'mixxx')
             build.env.Append(
                 CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
