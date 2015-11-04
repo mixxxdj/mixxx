@@ -80,6 +80,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     libnames << "mp3lame";
 #elif __WINDOWS__
     libnames << "lame_enc.dll";
+    libnames << "libmp3lame.dll";
 #elif __APPLE__
     libnames << "/usr/local/lib/libmp3lame.dylib";
     //Using MacPorts (former DarwinPorts) results in ...
@@ -88,8 +89,12 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
 
     foreach (QString libname, libnames) {
         m_library = new QLibrary(libname, 0);
-        if (m_library->load())
+        if (m_library->load()) {
+            qDebug() << "Successfully loaded encoder library " << libname;
             break;
+        } else {
+            qWarning() << "Failed to load " << libname << ", " << m_library->errorString();
+        }
         delete m_library;
         m_library = NULL;
     }

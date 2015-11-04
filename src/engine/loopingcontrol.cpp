@@ -16,7 +16,8 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
-double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, };
+double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
+                                          1, 2, 4, 8, 16, 32, 64 };
 
 // Used to generate the beatloop_%SIZE, beatjump_%SIZE, and loop_move_%SIZE CO
 // ConfigKeys.
@@ -25,6 +26,15 @@ ConfigKey keyForControl(const char* pGroup, QString ctrlName, double num) {
     key.group = pGroup;
     key.item = ctrlName.arg(num);
     return key;
+}
+
+// static
+QList<double> LoopingControl::getBeatSizes() {
+    QList<double> result;
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+        result.append(s_dBeatSizes[i]);
+    }
+    return result;
 }
 
 LoopingControl::LoopingControl(const char* _group,
@@ -82,13 +92,13 @@ LoopingControl::LoopingControl(const char* _group,
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize"));
     m_pNextBeat = ControlObject::getControl(ConfigKey(_group, "beat_next"));
     m_pClosestBeat = ControlObject::getControl(ConfigKey(_group, "beat_closest"));
-    m_pTrackSamples = ControlObject::getControl(ConfigKey(_group,"track_samples"));
-    m_pSlipEnabled = ControlObject::getControl(ConfigKey(_group,"slip_enabled"));
+    m_pTrackSamples = ControlObject::getControl(ConfigKey(_group, "track_samples"));
+    m_pSlipEnabled = ControlObject::getControl(ConfigKey(_group, "slip_enabled"));
 
     // Connect beatloop, which can flexibly handle different values.
     // Using this CO directly is meant to be used internally and by scripts,
     // or anything else that can pass in arbitrary values.
-    m_pCOBeatLoop = new ControlObject(ConfigKey(_group, "beatloop"));
+    m_pCOBeatLoop = new ControlObject(ConfigKey(_group, "beatloop"), false);
     connect(m_pCOBeatLoop, SIGNAL(valueChanged(double)), this,
             SLOT(slotBeatLoop(double)), Qt::DirectConnection);
 
@@ -112,7 +122,7 @@ LoopingControl::LoopingControl(const char* _group,
         m_beatLoops.append(pBeatLoop);
     }
 
-    m_pCOBeatJump = new ControlObject(ConfigKey(_group, "beatjump"));
+    m_pCOBeatJump = new ControlObject(ConfigKey(_group, "beatjump"), false);
     connect(m_pCOBeatJump, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatJump(double)), Qt::DirectConnection);
 
@@ -126,7 +136,7 @@ LoopingControl::LoopingControl(const char* _group,
         m_beatJumps.append(pBeatJump);
     }
 
-    m_pCOLoopMove = new ControlObject(ConfigKey(_group, "loop_move"));
+    m_pCOLoopMove = new ControlObject(ConfigKey(_group, "loop_move"), false);
     connect(m_pCOLoopMove, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopMove(double)), Qt::DirectConnection);
 
@@ -140,7 +150,7 @@ LoopingControl::LoopingControl(const char* _group,
         m_loopMoves.append(pLoopMove);
     }
 
-    m_pCOLoopScale = new ControlObject(ConfigKey(_group, "loop_scale"));
+    m_pCOLoopScale = new ControlObject(ConfigKey(_group, "loop_scale"), false);
     connect(m_pCOLoopScale, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopScale(double)));
     m_pLoopHalveButton = new ControlPushButton(ConfigKey(_group, "loop_halve"));

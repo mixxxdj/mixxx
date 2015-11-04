@@ -20,7 +20,7 @@ class EngineMicrophoneTest : public testing::Test {
         output = SampleUtil::alloc(outputLength);
         test = SampleUtil::alloc(outputLength);
 
-        m_pMicrophone = new EngineMicrophone("[Microphone]");
+        m_pMicrophone = new EngineMicrophone("[Microphone]", NULL);
         m_pTalkover = ControlObject::getControl(ConfigKey("[Microphone]", "talkover"));
     }
 

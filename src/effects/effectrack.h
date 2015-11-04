@@ -24,7 +24,7 @@ class EffectRack : public QObject {
     virtual ~EffectRack();
 
     static QString formatGroupString(const unsigned int iRackNumber) {
-        return QString("[EffectRack%1]").arg(iRackNumber);
+        return QString("[EffectRack%1]").arg(iRackNumber + 1);
     }
 
     void addToEngine();
