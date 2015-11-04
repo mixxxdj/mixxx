@@ -69,9 +69,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     ControlObjectThread* m_pSlipEnabled;
     ControlObjectThread* m_pSlipPosition;
 
-#ifdef __VINYLCONTROL__
     VinylControlManager* m_pVCManager;
-#endif
     double m_dInitialPos;
 
     int m_iVinylInput;

@@ -13,6 +13,7 @@
 #include "skin/legacyskinparser.h"
 #include "controllers/controllermanager.h"
 #include "library/library.h"
+#include "effects/effectsmanager.h"
 #include "playermanager.h"
 #include "util/debug.h"
 
@@ -77,9 +78,12 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                      PlayerManager* pPlayerManager,
                                      ControllerManager* pControllerManager,
                                      Library* pLibrary,
-                                     VinylControlManager* pVCMan, TrackCollection* pTrackCollection) {
+                                     VinylControlManager* pVCMan,
+                                     TrackCollection* pTrackCollection,
+                                     EffectsManager* pEffectsManager) {
     QString skinPath = getConfiguredSkinPath();
 
-    LegacySkinParser legacy(m_pConfig, pTrackCollection, pKeyboard, pPlayerManager, pControllerManager, pLibrary, pVCMan);
+    LegacySkinParser legacy(m_pConfig, pTrackCollection, pKeyboard, pPlayerManager,
+                            pControllerManager, pLibrary, pVCMan, pEffectsManager);
     return legacy.parseSkin(skinPath, pParent);
 }

@@ -52,10 +52,10 @@ class LoopingControlTest : public MockedEngineBackendTest {
                 ConfigKey(m_sGroup1, "loop_end_position")));
         m_pPlayPosition.reset(getControlObjectThread(
                 ConfigKey(m_sGroup1, "playposition")));
-        m_pButtonBeatShiftForward.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "beatshift_forward")));
-        m_pButtonBeatShiftBackward.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "beatshift_backward")));
+        m_pButtonBeatMoveForward.reset(getControlObjectThread(
+                ConfigKey(m_sGroup1, "loop_move_1_forward")));
+        m_pButtonBeatMoveBackward.reset(getControlObjectThread(
+                ConfigKey(m_sGroup1, "loop_move_1_backward")));
     }
 
     bool isLoopEnabled() {
@@ -82,8 +82,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
     QScopedPointer<ControlObjectThread> m_pLoopStartPoint;
     QScopedPointer<ControlObjectThread> m_pLoopEndPoint;
     QScopedPointer<ControlObjectThread> m_pPlayPosition;
-    QScopedPointer<ControlObjectThread> m_pButtonBeatShiftForward;
-    QScopedPointer<ControlObjectThread> m_pButtonBeatShiftBackward;
+    QScopedPointer<ControlObjectThread> m_pButtonBeatMoveForward;
+    QScopedPointer<ControlObjectThread> m_pButtonBeatMoveBackward;
 };
 
 TEST_F(LoopingControlTest, LoopSet) {
@@ -320,7 +320,7 @@ TEST_F(LoopingControlTest, LoopHalveButton_IgnoresTooSmall) {
     EXPECT_EQ(40, m_pLoopEndPoint->get());
 }
 
-TEST_F(LoopingControlTest, LoopShiftTest) {
+TEST_F(LoopingControlTest, LoopMoveTest) {
     // Set a crazy bpm so our super-short track of 1000 samples has a couple beats in it.
     m_pTrack1->setBpm(23520);
     m_pLoopStartPoint->slotSet(0);
@@ -330,19 +330,19 @@ TEST_F(LoopingControlTest, LoopShiftTest) {
     EXPECT_EQ(300, m_pLoopEndPoint->get());
     EXPECT_EQ(10, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 
-    // Shift the loop out from under the playposition.
-    m_pButtonBeatShiftForward->set(1.0);
-    m_pButtonBeatShiftForward->set(0.0);
+    // Move the loop out from under the playposition.
+    m_pButtonBeatMoveForward->set(1.0);
+    m_pButtonBeatMoveForward->set(0.0);
     ProcessBuffer();
     EXPECT_EQ(224, m_pLoopStartPoint->get());
     EXPECT_EQ(524, m_pLoopEndPoint->get());
     EXPECT_EQ(310, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
 
-    // Shift backward so that the current position is off the end of the loop.
+    // Move backward so that the current position is off the end of the loop.
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(500, EngineBuffer::SEEK_STANDARD);
     ProcessBuffer();
-    m_pButtonBeatShiftBackward->set(1.0);
-    m_pButtonBeatShiftBackward->set(0.0);
+    m_pButtonBeatMoveBackward->set(1.0);
+    m_pButtonBeatMoveBackward->set(0.0);
     ProcessBuffer();
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(300, m_pLoopEndPoint->get());

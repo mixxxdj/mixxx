@@ -17,6 +17,7 @@
 class ControlPushButton;
 class ControlObject;
 
+class LoopMoveControl;
 class BeatJumpControl;
 class BeatLoopingControl;
 
@@ -76,10 +77,8 @@ class LoopingControl : public EngineControl {
     // Jump forward or backward by beats.
     void slotBeatJump(double beats);
 
-    // Shift the loop by beats.
-    void slotBeatShift(double beats);
-    void slotBeatShiftForward(double);
-    void slotBeatShiftBackward(double);
+    // Move the loop by beats.
+    void slotLoopMove(double beats);
 
     void slotLoopScale(double);
     void slotLoopDouble(double);
@@ -126,12 +125,33 @@ class LoopingControl : public EngineControl {
 
     ControlObject* m_pCOBeatJump;
     QList<BeatJumpControl*> m_beatJumps;
-    ControlObject* m_pCOBeatShift;
-    ControlObject* m_pCOBeatShiftForward;
-    ControlObject* m_pCOBeatShiftBackward;
+
+    ControlObject* m_pCOLoopMove;
+    QList<LoopMoveControl*> m_loopMoves;
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
+};
+
+// Class for handling loop moves of a set size. This allows easy access from
+// skins.
+class LoopMoveControl : public QObject {
+    Q_OBJECT
+  public:
+    LoopMoveControl(const char* pGroup, double size);
+    virtual ~LoopMoveControl();
+
+  signals:
+    void loopMove(double beats);
+
+  public slots:
+    void slotMoveForward(double value);
+    void slotMoveBackward(double value);
+
+  private:
+    double m_dLoopMoveSize;
+    ControlPushButton* m_pMoveForward;
+    ControlPushButton* m_pMoveBackward;
 };
 
 // Class for handling beat jumps of a set size. This allows easy access from
@@ -150,7 +170,7 @@ class BeatJumpControl : public QObject {
     void slotJumpBackward(double value);
 
   private:
-    double m_dBeatLoopSize;
+    double m_dBeatJumpSize;
     ControlPushButton* m_pJumpForward;
     ControlPushButton* m_pJumpBackward;
 };

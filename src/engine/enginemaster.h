@@ -30,6 +30,7 @@
 class EngineWorkerScheduler;
 class EngineBuffer;
 class EngineChannel;
+class EngineDeck;
 class EngineClipping;
 class EngineFlanger;
 class EngineVuMeter;
@@ -37,6 +38,8 @@ class ControlPotmeter;
 class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
+class EffectsManager;
+class EngineEffectsManager;
 class SyncWorker;
 class GuiTick;
 class EngineSync;
@@ -48,13 +51,22 @@ class EngineMaster : public QObject, public AudioSource {
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
+                 EffectsManager* pEffectsManager,
                  bool bEnableSidechain,
-                 bool bRampingGain=true);
+                 bool bRampingGain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
     const CSAMPLE* buffer(AudioOutput output) const;
+
+    const QString getMasterGroup() const {
+        return QString("[Master]");
+    }
+
+    const QString getHeadphoneGroup() const {
+        return QString("[Headphone]");
+    }
 
     // WARNING: These methods are called by the main thread. They should only
     // touch the volatile bool connected indicators (see below). However, when
@@ -178,6 +190,7 @@ class EngineMaster : public QObject, public AudioSource {
                          unsigned int* headphoneOutput,
                          int iBufferSize);
 
+    EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
     QList<CSAMPLE> m_channelMasterGainCache;
@@ -217,6 +230,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
+    CSAMPLE m_masterVolumeOld;
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneVolumeOld;
 

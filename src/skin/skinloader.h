@@ -11,6 +11,7 @@ class ControllerManager;
 class Library;
 class VinylControlManager;
 class TrackCollection;
+class EffectsManager;
 
 class SkinLoader {
   public:
@@ -22,7 +23,8 @@ class SkinLoader {
                              ControllerManager* pControllerManager,
                              Library* pLibrary,
                              VinylControlManager* pVCMan,
-                             TrackCollection* pTrackCollection);
+                             TrackCollection* pTrackCollection,
+                             EffectsManager* pEffectsManager);
 
     QString getConfiguredSkinPath();
 
