@@ -1,3 +1,4 @@
+#include <QHashIterator>
 #include <QtDebug>
 #include <QThread>
 
@@ -43,6 +44,59 @@ int CoverArtDAO::saveCoverArt(QString coverLocation, QString md5Hash) {
     }
 
     return coverId;
+}
+
+QSet<QPair<int, int> > CoverArtDAO::saveCoverArt(
+                            QHash<int, QPair<QString, QString> > covers) {
+    if (covers.isEmpty()) {
+        return QSet<QPair<int, int> >();
+    }
+
+    // it'll be used to avoid writing a new ID for
+    // rows which have the same md5 (not changed).
+    QString selectCoverId = QString("SELECT id FROM cover_art WHERE md5='%1'");
+
+    // <trackId, coverId>
+    QSet<QPair<int, int> > res;
+
+    // preparing query to insert multi rows
+    QString sQuery;
+    QHashIterator<int, QPair<QString, QString> > i(covers);
+    i.next();
+    res.insert(qMakePair(i.key(), -1));
+    sQuery = QString("INSERT OR REPLACE INTO cover_art ('id', 'location', 'md5') "
+                     "SELECT (%1) AS 'id', '%2' AS 'location', '%3' AS 'md5' ")
+                    .arg(selectCoverId.arg(i.value().second))
+                    .arg(i.value().first)
+                    .arg(i.value().second);
+
+    while (i.hasNext()) {
+        i.next();
+        res.insert(qMakePair(i.key(), -1));
+        sQuery = sQuery % QString("UNION SELECT (%1), '%2', '%3'")
+                .arg(selectCoverId.arg(i.value().second))
+                .arg(i.value().first)
+                .arg(i.value().second);
+    }
+
+    QSqlQuery query(m_database);
+    if (!query.exec(sQuery)) {
+        LOG_FAILED_QUERY(query) << "Failed to save multiple covers!";
+        return QSet<QPair<int, int> >();
+    }
+
+    QSetIterator<QPair<int, int> > set(res);
+    while (set.hasNext()) {
+        QPair<int, int> p = set.next();
+        int trackId = p.first;
+        int coverId = getCoverArtId(covers.value(trackId).second);
+        if (coverId > 0) {
+            res.remove(p);
+            res.insert(qMakePair(trackId, coverId));
+        }
+    }
+
+    return res;
 }
 
 void CoverArtDAO::deleteUnusedCoverArts() {
@@ -109,42 +163,39 @@ CoverArtDAO::CoverArtInfo CoverArtDAO::getCoverArtInfo(int trackId) {
         return CoverArtInfo();
     }
 
-    QSqlQuery query(m_database);
-    query.prepare(
-        "SELECT album, cover_art.location AS cover, cover_art.md5 AS md5, "
-        "track_locations.directory AS directory, "
-        "track_locations.filename AS filename, "
-        "track_locations.location AS location "
-        "FROM Library INNER JOIN track_locations "
-        "ON library.location = track_locations.id "
-        "LEFT JOIN cover_art ON cover_art.id = library.cover_art "
-        "WHERE library.id=:id "
-    );
-    query.bindValue(":id", trackId);
+    // This method can be called a lot of times (by CoverCache),
+    // if we use functions like "indexOf()" to find the column numbers
+    // it will do at least one new loop for each column and it can bring
+    // performance issues...
+    QString columns = "album,"                         //0
+                      "cover_art.location AS cover,"   //1
+                      "cover_art.md5,"                 //2
+                      "track_locations.directory,"     //3
+                      "track_locations.filename,"      //4
+                      "track_locations.location";      //5
 
-    if (!query.exec()) {
+    QString sQuery = QString(
+         "SELECT " % columns % " FROM Library "
+         "INNER JOIN track_locations ON library.location = track_locations.id "
+         "LEFT JOIN cover_art ON cover_art.id = library.cover_art "
+         "WHERE library.id = %1").arg(trackId);
+
+    QSqlQuery query(m_database);
+    if (!query.exec(sQuery)) {
       LOG_FAILED_QUERY(query);
       return CoverArtInfo();
     }
 
-    QSqlRecord queryRecord = query.record();
-    const int albumColumn = queryRecord.indexOf("album");
-    const int coverColumn = queryRecord.indexOf("cover");
-    const int md5Column = queryRecord.indexOf("md5");
-    const int directoryColumn = queryRecord.indexOf("directory");
-    const int filenameColumn = queryRecord.indexOf("filename");
-    const int locationColumn = queryRecord.indexOf("location");
-
     if (query.next()) {
         CoverArtInfo coverInfo;
         coverInfo.trackId = trackId;
-        coverInfo.album = query.value(albumColumn).toString();
-        coverInfo.coverLocation = query.value(coverColumn).toString();
-        coverInfo.md5Hash = query.value(md5Column).toString();
-        coverInfo.trackDirectory = query.value(directoryColumn).toString();
-        coverInfo.trackLocation = query.value(locationColumn).toString();
-        coverInfo.trackBaseName = QFileInfo(query.value(filenameColumn)
-                                            .toString()).baseName();
+        coverInfo.album = query.value(0).toString();
+        coverInfo.coverLocation = query.value(1).toString();
+        coverInfo.md5Hash = query.value(2).toString();
+        coverInfo.trackDirectory = query.value(3).toString();
+        QString filename = query.value(4).toString();
+        coverInfo.trackLocation = query.value(5).toString();
+        coverInfo.trackBaseName = QFileInfo(filename).baseName();
         return coverInfo;
     }
 

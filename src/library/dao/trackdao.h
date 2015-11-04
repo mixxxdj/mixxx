@@ -50,6 +50,7 @@ const QString LIBRARYTABLE_KEY = "key";
 const QString LIBRARYTABLE_KEY_ID = "key_id";
 const QString LIBRARYTABLE_BPM_LOCK = "bpm_lock";
 const QString LIBRARYTABLE_PREVIEW = "preview";
+const QString LIBRARYTABLE_COVERART = "cover";
 const QString LIBRARYTABLE_COVERART_LOCATION = "cover_art";
 const QString LIBRARYTABLE_COVERART_MD5 = "md5";
 
@@ -115,6 +116,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     // it will update the Library.cover_art column in DB
     bool updateCoverArt(int trackId, int coverId);
+    bool updateCoverArt(QSet<QPair<int, int> > covers);
 
   signals:
     void trackDirty(int trackId);
@@ -125,6 +127,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void dbTrackAdded(TrackPointer pTrack);
     void progressVerifyTracksOutside(QString path);
     void updateTrackInBTC(int trackId);
+    void updateTracksInBTC(QSet<int> trackIds);
 
   public slots:
     // The public interface to the TrackDAO requires a TrackPointer so that we

@@ -8,6 +8,7 @@
 
 #include "library/basesqltablemodel.h"
 
+#include "library/coverartdelegate.h"
 #include "library/stardelegate.h"
 #include "library/starrating.h"
 #include "library/bpmdelegate.h"
@@ -94,6 +95,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("BPM Lock"));
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW),
                   Qt::Horizontal, tr("Preview"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART),
+                  Qt::Horizontal, tr("Cover Art"));
 }
 
 bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
@@ -677,7 +680,8 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         return defaultFlags;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
@@ -918,6 +922,8 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
         return new BPMDelegate(pParent, i, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pParent, i, m_pTrackCollection);
+    } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
+        return new CoverArtDelegate(pParent);
     }
     return NULL;
 }

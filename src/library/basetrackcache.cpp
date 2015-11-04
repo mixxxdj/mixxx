@@ -130,6 +130,13 @@ void BaseTrackCache::slotUpdateTrack(int trackId) {
     updateTrackInIndex(trackId);
 }
 
+void BaseTrackCache::slotUpdateTracks(QSet<int> trackIds) {
+    if (sDebug) {
+        qDebug() << this << "slotUpdateTracks" << trackIds.size();
+    }
+    updateTracksInIndex(trackIds);
+}
+
 void BaseTrackCache::ensureCached(int trackId) {
     updateTrackInIndex(trackId);
 }

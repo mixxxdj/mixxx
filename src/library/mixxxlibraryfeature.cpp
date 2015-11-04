@@ -94,14 +94,13 @@ void MixxxLibraryFeature::init() {
         }
     }
 
-    // All database access must be provided thru TrackCollection thread,
-    //    According to it, all signals emitted from TrackDAO will be emitted
-    //    from TrackCollection thread. Qt::DirectConnection uses here
-
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
         m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
 
-        m_pTrackCollection->callSync( [this, &pBaseTrackCache] (TrackCollectionPrivate* pTrackCollectionPrivate){
+    // All database access must be provided thru TrackCollection thread,
+    //    According to it, all signals emitted from TrackDAO will be emitted
+    //    from TrackCollection thread. Qt::DirectConnection uses here
+    m_pTrackCollection->callSync( [this, &pBaseTrackCache] (TrackCollectionPrivate* pTrackCollectionPrivate){
         connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(trackDirty(int)),
                 pBaseTrackCache, SLOT(slotTrackDirty(int)),
                 Qt::DirectConnection);
@@ -122,6 +121,9 @@ void MixxxLibraryFeature::init() {
                 Qt::DirectConnection);
         connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(updateTrackInBTC(int)),
                 pBaseTrackCache, SLOT(slotUpdateTrack(int)),
+                Qt::DirectConnection);
+        connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(updateTracksInBTC(QSet<int>)),
+                pBaseTrackCache, SLOT(slotUpdateTracks(QSet<int>)),
                 Qt::DirectConnection);
     }, __PRETTY_FUNCTION__);
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);

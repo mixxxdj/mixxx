@@ -31,8 +31,9 @@ void CrateTableModel::setTableModel(int crateId) {
     }
     m_iCrateId = crateId;
     QStringList columns;
-    columns << "crate_tracks." + CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
-            << "'' as preview";
+    columns << "crate_tracks." + CRATETRACKSTABLE_TRACKID + " AS " + LIBRARYTABLE_ID
+            << "'' AS " + LIBRARYTABLE_PREVIEW
+            << "'' AS " + LIBRARYTABLE_COVERART;
     QString tableName = QString("crate_%1").arg(m_iCrateId);
 
     // tro's lambda idea. This code calls synchronously!
@@ -65,6 +66,7 @@ void CrateTableModel::setTableModel(int crateId) {
 
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = LIBRARYTABLE_PREVIEW;
+    columns[2] = LIBRARYTABLE_COVERART;
     setTable(tableName, columns[0], columns,
              m_pTrackCollection->getTrackSource());
     setSearch("");

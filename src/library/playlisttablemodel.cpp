@@ -27,10 +27,11 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
 
     QStringList columns = QStringList()
-            << PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
+            << PLAYLISTTRACKSTABLE_TRACKID + " AS " + LIBRARYTABLE_ID
             << PLAYLISTTRACKSTABLE_POSITION
             << PLAYLISTTRACKSTABLE_DATETIMEADDED
-            << "'' as preview";
+            << "'' AS " + LIBRARYTABLE_PREVIEW
+            << "'' AS " + LIBRARYTABLE_COVERART;
 
     m_pTrackCollection->callSync(
                 [this, &playlistTableName, &playlistId, &columns](TrackCollectionPrivate* pTrackCollectionPrivate) {
@@ -60,6 +61,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
     columns[0] = LIBRARYTABLE_ID;
     columns[3] = LIBRARYTABLE_PREVIEW;
+    columns[4] = LIBRARYTABLE_COVERART;
     setTable(playlistTableName, columns[0], columns,
             m_pTrackCollection->getTrackSource());
     setSearch("");
