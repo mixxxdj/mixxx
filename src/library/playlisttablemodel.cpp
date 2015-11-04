@@ -208,10 +208,12 @@ bool PlaylistTableModel::isLocked() {
 
 void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude) {
     QList<int> positions;
+    QHash<int,int> allIds;
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    const int idColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID);
     int excludePos = -1;
     if (exclude.row() > -1) {
-        // this is uses to exclude the already loaded track at pos #1 if used from running Auto-DJ
+        // this is used to exclude the already loaded track at pos #1 if used from running Auto-DJ
         excludePos = exclude.sibling(exclude.row(), positionColumn).data().toInt();
     }
     if (shuffle.count() > 1) {
@@ -223,7 +225,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
             }
         }
     } else {
-        // if there is only on track selected, shuffle all tracks
+        // if there is only one track selected, shuffle all tracks
         int numOfTracks = rowCount();
         for (int i = 0; i < numOfTracks; i++) {
             int oldPosition = index(i, positionColumn).data().toInt();
@@ -233,9 +235,16 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
         }
     }
 
+    // Set up list of all IDs
+    int numOfTracks = rowCount();
+    for (int i = 0; i < numOfTracks; i++) {
+        int position = index(i, positionColumn).data().toInt();
+        int id = index(i, idColumn).data().toInt();
+        allIds.insert(position, id);
+    }
     m_pTrackCollection->callSync(
-                 [this, &positions] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        pTrackCollectionPrivate->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions);
+                 [this, &positions, &allIds] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        pTrackCollectionPrivate->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
     }, __PRETTY_FUNCTION__);
 }
 
