@@ -200,8 +200,6 @@ int ControllerManager::slotSetUpDevices() {
     QSet<QString> filenames;
     int error = 0;
 
-    QScopedPointer<PresetInfoEnumerator> pie(new PresetInfoEnumerator(m_pConfig));
-
     foreach (Controller* pController, deviceList) {
         QString name = pController->getName();
 
@@ -403,10 +401,31 @@ bool ControllerManager::checksumFile(const QString& filename,
     return true;
 }
 
+// static
+QString ControllerManager::getAbsolutePath(const QString& pathOrFilename,
+                                           const QStringList& paths) {
+    QFileInfo fileInfo(pathOrFilename);
+    if (fileInfo.isAbsolute()) {
+        return pathOrFilename;
+    }
+
+    foreach (const QString& path, paths) {
+        QDir pathDir(path);
+
+        if (pathDir.exists(pathOrFilename)) {
+            return pathDir.absoluteFilePath(pathOrFilename);
+        }
+    }
+
+    return QString();
+}
+
 bool ControllerManager::importScript(const QString& scriptPath,
                                      QString* newScriptFileName) {
-    QDir resourcePresets(resourcePresetsPath(m_pConfig));
     QDir userPresets(userPresetsPath(m_pConfig));
+
+    qDebug() << "ControllerManager::importScript importing script" << scriptPath
+             << "to" << userPresets.absolutePath();
 
     QFile scriptFile(scriptPath);
     QFileInfo script(scriptFile);
@@ -443,6 +462,9 @@ bool ControllerManager::importScript(const QString& scriptPath,
         if (checksumFile(userPresets.filePath(scriptFileName), &localScriptChecksum) &&
             scriptChecksumGood && scriptChecksum == localScriptChecksum) {
             *newScriptFileName = scriptFileName;
+            qDebug() << "ControllerManager::importScript" << scriptFileName
+                     << "had identical checksum to a file of the same name."
+                     << "Skipping import.";
             return true;
         }
 

@@ -299,7 +299,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_wmodplug);
 #endif
     } else if (m_wcontrollers->handleTreeItemClick(current)) {
-        // Do nothing. m_wcontrolles handled this click.
+        // Do nothing. m_wcontrollers handled this click.
     }
 }
 
@@ -435,6 +435,10 @@ DlgPreferencePage* DlgPreferences::currentPage() {
 
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
     pagesWidget->removeWidget(pWidget->parentWidget()->parentWidget());
+}
+
+void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {
+    contentsTreeWidget->expandItem(pItem);
 }
 
 void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {

@@ -19,7 +19,7 @@
 
 #include "configobject.h"
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "encoder/encoder.h"
 
 #ifdef __FFMPEGFILE__
@@ -42,8 +42,9 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue>* _config)
           m_pEncoder(NULL),
           m_pSndfile(NULL),
           m_iMetaDataLife(0) {
-    m_pRecReady = new ControlObjectThread(RECORDING_PREF_KEY, "status");
-    m_pSamplerate = new ControlObjectThread("[Master]", "samplerate");
+    m_pRecReady = new ControlObjectSlave(RECORDING_PREF_KEY, "status", this);
+    m_pSamplerate = new ControlObjectSlave("[Master]", "samplerate", this);
+    m_sampleRate = m_pSamplerate->get();
 }
 
 EngineRecord::~EngineRecord() {
@@ -64,6 +65,7 @@ void EngineRecord::updateFromPreferences() {
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")).toLatin1();
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
+    m_sampleRate = m_pSamplerate->get();
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
     if (m_pEncoder) {
@@ -80,7 +82,7 @@ void EngineRecord::updateFromPreferences() {
         m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if(m_pEncoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
-                                  m_pSamplerate->get()) < 0) {
+                                   m_sampleRate) < 0) {
             delete m_pEncoder;
             m_pEncoder = NULL;
 #ifdef __FFMPEGFILE__
@@ -98,7 +100,7 @@ void EngineRecord::updateFromPreferences() {
         m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if (m_pEncoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt()),
-                                   m_pSamplerate->get()) < 0) {
+                                   m_sampleRate) < 0) {
             delete m_pEncoder;
             m_pEncoder = NULL;
 #ifdef __FFMPEGFILE__
@@ -164,9 +166,12 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             m_iMetaDataLife = kMetaDataLifeTimeout;
             m_pCurrentTrack = TrackPointer();
 
+            // clean frames couting and get current sample rate.
+            m_frames = 0;
+            m_sampleRate = m_pSamplerate->get();
+
             if (m_bCueIsEnabled) {
                 openCueFile();
-                m_cueSamplePos = 0;
                 m_cueTrack = 0;
             }
         } else {  // Maybe the encoder could not be initialized
@@ -189,15 +194,31 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             }
         }
 
+        // update frames counting and recorded duration (seconds)
+        m_frames += iBufferSize / 2;
+        unsigned long lastDuration = m_recordedDuration;
+        m_recordedDuration = m_frames / m_sampleRate;
+
+        // gets recorded duration and emit signal that will be used
+        // by RecordingManager to update the label besides start/stop button
+        if (lastDuration != m_recordedDuration) {
+            emit(durationRecorded(getRecordedDurationStr()));
+        }
+
         if (m_bCueIsEnabled) {
             if (metaDataHasChanged()) {
                 m_cueTrack++;
                 writeCueLine();
                 m_cueFile.flush();
             }
-            m_cueSamplePos += iBufferSize;
         }
     }
+}
+
+QString EngineRecord::getRecordedDurationStr() {
+    return QString("%1:%2")
+                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0') // minutes
+                 .arg(m_recordedDuration, 2, 'f', 0, '0');     // seconds
 }
 
 void EngineRecord::writeCueLine() {
@@ -205,18 +226,10 @@ void EngineRecord::writeCueLine() {
         return;
     }
 
-    // account for multiple channels
-    unsigned long samplerate = m_pSamplerate->get() * 2;
     // CDDA is specified as having 75 frames a second
-    unsigned long frames = ((unsigned long)
-                                ((m_cueSamplePos / (samplerate / 75)))
+    unsigned long cueFrame = ((unsigned long)
+                                ((m_frames / (m_sampleRate / 75)))
                                     % 75);
-
-    unsigned long seconds =  ((unsigned long)
-                                (m_cueSamplePos / samplerate)
-                                    % 60 );
-
-    unsigned long minutes = m_cueSamplePos / (samplerate * 60);
 
     m_cueFile.write(QString("  TRACK %1 AUDIO\n")
             .arg((double)m_cueTrack, 2, 'f', 0, '0')
@@ -231,11 +244,9 @@ void EngineRecord::writeCueLine() {
     // Woefully inaccurate (at the seconds level anyways).
     // We'd need a signal fired state tracker
     // for the track detection code.
-    m_cueFile.write(QString("    INDEX 01 %1:%2:%3\n").arg(
-        QString("%1").arg((double)minutes, 2, 'f', 0, '0'),
-        QString("%1").arg((double)seconds, 2, 'f', 0, '0'),
-        QString("%1").arg((double)frames, 2, 'f', 0, '0')).toLatin1()
-    );
+    m_cueFile.write(QString("    INDEX 01 %1:%2\n")
+                    .arg(getRecordedDurationStr())
+                    .arg((double)cueFrame, 2, 'f', 0, '0').toLatin1());
 }
 
 // Encoder calls this method to write compressed audio
@@ -266,9 +277,8 @@ bool EngineRecord::fileOpen() {
 bool EngineRecord::openFile() {
     // Unfortunately, we cannot use QFile for writing WAV and AIFF audio.
     if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF){
-        unsigned long samplerate = m_pSamplerate->get();
         // set sfInfo
-        m_sfInfo.samplerate = samplerate;
+        m_sfInfo.samplerate = m_sampleRate;
         m_sfInfo.channels = 2;
 
         if (m_encoding == ENCODING_WAVE)

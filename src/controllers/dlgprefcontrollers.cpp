@@ -1,8 +1,11 @@
+#include <QDesktopServices>
+
 #include "controllers/dlgprefcontrollers.h"
 
 #include "dlgpreferences.h"
 #include "controllers/controllermanager.h"
 #include "controllers/dlgprefcontroller.h"
+#include "controllers/defs_controllers.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
                                        ConfigObject<ConfigValue>* pConfig,
@@ -16,14 +19,31 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     setupUi(this);
     setupControllerWidgets();
 
+    connect(&m_buttonMapper, SIGNAL(mapped(QString)),
+            this, SLOT(slotOpenLocalFile(QString)));
+
+    connect(btnOpenSystemPresets, SIGNAL(clicked()),
+            &m_buttonMapper, SLOT(map()));
+    connect(btnOpenLocalPresets, SIGNAL(clicked()),
+            &m_buttonMapper, SLOT(map()));
+    connect(btnOpenUserPresets, SIGNAL(clicked()),
+            &m_buttonMapper, SLOT(map()));
+
+    m_buttonMapper.setMapping(btnOpenSystemPresets, resourcePresetsPath(m_pConfig));
+    m_buttonMapper.setMapping(btnOpenLocalPresets, localPresetsPath(m_pConfig));
+    m_buttonMapper.setMapping(btnOpenUserPresets, userPresetsPath(m_pConfig));
+
     // Connections
     connect(m_pControllerManager, SIGNAL(devicesChanged()),
             this, SLOT(rescanControllers()));
-
 }
 
 DlgPrefControllers::~DlgPrefControllers() {
     destroyControllerWidgets();
+}
+
+void DlgPrefControllers::slotOpenLocalFile(const QString& file) {
+    QDesktopServices::openUrl(QUrl::fromLocalFile(file));
 }
 
 void DlgPrefControllers::slotUpdate() {
@@ -61,6 +81,8 @@ bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
         }
         return true;
     } else if (clickedItem == m_pControllerTreeItem) {
+        // Switch to the root page and expand the controllers tree item.
+        m_pDlgPreferences->expandTreeItem(clickedItem);
         m_pDlgPreferences->switchToPage(this);
         return true;
     }
@@ -124,7 +146,7 @@ void DlgPrefControllers::setupControllerWidgets() {
 
     // If no controllers are available, show the "No controllers available"
     // message.
-    noControllersAvailable->setVisible(controllerList.empty());
+    txtNoControllersAvailable->setVisible(controllerList.empty());
 }
 
 void DlgPrefControllers::slotHighlightDevice(DlgPrefController* dialog, bool enabled) {

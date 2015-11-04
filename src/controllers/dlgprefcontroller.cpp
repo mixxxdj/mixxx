@@ -361,6 +361,27 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
             presetPath, ControllerManager::getPresetPaths(m_pConfig));
 
+    // Import the preset scripts to the user scripts folder.
+    for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
+                 pPreset->scripts.begin(); it != pPreset->scripts.end(); ++it) {
+        // No need to import builtin scripts.
+        if (it->builtin) {
+            continue;
+        }
+
+        QString scriptPath = ControllerManager::getAbsolutePath(
+                it->name, ControllerManager::getPresetPaths(m_pConfig));
+
+
+        QString importedScriptFileName;
+        // If a conflict exists then importScript will provide a new filename to
+        // use. If importing fails then load the preset anyway without the
+        // import.
+        if (m_pControllerManager->importScript(scriptPath, &importedScriptFileName)) {
+            it->name = importedScriptFileName;
+        }
+    }
+
     // TODO(rryan): We really should not load the preset here. We should load it
     // into the preferences GUI and then load it to the actual controller once
     // the user hits apply.
@@ -694,16 +715,14 @@ void DlgPrefController::openScript() {
     foreach (QModelIndex index, selectedIndices) {
         selectedRows.insert(index.row());
     }
-    QList<QString> scriptPaths = m_pControllerManager->getPresetPaths(m_pConfig);
+    QList<QString> scriptPaths = ControllerManager::getPresetPaths(m_pConfig);
 
     foreach (int row, selectedRows) {
         QString scriptName = m_ui.m_pScriptsTableWidget->item(row, 0)->text();
-        foreach (QString scriptPath, scriptPaths) {
-            QFileInfo file(scriptPath + "/" + scriptName);
-            if (file.exists()) {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(
-                    file.absoluteFilePath()));
-            }
+
+        QString scriptPath = ControllerManager::getAbsolutePath(scriptName, scriptPaths);
+        if (!scriptPath.isEmpty()) {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(scriptPath));
         }
     }
 }

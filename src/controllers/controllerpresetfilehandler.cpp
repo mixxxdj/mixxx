@@ -7,6 +7,7 @@
 */
 
 #include "controllers/controllerpresetfilehandler.h"
+#include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
@@ -14,33 +15,18 @@
 // static
 ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& pathOrFilename,
                                                                 const QStringList& presetPaths) {
-    QString scriptPath = pathOrFilename;
-    QFileInfo scriptPathInfo(pathOrFilename);
+    qDebug() << "Searching for controller preset" << pathOrFilename
+             << "in paths:" << presetPaths.join(",");
+    QString scriptPath = ControllerManager::getAbsolutePath(pathOrFilename,
+                                                            presetPaths);
 
-    // If the path is not absolute, search for it in presetPaths.
-    if (scriptPathInfo.isAbsolute()) {
-        qDebug() << "Loading controller preset directly:" << scriptPath;
-    } else {
-        qDebug() << "Searching for controller preset" << scriptPath
-                 << "in paths:" << presetPaths.join(",");
-        bool found = false;
-        foreach (const QString& presetPath, presetPaths) {
-            QDir presetDir(presetPath);
-
-            if (presetDir.exists(pathOrFilename)) {
-                scriptPath = presetDir.absoluteFilePath(pathOrFilename);
-                scriptPathInfo = QFileInfo(scriptPath);
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            qDebug() << "Could not find" << pathOrFilename
-                     << "in any preset path.";
-            return ControllerPresetPointer();
-        }
+    if (scriptPath.isEmpty()) {
+        qDebug() << "Could not find" << pathOrFilename
+                 << "in any preset path.";
+        return ControllerPresetPointer();
     }
 
+    QFileInfo scriptPathInfo(scriptPath);
     if (!scriptPathInfo.exists() || !scriptPathInfo.isReadable()) {
         qDebug() << "Preset" << scriptPath << "does not exist or is unreadable.";
         return ControllerPresetPointer();
@@ -67,7 +53,6 @@ ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& p
 
     // NOTE(rryan): We don't provide a device name. It's unused currently.
     return pHandler->load(scriptPath, QString());
-
 }
 
 ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,

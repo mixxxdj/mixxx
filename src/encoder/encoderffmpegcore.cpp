@@ -73,7 +73,7 @@ EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
     m_lBitrate = 128000;
     m_lDts = 0;
     m_lPts = 0;
-    m_lRecorededBytes = 0;
+    m_lRecordedBytes = 0;
 
 }
 
@@ -170,11 +170,11 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
             if (m_lBufferSize > 0) {
                 m_pFltSamples[j] = m_SBuffer[ l_iBufPos++ ];
                 m_lBufferSize--;
-                m_lRecorededBytes++;
+                m_lRecordedBytes++;
             } else {
                 m_pFltSamples[j] = l_fNormalizedSamples[l_iPos++];
                 l_iLeft--;
-                m_lRecorededBytes++;
+                m_lRecordedBytes++;
             }
 
             if (l_iLeft <= 0) {
@@ -307,7 +307,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     l_SPacket.data = NULL;
 
     // Calculate correct DTS for FFMPEG
-    m_lDts = round(((double)m_lRecorededBytes / (double)44100 / (double)2. *
+    m_lDts = round(((double)m_lRecordedBytes / (double)44100 / (double)2. *
                     (double)m_pEncoderAudioStream->time_base.den));
     m_lPts = m_lDts;
 

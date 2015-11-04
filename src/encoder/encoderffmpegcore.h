@@ -110,7 +110,7 @@ private:
 
     uint32_t m_lBitrate;
     uint32_t m_lSampleRate;
-    uint64_t m_lRecorededBytes;
+    uint64_t m_lRecordedBytes;
     uint64_t m_lDts;
     uint64_t m_lPts;
 #if LIBAVCODEC_VERSION_INT > 3544932

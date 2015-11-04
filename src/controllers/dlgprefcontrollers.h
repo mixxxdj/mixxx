@@ -2,6 +2,7 @@
 #define DLGPREFCONTROLLERS_H
 
 #include <QTreeWidgetItem>
+#include <QSignalMapper>
 
 #include "configobject.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
@@ -30,6 +31,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
   private slots:
     void rescanControllers();
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
+    void slotOpenLocalFile(const QString& file);
 
   private:
     void destroyControllerWidgets();
@@ -41,6 +43,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     QTreeWidgetItem* m_pControllerTreeItem;
     QList<DlgPrefController*> m_controllerWindows;
     QList<QTreeWidgetItem*> m_controllerTreeItems;
+    QSignalMapper m_buttonMapper;
 };
 
 #endif /* DLGPREFCONTROLLERS_H */
