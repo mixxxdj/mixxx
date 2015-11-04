@@ -111,7 +111,7 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
     m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
     if (mode == SYNC_FOLLOWER) {
-        if (m_pVCEnabled->get()) {
+        if (m_pVCEnabled && m_pVCEnabled->get()) {
             // If follower mode is enabled, disable vinyl control.
             m_pVCEnabled->set(0.0);
         }
@@ -152,7 +152,7 @@ void SyncControl::setBpm(double bpm) {
     }
 
     // Vinyl Control overrides.
-    if (m_pVCEnabled->get() > 0.0) {
+    if (m_pVCEnabled && m_pVCEnabled->get() > 0.0) {
         return;
     }
 

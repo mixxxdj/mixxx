@@ -1305,7 +1305,7 @@ class MacAppStoreException(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('macappstore', 'Set to 1 to indicate the build is for the Mac App Store', 1)
+        vars.Add('macappstore', 'Set to 1 to indicate the build is for the Mac App Store', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):

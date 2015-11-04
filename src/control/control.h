@@ -25,6 +25,8 @@ class ControlDoublePrivate : public QObject {
         s_pUserConfig = pConfig;
     }
 
+    static void insertAlias(const ConfigKey& alias, const ConfigKey& key);
+
     // Gets the ControlDoublePrivate matching the given ConfigKey. If bCreate
     // is true, allocates a new ControlDoublePrivate for the ConfigKey if one
     // does not exist.
@@ -166,9 +168,12 @@ class ControlDoublePrivate : public QObject {
 
     // Hash of ControlDoublePrivate instantiations.
     static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOHash;
+    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOAliasHash;
 
     // Mutex guarding access to the ControlDoublePrivate hash.
     static QMutex s_qCOHashMutex;
+    // Mutex guarding access to the ControlDoublePrivate aliases hash.
+    static QMutex s_qCOAliasHashMutex;
 };
 
 
