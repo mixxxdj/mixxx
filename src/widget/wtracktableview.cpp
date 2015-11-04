@@ -146,6 +146,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pBpmTwoThirdsAction;
     delete m_pBpmThreeFourthsAction;
     delete m_pBPMMenu;
+    delete m_pReplayGainResetAction;
     delete m_pPurgeAct;
     delete m_pFileBrowserAct;
     delete m_pResetPlayedAct;
@@ -449,6 +450,10 @@ void WTrackTableView::createActions() {
     m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
     connect(m_pClearBeatsAction, SIGNAL(triggered()),
             this, SLOT(slotClearBeats()));
+
+    m_pReplayGainResetAction = new QAction(tr("Reset Replay Gain"), this);
+    connect(m_pReplayGainResetAction, SIGNAL(triggered()),
+            this, SLOT(slotReplayGainReset()));
 }
 
 // slot
@@ -870,7 +875,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pBPMMenu->addAction(m_pClearBeatsAction);
     }
 
-    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+    m_pMenu->addAction(m_pReplayGainResetAction);
+
     m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
         m_pMenu->addAction(m_pReloadMetadataAct);
@@ -899,6 +905,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
+    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
         m_pRemoveAct->setEnabled(!locked);
         m_pMenu->addAction(m_pRemoveAct);
@@ -1586,6 +1593,22 @@ void WTrackTableView::slotClearBeats() {
         TrackPointer track = trackModel->getTrack(index);
         if (!track->hasBpmLock()) {
             track->setBeats(BeatsPointer());
+        }
+    }
+}
+
+void WTrackTableView::slotReplayGainReset() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setReplayGain(Mixxx::ReplayGain());
         }
     }
 }
