@@ -14,7 +14,7 @@ EffectManifest Butterworth8EQEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Butterworth 8th order filter equalizer (flat responds, roll-off -48 db/Oct)"
+        "A Butterworth 8th order filter equalizer (flat response, roll-off -48 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
 
     EffectManifestParameter* low = manifest.addParameter();
