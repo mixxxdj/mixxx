@@ -205,7 +205,7 @@ void StatsManager::run() {
         processIncomingStatReports();
         m_statsPipeLock.unlock();
 
-        if (deref(m_emitAllStats) == 1) {
+        if (load_atomic(m_emitAllStats) == 1) {
             for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
                  it != m_stats.end(); ++it) {
                 emit(statUpdated(it.value()));
@@ -213,7 +213,7 @@ void StatsManager::run() {
             m_emitAllStats = 0;
         }
 
-        if (deref(m_quit) == 1) {
+        if (load_atomic(m_quit) == 1) {
             qDebug() << "StatsManager thread shutting down.";
             break;
         }

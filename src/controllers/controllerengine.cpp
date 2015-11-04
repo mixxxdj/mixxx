@@ -1350,18 +1350,20 @@ void ControllerEngine::scratchProcess(int timerId) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
-        // If in brake mode, we just set scratch2 to 0.0 (then wait until someone
-        //  calls scratchDisable().)
         if (m_brakeActive[deck]) {
+            // If in brake mode, set scratch2 rate to 0 and turn off the play button.
             cot->slotSet(0.0);
-        } else {
-            // Clear scratch2_enable to end scratching
-            cot = getControlObjectThread(group, "scratch2_enable");
-            if(cot == NULL) {
-                return; // abort and maybe it'll work on the next pass
+            cot = getControlObjectThread(group, "play");
+            if (cot != NULL) {
+                cot->slotSet(0.0);
             }
-            cot->slotSet(0);
         }
+        // Clear scratch2_enable to end scratching.
+        cot = getControlObjectThread(group, "scratch2_enable");
+        if(cot == NULL) {
+            return; // abort and maybe it'll work on the next pass
+        }
+        cot->slotSet(0);
 
         // Remove timer
         killTimer(timerId);
@@ -1500,7 +1502,7 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
     if (activate) {
         // store the new values for this spinback/brake effect
         m_rampFactor[deck] = rate * factor / 100000; // approx 1 second for a factor of 1
-        m_rampTo[deck] = -1.0;
+        m_rampTo[deck] = 0.0;
 
         // setup timer and send first scratch2 'tick'
         int timerId = startTimer(1);

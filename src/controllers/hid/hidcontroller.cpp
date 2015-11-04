@@ -26,7 +26,7 @@ HidReader::~HidReader() {
 void HidReader::run() {
     m_stop = 0;
     unsigned char *data = new unsigned char[255];
-    while (deref(m_stop) == 0) {
+    while (load_atomic(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data
