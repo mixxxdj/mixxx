@@ -20,6 +20,8 @@ class WKnobComposed : public WWidget {
 
     void setup(QDomNode node, const SkinContext& context);
 
+    void onConnectedControlChanged(double dParameter, double dValue);
+
   protected:
     void wheelEvent(QWheelEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
@@ -32,6 +34,7 @@ class WKnobComposed : public WWidget {
     void setPixmapBackground(const QString& filename, Paintable::DrawMode mode);
     void setPixmapKnob(const QString& filename);
 
+    double m_dCurrentAngle;
     PaintablePointer m_pKnob;
     PaintablePointer m_pPixmapBack;
     KnobEventHandler<WKnobComposed> m_handler;

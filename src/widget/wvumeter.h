@@ -43,6 +43,7 @@ class WVuMeter : public WWidget  {
 
   protected slots:
     void updateState(int msecsElapsed);
+    void maybeUpdate();
 
   private:
     /** Set position number to zero and deallocate pixmaps */
@@ -66,6 +67,8 @@ class WVuMeter : public WWidget  {
     int m_iPeakFallTime;
     int m_iPeakPos;
     int m_iPeakHoldCountdown;
+    int m_iLastPos;
+    int m_iLastPeakPos;
 
     QTime m_lastUpdate;
 };

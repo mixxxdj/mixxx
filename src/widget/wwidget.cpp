@@ -35,12 +35,6 @@ WWidget::~WWidget() {
     delete m_pTouchShift;
 }
 
-void WWidget::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dParameter);
-    Q_UNUSED(dValue);
-    update();
-}
-
 bool WWidget::touchIsRightButton() {
     return (m_pTouchShift->get() != 0.0);
 }
