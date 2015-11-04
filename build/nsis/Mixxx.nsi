@@ -20,7 +20,7 @@ SetCompressor /SOLID lzma
 !define PRODUCT_PUBLISHER "The Mixxx Development Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
 
-!define DEFAULT_SKIN "Deere1280x800-WXGA"
+!define DEFAULT_SKIN "LateNight-Stacked"
 
 ; Assumes this script is locaed in <base>\mixxx\build\nsis
 !define BASE_BUILD_DIR "..\.."
@@ -348,6 +348,11 @@ SectionGroup "Additional Skins" SecAddlSkins
 	  File /r /x ".svn" /x ".bzr" /x "*.git" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline*
 	SectionEnd
 
+	Section "Resizable skins" SecResizableSkins
+	  SetOutPath "$INSTDIR\skins"
+	  File /r /x ".svn" /x ".bzr" /x "*.git" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Shade ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\LateNight-Stacked
+	SectionEnd
+
 	Section "Netbook-size (1024x600)" SecNetbookSkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-Netbook
@@ -415,7 +420,7 @@ SectionEnd
 ; Descriptions
 
   ; Language strings
-  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx itself in US English with the default 1280x800 Deere skin"
+  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx itself in US English with the default scalable LateNight-Stacked"
   LangString DESC_SecStartMenu ${LANG_ENGLISH} "Mixxx program group containing useful shortcuts appearing under the [All] Programs section under the Start menu"
   LangString DESC_SecDesktop ${LANG_ENGLISH} "Shortcut to Mixxx placed on the Desktop"
   LangString DESC_SecTranslations ${LANG_ENGLISH} "Translations for all available languages"
@@ -429,6 +434,7 @@ SectionEnd
 
   ; Skin group descriptions
   LangString DESC_SecBasicSkins ${LANG_ENGLISH} "Additional skins using the Outline theme (featuring a clear, clean and simple layout,) including one for 800 pixel-wide screens"
+  LangString DESC_SecResizableSkins ${LANG_ENGLISH} "Additional skins that scale to fit the screen."
   LangString DESC_SecAddlSkins ${LANG_ENGLISH} "Additional skins with varying themes and screen sizes."
   LangString DESC_SecNetbookSkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
   LangString DESC_SecXGASkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
@@ -451,6 +457,7 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecCommunityMappings} $(DESC_SecCommunityMappings)
 
     !insertmacro MUI_DESCRIPTION_TEXT ${SecAddlSkins} $(DESC_SecAddlSkins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecResizableSkins} $(DESC_SecResizableSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecBasicSkins} $(DESC_SecBasicSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecNetbookSkins} $(DESC_SecNetbookSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecXGASkins} $(DESC_SecXGASkins)
@@ -613,6 +620,7 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\skins\Deere1920x1080-FullHD"
   RMDir /r "$INSTDIR\skins\Deere1920x1200-WUXGA"
   RMDir /r "$INSTDIR\skins\DeereSamplegrid1280x800-WXGA"
+  RMDir /r "$INSTDIR\skins\LateNight-Stacked"
   RMDir /r "$INSTDIR\skins\LateNight1280x1024-SXGA"
   RMDir /r "$INSTDIR\skins\LateNight1280x800-WXGA"
   RMDir /r "$INSTDIR\skins\LateNight1366x768-WXGA"
@@ -626,6 +634,7 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\skins\Phoney1680x1050-WSXGA"
   RMDir /r "$INSTDIR\skins\PhoneyDark1600x1200-UXGA"
   RMDir /r "$INSTDIR\skins\PhoneyDark1680x1050-WSXGA"
+  RMDir /r "$INSTDIR\skins\Shade"
   RMDir /r "$INSTDIR\skins\Shade1024x600-Netbook"
   RMDir /r "$INSTDIR\skins\Shade1024x768-XGA"
   RMDir /r "$INSTDIR\skins\ShadeDark1024x600-Netbook"
