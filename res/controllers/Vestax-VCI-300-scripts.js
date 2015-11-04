@@ -33,8 +33,8 @@
  * -          Double       = double loop length
  * - Shift  + Double       = jump to end of track (while not playing)
  * - Scroll + Double       = seek forward (while not playing)
- * -          Auto Tempo   = trigger beatsync
- * - Shift  + Auto Tempo   = toggle quantize
+ * -          Auto Tempo   = toggle quantize
+ * - Shift  + Auto Tempo   = trigger beatsync
  * - Scroll + Auto Tempo   = tap BPM
  * -          Keylock      = toggle keylock
  * - Shift  + Keylock      = reset pitch to 0.00% (quartz)
@@ -148,6 +148,16 @@
  *              by using a linear characteristic
  *            - Slightly increased sensitivity for jog scrolling
  *            - Some code cleanup and simplification
+ * 2014-03-22 Beat sync/active changes and cleanup for 1.12
+ *            - Change mapping of the Auto Tempo / Sync button: Sync
+ *              is now only triggered in combination with Shift, while
+ *              pressing the button without the Shift key toggles
+ *              quantize on/off. Before it was just to easy to
+ *              accidentily trigger Sync by hitting the wrong button!
+ *            - Disable the beat active indicator LED, because it has
+ *              not proven to be helpful.
+ *            - Reduce jog tempo sensitivity considerably
+ *            - Some minor cleanups before adding new features for 1.12
  * ...to be continued...
  *****************************************************************************/
 
@@ -168,7 +178,7 @@ VestaxVCI300.jogCueSensitivityPow = 1.0; // 1.0 = linear (like scratching)
 
 // You might adjust the jog sensitivity for pitch bending according to
 // your personal preferences.
-VestaxVCI300.jogTempoSensitivityScale = 24.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
+VestaxVCI300.jogTempoSensitivityScale = 8.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
 VestaxVCI300.jogTempoSensitivityPow = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
 
 VestaxVCI300.scratchRPM = 33.0 + (1.0 / 3.0); // 33 1/3 /*TUNABLE PARAM*/
@@ -183,6 +193,10 @@ VestaxVCI300.jogScrollBias = 0.0; // Initialize jog scroll
 VestaxVCI300.jogScrollDeltaStepsPerTrack = 8; // 1600 / 8 = 200 tracks per revolution /*TUNABLE PARAM*/
 
 VestaxVCI300.pitchFineTuneStepPercent100 = 1; // = 1/100 %
+
+// Enable/disable indicator for active beats. Not considered helpful,
+// so we disable it for now. Might be removed completely in the future.
+VestaxVCI300.enableBeatActiveLED = false;
 
 VestaxVCI300.autoLoopBeatsArray = [
 	"0.0625",
@@ -389,14 +403,15 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 		// reset jog scroll bias with every jog movement
 		var jogScrollBias = VestaxVCI300.jogScrollBias;
 		VestaxVCI300.jogScrollBias = 0.0;
-		if (this.shiftState && !engine.getValue(this.group,"play")) {
+		var isPlaying = engine.getValue(this.group,"play");
+		if (this.shiftState && !isPlaying) {
 			// fast track search
 			var playposition = engine.getValue(this.group, "playposition");
 			if (undefined != playposition) {
-				var searchpos = engine.getValue(this.group, "playposition") + (this.jogDelta / VestaxVCI300.jogResolution);
+				var searchpos = playposition + (this.jogDelta / VestaxVCI300.jogResolution);
 				engine.setValue(this.group, "playposition", Math.max(0.0, Math.min(1.0, searchpos)));
 			}
-		} else if (VestaxVCI300.scrollState && !engine.getValue(this.group,"play")) {
+		} else if (VestaxVCI300.scrollState && !isPlaying) {
 			// scroll playlist
 			var jogScrollDelta;
 			jogScrollDelta = jogScrollBias + (this.jogDelta / VestaxVCI300.jogScrollDeltaStepsPerTrack);
@@ -417,7 +432,7 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 					// jog movement
 					var jogSensitivityScale
 					var jogSensitivityPow
-					if (engine.getValue(this.group,"play")) {
+					if (isPlaying) {
 						jogSensitivityScale = VestaxVCI300.jogTempoSensitivityScale
 						jogSensitivityPow = VestaxVCI300.jogTempoSensitivityPow
 					} else {
@@ -478,22 +493,31 @@ VestaxVCI300.Deck.prototype.updateOutLoopState = function (index) {
 };
 
 VestaxVCI300.Deck.prototype.updateRateRange = function () {
-	this.rateRangePercent100 = Math.round(10000.0 * engine.getValue(this.group, "rateRange"));
+	var rateRangeValue = engine.getValue(this.group, "rateRange");
+	this.rateRangePercent100 = Math.round(10000.0 * rateRangeValue);
 	// Workaround: Explicitly (re-)set "rate" after changing "rateRange"!
 	// Otherwise the first button press on one of the pitch shift buttons
 	// is ignored.
-	engine.setValue(this.group, "rate", engine.getValue(this.group, "rate"));
+	var rateValue = engine.getValue(this.group, "rate");
+	engine.setValue(this.group, "rate", rateValue);
 };
 
 VestaxVCI300.Deck.prototype.updateCueState = function () {
-	this.cueLED.trigger(0 < engine.getValue(this.group, "cue_point"));
+	var cuePointValue = engine.getValue(this.group, "cue_point");
+	this.cueLED.trigger(0 < cuePointValue);
 };
 
 VestaxVCI300.Deck.prototype.updateBeatSyncState = function () {
-	this.beatSyncLED.trigger(
-		engine.getValue(this.group, "beatsync")
-		|| (engine.getValue(this.group, "play")
-		&& engine.getValue(this.group, "beat_active")));
+	var beatSyncValue =
+		engine.getValue(this.group, "beatsync") ||
+		engine.getValue(this.group, "quantize");
+	if (VestaxVCI300.enableBeatActiveLED) {
+		if (engine.getValue(this.group, "play") &&
+			engine.getValue(this.group, "beat_active")) {
+			beatSyncValue = !beatSyncValue;
+		}
+	}
+	this.beatSyncLED.trigger(beatSyncValue);
 };
 
 VestaxVCI300.Deck.prototype.initValues = function () {
@@ -542,7 +566,9 @@ VestaxVCI300.Deck.prototype.connectControls = function () {
 	VestaxVCI300.connectControl(this.group, "loop_double", this.onLoopDoubleValueCB);
 	VestaxVCI300.connectControl(this.group, "keylock", this.onKeylockValueCB);
 	VestaxVCI300.connectControl(this.group, "beatsync", this.onBeatSyncValueCB);
-	VestaxVCI300.connectControl(this.group, "beat_active", this.onBeatActiveValueCB);
+	if (VestaxVCI300.enableBeatActiveLED) {
+		VestaxVCI300.connectControl(this.group, "beat_active", this.onBeatActiveValueCB);
+	}
 	VestaxVCI300.connectControl(this.group, "reverse", this.onReverseValueCB);
 	VestaxVCI300.connectControl(this.group, "PeakIndicator", this.onPeakIndicatorValueCB);
 	VestaxVCI300.connectControl(this.group, "VuMeter", this.onVUMeterValueCB);
@@ -567,7 +593,9 @@ VestaxVCI300.Deck.prototype.disconnectControls = function () {
 	VestaxVCI300.disconnectControl(this.group, "loop_double");
 	VestaxVCI300.disconnectControl(this.group, "keylock");
 	VestaxVCI300.disconnectControl(this.group, "beatsync");
-	VestaxVCI300.disconnectControl(this.group, "beat_active");
+	if (VestaxVCI300.enableBeatActiveLED) {
+		VestaxVCI300.disconnectControl(this.group, "beat_active");
+	}
 	VestaxVCI300.disconnectControl(this.group, "reverse");
 	VestaxVCI300.disconnectControl(this.group, "PeakIndicator");
 	VestaxVCI300.disconnectControl(this.group, "VuMeter");
@@ -862,13 +890,14 @@ VestaxVCI300.onCueButton = function (channel, control, value, status, group) {
 VestaxVCI300.onPlayButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
 	if (VestaxVCI300.getButtonPressed(value)) {
-		if (!engine.getValue(group, "play")) {
+		var isPlaying = engine.getValue(group, "play");
+		if (!isPlaying) {
 			// adjust stutter play position
 			// Remark: It's safe to read the value of "playposition"
 			// here, because the deck is currently stopped/paused!
 			deck.stutterPlayPosition = engine.getValue(group, "playposition");
 		}
-		if (deck.shiftState && engine.getValue(group, "play")) {
+		if (deck.shiftState && isPlaying) {
 			// stutter play
 			if (undefined != deck.stutterPlayPosition) {
 				// jump back to stutter play position and continue playing
@@ -921,16 +950,16 @@ VestaxVCI300.onAutoTempoButton = function (channel, control, value, status, grou
 	} else {
 		engine.setValue(group, "bpm_tap", false);
 		if (deck.shiftState) {
+			// beatsync
+			engine.setValue(group, "beatsync", VestaxVCI300.getButtonPressed(value));
+		} else {
 			// quantize
 			if (VestaxVCI300.getButtonPressed(value)) {
 				VestaxVCI300.toggleBinaryValue(group, "quantize");
 			}
-		} else {
-			// beatsync
-			engine.setValue(group, "beatsync", VestaxVCI300.getButtonPressed(value));
 		}
 	}
-	deck.beatSyncLED.trigger(VestaxVCI300.getButtonPressed(value));
+	deck.updateBeatSyncState();
 };
 
 VestaxVCI300.onPFLButton = function (channel, control, value, status, group) {
