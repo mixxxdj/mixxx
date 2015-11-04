@@ -226,15 +226,13 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                                    int iBufferSize) {
     ScopedTimer timer("EngineMaster::processChannels");
 
-    QList<ChannelInfo*>::iterator it = m_channels.begin();
-
     // Clear talkover compressor for the next round of gain calculation.
     m_pTalkoverDucking->clearKeys();
 
     EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
     m_activeChannels.clear();
     m_activeChannels.reserve(m_channels.size());
-    it = m_channels.begin();
+    QList<ChannelInfo*>::iterator it = m_channels.begin();
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
