@@ -7,8 +7,10 @@
 #include "util/defs.h"
 #include "engine/enginemaster.h"
 #include "engine/enginechannel.h"
-#include "test/mixxxtest.h"
+#include "sampleutil.h"
 #include "controlobjectslave.h"
+
+#include "test/mixxxtest.h"
 
 using ::testing::Return;
 using ::testing::_;
@@ -47,13 +49,11 @@ class EngineMasterTest : public MixxxTest {
     }
 
     void ClearBuffer(CSAMPLE* pBuffer, int length) {
-        memset(pBuffer, 0, sizeof(pBuffer[0])*length);
+        SampleUtil::clear(pBuffer, length);
     }
 
     void FillBuffer(CSAMPLE* pBuffer, CSAMPLE value, int length) {
-        for (int i = 0; i < length; ++i) {
-            pBuffer[i] = value;
-        }
+        SampleUtil::fill(pBuffer, value, length);
     }
 
     void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value,

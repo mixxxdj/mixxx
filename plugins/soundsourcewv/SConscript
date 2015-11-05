@@ -13,6 +13,7 @@ Import('build')
 wv_sources = [
     "soundsource.cpp", # required to subclass soundsource
     "soundsourcewv.cpp",  # Wavpack support
+    "sampleutil.cpp", # utility functions
 ]
 
 

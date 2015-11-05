@@ -12,8 +12,8 @@
       <Template src="skin:spacer.xml"/>
       <Template src="skin:deck_right.xml">
         <SetVariable name="i">2</SetVariable>
-        <!-- Cyan -->
-        <SetVariable name="DeckColor">#00FFFF</SetVariable>
+        <!-- Traditional Orange -->
+        <SetVariable name="DeckColor">#E17800</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -21,8 +21,8 @@
         <Children>
           <Template src="skin:deck_right.xml">
             <SetVariable name="i">4</SetVariable>
-            <!-- Pink -->
-            <SetVariable name="DeckColor">#FFC0CB</SetVariable>
+            <!-- Lime -->
+            <SetVariable name="DeckColor">#CDDC39</SetVariable>
           </Template>
         </Children>
         <Connection>

@@ -12,8 +12,8 @@
       <Template src="skin:spacer.xml"/>
       <Template src="skin:deck_left.xml">
         <SetVariable name="i">1</SetVariable>
-        <!-- Camo Green -->
-        <SetVariable name="DeckColor">#808000</SetVariable>
+        <!-- Traditional Blue -->
+        <SetVariable name="DeckColor">#0099FF</SetVariable>
       </Template>
 
       <WidgetGroup>

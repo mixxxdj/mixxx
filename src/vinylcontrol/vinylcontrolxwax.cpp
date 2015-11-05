@@ -40,7 +40,7 @@
  ********************/
 
 // Sample threshold below which we consider there to be no signal.
-const double kMinSignal = 75.0 / SHRT_MAX;
+const double kMinSignal = 75.0 / SAMPLE_MAX;
 
 bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
@@ -217,12 +217,12 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     // Convert CSAMPLE samples to shorts, preventing overflow.
     for (int i = 0; i < static_cast<int>(samplesSize); ++i) {
-        CSAMPLE sample = pSamples[i] * gain * SHRT_MAX;
+        CSAMPLE sample = pSamples[i] * gain * SAMPLE_MAX;
 
-        if (sample > SHRT_MAX) {
-            m_pWorkBuffer[i] = SHRT_MAX;
-        } else if (sample < SHRT_MIN) {
-            m_pWorkBuffer[i] = SHRT_MIN;
+        if (sample > SAMPLE_MAX) {
+            m_pWorkBuffer[i] = SAMPLE_MAX;
+        } else if (sample < SAMPLE_MIN) {
+            m_pWorkBuffer[i] = SAMPLE_MIN;
         } else {
             m_pWorkBuffer[i] = static_cast<short>(sample);
         }

@@ -167,7 +167,7 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
 
     if (m_dBaseRate == 0 || m_dSpeedAdjust == 0) {
-        memset(m_buffer, 0, sizeof(m_buffer[0]) * buf_size);
+        SampleUtil::clear(m_buffer, buf_size);
         m_samplesRead = buf_size;
         return m_buffer;
     }

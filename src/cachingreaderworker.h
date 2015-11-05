@@ -6,11 +6,13 @@
 #include <QSemaphore>
 #include <QThread>
 #include <QString>
+#include <QScopedPointer>
 
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
 #include "util/fifo.h"
 #include "util/types.h"
+
 
 namespace Mixxx {
     class SoundSource;
@@ -110,7 +112,7 @@ class CachingReaderWorker : public EngineWorker {
                                  ReaderStatusUpdate* update);
 
     // The current sound source of the track loaded
-    Mixxx::SoundSource* m_pCurrentSoundSource;
+    QScopedPointer<Mixxx::SoundSource> m_pCurrentSoundSource;
     int m_iTrackNumSamples;
 
     // Temporary buffer for reading from SoundSources

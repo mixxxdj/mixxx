@@ -34,7 +34,7 @@ TagFetcher::TagFetcher(QObject* parent)
 }
 
 QString TagFetcher::getFingerprint(const TrackPointer tio) {
-    return chromaprinter(NULL).getFingerPrint(tio);
+    return ChromaPrinter(NULL).getFingerPrint(tio);
 }
 
 void TagFetcher::startFetch(const TrackPointer track) {

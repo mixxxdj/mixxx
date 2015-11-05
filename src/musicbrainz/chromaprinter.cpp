@@ -5,18 +5,18 @@
 #include "musicbrainz/chromaprinter.h"
 #include "soundsourceproxy.h"
 
-chromaprinter::chromaprinter(QObject* parent)
+ChromaPrinter::ChromaPrinter(QObject* parent)
              : QObject(parent),
                m_NumSamples(0),
                m_SampleRate(0) {
 }
 
-QString chromaprinter::getFingerPrint(TrackPointer pTrack){
+QString ChromaPrinter::getFingerPrint(TrackPointer pTrack){
     SoundSourceProxy soundSource(pTrack);
     return calcFingerPrint(soundSource);
 }
 
-QString chromaprinter::calcFingerPrint(SoundSourceProxy& soundSource){
+QString ChromaPrinter::calcFingerPrint(SoundSourceProxy& soundSource){
     soundSource.open();
     m_SampleRate = soundSource.getSampleRate();
     unsigned int length = soundSource.length();

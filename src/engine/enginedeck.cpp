@@ -79,7 +79,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     // Feed the incoming audio through if passthrough is active
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
     if (isPassthroughActive() && sampleBuffer) {
-        memcpy(pOut, sampleBuffer, iBufferSize * sizeof(pOut[0]));
+        SampleUtil::copy(pOut, sampleBuffer, iBufferSize);
         m_bPassthroughWasActive = true;
         m_sampleBuffer = NULL;
     } else {

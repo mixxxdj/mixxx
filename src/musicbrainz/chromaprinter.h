@@ -7,11 +7,11 @@
 
 class SoundSourceProxy;
 
-class chromaprinter: public QObject {
+class ChromaPrinter: public QObject {
   Q_OBJECT
 
   public:
-    chromaprinter(QObject* parent=NULL);
+    ChromaPrinter(QObject* parent=NULL);
     QString getFingerPrint(TrackPointer pTrack);
 
   private:

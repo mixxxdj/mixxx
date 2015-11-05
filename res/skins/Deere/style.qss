@@ -71,7 +71,6 @@ WWidget, QLabel {
   font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   font-size: 7pt;
   text-transform: uppercase;
-  color: black;
 }
 
 WSliderComposed {
@@ -136,7 +135,7 @@ WSliderComposed {
 }
 
 #ToolBar {
-  background-color: pink;
+  background-color: #111111;
 }
 
 /* All widget groups that are children of #DeckRows should AlignTop. */
@@ -236,23 +235,64 @@ WSliderComposed {
 }
 
 #MainDeckContainer {
-  background-color: red;
+  background-color: black;
 }
 
-#Deck1, #DeckMixer1 {
-  background-color: rgb(128,128,0);
+#LeftGutter, #RightGutter {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                    stop: 0 #333333,
+                                    stop: 1.0 #222222);
 }
 
-#Deck2, #DeckMixer2 {
-  background-color: cyan;
+#Deck1, #Deck2 {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                    stop: 0 #333333,
+                                    stop: 1.0 #222222);
 }
 
-#Deck3, #DeckMixer3 {
+#Deck3, #Deck4 {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                    stop: 0 #222222,
+                                    stop: 1.0 #333333);
+}
+
+WWidget, WLabel {
+  /* All labels should default to a grey that is readable on black. */
+  color: #888888;
+}
+
+/* Track text, etc. should be in the deck color. */
+#Deck1 WLabel {
+  color: #0099FF;
+}
+
+#DeckMixer1 {
+  background-color: #0099FF;
+}
+
+/* Track text, etc. should be in the deck color. */
+#Deck2 WLabel {
+  color: #E17800;
+}
+
+#DeckMixer2 {
+  background-color: #E17800;
+}
+
+#Deck3 WLabel {
+  color: violet;
+}
+
+#DeckMixer3 {
   background-color: violet;
 }
 
-#Deck4, #DeckMixer4 {
-  background-color: pink;
+#Deck4 WLabel {
+  color: #CDDC39;
+}
+
+#DeckMixer4 {
+  background-color: #CDDC39;
 }
 
 #Sampler {

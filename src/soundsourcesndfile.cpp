@@ -14,6 +14,10 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "soundsourcesndfile.h"
+#include "sampleutil.h"
+#include "util/math.h"
+
 #include <taglib/flacfile.h>
 #include <taglib/aifffile.h>
 #include <taglib/rifffile.h>
@@ -22,34 +26,24 @@
 #include <QString>
 #include <QtDebug>
 
-#include "soundsourcesndfile.h"
-#include "trackinfoobject.h"
-#include "util/math.h"
 
 /*
    Class for reading files using libsndfile
  */
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
     : Mixxx::SoundSource(qFilename),
+      fh(NULL),
       channels(0),
-      fh(NULL)
-{
-    m_bOpened = false;
-    info = new SF_INFO;
-    info->format = 0;   // Must be set to 0 per the API for reading (non-RAW files)
-    filelength = 0;
+      filelength(0) {
+    // Must be set to 0 per the API for reading (non-RAW files)
+    memset(&info, 0, sizeof(info));
 }
 
-SoundSourceSndFile::~SoundSourceSndFile()
-{
-    if (m_bOpened) {
-        sf_close(fh);
-    }
-    delete info;
+SoundSourceSndFile::~SoundSourceSndFile() {
+    sf_close(fh);
 }
 
-QList<QString> SoundSourceSndFile::supportedFileExtensions()
-{
+QList<QString> SoundSourceSndFile::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("aiff");
     list.push_back("aif");
@@ -62,10 +56,10 @@ Result SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
     // Pointer valid until string changed
     LPCWSTR lpcwFilename = (LPCWSTR)m_qFilename.utf16();
-    fh = sf_wchar_open(lpcwFilename, SFM_READ, info);
+    fh = sf_wchar_open(lpcwFilename, SFM_READ, &info);
 #else
     QByteArray qbaFilename = m_qFilename.toLocal8Bit();
-    fh = sf_open(qbaFilename.constData(), SFM_READ, info);
+    fh = sf_open(qbaFilename.constData(), SFM_READ, &info);
 #endif
 
     if (fh == NULL) {   // sf_format_check is only for writes
@@ -78,13 +72,12 @@ Result SoundSourceSndFile::open() {
         return ERR;
     }
 
-    channels = info->channels;
-
+    channels = info.channels;
+    m_iSampleRate =  info.samplerate;
     // This is the 'virtual' filelength. No matter how many channels the file
     // actually has, we pretend it has 2.
-    filelength = 2*info->frames; // File length with two interleaved channels
-    m_iSampleRate =  info->samplerate;
-    m_bOpened = true;
+    filelength = info.frames * 2; // File length with two interleaved channels
+
     return OK;
 }
 
@@ -135,20 +128,8 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
             // pretend to every reader that all files are in stereo.
             int readNo = sf_read_short(fh, dest, size/2);
 
-            // readNo*2 is strictly less than available buffer space
-
-            // rryan 2/2009
-            // Mini-proof of the below:
-            // size = 20, destination is a 20 element array 0-19
-            // readNo = 10 (or less, but 10 in this case)
-            // i = 10-1 = 9, so dest[9*2] and dest[9*2+1],
-            // so the first iteration touches the very ends of destination
-            // on the last iteration, dest[0] and dest[1] are assigned to dest[0]
-
-            for(int i=(readNo-1); i>=0; i--) {
-                dest[i*2]     = dest[i];
-                dest[(i*2)+1] = dest[i];
-            }
+            // dest has enough capacity for (readNo * 2) samples
+            SampleUtil::doubleMonoToDualMono(dest, readNo);
 
             // We doubled the readNo bytes we read into stereo.
             return readNo * 2;
@@ -200,12 +181,12 @@ Result SoundSourceSndFile::parseHeader()
             // intelligent version of taglib, should happen in 11.10
 
             // Have to open the file for info to be valid.
-            if (!m_bOpened) {
+            if (fh == NULL) {
                 open();
             }
 
-            if (info->samplerate > 0) {
-                setDuration(info->frames / info->samplerate);
+            if (info.samplerate > 0) {
+                setDuration(info.frames / info.samplerate);
             } else {
                 qDebug() << "WARNING: WAV file with invalid samplerate."
                          << "Can't get duration using libsndfile.";

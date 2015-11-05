@@ -21,7 +21,7 @@
         <SignalHighColor></SignalHighColor>
         <SignalMidColor></SignalMidColor>
         <SignalLowColor></SignalLowColor>
-        <SignalColor>#3087BF</SignalColor>
+        <SignalColor><Variable name="DeckColor"/></SignalColor>
         <PlayPosColor>#00FF00</PlayPosColor>
         <DefaultMark>
           <Align>bottom</Align>
@@ -29,6 +29,20 @@
           <TextColor>#FFFFFF</TextColor>
           <Text> %1 </Text>
         </DefaultMark>
+	<MarkRange>
+	  <StartControl>loop_start_position</StartControl>
+	  <EndControl>loop_end_position</EndControl>
+	  <EnabledControl>loop_enabled</EnabledControl>
+	  <Color>#00FF00</Color>
+	  <DisabledColor>#FFFFFF</DisabledColor>
+	</MarkRange>
+	<Mark>
+	  <Control>cue_point</Control>
+	  <Align>top</Align>
+	  <Color>#FF001C</Color>
+	  <TextColor>#FFFFFF</TextColor>
+	  <Text>C</Text>
+	</Mark>
         <Connection>
           <ConfigKey>
             <Variable name="group"/>,playposition</ConfigKey>

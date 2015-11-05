@@ -33,7 +33,6 @@ CachingReaderWorker::CachingReaderWorker(QString group,
           m_tag(QString("CachingReaderWorker %1").arg(m_group)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
           m_pReaderStatusFIFO(pReaderStatusFIFO),
-          m_pCurrentSoundSource(NULL),
           m_iTrackNumSamples(0),
           m_pSample(NULL),
           m_stop(0) {
@@ -42,7 +41,6 @@ CachingReaderWorker::CachingReaderWorker(QString group,
 
 CachingReaderWorker::~CachingReaderWorker() {
     delete [] m_pSample;
-    delete m_pCurrentSoundSource;
 }
 
 void CachingReaderWorker::processChunkReadRequest(ChunkReadRequest* request,
@@ -52,7 +50,7 @@ void CachingReaderWorker::processChunkReadRequest(ChunkReadRequest* request,
     update->chunk = request->chunk;
     update->chunk->length = 0;
 
-    if (m_pCurrentSoundSource == NULL || chunk_number < 0) {
+    if (!m_pCurrentSoundSource || chunk_number < 0) {
         update->status = CHUNK_READ_INVALID;
         return;
     }
@@ -80,17 +78,9 @@ void CachingReaderWorker::processChunkReadRequest(ChunkReadRequest* request,
         return;
     }
 
-    // TODO(XXX) This loop can't be done with a memcpy, but could be done with
-    // SSE.
     CSAMPLE* buffer = request->chunk->data;
     //qDebug() << "Reading into " << buffer;
-    SampleUtil::convert(buffer, m_pSample, samples_read);
-
-    // Normalize the samples from [SHRT_MIN, SHRT_MAX] to [-1.0, 1.0].
-    // TODO(rryan): Change the SoundSource API to do this for us.
-    for (int i = 0; i < samples_read; ++i) {
-        buffer[i] /= SHRT_MAX;
-    }
+    SampleUtil::convertS16ToFloat32(buffer, m_pSample, samples_read);
 
     update->status = CHUNK_READ_SUCCESS;
     update->chunk->length = samples_read;
@@ -142,10 +132,7 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
     status.chunk = NULL;
     status.trackNumSamples = 0;
 
-    if (m_pCurrentSoundSource != NULL) {
-        delete m_pCurrentSoundSource;
-        m_pCurrentSoundSource = NULL;
-    }
+    m_pCurrentSoundSource.reset();
     m_iTrackNumSamples = 0;
 
     QString filename = pTrack->getLocation();
@@ -161,7 +148,7 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
         return;
     }
 
-    m_pCurrentSoundSource = new SoundSourceProxy(pTrack);
+    m_pCurrentSoundSource.reset(new SoundSourceProxy(pTrack));
     bool openSucceeded = (m_pCurrentSoundSource->open() == OK); //Open the song for reading
     unsigned int trackSampleRate = m_pCurrentSoundSource->getSampleRate();
     m_iTrackNumSamples = status.trackNumSamples =

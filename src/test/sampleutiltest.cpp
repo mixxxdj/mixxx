@@ -36,13 +36,11 @@ class SampleUtilTest : public testing::Test {
     }
 
     void ClearBuffer(CSAMPLE* pBuffer, int length) {
-        memset(pBuffer, 0, sizeof(pBuffer[0])*length);
+        SampleUtil::clear(pBuffer, length);
     }
 
     void FillBuffer(CSAMPLE* pBuffer, CSAMPLE value, int length) {
-        for (int i = 0; i < length; ++i) {
-            pBuffer[i] = value;
-        }
+        SampleUtil::fill(pBuffer, value, length);
     }
 
     void AssertWholeBufferEquals(CSAMPLE* pBuffer, CSAMPLE value, int iBufferLen) {
@@ -316,19 +314,35 @@ TEST_F(SampleUtilTest, copy3WithGainAliased) {
     }
 }
 
-TEST_F(SampleUtilTest, convert) {
+TEST_F(SampleUtilTest, convertS16ToFloat32) {
     while (sseAvailable-- >= 0) {
         for (int i = 0; i < buffers.size(); ++i) {
             CSAMPLE* buffer = buffers[i];
             int size = sizes[i];
-            FillBuffer(buffer, 1.0f, size);
             SAMPLE* s16 = new SAMPLE[size];
+            FillBuffer(buffer, 1.0f, size);
             for (int j = 0; j < size; ++j) {
-                s16[j] = j;
+                s16[j] = SAMPLE_MAX;
             }
-            SampleUtil::convert(buffer, s16, size);
+            SampleUtil::convertS16ToFloat32(buffer, s16, size);
             for (int j = 0; j < size; ++j) {
-                EXPECT_FLOAT_EQ(j, buffer[j]);
+                EXPECT_FLOAT_EQ(1.0f, buffer[j]);
+            }
+            FillBuffer(buffer, 0.0f, size);
+            for (int j = 0; j < size; ++j) {
+                s16[j] = 0;
+            }
+            SampleUtil::convertS16ToFloat32(buffer, s16, size);
+            for (int j = 0; j < size; ++j) {
+                EXPECT_FLOAT_EQ(0.0f, buffer[j]);
+            }
+            FillBuffer(buffer, -1.0f, size);
+            for (int j = 0; j < size; ++j) {
+                s16[j] = -SAMPLE_MAX;
+            }
+            SampleUtil::convertS16ToFloat32(buffer, s16, size);
+            for (int j = 0; j < size; ++j) {
+                EXPECT_FLOAT_EQ(-1.0f, buffer[j]);
             }
             delete [] s16;
         }
