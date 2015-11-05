@@ -42,20 +42,28 @@ const QString kTrackLocationTest(QDir::currentPath() %
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     const QString kTestPath(QDir::currentPath() % "/src/test/id3-test-data/");
     QImage cover;
+    // We never need to acquire security tokens for tests since we don't run
+    // them in a sandboxed environment.
+    SecurityTokenPointer pToken;
     // aiff
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.aiff");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.aiff",
+                                                pToken);
     EXPECT_TRUE(!cover.isNull());
     // flac
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.flac");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.flac",
+                                                pToken);
     EXPECT_TRUE(!cover.isNull());
     // mp3
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.mp3");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.mp3",
+                                                pToken);
     EXPECT_TRUE(!cover.isNull());
     // ogg
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.ogg");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.ogg",
+                                                pToken);
     EXPECT_TRUE(!cover.isNull());
     // wav
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.wav");
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.wav",
+                                                pToken);
     EXPECT_TRUE(!cover.isNull());
 }
 
