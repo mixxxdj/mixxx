@@ -131,6 +131,10 @@ void BeatFactory::deleteBeats(Beats* pBeats) {
     QObject* pObject = dynamic_cast<QObject*>(pBeats);
 
     if (pObject != NULL) {
-        pObject->deleteLater();
+        // BeatGrid/BeatMap objects have no parent so they live in the thread
+        // that created them (sometimes the analyzer
+        // thread). QObject::deleteLater does not have the desired effect when
+        // for threads (like the analyzer thread) without an event loop.
+        delete pObject;
     }
 }

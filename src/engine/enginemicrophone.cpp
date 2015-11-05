@@ -36,6 +36,7 @@ EngineMicrophone::EngineMicrophone(QString pGroup, EffectsManager* pEffectsManag
 
 EngineMicrophone::~EngineMicrophone() {
     qDebug() << "~EngineMicrophone()";
+    delete m_pSampleRate;
     delete m_pEnabled;
     delete m_pPregain;
 }
