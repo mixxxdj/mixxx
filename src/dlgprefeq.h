@@ -29,12 +29,12 @@
 /**
   *@author John Sully
   */
-
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
     DlgPrefEQ(QWidget *parent, ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefEQ();
+    bool m_bEqAutoReset;
 
   public slots:
     void slotEqChanged();
@@ -46,6 +46,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
+    void slotEqAutoReset(int);
 
   signals:
     void apply(const QString &);
