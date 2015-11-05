@@ -406,7 +406,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
     } else {
         return;
     }
-    QList<QString> entries = playlist_parser->parse(playlist_file);
+    QStringList entries = playlist_parser->parse(playlist_file);
 
     // delete the parser object
     if (playlist_parser) {

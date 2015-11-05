@@ -143,6 +143,12 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     }
 }
 
+void SyncControl::notifyOnlyPlayingSyncable() {
+    // If we are the only remaining playing sync deck, we can reset the user
+    // tweak info.
+    m_pBpmControl->resetSyncAdjustment();
+}
+
 void SyncControl::requestSyncPhase() {
     m_pChannel->getEngineBuffer()->requestSyncPhase();
 }

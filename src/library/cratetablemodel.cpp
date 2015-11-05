@@ -81,6 +81,10 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
     QFileInfo fileInfo(location);
+    if (!fileInfo.exists()) {
+        return false;
+    }
+
     bool success = false;
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callSync(
@@ -111,7 +115,10 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     // the user probably dropped a file from outside Mixxx into this crate.
     QList<QFileInfo> fileInfoList;
     foreach(QString fileLocation, locations) {
-        fileInfoList.append(QFileInfo(fileLocation));
+        QFileInfo fileInfo(fileLocation);
+        if (fileInfo.exists()) {
+            fileInfoList.append(fileInfo);
+        }
     }
 
     int tracksAdded = 0;
