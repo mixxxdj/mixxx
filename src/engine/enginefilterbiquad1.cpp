@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <QLocale>
 #include "engine/enginefilterbiquad1.h"
 
 EngineFilterBiquad1LowShelving::EngineFilterBiquad1LowShelving(int sampleRate,
