@@ -30,7 +30,7 @@ QString typeToString(CoverInfo::Type type) {
 }
 
 QDebug operator<<(QDebug dbg, const CoverInfo& info) {
-    return dbg.maybeSpace() << QString("CoverInfo(%1,%2,%3,%4,%5,%6)")
+    return dbg.maybeSpace() << QString("CoverInfo(%1,%2,%3,%4,%5)")
             .arg(typeToString(info.type))
             .arg(sourceToString(info.source))
             .arg(info.coverLocation)

@@ -85,9 +85,8 @@ class EffectChain : public QObject {
     void setInsertionType(InsertionType type);
 
     void addEffect(EffectPointer pEffect);
-    void removeEffect(EffectPointer pEffect);
-    void replaceEffect(unsigned int iEffectNumber, EffectPointer pEffect);
-    EffectPointer getEffect(unsigned int i) const;
+    void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
+    void removeEffect(unsigned int effectSlotNumber);
     const QList<EffectPointer>& effects() const;
     unsigned int numEffects() const;
 
@@ -100,8 +99,7 @@ class EffectChain : public QObject {
 
   signals:
     // Signal that indicates that an effect has been added or removed.
-    void effectAdded();
-    void effectRemoved();
+    void effectsChanged();
     void nameChanged(const QString& name);
     void descriptionChanged(const QString& name);
     void enabledChanged(bool enabled);

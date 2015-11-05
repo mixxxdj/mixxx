@@ -22,7 +22,10 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
 }
 
 EffectChain::~EffectChain() {
-    //qDebug() << debugString() << "destroyed";
+    // Remove all effects.
+    for (int i = 0; i < m_effects.size(); ++i) {
+        removeEffect(i);
+    }
 }
 
 void EffectChain::addToEngine(EngineEffectRack* pRack, int iIndex) {
@@ -205,43 +208,39 @@ void EffectChain::addEffect(EffectPointer pEffect) {
     if (m_bAddedToEngine) {
         pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1);
     }
-    emit(effectAdded());
+    emit(effectsChanged());
 }
 
-void EffectChain::replaceEffect(unsigned int iEffectNumber,
+void EffectChain::replaceEffect(unsigned int effectSlotNumber,
                                 EffectPointer pEffect) {
     //qDebug() << debugString() << "replaceEffect" << iEffectNumber << pEffect;
-    while (iEffectNumber >= static_cast<unsigned int>(m_effects.size())) {
+    while (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
+        if (pEffect.isNull()) {
+            return;
+        }
         m_effects.append(EffectPointer());
     }
 
-    EffectPointer pOldEffect = m_effects[iEffectNumber];
-    if (pOldEffect) {
+
+    EffectPointer pOldEffect = m_effects[effectSlotNumber];
+    if (!pOldEffect.isNull()) {
         if (m_bAddedToEngine) {
-            pOldEffect->removeFromEngine(m_pEngineEffectChain, iEffectNumber);
+            pOldEffect->removeFromEngine(m_pEngineEffectChain, effectSlotNumber);
         }
     }
 
-    m_effects.replace(iEffectNumber, pEffect);
-    if (pEffect) {
+    m_effects.replace(effectSlotNumber, pEffect);
+    if (!pEffect.isNull()) {
         if (m_bAddedToEngine) {
-            pEffect->addToEngine(m_pEngineEffectChain, iEffectNumber);
+            pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber);
         }
     }
 
-    // TODO(rryan): Replaced signal?
-    emit(effectAdded());
+    emit(effectsChanged());
 }
 
-void EffectChain::removeEffect(EffectPointer pEffect) {
-    //qDebug() << debugString() << "removeEffect" << pEffect;
-    for (int i = 0; i < m_effects.size(); ++i) {
-        if (m_effects.at(i) == pEffect) {
-            pEffect->removeFromEngine(m_pEngineEffectChain, i);
-            m_effects.replace(i, EffectPointer());
-            emit(effectRemoved());
-        }
-    }
+void EffectChain::removeEffect(unsigned int effectSlotNumber) {
+    replaceEffect(effectSlotNumber, EffectPointer());
 }
 
 unsigned int EffectChain::numEffects() const {
@@ -250,13 +249,6 @@ unsigned int EffectChain::numEffects() const {
 
 const QList<EffectPointer>& EffectChain::effects() const {
     return m_effects;
-}
-
-EffectPointer EffectChain::getEffect(unsigned int effectNumber) const {
-    if (effectNumber >= static_cast<unsigned int>(m_effects.size())) {
-        qWarning() << debugString() << "WARNING: list index out of bounds for getEffect";
-    }
-    return m_effects[effectNumber];
 }
 
 EngineEffectChain* EffectChain::getEngineEffectChain() {

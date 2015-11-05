@@ -26,7 +26,7 @@ TEST_F(EffectsManagerTest, CanInstantiateEffectsFromBackend) {
     EffectManifest manifest;
     manifest.setId("org.mixxx.test.effect");
     manifest.setName("Test Effect");
-    registerTestEffect(manifest);
+    registerTestEffect(manifest, false);
 
     // Check we can get the same manifest that we registered back.
     EffectManifest effect_to_load = m_pEffectsManager->getEffectManifest(manifest.id());

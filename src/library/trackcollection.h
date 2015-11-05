@@ -32,6 +32,7 @@
 #include "library/dao/analysisdao.h"
 #include "library/queryutil.h"
 #include "library/dao/directorydao.h"
+#include "library/dao/libraryhashdao.h"
 
 #ifdef __SQLITE3__
 typedef struct sqlite3_context sqlite3_context;
@@ -122,7 +123,7 @@ class TrackCollection : public QThread {
     Q_OBJECT
   public:
     TrackCollection(ConfigObject<ConfigValue>* pConfig);
-    ~TrackCollection();
+    virtual ~TrackCollection();
     void run();
 
     void callAsync(func lambda, QString where = QString());

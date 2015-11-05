@@ -1,6 +1,7 @@
 #include "engine/effects/engineeffect.h"
 #include "sampleutil.h"
 
+
 EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<QString>& registeredGroups,
                            EffectInstantiatorPointer pInstantiator)

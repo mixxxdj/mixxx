@@ -468,7 +468,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
-    //Refresh the library models when the library (re)scan is finished.
+    // Refresh the library models when the library (re)scan is finished.
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 

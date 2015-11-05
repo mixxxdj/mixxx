@@ -20,22 +20,23 @@
 #include <QTimer>
 #include <QLinkedList>
 
+#include "library/libraryscanner.h"
+
 #include "soundsourceproxy.h"
 #include "library/legacylibraryimporter.h"
-#include "libraryscanner.h"
 #include "libraryscannerdlg.h"
 #include "library/queryutil.h"
 #include "library/coverartutils.h"
-#include "trackinfoobject.h"
+#include "library/trackcollection.h"
 #include "util/trace.h"
 #include "util/file.h"
+#include "library/scanner/scannerutil.h"
 
 #define MAX_CHUNK_SIZE 50
 
 LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection) :
     m_pTrackCollection(pTrackCollection),
-    //this is ugly, we are creating a database to overwrite it later
-    m_database(),
+    //don't initialize m_database here to have it in the right thread
     m_pProgress(NULL),
     m_libraryHashDao(m_database),
     m_cueDao(m_database),
@@ -44,10 +45,11 @@ LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection) :
     m_directoryDao(m_database),
     m_analysisDao(m_database, pTrackCollection->getConfig()),
     m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao,
-               m_analysisDao, m_directoryDao, pTrackCollection->getConfig()),
+               m_analysisDao, m_libraryHashDao, pTrackCollection->getConfig()),
     m_extensionFilter(SoundSourceProxy::supportedFileExtensionsRegex(),
                       Qt::CaseInsensitive),
-    m_bCancelLibraryScan(false) {
+    m_bCancelLibraryScan(false),
+    m_directoriesBlacklist(ScannerUtil::getDirectoryBlacklist()) {
 
     qDebug() << "Constructed LibraryScanner";
 
@@ -59,76 +61,37 @@ LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection) :
         [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
             connect(this, SIGNAL(scanFinished()),
                     &pTrackCollectionPrivate->getTrackDAO(), SLOT(clearCache()));
+            connect(this, SIGNAL(trackAdded(TrackPointer)),
+                    &pTrackCollectionPrivate->getTrackDAO(), SLOT(databaseTrackAdded(TrackPointer)));
+            connect(this, SIGNAL(tracksMoved(QSet<int>, QSet<int>)),
+                    &pTrackCollectionPrivate->getTrackDAO(), SLOT(databaseTracksMoved(QSet<int>, QSet<int>)));
+            connect(this, SIGNAL(tracksChanged(QSet<int>)),
+                    &pTrackCollectionPrivate->getTrackDAO(), SLOT(databaseTracksChanged(QSet<int>)));
     }, __PRETTY_FUNCTION__);
 
-    // The "Album Artwork" folder within iTunes stores Album Arts.
-    // It has numerous hundreds of sub folders but no audio files
-    // We put this folder on a "black list"
-    // On Windows, the iTunes folder is contained within the standard music folder
-    // Hence, Mixxx will scan the "Album Arts folder" for standard users which is wasting time
-    QString iTunesArtFolder = QDir::toNativeSeparators(
-                QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/iTunes/Album Artwork" );
-    m_directoriesBlacklist << iTunesArtFolder;
-    qDebug() << "iTunes Album Art path is:" << iTunesArtFolder;
-
-#ifdef __WINDOWS__
-    //Blacklist the _Serato_ directory that pollutes "My Music" on Windows.
-    QString seratoDir = QDir::toNativeSeparators(
-                QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/_Serato_" );
-    m_directoriesBlacklist << seratoDir;
-#endif
 }
 
 LibraryScanner::~LibraryScanner() {
-    // IMPORTANT NOTE: This code runs in the GUI thread, so it should _NOT_ use
-    //                the m_trackDao that lives inside this class. It should use
-    //                the DAOs that live in m_pTrackCollection.
-
     if (isRunning()) {
         // Cancel any running library scan...
         cancel();
         wait(); // Wait for thread to finish
     }
 
-    // tro's lambda idea. This code calls Synchronously!
-    m_pTrackCollection->callSync(
-                [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        // Do housekeeping on the LibraryHashes table.
-        ScopedTransaction transaction(pTrackCollectionPrivate->getDatabase());
+    // There should never be an outstanding transaction when this code is
+    // called. If there is, it means we probably aren't committing a transaction
+    // somewhere that should be.
+    if (m_database.isOpen()) {
+        qDebug() << "Closing database" << m_database.connectionName();
 
-        // Mark the corresponding file locations in the track_locations table as deleted
-        // if we find one or more deleted directories.
-        QStringList deletedDirs;
-        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
-        query.prepare("SELECT directory_path FROM LibraryHashes "
-                      "WHERE directory_deleted=1");
-        if (query.exec()) {
-            const int directoryPathColumn = query.record().indexOf("directory_path");
-            while (query.next()) {
-                QString directory = query.value(directoryPathColumn).toString();
-                deletedDirs << directory;
-            }
-        } else {
-            LOG_FAILED_QUERY(query) << "Couldn't SELECT deleted directories.";
+        // Rollback any uncommitted transaction
+        if (m_database.rollback()) {
+            qDebug() << "ERROR: There was a transaction in progress while closing the library scanner connection."
+                     << "There is a logic error somewhere.";
         }
-
-        // Delete any directories that have been marked as deleted...
-        query.finish();
-        query.exec("DELETE FROM LibraryHashes "
-                   "WHERE directory_deleted=1");
-
-        // Print out any SQL error, if there was one.
-        if (query.lastError().isValid()) {
-            LOG_FAILED_QUERY(query);
-        }
-
-        QString dir;
-        foreach(dir, deletedDirs) {
-            pTrackCollectionPrivate->getTrackDAO().markTrackLocationsAsDeleted(dir);
-        }
-        transaction.commit();
-    }, __PRETTY_FUNCTION__);
-
+        // Close our database connection
+        m_database.close();
+    }
     qDebug() << "LibraryScanner destroyed";
 }
 
@@ -137,7 +100,6 @@ void LibraryScanner::run() {
     unsigned static id = 0; // the id of this thread, for debugging purposes
     //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
-    //m_pProgress->slotStartTiming();
 
     qRegisterMetaType<QSet<int> >("QSet<int>");
 
@@ -185,8 +147,7 @@ void LibraryScanner::run() {
     if (!upgradefile.exists()) {
         LegacyLibraryImporter libImport(m_pTrackCollection, m_trackDao, m_playlistDao);
         connect(&libImport, SIGNAL(progress(QString)),
-                m_pProgress, SLOT(slotUpdate(QString)),
-                Qt::BlockingQueuedConnection);
+                this, SIGNAL(progressLoading(QString)));
         ScopedTransaction transaction(m_database);
         libImport.import();
         transaction.commit();
@@ -297,16 +258,9 @@ void LibraryScanner::run() {
 
     qDebug("Scan took: %d ms", t.elapsed());
 
-    //m_pProgress->slotStopTiming();
-    m_database.close();
-    // Update BaseTrackCache via the main TrackDao
-    m_pTrackCollection->callSync(
-        [this, &tracksMovedSetOld, &tracksMovedSetNew, &coverArtTracksChanged]
-        (TrackCollectionPrivate* pTrackCollectionPrivate) {
-            pTrackCollectionPrivate->getTrackDAO().databaseTracksMoved(
-                tracksMovedSetOld, tracksMovedSetNew);
-            pTrackCollectionPrivate->getTrackDAO().databaseTracksChanged(coverArtTracksChanged);
-    }, __PRETTY_FUNCTION__);
+    // Update BaseTrackCache via signals connected to the main TrackDAO.
+    emit(tracksMoved(tracksMovedSetOld, tracksMovedSetNew));
+    emit(tracksChanged(coverArtTracksChanged));
 
     emit(scanFinished());
 }
@@ -591,9 +545,7 @@ bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
             if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successfully added. Signal the main instance of TrackDAO,
                 // that there is a new track in the database.
-                m_pTrackCollection->callSync( [this, &pTrack] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-                    pTrackCollectionPrivate->getTrackDAO().databaseTrackAdded(pTrack);
-                }, __PRETTY_FUNCTION__);
+                emit(trackAdded(pTrack));
             } else {
                 qDebug() << "Track ("+filePath+") could not be added";
             }

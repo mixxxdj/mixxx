@@ -54,6 +54,6 @@ EffectPointer EffectsBackend::instantiateEffect(EffectsManager* pEffectsManager,
     QPair<EffectManifest, EffectInstantiatorPointer>& effectInfo =
             m_registeredEffects[effectId];
 
-    return EffectPointer(new Effect(this, pEffectsManager,
+    return EffectPointer(new Effect(pEffectsManager,
                                     effectInfo.first, effectInfo.second));
 }

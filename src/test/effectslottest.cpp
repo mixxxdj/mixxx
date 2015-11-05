@@ -46,7 +46,7 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     manifest.setId("org.mixxx.test.effect");
     manifest.setName("Test Effect");
     manifest.addParameter();
-    registerTestEffect(manifest);
+    registerTestEffect(manifest, false);
 
     // Check the controls reflect the state of their loaded effect.
     EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());

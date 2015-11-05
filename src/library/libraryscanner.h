@@ -1,4 +1,3 @@
-
 /***************************************************************************
                           libraryscanner.h  -  scans library in a thread
                              -------------------
@@ -29,6 +28,7 @@
 #include <QRegExp>
 #include <QFileInfo>
 #include <QLinkedList>
+#include <QTimer>
 
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -38,10 +38,10 @@
 #include "library/dao/trackdao.h"
 #include "library/dao/analysisdao.h"
 #include "libraryscannerdlg.h"
-#include "trackcollection.h"
 #include "util/sandbox.h"
+#include "trackinfoobject.h"
 
-class TrackInfoObject;
+class TrackCollection;
 
 class LibraryScanner : public QThread {
     Q_OBJECT
@@ -50,7 +50,6 @@ class LibraryScanner : public QThread {
     LibraryScanner(TrackCollection* pTrackCollection);
     virtual ~LibraryScanner();
 
-    void run();
     void scan(QWidget* parent);
 
     void scan();
@@ -71,6 +70,12 @@ class LibraryScanner : public QThread {
     void progressHashing(QString);
     void progressLoading(QString path);
     void progressCoverArt(QString file);
+    void trackAdded(TrackPointer pTrack);
+    void tracksMoved(QSet<int> oldTrackIds, QSet<int> newTrackIds);
+    void tracksChanged(QSet<int> changedTrackIds);
+
+  protected:
+    void run();
 
   private:
     // Recursively scan a music library. Doesn't import tracks for any

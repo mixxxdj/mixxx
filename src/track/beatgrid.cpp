@@ -42,7 +42,6 @@ BeatGrid::BeatGrid(TrackInfoObject* pTrack, int iSampleRate,
           m_iSampleRate(iSampleRate > 0 ? iSampleRate :
                         pTrack->getSampleRate()),
           m_dBeatLength(0.0) {
-    qDebug() << "New BeatGrid";
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
     }

@@ -194,21 +194,14 @@ EffectManifestParameter::ControlHint EffectParameter::getControlHint() const {
     return m_parameter.controlHint();
 }
 
-void EffectParameter::addToEngine() {
-    m_bAddedToEngine = true;
-}
-
-void EffectParameter::removeFromEngine() {
-    m_bAddedToEngine = false;
-}
-
 void EffectParameter::updateEngineState() {
-    if (!m_bAddedToEngine) {
+    EngineEffect* pEngineEffect = m_pEffect->getEngineEffect();
+    if (!pEngineEffect) {
         return;
     }
     EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
-    pRequest->pTargetEffect = m_pEffect->getEngineEffect();
+    pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;    
+    pRequest->pTargetEffect = pEngineEffect;
     pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
     pRequest->value = m_value;
     pRequest->minimum = m_minimum;

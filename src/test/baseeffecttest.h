@@ -63,7 +63,7 @@ class BaseEffectTest : public MixxxTest {
         m_pEffectsManager->addEffectsBackend(m_pTestBackend);
     }
 
-    void registerTestEffect(const EffectManifest& manifest);
+    void registerTestEffect(const EffectManifest& manifest, bool willAddToEngine);
 
     // Deleted by EffectsManager. Do not delete.
     TestEffectBackend* m_pTestBackend;

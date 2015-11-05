@@ -7,30 +7,29 @@
 #include "engine/effects/engineeffect.h"
 #include "xmlparse.h"
 
-Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
+Effect::Effect(EffectsManager* pEffectsManager,
                const EffectManifest& manifest,
                EffectInstantiatorPointer pInstantiator)
-        : QObject(pParent),
+        : QObject(),
           m_pEffectsManager(pEffectsManager),
           m_manifest(manifest),
-          m_pEngineEffect(new EngineEffect(manifest,
-                                           pEffectsManager->registeredGroups(),
-                                           pInstantiator)),
-          m_bAddedToEngine(false),
+          m_pInstantiator(pInstantiator),
+          m_pEngineEffect(NULL),
           m_bEnabled(true) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-             this, pEffectsManager, m_parameters.size(), parameter);
+            this, pEffectsManager, m_parameters.size(), parameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(parameter.id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
         m_parametersById[parameter.id()] = pParameter;
     }
+    //qDebug() << debugString() << "created" << this;
 }
 
 Effect::~Effect() {
-    //qDebug() << debugString() << "destroyed";
+    //qDebug() << debugString() << "destroyed" << this;
     m_parametersById.clear();
     for (int i = 0; i < m_parameters.size(); ++i) {
         EffectParameter* pParameter = m_parameters.at(i);
@@ -40,33 +39,35 @@ Effect::~Effect() {
 }
 
 void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
+    if (m_pEngineEffect) {
+        return;
+    }
+    m_pEngineEffect = new EngineEffect(m_manifest,
+            m_pEffectsManager->registeredGroups(),
+            m_pInstantiator);
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
     request->pTargetChain = pChain;
     request->AddEffectToChain.pEffect = m_pEngineEffect;
     request->AddEffectToChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
-    m_bAddedToEngine = true;
-    foreach (EffectParameter* pParameter, m_parameters) {
-        pParameter->addToEngine();
-    }
 }
 
 void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
+    if (!m_pEngineEffect) {
+        return;
+    }
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::REMOVE_EFFECT_FROM_CHAIN;
     request->pTargetChain = pChain;
     request->RemoveEffectFromChain.pEffect = m_pEngineEffect;
     request->RemoveEffectFromChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
-    m_bAddedToEngine = false;
-    foreach (EffectParameter* pParameter, m_parameters) {
-        pParameter->removeFromEngine();
-    }
+    m_pEngineEffect = NULL;
 }
 
 void Effect::updateEngineState() {
-    if (!m_bAddedToEngine) {
+    if (!m_pEngineEffect) {
         return;
     }
     sendParameterUpdate();
@@ -96,7 +97,7 @@ bool Effect::enabled() const {
 }
 
 void Effect::sendParameterUpdate() {
-    if (!m_bAddedToEngine) {
+    if (!m_pEngineEffect) {
         return;
     }
     EffectsRequest* pRequest = new EffectsRequest();

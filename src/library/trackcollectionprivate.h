@@ -25,10 +25,12 @@
 #include "configobject.h"
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
+#include "library/dao/directorydao.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
+#include "library/dao/libraryhashdao.h"
 #include "library/dao/autodjcratesdao.h"
 #include "library/queryutil.h"
 
@@ -103,11 +105,12 @@ class TrackCollectionPrivate : public QObject {
     QSqlDatabase* m_pDatabase;
     PlaylistDAO* m_pPlaylistDao;
     CrateDAO* m_pCrateDao;
+    DirectoryDAO* m_pDirectoryDao;
     CueDAO* m_pCueDao;
+    LibraryHashDAO* m_pLibraryHashDao;
     AnalysisDao* m_pAnalysisDao;
     TrackDAO* m_pTrackDao;
     AutoDJCratesDAO* m_pAutoDjCratesDao;
-    DirectoryDAO* m_pDirectoryDao;
 
     QQueue<func> m_lambdas;
     volatile bool m_stop;
