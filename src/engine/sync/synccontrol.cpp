@@ -28,7 +28,15 @@ SyncControl::SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfi
           m_masterBpmAdjustFactor(kBpmUnity),
           m_unmultipliedTargetBeatDistance(0.0),
           m_beatDistance(0.0),
-          m_prevLocalBpm(0.0) {
+          m_prevLocalBpm(0.0),
+          m_pBpm(NULL),
+          m_pLocalBpm(NULL),
+          m_pFileBpm(NULL),
+          m_pRateSlider(NULL),
+          m_pRateDirection(NULL),
+          m_pRateRange(NULL),
+          m_pVCEnabled(NULL),
+          m_pSyncPhaseButton(NULL) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton = new ControlObjectSlave(group, "play", this);

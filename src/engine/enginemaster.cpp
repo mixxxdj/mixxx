@@ -36,7 +36,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            bool bRampingGain)
         : m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_bRampingGain(bRampingGain),
-          m_ppSidechain(&m_pMaster),
+          m_ppSidechain(&m_pTalkover),
           m_masterGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
           m_headphoneGainOld(1.0),
@@ -500,14 +500,20 @@ void EngineMaster::process(const int iBufferSize) {
 
         // Submit master samples to the side chain to do shoutcasting, recording,
         // etc. (cpu intensive non-realtime tasks)
-        m_ppSidechain = &m_pMaster;
         if (m_pEngineSideChain != NULL) {
             if (m_pMasterTalkoverMix->toBool()) {
-                // Add Master and Talkover to Sidechain output, re-use the talkover buffer
+                // Add Master and Talkover to Sidechain output, re-use the
+                // talkover buffer
+                // Note: m_ppSidechain = &m_pTalkover;
                 SampleUtil::addWithGain(m_pTalkover,
                         m_pMaster, 1.0,
                         iBufferSize);
-                m_ppSidechain = &m_pTalkover;
+            } else {
+                // Just Copy Master to Sidechain since we have already added
+                // Talkover above
+                SampleUtil::copy(*m_ppSidechain,
+                        m_pMaster,
+                        iBufferSize);
             }
             m_pEngineSideChain->writeSamples(*m_ppSidechain, iBufferSize);
         }
