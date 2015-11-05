@@ -57,6 +57,38 @@
         <cstring>frameRateSlider</cstring>
        </property>
       </widget>
+     </item> 
+     <item row="10" column="3">
+      <widget class="QSpinBox" name="endOfTrackWarningTimeSpinBox">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>60</number>
+       </property>
+       <property name="value">
+        <number>30</number>
+       </property>
+       <property name="suffix">
+        <string> seconds</string>
+       </property>
+      </widget>
+     </item>
+    <item row="10" column="0">
+      <widget class="QLabel" name="endOfTrackWarningTimeLabel">
+       <property name="text">
+        <string>End of track warning time.</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="buddy">
+        <cstring>endOfTrackWarningTimeSlider</cstring>
+       </property>
+      </widget>
      </item>
      <item row="0" column="0">
       <widget class="QLabel" name="waveformTypeLabel">
@@ -175,6 +207,34 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1" colspan="2">
+      <widget class="QSlider" name="endOfTrackWarningTimeSlider">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>60</number>
+       </property>
+       <property name="value">
+        <number>30</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>

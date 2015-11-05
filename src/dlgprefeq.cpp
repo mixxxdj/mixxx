@@ -31,14 +31,14 @@ const int kFrequencyLowerLimit = 16;
 
 DlgPrefEQ::DlgPrefEQ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(pParent),
-          m_bEqAutoReset(false),
           m_COTLoFreq(CONFIG_KEY, "LoEQFrequency"),
           m_COTHiFreq(CONFIG_KEY, "HiEQFrequency"),
           m_COTLoFi(CONFIG_KEY, "LoFiEQs"),
           m_COTEnableEq(CONFIG_KEY, ENABLE_INTERNAL_EQ),
           m_pConfig(pConfig),
           m_lowEqFreq(0.0),
-          m_highEqFreq(0.0) {
+          m_highEqFreq(0.0),
+          m_bEqAutoReset(false) {
     setupUi(this);
     // Connection
     connect(SliderHiEQ, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateHiEQ()));
@@ -210,7 +210,7 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
 void DlgPrefEQ::slotApply() {
     m_COTLoFreq.slotSet(m_lowEqFreq);
     m_COTHiFreq.slotSet(m_highEqFreq);
-    
+
     m_pConfig->set(ConfigKey(CONFIG_KEY,"EqAutoReset"),
             ConfigValue(m_bEqAutoReset ? 1 : 0));
     m_COTLoFi.slotSet((m_pConfig->getValueString(

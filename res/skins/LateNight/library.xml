@@ -31,11 +31,10 @@
 									<CoverArt>
 										<SizePolicy>me,me</SizePolicy>
 										<MinimumSize>100,100</MinimumSize>
-										<!-- TODO: uncomment this when there is a control for showing/hiding cover art.
-											<Connection>
+										<Connection>
 											<ConfigKey>[Library],show_coverart</ConfigKey>
 											<BindProperty>visible</BindProperty>
-										</Connection> -->
+										</Connection>
 									</CoverArt>
 								</Children>
 							</WidgetGroup>

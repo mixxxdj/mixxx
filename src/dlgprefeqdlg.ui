@@ -61,7 +61,7 @@
         <string>Reset equalizers on track load</string>
        </property>
        <property name="toolTip">
-        <string>Resets the equalizers to their default values when loading a track</string>
+        <string>Resets the equalizers to their default values when loading a track.</string>
        </property>
       </widget>
      </item> 

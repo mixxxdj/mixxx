@@ -34,7 +34,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
   public:
     DlgPrefEQ(QWidget *parent, ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefEQ();
-    bool m_bEqAutoReset;
 
   public slots:
     void slotEqChanged();
@@ -64,6 +63,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     ControlObjectThread m_COTEnableEq;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
+    bool m_bEqAutoReset;
 };
 
 #endif

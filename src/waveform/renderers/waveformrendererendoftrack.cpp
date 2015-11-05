@@ -3,7 +3,6 @@
 #include <QPainter>
 
 #include "waveformrendererendoftrack.h"
-
 #include "waveformwidgetrenderer.h"
 
 #include "controlobject.h"
@@ -23,8 +22,8 @@ WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
       m_pPlayControl(NULL),
       m_pLoopControl(NULL),
       m_color(200, 25, 20),
-      m_blinkingPeriodMillis(1000),
-      m_remainingTimeTriggerSeconds(30.0) {
+      m_remainingTimeTriggerSeconds(30),
+      m_blinkingPeriodMillis(1000) {
 }
 
 WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
@@ -82,7 +81,6 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
     const double sampleRate = m_pTrackSampleRate->get();
-
     /*qDebug() << "WaveformRendererEndOfTrack :: "
              << "trackSamples" << trackSamples
              << "sampleRate" << sampleRate
@@ -90,8 +88,8 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
              << "m_loopControl->get()" << m_loopControl->get();*/
 
     m_endOfTrackEnabled = m_pEndOfTrackControl->get() > 0.5;
-
-    //special case of track not long enougth
+    m_remainingTimeTriggerSeconds = WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
+    // special case of track not long enough
     const double trackLength = 0.5 * trackSamples / sampleRate;
 
     if (sampleRate < 0.1 //not ready
