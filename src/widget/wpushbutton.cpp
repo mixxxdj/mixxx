@@ -239,19 +239,8 @@ void WPushButton::setPixmapBackground(PixmapSource source,
     }
 }
 
-void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dParameter);
-    // Enums are not currently represented using parameter space so it doesn't
-    // make sense to use the parameter here yet.
-    if (m_iNoStates == 1) {
-        m_bPressed = (dValue == 1.0);
-    }
-
-    double value = getControlParameterDisplay();
-    if (!isnan(value) && m_iNoStates > 0) {
-        int idx = static_cast<int>(value) % m_iNoStates;
-        emit(displayValueChanged(idx));
-    }
+void WPushButton::restyleAndRepaint() {
+    emit(displayValueChanged(readDisplayValue()));
 
     // According to http://stackoverflow.com/a/3822243 this is the least
     // expensive way to restyle just this widget.
@@ -260,8 +249,20 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     // re-render.
     style()->unpolish(this);
     style()->polish(this);
+
     // These calls don't always trigger the repaint, so call it explicitly.
     repaint();
+}
+
+void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dParameter);
+    // Enums are not currently represented using parameter space so it doesn't
+    // make sense to use the parameter here yet.
+    if (m_iNoStates == 1) {
+        m_bPressed = (dValue == 1.0);
+    }
+
+    restyleAndRepaint();
 }
 
 void WPushButton::paintEvent(QPaintEvent* e) {
@@ -321,7 +322,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             }
             m_bPressed = true;
             setControlParameterLeftDown(1.0);
-            update();
+            restyleAndRepaint();
         }
         // discharge right clicks here, because is used for latching in POWERWINDOW mode
         return;
@@ -334,7 +335,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
                 || m_iNoStates == 1) {
             m_bPressed = true;
             setControlParameterRightDown(1.0);
-            update();
+            restyleAndRepaint();
         }
         return;
     }
@@ -359,7 +360,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         }
         m_bPressed = true;
         setControlParameterLeftDown(emitValue);
-        update();
+        restyleAndRepaint();
     }
 }
 
@@ -370,7 +371,7 @@ void WPushButton::focusOutEvent(QFocusEvent* e) {
         // the pressed flag if the Primary touch point is moved to an
         // other widget
         m_bPressed = false;
-        update();
+        restyleAndRepaint();
     }
 }
 
@@ -390,7 +391,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         } else if (rightClick) {
             m_bPressed = false;
         }
-        update();
+        restyleAndRepaint();
         return;
     }
 
@@ -402,7 +403,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
                 || m_iNoStates == 1) {
             m_bPressed = false;
             setControlParameterRightUp(0.0);
-            update();
+            restyleAndRepaint();
         }
         return;
     }
@@ -426,7 +427,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         }
         m_bPressed = false;
         setControlParameterLeftUp(emitValue);
-        update();
+        restyleAndRepaint();
     }
 }
 
