@@ -339,15 +339,21 @@ QString ConfigObject<ValueType>::getResourcePath() {
     // On Windows it is always (and only) app dir.
     // On OS X it is the current directory and then the Resources/ dir in the app bundle
     //
-    QString qResourcePath; // TODO: this only changes once (on first load) during a run should make this a singleton.
+
+#ifdef __WINDOWS__
+    bool windows = true;
+#else
+    bool windows = false;
+#endif
 
     // Try to read in the resource directory from the command line
-    qResourcePath = CmdlineArgs::Instance().getResourcePath();
+    QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
     if (qResourcePath.isNull() || qResourcePath.isEmpty()) {
         QDir mixxxDir(QCoreApplication::applicationDirPath());
-        // Always check to see if the path is stored in the configuration database.
-        if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists()) {
+        // Always check to see if the path is stored in the configuration
+        // database unless we are running on Windows. See Bug #1392854.
+        if (!windows && getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists()) {
             qResourcePath = getValueString(ConfigKey("[Config]","Path"));
         } else if (mixxxDir.cd("res")) {
             // We are running out of the repository root.
