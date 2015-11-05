@@ -50,13 +50,13 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     unsetPixmaps();
 
     if (context.hasNode(node, "Slider")) {
-        QString pathSlider = context.getPixmapPath(context.selectNode(node, "Slider"));
-        setSliderPixmap(pathSlider);
+        PixmapSource sourceSlider = context.getPixmapSource(context.selectNode(node, "Slider"));
+        setSliderPixmap(sourceSlider);
     }
 
-    QString pathHandle = context.getPixmapPath(context.selectNode(node, "Handle"));
+    PixmapSource sourceHandle = context.getPixmapSource(context.selectNode(node, "Handle"));
     bool h = context.selectBool(node, "Horizontal", false);
-    setHandlePixmap(h, pathHandle);
+    setHandlePixmap(h, sourceHandle);
 
     if (context.hasNode(node, "EventWhileDrag")) {
         if (context.selectString(node, "EventWhileDrag").contains("no")) {
@@ -76,23 +76,23 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WSliderComposed::setSliderPixmap(const QString& filenameSlider) {
-    m_pSlider = WPixmapStore::getPaintable(filenameSlider,
+void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider) {
+    m_pSlider = WPixmapStore::getPaintable(sourceSlider,
                                            Paintable::STRETCH);
     if (!m_pSlider) {
-        qDebug() << "WSliderComposed: Error loading slider pixmap:" << filenameSlider;
+        qDebug() << "WSliderComposed: Error loading slider pixmap:" << sourceSlider.getPath();
     } else {
         // Set size of widget, using size of slider pixmap
         setFixedSize(m_pSlider->size());
     }
 }
 
-void WSliderComposed::setHandlePixmap(bool bHorizontal, const QString& filenameHandle) {
+void WSliderComposed::setHandlePixmap(bool bHorizontal, PixmapSource sourceHandle) {
     m_bHorizontal = bHorizontal;
-    m_pHandle = WPixmapStore::getPaintable(filenameHandle,
+    m_pHandle = WPixmapStore::getPaintable(sourceHandle,
                                            Paintable::STRETCH);
     if (!m_pHandle) {
-        qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
+        qDebug() << "WSliderComposed: Error loading handle pixmap:" << sourceHandle.getPath();
     } else {
         m_iHandleLength = m_bHorizontal ?
                 m_pHandle->width() : m_pHandle->height();

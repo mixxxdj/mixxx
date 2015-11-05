@@ -121,14 +121,14 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 
 void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     m_group = group;
-
+    
     // Set images
-    m_pBgImage = WImageStore::getImage(context.getPixmapPath(context.selectNode(node,
-                                                    "PathBackground")));
-    m_pFgImage = WImageStore::getImage(context.getPixmapPath(context.selectNode(node,
-                                                    "PathForeground")));
-    m_pGhostImage = WImageStore::getImage(context.getPixmapPath(context.selectNode(node,
-                                                    "PathGhost")));
+    m_pBgImage = WImageStore::getImage(context.getPixmapSource(
+                        context.selectNode(node, "PathBackground")));
+    m_pFgImage = WImageStore::getImage(context.getPixmapSource(
+                        context.selectNode(node,"PathForeground")));
+    m_pGhostImage = WImageStore::getImage(context.getPixmapSource(
+                        context.selectNode(node,"PathGhost")));
     if (m_pBgImage && !m_pBgImage->isNull()) {
         setFixedSize(m_pBgImage->size());
     }

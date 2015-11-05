@@ -43,9 +43,9 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        QString backPath = context.getPixmapPath(context.selectNode(node, "BackPath"));
-        if (!backPath.isEmpty()) {
-            setPixmapBackground(backPath, Paintable::DrawModeFromString(mode_str));
+        PixmapSource backSource = context.getPixmapSource(context.selectNode(node, "BackPath"));
+        if (!backSource.isEmpty()) {
+            setPixmapBackground(backSource, Paintable::DrawModeFromString(mode_str));
         }
     }
 
@@ -55,16 +55,16 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
         if (state.isElement() && state.nodeName() == "State") {
             int iState = context.selectInt(state, "Number");
             if (iState < m_iNoStates) {
-                QString pixmapPath;
+                PixmapSource pixmapSource;
                 
-                pixmapPath = context.getPixmapPath(context.selectNode(state, "Unpressed"));
-                if (!pixmapPath.isEmpty()) {
-                    setPixmap(iState, false, pixmapPath);
+                pixmapSource = context.getPixmapSource(context.selectNode(state, "Unpressed"));
+                if (!pixmapSource.isEmpty()) {
+                    setPixmap(iState, false, pixmapSource);
                 }
                 
-                pixmapPath = context.getPixmapPath(context.selectNode(state, "Pressed"));
-                if (!pixmapPath.isEmpty()) {
-                    setPixmap(iState, true, pixmapPath);
+                pixmapSource = context.getPixmapSource(context.selectNode(state, "Pressed"));
+                if (!pixmapSource.isEmpty()) {
+                    setPixmap(iState, true, pixmapSource);
                 }
                 
                 m_text.replace(iState, context.selectString(state, "Text"));
@@ -237,7 +237,8 @@ void WEffectPushButton::setStates(int iStates) {
     m_align.resize(iStates);
 }
 
-void WEffectPushButton::setPixmap(int iState, bool bPressed, const QString& filename) {
+void WEffectPushButton::setPixmap(int iState, bool bPressed,
+                                  const PixmapSource& source) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
@@ -245,13 +246,14 @@ void WEffectPushButton::setPixmap(int iState, bool bPressed, const QString& file
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source,
                                                           Paintable::STRETCH);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         // Only log if it looks like the user tried to specify a pixmap.
-        if (!filename.isEmpty()) {
-            qDebug() << "WEffectPushButton: Error loading pixmap:" << filename;
+        if (!source.isEmpty()) {
+            qDebug() << "WEffectPushButton: Error loading pixmap:"
+                << source.getPath();
         }
     } else {
         // Set size of widget equal to pixmap size
@@ -260,14 +262,15 @@ void WEffectPushButton::setPixmap(int iState, bool bPressed, const QString& file
     pixmaps.replace(iState, pPixmap);
 }
 
-void WEffectPushButton::setPixmapBackground(const QString &filename,
-                                      Paintable::DrawMode mode) {
+void WEffectPushButton::setPixmapBackground(const PixmapSource &source,
+                                            Paintable::DrawMode mode) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
-    if (!filename.isEmpty() &&
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
+    if (!source.isEmpty() &&
             (m_pPixmapBack.isNull() || m_pPixmapBack->isNull())) {
         // Only log if it looks like the user tried to specify a pixmap.
-        qDebug() << "WEffectPushButton: Error loading background pixmap:" << filename;
+        qDebug() << "WEffectPushButton: Error loading background pixmap:"
+            << source.getPath();
     }
 }
 

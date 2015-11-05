@@ -59,9 +59,9 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        QString backPath = context.getPixmapPath(context.selectNode(node, "BackPath"));
-        if (!backPath.isEmpty()) {
-            setPixmapBackground(backPath, Paintable::DrawModeFromString(mode_str));
+        PixmapSource backgroundSource = context.getPixmapSource(context.selectNode(node, "BackPath"));
+        if (!backgroundSource.isEmpty()) {
+            setPixmapBackground(backgroundSource, Paintable::DrawModeFromString(mode_str));
         }
     }
 
@@ -69,22 +69,26 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     QDomNode state = context.selectNode(node, "State");
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
-            int iState = context.selectInt(state, "Number");
+            // support for variables in State elements
+            SkinContext stateContext(context);
+            stateContext.updateVariables(state);
+            
+            int iState = stateContext.selectInt(state, "Number");
             if (iState < m_iNoStates) {
-                QString pixmapPath;
-
-                pixmapPath = context.getPixmapPath(context.selectNode(state, "Unpressed"));
-                if (!pixmapPath.isEmpty()) {
-                    setPixmap(iState, false, pixmapPath);
+                PixmapSource pixmapSource;
+                
+                pixmapSource = stateContext.getPixmapSource(stateContext.selectNode(state, "Unpressed"));
+                if (!pixmapSource.isEmpty()) {
+                    setPixmap(iState, false, pixmapSource);
                 }
-
-                pixmapPath = context.getPixmapPath(context.selectNode(state, "Pressed"));
-                if (!pixmapPath.isEmpty()) {
-                    setPixmap(iState, true, pixmapPath);
+                
+                pixmapSource = stateContext.getPixmapSource(stateContext.selectNode(state, "Pressed"));
+                if (!pixmapSource.isEmpty()) {
+                    setPixmap(iState, true, pixmapSource);
                 }
-
-                m_text.replace(iState, context.selectString(state, "Text"));
-                QString alignment = context.selectString(state, "Alignment").toLower();
+                
+                m_text.replace(iState, stateContext.selectString(state, "Text"));
+                QString alignment = stateContext.selectString(state, "Alignment").toLower();
                 if (alignment == "left") {
                     m_align.replace(iState, Qt::AlignLeft);
                 } else if (alignment == "right") {
@@ -198,7 +202,7 @@ void WPushButton::setStates(int iStates) {
     m_align.resize(iStates);
 }
 
-void WPushButton::setPixmap(int iState, bool bPressed, const QString& filename) {
+void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
@@ -206,13 +210,13 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString& filename) 
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source,
                                                           Paintable::STRETCH);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         // Only log if it looks like the user tried to specify a pixmap.
-        if (!filename.isEmpty()) {
-            qDebug() << "WPushButton: Error loading pixmap:" << filename;
+        if (!source.isEmpty()) {
+            qDebug() << "WPushButton: Error loading pixmap:" << source.getPath();
         }
     } else {
         // Set size of widget equal to pixmap size
@@ -221,14 +225,14 @@ void WPushButton::setPixmap(int iState, bool bPressed, const QString& filename) 
     pixmaps.replace(iState, pPixmap);
 }
 
-void WPushButton::setPixmapBackground(const QString &filename,
+void WPushButton::setPixmapBackground(PixmapSource source,
                                       Paintable::DrawMode mode) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
-    if (!filename.isEmpty() &&
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
+    if (!source.isEmpty() &&
             (m_pPixmapBack.isNull() || m_pPixmapBack->isNull())) {
         // Only log if it looks like the user tried to specify a pixmap.
-        qDebug() << "WPushButton: Error loading background pixmap:" << filename;
+        qDebug() << "WPushButton: Error loading background pixmap:" << source.getPath();
     }
 }
 
