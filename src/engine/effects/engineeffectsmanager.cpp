@@ -98,7 +98,6 @@ void EngineEffectsManager::onCallbackStart() {
                 break;
             case EffectsRequest::SET_EFFECT_PARAMETERS:
             case EffectsRequest::SET_PARAMETER_PARAMETERS:
-            case EffectsRequest::SET_PARAMETER_BUTTON_PARAMETERS:
                 if (!m_effects.contains(request->pTargetEffect)) {
                     if (kEffectDebugOutput) {
                         qDebug() << debugString()

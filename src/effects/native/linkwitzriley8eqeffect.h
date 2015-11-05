@@ -65,6 +65,10 @@ class LinkwitzRiley8EQEffect : public GroupEffectProcessor<LinkwitzRiley8EQEffec
     EngineEffectParameter* m_pPotMid;
     EngineEffectParameter* m_pPotHigh;
 
+    EngineEffectParameter* m_pKillLow;
+    EngineEffectParameter* m_pKillMid;
+    EngineEffectParameter* m_pKillHigh;
+
     ControlObjectSlave* m_pLoFreqCorner;
     ControlObjectSlave* m_pHiFreqCorner;
 

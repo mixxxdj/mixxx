@@ -21,7 +21,7 @@ class EffectParameterSlotBase : public QObject {
     EffectParameterSlotBase(const unsigned int iRackNumber,
                         const unsigned int iChainNumber,
                         const unsigned int iSlotNumber,
-                        const unsigned int iParameterNumber);
+                        const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlotBase();
 
     static QString formatGroupString(const unsigned int iRackNumber,
@@ -35,6 +35,7 @@ class EffectParameterSlotBase : public QObject {
 
     QString name() const;
     QString description() const;
+    const EffectManifestParameter getManifest();
 
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.
@@ -43,14 +44,13 @@ class EffectParameterSlotBase : public QObject {
   protected slots:
     // Solely for handling control changes
     void slotLoaded(double v);
-    void slotValueChanged(double v);
     void slotValueType(double v);
 
   protected:
     const unsigned int m_iRackNumber;
     const unsigned int m_iChainNumber;
     const unsigned int m_iSlotNumber;
-    const unsigned int m_iParameterNumber;
+    const unsigned int m_iParameterSlotNumber;
     QString m_group;
     EffectPointer m_pEffect;
     EffectParameter* m_pEffectParameter;

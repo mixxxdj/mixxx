@@ -28,7 +28,6 @@ EffectManifest FlangerEffect::getManifest() {
     depth->setName(QObject::tr("Depth"));
     depth->setDescription("TODO");
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setDefault(0.0);
@@ -40,7 +39,6 @@ EffectManifest FlangerEffect::getManifest() {
     delay->setName(QObject::tr("Delay"));
     delay->setDescription("TODO");
     delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    delay->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     delay->setDefault(50.0);
@@ -52,7 +50,6 @@ EffectManifest FlangerEffect::getManifest() {
     period->setName(QObject::tr("Period"));
     period->setDescription("TODO");
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    period->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     period->setDefault(50000.0);
@@ -84,10 +81,8 @@ void FlangerEffect::processGroup(const QString& group,
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
-    CSAMPLE lfoPeriod = m_pPeriodParameter ?
-            m_pPeriodParameter->value().toDouble() : 0.0f;
-    CSAMPLE lfoDepth = m_pDepthParameter ?
-            m_pDepthParameter->value().toDouble() : 0.0f;
+    CSAMPLE lfoPeriod = m_pPeriodParameter->value();
+    CSAMPLE lfoDepth = m_pDepthParameter->value();
     // Unused in EngineFlanger
     // CSAMPLE lfoDelay = m_pDelayParameter ?
     //         m_pDelayParameter->value().toDouble() : 0.0f;

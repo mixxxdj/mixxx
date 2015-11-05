@@ -27,7 +27,6 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     lpf->setName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
     lpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    lpf->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     lpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     lpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_LEFT);
@@ -41,7 +40,6 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     q->setName(QObject::tr("Resonance"));
     q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    q->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
     q->setDefault(0);
@@ -53,7 +51,6 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     hpf->setName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
     hpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    hpf->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     hpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     hpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     hpf->setDefaultLinkType(EffectManifestParameter::LINK_LINKED_RIGHT);
@@ -107,7 +104,7 @@ void MoogLadder4FilterEffect::processGroup(const QString& group,
     Q_UNUSED(sampleRate);
 
 
-    double resonance = m_pResonance->value().toDouble();
+    double resonance = m_pResonance->value();
     double hpf;
     double lpf;
     if (enableState == EffectProcessor::DISABLING) {
@@ -115,8 +112,8 @@ void MoogLadder4FilterEffect::processGroup(const QString& group,
         hpf = kMinCorner;
         lpf = kMaxCorner;
     } else {
-        hpf = m_pHPF->value().toDouble();
-        lpf = m_pLPF->value().toDouble();
+        hpf = m_pHPF->value();
+        lpf = m_pLPF->value();
     }
 
     if (pState->m_loFreq != lpf ||

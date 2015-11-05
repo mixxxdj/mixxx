@@ -34,7 +34,6 @@ struct EffectsRequest {
         // Messages for EngineEffect
         SET_EFFECT_PARAMETERS,
         SET_PARAMETER_PARAMETERS,
-        SET_PARAMETER_BUTTON_PARAMETERS,
 
         // Must come last.
         NUM_REQUEST_TYPES
@@ -125,10 +124,10 @@ struct EffectsRequest {
     QString group;
 
     // Used by SET_EFFECT_PARAMETER.
-    QVariant minimum;
-    QVariant maximum;
-    QVariant default_value;
-    QVariant value;
+    double minimum;
+    double maximum;
+    double default_value;
+    double value;
 };
 
 struct EffectsResponse {

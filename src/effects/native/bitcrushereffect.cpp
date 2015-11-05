@@ -21,7 +21,6 @@ EffectManifest BitCrusherEffect::getManifest() {
     depth->setName(QObject::tr("Bit Depth"));
     depth->setDescription("TODO");
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
@@ -37,7 +36,6 @@ EffectManifest BitCrusherEffect::getManifest() {
     frequency->setName(QObject::tr("Downsampling"));
     frequency->setDescription("TODO");
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    frequency->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
     frequency->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
@@ -73,10 +71,10 @@ void BitCrusherEffect::processGroup(const QString& group,
     Q_UNUSED(enableState); // no need to ramp, it is just a bitcrusher ;-)
 
     const CSAMPLE downsample = m_pDownsampleParameter ?
-            m_pDownsampleParameter->value().toDouble() : 0.0;
+            m_pDownsampleParameter->value() : 0.0;
 
     CSAMPLE bit_depth = m_pBitDepthParameter ?
-            m_pBitDepthParameter->value().toDouble() : 16;
+            m_pBitDepthParameter->value() : 16;
 
     // divided by two because we use float math which includes the sing bit anyway
     const CSAMPLE scale = pow(2.0f, bit_depth) / 2;

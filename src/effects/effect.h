@@ -24,6 +24,8 @@ typedef QSharedPointer<Effect> EffectPointer;
 class Effect : public QObject {
     Q_OBJECT
   public:
+    typedef bool (*ParameterFilterFnc)(EffectParameter*);
+
     Effect(QObject* pParent, EffectsManager* pEffectsManager,
            const EffectManifest& manifest,
            EffectInstantiatorPointer pInstantiator);
@@ -31,10 +33,16 @@ class Effect : public QObject {
 
     const EffectManifest& getManifest() const;
 
-    unsigned int numParameters() const;
+    unsigned int numKnobParameters() const;
     unsigned int numButtonParameters() const;
-    EffectParameter* getParameter(unsigned int parameterNumber);
-    EffectParameter* getButtonParameter(unsigned int parameterNumber);
+
+    static bool isButtonParameter(EffectParameter* parameter);
+    static bool isKnobParameter(EffectParameter* parameter);
+
+    EffectParameter* getFilteredParameterForSlot(ParameterFilterFnc filterFnc, unsigned int slotNumber);
+    EffectParameter* getKnobParameterForSlot(unsigned int slotNumber);
+    EffectParameter* getButtonParameterForSlot(unsigned int slotNumber);
+
     EffectParameter* getParameterById(const QString& id) const;
     EffectParameter* getButtonParameterById(const QString& id) const;
 
@@ -68,8 +76,6 @@ class Effect : public QObject {
     bool m_bEnabled;
     QList<EffectParameter*> m_parameters;
     QMap<QString, EffectParameter*> m_parametersById;
-    QList<EffectParameter*> m_buttonParameters;
-    QMap<QString, EffectParameter*> m_buttonParametersById;
 
     DISALLOW_COPY_AND_ASSIGN(Effect);
 };

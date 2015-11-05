@@ -27,7 +27,6 @@ EffectManifest EchoEffect::getManifest() {
     time->setDescription(
             QObject::tr("How much of the signal to send into the delay buffer"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    time->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     time->setMinimum(0.0);
@@ -39,7 +38,6 @@ EffectManifest EchoEffect::getManifest() {
     time->setName(QObject::tr("Delay"));
     time->setDescription(QObject::tr("Delay time (seconds)"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    time->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_TIME);
     time->setDefaultLinkType(EffectManifestParameter::LINK_LINKED);
@@ -53,7 +51,6 @@ EffectManifest EchoEffect::getManifest() {
     time->setDescription(
             QObject::tr("Amount the echo fades each time it loops"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
-    time->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     time->setMinimum(0.00);
@@ -68,7 +65,6 @@ EffectManifest EchoEffect::getManifest() {
                         "of the echoed signal is bounced between the left and "
                         "right speakers."));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    time->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     time->setMinimum(0.0);
@@ -111,14 +107,10 @@ void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
     Q_UNUSED(group);
     Q_UNUSED(groupFeatures);
     EchoGroupState& gs = *pGroupState;
-    double delay_time =
-            m_pDelayParameter ? m_pDelayParameter->value().toDouble() : 1.0f;
-    double send_amount =
-            m_pSendParameter ? m_pSendParameter->value().toDouble() : 1.0f;
-    double feedback_amount =
-            m_pFeedbackParameter ? m_pFeedbackParameter->value().toDouble() : 0.25f;
-    double pingpong_frac =
-            m_pPingPongParameter ? m_pPingPongParameter->value().toDouble() : 0.25f;
+    double delay_time = m_pDelayParameter->value();
+    double send_amount = m_pSendParameter->value();
+    double feedback_amount = m_pFeedbackParameter->value();
+    double pingpong_frac = m_pPingPongParameter->value();
 
     // TODO(owilliams): get actual sample rate from somewhere.
 
