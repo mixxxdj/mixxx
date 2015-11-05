@@ -50,6 +50,8 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // BrowseThread sets the Qt::UserRole of every QStandardItem to the sort key
     // of the item.
     m_proxyModel.setSortRole(Qt::UserRole);
+    // Dynamically re-sort contents as we add items to the source model.
+    m_proxyModel.setDynamicSortFilter(true);
 
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();

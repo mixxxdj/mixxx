@@ -3,12 +3,14 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QtDebug>
+#include <QMetaObject>
 #ifdef __AUTODJCRATES__
 #include <QMenu>
 #endif // __AUTODJCRATES__
 
-#include "library/autodjfeature.h"
+#include "library/autodj/autodjfeature.h"
 
+#include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"
 #include "dlgautodj.h"
 #include "library/treeitem.h"
@@ -25,8 +27,24 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
+          m_iAutoDJPlaylistId(-1),
+          m_pAutoDJProcessor(NULL),
           m_pAutoDJView(NULL)
 {
+    m_pTrackCollection->callSync( [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        m_iAutoDJPlaylistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
+        // If the AutoDJ playlist does not exist yet then create it.
+        if (m_iAutoDJPlaylistId < 0) {
+            m_iAutoDJPlaylistId = pTrackCollectionPrivate->getPlaylistDAO().createPlaylist(
+                    AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+        }
+    }, __PRETTY_FUNCTION__);
+    qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
+    m_pAutoDJProcessor = new AutoDJProcessor(
+            this, m_pConfig, m_iAutoDJPlaylistId, m_pTrackCollection);
+    connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+
 #ifdef __AUTODJCRATES__
 
     // Create the "Crates" tree-item under the root item.
@@ -65,6 +83,7 @@ AutoDJFeature::~AutoDJFeature() {
 #ifdef __AUTODJCRATES__
     delete m_pRemoveCrateFromAutoDj;
 #endif // __AUTODJCRATES__
+    delete m_pAutoDJProcessor;
 }
 
 QVariant AutoDJFeature::title() {
@@ -79,6 +98,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                   m_pConfig,
+                                  m_pAutoDJProcessor,
                                   m_pTrackCollection,
                                   keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
@@ -284,13 +304,12 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                 [this, &needToDoSelect] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         // Get access to the auto-DJ playlist.
         PlaylistDAO& playlistDao = pTrackCollectionPrivate->getPlaylistDAO();
-        int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-        if (iAutoDJPlaylistId >= 0) {
+        if (m_iAutoDJPlaylistId >= 0) {
             // Get the ID of a randomly-selected track.
             int iTrackId = pTrackCollectionPrivate->getAutoDJCratesDAO().getRandomTrackId();
             if (iTrackId != -1) {
                 // Add this randomly-selected track to the auto-DJ playlist.
-                playlistDao.appendTrackToPlaylist(iTrackId, iAutoDJPlaylistId);
+                playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
                 needToDoSelect = true;
             }
         }

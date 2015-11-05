@@ -400,7 +400,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // Write the position before the seek type, to reduce a possible race
     // condition effect
     m_queuedPosition.setValue(newpos);
-    m_iSeekQueued = load_atomic(seekType);
+    m_iSeekQueued = seekType;
 }
 
 void EngineBuffer::requestSyncPhase() {
@@ -636,7 +636,7 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     bool playPossible = true;
     if ((!m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && m_filepos_play >= m_file_length_old &&
-                    load_atomic(!m_iSeekQueued))) {
+                    !load_atomic(m_iSeekQueued))) {
         // play not possible
         playPossible = false;
     }
