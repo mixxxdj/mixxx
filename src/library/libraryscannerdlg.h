@@ -36,6 +36,7 @@ class LibraryScannerDlg : public QWidget {
     void slotCancel();
     void slotPause();
     void slotScanFinished();
+    void slotScanStarted();
 
   signals:
     void scanCancelled();

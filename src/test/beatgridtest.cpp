@@ -18,6 +18,28 @@ class BeatGridTest : public testing::Test {
     }
 };
 
+TEST_F(BeatGridTest, Scale) {
+    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+
+    int sampleRate = 44100;
+    double bpm = 60.0;
+    pTrack->setBpm(bpm);
+    pTrack->setSampleRate(sampleRate);
+
+    BeatGrid* pGrid = new BeatGrid(pTrack.data(), 0);
+    pGrid->setBpm(bpm);
+
+    EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
+    pGrid->scale(2);
+    EXPECT_DOUBLE_EQ(2 * bpm, pGrid->getBpm());
+
+    pGrid->scale(0.5);
+    EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
+
+    pGrid->scale(0.25);
+    EXPECT_DOUBLE_EQ(0.25 * bpm, pGrid->getBpm());
+}
+
 TEST_F(BeatGridTest, TestNthBeatWhenOnBeat) {
     TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
 

@@ -18,7 +18,7 @@ void WaveformRenderBackground::setup(const QDomNode& node,
     m_backgroundColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
     m_backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (m_backgroundPixmapPath.isEmpty()) {
-        qWarning() << "WaveformRenderBackground::generatePixmap - no background file";
+        //qWarning() << "WaveformRenderBackground::generatePixmap - no background file";
         m_backgroundPixmapPath = QString();
     } else {
         m_backgroundPixmapPath = context.getSkinPath(m_backgroundPixmapPath);

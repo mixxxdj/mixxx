@@ -78,7 +78,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     ControlObjectThread* m_pVinylControlEnabled;
     ControlObjectThread* m_pSignalEnabled;
     ControlObjectThread* m_pSlipEnabled;
-    ControlObjectThread* m_pSlipPosition;
 
     TrackPointer m_loadedTrack;
     QPixmap m_loadedCover;

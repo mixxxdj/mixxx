@@ -31,6 +31,7 @@
 #include "controlpushbutton.h"
 #include "control/controlbehavior.h"
 #include "util/debug.h"
+#include "util/math.h"
 
 WPushButton::WPushButton(QWidget* pParent)
         : WWidget(pParent),
@@ -72,22 +73,22 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
             // support for variables in State elements
             SkinContext stateContext(context);
             stateContext.updateVariables(state);
-            
+
             int iState = stateContext.selectInt(state, "Number");
             if (iState < m_iNoStates) {
-                
+
                 PixmapSource pixmapSource = stateContext.getPixmapSource(
                     stateContext.selectNode(state, "Unpressed"));
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, false, pixmapSource);
                 }
-                
+
                 pixmapSource = stateContext.getPixmapSource(
                     stateContext.selectNode(state, "Pressed"));
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, true, pixmapSource);
                 }
-                
+
                 m_text.replace(iState, stateContext.selectString(state, "Text"));
                 QString alignment = stateContext.selectString(state, "Alignment").toLower();
                 if (alignment == "left") {
@@ -163,9 +164,10 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                     ControlObject::getControl(configKey));
             if (p) {
                 m_rightButtonMode = p->getButtonMode();
-                if (m_rightButtonMode != ControlPushButton::PUSH) {
+                if (m_rightButtonMode != ControlPushButton::PUSH &&
+                        m_rightButtonMode != ControlPushButton::TRIGGER) {
                     qWarning()
-                            << "WPushButton::setup: Connecting a Pushbutton not in PUSH mode is not implemented\n"
+                            << "WPushButton::setup: Connecting a Pushbutton not in PUSH or TRIGGER mode is not implemented\n"
                             << "Please set <RightClickIsPushButton>true</RightClickIsPushButton>";
                 }
             }
@@ -246,8 +248,11 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     }
 
     double value = getControlParameterDisplay();
-    int idx = static_cast<int>(value) % m_iNoStates;
-    setProperty("displayValue", idx);
+    if (!isnan(value) && m_iNoStates > 0) {
+        int idx = static_cast<int>(value) % m_iNoStates;
+        emit(displayValueChanged(idx));
+    }
+
     // According to http://stackoverflow.com/a/3822243 this is the least
     // expensive way to restyle just this widget.
     // Since we expect button connections to not change at high frequency we
@@ -343,7 +348,10 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             emitValue = 1.0;
         } else {
             // Toggle thru the states
-            emitValue = static_cast<int>(getControlParameterLeft() + 1.0) % m_iNoStates;
+            emitValue = getControlParameterLeft();
+            if (!isnan(emitValue) && m_iNoStates > 0) {
+                emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
+            }
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
@@ -409,7 +417,9 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING
                     && m_clickTimer.isActive() && emitValue >= 1.0) {
                 // revert toggle if button is released too early
-                emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
+                if (!isnan(emitValue) && m_iNoStates > 0) {
+                    emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
+                }
             } else {
                 // Nothing special happens when releasing a normal toggle button
             }

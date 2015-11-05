@@ -1,58 +1,68 @@
 <Template>
-	<WidgetGroup>
-		<ObjectName>Library</ObjectName>
-		<SizePolicy>me,me</SizePolicy>
-		<MinimumSize>1280,50</MinimumSize>
-		<Layout>vertical</Layout>
-		<Children>
-			<!--
-			**********************************************
-			Library / Preview Deck / Search / Tree view
-			**********************************************
-			-->
-			<WidgetGroup>
-				<Layout>horizontal</Layout>
-				<Children>
-					<Splitter>
-						<Size>me,me</Size>
-						<SplitSizes>1,12</SplitSizes>
-						<Children>
-							<WidgetGroup>
-								<Style>QGroupBox {}</Style>
-								<Layout>vertical</Layout>
-								<Children>
-									<!-- Preview Deck-->
-									<Template src="skin:preview_deck_container.xml"/>
-									<!--Search Input Field-->
-									<SearchBox></SearchBox>
-									<!--Library Tree View-->
-									<LibrarySidebar></LibrarySidebar>
-									<!--Cover Art-->
-									<CoverArt>
-										<SizePolicy>me,me</SizePolicy>
-										<MinimumSize>100,100</MinimumSize>
-										<Connection>
-											<ConfigKey>[Library],show_coverart</ConfigKey>
-											<BindProperty>visible</BindProperty>
-										</Connection>
-									</CoverArt>
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-								<!-- Library Table-->
-								<Style>QGroupBox {}</Style>
-								<Layout>vertical</Layout>
-								<Children>
-									<Library>
-                                        <BgColor>#585858</BgColor>
-                                        <FgColor>#fff</FgColor>
-                                    </Library>
-								</Children>
-							</WidgetGroup>
-						</Children>
-					</Splitter>
-				</Children>
-			</WidgetGroup>
-		</Children>
-	</WidgetGroup>
+    <WidgetStack currentpage="[Library],show_current" persist="true">
+    <Children>
+    	<WidgetGroup trigger="[Library],show_library">
+    		<ObjectName>Library</ObjectName>
+    		<SizePolicy>me,me</SizePolicy>
+    		<MinimumSize>1280,50</MinimumSize>
+    		<Layout>vertical</Layout>
+    		<Children>
+    			<!--
+    			**********************************************
+    			Library / Preview Deck / Search / Tree view
+    			**********************************************
+    			-->
+    			<WidgetGroup>
+    				<Layout>horizontal</Layout>
+    				<Children>
+    					<Splitter>
+    						<Size>me,me</Size>
+    						<SplitSizes>1,12</SplitSizes>
+    						<Children>
+    							<WidgetGroup>
+    								<Style>QGroupBox {}</Style>
+    								<Layout>vertical</Layout>
+    								<Children>
+    									<!-- Preview Deck-->
+    									<Template src="skin:preview_deck_container.xml"/>
+    									<!--Search Input Field-->
+    									<SearchBox></SearchBox>
+    									<!--Library Tree View-->
+    									<LibrarySidebar></LibrarySidebar>
+    									<!--Cover Art-->
+    									<CoverArt>
+    										<SizePolicy>me,me</SizePolicy>
+    										<MinimumSize>100,100</MinimumSize>
+    										<Connection>
+    											<ConfigKey>[Library],show_coverart</ConfigKey>
+    											<BindProperty>visible</BindProperty>
+    										</Connection>
+    									</CoverArt>
+    								</Children>
+    							</WidgetGroup>
+    							<WidgetGroup>
+    								<!-- Library Table-->
+    								<Style>QGroupBox {}</Style>
+    								<Layout>vertical</Layout>
+    								<Children>
+    									<Library>
+                                            <BgColor>#585858</BgColor>
+                                            <FgColor>#fff</FgColor>
+                                        </Library>
+    								</Children>
+    							</WidgetGroup>
+    						</Children>
+    					</Splitter>
+    				</Children>
+    			</WidgetGroup>
+    		</Children>
+    	</WidgetGroup>
+        
+        <!-- Collapsed library -->
+        <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children/>
+        </WidgetGroup>
+      </Children>
+    </WidgetStack>
 </Template>

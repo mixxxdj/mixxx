@@ -21,15 +21,6 @@ class EffectParameterSlotBase : public QObject {
     EffectParameterSlotBase(const QString& group, const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlotBase();
 
-    static QString formatGroupString(const unsigned int iRackNumber,
-                                     const unsigned int iChainNumber,
-                                     const unsigned int iSlotNumber) {
-        return QString("[EffectRack%1_EffectUnit%2_Effect%3]")
-                .arg(QString::number(iRackNumber+1),
-                     QString::number(iChainNumber+1),
-                     QString::number(iSlotNumber+1));
-    }
-
     QString name() const;
     QString description() const;
     const EffectManifestParameter getManifest();

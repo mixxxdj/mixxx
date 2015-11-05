@@ -8,9 +8,6 @@
 #include "skin/svgparser.h"
 #include "util/cmdlineargs.h"
 
-SkinContext::SkinContext() {
-}
-
 SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
                          const QString& xmlPath)
         : m_xmlPath(xmlPath),
@@ -33,7 +30,7 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_pScriptEngine(parent.m_pScriptEngine),
           m_pScriptDebugger(parent.m_pScriptDebugger),
           m_parentGlobal(m_pScriptEngine->globalObject()) {
-    
+
     // we generate a new global object to preserve the scope between
     // a context and its children
     QScriptValue context = m_pScriptEngine->pushContext()->activationObject();
@@ -44,7 +41,7 @@ SkinContext::SkinContext(const SkinContext& parent)
         newGlobal.setProperty(it.name(), it.value());
     }
     m_pScriptEngine->setGlobalObject(newGlobal);
-    
+
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
         m_pScriptEngine->globalObject().setProperty(it.key(), it.value());
@@ -271,8 +268,8 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
  * from the svgParser.
  */
 QScriptValue SkinContext::evaluateScript(const QString& expression,
-                                         const QString& filename/*=QString()*/,
-                                         int lineNumber/*=1*/) {
+                                         const QString& filename,
+                                         int lineNumber) {
     return m_pScriptEngine->evaluate(expression, filename, lineNumber);
 }
 
@@ -289,13 +286,12 @@ const QSharedPointer<QScriptEngine> SkinContext::getScriptEngine() const {
 }
 
 void SkinContext::enableDebugger(bool state) const {
-    if (CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValueString(
-        ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
-        if( state ) {
+    if (CmdlineArgs::Instance().getDeveloper() && m_pConfig != NULL &&
+            m_pConfig->getValueString(ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
+        if (state) {
             m_pScriptDebugger->attachTo(m_pScriptEngine.data());
-        } else { 
+        } else {
             m_pScriptDebugger->detach();
         }
     }
 }
-

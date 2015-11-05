@@ -81,7 +81,7 @@
         <SetVariable name="ObjectName">PlayToggle</SetVariable>
         <SetVariable name="MinimumSize">40,20</SetVariable>
         <SetVariable name="MaximumSize">40,20</SetVariable>
-        <SetVariable name="SizePolicy">f,f,</SetVariable>
+        <SetVariable name="SizePolicy">f,f</SetVariable>
         <SetVariable name="state_0_text">▶</SetVariable>
         <SetVariable name="state_0_pressed"></SetVariable>
         <SetVariable name="state_0_unpressed"></SetVariable>

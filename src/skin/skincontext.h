@@ -12,13 +12,11 @@
 #include "configobject.h"
 #include "skin/pixmapsource.h"
 
-
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
 // evaluate skin XML nodes while loading the skin.
 class SkinContext {
   public:
-    SkinContext();
     SkinContext(ConfigObject<ConfigValue>* pConfig, const QString& xmlPath);
     SkinContext(const SkinContext& parent);
     virtual ~SkinContext();
@@ -79,7 +77,7 @@ class SkinContext {
     QString m_xmlPath;
     QString m_skinBasePath;
     ConfigObject<ConfigValue>* m_pConfig;
-    
+
     QHash<QString, QString> m_variables;
     QSharedPointer<QScriptEngine> m_pScriptEngine;
     QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;

@@ -43,6 +43,22 @@
       </PushButton>
 
       <PushButton>
+        <Size>60f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>+MICROPHONE</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>-MICROPHONE</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
@@ -58,28 +74,22 @@
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
         </Connection>
       </PushButton>
-      <Time>
-      </Time>
-      <Battery>
-      </Battery>
-
-      <Template src="skin:microphone.xml"/>
 
       <WidgetGroup>
         <ObjectName>MasterControls</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">balance</SetVariable>
-            <SetVariable name="label">Balance</SetVariable>
+            <SetVariable name="control">headMix</SetVariable>
+            <SetVariable name="label">Head Mix</SetVariable>
           </Template>
 
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">volume</SetVariable>
-            <SetVariable name="label">Volume</SetVariable>
+            <SetVariable name="control">headVolume</SetVariable>
+            <SetVariable name="label">Head Vol</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -89,24 +99,67 @@
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:knob.xml">
+
+          <PushButton>
+            <ObjectName>HeadSplit</ObjectName>
+            <Size>50f,20f</Size>
+            <TooltipId>headsplit</TooltipId>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>STEREO</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>MONO SPLIT</Text>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],headSplit</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            </Connection>
+          </PushButton>
+
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">headVolume</SetVariable>
-            <SetVariable name="label">Head Vol</SetVariable>
+            <SetVariable name="control">balance</SetVariable>
+            <SetVariable name="label">Balance</SetVariable>
           </Template>
 
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">headMix</SetVariable>
-            <SetVariable name="label">Head Mix</SetVariable>
+            <SetVariable name="control">volume</SetVariable>
+            <SetVariable name="label">Volume</SetVariable>
           </Template>
 
         </Children>
       </WidgetGroup>
 
+      <WidgetGroup>
+          <ObjectName>MasterVumeter</ObjectName>
+          <SizePolicy>min,min</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+              <Template src="skin:vumeter.xml">
+                  <TooltipId>master_VuMeterL</TooltipId>
+                  <SetVariable name="group">[Master]</SetVariable>
+                  <SetVariable name="control">VuMeterL</SetVariable>
+              </Template>
+              <Template src="skin:vumeter.xml">
+                  <TooltipId>master_VuMeterR</TooltipId>
+                  <SetVariable name="group">[Master]</SetVariable>
+                  <SetVariable name="control">VuMeterR</SetVariable>
+              </Template>
+          </Children>
+      </WidgetGroup>
+
+      <Time>
+        <ObjectName>Time</ObjectName>
+        <Size>60f,20f</Size>
+        <TooltipId>time</TooltipId>
+        <ShowSeconds>false</ShowSeconds>
+      </Time>
+
     </Children>
   </WidgetGroup>
-
-
 
 </Template>

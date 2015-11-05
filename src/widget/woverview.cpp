@@ -97,8 +97,10 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
-        connect(mark.m_pointControl, SIGNAL(valueChanged(double)),
-                this, SLOT(onMarkChanged(double)));
+        if (mark.m_pointControl) {
+            connect(mark.m_pointControl, SIGNAL(valueChanged(double)),
+                    this, SLOT(onMarkChanged(double)));
+        }
     }
 
     QDomNode child = node.firstChild();
@@ -108,12 +110,18 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
             WaveformMarkRange& markRange = m_markRanges.back();
             markRange.setup(m_group, child, context, m_signalColors);
 
-            connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
+            if (markRange.m_markEnabledControl) {
+                connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
+            if (markRange.m_markStartPointControl) {
+                connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
+            if (markRange.m_markEndPointControl) {
+                connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
         }
         child = child.nextSibling();
     }

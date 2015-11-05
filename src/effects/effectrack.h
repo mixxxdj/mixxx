@@ -66,6 +66,7 @@ class EffectRack : public QObject {
 
   protected:
     void addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot);
+    virtual EffectChainPointer makeEmptyChain();
 
     // We could make accessors for these for sub-classes. Doesn't really matter.
     EffectsManager* m_pEffectsManager;
@@ -142,6 +143,8 @@ class QuickEffectRack : public PerGroupRack {
                     EffectChainManager* pChainManager,
                     const unsigned int iRackNumber);
     virtual ~QuickEffectRack() {}
+
+    bool loadEffectToGroup(const QString& group, EffectPointer pEffect);
 
     static QString formatGroupString(const unsigned int iRackNumber) {
         return QString("[QuickEffectRack%1]")

@@ -222,7 +222,7 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
     }
 
     // Otherwise, construct it with the pixmap loader.
-    qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
+    //qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
 
     if (m_loader) {
         QImage* pImage = m_loader->getImage(source.getPath());

@@ -1,3 +1,7 @@
+#debugbg {
+    background-color: #fff;
+}
+
 #UIButtons {
 }
 
@@ -7,6 +11,7 @@
 }
 
 #UILowerHalf {
+  background-color: #0f0f0f;
 }
 
 #HorizBorder {
@@ -127,15 +132,24 @@
 }
 
 #MasterControls {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  padding-right: 2px;
+  padding-top: 10px;
 }
 
 #MixerContainer {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   background-color: #1e1e1e;
+  padding-top: 5px;
 }
 
 #MixerChannel {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+}
+
+#MixerChannelReversed {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  padding-left: 3px;
 }
 
 #MixerChannelHoriz {
@@ -151,7 +165,21 @@
 }
 
 #MasterKnobs {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#MasterKnobCol {
+  padding-left:1px;
+  padding-right:1px;
+}
+
+#VuAndSlider {
+  padding-top: 3px;
+}
+
+#VuMeter {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  padding-right: 6px;
 }
 
 #MasterSync {
@@ -168,6 +196,15 @@
 #KnobCentered {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
+
+#KillButton {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#KillButtonReversed {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
 
 #TitleGutter, #AlbumGutter { 
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
@@ -271,7 +308,8 @@
 #KnobLabel {
   font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   color: #585858;
-  text-align:center;
+  text-align: center;
+  qproperty-alignment: 'AlignCenter | AlignBottom';
   padding-bottom: 2px;
   padding-top: -2px;
 }
@@ -282,13 +320,7 @@
   border-bottom: 1px solid #585858;
 }
 
-/*#FourDeckToggleButton {
-  border: 1px solid #e17800;
-  font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-  color: #e17800;
-}*/
-
-#FourDeckToggleButton[displayValue="0"] {
+#GuiToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -297,7 +329,7 @@
     background-color: #0e0e0e;
 }
 
-#FourDeckToggleButton[displayValue="1"] {
+#GuiToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -306,14 +338,33 @@
     background-color: #e17800;
 }
 
+#GuiToggleButtonInverted[displayValue="0"] {
+    border: 1px solid #585858;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #0e0e0e;
+    background-color: #e17800;
+}
+
+#GuiToggleButtonInverted[displayValue="1"] {
+    border: 1px solid #585858;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #585858;
+    background-color: #0e0e0e;
+}
+
+
 #CrossFadeContainer {
 qproperty-layoutAlignment: 'AlignCenter';
  background-color: #1e1e1e;
 }
 
-#FourDeckButton {
+#GuiToggleContainer {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 5px;
+  padding: 2px;
   border: 0px solid #585858;
   border-left:0px;
   border-right:0px;
@@ -386,6 +437,14 @@ qproperty-layoutAlignment: 'AlignCenter';
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
+#AlignRightBottom {
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+}
+
+#AlignRightCenter {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
 #AlignLeftBottom {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
@@ -412,6 +471,10 @@ qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
   border-bottom: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#RateSlider {
+  padding-bottom: 2px;
 }
 
 #RateContainer3 {

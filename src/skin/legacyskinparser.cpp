@@ -80,6 +80,8 @@ using mixxx::skin::SkinManifest;
 QList<const char*> LegacySkinParser::s_channelStrs;
 QMutex LegacySkinParser::s_safeStringMutex;
 
+static bool sDebug = false;
+
 ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
                                     bool* created) {
     ControlObject* pControl = ControlObject::getControl(key);
@@ -354,6 +356,9 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
 
     // TODO(rryan) replace with a map to function pointers?
 
+    if (sDebug) {
+        qDebug() << "BEGIN PARSE NODE" << nodeName;
+    }
     // Root of the document
     if (nodeName == "skin") {
         // Parent all the skin widgets to an inner QWidget (this was MixxxView
@@ -484,6 +489,9 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
 
+    if (sDebug) {
+        qDebug() << "END PARSE NODE" << nodeName;
+    }
     return result;
 }
 
@@ -1344,13 +1352,17 @@ QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
         return QList<QWidget*>();
     }
 
+    if (sDebug) {
+        qDebug() << "BEGIN TEMPLATE" << path;
+    }
+
     SkinContext* pOldContext = m_pContext;
     m_pContext = new SkinContext(*pOldContext);
     // Take any <SetVariable> elements from this node and update the context
     // with them.
     m_pContext->updateVariables(node);
     m_pContext->setXmlPath(path);
-    
+
     QList<QWidget*> widgets;
 
     QDomNode child = templateNode.firstChild();
@@ -1364,6 +1376,10 @@ QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
 
     delete m_pContext;
     m_pContext = pOldContext;
+
+    if (sDebug) {
+        qDebug() << "END TEMPLATE" << path;
+    }
     return widgets;
 }
 
@@ -1535,14 +1551,14 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         QSizePolicy::Policy horizontalPolicy;
         if (parseSizePolicy(&xs, &horizontalPolicy)) {
             sizePolicy.setHorizontalPolicy(horizontalPolicy);
-        } else {
+        } else if (!xs.isEmpty()) {
             qDebug() << "Could not parse horizontal size policy:" << xs;
         }
 
         QSizePolicy::Policy verticalPolicy;
         if (parseSizePolicy(&ys, &verticalPolicy)) {
             sizePolicy.setVerticalPolicy(verticalPolicy);
-        } else {
+        } else if (!ys.isEmpty()) {
             qDebug() << "Could not parse vertical size policy:" << ys;
         }
 

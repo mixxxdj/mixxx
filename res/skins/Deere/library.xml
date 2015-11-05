@@ -24,6 +24,8 @@
             <ObjectName>LibrarySplitter</ObjectName>
             <Orientation>horizontal</Orientation>
             <SizePolicy>me,me</SizePolicy>
+            <SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>
+            <SplitSizes>2,8</SplitSizes>
             <Children>
               <WidgetGroup>
                 <Layout>vertical</Layout>

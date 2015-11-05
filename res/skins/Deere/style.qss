@@ -215,7 +215,13 @@ WSliderComposed {
   font-size: 12pt;
 }
 
-#KnobLabel {
+#EffectKnob {
+}
+
+#EffectButton {
+}
+
+#KnobLabel, #EffectKnobLabel, #EffectButtonLabel {
   background-color: white;
   border: 1px solid black;
   qproperty-alignment: 'AlignCenter | AlignVCenter';
@@ -297,6 +303,15 @@ WWidget, WLabel {
 
 #Sampler {
   background-color: cyan;
+}
+
+#MicrophonesContainer {
+}
+
+#MicrophoneRackExpanded {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                  stop: 0 #222222,
+                                  stop: 1.0 #333333);
 }
 
 #LibraryContainer {

@@ -1,0 +1,28 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A small knob.
+  Variables:
+    control: The control to connect to.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <KnobComposed>
+        <Size>20f,20f</Size>
+        <Knob>knob_small.svg</Knob>
+        <MinAngle>-230</MinAngle>
+        <MaxAngle>50</MaxAngle>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
+        </Connection>
+      </KnobComposed>
+      <Label>
+        <Size>15f,10f</Size>
+        <ObjectName>KnobLabel</ObjectName>
+        <Text><Variable name="label"/></Text>
+      </Label>
+    </Children>
+  </WidgetGroup>
+</Template>

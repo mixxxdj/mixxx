@@ -86,6 +86,13 @@ void EffectRack::slotClearRack(double v) {
     }
 }
 
+EffectChainPointer EffectRack::makeEmptyChain() {
+    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
+                                              EffectChainPointer()));
+    pChain->setName("Empty Chain");
+    return pChain;
+}
+
 int EffectRack::numEffectChainSlots() const {
     return m_effectChainSlots.size();
 }
@@ -145,9 +152,7 @@ void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
     EffectChainPointer pChain = pChainSlot->getEffectChain();
     if (!pChain) {
-        pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
-                                                    EffectChainPointer()));
-        pChain->setName("Empty Chain");
+        pChain = makeEmptyChain();
         pChainSlot->loadEffectChain(pChain);
     }
     pChain->replaceEffect(iEffectSlotNumber, pNextEffect);
@@ -168,9 +173,7 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
     EffectChainPointer pChain = pChainSlot->getEffectChain();
     if (!pChain) {
-        pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
-                                                    EffectChainPointer()));
-        pChain->setName("Empty Chain");
+        pChain = makeEmptyChain();
         pChainSlot->loadEffectChain(pChain);
     }
 
@@ -223,9 +226,7 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
 
     // Now load an empty effect chain into the slot so that users can edit
     // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
-                                              EffectChainPointer()));
-    pChain->setName("Empty Chain");
+    EffectChainPointer pChain = makeEmptyChain();
     pChainSlotPointer->loadEffectChain(pChain);
 
     return pChainSlotPointer;
@@ -282,9 +283,7 @@ void QuickEffectRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pS
 
     // Now load an empty effect chain into the slot so that users can edit
     // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
-                                              EffectChainPointer()));
-    pChain->setName(QObject::tr("Empty Chain"));
+    EffectChainPointer pChain = makeEmptyChain();
     pSlot->loadEffectChain(pChain);
 
     // Enable the chain for the group by default.
@@ -298,6 +297,31 @@ void QuickEffectRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pS
     pSlot->setParameterDefaultValue(0.5);
 }
 
+bool QuickEffectRack::loadEffectToGroup(const QString& group,
+                                        EffectPointer pEffect) {
+    EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(group);
+    if (pChainSlot.isNull()) {
+        qWarning() << "No chain for group" << group;
+        return false;
+    }
+
+    EffectChainPointer pChain = pChainSlot->getEffectChain();
+    if (pChain.isNull()) {
+        pChain = makeEmptyChain();
+        pChainSlot->loadEffectChain(pChain);
+        pChain->enableForGroup(group);
+        pChain->setMix(1.0);
+    }
+
+    pChain->replaceEffect(0, pEffect);
+
+    // Force update the new effect to match the current superknob position.
+    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
+    if (pEffectSlot) {
+        pEffectSlot->onChainParameterChanged(pChainSlot->getParameter(), true);
+    }
+    return true;
+}
 
 EqualizerRack::EqualizerRack(EffectsManager* pEffectsManager,
                              EffectChainManager* pChainManager,
@@ -319,9 +343,7 @@ void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlo
 
     // Now load an empty effect chain into the slot so that users can edit
     // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
-                                              EffectChainPointer()));
-    pChain->setName(QObject::tr("Empty Chain"));
+    EffectChainPointer pChain = makeEmptyChain();
     pSlot->loadEffectChain(pChain);
 
     // Enable the chain for the group by default.

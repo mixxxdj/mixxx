@@ -140,7 +140,7 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
     m_pSoftTakeover->ignoreNext();
 }
 
-void EffectParameterSlot::onChainParameterChanged(double parameter) {
+void EffectParameterSlot::onChainParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != NULL) {
         // Intermediate cast to integer is needed for VC++.
@@ -217,7 +217,7 @@ void EffectParameterSlot::onChainParameterChanged(double parameter) {
         }
 
         //qDebug() << "onChainParameterChanged" << parameter;
-        if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
+        if (force || !m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
             m_pControlValue->setParameterFrom(parameter, NULL);
         }
     }
@@ -237,4 +237,3 @@ void EffectParameterSlot::slotValueChanged(double v) {
         m_pEffectParameter->setValue(v);
     }
 }
-

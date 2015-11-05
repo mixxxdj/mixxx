@@ -20,19 +20,24 @@
         <SetVariable name="label">Pitch</SetVariable>
       </Template>
 
-      <Template src="skin:knob.xml">
-        <SetVariable name="control">filterHigh</SetVariable>
-        <SetVariable name="label">High</SetVariable>
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">1</SetVariable>
       </Template>
 
-      <Template src="skin:knob.xml">
-        <SetVariable name="control">filterMid</SetVariable>
-        <SetVariable name="label">Mid</SetVariable>
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">2</SetVariable>
       </Template>
 
-      <Template src="skin:knob.xml">
-        <SetVariable name="control">filterLow</SetVariable>
-        <SetVariable name="label">Low</SetVariable>
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">3</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">4</SetVariable>
+      </Template>
+
+      <Template src="skin:quick_effect_superknob.xml">
+        <SetVariable name="QuickEffect">1</SetVariable>
       </Template>
 
       <PushButton>

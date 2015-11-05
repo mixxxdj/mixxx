@@ -407,17 +407,20 @@ void BeatMap::translate(double dNumSamples) {
 
 void BeatMap::scale(double dScalePercentage) {
     QMutexLocker locker(&m_mutex);
-    if (!isValid() || dScalePercentage <= 0.0) {
+    if (!isValid() || dScalePercentage <= 0.0 || m_beats.isEmpty()) {
         return;
     }
-    // Scale every beat relative to the first one.
-    Beat firstBeat = m_beats.first();
-    for (BeatList::iterator it = m_beats.begin();
-         it != m_beats.end(); ++it) {
+
+    // Scale the distance between every beat by 1/dScalePercentage to scale the
+    // BPM by dScalePercentage.
+    const double kScaleBeatDistance = 1.0 / dScalePercentage;
+    Beat prevBeat = m_beats.first();
+    BeatList::iterator it = m_beats.begin() + 1;
+    for (; it != m_beats.end(); ++it) {
         // Need to not accrue fractional frames.
         double newFrame = floor(
-            (1 - dScalePercentage) * firstBeat.frame_position() +
-            dScalePercentage * it->frame_position());
+                (1 - kScaleBeatDistance) * prevBeat.frame_position() +
+                kScaleBeatDistance * it->frame_position());
         it->set_frame_position(newFrame);
     }
     onBeatlistChanged();
