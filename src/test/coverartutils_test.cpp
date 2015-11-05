@@ -65,6 +65,13 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.wav",
                                                 pToken);
     EXPECT_TRUE(!cover.isNull());
+
+#ifdef __OPUS__
+    // opus
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.opus",
+                                                pToken);
+    EXPECT_TRUE(!cover.isNull());
+#endif
 }
 
 TEST_F(CoverArtUtilTest, searchImage) {

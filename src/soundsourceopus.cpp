@@ -266,3 +266,13 @@ QList<QString> SoundSourceOpus::supportedFileExtensions() {
     list.push_back("opus");
     return list;
 }
+
+QImage SoundSourceOpus::parseCoverArt() {
+#if (TAGLIB_MAJOR_VERSION >= 1) && (TAGLIB_MINOR_VERSION >= 9)
+    setType("ogg");
+    TagLib::Ogg::Opus::File f(m_qFilename.toLocal8Bit().constData());
+    return getCoverInXiphComment(f.tag());
+#else
+    return QImage();
+#endif
+}
