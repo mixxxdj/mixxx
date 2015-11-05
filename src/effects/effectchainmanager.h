@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QList>
+#include <QHash>
 
 #include "configobject.h"
 #include "util.h"
@@ -26,10 +27,16 @@ class EffectChainManager : public QObject {
         return m_registeredGroups;
     }
 
-    EffectRackPointer addEffectRack(const QString& group = QString());
-    EffectRackPointer getEffectRack(int i);
+    StandardEffectRackPointer addStandardEffectRack();
+    StandardEffectRackPointer getStandardEffectRack(int rack);
+
+    EqualizerRackPointer addEqualizerRack();
+    EqualizerRackPointer getEqualizerRack(int rack);
+
+    QuickEffectRackPointer addQuickEffectRack();
+    QuickEffectRackPointer getQuickEffectRack(int rack);
+
     EffectRackPointer getEffectRack(const QString& group);
-    int getEffectRacksSize();
 
     void addEffectChain(EffectChainPointer pEffectChain);
     void removeEffectChain(EffectChainPointer pEffectChain);
@@ -51,8 +58,10 @@ class EffectChainManager : public QObject {
 
     ConfigObject<ConfigValue>* m_pConfig;
     EffectsManager* m_pEffectsManager;
-    QList<EffectRackPointer> m_effectRacks;
-    QHash<QString, EffectRackPointer> m_effectRacksHash;
+    QList<StandardEffectRackPointer> m_standardEffectRacks;
+    QList<EqualizerRackPointer> m_equalizerEffectRacks;
+    QList<QuickEffectRackPointer> m_quickEffectRacks;
+    QHash<QString, EffectRackPointer> m_effectRacksByGroup;
     QList<EffectChainPointer> m_effectChains;
     QSet<QString> m_registeredGroups;
     DISALLOW_COPY_AND_ASSIGN(EffectChainManager);

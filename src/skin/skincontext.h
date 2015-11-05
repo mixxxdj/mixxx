@@ -23,8 +23,6 @@ class SkinContext {
     SkinContext(const SkinContext& parent);
     virtual ~SkinContext();
 
-    SkinContext& operator=(const SkinContext& other);
-
     // Gets a path relative to the skin path.
     QString getSkinPath(const QString& relativePath) const {
         return QDir(m_skinBasePath).filePath(relativePath);
@@ -72,18 +70,20 @@ class SkinContext {
                                 const QString& filename=QString(),
                                 int lineNumber=1);
     QScriptValue importScriptExtension(const QString& extensionName);
-    const QScriptEngine& getScriptEngine() const;
-    void enableScriptDebugger();
+    const QSharedPointer<QScriptEngine> getScriptEngine() const;
+    void enableDebugger(bool state) const;
 
   private:
     QString variableNodeToText(const QDomElement& element) const;
 
-    mutable QScriptEngine m_scriptEngine;
-    QScriptEngineDebugger m_debugger;
-    QHash<QString, QString> m_variables;
+    QString m_xmlPath;
     QString m_skinBasePath;
     ConfigObject<ConfigValue>* m_pConfig;
-    QString m_xmlPath;
+    
+    QHash<QString, QString> m_variables;
+    QSharedPointer<QScriptEngine> m_pScriptEngine;
+    QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;
+    QScriptValue m_parentGlobal;
 };
 
 #endif /* SKINCONTEXT_H */

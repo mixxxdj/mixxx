@@ -14,9 +14,7 @@ EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pCon
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0),
           m_pLoEqFreq(NULL),
-          m_pHiEqFreq(NULL),
-          m_eqRackNumber(-1),
-          m_quickRackNumber(-1) {
+          m_pHiEqFreq(NULL) {
     qRegisterMetaType<EffectChain::InsertionType>("EffectChain::InsertionType");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
@@ -27,7 +25,7 @@ EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pCon
 }
 
 EffectsManager::~EffectsManager() {
-    m_pEffectChainManager->saveEffectChains();
+    //m_pEffectChainManager->saveEffectChains();
     processEffectsResponses();
     delete m_pEffectChainManager;
     while (!m_effectsBackends.isEmpty()) {
@@ -42,7 +40,9 @@ EffectsManager::~EffectsManager() {
 
     delete m_pHiEqFreq;
     delete m_pLoEqFreq;
-    // Safe because the Engine is deleted before EffectsManager.
+    // Safe because the Engine is deleted before EffectsManager. Also, it holds
+    // a bare pointer to m_pRequestPipe so it is critical that it does not
+    // outlast us.
     delete m_pEngineEffectsManager;
 }
 
@@ -78,7 +78,8 @@ const QList<QString> EffectsManager::getAvailableEffects() const {
     return availableEffects;
 }
 
-const QList<QPair<QString, QString> > EffectsManager::getEffectNamesFiltered(EffectManifestFilterFnc filter) const {
+const QList<QPair<QString, QString> > EffectsManager::getEffectNamesFiltered(
+        EffectManifestFilterFnc filter) const {
     QList<QPair<QString, QString> > filteredEQEffectNames;
     QString currentEffectName;
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
@@ -157,113 +158,39 @@ EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     return EffectPointer();
 }
 
-EffectRackPointer EffectsManager::addEffectRack(const QString& group) {
-    return m_pEffectChainManager->addEffectRack(group);
+StandardEffectRackPointer EffectsManager::addStandardEffectRack() {
+    return m_pEffectChainManager->addStandardEffectRack();
 }
 
-EffectRackPointer EffectsManager::getEffectRack(int i) {
-    return m_pEffectChainManager->getEffectRack(i);
+StandardEffectRackPointer EffectsManager::getStandardEffectRack(int rack) {
+    return m_pEffectChainManager->getStandardEffectRack(rack);
 }
 
-EffectRackPointer EffectsManager::getEQEffectRack() {
-    return m_pEffectChainManager->getEffectRack(kEqualizerRackName);
+EqualizerRackPointer EffectsManager::addEqualizerRack() {
+    return m_pEffectChainManager->addEqualizerRack();
 }
 
-EffectRackPointer EffectsManager::getQuickEffectRack() {
-    return m_pEffectChainManager->getEffectRack(kQuickEffectRackName);
+EqualizerRackPointer EffectsManager::getEqualizerRack(int rack) {
+    return m_pEffectChainManager->getEqualizerRack(rack);
 }
 
-void EffectsManager::addEqualizer(const QString& group) {
-    EffectRackPointer pRack = getEQEffectRack();
-    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlotForEQ(group);
-
-    const QString chainGroup(EffectChainSlot::formatGroupString(
-            pRack->getGroup(), group));
-    // Set the EQ to be active on group
-    ControlObject::set(ConfigKey(chainGroup, "group_" + group + "_enable"),
-            1.0);
-
-    // Set the EQ to be fully wet
-    ControlObject::set(ConfigKey(chainGroup, "mix"),
-            1.0);
-
-    const QString effectGroup(EffectSlot::formatGroupString(chainGroup, 0));
-
-    // Create aliases
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow"),
-            ConfigKey(effectGroup, "parameter1"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMid"),
-            ConfigKey(effectGroup, "parameter2"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh"),
-            ConfigKey(effectGroup, "parameter3"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill"),
-            ConfigKey(effectGroup, "button_parameter1"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill"),
-            ConfigKey(effectGroup, "button_parameter2"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill"),
-            ConfigKey(effectGroup, "button_parameter3"));
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow_loaded"),
-            ConfigKey(effectGroup, "parameter1_loaded"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMid_loaded"),
-            ConfigKey(effectGroup, "parameter2_loaded"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh_loaded"),
-            ConfigKey(effectGroup, "parameter3_loaded"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill_loaded"),
-            ConfigKey(effectGroup, "button_parameter1_loaded"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill_loaded"),
-            ConfigKey(effectGroup, "button_parameter2_loaded"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill_loaded"),
-            ConfigKey(effectGroup, "button_parameter3_loaded"));
-
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterDepth"),
-            ConfigKey(effectGroup, "parameter"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filter"),
-            ConfigKey(effectGroup, "enabled"));
+QuickEffectRackPointer EffectsManager::addQuickEffectRack() {
+    return m_pEffectChainManager->addQuickEffectRack();
 }
 
-void EffectsManager::addQuickEffect(const QString& group) {
-    EffectRackPointer pRack = getQuickEffectRack();
-    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlotForEQ(group);
-
-    const QString chainGroup(EffectChainSlot::formatGroupString(
-            pRack->getGroup(), group));
-    // Set the EQ to be active on group
-    ControlObject::set(ConfigKey(chainGroup, "group_" + group + "_enable"),
-            1.0);
-
-    // Set the EQ to be fully wet
-    ControlObject::set(ConfigKey(chainGroup, "mix"),
-            1.0);
-
-    const QString effectGroup(EffectSlot::formatGroupString(chainGroup, 0));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filterDepth"),
-            ConfigKey(chainGroup, "parameter"));
-
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "filter"),
-            ConfigKey(effectGroup, "enabled"));
+QuickEffectRackPointer EffectsManager::getQuickEffectRack(int rack) {
+    return m_pEffectChainManager->getQuickEffectRack(rack);
 }
 
 void EffectsManager::setupDefaults() {
     //m_pEffectChainManager->loadEffectChains();
 
-    EffectRackPointer pRack = addEffectRack(); // General purpose Rack
-    pRack->addEffectChainSlot();
-    pRack->addEffectChainSlot();
-    pRack->addEffectChainSlot();
-    pRack->addEffectChainSlot();
+    // Add a general purpose rack
+    StandardEffectRackPointer pStandardRack = addStandardEffectRack();
+    pStandardRack->addEffectChainSlot();
+    pStandardRack->addEffectChainSlot();
+    pStandardRack->addEffectChainSlot();
+    pStandardRack->addEffectChainSlot();
 
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.flanger"));
@@ -303,21 +230,22 @@ void EffectsManager::setupDefaults() {
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
-    // Add a new EffectRack for Equalizers
-    addEffectRack(kEqualizerRackName);
-    m_eqRackNumber = 1;
-
-
     // These controls are used inside EQ Effects
     m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
     m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
 
-    // Add a new EffectRack for Quick Effects
-    addEffectRack(kQuickEffectRackName);
-    m_quickRackNumber = 2;
+    // Add an EqualizerRack.
+    addEqualizerRack();
+
+    // Add a QuickEffectRack
+    addQuickEffectRack();
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
+    if (m_pRequestPipe.isNull()) {
+        return false;
+    }
+
     // This is effectively only GC at this point so only deal with responses
     // when writing new requests.
     processEffectsResponses();
@@ -331,6 +259,10 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
 }
 
 void EffectsManager::processEffectsResponses() {
+    if (m_pRequestPipe.isNull()) {
+        return;
+    }
+
     EffectsResponse response;
     while (m_pRequestPipe->readMessages(&response, 1) == 1) {
         QHash<qint64, EffectsRequest*>::iterator it =

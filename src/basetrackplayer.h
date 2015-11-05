@@ -34,7 +34,7 @@ class BaseTrackPlayer : public BasePlayer {
     // connected. Delete me when EngineMaster supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
-    void setupEqControlls();
+    void setupEqControls();
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay=false);

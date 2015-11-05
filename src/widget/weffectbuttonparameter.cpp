@@ -37,7 +37,7 @@ void WEffectButtonParameter::setup(QDomNode node, const SkinContext& context) {
         qDebug() << "EffectButtonParameterName node had invalid ButtonParameter number:" << parameterNumber;
     }
 
-    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
+    EffectRackPointer pRack = m_pEffectsManager->getStandardEffectRack(rackNumber);
     if (pRack) {
         EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
         if (pChainSlot) {

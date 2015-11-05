@@ -26,6 +26,7 @@
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectrack.h"
 
 /**
   *@author John Sully
@@ -75,8 +76,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     // Members needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
-    EffectRack* m_pEQEffectRack;
-    EffectRack* m_pQuickEffectRack;
+    EqualizerRackPointer m_pEQEffectRack;
+    QuickEffectRackPointer m_pQuickEffectRack;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckFilterEffectSelectors;
     QList<bool> m_filterWaveformEffectLoaded;

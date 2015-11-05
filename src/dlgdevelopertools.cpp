@@ -12,6 +12,8 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
 
     QList<QSharedPointer<ControlDoublePrivate> > controlsList;
     ControlDoublePrivate::getControls(&controlsList);
+    QHash<ConfigKey, ConfigKey> controlAliases =
+            ControlDoublePrivate::getControlAliases();
 
     for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
             it != controlsList.end(); ++it) {
@@ -20,8 +22,8 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
             m_controlModel.addControl(pControl->getKey(), pControl->name(),
                                       pControl->description());
 
-            ConfigKey aliasKey = ControlDoublePrivate::getFirstAliasFor(pControl);
-            if(!aliasKey.isNull()) {
+            ConfigKey aliasKey = controlAliases[pControl->getKey()];
+            if (!aliasKey.isNull()) {
                 m_controlModel.addControl(aliasKey, pControl->name(),
                                           "Alias for " + pControl->getKey().group + pControl->getKey().item);
             }

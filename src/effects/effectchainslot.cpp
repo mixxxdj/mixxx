@@ -46,6 +46,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
     connect(m_pControlChainParameter, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainParameter(double)));
     m_pControlChainParameter->set(0.0);
+    m_pControlChainParameter->setDefaultValue(0.0);
 
     m_pControlChainInsertionType = new ControlPushButton(ConfigKey(m_group, "insertion_type"));
     m_pControlChainInsertionType->setButtonMode(ControlPushButton::TOGGLE);
@@ -101,6 +102,14 @@ QString EffectChainSlot::id() const {
     return "";
 }
 
+void EffectChainSlot::setParameter(double value) {
+    m_pControlChainParameter->set(value);
+}
+
+void EffectChainSlot::setParameterDefaultValue(double value) {
+    m_pControlChainParameter->setDefaultValue(value);
+}
+
 void EffectChainSlot::slotChainNameChanged(const QString&) {
     emit(updated());
 }
@@ -138,10 +147,9 @@ void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
     //qDebug() << debugString() << "slotChainEffectsChanged";
     if (m_pEffectChain) {
         QList<EffectPointer> effects = m_pEffectChain->effects();
-        while (effects.size() > m_slots.size()) {
-            addEffectSlot();
+        if (effects.size() > m_slots.size()) {
+            qWarning() << debugString() << "has too few slots for effect";
         }
-
         for (int i = 0; i < m_slots.size(); ++i) {
             EffectSlotPointer pSlot = m_slots[i];
             EffectPointer pEffect;
@@ -151,7 +159,9 @@ void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
             if (pSlot)
                 pSlot->loadEffect(pEffect);
         }
-        m_pControlNumEffects->setAndConfirm(m_pEffectChain->numEffects());
+        m_pControlNumEffects->setAndConfirm(math_min(
+            static_cast<unsigned int>(m_slots.size()),
+            m_pEffectChain->numEffects()));
         if (shouldEmit) {
             emit(updated());
         }
@@ -232,10 +242,10 @@ unsigned int EffectChainSlot::numSlots() const {
     return m_slots.size();
 }
 
-EffectSlotPointer EffectChainSlot::addEffectSlot() {
-    //qDebug() << debugString() << "addEffectSlot";
+EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
+    //qDebug() << debugString() << "addEffectSlot" << group;
 
-    EffectSlot* pEffectSlot = new EffectSlot(m_group, m_iChainSlotNumber,
+    EffectSlot* pEffectSlot = new EffectSlot(group, m_iChainSlotNumber,
                                              m_slots.size());
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
