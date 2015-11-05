@@ -7,7 +7,7 @@
 #include "configobject.h"
 #include "soundsourcemodplug.h"
 
-#define CONFIG_KEY "[Modplug]"
+#define kConfigKey "[Modplug]"
 
 DlgPrefModplug::DlgPrefModplug(QWidget *parent,
                                ConfigObject<ConfigValue> *_config)
@@ -51,67 +51,67 @@ void DlgPrefModplug::slotResetToDefaults() {
 
 void DlgPrefModplug::loadSettings() {
     m_pUi->memoryLimit->setValue(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"PerTrackMemoryLimitMB"),"256").toInt());
+        ConfigKey(kConfigKey,"PerTrackMemoryLimitMB"),"256").toInt());
     m_pUi->oversampling->setChecked(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"OversamplingEnabled"),"1") == QString("1"));
+        ConfigKey(kConfigKey,"OversamplingEnabled"),"1") == QString("1"));
     m_pUi->noiseReduction->setChecked(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"NoiseReductionEnabled"),"0") == QString("1"));
+        ConfigKey(kConfigKey,"NoiseReductionEnabled"),"0") == QString("1"));
     m_pUi->stereoSeparation->setValue(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"StereoSeparation"),"1").toInt());
+        ConfigKey(kConfigKey,"StereoSeparation"),"1").toInt());
     m_pUi->maxMixChannels->setValue(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"MaxMixChannels"),"128").toInt());
+        ConfigKey(kConfigKey,"MaxMixChannels"),"128").toInt());
     m_pUi->resampleMode->setCurrentIndex(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"ResamplingMode"),"1").toInt());
+        ConfigKey(kConfigKey,"ResamplingMode"),"1").toInt());
     m_pUi->reverb->setChecked(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"ReverbEnabled"),"0") == QString("1"));
+        ConfigKey(kConfigKey,"ReverbEnabled"),"0") == QString("1"));
     m_pUi->reverbDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"ReverbLevel"),"50").toInt());
+        ConfigKey(kConfigKey,"ReverbLevel"),"50").toInt());
     m_pUi->reverbDelay->setValue(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"ReverbDelay"),"50").toInt());
+        ConfigKey(kConfigKey,"ReverbDelay"),"50").toInt());
     m_pUi->megabass->setChecked(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"MegabassEnabled"),"0") == QString("1"));
+        ConfigKey(kConfigKey,"MegabassEnabled"),"0") == QString("1"));
     m_pUi->bassDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"MegabassLevel"),"50").toInt());
+        ConfigKey(kConfigKey,"MegabassLevel"),"50").toInt());
     m_pUi->bassCutoff->setValue(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"MegabassCutoff"),"50").toInt());
+        ConfigKey(kConfigKey,"MegabassCutoff"),"50").toInt());
     m_pUi->surround->setChecked(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"SurroundEnabled"),"0") == QString("1"));
+        ConfigKey(kConfigKey,"SurroundEnabled"),"0") == QString("1"));
     m_pUi->surroundDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"SurroundLevel"),"50").toInt());
+        ConfigKey(kConfigKey,"SurroundLevel"),"50").toInt());
     m_pUi->surroundDelay->setValue(m_pConfig->getValueString(
-        ConfigKey(CONFIG_KEY,"SurroundDelay"),"50").toInt());
+        ConfigKey(kConfigKey,"SurroundDelay"),"50").toInt());
 }
 
 void DlgPrefModplug::saveSettings() {
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"PerTrackMemoryLimitMB"),
+    m_pConfig->set(ConfigKey(kConfigKey,"PerTrackMemoryLimitMB"),
                    ConfigValue(m_pUi->memoryLimit->value()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"OversamplingEnabled"),
+    m_pConfig->set(ConfigKey(kConfigKey,"OversamplingEnabled"),
                    ConfigValue(m_pUi->oversampling->isChecked()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"NoiseReductionEnabled"),
+    m_pConfig->set(ConfigKey(kConfigKey,"NoiseReductionEnabled"),
                    ConfigValue(m_pUi->noiseReduction->isChecked()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"StereoSeparation"),
+    m_pConfig->set(ConfigKey(kConfigKey,"StereoSeparation"),
                    ConfigValue(m_pUi->stereoSeparation->value()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"MaxMixChannels"),
+    m_pConfig->set(ConfigKey(kConfigKey,"MaxMixChannels"),
                    ConfigValue(m_pUi->maxMixChannels->value()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"ResamplingMode"),
+    m_pConfig->set(ConfigKey(kConfigKey,"ResamplingMode"),
                    ConfigValue(m_pUi->resampleMode->currentIndex()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"ReverbEnabled"),
+    m_pConfig->set(ConfigKey(kConfigKey,"ReverbEnabled"),
                    ConfigValue(m_pUi->reverb->isChecked()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"ReverbLevel"),
+    m_pConfig->set(ConfigKey(kConfigKey,"ReverbLevel"),
                    ConfigValue(m_pUi->reverbDepth->value()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"ReverbDelay"),
+    m_pConfig->set(ConfigKey(kConfigKey,"ReverbDelay"),
                    ConfigValue(m_pUi->reverbDelay->value()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"MegabassEnabled"),
+    m_pConfig->set(ConfigKey(kConfigKey,"MegabassEnabled"),
                    ConfigValue(m_pUi->megabass->isChecked()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"MegabassLevel"),
+    m_pConfig->set(ConfigKey(kConfigKey,"MegabassLevel"),
                    ConfigValue(m_pUi->bassDepth->value()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"MegabassCutoff"),
+    m_pConfig->set(ConfigKey(kConfigKey,"MegabassCutoff"),
                    ConfigValue(m_pUi->bassCutoff->value()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"SurroundEnabled"),
+    m_pConfig->set(ConfigKey(kConfigKey,"SurroundEnabled"),
                    ConfigValue(m_pUi->surround->isChecked()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"SurroundLevel"),
+    m_pConfig->set(ConfigKey(kConfigKey,"SurroundLevel"),
                    ConfigValue(m_pUi->surroundDepth->value()));
-    m_pConfig->set(ConfigKey(CONFIG_KEY,"SurroundDelay"),
+    m_pConfig->set(ConfigKey(kConfigKey,"SurroundDelay"),
                    ConfigValue(m_pUi->surroundDelay->value()));
 }
 

@@ -46,6 +46,8 @@ class EffectChainSlot : public QObject {
     // Unload the loaded EffectChain.
     void clear();
 
+    unsigned int getChainSlotNumber() const;
+
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
     // EffectChainSlot chainNumber. pEffect may be an invalid pointer, which
@@ -86,6 +88,7 @@ class EffectChainSlot : public QObject {
     // Signal that indicates that the EffectChainSlot has been updated.
     void updated();
 
+
   private slots:
     void slotChainEffectsChanged(bool shouldEmit=true);
     void slotChainNameChanged(const QString& name);
@@ -114,11 +117,11 @@ class EffectChainSlot : public QObject {
 
   private:
     QString debugString() const {
-        return QString("EffectChainSlot(%1)").arg(m_iChainNumber);
+        return QString("EffectChainSlot(%1)").arg(m_iChainSlotNumber);
     }
 
     const unsigned int m_iRackNumber;
-    const unsigned int m_iChainNumber;
+    const unsigned int m_iChainSlotNumber;
     const QString m_group;
     EffectRack* m_pEffectRack;
 

@@ -16,6 +16,7 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "A Bessel 4th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -24 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
+    manifest.setIsMixingEQ(true); 
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* low = manifest.addParameter();

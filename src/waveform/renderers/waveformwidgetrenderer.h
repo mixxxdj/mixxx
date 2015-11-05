@@ -34,7 +34,7 @@ class WaveformWidgetRenderer {
     void onPreRender(VSyncThread* vsyncThread);
     void draw(QPainter* painter, QPaintEvent* event);
 
-    const char* getGroup() const { return m_group;}
+    inline const char* getGroup() const { return m_group;}
     const TrackPointer getTrackInfo() const { return m_trackInfoObject;}
 
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}

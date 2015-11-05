@@ -47,6 +47,7 @@ class DlgPrefNoVinyl;
 class DlgPrefShoutcast;
 class DlgPrefReplayGain;
 class ControllerManager;
+class EffectsManager;
 class SkinLoader;
 class PlayerManager;
 class Library;
@@ -60,8 +61,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
   public:
     DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
-                   VinylControlManager* pVCManager, ConfigObject<ConfigValue>* pConfig,
-                   Library *pLibrary);
+                   VinylControlManager* pVCManager, EffectsManager* pEffectsManager,
+                   ConfigObject<ConfigValue>* pConfig, Library *pLibrary);
     virtual ~DlgPreferences();
 
     void addPageWidget(DlgPreferencePage* pWidget);

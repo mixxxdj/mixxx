@@ -46,6 +46,10 @@ EffectRackPointer EffectChainManager::getEffectRack(int i) {
     return m_effectRacks[i];
 }
 
+int EffectChainManager::getEffectRacksSize() {
+    return m_effectRacks.size();
+}
+
 void EffectChainManager::addEffectChain(EffectChainPointer pEffectChain) {
     if (pEffectChain) {
         m_effectChains.append(pEffectChain);

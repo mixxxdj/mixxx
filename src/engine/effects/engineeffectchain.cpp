@@ -63,6 +63,7 @@ bool EngineEffectChain::removeEffect(EngineEffect* pEffect, int iIndex) {
     return true;
 }
 
+// this is called from the engine thread onCallbackStart()
 bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     // TODO(rryan): Parameter interpolation.
     m_insertionType = message.SetEffectChainParameters.insertion_type;
