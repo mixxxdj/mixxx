@@ -218,7 +218,7 @@ void LibraryScanner::run() {
         // directory.
         MDir dir(dirPath);
 
-        bScanFinishedCleanly = recursiveScan(dirPath, verifiedDirectories,
+        bScanFinishedCleanly = recursiveScan(dir.dir(), verifiedDirectories,
                                              dir.token());
         if (bScanFinishedCleanly) {
             qDebug() << "Recursive scanning (" << dirPath << ") finished cleanly.";
@@ -437,9 +437,14 @@ void LibraryScanner::addChunkToDatabase(SecurityTokenPointer pToken) {
 // Recursively scan a music library. Doesn't import tracks for any directories that
 // have already been scanned and have not changed. Changes are tracked by performing
 // a hash of the directory's file list, and those hashes are stored in the database.
-bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirectories,
+bool LibraryScanner::recursiveScan(QDir dir, QStringList& verifiedDirectories,
                                    SecurityTokenPointer pToken) {
-    QDirIterator it(dir.path(), QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+    // Note, we save on filesystem operations (and random work) by initializing
+    // a QDirIterator with a QDir instead of a QString -- but it inherits its
+    // Filter from the QDir so we have to set it first. If the QDir has not done
+    // any FS operations yet then this should be lightweight.
+    dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator it(dir);
     QString currentFile;
     QFileInfo currentFileInfo;
     QLinkedList<QString> filesToImport;
@@ -520,6 +525,48 @@ bool LibraryScanner::recursiveScan(const QDir& dir, QStringList& verifiedDirecto
     return true;
 }
 
+<<<<<<< HEAD
+=======
+bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
+                                 SecurityTokenPointer pToken) {
+    foreach (const QFileInfo& file, files) {
+        // If a flag was raised telling us to cancel the library scan then stop.
+        if (m_bCancelLibraryScan) {
+            return false;
+        }
+
+        QString filePath = file.filePath();
+        //qDebug() << "TrackCollection::importFiles" << filePath;
+
+        // If the track is in the database, mark it as existing. This code gets
+        // executed when other files in the same directory have changed (the
+        // directory hash has changed).
+        m_trackDao.markTrackLocationAsVerified(filePath);
+
+        // If the file does not exist in the database then add it. If it does
+        // then it is either in the user's library OR the user has "removed" the
+        // track via "Right-Click -> Remove". These tracks stay in the library,
+        // but their mixxx_deleted column is 1.
+        if (!m_trackDao.trackExistsInDatabase(filePath)) {
+            emit(progressLoading(file.fileName()));
+
+            TrackPointer pTrack = TrackPointer(
+                    new TrackInfoObject(file, pToken),
+                    &QObject::deleteLater);
+            if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
+                // Successfully added. Signal the main instance of TrackDAO,
+                // that there is a new track in the database.
+                m_pCollection->getTrackDAO().databaseTrackAdded(pTrack);
+            } else {
+                qDebug() << "Track ("+filePath+") could not be added";
+            }
+        }
+    }
+
+    return true;
+}
+
+>>>>>>> b29b291ea1844c60746022f9bb0416795a2f6a21
 // Table: LibraryHashes
 // PRIMARY KEY string directory
 // string hash

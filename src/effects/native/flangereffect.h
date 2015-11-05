@@ -38,6 +38,7 @@ class FlangerEffect : public GroupEffectProcessor<FlangerGroupState> {
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
                       const unsigned int sampleRate,
+                      const EffectProcessor::EnableState enableState,
                       const GroupFeatureState& groupFeatures);
 
   private:

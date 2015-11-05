@@ -1022,12 +1022,13 @@ TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
     // If the track cache contains the track, use it to get a strong reference
     // to the track. We do this first so that the QCache keeps track of the
     // least-recently-used track so that it expires them intelligently.
-    if (m_trackCache.contains(id)) {
-        pTrack = *m_trackCache[id];
-
+    TrackPointer* pTrackPointer = m_trackCache.object(id);
+    if (pTrackPointer != NULL) {
+        pTrack = *pTrackPointer;
         // If the strong reference is still valid (it should be), then return it.
-        if (pTrack)
+        if (pTrack) {
             return pTrack;
+        }
     }
 
     // scope this critical code so that is gets automatically unlocked
@@ -1038,9 +1039,10 @@ TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
         // so its reference count is non-zero despite it not being present in the
         // track cache. m_tracks is a map of weak pointers to the tracks.
         QMutexLocker locker(&m_sTracksMutex);
-        if (m_sTracks.contains(id)) {
-            qDebug() << "Returning cached TIO for track" << id;
-            pTrack = m_sTracks[id];
+        QHash<int, TrackWeakPointer>::iterator it = m_sTracks.find(id);
+        if (it != m_sTracks.end()) {
+            //qDebug() << "Returning cached TIO for track" << id;
+            pTrack = it.value();
         }
     }
 
