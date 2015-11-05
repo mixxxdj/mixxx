@@ -50,8 +50,8 @@ void DlgHidden::init() {
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
 
-    connect(m_pTrackTableView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
-            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
+    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
 }
 
 void DlgHidden::onShow() {

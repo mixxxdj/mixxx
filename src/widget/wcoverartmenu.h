@@ -4,44 +4,41 @@
 #include <QAction>
 #include <QMenu>
 #include <QWidget>
+#include <QPixmap>
 
 #include "trackinfoobject.h"
+#include "library/coverart.h"
 
+// This class implements a context-menu with all CoverArt user actions. Callers
+// must call setCoverArt before calling exec or popup. This class does
+// not change the database -- it emits a coverArtSelected signal when the user
+// performs an action. It is up to the parent to decide how to handle the
+// action.
 class WCoverArtMenu : public QMenu {
     Q_OBJECT
   public:
-    // This class implements a context-menu with all CoverArt actions.
-    // Callers MUST use the method show(...) to open the menu.
-    // do NOT use exec() or popup()
     WCoverArtMenu(QWidget *parent = 0);
     virtual ~WCoverArtMenu();
 
-    void show(QPoint pos, QPair<QString, QString> cover,
-              int trackId, TrackPointer pTrack=TrackPointer());
+    void setCoverArt(TrackPointer pTrack, const CoverInfo& info);
 
   signals:
-    void coverLocationUpdated(const QString& newLocation,
-                              const QString& oldLocation);
+    void coverArtSelected(const CoverArt& art);
+    void reloadCoverArt();
 
   private slots:
     void slotChange();
-    void slotShowFullSize();
-    void slotReload();
     void slotUnset();
 
   private:
     void createActions();
-    void addActions();
 
     QAction* m_pChange;
-    QAction* m_pFullSize;
     QAction* m_pReload;
     QAction* m_pUnset;
 
-    int m_iTrackId;
     TrackPointer m_pTrack;
-    QString m_sCoverLocation;
-    QString m_sMd5;
+    CoverInfo m_coverInfo;
 };
 
 #endif // WCOVERARTMENU_H

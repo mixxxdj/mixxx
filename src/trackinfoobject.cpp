@@ -19,9 +19,12 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QFileInfo>
+#include <QDirIterator>
+#include <QFile>
 #include <QMutexLocker>
 #include <QString>
 #include <QtDebug>
+#include <QRegExp>
 
 #include "trackinfoobject.h"
 
@@ -37,10 +40,11 @@
 #include "util/time.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
+#include "library/coverartutils.h"
 
 TrackInfoObject::TrackInfoObject(const QString& file,
                                  SecurityTokenPointer pToken,
-                                 bool parseHeader)
+                                 bool parseHeader, bool parseCoverArt)
         : m_fileInfo(file),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
@@ -48,12 +52,12 @@ TrackInfoObject::TrackInfoObject(const QString& file,
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
-    initialize(parseHeader);
+    initialize(parseHeader, parseCoverArt);
 }
 
 TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
                                  SecurityTokenPointer pToken,
-                                 bool parseHeader)
+                                 bool parseHeader, bool parseCoverArt)
         : m_fileInfo(fileInfo),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
@@ -61,7 +65,7 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
-    initialize(parseHeader);
+    initialize(parseHeader, parseCoverArt);
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
@@ -104,7 +108,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_bLocationChanged = false;
 }
 
-void TrackInfoObject::initialize(bool parseHeader) {
+void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
     m_bDirty = false;
     m_bLocationChanged = false;
 
@@ -132,7 +136,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader) {
-        parse();
+        parse(parseCoverArt);
     }
 }
 
@@ -147,7 +151,7 @@ TrackInfoObject::~TrackInfoObject() {
     delete m_waveformSummary;
 }
 
-void TrackInfoObject::parse() {
+void TrackInfoObject::parse(bool parseCoverArt) {
     // Log parsing of header information in developer mode. This is useful for
     // tracking down corrupt files.
     const QString& canonicalLocation = m_fileInfo.canonicalFilePath();
@@ -210,6 +214,18 @@ void TrackInfoObject::parse() {
         if (!key.isEmpty()) {
             setKeyText(key, mixxx::track::io::key::FILE_METADATA);
         }
+
+        if (parseCoverArt) {
+            m_coverArt.image = proxy.parseCoverArt();
+            if (!m_coverArt.image.isNull()) {
+                m_coverArt.info.hash = CoverArtUtils::calculateHash(
+                    m_coverArt.image);
+                m_coverArt.info.coverLocation = QString();
+                m_coverArt.info.type = CoverInfo::METADATA;
+                m_coverArt.info.source = CoverInfo::GUESSED;
+            }
+        }
+
         setHeaderParsed(true);
     } else {
         qDebug() << "TrackInfoObject::parse() error at file"
@@ -1000,4 +1016,35 @@ void TrackInfoObject::setBpmLock(bool bpmLock) {
 bool TrackInfoObject::hasBpmLock() const {
     QMutexLocker lock(&m_qMutex);
     return m_bBpmLock;
+}
+
+void TrackInfoObject::setCoverInfo(const CoverInfo& info) {
+    QMutexLocker lock(&m_qMutex);
+    if (info != m_coverArt.info) {
+        m_coverArt = CoverArt();
+        m_coverArt.info = info;
+        setDirty(true);
+        lock.unlock();
+        emit(coverArtUpdated());
+    }
+}
+
+CoverInfo TrackInfoObject::getCoverInfo() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_coverArt.info;
+}
+
+void TrackInfoObject::setCoverArt(const CoverArt& cover) {
+    QMutexLocker lock(&m_qMutex);
+    if (cover != m_coverArt) {
+        m_coverArt = cover;
+        setDirty(true);
+        lock.unlock();
+        emit(coverArtUpdated());
+    }
+}
+
+CoverArt TrackInfoObject::getCoverArt() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_coverArt;
 }

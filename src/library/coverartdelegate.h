@@ -1,14 +1,16 @@
 #ifndef COVERARTDELEGATE_H
 #define COVERARTDELEGATE_H
 
+#include <QObject>
+#include <QPainter>
 #include <QStyledItemDelegate>
-#include <QTableView>
+#include <QHash>
+#include <QLinkedList>
 
 #include "library/trackmodel.h"
 
 class CoverArtDelegate : public QStyledItemDelegate {
-  Q_OBJECT
-
+    Q_OBJECT
   public:
     explicit CoverArtDelegate(QObject* parent = NULL);
     virtual ~CoverArtDelegate();
@@ -16,6 +18,9 @@ class CoverArtDelegate : public QStyledItemDelegate {
     void paint(QPainter *painter,
                const QStyleOptionViewItem &option,
                const QModelIndex &index) const;
+
+  signals:
+    void coverReadyForCell(int row, int column);
 
   private slots:
     // If it is true, it must not try to load and search covers.
@@ -30,13 +35,25 @@ class CoverArtDelegate : public QStyledItemDelegate {
     // which could bring performance issues.
     void slotOnlyCachedCoverArt(bool b);
 
+    void slotCoverFound(const QObject* pRequestor,
+                        int requestReference,
+                        const CoverInfo& info,
+                        QPixmap pixmap, bool fromCache);
+
   private:
-    QTableView* m_pTableView;
-    TrackModel* m_pTrackModel;
     bool m_bOnlyCachedCover;
-    QString m_sDefaultCover;
+    int m_iCoverColumn;
+    int m_iCoverSourceColumn;
+    int m_iCoverTypeColumn;
     int m_iCoverLocationColumn;
-    int m_iMd5Column;
+    int m_iCoverHashColumn;
+    int m_iTrackLocationColumn;
+    int m_iIdColumn;
+
+    // We need to record rows in paint() (which is const) so these are marked
+    // mutable.
+    mutable QList<int> m_cacheMissRows;
+    mutable QHash<quint16, QLinkedList<int> > m_hashToRow;
 };
 
 #endif // COVERARTDELEGATE_H

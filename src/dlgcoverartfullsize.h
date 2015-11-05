@@ -4,27 +4,17 @@
 #include <QDialog>
 
 #include "ui_dlgcoverartfullsize.h"
-#include "util/singleton.h"
+#include "library/coverart.h"
 
 class DlgCoverArtFullSize
         : public QDialog,
-          public Ui::DlgCoverArtFullSize,
-          public Singleton<DlgCoverArtFullSize>
-{
+          public Ui::DlgCoverArtFullSize {
     Q_OBJECT
   public:
-    void init();
-
-  protected:
-    DlgCoverArtFullSize();
+    DlgCoverArtFullSize(QWidget* parent=0);
     virtual ~DlgCoverArtFullSize();
-    friend class Singleton<DlgCoverArtFullSize>;
 
-  private slots:
-    void slotPixmapFound(int trackId, QPixmap pixmap);
-
-  private:
-    QPixmap m_cover;
+    void init(CoverInfo info);
 };
 
 #endif // DLGCOVERARTFULLSIZE_H

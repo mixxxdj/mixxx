@@ -701,6 +701,7 @@ class MixxxCore(Feature):
                    "widget/wcombobox.cpp",
                    "widget/wsplitter.cpp",
                    "widget/wcoverart.cpp",
+                   "widget/wcoverartlabel.cpp",
                    "widget/wcoverartmenu.cpp",
 
                    "network.cpp",
@@ -732,6 +733,7 @@ class MixxxCore(Feature):
                    "library/missingtablemodel.cpp",
                    "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
+                   "library/coverart.cpp",
                    "library/coverartcache.cpp",
 
                    "library/playlisttablemodel.cpp",
@@ -783,7 +785,6 @@ class MixxxCore(Feature):
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
                    "library/dao/analysisdao.cpp",
-                   "library/dao/coverartdao.cpp",
 
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",

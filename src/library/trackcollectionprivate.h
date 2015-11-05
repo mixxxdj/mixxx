@@ -30,7 +30,6 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/autodjcratesdao.h"
-#include "library/dao/coverartdao.h"
 #include "library/queryutil.h"
 
 #define AUTODJ_TABLE "Auto DJ"
@@ -61,7 +60,6 @@ class TrackCollectionPrivate : public QObject {
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
     DirectoryDAO& getDirectoryDAO();
-    CoverArtDAO& getCoverArtDAO();
 #ifdef __AUTODJCRATES__
     AutoDJCratesDAO& getAutoDJCratesDAO();
 #endif
@@ -110,7 +108,6 @@ class TrackCollectionPrivate : public QObject {
     TrackDAO* m_pTrackDao;
     AutoDJCratesDAO* m_pAutoDjCratesDao;
     DirectoryDAO* m_pDirectoryDao;
-    CoverArtDAO* m_pCoverArtDao;
 
     QQueue<func> m_lambdas;
     volatile bool m_stop;

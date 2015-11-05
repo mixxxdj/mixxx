@@ -30,8 +30,6 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 }
 
 void MixxxLibraryFeature::init() {
-    QString coverartLocation = COVERART_TABLE + "." + COVERARTTABLE_LOCATION
-                                + " AS " + LIBRARYTABLE_COVERART_LOCATION;
     QStringList columns = QStringList()
             << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -59,8 +57,10 @@ void MixxxLibraryFeature::init() {
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED
-            << coverartLocation
-            << COVERART_TABLE + "." + COVERARTTABLE_MD5;
+            << "library." + LIBRARYTABLE_COVERART_SOURCE
+            << "library." + LIBRARYTABLE_COVERART_TYPE
+            << "library." + LIBRARYTABLE_COVERART_LOCATION
+            << "library." + LIBRARYTABLE_COVERART_HASH;
 
     QString tableName = "library_cache_view";
 
@@ -71,8 +71,7 @@ void MixxxLibraryFeature::init() {
         QString queryString = QString(
                     "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                     "SELECT %2 FROM library "
-                    "INNER JOIN track_locations ON library.location = track_locations.id "
-                    "LEFT JOIN cover_art ON library.cover_art = cover_art.id")
+                    "INNER JOIN track_locations ON library.location = track_locations.id ")
                 .arg(tableName, columns.join(","));
         query.prepare(queryString);
         if (!query.exec()) {
@@ -80,17 +79,13 @@ void MixxxLibraryFeature::init() {
         }
     }, __PRETTY_FUNCTION__);
 
-    // Strip out library. track_locations. and cover_art.
+    // Strip out library. and track_locations.
     for (QStringList::iterator it = columns.begin();
          it != columns.end(); ++it) {
         if (it->startsWith("library.")) {
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
             *it = it->replace("track_locations.", "");
-        } else if (it->operator==(coverartLocation)) {
-            *it = LIBRARYTABLE_COVERART_LOCATION;
-        } else if (it->startsWith(COVERART_TABLE + ".")) {
-            *it = it->replace(COVERART_TABLE + ".", "");
         }
     }
 
@@ -118,12 +113,6 @@ void MixxxLibraryFeature::init() {
                 Qt::DirectConnection);
         connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(dbTrackAdded(TrackPointer)),
                 pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)),
-                Qt::DirectConnection);
-        connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(updateTrackInBTC(int)),
-                pBaseTrackCache, SLOT(slotUpdateTrack(int)),
-                Qt::DirectConnection);
-        connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(updateTracksInBTC(QSet<int>)),
-                pBaseTrackCache, SLOT(slotUpdateTracks(QSet<int>)),
                 Qt::DirectConnection);
     }, __PRETTY_FUNCTION__);
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
@@ -156,22 +145,22 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 }
 
 void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
-                    MixxxKeyboard* pKeyboard) {
+                                     MixxxKeyboard* pKeyboard) {
     m_pHiddenView = new DlgHidden(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
     m_pHiddenView->init();
 
     pLibrary->registerView(kHiddenTitle, m_pHiddenView);
-    connect(m_pHiddenView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
-            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
+    connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
 
     m_pMissingView = new DlgMissing(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
     pLibrary->registerView(kMissingTitle, m_pMissingView);
-    connect(m_pMissingView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
-            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
+    connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
 }
 
 QVariant MixxxLibraryFeature::title() {

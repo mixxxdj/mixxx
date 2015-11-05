@@ -31,6 +31,7 @@
 #include <taglib/tfile.h>
 
 #include "library/dao/cue.h"
+#include "library/coverart.h"
 #include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
@@ -49,18 +50,20 @@ class TrackInfoObject : public QObject {
     // Initialize a new track with the filename.
     TrackInfoObject(const QString& file="",
                     SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true);
+                    bool parseHeader=true,
+                    bool parseCoverArt=false);
     // Initialize track with a QFileInfo class
     TrackInfoObject(const QFileInfo& fileInfo,
                     SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true);
+                    bool parseHeader=true,
+                    bool parseCoverArt=false);
     // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
     // Parse file metadata. If no file metadata is present, attempts to extract
     // artist and title information from the filename.
-    void parse();
+    void parse(bool parseCoverArt);
 
     // Returns the duration in seconds
     int getDuration() const;
@@ -265,12 +268,19 @@ class TrackInfoObject : public QObject {
     void setKeyText(QString key,
                     mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
+    void setCoverInfo(const CoverInfo& cover);
+    CoverInfo getCoverInfo() const;
+
+    void setCoverArt(const CoverArt& cover);
+    CoverArt getCoverArt() const;
+
   public slots:
     void slotCueUpdated();
 
   signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
+    void coverArtUpdated();
     void analyserProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
@@ -290,7 +300,7 @@ class TrackInfoObject : public QObject {
 
   private:
     // Common initialization function between all TIO constructors.
-    void initialize(bool parseHeader);
+    void initialize(bool parseHeader, bool parseCoverArt);
 
     // Methods for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"
@@ -390,6 +400,8 @@ class TrackInfoObject : public QObject {
     Waveform* const m_waveformSummary;
 
     QAtomicInt m_analyserProgress; // in 0.1%
+
+    CoverArt m_coverArt;
 
     friend class TrackDAO;
 };

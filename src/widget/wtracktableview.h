@@ -5,15 +5,18 @@
 #include <QSortFilterProxyModel>
 
 #include "configobject.h"
+#include "controlobjectslave.h"
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
+#include "library/coverart.h"
 #include "widget/wlibrarytableview.h"
 #include "dlgtagfetcher.h"
 
 class ControlObjectThread;
 class DlgTrackInfo;
 class TrackCollection;
+class WCoverArtMenu;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
@@ -67,10 +70,13 @@ class WTrackTableView : public WLibraryTableView {
     void doSortByColumn(int headerSection);
     void slotLockBpm();
     void slotUnlockBpm();
-    void slotScaleBpm(int); 
+    void slotScaleBpm(int);
     void slotClearBeats();
-    void slotGuiTickTime(double);
+    // Signalled 20 times per second (every 50ms) by GuiTick.
+    void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
+    void slotCoverArtSelected(const CoverArt& art);
+    void slotReloadCoverArt();
 
   private:
     void sendToAutoDJ(bool bTop);
@@ -82,7 +88,7 @@ class WTrackTableView : public WLibraryTableView {
     void dropEvent(QDropEvent * event);
     void lockBpm(bool lock);
 
-    void slotLoadCoverArt();
+    void enableCachedOnly();
     void selectionChanged(const QItemSelection &selected,
                           const QItemSelection &deselected);
 
@@ -110,6 +116,7 @@ class WTrackTableView : public WLibraryTableView {
 
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
+    WCoverArtMenu* m_pCoverMenu;
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
@@ -151,13 +158,17 @@ class WTrackTableView : public WLibraryTableView {
     bool m_sorting;
 
     // Column numbers
+    int m_iCoverSourceColumn; // cover art source
+    int m_iCoverTypeColumn; // cover art type
     int m_iCoverLocationColumn; // cover art location
-    int m_iMd5Column;           // cover art md5 hash
+    int m_iCoverHashColumn; // cover art hash
+    int m_iCoverColumn; // visible cover art
+    int m_iTrackLocationColumn;
 
     // Control the delay to load a cover art.
-    double m_lastSelection;
-    bool m_bLastCoverLoaded;
-    ControlObjectThread* m_pCOTGuiTickTime;
+    qint64 m_lastUserActionNanos;
+    bool m_loadCachedOnly;
+    ControlObjectSlave* m_pCOTGuiTick;
 };
 
 #endif

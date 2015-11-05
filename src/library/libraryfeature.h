@@ -16,6 +16,7 @@
 #include "trackinfoobject.h"
 #include "treeitemmodel.h"
 #include "trackcollectionprivate.h"
+#include "library/coverartcache.h"
 
 class TrackModel;
 class WLibrary;
@@ -99,10 +100,7 @@ class LibraryFeature : public QObject {
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
-    void loadCoverArt(const QString& coverLocation,
-                      const QString& md5Hash,
-                      int trackId);
-
+    void trackSelected(TrackPointer pTrack);
 };
 
 #endif /* LIBRARYFEATURE_H */

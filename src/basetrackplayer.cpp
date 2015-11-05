@@ -214,7 +214,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     m_replaygainPending = false;
     // Read the tags if required
     if (!m_pLoadedTrack->getHeaderParsed()) {
-        m_pLoadedTrack->parse();
+        m_pLoadedTrack->parse(false);
     }
 
     // m_pLoadedTrack->setPlayedAndUpdatePlaycount(true); // Actually the song is loaded but not played

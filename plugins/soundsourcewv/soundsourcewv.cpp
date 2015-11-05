@@ -139,6 +139,13 @@ Result SoundSourceWV::parseHeader() {
     return ERR;
 }
 
+QImage SoundSourceWV::parseCoverArt() {
+    setType("wv");
+    TagLib::WavPack::File f(m_qFilename.toLocal8Bit().constData());
+    TagLib::APE::Tag *ape = f.APETag();
+    return getCoverInAPETag(ape);
+}
+
 void SoundSourceWV::format_samples(int Bps, char *dst, int32_t *src, uint32_t count)
 {
     //this handles converting the fixed 32bit per sample produced by UnpackSamples

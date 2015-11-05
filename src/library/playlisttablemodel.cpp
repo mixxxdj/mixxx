@@ -31,7 +31,9 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             << PLAYLISTTRACKSTABLE_POSITION
             << PLAYLISTTRACKSTABLE_DATETIMEADDED
             << "'' AS " + LIBRARYTABLE_PREVIEW
-            << "'' AS " + LIBRARYTABLE_COVERART;
+            // For sorting the cover art column we give LIBRARYTABLE_COVERART
+            // the same value as the cover hash.
+            << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
 
     m_pTrackCollection->callSync(
                 [this, &playlistTableName, &playlistId, &columns](TrackCollectionPrivate* pTrackCollectionPrivate) {
@@ -260,8 +262,10 @@ bool PlaylistTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
             (PlayerManager::numPreviewDecks() == 0 &&
              column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_MD5)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
         return true;
     }
     return false;

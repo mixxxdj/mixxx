@@ -244,6 +244,12 @@ Result SoundSourceOggVorbis::parseHeader() {
     return result ? OK : ERR;
 }
 
+QImage SoundSourceOggVorbis::parseCoverArt() {
+    setType("ogg");
+    TagLib::Ogg::Vorbis::File f(m_qFilename.toLocal8Bit().constData());
+    return getCoverInXiphComment(f.tag());
+}
+
 /*
    Return the length of the file in samples.
  */

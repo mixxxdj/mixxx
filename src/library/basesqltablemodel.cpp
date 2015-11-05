@@ -935,9 +935,17 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pParent, i, m_pTrackCollection);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
-        return new CoverArtDelegate(pParent);
+        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pParent);
+        connect(pCoverDelegate, SIGNAL(coverReadyForCell(int, int)),
+                this, SLOT(refreshCell(int, int)));
+        return pCoverDelegate;
     }
     return NULL;
+}
+
+void BaseSqlTableModel::refreshCell(int row, int column) {
+    QModelIndex coverIndex = index(row, column);
+    emit(dataChanged(coverIndex, coverIndex));
 }
 
 // Must be called from Main thread

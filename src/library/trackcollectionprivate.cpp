@@ -145,10 +145,6 @@ DirectoryDAO& TrackCollectionPrivate::getDirectoryDAO() {
     return *m_pDirectoryDao;
 }
 
-CoverArtDAO& TrackCollectionPrivate::getCoverArtDAO() {
-    return *m_pCoverArtDao;
-}
-
 void TrackCollectionPrivate::createAndPopulateDbConnection() {
     // initialize database connection in TrackCollection
     const QStringList avaiableDrivers = QSqlDatabase::drivers();
@@ -181,9 +177,8 @@ void TrackCollectionPrivate::createAndPopulateDbConnection() {
     m_pPlaylistDao = new PlaylistDAO(*m_pDatabase);
     m_pCrateDao = new CrateDAO(*m_pDatabase);
     m_pCueDao = new CueDAO(*m_pDatabase);
-    m_pCoverArtDao = new CoverArtDAO(*m_pDatabase);
     m_pAnalysisDao = new AnalysisDao(*m_pDatabase, m_pConfig);
-    m_pTrackDao = new TrackDAO(*m_pDatabase, *m_pCoverArtDao, *m_pCueDao, *m_pPlaylistDao,
+    m_pTrackDao = new TrackDAO(*m_pDatabase, *m_pCueDao, *m_pPlaylistDao,
                                *m_pCrateDao, *m_pAnalysisDao, *m_pDirectoryDao,
                                m_pConfig);
 #ifdef __AUTODJCRATES__
@@ -194,7 +189,6 @@ void TrackCollectionPrivate::createAndPopulateDbConnection() {
 												 m_pConfig);
 #endif // __AUTODJCRATES__
     m_pDirectoryDao = new DirectoryDAO(*m_pDatabase);
-    m_pCoverArtDao = new CoverArtDAO(*m_pDatabase);
 }
 
 #ifdef __SQLITE3__

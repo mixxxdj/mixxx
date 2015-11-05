@@ -15,6 +15,7 @@
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
+#include "library/coverartcache.h"
 
 class TrackModel;
 class TrackCollection;
@@ -92,9 +93,7 @@ public:
     void searchStarting();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
-    void loadCoverArt(const QString& coverLocation,
-                      const QString& md5Hash,
-                      int trackId);
+    void trackSelected(TrackPointer pTrack);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

@@ -192,6 +192,12 @@ Result SoundSourceM4A::parseHeader(){
     return ERR;
 }
 
+QImage SoundSourceM4A::parseCoverArt() {
+    setType("m4a");
+    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+    return getCoverInMP4Tag(f.tag());
+}
+
 QList<QString> SoundSourceM4A::supportedFileExtensions()
 {
     QList<QString> list;

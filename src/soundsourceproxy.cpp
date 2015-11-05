@@ -48,6 +48,7 @@
 #endif
 #include "soundsourceflac.h"
 #include "util/cmdlineargs.h"
+#include "util/regex.h"
 
 //Static memory allocation
 QRegExp SoundSourceProxy::m_supportedFileRegex;
@@ -359,6 +360,10 @@ Result SoundSourceProxy::parseHeader() {
     return m_pSoundSource ? m_pSoundSource->parseHeader() : ERR;
 }
 
+QImage SoundSourceProxy::parseCoverArt() {
+    return m_pSoundSource ? m_pSoundSource->parseCoverArt() : QImage();
+}
+
 // static
 QStringList SoundSourceProxy::supportedFileExtensions()
 {
@@ -409,14 +414,7 @@ QString SoundSourceProxy::supportedFileExtensionsString() {
 // static
 QString SoundSourceProxy::supportedFileExtensionsRegex() {
     QStringList supportedFileExtList = SoundSourceProxy::supportedFileExtensions();
-
-    // Escape every extension appropriately
-    for (int i = 0; i < supportedFileExtList.size(); ++i) {
-    supportedFileExtList[i] = QRegExp::escape(supportedFileExtList[i]);
-    }
-
-    // Turn the list into a "\\.(mp3|wav|etc)$" style regex string
-    return QString("\\.(%1)$").arg(supportedFileExtList.join("|"));
+    return RegexUtils::fileExtensionsRegex(supportedFileExtList);
 }
 
 // static

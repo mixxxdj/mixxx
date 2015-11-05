@@ -128,8 +128,8 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
         qDebug() << "Activating " << item->data().toString();
         m_pBansheePlaylistModel->setTableModel(playlistID);
         emit(showTrackModel(m_pBansheePlaylistModel));
+        emit(enableCoverArtDisplay(false));
     }
-    emit(enableCoverArtDisplay(false));
 }
 
 TreeItemModel* BansheeFeature::getChildModel() {

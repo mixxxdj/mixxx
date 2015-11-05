@@ -49,6 +49,7 @@ class SoundSourceM4A : public SoundSource {
         unsigned read(unsigned long size, const SAMPLE*);
         unsigned long length();
         Result parseHeader();
+        QImage parseCoverArt();
         static QList<QString> supportedFileExtensions();
     private:
         int trackId;

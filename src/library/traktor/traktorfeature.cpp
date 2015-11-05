@@ -177,8 +177,8 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
         m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
         m_pTraktorPlaylistModel->setPlaylistUI();
         emit(showTrackModel(m_pTraktorPlaylistModel));
+        emit(enableCoverArtDisplay(false));
     }
-    emit(enableCoverArtDisplay(false));
 }
 
 TreeItem* TraktorFeature::importLibrary(QString file) {

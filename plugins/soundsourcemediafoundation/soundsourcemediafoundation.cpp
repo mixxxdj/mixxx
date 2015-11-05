@@ -391,6 +391,11 @@ Result SoundSourceMediaFoundation::parseHeader()
     return ERR;
 }
 
+QImage SoundSourceMediaFoundation::parseCoverArt() {
+    setType("m4a");
+    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+    return getCoverInMP4Tag(f.tag());
+}
 
 // static
 QList<QString> SoundSourceMediaFoundation::supportedFileExtensions()

@@ -1,44 +1,49 @@
-#include <QtDebug>
-#include "dlgcoverartfullsize.h"
-#include "library/coverartcache.h"
+#include <QDesktopWidget>
 
-DlgCoverArtFullSize::DlgCoverArtFullSize() {
+#include "dlgcoverartfullsize.h"
+#include "library/coverartutils.h"
+
+DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent)
+        : QDialog(parent) {
     setupUi(this);
-    setWindowTitle(tr("Cover Art"));
-    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
-            this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 }
 
 DlgCoverArtFullSize::~DlgCoverArtFullSize() {
 }
 
-void DlgCoverArtFullSize::slotPixmapFound(int trackId, QPixmap pixmap) {
-    Q_UNUSED(trackId);
-    m_cover = pixmap;
+void DlgCoverArtFullSize::init(CoverInfo info) {
+    // TODO(rryan): don't do this in the main thread
+    QImage cover = CoverArtUtils::loadCover(info);
+    QPixmap pixmap;
+    if (!cover.isNull()) {
+        pixmap.convertFromImage(cover);
+    }
 
-    if (!QApplication::activeWindow()) {
+    if (pixmap.isNull()) {
         return;
+    }
+
+    QWidgetList windows = QApplication::topLevelWidgets();
+    QSize largestWindowSize;
+    foreach (QWidget* pWidget, windows) {
+        largestWindowSize = largestWindowSize.expandedTo(pWidget->size());
     }
 
     // If cover is bigger than Mixxx, it must be resized!
     // In this case, it need to do a small adjust to make
     // this dlg a bit smaller than the Mixxx window.
-    QSize mixxxSize = QApplication::activeWindow()->size() / qreal(1.2);
-    if (m_cover.height() > mixxxSize.height()
-            || m_cover.width() > mixxxSize.width()) {
-        m_cover.scaled(mixxxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QSize mixxxSize = largestWindowSize / qreal(1.2);
+    if (pixmap.height() > mixxxSize.height()
+            || pixmap.width() > mixxxSize.width()) {
+        pixmap = pixmap.scaled(
+            mixxxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
+    resize(pixmap.size());
+    coverArt->setPixmap(pixmap);
 
-    if (isVisible()) {
-        init();
-    }
-}
-
-void DlgCoverArtFullSize::init() {
-    if (m_cover.isNull())  {
-        return;
-    }
-    resize(m_cover.size());
-    coverArt->setPixmap(m_cover);
     show();
+    move(QApplication::desktop()->screenGeometry().center() - rect().center());
+    raise();
+    activateWindow();
 }

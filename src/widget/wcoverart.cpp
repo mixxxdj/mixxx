@@ -3,49 +3,51 @@
 #include <QBitmap>
 #include <QLabel>
 #include <QIcon>
-#include <QPainter>
+#include <QStylePainter>
+#include <QStyleOption>
 
-#include "dlgcoverartfullsize.h"
-#include "wcoverart.h"
-#include "wskincolor.h"
+#include "controlobject.h"
+#include "widget/wcoverart.h"
+#include "widget/wskincolor.h"
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
+#include "util/math.h"
+#include "util/dnd.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
-                     ConfigObject<ConfigValue>* pConfig)
+                     ConfigObject<ConfigValue>* pConfig,
+                     const QString& group)
         : QWidget(parent),
           WBaseWidget(this),
+          m_group(group),
           m_pConfig(pConfig),
-          m_bEnableWidget(true),
-          m_bCoverIsHovered(false),
-          m_bCoverIsVisible(false),
+          m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
-          m_loadedCover(CoverArtCache::instance()->getDefaultCoverArt()),
-          m_lastRequestedTrackId(-1) {
-    // load icon to hide cover
-    m_iconHide = QPixmap(":/images/library/ic_library_cover_hide.png");
-    m_iconHide = m_iconHide.scaled(20,
-                                   20,
-                                   Qt::KeepAspectRatioByExpanding,
-                                   Qt::SmoothTransformation);
+          m_pDlgFullSize(new DlgCoverArtFullSize()) {
+    // Accept drops if we have a group to load tracks into.
+    setAcceptDrops(!m_group.isEmpty());
 
-    // load icon to show cover
-    m_iconShow = QPixmap(":/images/library/ic_library_cover_show.png");
-    m_iconShow = m_iconShow.scaled(17,
-                                   17,
-                                   Qt::KeepAspectRatioByExpanding,
-                                   Qt::SmoothTransformation);
-
-    connect(CoverArtCache::instance(), SIGNAL(pixmapFound(int, QPixmap)),
-            this, SLOT(slotPixmapFound(int, QPixmap)), Qt::DirectConnection);
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache != NULL) {
+        connect(pCache, SIGNAL(coverFound(const QObject*, const int,
+                                          const CoverInfo&, QPixmap, bool)),
+                this, SLOT(slotCoverFound(const QObject*, const int,
+                                          const CoverInfo&, QPixmap, bool)));
+    }
+    connect(m_pMenu, SIGNAL(coverArtSelected(const CoverArt&)),
+            this, SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pMenu, SIGNAL(reloadCoverArt()),
+            this, SLOT(slotReloadCoverArt()));
 }
 
 WCoverArt::~WCoverArt() {
     delete m_pMenu;
+    delete m_pDlgFullSize;
 }
 
 void WCoverArt::setup(QDomNode node, const SkinContext& context) {
     Q_UNUSED(node);
-    setMouseTracking(TRUE);
+    setMouseTracking(true);
 
     // Background color
     QColor bgc(255,255,255);
@@ -65,135 +67,212 @@ void WCoverArt::setup(QDomNode node, const SkinContext& context) {
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
     pal.setBrush(foregroundRole(), m_fgc);
     setPalette(pal);
+
+    if (context.hasNode(node, "DefaultCover")) {
+        m_defaultCover = QPixmap(context.selectString(node, "DefaultCover"));
+    }
+
+    // If no default cover is specified or we failed to load it, fall back on
+    // the resource bundle default cover.
+    if (m_defaultCover.isNull()) {
+        m_defaultCover = QPixmap(CoverArtUtils::defaultCoverLocation());
+    }
+    m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
 
-void WCoverArt::slotEnableWidget(bool enable) {
-    m_bEnableWidget = enable;
-    setMinimumSize(0, 0);
+void WCoverArt::slotReloadCoverArt() {
+    if (m_loadedTrack) {
+        CoverArtCache* pCache = CoverArtCache::instance();
+        if (pCache) {
+            pCache->requestGuessCover(m_loadedTrack);
+        }
+    }
+}
+
+void WCoverArt::slotCoverArtSelected(const CoverArt& art) {
+    if (m_loadedTrack) {
+        // Will trigger slotTrackCoverArtUpdated().
+        m_loadedTrack->setCoverArt(art);
+    }
+}
+
+void WCoverArt::slotEnable(bool enable) {
+    bool wasDisabled = !m_bEnable && enable;
+    m_bEnable = enable;
+
+    if (wasDisabled) {
+        slotLoadTrack(m_loadedTrack);
+    }
+
     update();
 }
 
-void WCoverArt::slotResetWidget() {
-    m_lastRequestedTrackId = -1;
-    m_lastRequestedCover = qMakePair(QString(), QString());
-    m_bCoverIsVisible = false;
-    m_bCoverIsHovered = false;
-    m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
-    m_loadedCover = scaledCoverArt(m_loadedCover);
-    setMinimumSize(0, 20);
+void WCoverArt::slotReset() {
+    if (m_loadedTrack) {
+        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+                   this, SLOT(slotTrackCoverArtUpdated()));
+    }
+    m_loadedTrack = TrackPointer();
+    m_lastRequestedCover = CoverInfo();
+    m_loadedCover = QPixmap();
+    m_loadedCoverScaled = QPixmap();
     update();
 }
 
-void WCoverArt::slotPixmapFound(int trackId, QPixmap pixmap) {
-    if (!m_bEnableWidget) {
+void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
+                               const CoverInfo& info, QPixmap pixmap,
+                               bool fromCache) {
+    Q_UNUSED(info);
+    Q_UNUSED(fromCache);
+    if (!m_bEnable) {
         return;
     }
-    if (m_lastRequestedTrackId == trackId) {
-        m_loadedCover = scaledCoverArt(pixmap);
+
+    if (pRequestor == this && m_loadedTrack &&
+            m_loadedTrack->getId() == requestReference) {
+        qDebug() << "WCoverArt::slotCoverFound" << pRequestor << info
+                 << pixmap.size();
+        m_loadedCover = pixmap;
+        m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();
     }
 }
 
-void WCoverArt::slotLoadCoverArt(const QString& coverLocation,
-                                 const QString& md5Hash,
-                                 int trackId) {
-    if (!m_bEnableWidget) {
-        return;
+void WCoverArt::slotTrackCoverArtUpdated() {
+    if (m_loadedTrack) {
+        m_lastRequestedCover = m_loadedTrack->getCoverInfo();
+        m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
+        CoverArtCache* pCache = CoverArtCache::instance();
+        if (pCache != NULL) {
+            // TODO(rryan): Don't use track id.
+            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId());
+        }
     }
-
-    m_lastRequestedTrackId = trackId;
-    m_lastRequestedCover = qMakePair(coverLocation, md5Hash);
-
-    if (!m_bCoverIsVisible) {
-        return;
-    }
-
-    m_loadedCover = CoverArtCache::instance()->requestPixmap(trackId,
-                                                             coverLocation,
-                                                             md5Hash);
-    if (m_loadedCover.isNull()) {
-        m_loadedCover = CoverArtCache::instance()->getDefaultCoverLocation();
-    }
-    m_loadedCover = scaledCoverArt(m_loadedCover);
-    update();
 }
 
-QPixmap WCoverArt::scaledCoverArt(QPixmap normal) {
-    int height = parentWidget()->height() / 3;
-    return normal.scaled(QSize(height - 10, height - 10),
-                         Qt::KeepAspectRatio,
-                         Qt::SmoothTransformation);
+void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
+    if (m_loadedTrack) {
+        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+                   this, SLOT(slotTrackCoverArtUpdated()));
+    }
+    m_lastRequestedCover = CoverInfo();
+    m_loadedCover = QPixmap();
+    m_loadedCoverScaled = QPixmap();
+    m_loadedTrack = pTrack;
+    if (m_loadedTrack) {
+        connect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+                this, SLOT(slotTrackCoverArtUpdated()));
+    }
+
+    if (!m_bEnable) {
+        return;
+    }
+
+    slotTrackCoverArtUpdated();
+}
+
+QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
+    if (normal.isNull()) {
+        return QPixmap();
+    }
+    return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 void WCoverArt::paintEvent(QPaintEvent*) {
-    if (!m_bEnableWidget) {
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter painter(this);
+    painter.drawPrimitive(QStyle::PE_Widget, option);
+
+    if (!m_bEnable) {
         return;
     }
 
-    QPainter painter(this);
-    painter.drawLine(0, 0, width(), 0);
-
-    if (m_bCoverIsVisible) {
-        int x = width() / 2 - height() / 2 + 4;
-        int y = 6;
-        painter.drawPixmap(x, y, m_loadedCover);
-    } else {
-        painter.drawPixmap(1, 2 ,m_iconShow);
-        painter.drawText(25, 15, tr("Show Cover Art"));
+    QPixmap toDraw = m_loadedCoverScaled;
+    if (toDraw.isNull()) {
+        toDraw = m_defaultCoverScaled;
     }
 
-    if (m_bCoverIsVisible && m_bCoverIsHovered) {
-        painter.drawPixmap(width() - 21, 6, m_iconHide);
+    if (!toDraw.isNull()) {
+        QSize widgetSize = size();
+        QSize pixmapSize = toDraw.size();
+
+        int x = math_max(0, (widgetSize.width() - pixmapSize.width()) / 2);
+        int y = math_max(0, (widgetSize.height() - pixmapSize.height()) / 2);
+        painter.drawPixmap(x, y, toDraw);
     }
 }
 
 void WCoverArt::resizeEvent(QResizeEvent*) {
-    if (!m_bEnableWidget) {
-        setMinimumSize(0, 0);
-        return;
-    }
-
-    if (m_bCoverIsVisible) {
-        setMinimumSize(0, parentWidget()->height() / 3);
-        slotLoadCoverArt(m_lastRequestedCover.first,
-                         m_lastRequestedCover.second,
-                         m_lastRequestedTrackId);
-     } else {
-        m_loadedCover = CoverArtCache::instance()->getDefaultCoverArt();
-        setMinimumSize(0, 20);
-        DlgCoverArtFullSize::instance()->close();
-    }
+    m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
+    m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
 
 void WCoverArt::mousePressEvent(QMouseEvent* event) {
-    if (!m_bEnableWidget) {
+    if (!m_bEnable) {
         return;
     }
 
-    if (!m_bCoverIsVisible) { // show widget
-        m_bCoverIsVisible = true;
-        resize(sizeHint());
-        return;
+    if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
+        m_pMenu->setCoverArt(m_loadedTrack, m_lastRequestedCover);
+        m_pMenu->popup(event->globalPos());
+    } else if (event->button() == Qt::LeftButton) { // init/close fullsize cover
+        if (m_pDlgFullSize->isVisible()) {
+            m_pDlgFullSize->close();
+        } else {
+            m_pDlgFullSize->init(m_lastRequestedCover);
+        }
     }
-
-    QPoint lastPoint(event->pos());
-    if(lastPoint.x() > width() - (height() / 5)
-            && lastPoint.y() < (height() / 5) + 5) { // hide widget
-        m_bCoverIsVisible = false;
-        resize(sizeHint());
-    } else if (event->button() == Qt::RightButton) { // show context-menu
-        m_pMenu->show(event->globalPos(),
-                      m_lastRequestedCover,
-                      m_lastRequestedTrackId);
-    }
-}
-
-void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
-    m_bCoverIsHovered  = event->HoverEnter;
-    update();
 }
 
 void WCoverArt::leaveEvent(QEvent*) {
-    m_bCoverIsHovered = false;
-    update();
+    m_pDlgFullSize->close();
+}
+
+void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
+    if ((event->buttons() & Qt::LeftButton) && m_loadedTrack) {
+        DragAndDropHelper::dragTrack(m_loadedTrack, this);
+    }
+}
+
+void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
+    // We don't have a group to load the track into.
+    if (m_group.isEmpty()) {
+        event->ignore();
+        return;
+    }
+
+    if (event->mimeData()->hasUrls() &&
+            event->mimeData()->urls().size() > 0) {
+        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
+        if ((!ControlObject::get(ConfigKey(m_group, "play")) ||
+             m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt())) {
+            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+            if (!files.isEmpty()) {
+                event->acceptProposedAction();
+                return;
+            }
+        }
+    }
+    event->ignore();
+}
+
+void WCoverArt::dropEvent(QDropEvent *event) {
+    // We don't have a group to load the track into.
+    if (m_group.isEmpty()) {
+        event->ignore();
+        return;
+    }
+
+    if (event->mimeData()->hasUrls()) {
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            return;
+        }
+    }
+    event->ignore();
 }

@@ -10,6 +10,7 @@
 #include "configobject.h"
 #include "library/libraryview.h"
 #include "trackinfoobject.h"
+#include "library/coverartcache.h"
 
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
@@ -24,8 +25,9 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   signals:
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    void loadCoverArt(const QString& coverLocation, const QString&, int trackId);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group,
+            bool play = false);
+    void trackSelected(TrackPointer pTrack);
     void onlyCachedCoverArt(bool);
     void scrollValueChanged(int);
 

@@ -32,6 +32,7 @@ class SoundSourceOggVorbis : public Mixxx::SoundSource {
   unsigned read(unsigned long size, const SAMPLE*);
   inline long unsigned length();
   Result parseHeader();
+  QImage parseCoverArt();
   static QList<QString> supportedFileExtensions();
  private:
   int channels;

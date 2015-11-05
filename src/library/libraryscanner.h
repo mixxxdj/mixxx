@@ -30,7 +30,6 @@
 #include <QFileInfo>
 #include <QLinkedList>
 
-#include "library/dao/coverartdao.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/libraryhashdao.h"
@@ -71,6 +70,7 @@ class LibraryScanner : public QThread {
     void scanFinished();
     void progressHashing(QString);
     void progressLoading(QString path);
+    void progressCoverArt(QString file);
 
   private:
     // Recursively scan a music library. Doesn't import tracks for any
@@ -81,6 +81,11 @@ class LibraryScanner : public QThread {
                        SecurityTokenPointer pToken);
 
     bool importDirectory(const QString& directory, volatile bool* cancel);
+    // Import the provided files. Returns true if the scan completed without
+    // being cancelled. False if the scan was cancelled part-way through.
+    bool importFiles(const QLinkedList<QFileInfo>& files,
+                     const QLinkedList<QFileInfo>& possibleCovers,
+                     SecurityTokenPointer pToken);
 
     // The library trackcollection
     TrackCollection* m_pTrackCollection;
@@ -93,10 +98,10 @@ class LibraryScanner : public QThread {
     PlaylistDAO m_playlistDao;
     CrateDAO m_crateDao;
     DirectoryDAO m_directoryDao;
-    CoverArtDAO m_coverArtDao;
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
     QRegExp m_extensionFilter;
+    QRegExp m_coverExtensionFilter;
     volatile bool m_bCancelLibraryScan;
     QStringList m_directoriesBlacklist;
     QStringList m_tracksListInCnunk;

@@ -41,8 +41,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
-    connect(m_pTrackTableView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
-            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
+    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -588,8 +588,8 @@ bool DlgAutoDJ::loadNextTrackFromQueue() {
     // We ran out of tracks in the queue...
     if (!nextTrack) {
         // Disable auto DJ and return...
-        // pushButtonAutoDJ->setChecked(false);
-        emit(pushButtonAutoDJSetChecked(false));
+        pushButtonAutoDJ->setChecked(false);
+        //emit(pushButtonAutoDJSetChecked(false));
         // And eject track as "End of auto DJ warning"
         emit(loadTrack(nextTrack));
         return false;

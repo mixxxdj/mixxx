@@ -36,11 +36,8 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
 
-    connect(this, SIGNAL(activateButtons(bool)),
-            this, SLOT(slotActivateButtons(bool)), Qt::QueuedConnection);
-
-    connect(m_pTrackTableView, SIGNAL(loadCoverArt(const QString&, const QString&, int)),
-            this, SIGNAL(loadCoverArt(const QString&, const QString&, int)));
+    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
 }
 
 DlgMissing::~DlgMissing() {

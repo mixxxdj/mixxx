@@ -32,7 +32,6 @@
 #include "deck.h"
 #include "defs_urls.h"
 #include "dlgabout.h"
-#include "dlgcoverartfullsize.h"
 #include "dlgpreferences.h"
 #include "dlgdevelopertools.h"
 #include "engine/enginemaster.h"
@@ -106,6 +105,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
+    // We use QSet<int> in signals in the library.
+    qRegisterMetaType<QSet<int> >("QSet<int>");
+
     logBuildDetails();
     ScopedTimer t("MixxxMainWindow::MixxxMainWindow");
     m_runtime_timer.start();
@@ -282,7 +284,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #endif
 
     CoverArtCache::create();
-    DlgCoverArtFullSize::Singleton::create();
 
     initializeTrackCollection();
 
@@ -312,13 +313,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             hasChanged_MusicDir = true;
         }
     }
-
-    m_pLibrary->getTrackCollection()->callSync( [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
-        CoverArtCache::instance()->setCoverArtDAO(
-                    &pTrackCollectionPrivate->getCoverArtDAO());
-        CoverArtCache::instance()->setTrackDAO(
-                    &pTrackCollectionPrivate->getTrackDAO());
-    }, __PRETTY_FUNCTION__);
 
     // Call inits to invoke all other construction parts
 
@@ -547,13 +541,14 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << "delete library scanner " <<  qTime.elapsed();
     delete m_pLibraryScanner;
 
+    // CoverArtCache is fairly independent of everything else.
+    CoverArtCache::destroy();
+
     // Delete the library after the view so there are no dangling pointers to
     // Depends on RecordingManager
     // the data models.
     qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
-
-    DlgCoverArtFullSize::Singleton::destroy();
 
     // RecordingManager depends on config, engine
     qDebug() << "delete RecordingManager " << qTime.elapsed();
@@ -842,6 +837,10 @@ void MixxxMainWindow::slotViewShowPreviewDeck(bool enable) {
     toggleVisibility(ConfigKey("[PreviewDeck]", "show_previewdeck"), enable);
 }
 
+void MixxxMainWindow::slotViewShowCoverArt(bool enable) {
+    toggleVisibility(ConfigKey("[Library]", "show_coverart"), enable);
+}
+
 void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     ControlObject* pVisibilityControl = ControlObject::getControl(key);
     pAction->setEnabled(pVisibilityControl != NULL);
@@ -859,6 +858,8 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[Microphone]", "show_microphone"));
     setVisibilityOptionState(m_pViewShowPreviewDeck,
                              ConfigKey("[PreviewDeck]", "show_previewdeck"));
+    setVisibilityOptionState(m_pViewShowCoverArt,
+                             ConfigKey("[Library]", "show_coverart"));
 }
 
 int MixxxMainWindow::noSoundDlg(void)
@@ -1285,7 +1286,7 @@ void MixxxMainWindow::initActions()
 
     QString showPreviewDeckTitle = tr("Show Preview Deck");
     QString showPreviewDeckText = tr("Show the preview deck in the Mixxx interface.") +
-    " " + mayNotBeSupported;
+            " " + mayNotBeSupported;
     m_pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
     m_pViewShowPreviewDeck->setCheckable(true);
     m_pViewShowPreviewDeck->setShortcut(
@@ -1297,6 +1298,19 @@ void MixxxMainWindow::initActions()
     connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowPreviewDeck(bool)));
 
+    QString showCoverArtTitle = tr("Show Cover Art");
+    QString showCoverArtText = tr("Show cover art in the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pViewShowCoverArt = new QAction(showCoverArtTitle, this);
+    m_pViewShowCoverArt->setCheckable(true);
+    m_pViewShowCoverArt->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowCoverArt"),
+                                                  tr("Ctrl+5", "Menubar|View|Show Cover Art"))));
+    m_pViewShowCoverArt->setStatusTip(showCoverArtText);
+    m_pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
+    connect(m_pViewShowCoverArt, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowCoverArt(bool)));
 
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
@@ -1408,6 +1422,7 @@ void MixxxMainWindow::initMenuBar()
     m_pViewMenu->addAction(m_pViewVinylControl);
 #endif
     m_pViewMenu->addAction(m_pViewShowPreviewDeck);
+    m_pViewMenu->addAction(m_pViewShowCoverArt);
     m_pViewMenu->addSeparator();
     m_pViewMenu->addAction(m_pViewFullScreen);
 

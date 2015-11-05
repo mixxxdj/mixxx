@@ -14,7 +14,7 @@ class GuiTick : public QObject {
     GuiTick(QObject* pParent = NULL);
     ~GuiTick();
     void process();
-    static double cpuTime();
+    static double cpuTimeLastTick();
 
   private:
     ControlObject* m_pCOGuiTickTime;
@@ -23,7 +23,7 @@ class GuiTick : public QObject {
     PerformanceTimer m_cpuTimer;
 
     double m_lastUpdateTime;
-    static double m_cpuTime; // Stream Time in seconds
+    static double m_cpuTimeLastTick; // Stream Time in seconds
 };
 
 #endif // GUITICK_H
