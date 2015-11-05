@@ -659,6 +659,7 @@ class MixxxCore(Feature):
                    "upgrade.cpp",
 
                    "soundsource.cpp",
+                   "soundsourcetaglib.cpp",
 
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",

@@ -31,7 +31,7 @@
 class SoundSourceSndFile : public Mixxx::SoundSource
 {
 public:
-    SoundSourceSndFile(QString qFilename);
+    explicit SoundSourceSndFile(QString qFilename);
     ~SoundSourceSndFile();
     Result open();
     long seek(long);

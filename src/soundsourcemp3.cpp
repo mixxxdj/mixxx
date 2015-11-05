@@ -14,17 +14,20 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtDebug>
+#include "soundsourcemp3.h"
+#include "soundsourcetaglib.h"
+#include "util/math.h"
 
 #include <taglib/mpegfile.h>
 
-#include "soundsourcemp3.h"
-#include "util/math.h"
+#include <QtDebug>
+
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename) :
         Mixxx::SoundSource(qFilename),
         m_file(qFilename)
 {
+    setType("mp3");
     inputbuf = NULL;
     Stream = new mad_stream;
     mad_stream_init(Stream);
@@ -78,9 +81,9 @@ QList<QString> SoundSourceMp3::supportedFileExtensions()
 }
 
 Result SoundSourceMp3::open() {
-    m_file.setFileName(m_qFilename);
+    m_file.setFileName(getFilename());
     if (!m_file.open(QIODevice::ReadOnly)) {
-        //qDebug() << "MAD: Open failed:" << m_qFilename;
+        //qDebug() << "MAD: Open failed:" << getFilename();
         return ERR;
     }
 
@@ -126,18 +129,19 @@ Result SoundSourceMp3::open() {
             continue;
         }
 
-        // Grab data from Header
+        // Grab data from madHeader
 
         // This warns us only when the reported sample rate changes. (and when
         // it is first set)
-        if (m_iSampleRate == 0 && Header.samplerate > 0) {
+        if (getSampleRate() == 0 && Header.samplerate > 0) {
             setSampleRate(Header.samplerate);
-        } else if (m_iSampleRate != Header.samplerate) {
+        } else if (getSampleRate() != Header.samplerate) {
             qDebug() << "SSMP3: file has differing samplerate in some headers:"
-                     << m_qFilename
-                     << m_iSampleRate << "vs" << Header.samplerate;
+                     << getFilename()
+                     << getSampleRate() << "vs" << Header.samplerate;
         }
 
+        setChannels(2); // always pretend to read 2 channels
         m_iChannels = MAD_NCHANNELS(&Header);
         mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
@@ -155,7 +159,7 @@ Result SoundSourceMp3::open() {
 
     // This is not a working MP3 file.
     if (currentframe == 0) {
-        qDebug() << "SSMP3: This is not a working MP3 file:" << m_qFilename;
+        qDebug() << "SSMP3: This is not a working MP3 file:" << getFilename();
         return ERR;
     }
 
@@ -212,7 +216,7 @@ long SoundSourceMp3::seek(long filepos) {
     }
 
     if (!isValid()) {
-        qDebug() << "SSMP3: Error wile seeking file " << m_qFilename;
+        qDebug() << "SSMP3: Error wile seeking file " << getFilename();
         return 0;
     }
 
@@ -355,7 +359,7 @@ long SoundSourceMp3::seek(long filepos) {
 inline long unsigned SoundSourceMp3::length() {
     enum mad_units units;
 
-    switch (m_iSampleRate)
+    switch (getSampleRate())
     {
     case 8000:
         units = MAD_UNITS_8000_HZ;
@@ -386,12 +390,12 @@ inline long unsigned SoundSourceMp3::length() {
         break;
     default:             //By the MP3 specs, an MP3 _has_ to have one of the above samplerates...
         units = MAD_UNITS_44100_HZ;
-        qWarning() << "MP3 with corrupt samplerate (" << m_iSampleRate << "), defaulting to 44100";
+        qWarning() << "MP3 with corrupt samplerate (" << getSampleRate() << "), defaulting to 44100";
 
-        m_iSampleRate = 44100; //Prevents division by zero errors.
+        setSampleRate(44100); //Prevents division by zero errors.
     }
 
-    return (long unsigned) 2 *mad_timer_count(filelength, units);
+    return 2 * mad_timer_count(filelength, units);
 }
 
 /*
@@ -435,7 +439,7 @@ unsigned long SoundSourceMp3::discard(unsigned long samples_wanted) {
 unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _destination)
 {
     if (!isValid()) {
-        qDebug() << "SSMP3: Error while reading " << m_qFilename;
+        qDebug() << "SSMP3: Error while reading " << getFilename();
         return 0;
     }
 
@@ -559,34 +563,47 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 }
 
 Result SoundSourceMp3::parseHeader() {
-    setType("mp3");
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    QByteArray qBAFilename(getFilename().toLocal8Bit());
     TagLib::MPEG::File f(qBAFilename.constData());
 
-    // Takes care of all the default metadata
-    bool result = processTaglibFile(f);
+    if (!readFileHeader(this, f)) {
+        return ERR;
+    }
 
     // Now look for MP3 specific metadata (e.g. BPM)
     TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
     if (id3v2) {
-        processID3v2Tag(id3v2);
+        readID3v2Tag(this, *id3v2);
+    } else {
+        TagLib::APE::Tag *ape = f.APETag();
+        if (ape) {
+            readAPETag(this, *ape);
+        } else {
+            // fallback
+            const TagLib::Tag *tag(f.tag());
+            if (tag) {
+                readTag(this, *tag);
+            } else {
+                return ERR;
+            }
+        }
     }
 
-    TagLib::APE::Tag *ape = f.APETag();
-    if (ape) {
-        processAPETag(ape);
-    }
-
-    return result ? OK : ERR;
+    return OK;
 }
 
 QImage SoundSourceMp3::parseCoverArt() {
     QImage coverArt;
-    setType("mp3");
-    TagLib::MPEG::File f(m_qFilename.toLocal8Bit().constData());
-    coverArt = getCoverInID3v2Tag(f.ID3v2Tag());
+    TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
+    TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
+    if (id3v2) {
+        coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+    }
     if (coverArt.isNull()) {
-        coverArt = getCoverInAPETag(f.APETag());
+        TagLib::APE::Tag *ape = f.APETag();
+        if (ape) {
+            coverArt = Mixxx::getCoverInAPETag(*ape);
+        }
     }
     return coverArt;
 }

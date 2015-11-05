@@ -21,7 +21,7 @@ namespace ModPlug {
 class SoundSourceModPlug : public Mixxx::SoundSource
 {
   public:
-    SoundSourceModPlug(QString qFilename);
+    explicit SoundSourceModPlug(QString qFilename);
     ~SoundSourceModPlug();
     Result open();
     long seek(long);
