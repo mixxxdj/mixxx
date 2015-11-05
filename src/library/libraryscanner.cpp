@@ -399,18 +399,15 @@ void LibraryScanner::addChunkToDatabase(SecurityTokenPointer pToken) {
     DBG() << "Adding chunk to DB: " << m_tracksListInCnunk;
     m_trackDao.addTracksPrepare();
     foreach (m_tmpTrackPath, m_tracksListInCnunk) {
-        // If the track is in the database, mark it as existing. This code gets exectuted
-        // when other files in the same directory have changed (the directory hash has changed).
+        // If the track is in the database, mark it as existing. This code gets
+        // executed when other files in the same directory have changed (the
+        // directory hash has changed).
         m_trackDao.markTrackLocationAsVerified(m_tmpTrackPath);
 
-        // If the file already exists in the database, continue and go on to
-        // the next file.
-
-        // If the file doesn't already exist in the database, then add
-        // it. If it does exist in the database, then it is either in the
-        // user's library OR the user has "removed" the track via
-        // "Right-Click -> Remove". These tracks stay in the library, but
-        // their mixxx_deleted column is 1.
+        // If the file does not exist in the database then add it. If it does
+        // then it is either in the user's library OR the user has "removed" the
+        // track via "Right-Click -> Remove". These tracks stay in the library,
+        // but their mixxx_deleted column is 1.
         if (!m_trackDao.trackExistsInDatabase(m_tmpTrackPath)) {
             //qDebug() << "Loading" << it.fileName();
             emit(progressLoading(m_tmpTrackPath));
@@ -418,9 +415,8 @@ void LibraryScanner::addChunkToDatabase(SecurityTokenPointer pToken) {
                     new TrackInfoObject(m_tmpTrackPath, pToken),
                     &QObject::deleteLater);
             if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
-                // Successful added
-                // signal the main instance of TrackDao, that there is a
-                // new Track in the database
+                // Successful added. Dignal the main instance of TrackDao,
+                // that there is a new Track in the database
                 m_pTrackCollection->callSync( 
                     [this, pTrack] (TrackCollectionPrivate* pTrackCollectionPrivate){
                         pTrackCollectionPrivate->getTrackDAO().databaseTrackAdded(pTrack);
@@ -525,48 +521,6 @@ bool LibraryScanner::recursiveScan(QDir dir, QStringList& verifiedDirectories,
     return true;
 }
 
-<<<<<<< HEAD
-=======
-bool LibraryScanner::importFiles(const QLinkedList<QFileInfo>& files,
-                                 SecurityTokenPointer pToken) {
-    foreach (const QFileInfo& file, files) {
-        // If a flag was raised telling us to cancel the library scan then stop.
-        if (m_bCancelLibraryScan) {
-            return false;
-        }
-
-        QString filePath = file.filePath();
-        //qDebug() << "TrackCollection::importFiles" << filePath;
-
-        // If the track is in the database, mark it as existing. This code gets
-        // executed when other files in the same directory have changed (the
-        // directory hash has changed).
-        m_trackDao.markTrackLocationAsVerified(filePath);
-
-        // If the file does not exist in the database then add it. If it does
-        // then it is either in the user's library OR the user has "removed" the
-        // track via "Right-Click -> Remove". These tracks stay in the library,
-        // but their mixxx_deleted column is 1.
-        if (!m_trackDao.trackExistsInDatabase(filePath)) {
-            emit(progressLoading(file.fileName()));
-
-            TrackPointer pTrack = TrackPointer(
-                    new TrackInfoObject(file, pToken),
-                    &QObject::deleteLater);
-            if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
-                // Successfully added. Signal the main instance of TrackDAO,
-                // that there is a new track in the database.
-                m_pCollection->getTrackDAO().databaseTrackAdded(pTrack);
-            } else {
-                qDebug() << "Track ("+filePath+") could not be added";
-            }
-        }
-    }
-
-    return true;
-}
-
->>>>>>> b29b291ea1844c60746022f9bb0416795a2f6a21
 // Table: LibraryHashes
 // PRIMARY KEY string directory
 // string hash
