@@ -28,7 +28,7 @@ class SizeAwareLayout : public QStackedLayout
 
         QWidget *wc = widget(i);
         bool notFit = false;
-        if (i > 0 ) {
+        if (i > 0) {
             // Check minimum, but not for the smallest, it is the fallback
             notFit =  wc->minimumHeight() > s.height() || wc->minimumWidth() > s.width();
         }

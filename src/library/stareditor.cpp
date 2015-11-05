@@ -71,7 +71,7 @@ void StarEditor::paintEvent(QPaintEvent *)
     }
  }
 
- void StarEditor::leaveEvent(QEvent *){
+ void StarEditor::leaveEvent(QEvent*) {
      m_starRating.setStarCount(0);
      update();
  }

@@ -71,7 +71,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
 
     //TODO(MK,daschuer,nazar): is it ok to do that here?
     pTrackCollection->callSync( [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
-        m_database = QSqlDatabase::cloneDatabase( pTrackCollectionPrivate->getDatabase(), "ITUNES_SCANNER");
+        m_database = QSqlDatabase::cloneDatabase(pTrackCollectionPrivate->getDatabase(), "ITUNES_SCANNER");
     }, __PRETTY_FUNCTION__);
 
     //Open the database connection in this thread.

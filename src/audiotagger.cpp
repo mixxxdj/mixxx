@@ -116,7 +116,7 @@ bool AudioTagger::save() {
         file = new TagLib::FLAC::File(fileBA.constData());
 
         //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
-        addID3v2Tag(((TagLib::FLAC::File*)file)->ID3v2Tag(true) );
+        addID3v2Tag(((TagLib::FLAC::File*)file)->ID3v2Tag(true));
         //If the flac has no APE tag, we create a new one and add the TBPM and TKEY frame
         addXiphComment(((TagLib::FLAC::File*) file)->xiphComment(true));
 

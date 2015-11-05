@@ -10,7 +10,8 @@
 SkinContext::SkinContext() {
 }
 
-SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig, QString xmlPath)
+SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
+                         const QString& xmlPath)
         : m_pConfig(pConfig),
           m_xmlPath(xmlPath) {
 }
@@ -25,7 +26,7 @@ SkinContext::SkinContext(const SkinContext& parent)
          it != m_variables.end(); ++it) {
         context.setProperty(it.key(), it.value());
     }
-    
+
     if (CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValueString(
         ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
         // Enable script debugger
@@ -56,7 +57,7 @@ void SkinContext::setVariable(const QString& name, const QString& value) {
     context.setProperty(name, value);
 }
 
-void SkinContext::setXmlPath(const QString xmlPath) {
+void SkinContext::setXmlPath(const QString& xmlPath) {
     m_xmlPath = xmlPath;
 }
 
@@ -229,30 +230,30 @@ QString SkinContext::nodeToString(const QDomNode& node) const {
 
 PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
     PixmapSource source;
-    
+
     const SvgParser svgParser(*this);
-    
+
     if (!pixmapNode.isNull()) {
         QDomNode svgNode = selectNode(pixmapNode, "svg");
         if (!svgNode.isNull()) {
             // inline svg
             const QByteArray rslt = svgParser.saveToQByteArray(
-                svgParser.parseSvgTree(svgNode, m_xmlPath) );
-            source.setSVG( rslt );
+                svgParser.parseSvgTree(svgNode, m_xmlPath));
+            source.setSVG(rslt);
         } else {
             // filename
             QString pixmapName = nodeToString(pixmapNode);
             if (!pixmapName.isEmpty()) {
-                source.setPath( getSkinPath(pixmapName) );
+                source.setPath(getSkinPath(pixmapName));
                 if (source.isSVG()) {
                     const QByteArray rslt = svgParser.saveToQByteArray(
-                            svgParser.parseSvgFile(source.getPath()) );
-                    source.setSVG( rslt );
+                            svgParser.parseSvgFile(source.getPath()));
+                    source.setSVG(rslt);
                 }
             }
         }
     }
-    
+
     return source;
 }
 
@@ -277,6 +278,3 @@ QScriptValue SkinContext::importScriptExtension(const QString& extensionName) {
 const QScriptEngine& SkinContext::getScriptEngine() const {
     return m_scriptEngine;
 }
-
-
-

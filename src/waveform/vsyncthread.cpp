@@ -23,6 +23,7 @@
 
 VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
         : QThread(mixxxMainWindow),
+          m_bDoRendering(true),
           m_vSyncTypeChanged(false),
           m_usSyncIntervalTime(33333),
           m_vSyncMode(ST_TIMER),
@@ -31,20 +32,18 @@ VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
           m_swapWait(0),
           m_displayFrameRate(60.0),
           m_vSyncPerRendering(1),
-          m_pGuiTick(mixxxMainWindow->getGuiTick()){
-    doRendering = true;
+          m_pGuiTick(mixxxMainWindow->getGuiTick()) {
 }
 
 VSyncThread::~VSyncThread() {
-    doRendering = false;
+    m_bDoRendering = false;
     m_semaVsyncSlot.release(2); // Two slots
     wait();
     //delete m_glw;
 }
 
-void VSyncThread::stop()
-{
-    doRendering = false;
+void VSyncThread::stop() {
+    m_bDoRendering = false;
 }
 
 
@@ -55,7 +54,7 @@ void VSyncThread::run() {
     m_usWaitToSwap = m_usSyncIntervalTime;
     m_timer.start();
 
-    while (doRendering) {
+    while (m_bDoRendering) {
         if (m_vSyncMode == ST_FREE) {
             // for benchmark only!
 

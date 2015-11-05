@@ -83,7 +83,6 @@ class PresetInfoEnumerator {
 
   private:
     QList<QString> fileExtensions;
-    ConfigObject<ConfigValue>* m_pConfig;
 
     // List of paths for controller presets
     QList<QString> controllerDirPaths;

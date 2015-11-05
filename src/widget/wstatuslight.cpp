@@ -48,7 +48,7 @@ void WStatusLight::setNoPos(int iNoPos) {
 }
 
 WStatusLight::SizeMode WStatusLight::SizeModeFromString(QString str) {
-    if (str.toUpper() == "FIXED" ) {
+    if (str.toUpper() == "FIXED") {
         return FIXED;
     } else if (str.toUpper() == "RESIZE") {
         return RESIZE;

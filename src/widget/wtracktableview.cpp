@@ -751,7 +751,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
         }, __PRETTY_FUNCTION__);
         m_pPlaylistMenu->addSeparator();
-        QAction *newPlaylistAction = new QAction( tr("Create New Playlist"), m_pPlaylistMenu);
+        QAction* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
         m_pPlaylistMenu->addAction(newPlaylistAction);
         m_playlistMapper.setMapping(newPlaylistAction, -1);// -1 to signify new playlist
         connect(newPlaylistAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
@@ -783,7 +783,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
         }, __PRETTY_FUNCTION__);
         m_pCrateMenu->addSeparator();
-        QAction *newCrateAction = new QAction( tr("Create New Crate"), m_pCrateMenu);
+        QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
         m_pCrateMenu->addAction(newCrateAction);
         m_crateMapper.setMapping(newCrateAction, -1);// -1 to signify new playlist
         connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
@@ -808,7 +808,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
             int column = trackModel->fieldIndex("bpm_lock");
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(),column);
-            if (index.data().toBool()){ //BPM is locked
+            if (index.data().toBool()) { //BPM is locked
                 m_pBpmUnlockAction->setEnabled(true);
                 m_pBpmLockAction->setEnabled(false);
                 m_pBpmDoubleAction->setEnabled(false);
@@ -1362,7 +1362,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
             trackIds.append(iTrackId);
         }
     }
-   if (iPlaylistId==-1){//i.e. a new playlist is suppose to be created
+   if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
        QString name;
        bool validNameGiven = false;
 
@@ -1443,7 +1443,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
             trackIds.append(iTrackId);
         }
     }
-    if (iCrateId == -1){//i.e. a new crate is suppose to be created
+    if (iCrateId == -1) { // i.e. a new crate is suppose to be created
         QString name;
         bool validNameGiven = false;
         do {
@@ -1583,7 +1583,7 @@ void WTrackTableView::slotUnlockBpm() {
     lockBpm(false);
 }
 
-void WTrackTableView::slotScaleBpm(int scale){
+void WTrackTableView::slotScaleBpm(int scale) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel == NULL) {
         return;

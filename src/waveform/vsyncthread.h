@@ -73,7 +73,7 @@ class VSyncThread : public QThread {
     void vsyncSwap();
 
   private:
-    bool doRendering;
+    bool m_bDoRendering;
     QGLWidget *m_glw;
 
 #if defined(__APPLE__)

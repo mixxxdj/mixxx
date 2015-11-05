@@ -20,16 +20,15 @@ class SvgParser {
     QByteArray saveToQByteArray(const QDomNode& svgNode) const;
 
   private:
-    void scanTree(QDomNode& node) const;
-    void parseElement(QDomNode& svgNode) const;
-    void parseAttributes(QDomNode& node) const;
+    void scanTree(QDomNode* node) const;
+    void parseElement(QDomNode* svgNode) const;
+    void parseAttributes(const QDomNode& node) const;
     QScriptValue evaluateTemplateExpression(const QString& expression,
                                             int lineNumber) const;
-    
+
     mutable SkinContext m_context;
     mutable QString m_currentFile;
     QDomDocument m_document;
-    
 };
 
 #endif /* SVGPARSER_H */

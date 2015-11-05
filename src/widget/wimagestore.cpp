@@ -9,17 +9,17 @@ QHash<QString, WImageStore::ImageInfoType*> WImageStore::m_dictionary;
 QSharedPointer<ImgSource> WImageStore::m_loader = QSharedPointer<ImgSource>();
 
 // static
-QImage * WImageStore::getImageNoCache(const QString& fileName) {
+QImage* WImageStore::getImageNoCache(const QString& fileName) {
     return getImageNoCache(PixmapSource(fileName));
 }
 
 // static
-QImage * WImageStore::getImage(const QString &fileName) {
+QImage* WImageStore::getImage(const QString& fileName) {
     return getImage(PixmapSource(fileName));
 }
 
 // static
-QImage * WImageStore::getImage(const PixmapSource source) {
+QImage* WImageStore::getImage(const PixmapSource& source) {
     // Search for Image in list
     ImageInfoType* info = NULL;
 
@@ -56,20 +56,20 @@ QImage * WImageStore::getImage(const PixmapSource source) {
 
 /**/
 // static
-QImage * WImageStore::getImageNoCache(const PixmapSource source) {
+QImage* WImageStore::getImageNoCache(const PixmapSource& source) {
     QImage* pImage;
     if (source.isSVG()) {
-        QScopedPointer<QSvgRenderer> pSvgRenderer(new QSvgRenderer());
-        if( source.getData().isEmpty() ){
-            pSvgRenderer->load(source.getPath());
+        QSvgRenderer renderer;
+        if (source.getData().isEmpty()) {
+            renderer.load(source.getPath());
         } else {
-            pSvgRenderer->load(source.getData());
+            renderer.load(source.getData());
         }
-        
-        pImage = new QImage(pSvgRenderer->defaultSize(), QImage::Format_ARGB32);
+
+        pImage = new QImage(renderer.defaultSize(), QImage::Format_ARGB32);
         pImage->fill(0x00000000);  // Transparent black.
         QPainter painter(pImage);
-        pSvgRenderer->render(&painter);
+        renderer.render(&painter);
     } else {
         if (m_loader) {
             pImage = m_loader->getImage(source.getPath());

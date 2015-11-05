@@ -92,7 +92,7 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
 DlgPrefKey::~DlgPrefKey() {
 }
 
-void DlgPrefKey::loadSettings(){
+void DlgPrefKey::loadSettings() {
     qDebug() << "DlgPrefKey::loadSettings";
     qDebug() << "Key plugin ID:" << m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
@@ -165,7 +165,7 @@ void DlgPrefKey::slotResetToDefaults() {
     slotUpdate();
 }
 
-void DlgPrefKey::pluginSelected(int i){
+void DlgPrefKey::pluginSelected(int i) {
     if (i == -1) {
         return;
     }
@@ -173,12 +173,12 @@ void DlgPrefKey::pluginSelected(int i){
     slotUpdate();
 }
 
-void  DlgPrefKey::analyserEnabled(int i){
+void DlgPrefKey::analyserEnabled(int i) {
     m_bAnalyserEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
-void  DlgPrefKey::fastAnalysisEnabled(int i){
+void DlgPrefKey::fastAnalysisEnabled(int i) {
     m_bFastAnalysisEnabled = static_cast<bool>(i);
     slotUpdate();
 }
@@ -269,7 +269,7 @@ void DlgPrefKey::slotUpdate() {
     }
 
     int comboselected = m_listIdentifier.indexOf(m_selectedAnalyser);
-    if (comboselected == -1){
+    if (comboselected == -1) {
         qDebug() << "DlgPrefKey: Plugin not found in slotUpdate()";
         return;
     }

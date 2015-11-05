@@ -156,7 +156,7 @@ void WSliderComposed::wheelEvent(QWheelEvent *e) {
     double newValue = m_dOldValue + wheelDirection;
 
     // Clamp to [0.0, 1.0]
-    newValue = math_clamp(newValue, 0.0, 1.0);
+    newValue = math_clamp_unsafe(newValue, 0.0, 1.0);
 
     setControlParameter(newValue);
     // Value is unused in WSliderComposed.

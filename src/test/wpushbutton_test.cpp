@@ -13,7 +13,7 @@
 class WPushButtonTest : public MixxxTest {
   public:
     WPushButtonTest()
-          : m_pGroup("[Channel1]"){
+          : m_pGroup("[Channel1]") {
     }
 
   protected:

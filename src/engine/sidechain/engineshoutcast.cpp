@@ -107,7 +107,7 @@ EngineShoutcast::~EngineShoutcast() {
 }
 
 bool EngineShoutcast::serverDisconnect() {
-    if (m_encoder){
+    if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
         m_encoder = NULL;
@@ -377,7 +377,7 @@ bool EngineShoutcast::serverConnect() {
      * If m_encoder is NULL, then we propably want to use MP3 streaming, however, lame could not be found
      * It does not make sense to connect
      */
-    if(m_encoder == NULL){
+    if (m_encoder == NULL) {
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
         m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
@@ -429,7 +429,7 @@ bool EngineShoutcast::serverConnect() {
     }
     //otherwise disable shoutcast in preferences
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-    if(m_pShout){
+    if (m_pShout) {
         shout_close(m_pShout);
         //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
@@ -446,11 +446,11 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         // Send header if there is one
-        if ( headerLen > 0 ) {
+        if (headerLen > 0) {
             ret = shout_send(m_pShout, header, headerLen);
             if (ret != SHOUTERR_SUCCESS) {
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-                if ( m_iShoutFailures > 3 ){
+                if (m_iShoutFailures > 3) {
                     if(!serverConnect())
                         errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
                 }
@@ -467,7 +467,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         ret = shout_send(m_pShout, body, bodyLen);
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-            if ( m_iShoutFailures > 3 ){
+            if (m_iShoutFailures > 3) {
                 if(!serverConnect())
                     errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
             }
@@ -529,7 +529,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         return;
 
     // If we are connected, encode the samples.
-    if (iBufferSize > 0 && m_encoder){
+    if (iBufferSize > 0 && m_encoder) {
         m_encoder->encodeBuffer(pBuffer, iBufferSize);
     }
 
@@ -613,7 +613,7 @@ void EngineShoutcast::updateMetaData() {
                 // the references to $title and $artist by doing a single
                 // pass over the string
                 int replaceIndex = 0;
-                
+
                 // Make a copy so we don't overwrite the references only
                 // once per streaming session.
                 QString metadataFinal = m_metadataFormat;

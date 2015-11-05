@@ -100,9 +100,9 @@ void WDisplay::setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
     if (iPos < 0 || iPos >= pPixmaps->size()) {
         return;
     }
-    
+
     PixmapSource source(filename);
-    PaintablePointer pPixmap = WPixmapStore::getPaintable( source,
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source,
                                                           Paintable::TILE);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
@@ -163,7 +163,7 @@ void WDisplay::onConnectedControlChanged(double dParameter, double dValue) {
     }
 }
 
-void WDisplay::paintEvent(QPaintEvent* ) {
+void WDisplay::paintEvent(QPaintEvent*) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);

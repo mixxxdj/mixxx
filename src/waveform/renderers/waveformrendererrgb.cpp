@@ -11,7 +11,7 @@
 
 WaveformRendererRGB::WaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase( waveformWidgetRenderer) {
+        : WaveformRendererSignalBase(waveformWidgetRenderer) {
 }
 
 WaveformRendererRGB::~WaveformRendererRGB() {

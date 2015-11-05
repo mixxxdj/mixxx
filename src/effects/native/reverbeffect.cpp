@@ -69,6 +69,7 @@ void ReverbEffect::processGroup(const QString& group,
                                 const EffectProcessor::EnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
+    Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
     CSAMPLE bandwidth = m_pBandWidthParameter->value();

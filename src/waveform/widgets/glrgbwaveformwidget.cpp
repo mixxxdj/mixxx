@@ -13,7 +13,7 @@
 
 #include "util/performancetimer.h"
 
-GLRGBWaveformWidget::GLRGBWaveformWidget( const char* group, QWidget* parent)
+GLRGBWaveformWidget::GLRGBWaveformWidget(const char* group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
 
@@ -47,7 +47,7 @@ void GLRGBWaveformWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
 }
 
-void GLRGBWaveformWidget::paintEvent( QPaintEvent* event) {
+void GLRGBWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 

@@ -12,9 +12,9 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     setupUi(this);
 
     // Waveform overview init
-    waveformOverviewComboBox->addItem( tr("Filtered") ); // "0"
-    waveformOverviewComboBox->addItem( tr("HSV") ); // "1"
-    waveformOverviewComboBox->addItem( tr("RGB") ); // "2"
+    waveformOverviewComboBox->addItem(tr("Filtered")); // "0"
+    waveformOverviewComboBox->addItem(tr("HSV")); // "1"
+    waveformOverviewComboBox->addItem(tr("RGB")); // "2"
 
     // Populate waveform options.
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -163,7 +163,7 @@ void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {
-    WaveformWidgetFactory::instance()->setDefaultZoom( index + 1);
+    WaveformWidgetFactory::instance()->setDefaultZoom(index + 1);
 }
 
 void DlgPrefWaveform::slotSetZoomSynchronization(bool checked) {
@@ -186,7 +186,7 @@ void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
     WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,gain);
 }
 
-void DlgPrefWaveform::slotSetNormalizeOverview( bool normalize) {
+void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
 }
 

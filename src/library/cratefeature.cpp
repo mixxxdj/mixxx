@@ -190,8 +190,7 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
     connect(edit, SIGNAL(anchorClicked(const QUrl)),
-        this, SLOT(htmlLinkClicked(const QUrl))
-    );
+            this, SLOT(htmlLinkClicked(const QUrl)));
     libraryWidget->registerView("CRATEHOME", edit);
 }
 
@@ -640,7 +639,7 @@ void CrateFeature::slotImportPlaylist() {
         lastCrateDirectory,
         tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     // Exit method if user cancelled the open dialog.
-    if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
+    if (playlist_file.isNull() || playlist_file.isEmpty()) return;
 
     // Update the import/export crate directory
     QFileInfo fileName(playlist_file);
@@ -786,7 +785,7 @@ void CrateFeature::slotCrateTableRenamed(int a_iCrateId,
     slotCrateTableChanged(a_iCrateId);
 }
 
-void CrateFeature::htmlLinkClicked(const QUrl & link) {
+void CrateFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path())=="create") {
         slotCreateCrate();
     } else {
@@ -810,9 +809,8 @@ QString CrateFeature::getRootViewHtml() const {
     html.append("</td><td rowspan=\"2\">");
     html.append("<img src=\"qrc:/images/library/crates_art.png\">");
     html.append("</td></tr>");
-    html.append(
-        QString("<tr><td><a href=\"create\">%1</a>").arg(createCrateLink)
-    );
+    html.append(QString("<tr><td><a href=\"create\">%1</a>")
+                .arg(createCrateLink));
     html.append("</td></tr></table>");
     return html;
 }

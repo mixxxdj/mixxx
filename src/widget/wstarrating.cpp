@@ -26,14 +26,14 @@ QSize WStarRating::sizeHint() const {
     QSize widgetSize = style()->sizeFromContents(QStyle::CT_PushButton, &option,
                                                  m_starRating.sizeHint(), this);
     widgetSize.expandedTo(QApplication::globalStrut());
-    
+
     m_contentRect.setRect(
-        (widgetSize.width() - m_starRating.sizeHint().width() ) / 2,
-        (widgetSize.height() - m_starRating.sizeHint().height() ) / 2,
+        (widgetSize.width() - m_starRating.sizeHint().width()) / 2,
+        (widgetSize.height() - m_starRating.sizeHint().height()) / 2,
         m_starRating.sizeHint().width(),
         m_starRating.sizeHint().height()
     );
-    
+
     return widgetSize;
 }
 
@@ -72,10 +72,10 @@ void WStarRating::paintEvent(QPaintEvent *) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
-    
+
     painter.setBrush(option.palette.text());
     painter.drawPrimitive(QStyle::PE_Widget, option);
-    
+
     m_starRating.paint(&painter, m_contentRect, option.palette,
                        StarRating::ReadOnly,
                        option.state & QStyle::State_Selected);
@@ -106,17 +106,17 @@ int WStarRating::starAtPosition(int x) {
         return 0;
     }
     int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
-    
-    if (star <= 0 || star > m_starRating.maxStarCount()){
+
+    if (star <= 0 || star > m_starRating.maxStarCount()) {
         return 0;
     }
-    
+
     return star;
 }
 
 void WStarRating::mouseReleaseEvent(QMouseEvent*) {
     if (!m_pCurrentTrack)
         return;
-    
+
     m_pCurrentTrack->setRating(m_starRating.starCount());
 }

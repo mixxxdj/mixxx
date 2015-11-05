@@ -19,7 +19,7 @@
 
 class VampAnalyser {
   public:
-    VampAnalyser(ConfigObject<ConfigValue> *pconfig);
+    VampAnalyser();
     virtual ~VampAnalyser();
 
     bool Init(const QString pluginlibrary, const QString pluginid,
@@ -53,8 +53,6 @@ class VampAnalyser {
     bool m_bDoNotAnalyseMoreSamples;
     bool m_FastAnalysisEnabled;
     int m_iMaxSamplesToAnalyse;
-    /** Pointer to config object */
-    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* VAMPANALYSER_H_ */

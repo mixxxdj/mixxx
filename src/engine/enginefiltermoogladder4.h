@@ -68,7 +68,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
         float kfc = cutoff / sampleRate;
         float kf = kfc;
-        if (MODE == LP_OVERS || MODE == HP_OVERS ) {
+        if (MODE == LP_OVERS || MODE == HP_OVERS) {
             // m_inputSampeRate is half the actual filter sampling rate in oversampling mode
             kf = kfc / 2;
         }
@@ -83,7 +83,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         // Resonance correction for self oscillation ~4
         m_kacr = resonance * (-3.9364 * (kfc*kfc) + 1.8409 * kfc + 0.9968);
 
-        if (MODE == HP_OVERS || MODE == HP ) {
+        if (MODE == HP_OVERS || MODE == HP) {
             m_postGain = 1;
         } else {
             m_postGain = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
@@ -108,7 +108,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         m_buffersClear = false;
     }
 
-    inline CSAMPLE processSample(float input, struct Buffer* pB ) {
+    inline CSAMPLE processSample(float input, struct Buffer* pB) {
 
         const float v2 = 2 + kVt;   // twice the 'thermal voltage of a transistor'
 
@@ -128,7 +128,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         pB->m_azt4 = az4 - at4;
 
         // Oversampling if requested
-        if (MODE == LP_OVERS || MODE == HP_OVERS ) {
+        if (MODE == LP_OVERS || MODE == HP_OVERS) {
             // 1/2-sample delay for phase compensation
             pB->m_amf = (az4 + pB->m_az5) / 2;
             pB->m_az5 = az4;
@@ -155,7 +155,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             pB->m_amf = az4;
         }
 
-        if (MODE == HP_OVERS || MODE == HP ) {
+        if (MODE == HP_OVERS || MODE == HP) {
             return (x1 - 3 * az3 + 2 * az4) * m_postGain;
         }
         return pB->m_amf * m_postGain;

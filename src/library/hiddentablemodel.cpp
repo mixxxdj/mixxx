@@ -13,7 +13,7 @@ void HiddenTableModel::init() {
 }
 
 // Must be called from TrackCollection thread
-void HiddenTableModel::setTableModel(int id){
+void HiddenTableModel::setTableModel(int id) {
     Q_UNUSED(id);
     const QString tableName("hidden_songs");
     // tro's lambda idea. This code calls synchronously!

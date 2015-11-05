@@ -28,7 +28,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
         return "";
     }
     void assertIsMaster(QString group) {
-        if (group == m_sInternalClockGroup){
+        if (group == m_sInternalClockGroup) {
             ASSERT_EQ(1,
                       ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                           "sync_master"))->get());

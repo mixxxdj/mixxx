@@ -284,7 +284,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                         for(int i = 0; i < rows; ++i){
                             QModelIndex index = m_pPlaylistTableModel->index(i,0);
                             if (index.isValid()) {
-                                TrackPointer track = m_pPlaylistTableModel->getTrack(index);   ///////// avoid
+                                TrackPointer track = m_pPlaylistTableModel->getTrack(index);
                                 // Do not update the playcount, just set played
                                 // status.
                                 track->setPlayed(true);

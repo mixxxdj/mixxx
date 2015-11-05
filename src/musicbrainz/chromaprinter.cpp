@@ -9,7 +9,7 @@ ChromaPrinter::ChromaPrinter(QObject* parent)
              : QObject(parent) {
 }
 
-QString ChromaPrinter::getFingerPrint(TrackPointer pTrack){
+QString ChromaPrinter::getFingerPrint(TrackPointer pTrack) {
     SoundSourceProxy soundSourceProxy(pTrack);
     Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.open());
     if (pSoundSource.isNull()) {

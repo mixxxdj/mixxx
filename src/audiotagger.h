@@ -14,20 +14,20 @@
 class AudioTagger {
   public:
     AudioTagger(const QString& file, SecurityTokenPointer pToken);
-    virtual ~AudioTagger ( );
+    virtual ~AudioTagger();
 
-    void setArtist (QString artist );
-    void setTitle (QString title );
-    void setAlbum (QString album );
-    void setAlbumArtist (QString albumArtist );
-    void setGenre (QString genre );
-    void setComposer (QString composer );
-    void setGrouping (QString grouping );
-    void setYear (QString year );
-    void setComment (QString comment );
-    void setKey (QString key );
-    void setBpm (QString bpm );
-    void setTracknumber (QString tracknumber );
+    void setArtist(QString artist);
+    void setTitle(QString title);
+    void setAlbum(QString album);
+    void setAlbumArtist(QString albumArtist);
+    void setGenre(QString genre);
+    void setComposer(QString composer);
+    void setGrouping(QString grouping);
+    void setYear(QString year);
+    void setComment(QString comment);
+    void setKey(QString key);
+    void setBpm(QString bpm);
+    void setTracknumber(QString tracknumber);
     bool save();
 
   private:

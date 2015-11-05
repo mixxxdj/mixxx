@@ -68,16 +68,16 @@ Paintable::Paintable(const QString& fileName, DrawMode mode)
     }
 }
 
-Paintable::Paintable(PixmapSource source, DrawMode mode)
+Paintable::Paintable(const PixmapSource& source, DrawMode mode)
         : m_draw_mode(mode) {
     if (source.isSVG()) {
         QScopedPointer<QSvgRenderer> pSvgRenderer(new QSvgRenderer());
-        if( source.getData().isEmpty() ){
+        if (source.getData().isEmpty()) {
             pSvgRenderer->load(source.getPath());
         } else {
             pSvgRenderer->load(source.getData());
         }
-        
+
         if (mode == STRETCH) {
             m_pSvg.reset(pSvgRenderer.take());
         } else if (mode == TILE) {
@@ -94,7 +94,7 @@ Paintable::Paintable(PixmapSource source, DrawMode mode)
         }
     } else {
         QPixmap * pPixmap = new QPixmap();
-        if (!source.getData().isEmpty()){
+        if (!source.getData().isEmpty()) {
             pPixmap->loadFromData(source.getData());
         } else {
             pPixmap->load(source.getPath());
@@ -241,7 +241,7 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
         }
         return PaintablePointer();
     }
-    
+
     m_paintableCache[source.getId()] = pPaintable;
     return pPaintable;
 }

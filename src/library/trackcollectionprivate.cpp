@@ -246,8 +246,7 @@ void TrackCollectionPrivate::installSorting(QSqlDatabase &db) {
 //static
 int TrackCollectionPrivate::sqliteLocaleAwareCompare(void* pArg,
                                     int len1, const void* data1,
-                                    int len2, const void* data2 )
-{
+                                    int len2, const void* data2 ) {
     Q_UNUSED(pArg);
     // Construct a QString without copy
     QString string1 = QString::fromRawData(reinterpret_cast<const QChar*>(data1),
@@ -329,7 +328,7 @@ int TrackCollectionPrivate::likeCompareInner(
   const QChar* string, // The string to compare against
   int stringSize,
   const QChar esc // The escape character
-){
+) {
     static const QChar MATCH_ONE = QChar('_');
     static const QChar MATCH_ALL = QChar('%');
 
