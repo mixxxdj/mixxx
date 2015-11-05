@@ -104,7 +104,7 @@ ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double 
         qWarning() << "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() minDB must be negative";
         m_minDB = -1;
     } else {
-        m_minDB= minDB;
+        m_minDB = minDB;
     }
     m_minOffset = db2ratio(m_minDB);
 }
