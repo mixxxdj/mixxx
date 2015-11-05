@@ -31,7 +31,7 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
 /*----------------------------------------------------------------
    A pregaincontrol is ... a pregain.
    ----------------------------------------------------------------*/
-EnginePregain::EnginePregain(const char* group)
+EnginePregain::EnginePregain(QString group)
 {
     m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, +12, 0.5);
     //Replay Gain things

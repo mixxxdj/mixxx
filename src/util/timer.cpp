@@ -1,8 +1,9 @@
 #include "util/timer.h"
+#include "util/experiment.h"
 
 Timer::Timer(const QString& key, Stat::ComputeFlags compute)
         : m_key(key),
-          m_compute(compute),
+          m_compute(Stat::experimentFlags(compute)),
           m_running(false) {
 }
 
@@ -15,7 +16,11 @@ int Timer::restart(bool report) {
     if (m_running) {
         int nsec = m_time.restart();
         if (report) {
-            Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute, nsec);
+            // Ignore the report if it crosses the experiment boundary.
+            Experiment::Mode oldMode = Stat::modeFromFlags(m_compute);
+            if (oldMode == Experiment::mode()) {
+                Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute, nsec);
+            }
         }
         return nsec;
     } else {
@@ -27,7 +32,11 @@ int Timer::restart(bool report) {
 int Timer::elapsed(bool report) {
     int nsec = m_time.elapsed();
     if (report) {
-        Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute, nsec);
+        // Ignore the report if it crosses the experiment boundary.
+        Experiment::Mode oldMode = Stat::modeFromFlags(m_compute);
+        if (oldMode == Experiment::mode()) {
+            Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute, nsec);
+        }
     }
     return nsec;
 }
@@ -57,9 +66,11 @@ void SuspendableTimer::go() {
 int SuspendableTimer::elapsed(bool report) {
     m_leapTime += m_time.elapsed();
     if (report) {
-        Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute, m_leapTime);
+        // Ignore the report if it crosses the experiment boundary.
+        Experiment::Mode oldMode = Stat::modeFromFlags(m_compute);
+        if (oldMode == Experiment::mode()) {
+            Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute, m_leapTime);
+        }
     }
     return m_leapTime;
 }
-
-

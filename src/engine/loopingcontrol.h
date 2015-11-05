@@ -12,7 +12,7 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
-#define MINIMUM_AUDIBLE_LOOP_SIZE   30  // In samples
+#define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples
 
 class ControlPushButton;
 class ControlObject;
@@ -26,7 +26,7 @@ class LoopingControl : public EngineControl {
   public:
     static QList<double> getBeatSizes();
 
-    LoopingControl(const char* _group, ConfigObject<ConfigValue>* _config);
+    LoopingControl(QString group, ConfigObject<ConfigValue>* _config);
     virtual ~LoopingControl();
 
     // process() updates the internal state of the LoopingControl to reflect the
@@ -140,7 +140,7 @@ class LoopingControl : public EngineControl {
 class LoopMoveControl : public QObject {
     Q_OBJECT
   public:
-    LoopMoveControl(const char* pGroup, double size);
+    LoopMoveControl(QString group, double size);
     virtual ~LoopMoveControl();
 
   signals:
@@ -161,7 +161,7 @@ class LoopMoveControl : public QObject {
 class BeatJumpControl : public QObject {
     Q_OBJECT
   public:
-    BeatJumpControl(const char* pGroup, double size);
+    BeatJumpControl(QString group, double size);
     virtual ~BeatJumpControl();
 
   signals:
@@ -182,7 +182,7 @@ class BeatJumpControl : public QObject {
 class BeatLoopingControl : public QObject {
     Q_OBJECT
   public:
-    BeatLoopingControl(const char* pGroup, double size);
+    BeatLoopingControl(QString group, double size);
     virtual ~BeatLoopingControl();
 
     void activate();

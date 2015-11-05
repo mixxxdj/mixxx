@@ -58,10 +58,10 @@
 
 #include "trackinfoobject.h"
 
-EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
+EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
         : m_engineLock(QMutex::Recursive),
-          m_group(_group),
+          m_group(group),
           m_pConfig(_config),
           m_pLoopingControl(NULL),
           m_pSyncControl(NULL),
@@ -123,7 +123,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
 
-    m_pReader = new CachingReader(_group, _config);
+    m_pReader = new CachingReader(group, _config);
     connect(m_pReader, SIGNAL(trackLoading()),
             this, SLOT(slotTrackLoading()),
             Qt::DirectConnection);
@@ -223,29 +223,29 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
-    addControl(new QuantizeControl(_group, _config));
-    m_pQuantize = ControlObject::getControl(ConfigKey(_group, "quantize"));
+    addControl(new QuantizeControl(group, _config));
+    m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
 
     // Create the Loop Controller
-    m_pLoopingControl = new LoopingControl(_group, _config);
+    m_pLoopingControl = new LoopingControl(group, _config);
     addControl(m_pLoopingControl);
 
     m_pEngineSync = pMixingEngine->getEngineSync();
 
-    m_pSyncControl = new SyncControl(_group, _config, pChannel, m_pEngineSync);
+    m_pSyncControl = new SyncControl(group, _config, pChannel, m_pEngineSync);
     addControl(m_pSyncControl);
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlControl = new VinylControlControl(_group, _config);
+    m_pVinylControlControl = new VinylControlControl(group, _config);
     addControl(m_pVinylControlControl);
 #endif
 
-    m_pRateControl = new RateControl(_group, _config);
+    m_pRateControl = new RateControl(group, _config);
     // Add the Rate Controller
     addControl(m_pRateControl);
 
     // Create the BPM Controller
-    m_pBpmControl = new BpmControl(_group, _config);
+    m_pBpmControl = new BpmControl(group, _config);
     addControl(m_pBpmControl);
 
     // TODO(rryan) remove this dependence?
@@ -253,19 +253,19 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pSyncControl->setEngineControls(m_pRateControl, m_pBpmControl);
     pMixingEngine->getEngineSync()->addSyncableDeck(m_pSyncControl);
 
-    m_fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
-    m_backButton = ControlObject::getControl(ConfigKey(_group, "back"));
+    m_fwdButton = ControlObject::getControl(ConfigKey(group, "fwd"));
+    m_backButton = ControlObject::getControl(ConfigKey(group, "back"));
 
-    m_pKeyControl = new KeyControl(_group, _config);
+    m_pKeyControl = new KeyControl(group, _config);
     addControl(m_pKeyControl);
     m_pPitchControl = new ControlObjectSlave(m_group, "pitch", this);
 
     // Create the clock controller
-    m_pClockControl = new ClockControl(_group, _config);
+    m_pClockControl = new ClockControl(group, _config);
     addControl(m_pClockControl);
 
     // Create the cue controller
-    m_pCueControl = new CueControl(_group, _config);
+    m_pCueControl = new CueControl(group, _config);
     addControl(m_pCueControl);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
@@ -284,7 +284,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     }
     enablePitchAndTimeScaling(false);
 
-    m_pPassthroughEnabled.reset(new ControlObjectSlave(_group, "passthrough", this));
+    m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
@@ -482,7 +482,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_engineLock.unlock();
 }
 
-const char* EngineBuffer::getGroup()
+QString EngineBuffer::getGroup()
 {
     return m_group;
 }

@@ -33,7 +33,7 @@ ControlPotmeter* EngineFilterBlock::s_hiEqFreq = NULL;
 ControlPushButton* EngineFilterBlock::s_lofiEq = NULL;
 ControlPushButton* EngineFilterBlock::s_EnableEq = NULL;
 
-EngineFilterBlock::EngineFilterBlock(const char* group)
+EngineFilterBlock::EngineFilterBlock(QString group)
 {
     ilowFreq = 0;
     ihighFreq = 0;

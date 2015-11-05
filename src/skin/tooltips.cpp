@@ -252,7 +252,8 @@ void Tooltips::addStandardTooltips() {
 
     add("beats_translate_curpos")
             << tr("Adjust Beatgrid")
-            << tr("Adjust beatgrid so the closest beat is aligned with the current play position.");
+            << QString("%1: %2").arg(leftClick, tr("Adjust beatgrid so the closest beat is aligned with the current play position."))
+            << QString("%1: %2").arg(rightClick, tr("Adjust beatgrid to match another playing deck."));
 
     add("keylock")
             << tr("Key-Lock")

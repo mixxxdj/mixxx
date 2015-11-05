@@ -27,7 +27,7 @@
  *   these slow speeds.
  */
 
-EngineVinylSoundEmu::EngineVinylSoundEmu(const char* group)
+EngineVinylSoundEmu::EngineVinylSoundEmu(QString group)
         : m_dSpeed(0.0),
           m_dOldSpeed(0.0),
           m_iNoisePos(0) {

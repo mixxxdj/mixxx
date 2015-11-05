@@ -1,4 +1,3 @@
-
 // bpmcontrol.h
 // Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
 
@@ -21,7 +20,7 @@ class BpmControl : public EngineControl {
     Q_OBJECT
 
   public:
-    BpmControl(const char* _group, ConfigObject<ConfigValue>* _config);
+    BpmControl(QString group, ConfigObject<ConfigValue>* _config);
     virtual ~BpmControl();
 
     double getBpm() const;
@@ -88,6 +87,7 @@ class BpmControl : public EngineControl {
     void slotAdjustRateSlider();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
+    void slotBeatsTranslateMatchAlignment(double);
 
   private:
     SyncMode getSyncMode() const {
@@ -132,6 +132,8 @@ class BpmControl : public EngineControl {
     // Button that translates the beats so the nearest beat is on the current
     // playposition.
     ControlPushButton* m_pTranslateBeats;
+    // Button that translates beats to match another playing deck
+    ControlPushButton* m_pBeatsTranslateMatchAlignment;
 
     double m_dPreviousSample;
 

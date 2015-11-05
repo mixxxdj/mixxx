@@ -5,6 +5,8 @@
 #include <QVector>
 #include <QString>
 
+#include "util/experiment.h"
+
 struct StatReport;
 
 class Stat {
@@ -68,8 +70,33 @@ class Stat {
         REPORTS_PER_SECOND = 0x0200,
         // TODO, track the time in between received reports.
         REPORT_TIME_DELTA = 0x0400,
+        // Used for marking stats recorded in EXPERIMENT mode.
+        STATS_EXPERIMENT  = 0x0800,
+        // Used for marking stats recorded in BASE mode.
+        STATS_BASE        = 0x1000,
     };
     typedef int ComputeFlags;
+
+    static Experiment::Mode modeFromFlags(ComputeFlags flags) {
+        if (flags & Stat::STATS_EXPERIMENT) {
+            return Experiment::EXPERIMENT;
+        } else if (flags & Stat::STATS_BASE) {
+            return Experiment::BASE;
+        }
+        return Experiment::OFF;
+    }
+
+    static ComputeFlags experimentFlags(ComputeFlags flags) {
+        switch (Experiment::mode()) {
+            case Experiment::EXPERIMENT:
+                return flags | STATS_EXPERIMENT;
+            case Experiment::BASE:
+                return flags | STATS_BASE;
+            default:
+            case Experiment::OFF:
+                return flags;
+        }
+    }
 
     explicit Stat();
     void processReport(const StatReport& report);

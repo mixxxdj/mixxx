@@ -28,7 +28,7 @@ class ControlObject;
 class EngineVinylSoundEmu : public EngineObject {
     Q_OBJECT
   public:
-    EngineVinylSoundEmu(const char* group);
+    EngineVinylSoundEmu(QString group);
     virtual ~EngineVinylSoundEmu();
 
     void setSpeed(double speed);

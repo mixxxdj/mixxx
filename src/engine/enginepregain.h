@@ -27,7 +27,7 @@ class ControlObject;
 
 class EnginePregain : public EngineObject {
   public:
-    EnginePregain(const char* group);
+    EnginePregain(QString group);
     virtual ~EnginePregain();
 
     void process(CSAMPLE* pInOut, const int iBufferSize);
