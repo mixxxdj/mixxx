@@ -106,7 +106,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     // 4. front.jpg
     // 5. album.jpg
     // 6. folder.jpg
-    // 7. anything else found in the folder (get the lighter one)
+    // 7. if just one file exists take that otherwise none.
 
     // All the following expect the same image/hash to be selected.
     expected.image = img;
