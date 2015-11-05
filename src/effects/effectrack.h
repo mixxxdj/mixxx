@@ -20,7 +20,8 @@ class EffectRack : public QObject {
   public:
     EffectRack(EffectsManager* pEffectsManager,
                EffectChainManager* pChainManager,
-               const unsigned int iRackNumber);
+               const unsigned int iRackNumber,
+               const QString& group);
     virtual ~EffectRack();
 
     static QString formatGroupString(const unsigned int iRackNumber) {
@@ -33,19 +34,19 @@ class EffectRack : public QObject {
 
     void registerGroup(const QString& group);
     int numEffectChainSlots() const;
-    EffectChainSlotPointer addEffectChainSlot();
-    EffectChainSlotPointer addEffectChainSlotForEQ();
+    EffectChainSlotPointer addEffectChainSlot(QString unitGroup = QString());
+    EffectChainSlotPointer addEffectChainSlotForEQ(QString unitGroup = QString());
     EffectChainSlotPointer getEffectChainSlot(int i);
 
-    // Getter for rack number
-    int getRackNumber();
+    const QString& getGroup() const;
+
+    void loadEffectToChainSlot(const unsigned int iChainSlotNumber,
+                                   const unsigned int iEffectSlotNumber,
+                                   QString effectId);
 
   public slots:
     void slotClearRack(double v);
     void slotNumEffectChainSlots(double v);
-    void slotLoadEffectOnChainSlot(const unsigned int iChainSlotNumber,
-                                   const unsigned int iEffectSlotNumber,
-                                   QString effectId);
 
   private slots:
     void loadNextChain(const unsigned int iChainSlotNumber,
@@ -61,11 +62,6 @@ class EffectRack : public QObject {
                         EffectPointer pEffect);
 
   private:
-    inline QString debugString() const {
-        return QString("EffectRack%1").arg(m_iRackNumber);
-    }
-
-    const unsigned int m_iRackNumber;
     const QString m_group;
 
     EffectsManager* m_pEffectsManager;
