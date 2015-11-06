@@ -109,9 +109,12 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
     }
 
     // Create the source reader to read the input file.
-    static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
-    hr = MFCreateSourceReaderFromURL(
-            (wchar_t*)getFilename().utf16(),
+    // Note: we cannot use QString::toStdWString since QT 4 is compiled with
+    // '/Zc:wchar_t-' flag and QT 5 not
+    const ushort* const fileNameUtf16 = fileName.utf16();
+    static_assert(sizeof(wchar_t) == sizeof(ushort), "QString::utf16(): wchar_t and ushort have different sizes");
+    HRESULT hr = MFCreateSourceReaderFromURL(
+            reinterpret_cast<const wchar_t*>(fileNameUtf16),
             NULL,
             &m_pReader);
 
@@ -139,8 +142,6 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
 }
 
 void SoundSourceMediaFoundation::close() {
-    delete[] m_wcFilename;
-    m_wcFilename = NULL;
     delete[] m_leftoverBuffer;
     m_leftoverBuffer = NULL;
 
