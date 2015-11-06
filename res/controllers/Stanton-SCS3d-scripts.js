@@ -558,7 +558,7 @@ SCS3D.Agent = function(device) {
 			var pos = Math.max(0, Math.min(range, (1-value) * range));
 			var left = Math.min(center, pos);
 			var right = Math.max(center, pos);
-			print(left+" "+pos+" "+right);
+
 			var i = 0;
 			for (; i < count; i++) {
 				var light = lights[i];
