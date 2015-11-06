@@ -3,7 +3,6 @@
 // Issues
 // - Each deck rembembers the mode it was in, confusing? Would it be better to
 //   keep the current mode on deck switch?
-// - VINYL-SYNC does not send release, grid-sync button stuck to on
 
 // Useful tinkering commands, channel reset and flat mode
 // amidi -p hw:1 -S F00001600200F7
@@ -1693,13 +1692,31 @@ SCS3D.Agent = function(device) {
 
 		if (activeMode.held() === 'vinyl') {
 			// When VINYL is held, SYNC adjusts the beatgrid
-			expect(device.button.sync.touch, function() {
-				if (engine.getValue(channel, 'play')) {
-					engine.setValue(channel, 'beats_translate_match_alignment', true);
-				} else {
-					engine.setValue(channel, 'beats_translate_curpos', true);
+			// When the track is playing, the beatgrid is synced to the other
+			// track (we assume the tracks were beatmatched and the other
+			// track's grid is fine). When the track is not playing, we align
+			// the grid with the current cursor position.
+
+			// We don't know which control we have to release until
+			// the button is pressed, because the behaviour depends on
+			// whether the track is playing or not
+			var affectedSyncControl;
+
+			Autocancel('beatsync',
+				function(engage, cancelIfEngaged) {
+					expect(device.button.sync.release, cancelIfEngaged);
+					expect(device.button.sync.touch, function() {
+						affectedSyncControl = engine.getValue(channel, 'play')
+							? 'beats_translate_match_alignment'
+							: 'beats_translate_curpos';
+						engine.setValue(channel, affectedSyncControl, true);
+						engage();
+					});
+				},
+				function() {
+					engine.setValue(channel, affectedSyncControl, false);
 				}
-			});
+			);
 		} else {
 			// Hold to toggle sync lock
 			ExpectHeld(device.button.sync,
