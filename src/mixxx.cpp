@@ -507,7 +507,6 @@ void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
                 exit(0);
             }
         }
-        setupDevices = m_pSoundManager->setupDevices();
         numDevices = m_pSoundManager->getConfig().getOutputs().count();
     }
 
@@ -1122,7 +1121,6 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked)
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
-                m_pSoundManager->queryDevices();
                 return 0;
             }
 
