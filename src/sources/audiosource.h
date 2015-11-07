@@ -219,7 +219,7 @@ public:
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
     // NOTE(uklotzde): Inheriting constructors are supported since VS2015.
     AudioSourceConfig() {}
-    AudioSignal(SINT channelCount, SINT samplingRate): AudioSignal(channelCount, samplingRate) {}
+    AudioSourceConfig(SINT channelCount, SINT samplingRate): AudioSignal(channelCount, samplingRate) {}
 #else
     // Inherit constructors from base class
     using AudioSignal::AudioSignal;
