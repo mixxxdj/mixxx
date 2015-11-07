@@ -74,7 +74,7 @@ class VSyncThread : public QThread {
 
   private:
     bool m_bDoRendering;
-    QGLWidget *m_glw;
+    //QGLWidget *m_glw;
 
 #if defined(__APPLE__)
 
@@ -84,6 +84,7 @@ class VSyncThread : public QThread {
     void initGlxext(QGLWidget* glw);
     bool glXExtensionSupported(Display *dpy, int screen, const char *extension);
 
+    /* Currently unused, but probably part of later a hardware sync solution
     PFNGLXGETVIDEOSYNCSGIPROC glXGetVideoSyncSGI;
     PFNGLXWAITVIDEOSYNCSGIPROC glXWaitVideoSyncSGI;
 
@@ -98,12 +99,11 @@ class VSyncThread : public QThread {
     PFNGLXWAITFORSBCOMLPROC  glXWaitForSbcOML;
 
     PFNGLXSWAPINTERVALSGIPROC glXSwapIntervalMESA;
+    */
 
-    uint m_counter;
-
-    int64_t m_target_msc;
-    Display* m_dpy;
-    GLXDrawable m_drawable;
+    //int64_t m_target_msc;
+    //Display* m_dpy;
+    //GLXDrawable m_drawable;
 
 #endif
 
