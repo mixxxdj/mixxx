@@ -4,37 +4,75 @@
 
 namespace Mixxx {
 
-/*static*/ const double ReplayGain::kRatioUndefined = 0.0;
-/*static*/ const double ReplayGain::kRatioMin = 0.0; // lower bound (inclusive)
-/*static*/ const double ReplayGain::kRatio0dB = 1.0;
+/*static*/ constexpr double ReplayGain::kRatioUndefined;
+/*static*/ constexpr double ReplayGain::kRatioMin;
+/*static*/ constexpr double ReplayGain::kRatio0dB;
+
+/*static*/ constexpr CSAMPLE ReplayGain::kPeakUndefined;
+/*static*/ constexpr CSAMPLE ReplayGain::kPeakMin;
+/*static*/ constexpr CSAMPLE ReplayGain::kPeakClip;
 
 namespace {
 
 const QString kGainUnit("dB");
 const QString kGainSuffix(" " + kGainUnit);
 
-} // anonymous namespace
+QString stripLeadingSign(const QString& trimmed, char sign) {
+    const int signIndex = trimmed.indexOf(sign);
+    if (0 == signIndex) {
+        return trimmed.mid(signIndex + 1).trimmed();
+    } else {
+        return trimmed;
+    }
+}
 
-double ReplayGain::parseGain2Ratio(QString dbGain, bool* pValid) {
+QString normalizeNumberString(const QString& number, bool* pValid) {
     if (pValid) {
         *pValid = false;
     }
-    QString trimmedGain(dbGain.trimmed());
-    const int plusIndex = trimmedGain.indexOf('+');
-    if (0 == plusIndex) {
-        // strip leading "+"
-        trimmedGain = trimmedGain.mid(plusIndex + 1).trimmed();
+    const QString trimmed(number.trimmed());
+    QString normalized(stripLeadingSign(trimmed, '+'));
+    if (normalized == trimmed) {
+        // no leading '+' sign found
+        if (pValid) {
+            *pValid = true;
+        }
+        return normalized;
+    } else {
+        // stripped leading '+' sign -> no more leading signs '+'/'-' allowed
+        if ((normalized == stripLeadingSign(normalized, '+')) &&
+            (normalized == stripLeadingSign(normalized, '-'))) {
+            if (pValid) {
+                *pValid = true;
+            }
+            return normalized;
+        }
     }
-    const int unitIndex = trimmedGain.lastIndexOf(kGainUnit, -1, Qt::CaseInsensitive);
-    if ((0 <= unitIndex) && ((trimmedGain.length() - 2) == unitIndex)) {
-        // strip trailing unit suffix
-        trimmedGain = trimmedGain.left(unitIndex).trimmed();
-    }
-    if (trimmedGain.isEmpty()) {
-        return kRatioUndefined;
+    // normalization failed
+    return number;
+}
+
+} // anonymous namespace
+
+double ReplayGain::ratioFromString(QString dbGain, bool* pValid) {
+    if (pValid) {
+        *pValid = false;
     }
     bool isValid = false;
-    const double replayGainDb = trimmedGain.toDouble(&isValid);
+    QString normalizedGain(normalizeNumberString(dbGain, &isValid));
+    if (!isValid) {
+        return kRatioUndefined;
+    }
+    const int unitIndex = normalizedGain.lastIndexOf(kGainUnit, -1, Qt::CaseInsensitive);
+    if ((0 <= unitIndex) && ((normalizedGain.length() - 2) == unitIndex)) {
+        // strip trailing unit suffix
+        normalizedGain = normalizedGain.left(unitIndex).trimmed();
+    }
+    if (normalizedGain.isEmpty()) {
+        return kRatioUndefined;
+    }
+    isValid = false;
+    const double replayGainDb = normalizedGain.toDouble(&isValid);
     if (isValid) {
         const double ratio = db2ratio(replayGainDb);
         DEBUG_ASSERT(kRatioUndefined != ratio);
@@ -52,7 +90,7 @@ double ReplayGain::parseGain2Ratio(QString dbGain, bool* pValid) {
     return kRatioUndefined;
 }
 
-QString ReplayGain::formatRatio2Gain(double ratio) {
+QString ReplayGain::ratioToString(double ratio) {
     if (isValidRatio(ratio)) {
         return QString::number(ratio2db(ratio)) + kGainSuffix;
     } else {
@@ -62,13 +100,59 @@ QString ReplayGain::formatRatio2Gain(double ratio) {
 
 double ReplayGain::normalizeRatio(double ratio) {
     if (isValidRatio(ratio)) {
-        const double normalizedRatio = parseGain2Ratio(formatRatio2Gain(ratio));
+        const double normalizedRatio = ratioFromString(ratioToString(ratio));
         // NOTE(uklotzde): Subsequently formatting and parsing the
         // normalized value should not alter it anymore!
-        DEBUG_ASSERT(normalizedRatio == parseGain2Ratio(formatRatio2Gain(normalizedRatio)));
+        DEBUG_ASSERT(normalizedRatio == ratioFromString(ratioToString(normalizedRatio)));
         return normalizedRatio;
     } else {
-        return ratio;
+        return kRatioUndefined;
+    }
+}
+
+CSAMPLE ReplayGain::peakFromString(QString strPeak, bool* pValid) {
+    if (pValid) {
+        *pValid = false;
+    }
+    bool isValid = false;
+    QString normalizedPeak(normalizeNumberString(strPeak, &isValid));
+    if (!isValid || normalizedPeak.isEmpty()) {
+        return kPeakUndefined;
+    }
+    isValid = false;
+    const CSAMPLE peak = normalizedPeak.toDouble(&isValid);
+    if (isValid) {
+        if (isValidPeak(peak)) {
+            if (pValid) {
+                *pValid = true;
+            }
+            return peak;
+        } else {
+            qDebug() << "ReplayGain: Invalid peak value:" << strPeak << " -> "<< peak;
+        }
+    } else {
+        qDebug() << "ReplayGain: Failed to parse peak:" << strPeak;
+    }
+    return kPeakUndefined;
+}
+
+QString ReplayGain::peakToString(CSAMPLE peak) {
+    if (isValidPeak(peak)) {
+        return QString::number(peak);
+    } else {
+        return QString();
+    }
+}
+
+CSAMPLE ReplayGain::normalizePeak(CSAMPLE peak) {
+    if (isValidPeak(peak)) {
+        const CSAMPLE normalizedPeak = peakFromString(peakToString(peak));
+        // NOTE(uklotzde): Subsequently formatting and parsing the
+        // normalized value should not alter it anymore!
+        DEBUG_ASSERT(normalizedPeak == peakFromString(peakToString(normalizedPeak)));
+        return normalizedPeak;
+    } else {
+        return kPeakUndefined;
     }
 }
 

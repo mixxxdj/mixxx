@@ -17,6 +17,7 @@
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/trackid.h"
+#include "util/replaygain.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
@@ -99,9 +100,9 @@ class TrackInfoObject : public QObject {
     bool exists() const;
 
     // Returns ReplayGain
-    float getReplayGain() const;
+    Mixxx::ReplayGain getReplayGain() const;
     // Set ReplayGain
-    void setReplayGain(float);
+    void setReplayGain(const Mixxx::ReplayGain&);
     // Returns BPM
     double getBpm() const;
     // Set BPM
@@ -269,7 +270,7 @@ class TrackInfoObject : public QObject {
     void beatsUpdated();
     void keyUpdated(double key);
     void keysUpdated();
-    void ReplayGainUpdated(double replaygain);
+    void ReplayGainUpdated(Mixxx::ReplayGain replayGain);
     void cuesUpdated();
     void changed(TrackInfoObject* pTrack);
     void dirty(TrackInfoObject* pTrack);
@@ -346,7 +347,7 @@ class TrackInfoObject : public QObject {
     // Number of times the track has been played
     int m_iTimesPlayed;
     // Replay Gain volume
-    float m_fReplayGain;
+    Mixxx::ReplayGain m_replayGain;
     // Has this track been played this sessions?
     bool m_bPlayed;
     // True if header was parsed

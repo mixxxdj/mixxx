@@ -68,7 +68,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
     void slotUnloadTrack(TrackPointer track);
-    void slotSetReplayGain(double replayGain);
+    void slotSetReplayGain(Mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 
   private:

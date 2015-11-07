@@ -193,29 +193,49 @@ inline bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
 
 inline QString formatTrackGain(const TrackMetadata& trackMetadata) {
     const double trackGainRatio(trackMetadata.getReplayGain().getRatio());
-    return ReplayGain::formatRatio2Gain(trackGainRatio);
+    return ReplayGain::ratioToString(trackGainRatio);
 }
 
-bool parseTrackGain(TrackMetadata* pTrackMetadata, QString dbGain) {
+void parseTrackGain(
+        TrackMetadata* pTrackMetadata,
+        const QString& dbGain) {
     DEBUG_ASSERT(pTrackMetadata);
 
-    bool trackGainRatioValid = false;
-    double trackGainRatio = ReplayGain::parseGain2Ratio(dbGain, &trackGainRatioValid);
-    if (trackGainRatioValid) {
+    bool isRatioValid = false;
+    double ratio = ReplayGain::ratioFromString(dbGain, &isRatioValid);
+    if (isRatioValid) {
         // Some applications (e.g. Rapid Evolution 3) write a replay gain
         // of 0 dB even if the replay gain is undefined. To be safe we
         // ignore this special value and instead prefer to recalculate
         // the replay gain.
-        if (trackGainRatio == ReplayGain::kRatio0dB) {
+        if (ratio == ReplayGain::kRatio0dB) {
             // special case
-            qDebug() << "Ignoring possibly undefined gain:" << ReplayGain::formatRatio2Gain(trackGainRatio);
-            trackGainRatio = ReplayGain::kRatioUndefined;
+            qDebug() << "Ignoring possibly undefined gain:" << dbGain;
+            ratio = ReplayGain::kRatioUndefined;
         }
-        ReplayGain trackGain(pTrackMetadata->getReplayGain());
-        trackGain.setRatio(trackGainRatio);
-        pTrackMetadata->setReplayGain(trackGain);
+        ReplayGain replayGain(pTrackMetadata->getReplayGain());
+        replayGain.setRatio(ratio);
+        pTrackMetadata->setReplayGain(replayGain);
     }
-    return trackGainRatioValid;
+}
+
+inline QString formatTrackPeak(const TrackMetadata& trackMetadata) {
+    const CSAMPLE trackGainPeak(trackMetadata.getReplayGain().getPeak());
+    return ReplayGain::peakToString(trackGainPeak);
+}
+
+void parseTrackPeak(
+        TrackMetadata* pTrackMetadata,
+        const QString& strPeak) {
+    DEBUG_ASSERT(pTrackMetadata);
+
+    bool isPeakValid = false;
+    const CSAMPLE peak = ReplayGain::peakFromString(strPeak, &isPeakValid);
+    if (isPeakValid) {
+        ReplayGain replayGain(pTrackMetadata->getReplayGain());
+        replayGain.setPeak(peak);
+        pTrackMetadata->setReplayGain(replayGain);
+    }
 }
 
 void readAudioProperties(TrackMetadata* pTrackMetadata,
@@ -651,12 +671,19 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
     }
 
     // Only read track gain (not album gain)
-    TagLib::ID3v2::UserTextIdentificationFrame* pReplayGainFrame =
+    TagLib::ID3v2::UserTextIdentificationFrame* pTrackGainFrame =
             findFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_TRACK_GAIN");
-    if (pReplayGainFrame && (2 <= pReplayGainFrame->fieldList().size())) {
+    if (pTrackGainFrame && (2 <= pTrackGainFrame->fieldList().size())) {
         // The value is stored in the 2nd field
         parseTrackGain(pTrackMetadata,
-                toQString(pReplayGainFrame->fieldList()[1]));
+                toQString(pTrackGainFrame->fieldList()[1]));
+    }
+    TagLib::ID3v2::UserTextIdentificationFrame* pTrackPeakFrame =
+            findFirstUserTextIdentificationFrame(tag, "REPLAYGAIN_TRACK_PEAK");
+    if (pTrackPeakFrame && (2 <= pTrackPeakFrame->fieldList().size())) {
+        // The value is stored in the 2nd field
+        parseTrackPeak(pTrackMetadata,
+                toQString(pTrackPeakFrame->fieldList()[1]));
     }
 }
 
@@ -696,6 +723,10 @@ void readTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::AP
     if (tag.itemListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
         parseTrackGain(pTrackMetadata,
                 toQString(tag.itemListMap()["REPLAYGAIN_TRACK_GAIN"]));
+    }
+    if (tag.itemListMap().contains("REPLAYGAIN_TRACK_PEAK")) {
+        parseTrackPeak(pTrackMetadata,
+                toQString(tag.itemListMap()["REPLAYGAIN_TRACK_PEAK"]));
     }
 }
 
@@ -765,6 +796,10 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
     if (tag.fieldListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
         parseTrackGain(pTrackMetadata,
                 toQStringFirstNotEmpty(tag.fieldListMap()["REPLAYGAIN_TRACK_GAIN"]));
+    }
+    if (tag.fieldListMap().contains("REPLAYGAIN_TRACK_PEAK")) {
+        parseTrackPeak(pTrackMetadata,
+                toQStringFirstNotEmpty(tag.fieldListMap()["REPLAYGAIN_TRACK_PEAK"]));
     }
 
     /*
@@ -843,6 +878,11 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
         parseTrackGain(pTrackMetadata,
                 toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:replaygain_track_gain"]));
     }
+    if (getItemListMap(tag).contains(
+            "----:com.apple.iTunes:replaygain_track_peak")) {
+        parseTrackPeak(pTrackMetadata,
+                toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:replaygain_track_peak"]));
+    }
 
     // Read musical key (conforms to Rapid Evolution)
     if (getItemListMap(tag).contains("----:com.apple.iTunes:KEY")) {
@@ -916,6 +956,11 @@ bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             formatTrackGain(trackMetadata),
             "REPLAYGAIN_TRACK_GAIN",
             true);
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            formatTrackPeak(trackMetadata),
+            "REPLAYGAIN_TRACK_PEAK",
+            true);
 
     return true;
 }
@@ -939,6 +984,8 @@ bool writeTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& t
             toTagLibString(TrackMetadata::formatBpm(trackMetadata.getBpm())), true);
     pTag->addValue("REPLAYGAIN_TRACK_GAIN",
             toTagLibString(formatTrackGain(trackMetadata)), true);
+    pTag->addValue("REPLAYGAIN_TRACK_PEAK",
+            toTagLibString(formatTrackPeak(trackMetadata)), true);
 
     return true;
 }
@@ -983,6 +1030,9 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     pTag->removeField("REPLAYGAIN_TRACK_GAIN");
     pTag->addField("REPLAYGAIN_TRACK_GAIN",
             toTagLibString(formatTrackGain(trackMetadata)));
+    pTag->removeField("REPLAYGAIN_TRACK_PEAK");
+    pTag->addField("REPLAYGAIN_TRACK_PEAK",
+            toTagLibString(formatTrackPeak(trackMetadata)));
 
     return true;
 }
@@ -1007,6 +1057,8 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
             TrackMetadata::formatBpm(trackMetadata.getBpm()));
     writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_gain",
             formatTrackGain(trackMetadata));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_peak",
+            formatTrackPeak(trackMetadata));
     writeMP4Atom(pTag, "----:com.apple.iTunes:initialkey",
             trackMetadata.getKey());
     writeMP4Atom(pTag, "----:com.apple.iTunes:KEY",

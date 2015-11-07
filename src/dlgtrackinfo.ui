@@ -473,7 +473,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QGridLayout" name="gridLayout_4" columnstretch="0,1,1,1,1,1,1,1">
+        <layout class="QGridLayout" name="gridLayout_4" columnstretch="0,1,0,1,0,1">
          <item row="0" column="0">
           <widget class="QLabel" name="lblDuration">
            <property name="font">
@@ -487,6 +487,16 @@
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="txtDuration">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
            </property>
           </widget>
          </item>
@@ -506,32 +516,6 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="lblLocation">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Location:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="txtDuration">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="textInteractionFlags">
-            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="3">
           <widget class="QLabel" name="txtBpm">
            <property name="text">
@@ -543,6 +527,32 @@
           </widget>
          </item>
          <item row="0" column="4">
+          <widget class="QLabel" name="lblReplayGain">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Replay Gain:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QLabel" name="txtReplayGain">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
           <widget class="QLabel" name="lblBitrate">
            <property name="font">
             <font>
@@ -558,7 +568,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="5">
+         <item row="1" column="1">
           <widget class="QLabel" name="txtBitrate">
            <property name="text">
             <string/>
@@ -568,7 +578,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="6">
+         <item row="1" column="2">
           <widget class="QLabel" name="lblType">
            <property name="font">
             <font>
@@ -584,7 +594,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="7">
+         <item row="1" column="3">
           <widget class="QLabel" name="txtType">
            <property name="text">
             <string/>
@@ -594,7 +604,23 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1" colspan="7">
+         <item row="2" column="0">
+          <widget class="QLabel" name="lblLocation">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Location:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1" colspan="5">
           <widget class="QPlainTextEdit" name="txtLocation">
            <property name="enabled">
             <bool>true</bool>
