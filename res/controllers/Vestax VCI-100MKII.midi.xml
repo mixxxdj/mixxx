@@ -265,7 +265,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VCI102.rateMSB2</key>
+        <key>VCI102.rateQuantizedMSB</key>
         <status>0xB0</status>
         <midino>0x1E</midino>
         <options>
@@ -274,7 +274,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VCI102.rateMSB2</key>
+        <key>VCI102.rateQuantizedMSB</key>
         <status>0xB1</status>
         <midino>0x1E</midino>
         <options>
@@ -283,7 +283,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>VCI102.rateMSB2</key>
+        <key>VCI102.rateQuantizedMSB</key>
         <status>0xB2</status>
         <midino>0x1E</midino>
         <options>
@@ -292,7 +292,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>VCI102.rateMSB2</key>
+        <key>VCI102.rateQuantizedMSB</key>
         <status>0xB3</status>
         <midino>0x1E</midino>
         <options>
@@ -301,7 +301,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VCI102.rateLSB2</key>
+        <key>VCI102.rateQuantizedLSB</key>
         <status>0xB0</status>
         <midino>0x2E</midino>
         <options>
@@ -310,7 +310,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VCI102.rateLSB2</key>
+        <key>VCI102.rateQuantizedLSB</key>
         <status>0xB1</status>
         <midino>0x2E</midino>
         <options>
@@ -319,7 +319,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>VCI102.rateLSB2</key>
+        <key>VCI102.rateQuantizedLSB</key>
         <status>0xB2</status>
         <midino>0x2E</midino>
         <options>
@@ -328,7 +328,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>VCI102.rateLSB2</key>
+        <key>VCI102.rateQuantizedLSB</key>
         <status>0xB3</status>
         <midino>0x2E</midino>
         <options>

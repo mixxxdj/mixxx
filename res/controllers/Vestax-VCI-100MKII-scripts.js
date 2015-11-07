@@ -127,30 +127,30 @@ VCI102.jog = function(ch, midino, value, status, group) {
     }
 };
 
-VCI102.rate7 = [64, 64, 64, 64];
+VCI102.rate7bit = [64, 64, 64, 64];
 
 VCI102.rateEnable = [true, true, true, true];
 
 VCI102.rateMSB = function(ch, midino, value, status, group) {
     if (!VCI102.rateEnable[ch]) {
-        if (Math.abs(value - VCI102.rate7[ch]) > 1) {
+        if (Math.abs(value - VCI102.rate7bit[ch]) > 1) {
             VCI102.rateEnable[ch] = true;
         } else {
             return;
         }
     }
-    VCI102.rate7[ch] = value;
+    VCI102.rate7bit[ch] = value;
 };
 
-VCI102.rateMSB2 = function(ch, midino, value, status, group) {
+VCI102.rateQuantizedMSB = function(ch, midino, value, status, group) {
     if (VCI102.rateEnable[ch]) {
         VCI102.rateEnable[ch] = false;
     }
-    VCI102.rate7[ch] = value;
+    VCI102.rate7bit[ch] = value;
 };
 
 VCI102.rate = function(ch, lsb) {
-    return ((64 - VCI102.rate7[ch]) * 128 - lsb) / 8192;
+    return ((64 - VCI102.rate7bit[ch]) * 128 - lsb) / 8192;
 };
 
 VCI102.rateLSB = function(ch, midino, value, status, group) {
@@ -159,7 +159,7 @@ VCI102.rateLSB = function(ch, midino, value, status, group) {
     }
 };
 
-VCI102.rateLSB2 = function(ch, midino, value, status, group) {
+VCI102.rateQuantizedLSB = function(ch, midino, value, status, group) {
     engine.setValue(
         group, "bpm", Math.round(
             (VCI102.rate(ch, value) * engine.getValue(group, "rateRange") + 1
@@ -255,7 +255,7 @@ VCI102.init = function() {
         [0x2C, 0x25, 0x27, 0x28],
         [0x28, 0x25, 0x27, 0x2C]
     ];
-    var LFX = [0x3A, 0x38];
+    var LEDfx = [0x3A, 0x38];
 
     function headMix(value, group, key) {
         var i;
@@ -289,9 +289,9 @@ VCI102.init = function() {
         };
     }
 
-    function makeLFX(ch, midino, fx) {
+    function makeLEDfx(ch, midino, button) {
         return function(value, group, key) {
-            if (group == VCI102.fxButton[ch % 2][fx]) {
+            if (group == VCI102.fxButton[ch % 2][button]) {
                 midi.sendShortMsg(0x90 + ch, midino, value * 127);
             }
         };
@@ -303,7 +303,7 @@ VCI102.init = function() {
         engine.connectControl(VCI102.deck[i], "pfl", headMix);
         enabled = "group_" + VCI102.deck[i] + "_enable";
         for (j = 0; j < 2; j++) {
-            led = makeLFX(i, LFX[j], j);
+            led = makeLEDfx(i, LEDfx[j], j);
             for (k = j + 1; k <= 4; k += 2) {
                 engine.connectControl(
                     "[EffectRack1_EffectUnit" + k + "]", enabled, led);
