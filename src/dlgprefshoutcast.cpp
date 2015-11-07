@@ -251,6 +251,7 @@ void DlgPrefShoutcast::slotApply()
             ConfigValue(comboBoxEncodingChannels->itemData(
                             comboBoxEncodingChannels->currentIndex()).toString()));
 
+    mountpoint->setText(mountpoint->text().trimmed());
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint"),
             ConfigValue(mountpoint->text()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "host"),
