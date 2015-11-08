@@ -910,8 +910,6 @@ bool CueControl::updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible) 
     }
     m_pPlayStutter->set(newPlay ? 1.0 : 0.0);
 
-    qDebug() << newPlay;
-
     return newPlay;
 }
 
