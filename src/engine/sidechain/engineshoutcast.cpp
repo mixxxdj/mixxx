@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <QtDebug>
+#include <QUrl>
 
 #include <signal.h>
 
@@ -158,6 +159,13 @@ void EngineShoutcast::updateFromPreferences() {
                  << " defaulting to ISO-8859-1.";
     }
 
+    // libshout does not remove starting '/' if it is encoded.
+    QString mountPoint = m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint"));
+    if (mountPoint.at(0) == '/') {
+        mountPoint.remove(0,1);
+    }
+
     // Indicates our metadata is in the provided charset.
     shout_metadata_add(m_pShoutMetaData, "charset",  baCodec.constData());
 
@@ -168,8 +176,7 @@ void EngineShoutcast::updateFromPreferences() {
             ConfigKey(SHOUTCAST_PREF_KEY, "servertype")).toLatin1();
     QByteArray baPort = m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "port")).toLatin1();
-    QByteArray baMountPoint = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint")).toLatin1();
+    QByteArray baMountPoint = QUrl::toPercentEncoding(mountPoint.toLatin1());
     QByteArray baLogin = m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "login")).toLatin1();
     QByteArray baPassword = m_pConfig->getValueString(
