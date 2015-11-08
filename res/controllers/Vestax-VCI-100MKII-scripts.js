@@ -132,12 +132,13 @@ VCI102.rate7bit = [64, 64, 64, 64];
 VCI102.rateEnable = [true, true, true, true];
 
 VCI102.rateMSB = function(ch, midino, value, status, group) {
-    if (!VCI102.rateEnable[ch]) {
-        if (Math.abs(value - VCI102.rate7bit[ch]) > 1) {
-            VCI102.rateEnable[ch] = true;
-        } else {
-            return;
-        }
+    if (VCI102.rateEnable[ch]) {
+        engine.softTakeover(group, "rate", true);
+    } else if (Math.abs(value - VCI102.rate7bit[ch]) > 1) {
+        VCI102.rateEnable[ch] = true;
+        engine.softTakeover(group, "rate", false);
+    } else {
+        return;
     }
     VCI102.rate7bit[ch] = value;
 };
@@ -309,7 +310,6 @@ VCI102.init = function() {
                     "[EffectRack1_EffectUnit" + k + "]", enabled, led);
             }
         }
-        engine.softTakeover(VCI102.deck[i], "rate", true);
         engine.softTakeover(VCI102.deck[i], "pitch", true);
     }
     for (i = 1; i <= 4; i++) {
