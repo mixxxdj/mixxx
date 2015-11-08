@@ -94,6 +94,10 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
     return OK;
 }
 
+bool SoundDeviceNetwork::isOpen() {
+    return (m_outputFifo || m_outputFifo);
+}
+
 Result SoundDeviceNetwork::close() {
     //qDebug() << "SoundDeviceNetwork::close()" << getInternalName();
     m_pNetworkStream->stopStream();

@@ -191,6 +191,9 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    QApplication::processEvents();
+
     m_pKeylockEngine->set(keylockComboBox->currentIndex());
     m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
                    ConfigValue(keylockComboBox->currentIndex()));
@@ -199,6 +202,7 @@ void DlgPrefSound::slotApply() {
     m_config.clearOutputs();
     emit(writePaths(&m_config));
     int err = m_pSoundManager->setConfig(m_config);
+    QApplication::restoreOverrideCursor();
     if (err != OK) {
         QString error;
         QString deviceName(tr("a device"));
@@ -522,8 +526,11 @@ void DlgPrefSound::settingChanged() {
  * Slot called when the "Query Devices" button is clicked.
  */
 void DlgPrefSound::queryClicked() {
-    m_pSoundManager->queryDevices();
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    QApplication::processEvents();
+    m_pSoundManager->queryDevices(true);
     updateAPIs();
+    QApplication::restoreOverrideCursor();
 }
 
 /**

@@ -62,13 +62,13 @@ class SoundManager : public QObject {
     // open, this method simply runs through the list of all known soundcards
     // (from PortAudio) and attempts to close them all. Closing a soundcard that
     // isn't open is safe.
-    void closeDevices();
+    void closeDevices(bool wait);
 
     // Closes all the devices and empties the list of devices we have.
-    void clearDeviceList();
+    void clearDeviceList(bool wait);
 
     // Creates a list of sound devices
-    void queryDevices();
+    void queryDevices(bool clearFirst);
     void queryDevicesPortaudio();
     void queryDevicesMixxx();
 

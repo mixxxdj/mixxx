@@ -1055,7 +1055,7 @@ int MixxxMainWindow::noSoundDlg(void)
         msgBox.exec();
 
         if (msgBox.clickedButton() == retryButton) {
-            m_pSoundManager->queryDevices();
+            m_pSoundManager->queryDevices(true);
             return 0;
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(
@@ -1064,13 +1064,11 @@ int MixxxMainWindow::noSoundDlg(void)
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
-            m_pSoundManager->queryDevices();
 
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
-                m_pSoundManager->queryDevices();
                 return 0;
             }
 
@@ -1115,7 +1113,6 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked)
             return 0;
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
-            m_pSoundManager->queryDevices();
 
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
