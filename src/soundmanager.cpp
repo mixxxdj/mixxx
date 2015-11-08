@@ -73,7 +73,7 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
     m_pNetworkStream = QSharedPointer<EngineNetworkStream>(
             new EngineNetworkStream(2, 0));
 
-    queryDevices(false);
+    queryDevices();
 
     if (!m_config.readFromDisk()) {
         m_config.loadDefaults(this, SoundManagerConfig::ALL);
@@ -235,18 +235,19 @@ QList<unsigned int> SoundManager::getSampleRates() const {
     return getSampleRates("");
 }
 
-void SoundManager::queryDevices(bool clearFirst) {
+void SoundManager::queryDevices() {
     //qDebug() << "SoundManager::queryDevices()";
-
-    if (clearFirst) {
-        clearDeviceList(true);
-    }
-
     queryDevicesPortaudio();
     queryDevicesMixxx();
 
     // now tell the prefs that we updated the device list -- bkgood
     emit(devicesUpdated());
+}
+
+void SoundManager::clearAndQueryDevices() {
+    bool sleepAfterClosing = true;
+    clearDeviceList(sleepAfterClosing);
+    queryDevices();
 }
 
 void SoundManager::queryDevicesPortaudio() {

@@ -1055,7 +1055,7 @@ int MixxxMainWindow::noSoundDlg(void)
         msgBox.exec();
 
         if (msgBox.clickedButton() == retryButton) {
-            m_pSoundManager->queryDevices(true);
+            m_pSoundManager->clearAndQueryDevices();
             return 0;
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(

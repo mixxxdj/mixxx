@@ -68,7 +68,8 @@ class SoundManager : public QObject {
     void clearDeviceList(bool sleepAfterClosing);
 
     // Creates a list of sound devices
-    void queryDevices(bool clearFirst);
+    void clearAndQueryDevices();
+    void queryDevices();
     void queryDevicesPortaudio();
     void queryDevicesMixxx();
 

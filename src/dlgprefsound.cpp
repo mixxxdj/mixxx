@@ -528,7 +528,7 @@ void DlgPrefSound::settingChanged() {
  */
 void DlgPrefSound::queryClicked() {
     ScopedWaitCursor cursor;
-    m_pSoundManager->queryDevices(true);
+    m_pSoundManager->clearAndQueryDevices();
     updateAPIs();
 }
 
