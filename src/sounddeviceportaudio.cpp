@@ -334,7 +334,7 @@ Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
     return OK;
 }
 
-bool SoundDevicePortAudio::isOpen() {
+bool SoundDevicePortAudio::isOpen() const {
     return m_pStream != NULL;
 }
 

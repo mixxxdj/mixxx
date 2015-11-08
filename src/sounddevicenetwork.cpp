@@ -94,7 +94,7 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
     return OK;
 }
 
-bool SoundDeviceNetwork::isOpen() {
+bool SoundDeviceNetwork::isOpen() const {
     return (m_outputFifo != NULL || m_outputFifo != NULL);
 }
 
