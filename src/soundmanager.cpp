@@ -40,6 +40,10 @@
 typedef PaError (*SetJackClientName)(const char *name);
 #endif
 
+#ifdef __LINUX__
+const unsigned int kSleepSecondsAfterClosingDevice = 5;
+#endif
+
 SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
                            EngineMaster *pMaster)
         : m_pMaster(pMaster),
@@ -135,12 +139,12 @@ QList<QString> SoundManager::getHostAPIList() const {
     return apiList;
 }
 
-void SoundManager::closeDevices(bool wait) {
+void SoundManager::closeDevices(bool sleepAfterClosing) {
     //qDebug() << "SoundManager::closeDevices()";
 
     bool closed = false;
     foreach (SoundDevice* pDevice, m_devices) {
-        if(pDevice->isOpen()) {
+        if (pDevice->isOpen()) {
             // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
             // while callbacks are active.
             pDevice->close();
@@ -148,11 +152,11 @@ void SoundManager::closeDevices(bool wait) {
         }
     }
 
-    if (closed && wait) {
+    if (closed && sleepAfterClosing) {
 #ifdef __LINUX__
-        // Sleep for 5 sec to allow asynchrony sound APIs like "pulse" to free
+        // Sleep for 5 sec to allow asynchronously sound APIs like "pulse" to free
         // its resources as well
-        sleep(5);
+        sleep(kSleepSecondsAfterClosingDevice);
 #endif
     }
 
@@ -194,11 +198,11 @@ void SoundManager::closeDevices(bool wait) {
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
 }
 
-void SoundManager::clearDeviceList(bool wait) {
+void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     //qDebug() << "SoundManager::clearDeviceList()";
 
     // Close the devices first.
-    closeDevices(wait);
+    closeDevices(sleepAfterClosing);
 
     // Empty out the list of devices we currently have.
     while (!m_devices.empty()) {
