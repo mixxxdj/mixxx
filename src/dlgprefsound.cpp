@@ -23,6 +23,7 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "util/rlimit.h"
+#include "util/scopedoverridecursor.h"
 #include "controlobjectslave.h"
 
 /**
@@ -191,18 +192,18 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QApplication::processEvents();
+    int err = OK;
+    {
+        ScopedWaitCursor cursor;
+        m_pKeylockEngine->set(keylockComboBox->currentIndex());
+        m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
+                       ConfigValue(keylockComboBox->currentIndex()));
 
-    m_pKeylockEngine->set(keylockComboBox->currentIndex());
-    m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
-                   ConfigValue(keylockComboBox->currentIndex()));
-
-    m_config.clearInputs();
-    m_config.clearOutputs();
-    emit(writePaths(&m_config));
-    int err = m_pSoundManager->setConfig(m_config);
-    QApplication::restoreOverrideCursor();
+        m_config.clearInputs();
+        m_config.clearOutputs();
+        emit(writePaths(&m_config));
+        err = m_pSoundManager->setConfig(m_config);
+    }
     if (err != OK) {
         QString error;
         QString deviceName(tr("a device"));
@@ -526,11 +527,9 @@ void DlgPrefSound::settingChanged() {
  * Slot called when the "Query Devices" button is clicked.
  */
 void DlgPrefSound::queryClicked() {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QApplication::processEvents();
+    ScopedWaitCursor cursor;
     m_pSoundManager->queryDevices(true);
     updateAPIs();
-    QApplication::restoreOverrideCursor();
 }
 
 /**
