@@ -132,6 +132,7 @@ VCI102.rate7bit = [64, 64, 64, 64];
 VCI102.rateEnable = [true, true, true, true];
 
 VCI102.rateMSB = function(ch, midino, value, status, group) {
+    // unlock rate control if the change is not caused by a mechanical drift
     if (VCI102.rateEnable[ch]) {
         engine.softTakeover(group, "rate", true);
     } else if (Math.abs(value - VCI102.rate7bit[ch]) > 1) {
@@ -144,6 +145,7 @@ VCI102.rateMSB = function(ch, midino, value, status, group) {
 };
 
 VCI102.rateQuantizedMSB = function(ch, midino, value, status, group) {
+    // lock rate control against a mechanical drift
     if (VCI102.rateEnable[ch]) {
         VCI102.rateEnable[ch] = false;
     }
@@ -155,6 +157,7 @@ VCI102.rate = function(ch, lsb) {
 };
 
 VCI102.rateLSB = function(ch, midino, value, status, group) {
+    // inhibit rate control after the change by quantized bpm until unlocked
     if (VCI102.rateEnable[ch]) {
         engine.setValue(group, "rate", VCI102.rate(ch, value));
     }
