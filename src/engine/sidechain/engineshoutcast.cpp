@@ -164,7 +164,7 @@ void EngineShoutcast::updateFromPreferences() {
             ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint"));
     int firstSlashIndex = mountPoint.indexOf('/');
     if (0 == firstSlashIndex) {
-      mountPoint = mountPoint.mid(firstSlashIndex + 1).trimmed();
+        mountPoint = mountPoint.mid(firstSlashIndex + 1).trimmed();
     }
 
     // Indicates our metadata is in the provided charset.
