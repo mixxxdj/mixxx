@@ -162,8 +162,9 @@ void EngineShoutcast::updateFromPreferences() {
     // libshout does not remove starting '/' if it is encoded.
     QString mountPoint = m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint"));
-    if (mountPoint.at(0) == '/') {
-        mountPoint.remove(0,1);
+    int firstSlashIndex = mountPoint.indexOf('/');
+    if (0 == firstSlashIndex) {
+      mountPoint = mountPoint.mid(firstSlashIndex + 1).trimmed();
     }
 
     // Indicates our metadata is in the provided charset.
