@@ -40,9 +40,11 @@
 typedef PaError (*SetJackClientName)(const char *name);
 #endif
 
+namespace {
 #ifdef __LINUX__
 const unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
+} // anonymous namespace
 
 SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
                            EngineMaster *pMaster)
