@@ -127,21 +127,21 @@ VCI102.jog = function(ch, midino, value, status, group) {
     }
 };
 
-VCI102.rate7bit = [64, 64, 64, 64];
-
 VCI102.rateEnable = [true, true, true, true];
+
+VCI102.rateValueMSB = [64, 64, 64, 64];  // defaults are at center
 
 VCI102.rateMSB = function(ch, midino, value, status, group) {
     // unlock rate control if the change is not caused by a mechanical drift
     if (VCI102.rateEnable[ch]) {
         engine.softTakeover(group, "rate", true);
-    } else if (Math.abs(value - VCI102.rate7bit[ch]) > 1) {
+    } else if (Math.abs(value - VCI102.rateValueMSB[ch]) > 1) {
         VCI102.rateEnable[ch] = true;
         engine.softTakeover(group, "rate", false);
     } else {
         return;
     }
-    VCI102.rate7bit[ch] = value;
+    VCI102.rateValueMSB[ch] = value;
 };
 
 VCI102.rateQuantizedMSB = function(ch, midino, value, status, group) {
@@ -149,11 +149,11 @@ VCI102.rateQuantizedMSB = function(ch, midino, value, status, group) {
     if (VCI102.rateEnable[ch]) {
         VCI102.rateEnable[ch] = false;
     }
-    VCI102.rate7bit[ch] = value;
+    VCI102.rateValueMSB[ch] = value;
 };
 
 VCI102.rate = function(ch, lsb) {
-    return ((64 - VCI102.rate7bit[ch]) * 128 - lsb) / 8192;
+    return ((64 - VCI102.rateValueMSB[ch]) * 128 - lsb) / 8192;
 };
 
 VCI102.rateLSB = function(ch, midino, value, status, group) {
