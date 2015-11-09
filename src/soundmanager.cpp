@@ -84,7 +84,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
 
 SoundManager::~SoundManager() {
     // Clean up devices.
-    clearDeviceList(false);
+    const bool sleepAfterClosing = false;
+    clearDeviceList(sleepAfterClosing);
 
 #ifdef __PORTAUDIO__
     if (m_paInitialized) {
@@ -245,7 +246,7 @@ void SoundManager::queryDevices() {
 }
 
 void SoundManager::clearAndQueryDevices() {
-    bool sleepAfterClosing = true;
+    const bool sleepAfterClosing = true;
     clearDeviceList(sleepAfterClosing);
     queryDevices();
 }
@@ -476,8 +477,10 @@ Result SoundManager::setupDevices() {
     }
     m_pErrorDevice = NULL;
     return ERR;
+
 closeAndError:
-    closeDevices(false);
+    const bool sleepAfterClosing = false;
+    closeDevices(sleepAfterClosing);
     return err;
 }
 
@@ -497,7 +500,8 @@ Result SoundManager::setConfig(SoundManagerConfig config) {
     // Close open devices. After this call we will not get any more
     // onDeviceOutputCallback() or pushBuffer() calls because all the
     // SoundDevices are closed. closeDevices() blocks and can take a while.
-    closeDevices(true);
+    const bool sleepAfterClosing = true;
+    closeDevices(sleepAfterClosing);
 
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood
