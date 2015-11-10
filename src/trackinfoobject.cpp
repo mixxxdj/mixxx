@@ -345,8 +345,7 @@ void TrackInfoObject::setBpm(double f) {
     emit(bpmUpdated(f));
 }
 
-QString TrackInfoObject::getBpmStr() const
-{
+QString TrackInfoObject::getBpmStr() const {
     return QString("%1").arg(getBpm(), 3,'f',1);
 }
 
@@ -394,14 +393,12 @@ void TrackInfoObject::slotBeatsUpdated() {
     emit(beatsUpdated());
 }
 
-bool TrackInfoObject::getHeaderParsed()  const
-{
+bool TrackInfoObject::getHeaderParsed()  const {
     QMutexLocker lock(&m_qMutex);
     return m_bHeaderParsed;
 }
 
-void TrackInfoObject::setHeaderParsed(bool parsed)
-{
+void TrackInfoObject::setHeaderParsed(bool parsed) {
     QMutexLocker lock(&m_qMutex);
     if (m_bHeaderParsed != parsed) {
         m_bHeaderParsed = parsed;
@@ -409,8 +406,7 @@ void TrackInfoObject::setHeaderParsed(bool parsed)
     }
 }
 
-QString TrackInfoObject::getInfo()  const
-{
+QString TrackInfoObject::getInfo() const {
     QMutexLocker lock(&m_qMutex);
     QString artist = m_sArtist.trimmed() == "" ? "" : m_sArtist + ", ";
     QString sInfo = artist + m_sTitle;
