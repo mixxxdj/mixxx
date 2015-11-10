@@ -408,9 +408,11 @@ void TrackInfoObject::setHeaderParsed(bool parsed) {
 
 QString TrackInfoObject::getInfo() const {
     QMutexLocker lock(&m_qMutex);
-    QString artist = m_sArtist.trimmed() == "" ? "" : m_sArtist + ", ";
-    QString sInfo = artist + m_sTitle;
-    return sInfo;
+    if (m_sArtist.trimmed().isEmpty()) {
+        return m_sTitle;
+    } else {
+        return m_sArtist + ", " + m_sTitle;
+    }
 }
 
 QDateTime TrackInfoObject::getDateAdded() const {
