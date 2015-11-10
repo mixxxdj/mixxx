@@ -151,7 +151,7 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
 void TrackInfoObject::parse(bool parseCoverArt) {
     // Log parsing of header information in developer mode. This is useful for
     // tracking down corrupt files.
-    const QString& canonicalLocation = m_fileInfo.canonicalFilePath();
+    const QString canonicalLocation(getCanonicalLocation());
     if (CmdlineArgs::Instance().getDeveloper()) {
         qDebug() << "TrackInfoObject::parse()" << canonicalLocation;
     }
@@ -172,7 +172,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
             // TODO(rryan): Should we re-visit this decision?
             if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
                 Mixxx::TrackMetadata fileNameMetadata;
-                parseMetadataFromFileName(fileNameMetadata, m_fileInfo.fileName());
+                parseMetadataFromFileName(fileNameMetadata, getFileName());
                 if (trackMetadata.getArtist().isEmpty()) {
                     trackMetadata.setArtist(fileNameMetadata.getArtist());
                 }
@@ -197,7 +197,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
                      << canonicalLocation;
 
             // Add basic information derived from the filename
-            parseMetadataFromFileName(trackMetadata, m_fileInfo.fileName());
+            parseMetadataFromFileName(trackMetadata, getFileName());
 
             setHeaderParsed(false);
         }
