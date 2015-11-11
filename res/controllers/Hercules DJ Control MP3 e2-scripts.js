@@ -830,17 +830,30 @@ HerculesMP3e2.wind = function(midino, control, value, status, group) {
     var deck = HerculesMP3e2.switchDeck(group);
     var newValue = 0;
 
-    if (control == 0x21 || control == 0x0D) {
-        if (superButtonHold >= 1 && value) {
-            newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, 1);
-            engine.setValue(deck, "pregain", newValue);
+    if (control == 0x21 || control == 0x0D) { //forward
+
+        if (superButtonHold == 2) {
+            if (debug)
+                print("**** BRAKE deck " + (control == 0x0D ? deckA.toString() : deckB.toString()) + " : " + (value ? "true" : "false"));
+            engine.brake(control == 0x0D ? deckA : deckB, value ? true : false);
+        } else if (superButtonHold == 1) {
+            if (value) {
+                newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, 1);
+                engine.setValue(deck, "pregain", newValue);
+            }
         } else {
             engine.setValue(deck, "fwd", value ? 1 : 0);
         }
-    } else {
-        if (superButtonHold >= 1 && value) {
-            newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, -1);
-            engine.setValue(deck, "pregain", newValue);
+    } else { // Backward
+        if (superButtonHold == 2) {
+            if (debug)
+                print("**** SPINBACK deck " + (control == 0x0C ? deckA.toString() : deckB.toString()) + " : " + (value ? "true" : "false"));
+            engine.spinback(control == 0x0C ? deckA : deckB, value ? true : false);
+        } else if (superButtonHold == 1) {
+            if (value) {
+                newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, -1);
+                engine.setValue(deck, "pregain", newValue);
+            }
         } else {
             engine.setValue(deck, "back", value ? 1 : 0);
         }
