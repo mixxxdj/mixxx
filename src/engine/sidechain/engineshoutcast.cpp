@@ -98,7 +98,16 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
 EngineShoutcast::~EngineShoutcast() {
     m_pShoutcastEnabled->set(0);
     m_readSema.release();
-    wait(); // until the thread ends.
+
+    // Wait maximum ~4 seconds. User will get annoyed but
+    // if there is some network problems we let them settle
+    wait(4000);
+
+    // Signal user if thread doesn't die
+    DEBUG_ASSERT_AND_HANDLE(isRunning()) {
+       qWarning() << "EngineShoutcast:~EngineShoutcast(): Thread didn't die.\
+       Ignored but add this to bug report if problems rise!";
+    }
 
     delete m_pStatusCO;
     delete m_pMasterSamplerate;
@@ -399,21 +408,48 @@ bool EngineShoutcast::processConnect() {
             break;
         }
 
+        // SHOUTERR_INSANE self is corrupt or incorrect
+        // SHOUTERR_UNSUPPORTED The protocol/format combination is unsupported
+        // SHOUTERR_NOLOGIN The server refused login
+        // SHOUTERR_MALLOC There wasn't enough memory to complete the operation
+        if (m_iShoutStatus == SHOUTERR_INSANE ||
+            m_iShoutStatus == SHOUTERR_UNSUPPORTED ||
+            m_iShoutStatus == SHOUTERR_NOLOGIN ||
+            m_iShoutStatus == SHOUTERR_MALLOC) {
+            qDebug() << "Streaming server made fatal error. Can't continue connecting:" << shout_get_error(m_pShout);
+            break;
+        }
+
         m_iShoutFailures++;
-        qDebug() << "Streaming server failed connect. Failures:" << shout_get_error(m_pShout);
-        sleep(1);
+        qDebug() << m_iShoutFailures << "/" << kMaxShoutFailures << "Streaming server failed connect. Failures:" << shout_get_error(m_pShout);
     }
 
-    if (m_iShoutFailures < kMaxShoutFailures) {
+    // If we don't have any fatal errors let's try to connect
+    if ((m_iShoutStatus == SHOUTERR_BUSY ||
+         m_iShoutStatus == SHOUTERR_CONNECTED ||
+         m_iShoutStatus == SHOUTERR_SUCCESS) &&
+         m_iShoutFailures < kMaxShoutFailures) {
         m_iShoutFailures = 0;
         int timeout = 0;
         while (m_iShoutStatus == SHOUTERR_BUSY &&
                 timeout < kConnectRetries &&
                 m_pShoutcastEnabled->toBool()) {
             setState(NETWORKSTREAMWORKER_STATE_WAITING);
-            qDebug() << "Connection pending. Sleeping...";
-            sleep(1);
+            qDebug() << "Connection pending. Waiting...";
             m_iShoutStatus = shout_get_connected(m_pShout);
+
+            if (m_iShoutStatus != SHOUTERR_BUSY &&
+                m_iShoutStatus != SHOUTERR_SUCCESS &&
+                m_iShoutStatus != SHOUTERR_CONNECTED) {
+                qDebug() << "Streaming server made error:" << shout_get_error(m_pShout);
+            }
+
+            // If socket is busy then we wait half second
+            if(m_iShoutStatus == SHOUTERR_BUSY)
+            {
+               QThread::msleep(500);
+            }
+
             ++ timeout;
         }
         if (m_iShoutStatus == SHOUTERR_CONNECTED) {
