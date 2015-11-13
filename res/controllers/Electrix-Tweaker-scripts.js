@@ -480,7 +480,11 @@ ElectrixTweaker.deckShiftButton = function (channel, control, value, status, gro
 }
 
 ElectrixTweaker.rateEncoderLEDs = function (value, group, control) {
-	midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group]['High']['cc'], script.absoluteLinInverse(value, -1, 1))
+	midi.sendShortMsg(
+						0xB0,
+						ElectrixTweaker.encoders[group]['High']['cc'],
+						script.absoluteLinInverse(value, -1, 1)
+					 )
 }
 
 // ================================================== ARROWS + BIG ENCODER ====================================================
@@ -833,7 +837,8 @@ ElectrixTweaker.modeButton = function (channel, control, value, status, group) {
 
 ElectrixTweaker.fader = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	// soft takeover
+	// soft takeover. This is necessary for toggling between decks 1/3 or 2/4
+	// because the fader can't be moved to the new deck's value by this script
 	if (Math.abs(value - script.absoluteNonLinInverse(engine.getValue(group, 'volume'), 0, .25, 1)) < 30) {
 		engine.setValue(group, 'volume', script.absoluteNonLin(value, 0, .25, 1))
 	}
