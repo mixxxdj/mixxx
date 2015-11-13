@@ -132,11 +132,20 @@ script.toggleControl = function (group, control) {
    Output:  MixxxControl value corresponding to the knob position
    -------- ------------------------------------------------------ */
 script.absoluteLin = function (value, low, high, min, max) {
-    if (!min) min = 0;
-    if (!max) max = 127;
-    if (value <= min) return low;
-    if (value >= max) return high;
-    else return ((((high - low) / (max-min)) * (value-min)) + low);
+    if (!min) {
+        min = 0;
+    }
+    if (!max) {
+        max = 127;
+    }
+    
+    if (value <= min) {
+        return low;
+    } else if (value >= max) {
+        return high;
+    } else {
+        return ((((high - low) / (max-min)) * (value-min)) + low);
+    }
 }
 
 /* -------- ------------------------------------------------------
@@ -149,12 +158,20 @@ script.absoluteLin = function (value, low, high, min, max) {
    Output:  Linear value corresponding to the knob position
    -------- ------------------------------------------------------ */
 script.absoluteLinInverse = function (value, low, high, min, max) {
-    if (!min) min = 0;
-    if (!max) max = 127;
+    if (!min) {
+        min = 0;
+    }
+    if (!max) {
+        max = 127;
+    }
     var result = (((value-low)*(max-min))/(high-low)) + min
-    if (result < min) return min;
-    if (result > max) return max;
-    return result;
+    if (result < min) {
+        return min;
+    } else if (result > max) {
+        return max;
+    } else {
+        return result;
+    }
 }
 
 
@@ -168,14 +185,20 @@ script.absoluteLinInverse = function (value, low, high, min, max) {
    Output:  MixxxControl value corresponding to the knob position
    -------- ------------------------------------------------------ */
 script.absoluteNonLin = function (value, low, mid, high, min, max) {
-    if (!min) min = 0;
-    if (!max) max = 127;
+    if (!min) {
+        min = 0;
+    }
+    if (!max) {
+        max = 127;
+    }
     var center = (max-min)/2;
-    if (value==center || value==Math.round(center))
+    if (value==center || value==Math.round(center)) {
         return mid;
-    if (value<center)
+    } else if (value<center) {
         return low+(value/(center/(mid-low)));
-    return mid+((value-center)/(center/(high-mid)));
+    } else {
+        return mid+((value-center)/(center/(high-mid)));
+    }
 }
 
 /* -------- ------------------------------------------------------
@@ -187,19 +210,30 @@ script.absoluteNonLin = function (value, low, mid, high, min, max) {
  Output: MixxxControl value scaled to output range
  -------- ------------------------------------------------------ */
 script.absoluteNonLinInverse = function (value, low, mid, high, min, max) {
-    if (!min) min = 0;
-    if (!max) max = 127;
+    if (!min) {
+        min = 0;
+    }
+    if (!max) {
+        max = 127;
+    }
     var center = (max-min)/2;
     var result;
-    if (value==mid)
+    
+    if (value==mid) {
         return center;
-    if (value<mid)
+    } else if (value<mid) {
         result = (center/(mid-low)) * (value-low);
-    else
+    } else {
         result = center + (center/(high-mid)) * (value-mid);
-    if (result < min) return min;
-    if (result > max) return max;
-    return result;
+    }
+    
+    if (result < min) {
+        return min;
+    } else if (result > max) {
+        return max;
+    } else {
+        return result;
+    }
 }
 
 /* -------- ------------------------------------------------------
