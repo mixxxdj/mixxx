@@ -2,7 +2,7 @@
 <MixxxControllerPreset mixxxVersion="1.12.0+" schemaVersion="1">
   <info>
     <name>Stanton SCS.3d</name>
-    <author>sbalmer</author>
+    <author>sbalmer &amp; Sean M. Pappalardo</author>
     <description>Mapping for the Stanton SCS3 system. This part maps the SCS.3d controller.</description>
   </info>
   <controller id="SCS.3d">
