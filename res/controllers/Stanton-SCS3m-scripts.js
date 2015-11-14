@@ -1,4 +1,14 @@
 "use strict";
+////////////////////////////////////////////////////////////////////////
+// JSHint configuration                                               //
+////////////////////////////////////////////////////////////////////////
+/* global engine                                                      */
+/* global print                                                       */
+/* global midi                                                        */
+/* global SCS3M:true                                                  */
+/* jshint -W097                                                       */
+/* jshint laxbreak: true                                              */
+////////////////////////////////////////////////////////////////////////
 
 // issues:
 // - blink EQ when not zeroed?
@@ -8,24 +18,24 @@
 // amidi -p hw:1 -S F00001601501F7 # flat mode
 // amidi -p hw:1 -S 900302 # 90: note on, 03: id of a touch button, 02: red LED
 
-StantonSCS3m = {}
+SCS3M = {};
 
-StantonSCS3m.init = function(id) {
+SCS3M.init = function(id) {
 	this.device = this.Device();
 	this.agent = this.Agent(this.device);
 	this.agent.start();
-}
+};
 
-StantonSCS3m.shutdown = function() {
-	StantonSCS3m.agent.stop();
-}
+SCS3M.shutdown = function() {
+	SCS3M.agent.stop();
+};
 
-StantonSCS3m.receive = function(channel, control, value, status) {
-	StantonSCS3m.agent.receive(status, control, value)
-}
+SCS3M.receive = function(channel, control, value, status) {
+	SCS3M.agent.receive(status, control, value);
+};
 
 /* midi map */
-StantonSCS3m.Device = function() {
+SCS3M.Device = function() {
 	var NoteOn = 0x90;
 	var NoteOff = 0x80;
 	var CC = 0xB0;
@@ -41,7 +51,7 @@ StantonSCS3m.Device = function() {
 		return {
 			on: [NoteOn, id, 0x01],
 			off: [NoteOn, id, 0x00]
-		}
+		};
 	}
 
 	function Meter(id, lights) {
@@ -65,12 +75,12 @@ StantonSCS3m.Device = function() {
 				return [CC, id, plain(value)];
 			},
 			centerbar: function(value) {
-				return [CC, id, 0x14 + clamped(value)]
+				return [CC, id, 0x14 + clamped(value)];
 			},
 			bar: function(value) {
 				return [CC, id, 0x28 + zeroclamped(value) ];
 			}
-		}
+		};
 	}
 
 	function Slider(id, lights) {
@@ -82,7 +92,7 @@ StantonSCS3m.Device = function() {
 				relative: [CM, id, 0x71],
 				end:      [CM, id, 0x7F]
 			}
-		}
+		};
 	}
 
 	function Light(id) {
@@ -91,7 +101,7 @@ StantonSCS3m.Device = function() {
 			blue: [NoteOn, id, blue],
 			red: [NoteOn, id, red],
 			purple: [NoteOn, id, purple],
-		}
+		};
 	}
 
 	function Touch(id) {
@@ -99,7 +109,7 @@ StantonSCS3m.Device = function() {
 			light: Light(id),
 			touch: [NoteOn, id],
 			release: [NoteOff, id]
-		}
+		};
 	}
 
 	function Side(side) {
@@ -111,11 +121,11 @@ StantonSCS3m.Device = function() {
 			var id = either(0x10, 0x0F);
 			return {
 				light: function (bits) {
-					return [NoteOn, id, (bits[0] ? 1 : 0) | (bits[1] ? 2 : 0)]
+					return [NoteOn, id, (bits[0] ? 1 : 0) | (bits[1] ? 2 : 0)];
 				},
 				touch: [NoteOn, id],
 				release: [NoteOff, id]
-			}
+			};
 		}
 
 		function Pitch() {
@@ -127,14 +137,14 @@ StantonSCS3m.Device = function() {
 				low: Slider(either(0x02, 0x03), 7),
 				mid: Slider(either(0x04, 0x05), 7),
 				high: Slider(either(0x06, 0x07), 7),
-			}
+			};
 		}
 
 		function Modes() {
 			return {
 				fx: Touch(either(0x0A, 0x0B)),
 				eq: Touch(either(0x0C, 0x0D))
-			}
+			};
 		}
 
 		function Gain() {
@@ -163,7 +173,7 @@ StantonSCS3m.Device = function() {
 			touches: Touches(),
 			phones: Phones(),
 			meter: Meter(either(0x0C, 0x0D), 7)
-		}
+		};
 	}
 
 	return {
@@ -175,10 +185,10 @@ StantonSCS3m.Device = function() {
 		right: Side('right'),
 		master: Touch(0x0E),
 		crossfader: Slider(0x0A, 11)
-	}
-}
+	};
+};
 
-StantonSCS3m.Agent = function(device) {
+SCS3M.Agent = function(device) {
 	// Cache last sent bytes to avoid sending duplicates.
 	// The second byte of each message (controller id) is used as key to hold
 	// the last sent message for each controller.
@@ -207,7 +217,7 @@ StantonSCS3m.Agent = function(device) {
 		// I'd like to disconnect everything on clear, but that doesn't work when using closure callbacks, I guess I'd have to pass the callback function as string name
 		// I'd have to invent function names for all handlers
 		// Instead I'm not gonna bother and just let the callbacks do nothing
-		for (ctrl in watched) {
+		for (var ctrl in watched) {
 			if (watched.hasOwnProperty(ctrl)) {
 				watched[ctrl] = [];
 			}
@@ -216,8 +226,8 @@ StantonSCS3m.Agent = function(device) {
 
 	function receive(type, control, value) {
 		var address = (type << 8) + control;
-
-		if (handler = receivers[address]) {
+		var handler = receivers[address];
+		if (handler) {
 			handler(value);
 			return;
 		}
@@ -264,20 +274,21 @@ StantonSCS3m.Agent = function(device) {
 
 	function watchmulti(controls, handler) {
 		var values = [];
-		var wait = controls.length
+		var wait = controls.length;
 		var i = 0;
+		var watchControl = function(controlpos) {
+			watch(controls[controlpos][0], controls[controlpos][1], function(value) {
+				values[controlpos] = value;
+				if (wait > 1) {
+					wait -= 1;
+				} else {
+					handler(values);
+				}
+			});
+		};
+
 		for (; i < controls.length; i++) {
-			(function() {
-				var controlpos = i;
-				watch(controls[controlpos][0], controls[controlpos][1], function(value) {
-					values[controlpos] = value;
-					if (wait > 1) {
-						wait -= 1;
-					} else {
-						handler(values);
-					}
-				});
-			})();
+			watchControl(i);
 		}
 	}
 
@@ -327,13 +338,16 @@ StantonSCS3m.Agent = function(device) {
 
 		// Send messages that terminate the previous slow command
 		// These need to be sent with delay as well
-		if (message = slowterm.shift()) {
+		message = slowterm.shift();
+		if (message) {
 			send(message, true, true);
 			return;
 		}
 
 		// Send messages where the device needs a pause after
-		while (messages = slow.shift()) {
+		while (slow.length) {
+			messages = slow.shift();
+
 			// There are usually two messages, one to tell the device
 			// what to do, and one to terminate the command
 			message = messages.shift();
@@ -377,7 +391,7 @@ StantonSCS3m.Agent = function(device) {
 	function patch(translator) {
 		return function(value) {
 			tell(translator(value));
-		}
+		};
 	}
 
 	// Cut off at 0.01 because it drops off very slowly
@@ -385,21 +399,21 @@ StantonSCS3m.Agent = function(device) {
 		return function(value) {
 			value = value * 1.01 - 0.01;
 			tell(translator(value));
-		}
+		};
 	}
 
 	// accelerate away from 0.5 so that small changes become visible faster
 	function offcenter(translator) {
 		return function(value) {
 			// If you want to adjust it, fiddle with the exponent (second argument to pow())
-			return translator(Math.pow(Math.abs(value - 0.5) * 2, 0.6) / (value < 0.5 ? -2 : 2) + 0.5)
-		}
+			return translator(Math.pow(Math.abs(value - 0.5) * 2, 0.6) / (value < 0.5 ? -2 : 2) + 0.5);
+		};
 	}
 
 	function binarylight(off, on) {
 		return function(value) {
 			tell(value ? on : off);
-		}
+		};
 	}
 
 	// absolute control
@@ -408,13 +422,13 @@ StantonSCS3m.Agent = function(device) {
 			engine.setParameter(channel, control,
 				value/127
 			);
-		}
+		};
 	}
 
 	function reset(channel, control) {
 		return function() {
 			engine.reset(channel, control);
-		}
+		};
 	}
 
 	// relative control
@@ -424,7 +438,7 @@ StantonSCS3m.Agent = function(device) {
 				engine.getValue(channel, control)
 				+ (offset-64)/128
 			);
-		}
+		};
 	}
 
 	// switch
@@ -433,7 +447,7 @@ StantonSCS3m.Agent = function(device) {
 			engine.setValue(channel, control,
 				!engine.getValue(channel, control)
 			);
-		}
+		};
 	}
 
 	function Switch() {
@@ -450,7 +464,7 @@ StantonSCS3m.Agent = function(device) {
 			'toggle': function() { engaged = !engaged; },
 			'engaged': function() { return engaged; },
 			'choose': function(off, on) { return engaged ? on : off; }
-		}
+		};
 	}
 
 	function Multiswitch(preset) {
@@ -458,34 +472,36 @@ StantonSCS3m.Agent = function(device) {
 		return {
 			'engage': function(pos) { engaged = pos; },
 			'cancel': function() { engaged = preset; },
-			'engaged': function(pos) { return engaged === pos },
+			'engaged': function(pos) { return engaged === pos; },
 			'choose': function(pos, off, on) { return (engaged === pos) ? on : off; }
-		}
+		};
 	}
 
 	var master = Switch(); // Whether master key is held
 	var deck = {
 		left: Switch(), // off: channel1, on: channel3
 		right: Switch() // off: channel2, on: channel4
-	}
+	};
 
 	var overlay = {
 		left:  Multiswitch('eq'),
 		right: Multiswitch('eq')
-	}
+	};
 
 	var eqheld = {
 		left: Switch(),
 		right: Switch()
-	}
+	};
+
 	var fxheld = {
 		left: Switch(),
 		right: Switch()
-	}
+	};
+
 	var touchheld = {
 		left: Switch(),
 		right: Switch()
-	}
+	};
 
 	function repatch(handler) {
 		return function(value) {
@@ -493,7 +509,7 @@ StantonSCS3m.Agent = function(device) {
 			handler(value);
 			clear();
 			patchage();
-		}
+		};
 	}
 
 	function patchage() {
@@ -509,20 +525,18 @@ StantonSCS3m.Agent = function(device) {
 					tellslowly([part.eq.high.meter.centerbar(lightval)]);
 					tellslowly([part.eq.mid.meter.centerbar(lightval)]);
 					tellslowly([part.eq.low.meter.centerbar(lightval)]);
-				}
+				};
 			}
 
 			// Switch deck/channel when button is touched
 			expect(part.deck.touch, deckflash(repatch(deck[side].toggle)));
 			tell(part.deck.light[deck[side].choose('first', 'second')]);
 
-			function either(left, right) { return (side == 'left') ? left : right }
+			function either(left, right) { return (side == 'left') ? left : right; }
 
 			var channelno = deck[side].choose(either(1,2), either(3,4));
 			var channel = '[Channel'+channelno+']';
 			var effectchannel = '[QuickEffectRack1_[Channel'+channelno+']]';
-			var effectunit = '[EffectRack1_EffectUnit'+channelno+']';
-			var effectunit_enable = 'group_'+channel+'_enable';
 			var eqsideheld = eqheld[side];
 			var touchsideheld = touchheld[side];
 			var sideoverlay = overlay[side];
@@ -534,7 +548,7 @@ StantonSCS3m.Agent = function(device) {
 					bits = bits.slice(); // clone
 					bits[activepos] = !bits[activepos]; // Invert the bit for the light that should be on
 					return translator(bits);
-				}
+				};
 			}
 			watchmulti([
 				['[Channel'+either(1,2)+']', 'beat_active'],
@@ -578,8 +592,7 @@ StantonSCS3m.Agent = function(device) {
 
 			var fxsideheld = fxheld[side];
 
-			var tnr = 0;
-			for (; tnr < 4; tnr++) {
+			var fxMap = function(tnr) {
 				var touch = part.touches[tnr];
 				var fxchannel = channel;
 				if (master.engaged()) {
@@ -630,6 +643,10 @@ StantonSCS3m.Agent = function(device) {
 					watch(effectunit_effect, 'parameter2', patch(part.eq.mid.meter.needle));
 					watch(effectunit_effect, 'parameter1', patch(part.eq.low.meter.needle));
 				}
+			};
+
+			for (var tnr = 0; tnr < 4; tnr++) {
+				fxMap(tnr);
 			}
 
 			expect(part.modes.fx.touch, repatch(fxsideheld.engage));
@@ -746,7 +763,7 @@ StantonSCS3m.Agent = function(device) {
 			tell(device.lightsoff);
 			send(device.logo.on, true);
 		}
-	}
-}
+	};
+};
 
 
