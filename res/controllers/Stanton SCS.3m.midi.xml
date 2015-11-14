@@ -11,7 +11,6 @@
     </scriptfiles>
     <controls>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x0C</midino>
@@ -20,7 +19,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x09</midino>
@@ -29,7 +27,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x05</midino>
@@ -38,7 +35,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x10</midino>
@@ -47,7 +43,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x53</midino>
@@ -56,7 +51,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x06</midino>
@@ -65,7 +59,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x03</midino>
@@ -74,7 +67,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x54</midino>
@@ -83,7 +75,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x0A</midino>
@@ -92,7 +83,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x00</midino>
@@ -101,7 +91,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x0B</midino>
@@ -110,7 +99,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x08</midino>
@@ -119,7 +107,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x04</midino>
@@ -128,7 +115,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x0F</midino>
@@ -137,7 +123,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x05</midino>
@@ -146,7 +131,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x02</midino>
@@ -155,7 +139,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x53</midino>
@@ -164,7 +147,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x10</midino>
@@ -173,7 +155,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x09</midino>
@@ -182,7 +163,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x0A</midino>
@@ -191,7 +171,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x07</midino>
@@ -200,7 +179,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x03</midino>
@@ -209,7 +187,6 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x0E</midino>
@@ -218,7 +195,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x51</midino>
@@ -227,7 +203,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x04</midino>
@@ -236,7 +211,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x01</midino>
@@ -245,7 +219,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x0F</midino>
@@ -254,7 +227,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x08</midino>
@@ -263,7 +235,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x56</midino>
@@ -272,7 +243,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x09</midino>
@@ -281,7 +251,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x06</midino>
@@ -290,7 +259,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x02</midino>
@@ -299,7 +267,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x0D</midino>
@@ -308,7 +275,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x03</midino>
@@ -317,7 +283,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x00</midino>
@@ -326,7 +291,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x51</midino>
@@ -335,7 +299,6 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x0E</midino>
@@ -344,7 +307,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x07</midino>
@@ -353,7 +315,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x08</midino>
@@ -362,7 +323,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x05</midino>
@@ -371,7 +331,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x01</midino>
@@ -380,7 +339,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x56</midino>
@@ -389,7 +347,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x0C</midino>
@@ -398,7 +355,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x02</midino>
@@ -407,7 +363,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x0D</midino>
@@ -416,7 +371,6 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x0A</midino>
@@ -425,7 +379,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x06</midino>
@@ -434,7 +387,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x54</midino>
@@ -443,7 +395,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x07</midino>
@@ -452,7 +403,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x04</midino>
@@ -461,7 +411,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x00</midino>
@@ -470,7 +419,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x0B</midino>
@@ -479,7 +427,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x01</midino>
