@@ -10,23 +10,37 @@
             <file functionprefix="SCS3D" filename="Stanton-SCS3d-scripts.js"/>
         </scriptfiles>
         <controls>
+			<!-- central slider -->
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x01</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x01</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x01</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x02</midino><options><script-binding/></options></control>
+
+			<!-- pitch slider -->
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x03</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x03</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x03</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x04</midino><options><script-binding/></options></control>
+
+			<!-- gain slider -->
+			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x07</midino><options><script-binding/></options></control>
+			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x07</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x07</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x08</midino><options><script-binding/></options></control>
+
+			<!-- left slider -->
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x0C</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x0C</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x0C</midino><options><script-binding/></options></control>
+			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x0D</midino><options><script-binding/></options></control>
+
+			<!-- right slider -->
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x0E</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x0E</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x0E</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x0F</midino><options><script-binding/></options></control>
+
+			<!-- mode buttons -->
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x20</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x20</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x22</midino><options><script-binding/></options></control>
@@ -39,6 +53,8 @@
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x28</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x2A</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x2A</midino><options><script-binding/></options></control>
+
+			<!-- B11 to B14 -->
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x2C</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x2C</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x2E</midino><options><script-binding/></options></control>
@@ -47,6 +63,8 @@
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x30</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x32</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x32</midino><options><script-binding/></options></control>
+
+			<!-- buttons in the circle -->
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x48</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x48</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x4A</midino><options><script-binding/></options></control>
@@ -63,10 +81,14 @@
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x53</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x55</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x55</midino><options><script-binding/></options></control>
+
+			<!-- circle slider -->
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x62</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x62</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x62</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0xB0</status><midino>0x63</midino><options><script-binding/></options></control>
+
+			<!-- buttons bottom -->
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x6D</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x90</status><midino>0x6D</midino><options><script-binding/></options></control>
 			<control><key>SCS3D.receive</key><status>0x80</status><midino>0x6E</midino><options><script-binding/></options></control>
