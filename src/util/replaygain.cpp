@@ -4,6 +4,7 @@
 
 namespace Mixxx {
 
+#if MIXXX_HAS_CONSTEXPR
 /*static*/ constexpr double ReplayGain::kRatioUndefined;
 /*static*/ constexpr double ReplayGain::kRatioMin;
 /*static*/ constexpr double ReplayGain::kRatio0dB;
@@ -11,6 +12,15 @@ namespace Mixxx {
 /*static*/ constexpr CSAMPLE ReplayGain::kPeakUndefined;
 /*static*/ constexpr CSAMPLE ReplayGain::kPeakMin;
 /*static*/ constexpr CSAMPLE ReplayGain::kPeakClip;
+#else
+/*static*/ const double ReplayGain::kRatioUndefined = 0.0;
+/*static*/ const double ReplayGain::kRatioMin = 0.0;
+/*static*/ const double ReplayGain::kRatio0dB = 1.0;
+
+/*static*/ const CSAMPLE ReplayGain::kPeakUndefined = -CSAMPLE_PEAK;
+/*static*/ const CSAMPLE ReplayGain::kPeakMin = CSAMPLE_ZERO;
+/*static*/ const CSAMPLE ReplayGain::kPeakClip = CSAMPLE_PEAK;
+#endif
 
 namespace {
 
