@@ -1405,7 +1405,7 @@ SCS3D.Agent = function(device) {
     function vinylpatch(channel, held) {
         comm.sysex(device.modeset.circle);
         pitchPatch(channel);
-        beatJump();
+        beatJump(channel);
 
         // The four buttons select pitch slider mode when vinyl is held
         if (held) {
