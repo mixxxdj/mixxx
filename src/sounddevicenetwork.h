@@ -20,6 +20,7 @@ class SoundDeviceNetwork : public SoundDevice {
     virtual ~SoundDeviceNetwork();
 
     virtual Result open(bool isClkRefDevice, int syncBuffers);
+    virtual bool isOpen() const;
     virtual Result close();
     virtual void readProcess();
     virtual void writeProcess();

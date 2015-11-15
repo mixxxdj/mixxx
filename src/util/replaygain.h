@@ -23,18 +23,24 @@ namespace Mixxx {
 // as a string into file tags.
 class ReplayGain final {
 public:
-    static constexpr double kRatioUndefined = 0.0;
-    static constexpr double kRatioMin = 0.0; // lower bound (exclusive)
-    static constexpr double kRatio0dB = 1.0;
+    // TODO(uklotzde): Replace 'const' with 'constexpr'
+    // (and copy initialization from .cpp file) after switching to
+    // Visual Studio 2015 on Windows.
+    static const double kRatioUndefined;
+    static const double kRatioMin; // lower bound (exclusive)
+    static const double kRatio0dB;
 
-    static constexpr CSAMPLE kPeakUndefined = -CSAMPLE_PEAK;
-    static constexpr CSAMPLE kPeakMin = CSAMPLE_ZERO; // lower bound (inclusive)
-    static constexpr CSAMPLE kPeakClip = CSAMPLE_PEAK; // upper bound (inclusive) represents digital full scale without clipping
+    static const CSAMPLE kPeakUndefined;
+    static const CSAMPLE kPeakMin; // lower bound (inclusive)
+    static const CSAMPLE kPeakClip; // upper bound (inclusive) represents digital full scale without clipping
 
-    static_assert(ReplayGain::kPeakClip == 1.0,
-            "http://wiki.hydrogenaud.io/index.php?title=ReplayGain_2.0_specification#Peak_amplitude: "
-            "The maximum peak amplitude value is stored as a floating number, "
-            "where 1.0 represents digital full scale");
+    // TODO(uklotzde): Uncomment after switching to Visual Studio 2015
+    // on Windows.
+    //static_assert(ReplayGain::kPeakClip == 1.0,
+    //        "http://wiki.hydrogenaud.io/index.php"
+    //        "?title=ReplayGain_2.0_specification#Peak_amplitude: "
+    //        "The maximum peak amplitude value is stored as a floating number, "
+    //        "where 1.0 represents digital full scale");
 
     ReplayGain()
         : ReplayGain(kRatioUndefined, kPeakUndefined) {
