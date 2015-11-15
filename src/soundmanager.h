@@ -58,16 +58,8 @@ class SoundManager : public QObject {
     // bOutputDevices or bInputDevices are set, respectively.
     QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
 
-    // Closes all the open sound devices. Because multiple soundcards might be
-    // open, this method simply runs through the list of all known soundcards
-    // (from PortAudio) and attempts to close them all. Closing a soundcard that
-    // isn't open is safe.
-    void closeDevices();
-
-    // Closes all the devices and empties the list of devices we have.
-    void clearDeviceList();
-
     // Creates a list of sound devices
+    void clearAndQueryDevices();
     void queryDevices();
     void queryDevicesPortaudio();
     void queryDevicesMixxx();
@@ -121,6 +113,15 @@ class SoundManager : public QObject {
     void inputRegistered(AudioInput input, AudioDestination *dest);
 
   private:
+    // Closes all the devices and empties the list of devices we have.
+    void clearDeviceList(bool sleepAfterClosing);
+
+    // Closes all the open sound devices. Because multiple soundcards might be
+    // open, this method simply runs through the list of all known soundcards
+    // (from PortAudio) and attempts to close them all. Closing a soundcard that
+    // isn't open is safe.
+    void closeDevices(bool sleepAfterClosing);
+
     void setJACKName() const;
 
     EngineMaster *m_pMaster;
