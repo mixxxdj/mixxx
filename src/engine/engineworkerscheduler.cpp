@@ -15,8 +15,10 @@ EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
 }
 
 EngineWorkerScheduler::~EngineWorkerScheduler() {
+    m_mutex.lock();
     m_bQuit = true;
     m_waitCondition.wakeAll();
+    m_mutex.unlock();
     wait();
 }
 
@@ -51,7 +53,9 @@ void EngineWorkerScheduler::run() {
         }
         Event::end("EngineWorkerScheduler");
         m_mutex.lock();
-        m_waitCondition.wait(&m_mutex); // unlock mutex and wait
+        if (!m_bQuit) {
+            m_waitCondition.wait(&m_mutex); // unlock mutex and wait
+        }
         m_mutex.unlock();
     }
 }

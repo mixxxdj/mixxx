@@ -56,6 +56,7 @@ class SoundDevice {
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
     virtual Result open(bool isClkRefDevice, int syncBuffers) = 0;
+    virtual bool isOpen() const = 0;
     virtual Result close() = 0;
     virtual void readProcess() = 0;
     virtual void writeProcess() = 0;

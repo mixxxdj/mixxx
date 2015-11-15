@@ -334,6 +334,10 @@ Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
     return OK;
 }
 
+bool SoundDevicePortAudio::isOpen() const {
+    return m_pStream != NULL;
+}
+
 Result SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << getInternalName();
     PaStream* pStream = m_pStream;
