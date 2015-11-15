@@ -188,21 +188,16 @@ class TrackInfoObject : public QObject {
 
     PlayCounter getPlayCounter() const;
     void setPlayCounter(const PlayCounter& playCounter);
+    void resetPlayCounter(int iTimesPlayed = 0) {
+        setPlayCounter(PlayCounter(iTimesPlayed));
+    }
+    // Sets played status and increments or decrements the play count
+    void updatePlayCounter(bool bPlayed = true);
 
-    // Set played status without affecting the play count
-    void setPlayed(bool bPlayed = true);
-    // Returns true if the  track has been played during this session
-    bool isPlayed() const;
-
-    // Returns the number of times the track has been played
-    int getTimesPlayed() const;
-    // Set number of times the track has been played
-    void setTimesPlayed(int timesPlayed);
-    // Resets the play count back to 0
-    void resetTimesPlayed();
-
-    // Set played status and increment or decrement play count
-    void setPlayedAndUpdatePlayCount(bool bPlayed = true);
+    // Only required for the times_played property
+    int getTimesPlayed() const {
+        return getPlayCounter().getTimesPlayed();
+    }
 
     // Returns rating
     int getRating() const;

@@ -208,9 +208,10 @@ void SetlogFeature::slotJoinWithPrevious() {
                         QModelIndex index = m_pPlaylistTableModel->index(i,0);
                         if (index.isValid()) {
                             TrackPointer track = m_pPlaylistTableModel->getTrack(index);
-                            // Do not update the playcount, just set played
-                            // status.
-                            track->setPlayed();
+                            // Do not update the play count, just set played status.
+                            PlayCounter playCounter(track->getPlayCounter());
+                            playCounter.setPlayed();
+                            track->setPlayCounter(playCounter);
                         }
                     }
 
@@ -256,7 +257,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 
     // If the track is not present in the recent tracks list, mark it
     // played and update its playcount.
-    currentPlayingTrack->setPlayedAndUpdatePlayCount();
+    currentPlayingTrack->updatePlayCounter();
 
     // We can only add tracks that are Mixxx library tracks, not external
     // sources.

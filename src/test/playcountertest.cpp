@@ -15,7 +15,7 @@ class PlayCounterTest : public testing::Test {
     void updatePlayedAndVerify(PlayCounter* pPlayCounter, bool bPlayed) {
         bool isPlayedBefore = pPlayCounter->isPlayed();
         int timesPlayedBefore = pPlayCounter->getTimesPlayed();
-        pPlayCounter->updatePlayed(bPlayed);
+        pPlayCounter->setPlayedAndUpdateTimesPlayed(bPlayed);
         bool isPlayedAfter = pPlayCounter->isPlayed();
         int timesPlayedAfter = pPlayCounter->getTimesPlayed();
         if (bPlayed) {
@@ -32,8 +32,7 @@ class PlayCounterTest : public testing::Test {
     }
 
     void resetAndVerify(PlayCounter* pPlayCounter) {
-        pPlayCounter->resetPlayed();
-        pPlayCounter->resetTimesPlayed();
+        *pPlayCounter = PlayCounter();
         bool isPlayedAfter = pPlayCounter->isPlayed();
         int timesPlayedAfter = pPlayCounter->getTimesPlayed();
         EXPECT_FALSE(isPlayedAfter);

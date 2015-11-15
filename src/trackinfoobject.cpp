@@ -562,56 +562,6 @@ void TrackInfoObject::setTrackNumber(const QString& s) {
     }
 }
 
-void TrackInfoObject::setPlayed(bool played) {
-    QMutexLocker lock(&m_qMutex);
-    PlayCounter playCounter(m_playCounter);
-    playCounter.setPlayed(played);
-    if (m_playCounter != playCounter) {
-        m_playCounter = playCounter;
-        setDirty(true);
-    }
-}
-
-bool TrackInfoObject::isPlayed() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_playCounter.isPlayed();
-}
-
-void TrackInfoObject::setTimesPlayed(int timesPlayed) {
-    QMutexLocker lock(&m_qMutex);
-    PlayCounter playCounter(m_playCounter);
-    playCounter.setTimesPlayed(timesPlayed);
-    if (m_playCounter != playCounter) {
-        m_playCounter = playCounter;
-        setDirty(true);
-    }
-}
-
-void TrackInfoObject::resetTimesPlayed() {
-    QMutexLocker lock(&m_qMutex);
-    PlayCounter playCounter(m_playCounter);
-    playCounter.resetTimesPlayed();
-    if (m_playCounter != playCounter) {
-        m_playCounter = playCounter;
-        setDirty(true);
-    }
-}
-
-int TrackInfoObject::getTimesPlayed() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_playCounter.getTimesPlayed();
-}
-
-void TrackInfoObject::setPlayedAndUpdatePlayCount(bool bPlayed) {
-    QMutexLocker lock(&m_qMutex);
-    PlayCounter playCounter(m_playCounter);
-    playCounter.updatePlayed(bPlayed);
-    if (m_playCounter != playCounter) {
-        m_playCounter = playCounter;
-        setDirty(true);
-    }
-}
-
 PlayCounter TrackInfoObject::getPlayCounter() const {
     QMutexLocker lock(&m_qMutex);
     return m_playCounter;
@@ -619,6 +569,16 @@ PlayCounter TrackInfoObject::getPlayCounter() const {
 
 void TrackInfoObject::setPlayCounter(const PlayCounter& playCounter) {
     QMutexLocker lock(&m_qMutex);
+    if (m_playCounter != playCounter) {
+        m_playCounter = playCounter;
+        setDirty(true);
+    }
+}
+
+void TrackInfoObject::updatePlayCounter(bool bPlayed) {
+    QMutexLocker lock(&m_qMutex);
+    PlayCounter playCounter(m_playCounter);
+    playCounter.setPlayedAndUpdateTimesPlayed(bPlayed);
     if (m_playCounter != playCounter) {
         m_playCounter = playCounter;
         setDirty(true);

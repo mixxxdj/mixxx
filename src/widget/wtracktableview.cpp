@@ -1334,7 +1334,7 @@ void WTrackTableView::slotResetPlayed() {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->resetTimesPlayed();
+            pTrack->resetPlayCounter();
         }
     }
 }

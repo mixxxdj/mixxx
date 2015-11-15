@@ -40,9 +40,9 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     } else if (column == LIBRARYTABLE_BPM) {
         return pTrack->getBpm();
     } else if (column == LIBRARYTABLE_PLAYED) {
-        return pTrack->isPlayed();
+        return pTrack->getPlayCounter().isPlayed();
     } else if (column == LIBRARYTABLE_TIMESPLAYED) {
-        return pTrack->getTimesPlayed();
+        return pTrack->getPlayCounter().getTimesPlayed();
     } else if (column == LIBRARYTABLE_RATING) {
         return pTrack->getRating();
     } else if (column == LIBRARYTABLE_KEY) {

@@ -408,7 +408,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     // We no longer store the wavesummary in the library table.
     m_pQueryLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
 
-    m_pQueryLibraryInsert->bindValue(":timesplayed", pTrack->getTimesPlayed());
+    m_pQueryLibraryInsert->bindValue(":timesplayed", pTrack->getPlayCounter().getTimesPlayed());
     //query.bindValue(":datetime_added", pTrack->getDateAdded());
     m_pQueryLibraryInsert->bindValue(":channels", pTrack->getChannels());
     m_pQueryLibraryInsert->bindValue(":mixxx_deleted", 0);
@@ -1081,14 +1081,17 @@ bool setTrackReplayGainPeak(const QSqlRecord& record, const int column,
 
 bool setTrackTimesPlayed(const QSqlRecord& record, const int column,
                          TrackPointer pTrack) {
-    pTrack->setTimesPlayed(record.value(column).toInt());
+    PlayCounter playCounter(pTrack->getPlayCounter());
+    playCounter.setTimesPlayed(record.value(column).toInt());
+    pTrack->setPlayCounter(playCounter);
     return false;
 }
 
 bool setTrackPlayed(const QSqlRecord& record, const int column,
                     TrackPointer pTrack) {
-    pTrack->setPlayed(record.value(column).toBool());
-    return false;
+    PlayCounter playCounter(pTrack->getPlayCounter());
+    playCounter.setPlayed(record.value(column).toBool());
+    pTrack->setPlayCounter(playCounter);
 }
 
 bool setTrackChannels(const QSqlRecord& record, const int column,
@@ -1469,8 +1472,9 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":replaygain", pTrack->getReplayGain().getRatio());
     query.bindValue(":replaygain_peak", pTrack->getReplayGain().getPeak());
     query.bindValue(":rating", pTrack->getRating());
-    query.bindValue(":timesplayed", pTrack->getTimesPlayed());
-    query.bindValue(":played", pTrack->isPlayed() ? 1 : 0);
+    const PlayCounter playCounter(pTrack->getPlayCounter());
+    query.bindValue(":timesplayed", playCounter.getTimesPlayed());
+    query.bindValue(":played", playCounter.isPlayed() ? 1 : 0);
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());

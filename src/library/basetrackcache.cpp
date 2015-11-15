@@ -310,9 +310,9 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) == column) {
         trackValue.setValue(pTrack->getReplayGain().getRatio());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
-        trackValue.setValue(pTrack->isPlayed());
+        trackValue.setValue(pTrack->getPlayCounter().isPlayed());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) == column) {
-        trackValue.setValue(pTrack->getTimesPlayed());
+        trackValue.setValue(pTrack->getPlayCounter().getTimesPlayed());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
         trackValue.setValue(pTrack->getRating());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {

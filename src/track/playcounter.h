@@ -1,7 +1,11 @@
 #ifndef MIXXX_PLAYCOUNTER_H
 #define MIXXX_PLAYCOUNTER_H
 
+#include "util/assert.h"
 
+
+// Counts the total number of times a track has been played
+// and if the track has been played during the current session.
 class PlayCounter {
 public:
     explicit PlayCounter(int timesPlayed = 0):
@@ -9,36 +13,29 @@ public:
         m_bPlayed(false) {
     }
 
-    // Set number of times the track has been played
-    void setTimesPlayed(int timesPlayed) {
-        m_iTimesPlayed = timesPlayed;
+    // Sets total number of times a track has been played
+    void setTimesPlayed(int iTimesPlayed) {
+        DEBUG_ASSERT(0 <= iTimesPlayed);
+        m_iTimesPlayed = iTimesPlayed;
     }
-    // Resets the play count back to 0
-    void resetTimesPlayed() {
-        setTimesPlayed(0);
-    }
-    // Return number of times the track has been played
+    // Returns the total number of times a track has been played
     int getTimesPlayed() const {
         return m_iTimesPlayed;
     }
 
-    // Set played status for the current session without affecting
-    // the play count
+    // Sets the played status of a track for the current session
+    // without affecting the play count.
     void setPlayed(bool bPlayed = true) {
         m_bPlayed = bPlayed;
     }
-    // Reset played status for the current session without affecting
-    // the play count
-    void resetPlayed() {
-        setPlayed(false);
-    }
-    // Returns true if track has been played during this session
+    // Returns true if track has been played during the current session
     bool isPlayed() const {
         return m_bPlayed;
     }
 
-    // Set played status and increment or decrement the play count accordingly.
-    void updatePlayed(bool bPlayed = true);
+    // Sets the played status of a track for the current session and
+    // increments or decrements the total play count accordingly.
+    void setPlayedAndUpdateTimesPlayed(bool bPlayed = true);
 
 private:
     int m_iTimesPlayed;
