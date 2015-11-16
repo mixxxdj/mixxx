@@ -154,8 +154,8 @@ void DlgPrefCrossfader::drawXfaderDisplay()
     }
 
     // Draw graph lines
-    QPoint pointTotal, point1, point2;
-    QPoint pointTotalPrev, point1Prev, point2Prev;
+    QPointF pointTotal, point1, point2;
+    QPointF pointTotalPrev, point1Prev, point2Prev;
     int pointCount = sizeX - 4;
     // reduced by 2 x 1 for border + 2 x 1 for inner distance to border
     double xfadeStep = 2. / (pointCount - 1);
@@ -174,9 +174,9 @@ void DlgPrefCrossfader::drawXfaderDisplay()
         sum *= 0.80;
 
         // draw it
-        pointTotal = QPoint(i + 1, (int)((1. - sum) * (sizeY)));
-        point1 = QPoint(i + 1, (int)((1. - gain1) * (sizeY)));
-        point2 = QPoint(i + 1, (int)((1. - gain2) * (sizeY)));
+        pointTotal = QPointF(i + 1, (1. - sum) * (sizeY) - 3);
+        point1 = QPointF(i + 1, (1. - gain1) * (sizeY) - 3);
+        point2 = QPointF(i + 1, (1. - gain2) * (sizeY) - 3);
 
         if(i == 0) {
             pointTotalPrev = pointTotal;

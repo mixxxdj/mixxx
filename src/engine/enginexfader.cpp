@@ -20,10 +20,7 @@ void EngineXfader::getXfadeGains(
 
     if (constPower) {
         // Apply Calibration
-        if (powerCalibration != 0.0) {
-            xfadePosition *= powerCalibration;
-        }
-
+        xfadePosition *= powerCalibration;
         xfadePositionLeft = xfadePosition - powerCalibration;
         xfadePositionRight = xfadePosition + powerCalibration;
     }
@@ -47,6 +44,14 @@ void EngineXfader::getXfadeGains(
     }
     if (*gain2 < 0.0) {
         *gain2 = 0.0;
+    }
+
+    if (constPower) {
+        if (*gain1 > *gain2) {
+            *gain2 = 1 - *gain1;
+        } else {
+            *gain1 = 1 - *gain2;
+        }
     }
 
     if (reverse) {
