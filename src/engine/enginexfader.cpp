@@ -2,13 +2,13 @@
 
 #include "util/math.h"
 
-double EngineXfader::getCalibration(double transform) {
+double EngineXfader::getPowerCalibration(double transform) {
     // get the transform_root of -3db (.5)
-    return pow(0.5, 1.0/transform);
+    return pow(0.5, 1.0 / transform);
 }
 
 void EngineXfader::getXfadeGains(
-        double xfadePosition, double transform, double calibration,
+        double xfadePosition, double transform, double powerCalibration,
         bool constPower, bool reverse, double* gain1, double* gain2) {
     if (gain1 == NULL || gain2 == NULL) {
         return;
@@ -20,12 +20,12 @@ void EngineXfader::getXfadeGains(
 
     if (constPower) {
         // Apply Calibration
-        if (calibration != 0.0) {
-            xfadePosition *= calibration;
+        if (powerCalibration != 0.0) {
+            xfadePosition *= powerCalibration;
         }
 
-        xfadePositionLeft = xfadePosition - calibration;
-        xfadePositionRight = xfadePosition + calibration;
+        xfadePositionLeft = xfadePosition - powerCalibration;
+        xfadePositionRight = xfadePosition + powerCalibration;
     }
 
     if (xfadePositionLeft < 0) { // on left side
