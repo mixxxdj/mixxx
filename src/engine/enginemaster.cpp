@@ -161,9 +161,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
             ConfigKey("[Mixer Profile]", "xFaderMode"));
     m_pXFaderMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pXFaderCurve = new ControlPotmeter(
-            ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
+            ConfigKey("[Mixer Profile]", "xFaderCurve"), 1.0, 1000.0);
     m_pXFaderCalibration = new ControlPotmeter(
-            ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
+            ConfigKey("[Mixer Profile]", "xFaderCalibration"), 0.5, 1.);
     m_pXFaderReverse = new ControlPushButton(
             ConfigKey("[Mixer Profile]", "xFaderReverse"));
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
