@@ -32,7 +32,7 @@
            3 - Mixxx 1.10.0 Pre (added freeing function for extensions)
            4 - Mixxx 1.11.0 Pre (added composer field to SoundSource)
            5 - Mixxx 1.12.0 Pre (added album artist and grouping fields to SoundSource)
-           6 - Mixxx 1.13.0 (added cover art suppport)
+           6 - Mixxx 2.0 (added cover art suppport)
   */
 
 /** Getter function to be declared by all SoundSource plugins */
