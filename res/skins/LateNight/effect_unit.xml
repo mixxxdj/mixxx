@@ -42,7 +42,8 @@
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>⏏</Text>
+                  <Unpressed>btn_clear.png</Unpressed>
+                  <Pressed>btn_clear_down.png</Pressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,clear</ConfigKey>
@@ -55,7 +56,8 @@
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>◀</Text>
+                  <Unpressed>btn_prev_chain.png</Unpressed>
+                  <Pressed>btn_prev_chain_down.png</Pressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,prev_chain</ConfigKey>
@@ -69,7 +71,8 @@
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>▶</Text>
+                  <Unpressed>btn_next_chain.png</Unpressed>
+                  <Pressed>btn_next_chain_down.png</Pressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,next_chain</ConfigKey>

@@ -1272,7 +1272,7 @@ void MixxxMainWindow::initActions()
     connect(m_pOptionsPreferences, SIGNAL(triggered()),
             this, SLOT(slotOptionsPreferences()));
 
-    QString externalLinkSuffix = QChar(0x21D7);
+    QString externalLinkSuffix = " =>";
 
     QString aboutTitle = tr("&About");
     QString aboutText = tr("About the application");

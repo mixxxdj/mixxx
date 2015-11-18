@@ -13,8 +13,8 @@ To get started with Mixxx:
 
 ## Roadmap
 
-The Mixxx team is hard at work on Mixxx 1.12.0. The best place to keep track of
-1.12.0 development is the [1.12.0 milestone page on Launchpad][launchpad 1.12.0].
+The Mixxx team is hard at work on Mixxx 2.0. The best place to keep track of
+2.0 development is the [1.12.0 milestone page on Launchpad][launchpad 1.12.0].
 
 ## Bug tracker
 

@@ -1,3 +1,5 @@
+#include <QDir>
+
 #include "sources/soundsourcesndfile.h"
 
 namespace Mixxx {
@@ -18,7 +20,8 @@ Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 #ifdef __WINDOWS__
     // Note: we cannot use QString::toStdWString since QT 4 is compiled with
     // '/Zc:wchar_t-' flag and QT 5 not
-    const ushort* const fileNameUtf16 = getLocalFileName().utf16();
+    const QString localFileName(QDir::toNativeSeparators(getLocalFileName()));
+    const ushort* const fileNameUtf16 = localFileName.utf16();
     static_assert(sizeof(wchar_t) == sizeof(ushort), "QString::utf16(): wchar_t and ushort have different sizes");
     m_pSndFile = sf_wchar_open(
 		reinterpret_cast<wchar_t*>(const_cast<ushort*>(fileNameUtf16)),
