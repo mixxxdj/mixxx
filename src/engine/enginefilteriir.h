@@ -22,11 +22,18 @@ enum IIRPass {
     IIR_HPMO,
 };
 
+
+class EngineFilterIIRBase : public EngineObjectConstIn {
+  public:
+    virtual void assumeSettled() = 0;
+};
+
+
 // length of the 3rd argument to fid_design_coef
 #define FIDSPEC_LENGTH 40
 
 template<unsigned int SIZE, enum IIRPass PASS>
-class EngineFilterIIR : public EngineObjectConstIn {
+class EngineFilterIIR : public EngineFilterIIRBase {
   public:
     EngineFilterIIR()
             : m_doRamping(false),
@@ -172,9 +179,13 @@ class EngineFilterIIR : public EngineObjectConstIn {
             qDebug() << "freq5:" << freq01 * 2.2 << resp3 << phase0;
             free(filt);
 #endif
-        }   
-    }   
+        }
+    }
 
+    virtual void assumeSettled() {
+        m_doRamping = false;
+        m_doStart = false;
+    }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {
@@ -233,7 +244,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
     }
 
   protected:
-    inline double processSample(double* coef, double* buf, register double val);
+    inline double processSample(double* coef, double* buf, double val);
     inline void pauseFilterInner() {
         // Set the current buffers to 0
         memset(m_buf1, 0, sizeof(m_buf1));
@@ -267,8 +278,8 @@ class EngineFilterIIR : public EngineObjectConstIn {
 template<>
 inline double EngineFilterIIR<2, IIR_LP>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-    register double tmp, fir, iir;
+                                                        double val) {
+    double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1];
     iir = val * coef[0];
     iir -= coef[1] * tmp; fir = tmp;
@@ -281,8 +292,8 @@ inline double EngineFilterIIR<2, IIR_LP>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<2, IIR_BP>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-    register double tmp, fir, iir;
+                                                        double val) {
+    double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1];
     iir = val * coef[0];
     iir -= coef[1] * tmp; fir = -tmp;
@@ -295,8 +306,8 @@ inline double EngineFilterIIR<2, IIR_BP>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<2, IIR_HP>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-    register double tmp, fir, iir;
+                                                        double val) {
+    double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1];
     iir = val * coef[0];
     iir -= coef[1] * tmp; fir = tmp;
@@ -309,8 +320,8 @@ inline double EngineFilterIIR<2, IIR_HP>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<4, IIR_LP>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-    register double tmp, fir, iir;
+                                                        double val) {
+    double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     iir = val * coef[0];
     iir -= coef[1] * tmp; fir = tmp;
@@ -328,8 +339,8 @@ inline double EngineFilterIIR<4, IIR_LP>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<8, IIR_BP>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-    register double tmp, fir, iir;
+                                                        double val) {
+    double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     buf[3] = buf[4]; buf[4] = buf[5]; buf[5] = buf[6]; buf[6] = buf[7];
     iir = val * coef[0];
@@ -358,8 +369,8 @@ inline double EngineFilterIIR<8, IIR_BP>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<4, IIR_HP>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-    register double tmp, fir, iir;
+                                                        double val) {
+    double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     iir= val * coef[0];
     iir -= coef[1] * tmp; fir = tmp;
@@ -377,8 +388,8 @@ inline double EngineFilterIIR<4, IIR_HP>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<8, IIR_LP>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-    register double tmp, fir, iir;
+                                                        double val) {
+    double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     buf[3] = buf[4]; buf[4] = buf[5]; buf[5] = buf[6]; buf[6] = buf[7];
     iir = val * coef[0];
@@ -407,8 +418,8 @@ inline double EngineFilterIIR<8, IIR_LP>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<16, IIR_BP>::processSample(double* coef,
                                                          double* buf,
-                                                         register double val) {
-    register double tmp, fir, iir;
+                                                         double val) {
+    double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     buf[3] = buf[4]; buf[4] = buf[5]; buf[5] = buf[6]; buf[6] = buf[7];
     buf[7] = buf[8]; buf[8] = buf[9]; buf[9] = buf[10]; buf[10] = buf[11];
@@ -459,8 +470,8 @@ inline double EngineFilterIIR<16, IIR_BP>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<8, IIR_HP>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-    register double tmp, fir, iir;
+                                                        double val) {
+    double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
     buf[3] = buf[4]; buf[4] = buf[5]; buf[5] = buf[6]; buf[6] = buf[7];
     iir = val * coef[0];
@@ -490,8 +501,8 @@ inline double EngineFilterIIR<8, IIR_HP>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<5, IIR_BP>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-    register double tmp, fir, iir;
+                                                        double val) {
+    double tmp, fir, iir;
     tmp = buf[0]; buf[0] = buf[1];
     iir = val * coef[0];
     iir -= coef[1] * tmp; fir = coef[2] * tmp;
@@ -504,8 +515,8 @@ inline double EngineFilterIIR<5, IIR_BP>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<4, IIR_LPMO>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-   register double tmp, fir, iir;
+                                                        double val) {
+   double tmp, fir, iir;
    tmp= buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
    iir= val * coef[0];
    iir -= coef[1]*tmp; fir= tmp;
@@ -530,8 +541,8 @@ inline double EngineFilterIIR<4, IIR_LPMO>::processSample(double* coef,
 template<>
 inline double EngineFilterIIR<4, IIR_HPMO>::processSample(double* coef,
                                                         double* buf,
-                                                        register double val) {
-   register double tmp, fir, iir;
+                                                        double val) {
+   double tmp, fir, iir;
    tmp= buf[0]; buf[0] = buf[1]; buf[1] = buf[2]; buf[2] = buf[3];
    iir= val * coef[0];
    iir -= coef[1]*tmp; fir= -tmp;

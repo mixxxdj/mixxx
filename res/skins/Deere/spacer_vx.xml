@@ -1,0 +1,16 @@
+<!DOCTYPE template>
+<!--
+Description: Spacer.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Spacer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Size><Variable name="height"/></Size>
+    <MinimumSize><Variable name="height"/></MinimumSize>
+    <MaximumSize><Variable name="height"/></MaximumSize>
+    <Children>
+    </Children>
+  </WidgetGroup>
+</Template>

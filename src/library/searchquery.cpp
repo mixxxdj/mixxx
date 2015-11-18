@@ -56,35 +56,55 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     return QVariant();
 }
 
-bool AndNode::match(const TrackPointer& pTrack) const {
-    if (m_nodes.isEmpty()) {
-        return true;
+//static
+QString QueryNode::concatSqlClauses(
+        const QStringList& sqlClauses, const QString& sqlConcatOp) {
+    switch (sqlClauses.size()) {
+    case 0:
+        return QString();
+    case 1:
+        return sqlClauses.front();
+    default:
+        // The component terms need to be wrapped into parantheses,
+        // but the whole expression does not. The composite node is
+        // always responsible for proper wrapping into parantheses!
+        return "(" % sqlClauses.join(") " % sqlConcatOp % " (") % ")";
     }
+}
 
-    foreach (const QueryNode* pNode, m_nodes) {
+bool AndNode::match(const TrackPointer& pTrack) const {
+    for (const auto& pNode: m_nodes) {
         if (!pNode->match(pTrack)) {
             return false;
         }
     }
+    // An empty AND node always evaluates to true! This
+    // is consistent with the generated SQL query.
     return true;
 }
 
 QString AndNode::toSql() const {
     QStringList queryFragments;
-    foreach (const QueryNode* pNode, m_nodes) {
+    queryFragments.reserve(m_nodes.size());
+    for (const auto& pNode: m_nodes) {
         QString sql = pNode->toSql();
         if (!sql.isEmpty()) {
             queryFragments << sql;
         }
     }
-    return queryFragments.join(" AND ");
+    return concatSqlClauses(queryFragments, "AND");
 }
 
 bool OrNode::match(const TrackPointer& pTrack) const {
-    if (m_nodes.isEmpty()) {
+    // An empty OR node would always evaluate to false
+    // which is inconsistent with the generated SQL query!
+    DEBUG_ASSERT_AND_HANDLE(!m_nodes.empty()) {
+        // Evaluate to true even if the correct choice would
+        // be false to keep the evaluation consistent with
+        // the generated SQL query.
         return true;
     }
-    foreach (const QueryNode* pNode, m_nodes) {
+    for (const auto& pNode: m_nodes) {
         if (pNode->match(pTrack)) {
             return true;
         }
@@ -94,36 +114,34 @@ bool OrNode::match(const TrackPointer& pTrack) const {
 
 QString OrNode::toSql() const {
     QStringList queryFragments;
-    foreach (const QueryNode* pNode, m_nodes) {
+    queryFragments.reserve(m_nodes.size());
+    for (const auto& pNode: m_nodes) {
         QString sql = pNode->toSql();
         if (!sql.isEmpty()) {
             queryFragments << sql;
         }
     }
-    return queryFragments.join(" OR ");
-}
-
-NotNode::NotNode(QueryNode* pNode)
-        : m_pNode(pNode) {
+    return concatSqlClauses(queryFragments, "OR");
 }
 
 bool NotNode::match(const TrackPointer& pTrack) const {
-    if (m_pNode != NULL) {
-        return !m_pNode->match(pTrack);
-    }
-    return false;
+    return !m_pNode->match(pTrack);
 }
 
 QString NotNode::toSql() const {
-    QString sql = m_pNode->toSql();
-    if (!sql.isEmpty()) {
-        return sql.prepend("NOT ");
+    QString sql(m_pNode->toSql());
+    if (sql.isEmpty()) {
+        return QString();
+    } else {
+        // The component term needs to be wrapped into parantheses,
+        // but the whole expression does not. The composite node is
+        // always responsible for proper wrapping into parantheses!
+        return "NOT (" % sql % ")";
     }
-    return QString();
 }
 
 bool TextFilterNode::match(const TrackPointer& pTrack) const {
-    foreach (QString sqlColumn, m_sqlColumns) {
+    for (const auto& sqlColumn: m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
         if (!value.isValid() || !qVariantCanConvert<QString>(value)) {
             continue;
@@ -141,17 +159,13 @@ QString TextFilterNode::toSql() const {
     QString escapedArgument = escaper.escapeString("%" + m_argument + "%");
 
     QStringList searchClauses;
-    foreach (QString sqlColumn, m_sqlColumns) {
-        searchClauses << QString("(%1 LIKE %2)").arg(sqlColumn, escapedArgument);
+    for (const auto& sqlColumn: m_sqlColumns) {
+        searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);
     }
-
-    return searchClauses.length() > 1 ?
-            QString("(%1)").arg(searchClauses.join(" OR ")) :
-            searchClauses.at(0);
+    return concatSqlClauses(searchClauses, "OR");
 }
 
-NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
-                                     QString argument)
+NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
         : m_sqlColumns(sqlColumns),
           m_bOperatorQuery(false),
           m_operator("="),
@@ -159,6 +173,11 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
           m_bRangeQuery(false),
           m_dRangeLow(0.0),
           m_dRangeHigh(0.0) {
+}
+
+NumericFilterNode::NumericFilterNode(
+        const QStringList& sqlColumns, const QString& argument)
+        : NumericFilterNode(sqlColumns) {
     init(argument);
 }
 
@@ -193,18 +212,8 @@ double NumericFilterNode::parse(const QString& arg, bool *ok) {
     return arg.toDouble(ok);
 }
 
-NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
-        : m_sqlColumns(sqlColumns),
-          m_bOperatorQuery(false),
-          m_operator("="),
-          m_dOperatorArgument(0.0),
-          m_bRangeQuery(false),
-          m_dRangeLow(0.0),
-          m_dRangeHigh(0.0) {
-}
-
 bool NumericFilterNode::match(const TrackPointer& pTrack) const {
-    foreach (QString sqlColumn, m_sqlColumns) {
+    for (const auto& sqlColumn: m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
         if (!value.isValid() || !qVariantCanConvert<double>(value)) {
             continue;
@@ -230,34 +239,34 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
 QString NumericFilterNode::toSql() const {
     if (m_bOperatorQuery) {
         QStringList searchClauses;
-        foreach (const QString& sqlColumn, m_sqlColumns) {
-            searchClauses << QString("(%1 %2 %3)").arg(
+        for (const auto& sqlColumn: m_sqlColumns) {
+            searchClauses << QString("%1 %2 %3").arg(
                 sqlColumn, m_operator, QString::number(m_dOperatorArgument));
         }
-        return searchClauses.length() > 1 ?
-                QString("(%1)").arg(searchClauses.join(" OR ")) :
-                searchClauses[0];
+        return concatSqlClauses(searchClauses, "OR");
     }
 
     if (m_bRangeQuery) {
         QStringList searchClauses;
-        foreach (const QString& sqlColumn, m_sqlColumns) {
-            searchClauses << QString("(%1 >= %2 AND %1 <= %3)")
-                    .arg(sqlColumn, QString::number(m_dRangeLow),
-                         QString::number(m_dRangeHigh));
+        for (const auto& sqlColumn: m_sqlColumns) {
+            QStringList rangeClauses;
+            rangeClauses << QString("%1 >= %2").arg(
+                    sqlColumn, QString::number(m_dRangeLow));
+            rangeClauses << QString("%1 <= %2").arg(
+                    sqlColumn, QString::number(m_dRangeHigh));
+            searchClauses << concatSqlClauses(rangeClauses, "AND");
         }
-
-        return searchClauses.length() > 1 ?
-                QString("(%1)").arg(searchClauses.join(" OR ")) :
-                searchClauses[0];
+        return concatSqlClauses(searchClauses, "OR");
     }
 
     return QString();
 }
 
-DurationFilterNode::DurationFilterNode(const QStringList& sqlColumns,
-                                       QString argument)
+DurationFilterNode::DurationFilterNode(
+        const QStringList& sqlColumns, const QString& argument)
         : NumericFilterNode(sqlColumns) {
+    // init() has to be called from this class directly to invoke
+    // the implementation of this and not that of the base class!
     init(argument);
 }
 
@@ -306,11 +315,8 @@ bool KeyFilterNode::match(const TrackPointer& pTrack) const {
 
 QString KeyFilterNode::toSql() const {
     QStringList searchClauses;
-    foreach (mixxx::track::io::key::ChromaticKey match, m_matchKeys) {
-        searchClauses << QString("(key_id IS %1)").arg(QString::number(match));
+    for (const auto& matchKey: m_matchKeys) {
+        searchClauses << QString("key_id IS %1").arg(QString::number(matchKey));
     }
-
-    return searchClauses.length() > 1 ?
-            QString("(%1)").arg(searchClauses.join(" OR ")) :
-            searchClauses[0];
+    return concatSqlClauses(searchClauses, "OR");
 }

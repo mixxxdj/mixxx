@@ -89,7 +89,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
 
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
         m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
@@ -102,9 +102,9 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     }
 
     // remove tracks that could not be added
-    for (int trackId = 0; trackId < trackIds.size(); ++trackId) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
+    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); ++trackIdIndex) {
+        if (!trackIds.at(trackIdIndex).isValid()) {
+            trackIds.removeAt(trackIdIndex--);
         }
     }
 
@@ -116,9 +116,8 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     int playlistId = playlistIdFromIndex(index);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
-    QFileInfo file(url.toLocalFile());
-    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName()) ||
-            Parser::isPlaylistFilenameSupported(file.fileName());
+    bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
     return !locked && formatSupported;
 }
 
@@ -191,12 +190,38 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
+    }
+}
 
+void PlaylistFeature::slotPlaylistContentChanged(int playlistId) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistContentChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        updateChildModel(playlistId);
+    }
+}
+
+
+
+void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
+                                               QString /* a_strName */) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        clearChildModel();
+        m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            // Switch the view to the playlist.
-            m_pPlaylistTableModel->setTableModel(playlistId);
-            // Update selection
-            emit(featureSelect(this, m_lastRightClickedIndex));
+            activatePlaylist(playlistId);
         }
     }
 }

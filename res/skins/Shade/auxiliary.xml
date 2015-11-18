@@ -12,7 +12,7 @@
 				**********************************************
 				-->
 				<StatusLight>
-					<TooltipId>PeakIndicator</TooltipId>
+					<TooltipId>channel_PeakIndicator</TooltipId>
 					<Style></Style>
 					<PathStatusLight>btn_clipping_microphone_over.png</PathStatusLight>
 					<PathBack>btn_clipping_microphone.png</PathBack>
@@ -21,14 +21,14 @@
 						<ConfigKey>[Auxiliary<Variable name="auxnum"/>],PeakIndicator</ConfigKey>
 					</Connection>
 				</StatusLight>
-	
+
 				<!--
 				**********************************************
 				Visual - Volume level display
 				**********************************************
 				-->
 				<VuMeter>
-					<TooltipId>microphone_VuMeter</TooltipId>
+					<TooltipId>channel_VuMeter</TooltipId>
 					<Style></Style>
 					<PathVu>btn_volume_display_microphone_over.png</PathVu>
 					<PathBack>btn_volume_display_microphone.png</PathBack>
@@ -62,7 +62,7 @@
 					    <ButtonState>LeftButton</ButtonState>
 				    </Connection>
 			    </PushButton>
-	
+
 
 				<Knob>
 					<TooltipId>pregain</TooltipId>

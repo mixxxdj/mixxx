@@ -37,7 +37,8 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(NULL) {
+          m_sampleBuffer(NULL),
+          m_wasActive(false) {
     if (pEffectsManager != NULL) {
         pEffectsManager->registerChannel(handle_group);
     }
@@ -78,6 +79,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         m_bPassthroughWasActive = true;
         m_sampleBuffer = NULL;
         m_pPregain->setSpeed(1);
+        m_pPregain->setScratching(false);
     } else {
         // If passthrough is no longer enabled, zero out the buffer
         if (m_bPassthroughWasActive) {
@@ -90,6 +92,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         m_pBuffer->process(pOut, iBufferSize);
         m_pBuffer->collectFeatures(&features);
         m_pPregain->setSpeed(m_pBuffer->getSpeed());
+        m_pPregain->setScratching(m_pBuffer->getScratching());
         m_bPassthroughWasActive = false;
     }
 
@@ -117,11 +120,18 @@ EngineBuffer* EngineDeck::getEngineBuffer() {
 }
 
 bool EngineDeck::isActive() {
+    bool active = false;
     if (m_bPassthroughWasActive && !m_bPassthroughIsActive) {
-        return true;
+        active = true;
+    } else {
+        active = m_pBuffer->isTrackLoaded() || isPassthroughActive();
     }
 
-    return (m_pBuffer->isTrackLoaded() || isPassthroughActive());
+    if (!active && m_wasActive) {
+        m_pVUMeter->reset();
+    }
+    m_wasActive = active;
+    return active;
 }
 
 void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int nFrames) {

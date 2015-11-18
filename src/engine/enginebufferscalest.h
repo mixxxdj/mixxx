@@ -58,9 +58,6 @@ class EngineBufferScaleST : public EngineBufferScale {
   private:
     // Holds the playback direction.
     bool m_bBackwards;
-    // Holds previous values for SoundTouch rate and tempo settings.
-    double m_dRateOld;
-    double m_dTempoOld;
 
     // Temporary buffer for reading from the RAMAN.
     CSAMPLE* buffer_back;

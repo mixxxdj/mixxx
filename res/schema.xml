@@ -395,4 +395,14 @@ METADATA
       ALTER TABLE library ADD COLUMN coverart_hash INTEGER DEFAULT 0;
     </sql>
   </revision>
+  <revision version="25" min_compatible="3">
+    <description>
+      Add full replay gain support including peak amplitude. The default
+      value for the peak amplitude is "undefined", represented by any
+      negative value. The internal constant for "undefined" is -1.0.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN replaygain_peak REAL DEFAULT -1.0;
+    </sql>
+  </revision>
 </schema>

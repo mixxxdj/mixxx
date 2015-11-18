@@ -104,11 +104,12 @@ class EngineBuffer : public EngineObject {
     };
   public:
     enum SeekRequest {
-        NO_SEEK,
-        SEEK_STANDARD,
-        SEEK_EXACT,
-        SEEK_PHASE
+        SEEK_NONE = 0x00,
+        SEEK_PHASE = 0x01,
+        SEEK_EXACT = 0x02,
+        SEEK_STANDARD = 0x03, // = (SEEK_EXACT | SEEK_PHASE)
     };
+    Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
     enum KeylockEngine {
         SOUNDTOUCH,
@@ -124,6 +125,7 @@ class EngineBuffer : public EngineObject {
 
     // Return the current rate (not thread-safe)
     double getSpeed();
+    bool getScratching();
     // Returns current bpm value (not thread-safe)
     double getBpm();
     // Returns the BPM of the loaded track around the current position (not thread-safe)
@@ -131,6 +133,7 @@ class EngineBuffer : public EngineObject {
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
+    // Queues a new seek position. Use SEEK_EXACT or SEEK_STANDARD as seekType
     void queueNewPlaypos(double newpos, enum SeekRequest seekType);
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
@@ -154,7 +157,7 @@ class EngineBuffer : public EngineObject {
     //void setReader(CachingReader* pReader);
 
     // For dependency injection of scalers.
-    void setScalerForTest(EngineBufferScale* pScale,
+    void setScalerForTest(EngineBufferScale* pScaleVinyl,
                           EngineBufferScale* pScaleKeylock);
 
     // For dependency injection of fake tracks, with an optional filebpm value.
@@ -233,9 +236,9 @@ class EngineBuffer : public EngineObject {
     void setNewPlaypos(double playpos);
 
     void processSyncRequests();
-    void processSeek();
+    void processSeek(bool paused);
 
-    double updateIndicatorsAndModifyPlay(double v);
+    bool updateIndicatorsAndModifyPlay(bool newPlay);
     void verifyPlay();
 
     // Holds the name of the control group
@@ -245,10 +248,12 @@ class EngineBuffer : public EngineObject {
     LoopingControl* m_pLoopingControl;
     FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
+    FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
+    FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;
@@ -278,6 +283,9 @@ class EngineBuffer : public EngineObject {
 
     // True if the previous callback was scratching.
     bool m_scratching_old;
+
+    // True if the previous callback was reverse.
+    bool m_reverse_old;
 
     // The previous callback's pitch. Used to check if the scaler parameters
     // need updating.
@@ -324,7 +332,6 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_backButton;
     ControlPushButton* m_pSlipButton;
 
-    ControlObject* m_rateEngine;
     ControlObject* m_visualBpm;
     ControlObject* m_visualKey;
     ControlObject* m_pQuantize;
@@ -333,7 +340,11 @@ class EngineBuffer : public EngineObject {
     ControlObjectSlave* m_pSampleRate;
     ControlObjectSlave* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
-    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
+
+    // This ControlObjectSlaves is created as parent to this and deleted by
+    // the Qt object tree. This helps that they are deleted by the creating
+    // thread, which is required to avoid segfaults.
+    ControlObjectSlave* m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
 
@@ -349,6 +360,8 @@ class EngineBuffer : public EngineObject {
     EngineBufferScale* m_pScale;
     FRIEND_TEST(EngineBufferTest, SlowRubberBand);
     FRIEND_TEST(EngineBufferTest, ResetPitchAdjustUsesLinear);
+    FRIEND_TEST(EngineBufferTest, VinylScalerRampZero);
+    FRIEND_TEST(EngineBufferTest, ReadFadeOut);
     EngineBufferScale* m_pScaleVinyl;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
@@ -366,9 +379,10 @@ class EngineBuffer : public EngineObject {
     bool m_bScalerOverride;
 
     QAtomicInt m_iSeekQueued;
+    QAtomicInt m_iSeekPhaseQueued;
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
-    ControlValueAtomic<double> m_queuedPosition;
+    ControlValueAtomic<double> m_queuedSeekPosition;
 
     // Holds the last sample value of the previous buffer. This is used when ramping to
     // zero in case of an immediate stop of the playback
@@ -399,5 +413,7 @@ class EngineBuffer : public EngineObject {
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(EngineBuffer::SeekRequests)
 
 #endif

@@ -11,8 +11,8 @@
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
-    <MinimumSize>-1,45</MinimumSize>
-    <MaximumSize>-1,45</MaximumSize>
+    <MinimumSize>-1,50</MinimumSize>
+    <MaximumSize>-1,50</MaximumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitNameRow</ObjectName>
@@ -20,89 +20,91 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>EffectUnitNameContainer</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,max</SizePolicy>
-            <Children>
-              <EffectChainName>
-                <EffectRack><Variable name="EffectRack"/></EffectRack>
-                <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
-              </EffectChainName>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
             <ObjectName>EffectUnitNextPrevContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>⏏</Text>
-                </State>
-                <Connection>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ConfigKey><Variable name="group"/>,clear</ConfigKey>
-                </Connection>
-              </PushButton>
-
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>E</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>E</Text>
-                </State>
-                <Connection>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
-                </Connection>
-              </PushButton>
-
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>◀</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,prev_chain</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
-
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>▶</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,next_chain</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
-
-              <Template src="skin:small_knob.xml">
-                <SetVariable name="control">super1</SetVariable>
-                <SetVariable name="label">SuperKnob</SetVariable>
+              <Template src="skin:left_2state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,enabled</SetVariable>
               </Template>
 
-              <Template src="skin:small_knob.xml">
-                <SetVariable name="control">mix</SetVariable>
-                <SetVariable name="label">Mix</SetVariable>
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,clear</SetVariable>
               </Template>
+
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_chevron_left_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_chevron_left_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,prev_chain</SetVariable>
+              </Template>
+
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_chevron_right_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_chevron_right_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,next_chain</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>EffectUnitNameContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,max</SizePolicy>
+                <Children>
+                  <EffectChainName>
+                    <EffectRack><Variable name="EffectRack"/></EffectRack>
+                    <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+                  </EffectChainName>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>EffectUnitMainKnobsContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:small_knob.xml">
+                    <SetVariable name="control">super1</SetVariable>
+                    <SetVariable name="label">Super</SetVariable>
+                  </Template>
+                  <Template src="skin:small_knob.xml">
+                    <SetVariable name="control">mix</SetVariable>
+                    <SetVariable name="label">Mix</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>
@@ -142,6 +144,130 @@
             <SetVariable name="group_name">CH4</SetVariable>
             <SetVariable name="group_group">[Channel4]</SetVariable>
           </Template>
+
+          <!-- Optionally display Mic 1-4 and Aux 1-4 FX arm buttons if these
+               channels are configured in the Sound Hardware preferences.
+                We have to use WidgetGroups here, because we can't connect
+               <BindProperty> directly to templates. -->
+          <WidgetGroup>
+            <ObjectName>EffectUnitGroupControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">MIC1</SetVariable>
+                    <SetVariable name="group_group">[Microphone]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Microphone],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">MIC2</SetVariable>
+                    <SetVariable name="group_group">[Microphone2]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Microphone2],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">MIC3</SetVariable>
+                    <SetVariable name="group_group">[Microphone3]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Microphone3],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">MIC4</SetVariable>
+                    <SetVariable name="group_group">[Microphone4]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Microphone4],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                  <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">Aux1</SetVariable>
+                    <SetVariable name="group_group">[Auxiliary1]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary1],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                  <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">Aux2</SetVariable>
+                    <SetVariable name="group_group">[Auxiliary2]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary2],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                  <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">Aux3</SetVariable>
+                    <SetVariable name="group_group">[Auxiliary3]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary3],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                  <Children>
+                  <Template src="skin:effect_chain_group_control_button.xml">
+                    <SetVariable name="group_name">Aux4</SetVariable>
+                    <SetVariable name="group_group">[Auxiliary4]</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Auxiliary4],enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
     </Children>

@@ -10,67 +10,62 @@
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <Template src="skin:knob_with_button.xml">
-        <SetVariable name="TooltipId">pregain</SetVariable>
-        <SetVariable name="control">pregain</SetVariable>
-        <SetVariable name="button_TooltipId">mute</SetVariable>
-        <SetVariable name="button_control">mute</SetVariable>
-        <SetVariable name="label">Gain</SetVariable>
-      </Template>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:knob_with_button_horizontal.xml">
+            <SetVariable name="TooltipId">pregain</SetVariable>
+            <SetVariable name="control">pregain</SetVariable>
+            <SetVariable name="color">red</SetVariable>
+            <SetVariable name="button_TooltipId">mute</SetVariable>
+            <SetVariable name="button_control">mute</SetVariable>
+            <SetVariable name="label">Gain</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
 
       <Template src="skin:equalizer_rack_parameter.xml">
         <SetVariable name="parameter">4</SetVariable>
+        <SetVariable name="color">yellow</SetVariable>
       </Template>
 
       <Template src="skin:equalizer_rack_parameter.xml">
         <SetVariable name="TooltipId">filterHighKill</SetVariable>
         <SetVariable name="parameter">3</SetVariable>
+        <SetVariable name="color">yellow</SetVariable>
       </Template>
 
       <Template src="skin:equalizer_rack_parameter.xml">
         <SetVariable name="TooltipId">filterMidKill</SetVariable>
         <SetVariable name="parameter">2</SetVariable>
+        <SetVariable name="color">yellow</SetVariable>
       </Template>
 
       <Template src="skin:equalizer_rack_parameter.xml">
         <SetVariable name="TooltipId">filterLowKill</SetVariable>
         <SetVariable name="parameter">1</SetVariable>
+        <SetVariable name="color">yellow</SetVariable>
       </Template>
 
       <Template src="skin:quick_effect_superknob.xml">
         <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
         <SetVariable name="TooltipId"></SetVariable>
         <SetVariable name="QuickEffect">1</SetVariable>
+        <SetVariable name="color">blue</SetVariable>
       </Template>
 
-      <Template src="skin:knob_with_button.xml">
+      <Template src="skin:knob_with_button_horizontal.xml">
         <SetVariable name="TooltipId">pitch_adjust</SetVariable>
         <SetVariable name="control">pitch_adjust</SetVariable>
+        <SetVariable name="color">blue</SetVariable>
         <SetVariable name="button_TooltipId">keylock</SetVariable>
         <SetVariable name="button_control">keylock</SetVariable>
         <SetVariable name="label">Key</SetVariable>
       </Template>
 
-      <PushButton>
-        <TooltipId>pfl</TooltipId>
-        <ObjectName>DeckPFL</ObjectName>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>HEAD</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>HEAD</Text>
-        </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
-
+      <!-- Needed to pin above controls to top, if ``None``  is
+           selected in Preferences>Equalizers>Quick-Effect -->
+      <Template src="skin:spacer_v.xml"></Template>
     </Children>
   </WidgetGroup>
 </Template>

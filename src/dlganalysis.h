@@ -23,6 +23,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     virtual void onShow();
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
+    virtual void slotSendToAutoDJ();
+    virtual void slotSendToAutoDJTop();
     virtual void moveSelection(int delta);
     inline const QString currentSearch() {
         return m_pAnalysisLibraryTableModel->currentSearch();
@@ -45,7 +47,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString player);
-    void analyzeTracks(QList<int> trackIds);
+    void analyzeTracks(QList<TrackId> trackIds);
     void stopAnalysis();
     void trackSelected(TrackPointer pTrack);
 

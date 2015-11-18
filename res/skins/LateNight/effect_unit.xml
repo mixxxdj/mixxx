@@ -11,8 +11,8 @@
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
-    <MinimumSize>300,60</MinimumSize>
-    <MaximumSize>350,-1</MaximumSize>
+    <MinimumSize>300,85</MinimumSize>
+    <MaximumSize>350,85</MaximumSize>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitNameRow</ObjectName>
@@ -37,6 +37,7 @@
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <PushButton>
+                <ObjectName>EffectUnitButton</ObjectName>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
@@ -49,6 +50,7 @@
               </PushButton>
 
               <PushButton>
+                <ObjectName>EffectUnitButton</ObjectName>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
@@ -62,6 +64,7 @@
               </PushButton>
 
               <PushButton>
+                <ObjectName>EffectUnitButton</ObjectName>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
@@ -168,11 +171,11 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:effect_unit_group_control_button.xml">
-                        <SetVariable name="group_name">Master</SetVariable>
+                        <SetVariable name="group_name">MASTER</SetVariable>
                         <SetVariable name="group_group">[Master]</SetVariable>
                       </Template>
                       <Template src="skin:effect_unit_group_control_button.xml">
-                        <SetVariable name="group_name">Head</SetVariable>
+                        <SetVariable name="group_name">HEAD</SetVariable>
                         <SetVariable name="group_group">[Headphone]</SetVariable>
                       </Template>
                     </Children>

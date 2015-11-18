@@ -22,6 +22,9 @@
 	the resulting work only under the same or similar license to this one.
 
 	See CHANGELOG.txt for the list of changes.
+
+	TODO: Remove "persist" attributes throughout the skin and confirm that declaring
+	them in the attributes section instead works.
 	-->
 
 <!DOCTYPE skin>
@@ -34,23 +37,28 @@
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
+      <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <!--<attribute config_key="[Master],num_samplers">4</attribute>-->
-      <!--<attribute config_key="[Master],num_preview_decks">1</attribute>-->
-      <!--Optionally, make elements visible on skin load-->
-      <attribute config_key="[Spinny1],show_spinny">1</attribute>
-      <attribute config_key="[Spinny2],show_spinny">1</attribute>
-      <attribute config_key="[Spinny3],show_spinny">1</attribute>
-      <attribute config_key="[Spinny4],show_spinny">1</attribute>
-      <attribute config_key="[Samplers],show_samplers">0</attribute>
-      <attribute config_key="[Microphone],show_microphone">0</attribute>
-      <attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
-      <attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <attribute config_key="[Master],mixer_4decks_status">1</attribute>
-      <attribute config_key="[Master],show_mixer">1</attribute>
-      <attribute config_key="[Library],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute persist="true" config_key="[MicrophoneRack],show">0</attribute>
+      <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
+      <attribute persist="true" config_key="[Master],show_mics">0</attribute>
+      <attribute persist="true" config_key="[Master],view_curpage">2</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Library],show_current">1</attribute>
+      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
-      <attribute config_key="[Library],show_current">1</attribute>
+      <attribute config_key="[Master],maximize_library">0</attribute>
     </attributes>
   </manifest>
 
@@ -77,40 +85,41 @@
     <WidgetGroup>
         <ObjectName>SkinContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,max</SizePolicy>
-        <MinimumSize>0,0</MinimumSize>
+        <SizePolicy>me,me</SizePolicy>
         <Children>
-            <WidgetStack currentpage="[Library],show_big_current" persist="true">
+            <!-- Select between either the full UI or the big library -->
+            <WidgetStack currentpage="[Master],maximize_library">
                 <Children>
-                    <WidgetGroup trigger="[Library],unshow_big">
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>i,max</SizePolicy>
-                        <!-- <MinimumSize>1280,525</MinimumSize>-->
-                        <!--  <MinimumSize>0,525</MinimumSize>-->
-                        <!--  <MaximumSize>1920,525</MaximumSize>-->
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,me</SizePolicy>
                         <Children>
-                            <Template src="skin:decks_left.xml"/>
-                            <Template src="skin:waveform_and_mixer.xml"/>
-                            <Template src="skin:decks_right.xml"/>
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>i,max</SizePolicy>
+                                <Children>
+                                    <Template src="skin:decks_left.xml"/>
+                                    <Template src="skin:waveform_and_mixer.xml"/>
+                                    <Template src="skin:decks_right.xml"/>
+                                </Children>
+                            </WidgetGroup>
+                            <Template src="skin:lower_half.xml"/>
                         </Children>
                     </WidgetGroup>
 
-                    <!-- Collapsed UI == big library.
-                    To get this to work, I had to wrap the stack in a group
-                    with sizepolicy max, max (which means the group can shrink
-                    as much as necessary) and then set the min size to 0, which
-                    means it can shrink to nothing.
-                     -->
                     <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>f,f</SizePolicy>
-                        <Size>0,0</Size>
-                        <Children/>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children>
+                            <SingletonContainer>
+                                <ObjectName>LibrarySingleton</ObjectName>
+                            </SingletonContainer>
+                            <Template src="skin:toolbar_big_library.xml"/>
+                        </Children>
                     </WidgetGroup>
                 </Children>
             </WidgetStack>
         </Children>
     </WidgetGroup>
-    <Template src="skin:lower_half.xml"/>
   </Children>
 </skin>

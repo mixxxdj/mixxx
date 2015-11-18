@@ -43,7 +43,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
                                     double* pPitchRatio);
 
   private:
-    CSAMPLE* do_scale(CSAMPLE* buf, unsigned long buf_size,
+    CSAMPLE* do_scale(CSAMPLE* buf, int buf_size,
                       int *samples_read);
 
     /** Holds playback direction */
@@ -52,18 +52,14 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
     double m_dRate;
     double m_dOldRate;
 
-    /** Buffer for handling calls to ReadAheadManager */
-    CSAMPLE* buffer_int;
-    int buffer_int_size;
-    CSAMPLE m_fPrevSample[2];
+    // Buffer for handling calls to ReadAheadManager
+    CSAMPLE* m_bufferInt;
+    int m_bufferIntSize;
+    CSAMPLE m_floorSampleOld[2];
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
-    double m_dCurSampleIndex;
-    double m_dNextSampleIndex;
-
-    /*QFile df;
-    QTextStream writer;
-    int buffer_count;*/
+    double m_dCurrentFrame;
+    double m_dNextFrame;
 };
 
 #endif

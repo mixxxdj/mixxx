@@ -11,10 +11,12 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
+    <Size>40f,30f</Size>
     <Children>
-      <Template src="skin:knob.xml">
+      <Template src="skin:small_knob.xml">
         <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
         <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
+        <SetVariable name="color"><Variable name="color"/></SetVariable>
       </Template>
       <EffectParameterName>
         <Size>40f,10f</Size>

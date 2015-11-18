@@ -2,7 +2,6 @@
 #define KEYCONTROL_H
 
 #include "engine/enginecontrol.h"
-#include "tapfilter.h"
 #include "control/controlvalue.h"
 
 class ControlObject;

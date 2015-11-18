@@ -426,6 +426,10 @@
        <property name="text">
         <string>Jump to main cue point</string>
        </property>
+       <property name="toolTip">
+        <string>Automatically seeks to the first saved cue point on track load.
+            If none exists, seeks to the beginning of the track.</string>
+       </property>
       </widget>
      </item>
      <item row="0" column="1" colspan="2">
@@ -628,10 +632,12 @@
      <item row="8" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault">
        <property name="toolTip">
-        <string>Mixxx mode: 
+        <string>Mixxx mode:
 - Cue button while pause at cue point = preview
 - Cue button while pause not at cue point = set cue point
 - Cue button while playing = pause at cue point
+Mixxx mode (no blinking):
+- Same as Mixxx mode but with no blinking indicators
 Pioneer mode:
 - Same as Mixxx mode with a flashing play button
 Denon mode:
@@ -640,7 +646,7 @@ Denon mode:
 - Play = set cue point
 Numark mode:
 - Same as Denon mode, but without a flashing play button
-        </string>
+</string>
        </property>
       </widget>
      </item>

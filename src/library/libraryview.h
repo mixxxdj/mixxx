@@ -11,6 +11,8 @@
 
 class LibraryView {
   public:
+    virtual ~LibraryView() {};
+
     virtual void onShow() = 0;
     // reimplement if LibraryView should be able to search
     virtual void onSearch(const QString& text) {Q_UNUSED(text);}
@@ -18,6 +20,9 @@ class LibraryView {
     // If applicable, requests that the LibraryView load the selected
     // track. Does nothing otherwise.
     virtual void loadSelectedTrack() {};
+
+    virtual void slotSendToAutoDJ() {};
+    virtual void slotSendToAutoDJTop() {};
 
     // If applicable, requests that the LibraryView load the selected track to
     // the specified group. Does nothing otherwise.

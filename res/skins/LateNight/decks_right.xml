@@ -20,6 +20,7 @@
                     <WidgetGroup>
                         <ObjectName>Deck</ObjectName>
                         <Layout>horizontal</Layout>
+                        <SizePolicy>me,me</SizePolicy>
                         <Children>
                             <Template src="skin:deck.xml">
                                 <SetVariable name="channum">4</SetVariable>
@@ -36,9 +37,22 @@
                         </Connection>
                     </WidgetGroup>
                     <WidgetGroup>
-                      <Layout>vertical</Layout>
-                      <SizePolicy>me,min</SizePolicy>
+                      <ObjectName>NoBorder</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,me</SizePolicy>
                       <MinimumSize>0,0</MinimumSize>
+                      <MaximumSize>,70</MaximumSize>
+                      <Children/>
+                      <Connection>
+                          <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,me</SizePolicy>
+                      <MinimumSize>0,0</MinimumSize>
+                      <MaximumSize>,80</MaximumSize>
                       <Children/>
                     </WidgetGroup>
                 </Children>

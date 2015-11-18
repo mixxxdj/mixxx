@@ -141,7 +141,8 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
-        double drawPos = m_handler.parameterToPosition(getControlParameterDisplay());
+        // Slider position rounded, verify this for HiDPI : bug 1479037
+        double drawPos = round(m_handler.parameterToPosition(getControlParameterDisplay()));
         if (m_bHorizontal) {
             // The handle's draw mode determines whether it is stretched.
             QRectF targetRect(drawPos, 0, m_dHandleLength, height());
@@ -190,8 +191,13 @@ double WSliderComposed::calculateHandleLength() {
                     mode == Paintable::TILE || m_pHandle->height() == 0.0) {
                 return m_pHandle->width();
             } else if (mode == Paintable::STRETCH_ASPECT) {
-                const qreal aspect = static_cast<double>(m_pHandle->width()) /
-                        static_cast<double>(m_pHandle->height());
+                const int iHeight = m_pHandle->height();
+                if (iHeight == 0) {
+                  qDebug() << "WSliderComposed: Invalid height.";
+                  return 0.0;
+                }
+                const qreal aspect =
+                  static_cast<qreal>(m_pHandle->width()) / iHeight;
                 return aspect * height();
             }
         } else {
@@ -200,8 +206,13 @@ double WSliderComposed::calculateHandleLength() {
                     mode == Paintable::TILE || m_pHandle->width() == 0.0) {
                 return m_pHandle->height();
             } else if (mode == Paintable::STRETCH_ASPECT) {
-                const qreal aspect = static_cast<double>(m_pHandle->height()) /
-                        static_cast<double>(m_pHandle->width());
+                const int iWidth = m_pHandle->width();
+                if (iWidth == 0) {
+                  qDebug() << "WSliderComposed: Invalid width.";
+                  return 0.0;
+                }
+                const qreal aspect =
+                  static_cast<qreal>(m_pHandle->height()) / iWidth;
                 return aspect * width();
             }
         }

@@ -24,7 +24,7 @@ void EngineBufferScaleDummy::clear()
 
 CSAMPLE* EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
-    double rate = m_dBaseRate * m_dTempo;
+    double rate = m_dBaseRate * m_dTempoRatio;
     if (rate == 0.0) {
         SampleUtil::clear(m_buffer, buf_size);
         return m_buffer;

@@ -6,7 +6,7 @@
 #include "waveformwidgetrenderer.h"
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
@@ -36,16 +36,16 @@ WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
 bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
-    m_pEndOfTrackControl = new ControlObjectThread(
+    m_pEndOfTrackControl = new ControlObjectSlave(
             m_waveformRenderer->getGroup(), "end_of_track");
     m_pEndOfTrackControl->slotSet(0.);
     m_endOfTrackEnabled = false;
 
-    m_pTrackSampleRate = new ControlObjectThread(
+    m_pTrackSampleRate = new ControlObjectSlave(
             m_waveformRenderer->getGroup(), "track_samplerate");
-    m_pPlayControl = new ControlObjectThread(
+    m_pPlayControl = new ControlObjectSlave(
             m_waveformRenderer->getGroup(), "play");
-    m_pLoopControl = new ControlObjectThread(
+    m_pLoopControl = new ControlObjectSlave(
             m_waveformRenderer->getGroup(), "loop_enabled");
     return true;
 }
@@ -99,7 +99,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
             || trackLength <= m_remainingTimeTriggerSeconds //track too short
             ) {
         if (m_endOfTrackEnabled) {
-            m_pEndOfTrackControl->slotSet(0.0);
+            m_pEndOfTrackControl->set(0.0);
             m_endOfTrackEnabled = false;
         }
         return;
@@ -111,7 +111,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     if (remainingTime > m_remainingTimeTriggerSeconds) {
         if (m_endOfTrackEnabled) {
-            m_pEndOfTrackControl->slotSet(0.);
+            m_pEndOfTrackControl->set(0.);
             m_endOfTrackEnabled = false;
         }
         return;

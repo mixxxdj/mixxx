@@ -249,8 +249,7 @@ void SampleUtil::copyWithGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT
 
 // static
 void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT pSrc,
-        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
-        int iNumSamples) {
+        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain, int iNumSamples) {
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;
@@ -285,37 +284,56 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
 // static
 void SampleUtil::convertS16ToFloat32(CSAMPLE* _RESTRICT pDest, const SAMPLE* _RESTRICT pSrc,
         int iNumSamples) {
-    // -32768 is a valid low sample, whereas 32767 is the highest valid sample.
-    // Note that this means that although some sample values convert to -1.0,
-    // none will convert to +1.0.
-    const CSAMPLE kConversionFactor = 0x8000;
+    // SAMPLE_MIN = -32768 is a valid low sample, whereas SAMPLE_MAX = 32767
+    // is the highest valid sample. Note that this means that although some
+    // sample values convert to -1.0, none will convert to +1.0.
+    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
+    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
     // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
     }
 }
 
+//static
+void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
+        unsigned int iNumSamples) {
+    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
+    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = SAMPLE(pSrc[i] * kConversionFactor);
+    }
+}
+
 // static
-bool SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
+SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
         const CSAMPLE* pBuffer, int iNumSamples) {
     CSAMPLE fAbsL = CSAMPLE_ZERO;
     CSAMPLE fAbsR = CSAMPLE_ZERO;
-    CSAMPLE clipped = 0;
+    CSAMPLE clippedL = 0;
+    CSAMPLE clippedR = 0;
 
     // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         CSAMPLE absl = fabs(pBuffer[i * 2]);
         fAbsL += absl;
-        clipped += absl > CSAMPLE_PEAK ? 1 : 0;
+        clippedL += absl > CSAMPLE_PEAK ? 1 : 0;
         CSAMPLE absr = fabs(pBuffer[i * 2 + 1]);
         fAbsR += absr;
         // Replacing the code with a bool clipped will prevent vetorizing
-        clipped += absr > CSAMPLE_PEAK ? 1 : 0;
+        clippedR += absr > CSAMPLE_PEAK ? 1 : 0;
     }
 
     *pfAbsL = fAbsL;
     *pfAbsR = fAbsR;
-    return (clipped != 0);
+    SampleUtil::CLIP_STATUS clipping = SampleUtil::NO_CLIPPING;
+    if (clippedL > 0) {
+        clipping |= SampleUtil::CLIPPING_LEFT;
+    }
+    if (clippedR > 0) {
+        clipping |= SampleUtil::CLIPPING_RIGHT;
+    }
+    return clipping;
 }
 
 // static
@@ -377,12 +395,12 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
 }
 
 // static
-void SampleUtil::doubleMonoToDualMono(SAMPLE* pBuffer, int numFrames) {
+void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, int numFrames) {
     // backward loop
     int i = numFrames;
     // Unvectorizable Loop
     while (0 < i--) {
-        CSAMPLE s = pBuffer[i];
+        const CSAMPLE s = pBuffer[i];
         pBuffer[i * 2] = s;
         pBuffer[i * 2 + 1] = s;
     }
@@ -394,7 +412,7 @@ void SampleUtil::copyMonoToDualMono(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RE
     // forward loop
     // note: LOOP VECTORIZED
     for (int i = 0; i < numFrames; ++i) {
-        CSAMPLE s = pSrc[i];
+        const CSAMPLE s = pSrc[i];
         pDest[i * 2] = s;
         pDest[i * 2 + 1] = s;
     }
@@ -419,3 +437,18 @@ void SampleUtil::copyMultiToStereo(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RES
         pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
     }
 }
+
+
+// static
+void SampleUtil::reverse(CSAMPLE* pBuffer, int iNumSamples) {
+    for (int j = 0; j < iNumSamples / 4; ++j) {
+        const int endpos = (iNumSamples - 1) - j * 2 ;
+        CSAMPLE temp1 = pBuffer[j * 2];
+        CSAMPLE temp2 = pBuffer[j * 2 + 1];
+        pBuffer[j * 2] = pBuffer[endpos - 1];
+        pBuffer[j * 2 + 1] = pBuffer[endpos];
+        pBuffer[endpos - 1] = temp1;
+        pBuffer[endpos] = temp2;
+    }
+}
+

@@ -92,7 +92,7 @@ void EffectRack::slotClearRack(double v) {
 EffectChainPointer EffectRack::makeEmptyChain() {
     EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
                                               EffectChainPointer()));
-    pChain->setName("Empty Chain");
+    pChain->setName(tr("Empty Chain"));
     return pChain;
 }
 

@@ -60,8 +60,8 @@ class EngineBufferScale : public QObject {
                                     double* pTempoRatio,
                                     double* pPitchRatio) {
         m_dBaseRate = base_rate;
-        m_dTempo = *pTempoRatio;
-        m_dPitch = *pPitchRatio;
+        m_dTempoRatio = *pTempoRatio;
+        m_dPitchRatio = *pPitchRatio;
     }
 
     // Set the desired output sample rate.
@@ -80,8 +80,8 @@ class EngineBufferScale : public QObject {
     int m_iSampleRate;
     double m_dBaseRate;
     bool m_bSpeedAffectsPitch;
-    double m_dTempo;
-    double m_dPitch;
+    double m_dTempoRatio;
+    double m_dPitchRatio;
     /** Pointer to internal buffer */
     CSAMPLE* m_buffer;
     /** New playpos after call to scale */
