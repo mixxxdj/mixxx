@@ -55,17 +55,15 @@ QString safeDecodeWideString(const wchar_t* pStr, size_t max_length) {
     while ((size < (int)max_length) && (pStr[size] != 0)) {
         ++size;
     }
-#ifdef __WINDOWS__
-    // We cannot use Qts wchar_t functions, since the may work or not
+    // inlining QString::fromWCharArray()
+    // We cannot use Qts wchar_t functions, since they may work or not
     // depending on the '/Zc:wchar_t-' build flag in the Qt configs
+    // on Windows build
     if (sizeof(wchar_t) == sizeof(QChar)) {
         return QString::fromUtf16((const ushort *)pStr, size);
     } else {
         return QString::fromUcs4((uint *)pStr, size);
     }
-#else
-    return QString::fromWCharArray(pStr, size);
-#endif
 }
 
 HidController::HidController(const hid_device_info deviceInfo)
