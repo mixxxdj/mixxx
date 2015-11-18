@@ -50,30 +50,22 @@ QString safeDecodeWideString(const wchar_t* pStr, size_t max_length) {
     if (pStr == NULL) {
         return QString();
     }
-    // pStr is untrusted since it might be non-null terminated.
-    wchar_t* tmp = new wchar_t[max_length+1];
-    // wcsnlen is not available on all platforms, so just make a temporary
-    // buffer
-    wcsncpy(tmp, pStr, max_length);
-    // If pStr is greater than max_length characters or it is not
-    // NULL-terminated then we add a safety NULL at the end of our copy
-    // array. This allows us to pass it to fromXXX below without worrying about
-    // walking off into unallocated memory.
-    tmp[max_length] = 0;
-    QString result;
+    // find a terminating 0 or take all chars
+    int size = 0;
+    while ((size < (int)max_length) && (pStr[size] != 0)) {
+        ++size;
+    }
 #ifdef __WINDOWS__
     // We cannot use Qts wchar_t functions, since the may work or not
     // depending on the '/Zc:wchar_t-' build flag in the Qt configs
     if (sizeof(wchar_t) == sizeof(QChar)) {
-        result = QString::fromUtf16((const ushort *)tmp);
+        return QString::fromUtf16((const ushort *)pStr, size);
     } else {
-        result = QString::fromUcs4((uint *)tmp);
+        return QString::fromUcs4((uint *)pStr, size);
     }
 #else
-    result = QString::fromWCharArray(tmp);
+    return QString::fromWCharArray(pStr, size);
 #endif
-    delete [] tmp;
-    return result;
 }
 
 HidController::HidController(const hid_device_info deviceInfo)
