@@ -66,7 +66,7 @@
     <!-- And ALWAYS install per machine!!! -->
     <Package Id="*"
              Keywords="Installer"
-             InstallerVersion="400"
+             InstallerVersion="200"
              Compressed="yes"
              InstallScope="perMachine"
              Description="!(loc.ProductDescription)"
@@ -138,9 +138,12 @@
         When time will come to remove XP support, simply change 501 to 600 for vista or 601 for seven
         https://msdn.microsoft.com/en-us/library/aa370556%28v=vs.85%29.aspx
     -->
+    <!-- minimum OS version check disabled for now because we do not want to enforce installing mixxx on older systems.
+         Anyway, we display a warning message when installing on XP and below
     <Condition Message="!(loc.OS2Old)">
        <![CDATA[Installed OR (VersionNT >= 501)]]>
     </Condition>
+    -->
  
     <!-- 
       2. Check OS bitness
