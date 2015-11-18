@@ -23,14 +23,11 @@
                                    <PushButton>
                                       <Size>16f,16f</Size>
                                       <ObjectName>PitchTweakButton</ObjectName>
-                                      <NumberStates>2</NumberStates>
+                                      <NumberStates>1</NumberStates>
                                       <State>
                                         <Number>0</Number>
-                                        <Text>&#9664;</Text>
-                                      </State>
-                                      <State>
-                                        <Number>1</Number>
-                                        <Text>&#9664;</Text>
+                                        <Unpressed>btn_prev.png</Unpressed>
+                                        <Pressed>btn_prev_down.png</Pressed>
                                       </State>
                                       <Connection>
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_down_small</ConfigKey>
@@ -67,14 +64,11 @@
                                    <PushButton>
                                       <Size>16f,16f</Size>
                                       <ObjectName>PitchTweakButton</ObjectName>
-                                      <NumberStates>2</NumberStates>
+                                      <NumberStates>1</NumberStates>
                                       <State>
                                         <Number>0</Number>
-                                        <Text>&#9654;</Text>
-                                      </State>
-                                      <State>
-                                        <Number>1</Number>
-                                        <Text>&#9654;</Text>
+                                        <Unpressed>btn_next.png</Unpressed>
+                                        <Pressed>btn_next_down.png</Pressed>
                                       </State>
                                       <Connection>
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>

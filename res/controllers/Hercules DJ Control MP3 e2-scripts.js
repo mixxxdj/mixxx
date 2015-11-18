@@ -116,13 +116,15 @@ HerculesMP3e2.connectControl = function(deck, remove) {
     engine.connectControl("[Channel" + deck + "]", "hotcue_4_enabled", "HerculesMP3e2.hotcueLeds", remove);
     engine.connectControl("[Channel" + deck + "]", "sync_enabled", "HerculesMP3e2.syncmode", remove);
     engine.connectControl("[Channel" + deck + "]", "pfl", "HerculesMP3e2.pflLeds", remove);
-    if (debug)
+    if (debug) {
         print("*** " + (remove === true) ? "Disable" : "Enable" + " soft takeover for [EqualizerRack1_[Channel" + deck + "]_Effect1].parameter[1-3]");
+    }
     engine.softTakeover("[EqualizerRack1_[Channel" + deck + "]_Effect1]", "parameter1", (remove === true) ? false : true);
     engine.softTakeover("[EqualizerRack1_[Channel" + deck + "]_Effect1]", "parameter2", (remove === true) ? false : true);
     engine.softTakeover("[EqualizerRack1_[Channel" + deck + "]_Effect1]", "parameter3", (remove === true) ? false : true);
-    if (debug)
+    if (debug) {
         print("*** " + (remove === true) ? "Disable" : "Enable" + " soft takeover for [Channel" + deck + "].volume");
+    }
     engine.softTakeover("[Channel" + deck + "]", "volume", (remove === true) ? false : true);
 };
 
@@ -148,11 +150,13 @@ HerculesMP3e2.updateLeds = function(deck) {
 };
 
 HerculesMP3e2.init = function(id, debugging) {
-    if (debugging)
+    if (debugging) {
         debug = true;
+    }
 
-    if (debug)
+    if (debug) {
         print("*** Hercules MP3 e2 id " + id + " initialization begins");
+    }
 
     // Switch off all LEDs
     for (var i = 1; i < 95; i++) {
@@ -164,32 +168,37 @@ HerculesMP3e2.init = function(id, debugging) {
     // Switch-on some LEDs for improve the usability
     midi.sendShortMsg(0x90, 46, 0x7F); // Automix LED
 
-    if (debug)
+    if (debug) {
         print("*** Connecting controls of deck A to [Channel" + deckA + "]");
+    }
     HerculesMP3e2.connectControl(deckA);
     HerculesMP3e2.updateLeds(deckA);
 
-    if (debug)
+    if (debug) {
         print("*** Connecting controls of deck B to [Channel" + deckB + "]");
+    }
     HerculesMP3e2.connectControl(deckB);
     HerculesMP3e2.updateLeds(deckB);
 
-    if (debug)
+    if (debug) {
         print("*** Hercules MP3 e2 initialization complete");
+    }
 };
 
 
 HerculesMP3e2.shutdown = function() {
-    if (debug)
+    if (debug) {
         print("*** Hercules MP3 e2 shutdown begins. Swhitching off all leds");
+    }
 
     // Switch off all LEDs
     for (var i = 1; i < 95; i++) {
         midi.sendShortMsg(0x90, i, 0x00);
     }
 
-    if (debug)
+    if (debug) {
         print("*** Hercules MP3 e2 shutdown complete, Bye...");
+    }
 };
 
 HerculesMP3e2.automix = function(midino, control, value, status, group) {
@@ -232,14 +241,17 @@ HerculesMP3e2.masterTempo = function(midino, control, value, status, group) {
     var deck = HerculesMP3e2.switchDeck(group);
 
     if (superButtonHold == 2) {
-        if (value)
+        if (value) {
             engine.setValue(deck, "quantize", !(engine.getValue(deck, "quantize")));
+        }
     } else if (superButtonHold == 1) {
-        if (value && scratchMode === 0)
+        if (value && scratchMode === 0) {
             engine.setValue(deck, "keylock", (engine.getValue(deck, "keylock") === 0) ? 1 : 0);
+        }
     } else {
-        if (value)
+        if (value) {
             engine.setValue(deck, "sync_enabled", (engine.getValue(deck, "sync_enabled") === 0) ? 1 : 0);
+        }
     }
 };
 
@@ -253,8 +265,9 @@ HerculesMP3e2.loadTrack = function(midino, control, value, status, group) {
         if (value) {
             // Deck switch between 1/3 or 2/4
             if (control == 0x11) {
-                if (debug)
+                if (debug) {
                     print("*** remove Deck A controls from [Channel" + deckA + "]");
+                }
 
                 HerculesMP3e2.connectControl(deckA, true); // remove connected controls for deckA
 
@@ -264,8 +277,9 @@ HerculesMP3e2.loadTrack = function(midino, control, value, status, group) {
                 HerculesMP3e2.connectControl(deckA); // Connect new controls for deckA
                 HerculesMP3e2.updateLeds(deckA); // Update all leds for deckA according to new Channel
 
-                if (debug)
+                if (debug) {
                     print("*** Switched Deck A to [Channel" + deckA + "]");
+                }
             } else {
                 HerculesMP3e2.connectControl(deckB, true); // remove connected controls for deckB
 
@@ -275,8 +289,9 @@ HerculesMP3e2.loadTrack = function(midino, control, value, status, group) {
                 HerculesMP3e2.connectControl(deckB); // Connect new controls for deckB
                 HerculesMP3e2.updateLeds(deckB); // Update all leds for DeckB according to new Channel
 
-                if (debug)
+                if (debug) {
                     print("*** Switched Deck B to [Channel" + deckB + "]");
+                }
             }
         }
     } else {
@@ -285,11 +300,12 @@ HerculesMP3e2.loadTrack = function(midino, control, value, status, group) {
             deck = deck.replace("Channel", "Sampler");
         }
 
-        if (value && engine.getValue(deck, "play") != 1) // Load the selected track in the corresponding deck only if the track is paused
-        {
+        if (value && engine.getValue(deck, "play") != 1) { // Load the selected track in the corresponding deck only if the track is paused
             engine.setValue(deck, "LoadSelectedTrack", 1);
             engine.setValue(deck, "rate", 0);
-        } else engine.setValue(deck, "LoadSelectedTrack", 0);
+        } else {
+            engine.setValue(deck, "LoadSelectedTrack", 0);
+        }
     }
 };
 
@@ -300,10 +316,11 @@ HerculesMP3e2.scroll = function(midino, control, value, status, group) {
     // Supershifted: stop sampler
 
     var deck = "";
-    if (control == 0x2C)
+    if (control == 0x2C) {
         deck = "[Sampler" + deckA + "]";
-    else
+    } else {
         deck = "[Sampler" + deckB + "]";
+    }
 
     if (value) {
         if (superButtonHold == 2) {
@@ -392,7 +409,9 @@ HerculesMP3e2.keyButton = function(midino, control, value, status, group) {
                 engine.setValue(deck, "beatloop_16_toggle", 1);
             } else if (superButtonHold == 1 && value) {
                 engine.setValue(deck, "beatloop_2_toggle", 1);
-            } else if (value) engine.setValue(deck, "beatloop_4_toggle", 1);
+            } else if (value) { 
+                engine.setValue(deck, "beatloop_4_toggle", 1);
+            }
             break;
 
             // Hotcue buttons:
@@ -611,8 +630,9 @@ HerculesMP3e2.sync = function(midino, control, value, status, group) {
     var deck = HerculesMP3e2.switchDeck(group);
 
     if (superButtonHold == 2) {
-        if (value)
+        if (value) {
             engine.setValue(deck, "filterMidKill", !(engine.getValue(deck, "filterMidKill")));
+        }
     } else if (superButtonHold == 1) {
         engine.setValue(deck, "beats_translate_curpos", value ? 1 : 0);
     } else {
@@ -627,22 +647,30 @@ HerculesMP3e2.sync = function(midino, control, value, status, group) {
 
 HerculesMP3e2.wheelOnOff = function() {
     // Wheel Deck A / Channel 1
-    if (wheelMove[0]) engine.scratchEnable(1, 128, standardRpm, alpha, beta);
+    if (wheelMove[0]) {
+        engine.scratchEnable(1, 128, standardRpm, alpha, beta);
+    }
     else engine.scratchDisable(1);
     wheelMove[0] = 0;
 
     //Wheel Deck B / Channel 2
-    if (wheelMove[1]) engine.scratchEnable(2, 128, standardRpm, alpha, beta);
+    if (wheelMove[1]) {
+        engine.scratchEnable(2, 128, standardRpm, alpha, beta);
+    }
     else engine.scratchDisable(2);
     wheelMove[1] = 0;
 
     // Wheel Deck A / Channel 3
-    if (wheelMove[2]) engine.scratchEnable(3, 128, standardRpm, alpha, beta);
+    if (wheelMove[2]) {
+        engine.scratchEnable(3, 128, standardRpm, alpha, beta);
+    }
     else engine.scratchDisable(3);
     wheelMove[2] = 0;
 
     //Wheel Deck B / Channel 4
-    if (wheelMove[3]) engine.scratchEnable(4, 128, standardRpm, alpha, beta);
+    if (wheelMove[3]) {
+        engine.scratchEnable(4, 128, standardRpm, alpha, beta);
+    }
     else engine.scratchDisable(4);
     wheelMove[3] = 0;
 };
@@ -723,8 +751,7 @@ HerculesMP3e2.syncmode = function(value, group, control) {
     	}
     	else */
 
-    if (value == 1) // Sync_enabled => fixed
-    {
+    if (value == 1) { // Sync_enabled => fixed
         if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3))) {
             midi.sendShortMsg(0x90, 67, 0x00); //blink off
             midi.sendShortMsg(0x90, 19, 0x7F); //fixed on
@@ -732,8 +759,7 @@ HerculesMP3e2.syncmode = function(value, group, control) {
             midi.sendShortMsg(0x90, 87, 0x00); //blink off
             midi.sendShortMsg(0x90, 39, 0x7F); //fixed on
         }
-    } else if (value === 0) //None => led off
-    {
+    } else if (value === 0) { //None => led off
         if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3))) {
             midi.sendShortMsg(0x90, 67, 0x00); //blink off
             midi.sendShortMsg(0x90, 19, 0x00); //fixed off
@@ -803,22 +829,34 @@ HerculesMP3e2.hotcueLeds = function(value, group, control) {
 // Switch-on the K1 Led if the loop start is set
 HerculesMP3e2.loopStartSetLeds = function(loopStartPos, group) {
     if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3))) {
-        if (loopStartPos != -1) midi.sendShortMsg(0x90, 1, 0x7F);
-        else midi.sendShortMsg(0x90, 1, 0x00);
+        if (loopStartPos != -1) {
+            midi.sendShortMsg(0x90, 1, 0x7F);
+        } else {
+            midi.sendShortMsg(0x90, 1, 0x00);
+        }
     } else if (((group == "[Channel2]") && (deckB == 2)) || ((group == "[Channel4]") && (deckB == 4))) {
-        if (loopStartPos != -1) midi.sendShortMsg(0x90, 21, 0x7F);
-        else midi.sendShortMsg(0x90, 21, 0x00);
+        if (loopStartPos != -1) {
+            midi.sendShortMsg(0x90, 21, 0x7F);
+        } else {
+            midi.sendShortMsg(0x90, 21, 0x00);
+        }
     }
 };
 
 // Switch-on the K2 Led if the loop end is set
 HerculesMP3e2.loopEndSetLeds = function(loopEndPos, group) {
     if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3))) {
-        if (loopEndPos != -1) midi.sendShortMsg(0x90, 2, 0x7F);
-        else midi.sendShortMsg(0x90, 2, 0x00);
+        if (loopEndPos != -1) {
+            midi.sendShortMsg(0x90, 2, 0x7F);
+        } else {
+            midi.sendShortMsg(0x90, 2, 0x00);
+        }
     } else if (((group == "[Channel2]") && (deckB == 2)) || ((group == "[Channel4]") && (deckB == 4))) {
-        if (loopEndPos != -1) midi.sendShortMsg(0x90, 22, 0x7F);
-        else midi.sendShortMsg(0x90, 22, 0x00);
+        if (loopEndPos != -1) {
+            midi.sendShortMsg(0x90, 22, 0x7F);
+        } else {
+            midi.sendShortMsg(0x90, 22, 0x00);
+        }
     }
 };
 
@@ -830,17 +868,32 @@ HerculesMP3e2.wind = function(midino, control, value, status, group) {
     var deck = HerculesMP3e2.switchDeck(group);
     var newValue = 0;
 
-    if (control == 0x21 || control == 0x0D) {
-        if (superButtonHold >= 1 && value) {
-            newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, 1);
-            engine.setValue(deck, "pregain", newValue);
+    if (control == 0x21 || control == 0x0D) { //forward
+
+        if (superButtonHold == 2) {
+            if (debug) {
+                print("**** BRAKE deck " + (control == 0x0D ? deckA.toString() : deckB.toString()) + " : " + (value ? "true" : "false"));
+            }
+            engine.brake(control == 0x0D ? deckA : deckB, value ? true : false);
+        } else if (superButtonHold == 1) {
+            if (value) {
+                newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, 1);
+                engine.setValue(deck, "pregain", newValue);
+            }
         } else {
             engine.setValue(deck, "fwd", value ? 1 : 0);
         }
-    } else {
-        if (superButtonHold >= 1 && value) {
-            newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, -1);
-            engine.setValue(deck, "pregain", newValue);
+    } else { // Backward
+        if (superButtonHold == 2) {
+            if (debug) {
+                print("**** SPINBACK deck " + (control == 0x0C ? deckA.toString() : deckB.toString()) + " : " + (value ? "true" : "false"));
+            }
+            engine.spinback(control == 0x0C ? deckA : deckB, value ? true : false);
+        } else if (superButtonHold == 1) {
+            if (value) {
+                newValue = HerculesMP3e2.knobIncrement(deck, "pregain", 0, 4, 1, 20, -1);
+                engine.setValue(deck, "pregain", newValue);
+            }
         } else {
             engine.setValue(deck, "back", value ? 1 : 0);
         }
@@ -878,11 +931,17 @@ HerculesMP3e2.play = function(midino, control, value, status, group) {
 // Switch-on the pfl / headphone Led if pfl is set
 HerculesMP3e2.pflLeds = function(value, group, control) {
     if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3))) {
-        if (value) midi.sendShortMsg(0x90, 16, 0x7F);
-        else midi.sendShortMsg(0x90, 16, 0x00);
+        if (value) {
+            midi.sendShortMsg(0x90, 16, 0x7F);
+        } else {
+            midi.sendShortMsg(0x90, 16, 0x00);
+        }
     } else if (((group == "[Channel2]") && (deckB == 2)) || ((group == "[Channel4]") && (deckB == 4))) {
-        if (value) midi.sendShortMsg(0x90, 36, 0x7F);
-        else midi.sendShortMsg(0x90, 36, 0x00);
+        if (value) {
+            midi.sendShortMsg(0x90, 36, 0x7F);
+        } else {
+            midi.sendShortMsg(0x90, 36, 0x00);
+        }
     }
 };
 
