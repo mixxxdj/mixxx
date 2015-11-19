@@ -65,7 +65,7 @@ HidController::HidController(const hid_device_info deviceInfo)
     }
 
     // Don't trust path to be null terminated.
-    hid_path = new char[PATH_MAX+1];
+    hid_path = new char[PATH_MAX + 1];
     strncpy(hid_path, deviceInfo.path, PATH_MAX);
     hid_path[PATH_MAX] = 0;
 
