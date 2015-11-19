@@ -734,7 +734,12 @@ void MixxxMainWindow::logBuildDetails() {
 
     // This is the first line in mixxx.log
     qDebug() << "Mixxx" << version << buildInfoFormatted << "is starting...";
-    qDebug() << "Qt version is:" << qVersion();
+
+    QStringList depVersions = Version::dependencyVersions();
+    qDebug() << "Library versions:";
+    foreach (const QString& depVersion, depVersions) {
+        qDebug() << qPrintable(depVersion);
+    }
 
     qDebug() << "QDesktopServices::storageLocation(HomeLocation):"
              << QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
@@ -2373,5 +2378,3 @@ void MixxxMainWindow::launchProgress(int progress) {
     m_pLaunchImage->progress(progress);
     qApp->processEvents();
 }
-
-
