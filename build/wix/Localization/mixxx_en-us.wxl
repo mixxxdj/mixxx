@@ -37,6 +37,6 @@
    <String Id="FeatureManualTitle">User Manual</String>
    <String Id="FeatureManualDescription">The Mixxx user manual in PDF form, also available at http://mixxx.org/manual/</String>
    <String Id="FeatureTranslationsTitle">Translations</String>
-   <String Id="FeatureTranslationsDescription">Resource files that allow Mixxx to display in alternate languages</String>
+   <String Id="FeatureTranslationsDescription">Resource files that allow Mixxx to display in alternate languages, other than US english</String>
  
 </WixLocalization>

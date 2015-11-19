@@ -31,6 +31,6 @@
    <String Id="FeatureManualTitle">Manuel Mixxx</String>
    <String Id="FeatureManualDescription">Le manuel de Mixxx en PDF</String>
    <String Id="FeatureTranslationsTitle">Traductions</String>
-   <String Id="FeatureTranslationsDescription">Fichiers de ressources contenant les traductions de Mixxx</String>
+   <String Id="FeatureTranslationsDescription">Fichiers de ressources contenant les traductions de Mixxx autres que l'anglais (US)</String>
  
 </WixLocalization>
