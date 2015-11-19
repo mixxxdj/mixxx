@@ -81,8 +81,8 @@ def build_tests():
         test_env = env.Clone()
         test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
         test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
-        test_files = [test_env.StaticObject(filename) \
-                              if filename !='main.cpp' else filename
+        test_files = [test_env.StaticObject(filename)
+                      if filename !='main.cpp' else filename
                       for filename in test_files]
         mixxx_sources = [filename for filename in sources if filename != 'main.cpp']
         test_sources = (test_files + mixxx_sources)
@@ -98,7 +98,7 @@ def build_tests():
                 # into mixxx and mixxx-test. We could build both in different
                 # environments right now but then automoc and protoc get run in
                 # both environments which makes SCons unhappy.
-                # Currently both executables are built with /subsystem:windows 
+                # Currently both executables are built with /subsystem:windows
                 # and the console is attached manually
                 test_bin = env.Program(
                         'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
@@ -219,20 +219,24 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 
 # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets
 # all files on 2+ builds after a clean.
+dll_files = []
+bundle_pdbs = build.platform_is_windows and (
+        build.build_is_debug or
+        SCons.ARGUMENTS.get('bundle_pdbs', '') in ('yes', 'y', '1'))
+
 if build.toolchain_is_msvs:
         mixxx_winlib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc90-release')
         # skip the MSVC DLLs incase they're in there too
-        dll_files = Glob('%s/*.dll' % mixxx_winlib_path) + Glob('%s/lib/*.dll' % mixxx_winlib_path)
+        dll_files.extend(Glob('%s/*.dll' % mixxx_winlib_path))
+        dll_files.extend(Glob('%s/lib/*.dll' % mixxx_winlib_path))
+
+        if bundle_pdbs:
+                dll_files.extend(Glob('%s/*.pdb' % mixxx_winlib_path))
+                dll_files.extend(Glob('%s/lib/*.pdb' % mixxx_winlib_path))
 elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
         # We're cross-compiling, grab these from the crosscompile bin
         # folder. How should we be doing this?
         dll_files = Glob('#/../../mixxx-win%slib-crossmingw' % build.bitwidth)
-elif build.crosscompile and build.platform_is_osx:
-        # Glob appropriate dylib files. We have 4 different library types,
-        # x86_64, x86, powerpc, powerpc64
-        dylib_files = Glob('#/../../mixxx-osx-%s-crossmingw' % build.machine)
-else:
-        dll_files = list() # dll_files += on the next line required dll_files to exist
 
 qt_modules = depends.Qt.enabled_modules(build)
 qt5 = depends.Qt.qt5_enabled(build)
