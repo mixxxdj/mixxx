@@ -3,14 +3,23 @@
 #include <QStringList>
 #include <QtGlobal>
 
-#include <FLAC/format.h>
 // Fixes redefinition warnings from SoundTouch.
 #undef TRUE
 #undef FALSE
 #include <SoundTouch.h>
+
+// shout.h checks for WIN32 to see if we are on Windows.
+#ifdef WIN64
+#define WIN32
+#endif
+#include <shout/shout.h>
+#ifdef WIN64
+#undef WIN32
+#endif
+
+#include <FLAC/format.h>
 #include <chromaprint.h>
 #include <rubberband/RubberBandStretcher.h>
-#include <shout/shout.h>
 #include <taglib/taglib.h>
 #include <vorbis/codec.h>
 
