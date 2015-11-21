@@ -993,8 +993,10 @@ class Optimize(Feature):
         return "Optimization and Tuning"
 
     @staticmethod
-    def get_optimization_level():
-        optimize_level = SCons.ARGUMENTS.get('optimize', Optimize.LEVEL_DEFAULT)
+    def get_optimization_level(build):
+        optimize_level = SCons.ARGUMENTS.get('optimize', 'unset')
+        if optimize_level == 'unset':
+            optimize_level = build.env['optimize']
         try:
             optimize_integer = int(optimize_level)
             if optimize_integer == 0:
@@ -1020,7 +1022,7 @@ class Optimize(Feature):
         return optimize_level
 
     def enabled(self, build):
-        build.flags['optimize'] = Optimize.get_optimization_level()
+        build.flags['optimize'] = Optimize.get_optimization_level(build)
         return build.flags['optimize'] != Optimize.LEVEL_OFF
 
     def add_options(self, build, vars):
@@ -1077,7 +1079,7 @@ class Optimize(Feature):
             if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
-                # SSE and SSE2 are core instructions on x64 
+                # SSE and SSE2 are core instructions on x64
                 # and consequently raise a warning message from compiler with this flag on x64.
                 if not build.machine_is_64bit:
                     build.env.Append(CCFLAGS='/arch:SSE2')
