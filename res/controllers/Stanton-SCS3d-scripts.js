@@ -661,7 +661,7 @@ SCS3D.Agent = function(device) {
     }
 
     var blinken = {
-        ready: new Blinker(3, [1, 0, 0]),
+        fast: new Blinker(1, [1, 0]),
         heartbeat: new Blinker(1, [1, 0, 1, 0, 0, 0, 0, 0, 0]),
     };
 
@@ -671,6 +671,7 @@ SCS3D.Agent = function(device) {
             'position': [channel, 'playposition'],
             'duration': [channel, 'duration'],
             'play': [channel, 'play'],
+            'play_indicator': [channel, 'play_indicator'],
             'rate': [channel, 'rate'],
             'range': [channel, 'rateRange']
         }, function(values) {
@@ -690,12 +691,10 @@ SCS3D.Agent = function(device) {
 
             var lights = device.slider.circle.meter;
             var count = lights.length;
-            var playable = values.duration > 0 && values.position < 1;
-            var paused = !values.play && playable;
             var pos = false;
 
             // Don't show position indicator when the end is reached
-            if (playable) {
+            if (values.play_indicator) {
                 pos = count - Math.floor(needle * count) - 1; // Zero-based index
             }
 
@@ -706,7 +705,7 @@ SCS3D.Agent = function(device) {
             // warnDuration according to pitch rate.
             var scaledWarnDuration = warnDuration + warnDuration * ((values.rate - 0.5) * 2 * values.range);
             var warnPos = false;
-            if (playable && left < scaledWarnDuration) {
+            if (values.play_indicator && left < scaledWarnDuration) {
                 // Add a blinking light that runs a tad slower so the needle
                 // will reach it when the track runs out
                 var warnOffset = count - Math.floor(count * (left / scaledWarnDuration));
@@ -716,15 +715,11 @@ SCS3D.Agent = function(device) {
             var i = 0;
             for (; i < count; i++) {
                 if (i === warnPos) {
-                    comm.mask(lights[i], blinken.heartbeat, true);
+                    comm.mask(lights[i], values.play ? blinken.heartbeat : blinken.fast, true);
                 } else if (i === pos) {
-                    if (paused) {
-                        comm.mask(lights[i], blinken.ready, true);
-                    } else {
-                        comm.mask(lights[i], function(value) {
-                            return !value;
-                        }); // Invert
-                    }
+                    comm.mask(lights[i], function(value) {
+                        return !value;
+                    }); // Invert
                 } else {
                     comm.unmask(lights[i]);
                 }
@@ -1719,22 +1714,16 @@ SCS3D.Agent = function(device) {
         activeMode.active()(channel, activeMode.held());
 
         expect(device.button.play.touch, toggle(channel, 'play'));
-        watchmulti({
-            play: [channel, 'play'],
-            position: [channel, 'playposition'],
-            duration: [channel, 'duration']
-        }, function(values) {
-            tell(device.button.play.light[values.play ? 'red' : 'black']);
-            if (!values.play && values.position < 1 && values.duration > 0) {
-                comm.mask(device.button.play.light.red, blinken.ready, true);
-            } else {
-                comm.unmask(device.button.play.light.red);
-            }
-        });
+        watch(channel, 'play_indicator', binarylight(
+            device.button.play.light.black,
+            device.button.play.light.red));
+
 
         expect(device.button.cue.touch, setConst(channel, 'cue_default', true));
         expect(device.button.cue.release, setConst(channel, 'cue_default', false));
-        watch(channel, 'cue_default', binarylight(device.button.cue.light.black, device.button.cue.light.red));
+        watch(channel, 'cue_indicator', binarylight(
+            device.button.cue.light.black,
+            device.button.cue.light.red));
 
         // Sync button, red when sync lock is on
         watch(channel, 'sync_enabled', binarylight(
