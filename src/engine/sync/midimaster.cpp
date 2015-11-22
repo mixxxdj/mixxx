@@ -54,6 +54,11 @@ void MidiMasterClock::requestSyncPhase() {
     // but really, it's a read-only clock.
 }
 
+bool MidiMasterClock::isPlaying() const {
+    // midi running / not running state
+    return m_pMidiSourceClockRunning->get();
+}
+
 void MidiMasterClock::slotSyncMasterEnabledChangeRequest(double state) {
     bool currentlyMaster = getSyncMode() == SYNC_MASTER;
 

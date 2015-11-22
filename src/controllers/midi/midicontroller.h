@@ -26,7 +26,7 @@ class ControlObjectSlave;
 class MidiController : public Controller {
     Q_OBJECT
   public:
-    MidiController();
+    explicit MidiController(ConfigObject<ConfigValue>* config);
     virtual ~MidiController();
 
     virtual QString presetExtension();
@@ -105,7 +105,8 @@ class MidiController : public Controller {
     MidiControllerPreset m_preset;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
-    MixxxClock m_mixxxClock;
+    ConfigObject<ConfigValue>* m_pConfig;
+    WallClock m_wallClock;
     MidiSourceClock m_midiSourceClock;
 
     // Slaves are cleaned up by QT.

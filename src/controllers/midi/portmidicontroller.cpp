@@ -9,11 +9,12 @@
 
 #include "controllers/midi/portmidicontroller.h"
 
-PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
+PortMidiController::PortMidiController(ConfigObject<ConfigValue>* config,
+                                       const PmDeviceInfo* inputDeviceInfo,
                                        const PmDeviceInfo* outputDeviceInfo,
                                        int inputDeviceIndex,
                                        int outputDeviceIndex)
-        : MidiController(),
+        : MidiController(config),
           m_pInputDeviceInfo(inputDeviceInfo),
           m_pOutputDeviceInfo(outputDeviceInfo),
           m_iInputDeviceIndex(inputDeviceIndex),

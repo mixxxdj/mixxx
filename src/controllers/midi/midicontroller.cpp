@@ -16,12 +16,12 @@
 #include "playermanager.h"
 #include "util/math.h"
 
-MidiController::MidiController()
-        : Controller(), m_midiSourceClock(&m_mixxxClock) {
+MidiController::MidiController(ConfigObject<ConfigValue>* config)
+        : Controller(), m_pConfig(config), m_midiSourceClock(&m_wallClock) {
     m_pClockBpm = new ControlObjectSlave("[MidiSourceClock]", "bpm", this);
     m_pClockLastBeat = new ControlObjectSlave("[MidiSourceClock]",
                                               "last_beat_time", this);
-    m_pClockRunning = new ControlObjectSlave("[MidiSourceClock]", "play", this);
+    m_pClockRunning = new ControlObjectSlave("[MidiSourceClock]", "run", this);
     setDeviceCategory(tr("MIDI Controller"));
 }
 
@@ -260,11 +260,21 @@ void MidiController::receive(unsigned char status, unsigned char control,
     }
 
     // If MidiSourceClock handles the message, record the updated values and
-    // no further action is needed.
+    // no further action is needed.  Note that the clock code is active even if
+    // this device is not master, so if the user changes masters all of the data
+    // is ready to be used instantly.
     if (m_midiSourceClock.handleMessage(status)) {
+        // TODO:
+        // Are we actually clock master?  Doing a string comparison on every pulse
+        // is not great.  The better solution would to be notified when the config
+        // value changes.
+//        const QString master_midi_device =
+//                m_pConfig->getValueString(ConfigKey("[MidiSourceClock]", "source_device"));
+//        if (m_preset.deviceId() == master_midi_device) {
         m_pClockBpm->set(m_midiSourceClock.bpm());
         m_pClockLastBeat->set(m_midiSourceClock.lastBeatTime());
         m_pClockRunning->set(static_cast<double>(m_midiSourceClock.running()));
+//        }
         return;
     }
 

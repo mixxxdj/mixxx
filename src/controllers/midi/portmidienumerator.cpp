@@ -21,7 +21,9 @@ bool shouldBlacklistDevice(const PmDeviceInfo* device) {
             deviceName.startsWith("Midi Through Port", Qt::CaseInsensitive);
 }
 
-PortMidiEnumerator::PortMidiEnumerator() : MidiEnumerator() {
+PortMidiEnumerator::PortMidiEnumerator(ConfigObject<ConfigValue>* config) :
+        MidiEnumerator(),
+        m_pConfig(config) {
 }
 
 PortMidiEnumerator::~PortMidiEnumerator() {
@@ -235,6 +237,7 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
 
             //.... so create our (aggregate) MIDI device!
             PortMidiController *currentDevice = new PortMidiController(
+                m_pConfig,
                 inputDeviceInfo, outputDeviceInfo,
                 inputDevIndex, outputDevIndex);
             m_devices.push_back(currentDevice);

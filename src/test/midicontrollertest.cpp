@@ -11,7 +11,7 @@
 
 class MockMidiController : public MidiController {
   public:
-    MockMidiController() { }
+    MockMidiController(ConfigObject<ConfigValue>* config) : MidiController(config) { }
     virtual ~MockMidiController() { }
 
     MOCK_METHOD0(open, int());
@@ -24,7 +24,7 @@ class MockMidiController : public MidiController {
 class MidiControllerTest : public MixxxTest {
   protected:
     virtual void SetUp() {
-        m_pController.reset(new MockMidiController());
+        m_pController.reset(new MockMidiController(m_pConfig.data()));
     }
 
     virtual void TearDown() {

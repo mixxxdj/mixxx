@@ -14,7 +14,7 @@ public:
     virtual qint64 now() = 0;
 };
 
-class MixxxClock: public MockableClock {
+class WallClock: public MockableClock {
 public:
     virtual qint64 now() {
         return Time::elapsed();
