@@ -173,6 +173,7 @@ bool PortMidiController::poll() {
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
             receive(status, 0, 0);
+            continue;
         }
 
         reprocessMessage:
