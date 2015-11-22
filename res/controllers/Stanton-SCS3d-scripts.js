@@ -1672,9 +1672,6 @@ SCS3D.Agent = function(device) {
         tell(device.decklight[0](!(deck & 1)));
         tell(device.decklight[1](deck & 1));
 
-        expect(device.gain.slide.abs, set(channel, 'volume'));
-        watch(channel, 'volume', Bar(device.gain.meter));
-
         for (var name in autocancel) {
             autocancel[name]();
         }
@@ -1682,6 +1679,14 @@ SCS3D.Agent = function(device) {
         if (resetHotcue) resetHotcue();
 
         var activeMode = mode[deck];
+
+        if (activeMode.held() === 'eq') {
+            expect(device.gain.slide.rel, budge(channel, 'pregain'));
+            watch(channel, 'pregain', Needle(device.gain.meter));
+        } else {
+            expect(device.gain.slide.abs, set(channel, 'volume'));
+            watch(channel, 'volume', Bar(device.gain.meter));
+        }
 
         tell(device.mode.fx.light.black);
         tell(device.mode.eq.light.black);
