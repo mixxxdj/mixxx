@@ -1871,12 +1871,8 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             QString property = m_pContext->selectString(con, "BindProperty");
             //qDebug() << "Making property connection for" << property;
 
-            ControlObjectSlave* pControlWidget =
-                    new ControlObjectSlave(control->getKey(),
-                                           pWidget->toQWidget());
-
             ControlWidgetPropertyConnection* pConnection =
-                    new ControlWidgetPropertyConnection(pWidget, pControlWidget,
+                    new ControlWidgetPropertyConnection(pWidget, control->getKey(),
                                                         pTransformer, property);
             pWidget->addPropertyConnection(pConnection);
 
@@ -1943,12 +1939,8 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 emitOption |= ControlParameterWidgetConnection::EMIT_DEFAULT;
             }
 
-            // Connect control proxy to widget. Parented to pWidget so it is not
-            // leaked.
-            ControlObjectSlave* pControlWidget = new ControlObjectSlave(
-                    control->getKey(), pWidget->toQWidget());
             ControlParameterWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-                    pWidget, pControlWidget, pTransformer,
+                    pWidget, control->getKey(), pTransformer,
                     static_cast<ControlParameterWidgetConnection::DirectionOption>(directionOption),
                     static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
 
@@ -1976,6 +1968,8 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 pWidget->addRightConnection(pConnection);
                 break;
             default:
+                // can't happen. Nothing else is returned by parseButtonState();
+                DEBUG_ASSERT(false);
                 break;
             }
 

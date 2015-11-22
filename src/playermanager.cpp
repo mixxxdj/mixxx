@@ -74,6 +74,8 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
         m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 0, o),
                                         m_pEngine);
     }
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::SIDECHAIN),
+                                    m_pEngine);
 }
 
 PlayerManager::~PlayerManager() {

@@ -1,17 +1,17 @@
 #ifndef MIXXX_SOUNDSOURCEPLUGINAPI_H
 #define MIXXX_SOUNDSOURCEPLUGINAPI_H
 
-#define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 8
-/** @note SoundSource API Version history:
- 1 - Mixxx 1.8.0 Beta 2
- 2 - Mixxx 1.9.0 Pre (added key code)
- 3 - Mixxx 1.10.0 Pre (added freeing function for extensions)
- 4 - Mixxx 1.11.0 Pre (added composer field to SoundSource)
- 5 - Mixxx 1.12.0 Pre (added album artist and grouping fields to SoundSource)
- 6 - Mixxx 1.12.0 Pre (added cover art suppport)
- 7 - Mixxx 1.13.0 New SoundSource/AudioSource API
- 8 - Mixxx 1.13.0 New SoundSource Plugin API
- */
+#define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 9
+// SoundSource Plugin API version history:
+//   9 - Mixxx 2.1.0 - New classes AudioSignal and ReplayGain
+//   8 - Mixxx 2.1.0 - New SoundSource Plugin API
+//   7 - Mixxx 2.1.0 - New SoundSource/AudioSource API
+//   6 - Mixxx 2.0.0 - Cover art support
+//   5 - Mixxx 2.0.0 - Add album artist and grouping fields to SoundSource
+//   4 - Mixxx 1.11.0 - Add composer field to SoundSource
+//   3 - Mixxx 1.10.0 - Add freeing function for extensions
+//   2 - Mixxx 1.9.0  - Add key code
+//   1 - Mixxx 1.8.0  - Beta 2
 
 #include <QtGlobal>
 

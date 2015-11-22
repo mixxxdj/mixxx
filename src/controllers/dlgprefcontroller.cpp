@@ -504,6 +504,8 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
         1, new QTableWidgetItem(tr("Function Prefix")));
     m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
         2, new QTableWidgetItem(tr("Built-in")));
+    m_ui.m_pScriptsTableWidget->horizontalHeader()
+            ->setResizeMode(QHeaderView::Stretch);
 
     for (int i = 0; i < preset->scripts.length(); ++i) {
         const ControllerPreset::ScriptFileInfo& script = preset->scripts.at(i);
@@ -709,6 +711,11 @@ void DlgPrefController::openScript() {
     QModelIndexList selectedIndices = m_ui.m_pScriptsTableWidget->selectionModel()
             ->selection().indexes();
     if (selectedIndices.isEmpty()) {
+         QMessageBox::information(
+                    this,
+                    tr("Mixxx"),
+                    tr("Please select a script from the list to open."),
+                    QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
 

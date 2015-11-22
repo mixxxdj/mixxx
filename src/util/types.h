@@ -1,10 +1,13 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include "util/math.h"
-
 #include <cstddef>
 #include <climits>
+
+#include "util/math.h"
+
+// TODO(uklotzde): Replace 'const' with 'constexpr' after
+// switching to Visual Studio 2015 on Windows.
 
 // Signed integer type for POT array indices, sizes and pointer
 // arithmetic. Its size (32-/64-bit) depends on the CPU architecture.

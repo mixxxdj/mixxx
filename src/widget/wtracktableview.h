@@ -13,7 +13,7 @@
 #include "widget/wlibrarytableview.h"
 #include "dlgtagfetcher.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 class DlgTrackInfo;
 class TrackCollection;
 class WCoverArtMenu;
@@ -72,6 +72,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnlockBpm();
     void slotScaleBpm(int);
     void slotClearBeats();
+    void slotReplayGainReset();
     // Signalled 20 times per second (every 50ms) by GuiTick.
     void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
@@ -110,9 +111,9 @@ class WTrackTableView : public WLibraryTableView {
     QModelIndex currentTrackInfoIndex;
 
 
-    ControlObjectThread* m_pNumSamplers;
-    ControlObjectThread* m_pNumDecks;
-    ControlObjectThread* m_pNumPreviewDecks;
+    ControlObjectSlave* m_pNumSamplers;
+    ControlObjectSlave* m_pNumDecks;
+    ControlObjectSlave* m_pNumPreviewDecks;
 
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
@@ -154,6 +155,9 @@ class WTrackTableView : public WLibraryTableView {
 
     // Clear track beats
     QAction* m_pClearBeatsAction;
+
+    // Replay Gain feature
+    QAction *m_pReplayGainResetAction;
 
     bool m_sorting;
 

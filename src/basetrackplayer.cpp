@@ -64,10 +64,10 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             this, SLOT(slotUnloadTrack(TrackPointer)));
 
     // Get loop point control objects
-    m_pLoopInPoint = new ControlObjectThread(
-            getGroup(),"loop_start_position");
-    m_pLoopOutPoint = new ControlObjectThread(
-            getGroup(),"loop_end_position");
+    m_pLoopInPoint = new ControlObjectSlave(
+            getGroup(),"loop_start_position", this);
+    m_pLoopOutPoint = new ControlObjectSlave(
+            getGroup(),"loop_end_position", this);
 
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
@@ -85,14 +85,14 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);
 
-    m_pPreGain = new ControlObjectSlave(ConfigKey(group, "pregain"));
+    m_pPreGain = new ControlObjectSlave(group, "pregain", this);
     //BPM of the current song
     m_pBPM = new ControlObjectThread(group, "file_bpm");
     m_pKey = new ControlObjectThread(group, "file_key");
-    m_pReplayGain = new ControlObjectThread(group, "replaygain");
-    m_pPlay = new ControlObjectThread(group, "play");
-    connect(m_pPlay, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPlayToggled(double)));
+
+    m_pReplayGain = new ControlObjectSlave(group, "replaygain", this);
+    m_pPlay = new ControlObjectSlave(group, "play", this);
+    m_pPlay->connectValueChanged(SLOT(slotPlayToggled(double)));
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -107,21 +107,8 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     delete m_pDuration;
     delete m_pWaveformZoom;
     delete m_pEndOfTrack;
-    delete m_pLoopInPoint;
-    delete m_pLoopOutPoint;
     delete m_pBPM;
     delete m_pKey;
-    delete m_pReplayGain;
-    delete m_pPlay;
-    delete m_pLowFilter;
-    delete m_pMidFilter;
-    delete m_pHighFilter;
-    delete m_pLowFilterKill;
-    delete m_pMidFilterKill;
-    delete m_pHighFilterKill;
-    delete m_pPreGain;
-    delete m_pSpeed;
-    delete m_pPitchAdjust;
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
@@ -165,7 +152,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
         disconnect(m_pLoadedTrack.data(), 0, this, 0);
         disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
 
-        m_pReplayGain->slotSet(0);
+        m_pReplayGain->set(0);
 
         // Causes the track's data to be saved back to the library database.
         emit(unloadingTrack(m_pLoadedTrack));
@@ -181,8 +168,8 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
                 m_pKey, SLOT(slotSet(double)));
 
         // Listen for updates to the file's Replay Gain
-        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(double)),
-                this, SLOT(slotSetReplayGain(double)));
+        connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(Mixxx::ReplayGain)),
+                this, SLOT(slotSetReplayGain(Mixxx::ReplayGain)));
     }
 
     // Request a new track from the reader
@@ -220,9 +207,9 @@ void BaseTrackPlayerImpl::slotUnloadTrack(TrackPointer) {
     m_pDuration->set(0);
     m_pBPM->slotSet(0);
     m_pKey->slotSet(0);
-    m_pReplayGain->slotSet(0);
-    m_pLoopInPoint->slotSet(-1);
-    m_pLoopOutPoint->slotSet(-1);
+    m_pReplayGain->set(0);
+    m_pLoopInPoint->set(-1);
+    m_pLoopOutPoint->set(-1);
     m_pLoadedTrack.clear();
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
@@ -244,15 +231,15 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
     m_pDuration->set(m_pLoadedTrack->getDuration());
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
     m_pKey->slotSet(m_pLoadedTrack->getKey());
-    m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
+    m_pReplayGain->set(m_pLoadedTrack->getReplayGain().getRatio());
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 
     // Reset the loop points.
-    m_pLoopInPoint->slotSet(-1);
-    m_pLoopOutPoint->slotSet(-1);
+    m_pLoopInPoint->set(-1);
+    m_pLoopOutPoint->set(-1);
 
     const QList<Cue*> trackCues = pTrackInfoObject->getCuePoints();
     QListIterator<Cue*> it(trackCues);
@@ -262,8 +249,8 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
             int loopStart = pCue->getPosition();
             int loopEnd = loopStart + pCue->getLength();
             if (loopStart != -1 && loopEnd != -1 && even(loopStart) && even(loopEnd)) {
-                m_pLoopInPoint->slotSet(loopStart);
-                m_pLoopOutPoint->slotSet(loopEnd);
+                m_pLoopInPoint->set(loopStart);
+                m_pLoopOutPoint->set(loopEnd);
                 break;
             }
         }
@@ -311,11 +298,11 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
 
-void BaseTrackPlayerImpl::slotSetReplayGain(double replayGain) {
+void BaseTrackPlayerImpl::slotSetReplayGain(Mixxx::ReplayGain replayGain) {
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change
     if (m_pPlay->get() == 0.0) {
-        m_pReplayGain->slotSet(replayGain);
+        m_pReplayGain->set(replayGain.getRatio());
     } else {
         m_replaygainPending = true;
     }
@@ -323,7 +310,7 @@ void BaseTrackPlayerImpl::slotSetReplayGain(double replayGain) {
 
 void BaseTrackPlayerImpl::slotPlayToggled(double v) {
     if (!v && m_replaygainPending) {
-        m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
+        m_pReplayGain->set(m_pLoadedTrack->getReplayGain().getRatio());
         m_replaygainPending = false;
     }
 }
@@ -334,12 +321,12 @@ EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
 
 void BaseTrackPlayerImpl::setupEqControls() {
     const QString group = getGroup();
-    m_pLowFilter = new ControlObjectSlave(group, "filterLow");
-    m_pMidFilter = new ControlObjectSlave(group, "filterMid");
-    m_pHighFilter = new ControlObjectSlave(group, "filterHigh");
-    m_pLowFilterKill = new ControlObjectSlave(group, "filterLowKill");
-    m_pMidFilterKill = new ControlObjectSlave(group, "filterMidKill");
-    m_pHighFilterKill = new ControlObjectSlave(group, "filterHighKill");
-    m_pSpeed = new ControlObjectSlave(group, "rate");
-    m_pPitchAdjust = new ControlObjectSlave(group, "pitch_adjust");
+    m_pLowFilter = new ControlObjectSlave(group, "filterLow", this);
+    m_pMidFilter = new ControlObjectSlave(group, "filterMid", this);
+    m_pHighFilter = new ControlObjectSlave(group, "filterHigh", this);
+    m_pLowFilterKill = new ControlObjectSlave(group, "filterLowKill", this);
+    m_pMidFilterKill = new ControlObjectSlave(group, "filterMidKill", this);
+    m_pHighFilterKill = new ControlObjectSlave(group, "filterHighKill", this);
+    m_pSpeed = new ControlObjectSlave(group, "rate", this);
+    m_pPitchAdjust = new ControlObjectSlave(group, "pitch_adjust", this);
 }

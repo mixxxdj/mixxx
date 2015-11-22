@@ -78,7 +78,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
 
     // create the output format
     const UInt32 numChannels =
-            isValidChannelCount(audioSrcCfg.channelCountHint) ? audioSrcCfg.channelCountHint : 2;
+            audioSrcCfg.hasChannelCount() ? audioSrcCfg.getChannelCount() : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 
@@ -125,7 +125,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     }
 
     setChannelCount(m_outputFormat.NumberChannels());
-    setFrameRate(m_inputFormat.mSampleRate);
+    setSamplingRate(m_inputFormat.mSampleRate);
     // NOTE(uklotzde): This is what I found when migrating
     // the code from SoundSource (sample-oriented) to the new
     // AudioSource (frame-oriented) API. It is not documented

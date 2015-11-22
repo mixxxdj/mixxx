@@ -23,8 +23,6 @@ EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
           m_buffer_back(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_pRubberBand(NULL),
           m_pReadAheadManager(pReadAheadManager) {
-    qDebug() << "RubberBand version" << RUBBERBAND_VERSION;
-
     m_retrieve_buffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_retrieve_buffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
 

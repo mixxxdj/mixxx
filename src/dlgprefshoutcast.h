@@ -32,7 +32,7 @@
   *@author John Sully
   */
 
-class ControlObjectThread;
+class ControlObjectSlave;
 
 class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDlg  {
     Q_OBJECT
@@ -45,14 +45,14 @@ class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDl
     void slotApply();
     void slotUpdate();
     void slotResetToDefaults();
+    void shoutcastEnabledChanged(double value);
 
   signals:
     void apply(const QString &);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
-    // If set to 1, EngineShoutcast will update it's settings.
-    ControlObjectThread* m_pUpdateShoutcastFromPrefs;
+    ControlObjectSlave* m_pShoutcastEnabled;
 };
 
 #endif

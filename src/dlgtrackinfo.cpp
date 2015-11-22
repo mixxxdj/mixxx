@@ -159,6 +159,8 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
     txtBpm->setText(pTrack->getBpmStr());
     txtKey->setText(pTrack->getKeyText());
+    const Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+    txtReplayGain->setText(Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
     BeatsPointer pBeats = pTrack->getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
     bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
@@ -172,7 +174,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     m_loadedCoverInfo = pTrack->getCoverInfo();
     int reference = pTrack->getId().toInt();
     m_loadedCoverInfo.trackLocation = pTrack->getLocation();
-    m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo.trackLocation, m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         pCache->requestCover(m_loadedCoverInfo, this, reference);
@@ -206,7 +208,7 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
             m_pLoadedTrack->getId().toInt() == requestReference) {
         qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
                  << pixmap.size();
-        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCoverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack->getLocation(), m_loadedCoverInfo, pixmap);
     }
 }
 
@@ -434,13 +436,14 @@ void DlgTrackInfo::clear() {
     txtLocation->setPlainText("");
     txtBitrate->setText("");
     txtBpm->setText("");
+    txtReplayGain->setText("");
 
     m_cueMap.clear();
     cueTable->clearContents();
     cueTable->setRowCount(0);
 
     m_loadedCoverInfo = CoverInfo();
-    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(QString(), m_loadedCoverInfo, QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {

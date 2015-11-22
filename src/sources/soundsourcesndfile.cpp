@@ -1,3 +1,5 @@
+#include <QDir>
+
 #include "sources/soundsourcesndfile.h"
 
 namespace Mixxx {
@@ -14,14 +16,19 @@ SoundSourceSndFile::~SoundSourceSndFile() {
 Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_pSndFile);
     SF_INFO sfInfo;
-#ifdef __WINDOWS__
-    // Pointer valid until string changed
-    const QString fileName(getLocalFileName());
-    LPCWSTR lpcwFilename = (LPCWSTR) fileName.utf16();
-    m_pSndFile = sf_wchar_open(lpcwFilename, SFM_READ, &sfInfo);
-#else
     memset(&sfInfo, 0, sizeof(sfInfo));
-    m_pSndFile = sf_open(getLocalFileNameBytes().constData(), SFM_READ, &sfInfo);
+#ifdef __WINDOWS__
+    // Note: we cannot use QString::toStdWString since QT 4 is compiled with
+    // '/Zc:wchar_t-' flag and QT 5 not
+    const QString localFileName(QDir::toNativeSeparators(getLocalFileName()));
+    const ushort* const fileNameUtf16 = localFileName.utf16();
+    static_assert(sizeof(wchar_t) == sizeof(ushort), "QString::utf16(): wchar_t and ushort have different sizes");
+    m_pSndFile = sf_wchar_open(
+		reinterpret_cast<wchar_t*>(const_cast<ushort*>(fileNameUtf16)),
+		SFM_READ,
+		&sfInfo);
+#else
+    m_pSndFile = sf_open(getLocalFileName().toLocal8Bit(), SFM_READ, &sfInfo);
 #endif
 
     if (!m_pSndFile) {   // sf_format_check is only for writes
@@ -37,7 +44,7 @@ Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     }
 
     setChannelCount(sfInfo.channels);
-    setFrameRate(sfInfo.samplerate);
+    setSamplingRate(sfInfo.samplerate);
     setFrameCount(sfInfo.frames);
 
     return OK;

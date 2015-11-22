@@ -25,6 +25,7 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
+#include "sounddevicenetwork.h"
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
 #include "soundmanagerutil.h"
@@ -32,10 +33,18 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "sampleutil.h"
 #include "util/cmdlineargs.h"
+#include "engine/sidechain/enginenetworkstream.h"
+#include "util/sleep.h"
 
 #ifdef __PORTAUDIO__
 typedef PaError (*SetJackClientName)(const char *name);
 #endif
+
+namespace {
+#ifdef __LINUX__
+const unsigned int kSleepSecondsAfterClosingDevice = 5;
+#endif
+} // anonymous namespace
 
 SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
                            EngineMaster *pMaster)
@@ -63,8 +72,10 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
     m_samplerates.push_back(48000);
     m_samplerates.push_back(96000);
 
-    queryDevices(); // initializes PortAudio so SMConfig:loadDefaults can do
-                    // its thing if it needs to
+    m_pNetworkStream = QSharedPointer<EngineNetworkStream>(
+            new EngineNetworkStream(2, 0));
+
+    queryDevices();
 
     if (!m_config.readFromDisk()) {
         m_config.loadDefaults(this, SoundManagerConfig::ALL);
@@ -74,8 +85,9 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
 }
 
 SoundManager::~SoundManager() {
-    //Clean up devices.
-    clearDeviceList();
+    // Clean up devices.
+    const bool sleepAfterClosing = false;
+    clearDeviceList(sleepAfterClosing);
 
 #ifdef __PORTAUDIO__
     if (m_paInitialized) {
@@ -130,14 +142,25 @@ QList<QString> SoundManager::getHostAPIList() const {
     return apiList;
 }
 
-void SoundManager::closeDevices() {
+void SoundManager::closeDevices(bool sleepAfterClosing) {
     //qDebug() << "SoundManager::closeDevices()";
-    QListIterator<SoundDevice*> dev_it(m_devices);
 
-    // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
-    // while callbacks are active.
-    while (dev_it.hasNext()) {
-        dev_it.next()->close();
+    bool closed = false;
+    foreach (SoundDevice* pDevice, m_devices) {
+        if (pDevice->isOpen()) {
+            // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
+            // while callbacks are active.
+            pDevice->close();
+            closed = true;
+        }
+    }
+
+    if (closed && sleepAfterClosing) {
+#ifdef __LINUX__
+        // Sleep for 5 sec to allow asynchronously sound APIs like "pulse" to free
+        // its resources as well
+        sleep(kSleepSecondsAfterClosingDevice);
+#endif
     }
 
     m_pErrorDevice = NULL;
@@ -178,11 +201,11 @@ void SoundManager::closeDevices() {
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
 }
 
-void SoundManager::clearDeviceList() {
+void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     //qDebug() << "SoundManager::clearDeviceList()";
 
     // Close the devices first.
-    closeDevices();
+    closeDevices(sleepAfterClosing);
 
     // Empty out the list of devices we currently have.
     while (!m_devices.empty()) {
@@ -217,8 +240,20 @@ QList<unsigned int> SoundManager::getSampleRates() const {
 
 void SoundManager::queryDevices() {
     //qDebug() << "SoundManager::queryDevices()";
-    clearDeviceList();
+    queryDevicesPortaudio();
+    queryDevicesMixxx();
 
+    // now tell the prefs that we updated the device list -- bkgood
+    emit(devicesUpdated());
+}
+
+void SoundManager::clearAndQueryDevices() {
+    const bool sleepAfterClosing = true;
+    clearDeviceList(sleepAfterClosing);
+    queryDevices();
+}
+
+void SoundManager::queryDevicesPortaudio() {
 #ifdef __PORTAUDIO__
     PaError err = paNoError;
     if (!m_paInitialized) {
@@ -243,8 +278,9 @@ void SoundManager::queryDevices() {
     const PaDeviceInfo* deviceInfo;
     for (int i = 0; i < iNumDevices; i++) {
         deviceInfo = Pa_GetDeviceInfo(i);
-        if (!deviceInfo)
+        if (!deviceInfo) {
             continue;
+        }
         /* deviceInfo fields for quick reference:
             int     structVersion
             const char *    name
@@ -257,7 +293,8 @@ void SoundManager::queryDevices() {
             PaTime  defaultHighOutputLatency
             double  defaultSampleRate
          */
-        SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
+        SoundDevicePortAudio* currentDevice = new SoundDevicePortAudio(
+                m_pConfig, this, deviceInfo, i);
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {
@@ -265,8 +302,12 @@ void SoundManager::queryDevices() {
         }
     }
 #endif
-    // now tell the prefs that we updated the device list -- bkgood
-    emit(devicesUpdated());
+}
+
+void SoundManager::queryDevicesMixxx() {
+    SoundDeviceNetwork* currentDevice = new SoundDeviceNetwork(
+            m_pConfig, this, m_pNetworkStream);
+    m_devices.push_back(currentDevice);
 }
 
 Result SoundManager::setupDevices() {
@@ -291,11 +332,6 @@ Result SoundManager::setupDevices() {
     // filter out any devices in the config we don't actually have
     m_config.filterOutputs(this);
     m_config.filterInputs(this);
-
-    // Close open devices. After this call we will not get any more
-    // onDeviceOutputCallback() or pushBuffer() calls because all the
-    // SoundDevices are closed. closeDevices() blocks and can take a while.
-    closeDevices();
 
     // NOTE(rryan): Documenting for future people touching this class. If you
     // would like to remove the fact that we close all the devices first and
@@ -322,7 +358,8 @@ Result SoundManager::setupDevices() {
         device->clearInputs();
         device->clearOutputs();
         m_pErrorDevice = device;
-        foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
+        foreach (AudioInput in,
+                 m_config.getInputs().values(device->getInternalName())) {
             isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
@@ -343,7 +380,16 @@ Result SoundManager::setupDevices() {
                 it.value()->onInputConfigured(in);
             }
         }
-        foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
+        QList<AudioOutput> outputs =
+                m_config.getOutputs().values(device->getInternalName());
+
+        // Statically connect the Network Device to the Sidechain
+        if (device->getInternalName() == kNetworkDeviceInternalName) {
+            AudioOutput out(AudioPath::SIDECHAIN, 0, 2, 0);
+            outputs.append(out);
+        }
+
+        foreach (AudioOutput out, outputs) {
             isOutput = true;
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
@@ -372,6 +418,7 @@ Result SoundManager::setupDevices() {
                 it.value()->onOutputConnected(out);
             }
         }
+
         if (isInput || isOutput) {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
@@ -422,7 +469,8 @@ Result SoundManager::setupDevices() {
     qDebug() << inputDevicesOpened << "input  sound devices opened";
 
     m_pControlObjectSoundStatusCO->set(
-        outputDevicesOpened > 0 ? SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
+            outputDevicesOpened > 0 ?
+                    SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
 
     // returns OK if we were able to open all the devices the user wanted
     if (devicesAttempted == devicesOpened) {
@@ -431,8 +479,10 @@ Result SoundManager::setupDevices() {
     }
     m_pErrorDevice = NULL;
     return ERR;
+
 closeAndError:
-    closeDevices();
+    const bool sleepAfterClosing = false;
+    closeDevices(sleepAfterClosing);
     return err;
 }
 
@@ -448,6 +498,12 @@ Result SoundManager::setConfig(SoundManagerConfig config) {
     Result err = OK;
     m_config = config;
     checkConfig();
+
+    // Close open devices. After this call we will not get any more
+    // onDeviceOutputCallback() or pushBuffer() calls because all the
+    // SoundDevices are closed. closeDevices() blocks and can take a while.
+    const bool sleepAfterClosing = true;
+    closeDevices(sleepAfterClosing);
 
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood

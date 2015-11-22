@@ -195,6 +195,9 @@ Section "Mixxx (required)" SecMixxx
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  ; If PDB files are present bundle them. For release builds we will not copy
+  ; PDBs into the distXX folder so they won't get bundled.
+  File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.pdb"
 
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
@@ -206,22 +209,27 @@ Section "Mixxx (required)" SecMixxx
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\promo\${PRODUCT_VERSION}\*"
 
   SetOutPath $INSTDIR\sqldrivers
+  ; Copies both DLLs and PDBs.
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
 
   SetOutPath $INSTDIR\imageformats
+  ; Copies both DLLs and PDBs.
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\imageformats\*"
 
   SetOutPath $INSTDIR\fonts
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\fonts\*"
 
   SetOutPath $INSTDIR\plugins
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\*.dll"
+  ; Copies both DLLs and PDBs.
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\*"
 
   SetOutPath $INSTDIR\plugins\soundsource
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*.dll"
+  ; Copies both DLLs and PDBs.
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*"
 
   SetOutPath $INSTDIR\plugins\vamp
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*.dll"
+  ; Copies both DLLs and PDBs.
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*"
 
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\*.kbd.cfg"
@@ -310,15 +318,16 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
+  Delete $INSTDIR\*.pdb
   Delete $INSTDIR\*.manifest
   Delete $INSTDIR\UninstallMixxx.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
   Delete $INSTDIR\COPYING
-  Delete $INSTDIR\sqldrivers\*.dll
+  Delete $INSTDIR\sqldrivers\*
   RMDir "$INSTDIR\sqldrivers"
-  Delete $INSTDIR\imageformats\*.dll
+  Delete $INSTDIR\imageformats\*
   RMDir "$INSTDIR\imageformats"
   Delete $INSTDIR\fonts\*
   RMDir "$INSTDIR\fonts"
@@ -384,6 +393,8 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\DN-HS5500_MIDI_1.midi.xml"
   Delete "$INSTDIR\controllers\EKS Otus.hid.xml"
   Delete "$INSTDIR\controllers\EKS-Otus.js"
+  Delete "$INSTDIR\controllers\Electrix Tweaker.midi.xml"
+  Delete "$INSTDIR\controllers\Electrix-Tweaker-scripts.js"
   Delete "$INSTDIR\controllers\Evolution_Xsession.midi.xml"
   Delete "$INSTDIR\controllers\FaderFoxDJ2.midi.xml"
   Delete "$INSTDIR\controllers\Gemini FirstMix.midi.xml"
@@ -478,6 +489,10 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Pioneer-CDJ-350-scripts.js"
   Delete "$INSTDIR\controllers\Pioneer-CDJ-850-scripts.js"
   Delete "$INSTDIR\controllers\Pioneer-CDJ-HID.js"
+  Delete "$INSTDIR\controllers\Pioneer-DDJ-SB.midi.xml"
+  Delete "$INSTDIR\controllers\Pioneer-DDJ-SB-scripts.js"
+  Delete "$INSTDIR\controllers\Reloop Beatpad.midi.xml"
+  Delete "$INSTDIR\controllers\Reloop-Beatpad-scripts.js"
   Delete "$INSTDIR\controllers\Reloop Digital Jockey 2 Controller Edition.midi.xml"
   Delete "$INSTDIR\controllers\Reloop Terminal Mix 2-4.js"
   Delete "$INSTDIR\controllers\Reloop Terminal Mix 2-4.midi.xml"
@@ -504,6 +519,8 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Vestax VCI-100-3DEX.midi.xml"
   Delete "$INSTDIR\controllers\Vestax VCI-100-hile.midi.xml"
   Delete "$INSTDIR\controllers\Vestax VCI-100.midi.xml"
+  Delete "$INSTDIR\controllers\Vestax VCI-100MKII.midi.xml"
+  Delete "$INSTDIR\controllers\Vestax-VCI-100MKII-scripts.js"
   Delete "$INSTDIR\controllers\Vestax VCI-300.midi.xml"
   Delete "$INSTDIR\controllers\Vestax VCI-400.midi.xml"
   Delete "$INSTDIR\controllers\Vestax-Spin-scripts.js"

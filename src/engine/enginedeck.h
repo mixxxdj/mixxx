@@ -87,6 +87,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
+    bool m_wasActive;
 };
 
 #endif

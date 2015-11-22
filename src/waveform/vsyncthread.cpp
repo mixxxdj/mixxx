@@ -26,6 +26,7 @@ VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
           m_bDoRendering(true),
           m_vSyncTypeChanged(false),
           m_usSyncIntervalTime(33333),
+          m_usWaitToSwap(0),
           m_vSyncMode(ST_TIMER),
           m_syncOk(false),
           m_droppedFrames(0),

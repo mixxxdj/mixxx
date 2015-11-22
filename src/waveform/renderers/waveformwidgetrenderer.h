@@ -14,7 +14,7 @@
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
 class TrackInfoObject;
-class ControlObjectThread;
+class ControlObjectSlave;
 class VisualPlayPosition;
 class VSyncThread;
 
@@ -105,15 +105,15 @@ class WaveformWidgetRenderer {
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     double m_playPos;
     int m_playPosVSample;
-    ControlObjectThread* m_pRateControlObject;
+    ControlObjectSlave* m_pRateControlObject;
     double m_rate;
-    ControlObjectThread* m_pRateRangeControlObject;
+    ControlObjectSlave* m_pRateRangeControlObject;
     double m_rateRange;
-    ControlObjectThread* m_pRateDirControlObject;
+    ControlObjectSlave* m_pRateDirControlObject;
     double m_rateDir;
-    ControlObjectThread* m_pGainControlObject;
+    ControlObjectSlave* m_pGainControlObject;
     double m_gain;
-    ControlObjectThread* m_pTrackSamplesControlObject;
+    ControlObjectSlave* m_pTrackSamplesControlObject;
     int m_trackSamples;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG

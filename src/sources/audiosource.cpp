@@ -21,20 +21,8 @@ void AudioSource::clampFrameInterval(
 
 AudioSource::AudioSource(const QUrl& url)
         : UrlResource(url),
-          m_channelCount(kChannelCountDefault),
-          m_frameRate(kFrameRateDefault),
           m_frameCount(kFrameCountDefault),
           m_bitrate(kBitrateDefault) {
-}
-
-void AudioSource::setChannelCount(SINT channelCount) {
-    DEBUG_ASSERT(isValidChannelCount(channelCount));
-    m_channelCount = channelCount;
-}
-
-void AudioSource::setFrameRate(SINT frameRate) {
-    DEBUG_ASSERT(isValidFrameRate(frameRate));
-    m_frameRate = frameRate;
 }
 
 void AudioSource::setFrameCount(SINT frameCount) {

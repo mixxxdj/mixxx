@@ -292,8 +292,9 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                     m_pAutoDJView->onShow();
                     return;
                 } else {
-                    qDebug() << "Track does not exist: "<< addedTrack->getInfo()
-                             << " " << addedTrack->getDirectory();
+                    qDebug() << "Track does not exist:"
+                            << addedTrack->getInfo()
+                            << addedTrack->getLocation();
                 }
             }
             failedRetrieveAttempts += 1;
@@ -312,8 +313,9 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                         return;
                     }
                 } else {
-                    qDebug() << "Track does not exist:"<< addedTrack->getInfo()
-                             << addedTrack->getDirectory();
+                    qDebug() << "Track does not exist:"
+                            << addedTrack->getInfo()
+                            << addedTrack->getLocation();
                 }
             }
             failedRetrieveAttempts += 1;

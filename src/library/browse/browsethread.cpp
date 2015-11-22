@@ -154,7 +154,7 @@ void BrowseThread::populateModel() {
         item->setData("0", Qt::UserRole);
         row_data.insert(COLUMN_PREVIEW, item);
 
-        item = new QStandardItem(tio.getFilename());
+        item = new QStandardItem(tio.getFileName());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_FILENAME, item);
@@ -254,6 +254,13 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         item->setData(creationTime, Qt::UserRole);
         row_data.insert(COLUMN_FILE_CREATION_TIME, item);
+
+        const Mixxx::ReplayGain replayGain(tio.getReplayGain());
+        item = new QStandardItem(
+                Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
+        item->setToolTip(item->text());
+        item->setData(item->text(), Qt::UserRole);
+        row_data.insert(COLUMN_REPLAYGAIN, item);
 
         rows.append(row_data);
         ++row;

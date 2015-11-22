@@ -1,11 +1,11 @@
 #ifndef MIXXX_AUDIOSOURCE_H
 #define MIXXX_AUDIOSOURCE_H
 
+#include "audiosignal.h"
 #include "urlresource.h"
 
 #include "samplebuffer.h"
 
-#include "util/assert.h"
 #include "util/defs.h" // Result
 
 #include <QSharedPointer>
@@ -17,7 +17,7 @@ struct AudioSourceConfig;
 
 // Common interface and base class for audio sources.
 //
-// Both the number of channels and the frame rate must
+// Both the number of channels and the sampling rate must
 // be constant and are not allowed to change over time.
 //
 // The length of audio data is measured in frames. A frame
@@ -31,30 +31,9 @@ struct AudioSourceConfig;
 //
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
-class AudioSource: public UrlResource {
+class AudioSource: public UrlResource, public AudioSignal {
 public:
-    static const SINT kChannelCountMono = 1;
-    static const SINT kChannelCountStereo = 2;
-
-    // Returns the number of channels. The number of channels
-    // must be constant over time.
-    inline SINT getChannelCount() const {
-        return m_channelCount;
-    }
-
-    // Returns the number of frames per second. This equals
-    // the number samples for each channel per second, which
-    // must be uniform among all channels. The frame rate
-    // must be constant over time.
-    inline SINT getFrameRate() const {
-        return m_frameRate;
-    }
-
-    inline bool isValid() const {
-        return hasChannelCount() && hasFrameRate();
-    }
-
-    // Returns the total number of frames.
+    // Returns the total number of sample frames.
     inline SINT getFrameCount() const {
         return m_frameCount;
     }
@@ -70,7 +49,7 @@ public:
     }
     inline SINT getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero
-        return getFrameCount() / getFrameRate();
+        return getFrameCount() / getSamplingRate();
     }
 
     // The bitrate is measured in kbit/s (kbps).
@@ -86,21 +65,6 @@ public:
     inline SINT getBitrate() const {
         DEBUG_ASSERT(hasBitrate()); // prevents reading an invalid bitrate
         return m_bitrate;
-    }
-
-    // Conversion: #frames -> #samples
-    template<typename T>
-    inline T frames2samples(T frameCount) const {
-        DEBUG_ASSERT(hasChannelCount());
-        return frameCount * getChannelCount();
-    }
-
-    // Conversion: #samples -> #frames
-    template<typename T>
-    inline T samples2frames(T sampleCount) const {
-        DEBUG_ASSERT(hasChannelCount());
-        DEBUG_ASSERT(0 == (sampleCount % getChannelCount()));
-        return sampleCount / getChannelCount();
     }
 
     // Index of the first sample frame.
@@ -125,7 +89,7 @@ public:
     // - Precondition: isValidFrameIndex(frameIndex) == true
     //   - Index of first frame: frameIndex = 0
     //   - Index of last frame: frameIndex = getFrameCount() - 1
-    // - The seek position in seconds is frameIndex / frameRate()
+    // - The seek position in seconds is frameIndex / getSamplingRate()
     // Returns the actual current frame index which may differ from the
     // requested index if the source does not support accurate seeking.
     virtual SINT seekSampleFrame(SINT frameIndex) = 0;
@@ -221,22 +185,6 @@ public:
 protected:
     explicit AudioSource(const QUrl& url);
 
-    inline static bool isValidChannelCount(SINT channelCount) {
-        return kChannelCountZero < channelCount;
-    }
-    inline bool hasChannelCount() const {
-        return isValidChannelCount(getChannelCount());
-    }
-    void setChannelCount(SINT channelCount);
-
-    inline static bool isValidFrameRate(SINT frameRate) {
-        return kFrameRateZero < frameRate;
-    }
-    inline bool hasFrameRate() const {
-        return isValidFrameRate(getFrameRate());
-    }
-    void setFrameRate(SINT frameRate);
-
     inline static bool isValidFrameCount(SINT frameCount) {
         return kFrameCountZero <= frameCount;
     }
@@ -251,12 +199,6 @@ protected:
 private:
     friend struct AudioSourceConfig;
 
-    static const SINT kChannelCountZero = 0;
-    static const SINT kChannelCountDefault = kChannelCountZero;
-
-    static const SINT kFrameRateZero = 0;
-    static const SINT kFrameRateDefault = kFrameRateZero;
-
     static const SINT kFrameCountZero = 0;
     static const SINT kFrameCountDefault = kFrameCountZero;
 
@@ -266,22 +208,28 @@ private:
     static const SINT kBitrateZero = 0;
     static const SINT kBitrateDefault = kBitrateZero;
 
-    SINT m_channelCount;
-    SINT m_frameRate;
     SINT m_frameCount;
 
     SINT m_bitrate;
 };
 
 // Parameters for configuring audio sources
-struct AudioSourceConfig {
-    AudioSourceConfig()
-        : channelCountHint(AudioSource::kChannelCountDefault),
-          frameRateHint(AudioSource::kFrameRateDefault){
-    }
+class AudioSourceConfig: public AudioSignal {
+public:
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+    // NOTE(uklotzde): Inheriting constructors are supported since VS2015.
+    AudioSourceConfig() {}
+    AudioSourceConfig(SINT channelCount, SINT samplingRate): AudioSignal(channelCount, samplingRate) {}
+#else
+    // Inherit constructors from base class
+    using AudioSignal::AudioSignal;
+#endif
 
-    SINT channelCountHint;
-    SINT frameRateHint;
+    using AudioSignal::setChannelCount;
+    using AudioSignal::resetChannelCount;
+
+    using AudioSignal::setSamplingRate;
+    using AudioSignal::resetSamplingRate;
 };
 
 typedef QSharedPointer<AudioSource> AudioSourcePointer;

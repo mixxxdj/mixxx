@@ -1,5 +1,7 @@
 #include "sources/soundsourceoggvorbis.h"
 
+#include <QFile>
+
 namespace Mixxx {
 
 namespace {
@@ -14,9 +16,18 @@ const int kEntireBitstreamLink  = -1; // retrieve ... for the entire physical bi
 
 } // anonymous namespace
 
+//static
+ov_callbacks SoundSourceOggVorbis::s_callbacks = {
+    SoundSourceOggVorbis::ReadCallback,
+    SoundSourceOggVorbis::SeekCallback,
+    SoundSourceOggVorbis::CloseCallback,
+    SoundSourceOggVorbis::TellCallback
+};
+
 SoundSourceOggVorbis::SoundSourceOggVorbis(QUrl url)
         : SoundSource(url, "ogg"),
-          m_curFrameIndex(0) {
+          m_curFrameIndex(0),
+          m_pFile(NULL) {
     memset(&m_vf, 0, sizeof(m_vf));
 }
 
@@ -25,9 +36,13 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
 }
 
 Result SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    const QByteArray qbaFilename(getLocalFileNameBytes());
-    if (0 != ov_fopen(qbaFilename.constData(), &m_vf)) {
+    m_pFile = new QFile(getLocalFileName());
+    if(!m_pFile->open(QFile::ReadOnly)) {
         qWarning() << "Failed to open OggVorbis file:" << getUrlString();
+        return ERR;
+    }
+    if (ov_open_callbacks(m_pFile, &m_vf, NULL, 0, s_callbacks) < 0) {
+        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
         return ERR;
     }
 
@@ -43,7 +58,7 @@ Result SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         return ERR;
     }
     setChannelCount(vi->channels);
-    setFrameRate(vi->rate);
+    setSamplingRate(vi->rate);
     if (0 < vi->bitrate_nominal) {
         setBitrate(vi->bitrate_nominal / 1000);
     } else {
@@ -68,6 +83,7 @@ void SoundSourceOggVorbis::close() {
     if (0 != clearResult) {
         qWarning() << "Failed to close OggVorbis file" << clearResult;
     }
+    delete m_pFile;
 }
 
 SINT SoundSourceOggVorbis::seekSampleFrame(
@@ -161,6 +177,62 @@ SINT SoundSourceOggVorbis::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
     return numberOfFramesTotal - numberOfFramesRemaining;
+}
+
+
+//static
+size_t SoundSourceOggVorbis::ReadCallback(void *ptr, size_t size, size_t nmemb,
+       void *datasource) {
+   if (!size || !nmemb) {
+       return 0;
+   }
+   QFile* pFile = static_cast<QFile*>(datasource);
+   if (!pFile) {
+       return 0;
+   }
+
+   nmemb = math_min<size_t>((pFile->size() - pFile->pos()) / size, nmemb);
+   pFile->read((char*)ptr, nmemb * size);
+   return nmemb;
+}
+
+//static
+int SoundSourceOggVorbis::SeekCallback(void *datasource, ogg_int64_t offset,
+       int whence) {
+   QFile* pFile = static_cast<QFile*>(datasource);
+   if (!pFile) {
+       return 0;
+   }
+
+   switch(whence) {
+   case SEEK_SET:
+       return pFile->seek(offset) ? 0 : -1;
+   case SEEK_CUR:
+       return pFile->seek(pFile->pos() + offset) ? 0 : -1;
+   case SEEK_END:
+       return pFile->seek(pFile->size() + offset) ? 0 : -1;
+   default:
+       return -1;
+   }
+}
+
+//static
+int SoundSourceOggVorbis::CloseCallback(void* datasource) {
+   QFile* pFile = static_cast<QFile*>(datasource);
+   if (!pFile) {
+       return 0;
+   }
+   pFile->close();
+   return 0;
+}
+
+//static
+long SoundSourceOggVorbis::TellCallback(void* datasource) {
+   QFile* pFile = static_cast<QFile*>(datasource);
+   if (!pFile) {
+       return 0;
+   }
+   return pFile->pos();
 }
 
 QString SoundSourceProviderOggVorbis::getName() const {

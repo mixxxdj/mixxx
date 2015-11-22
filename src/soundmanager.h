@@ -26,6 +26,7 @@
 #include "util/defs.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
+#include "engine/sidechain/enginenetworkstream.h"
 
 class SoundDevice;
 class EngineMaster;
@@ -57,17 +58,11 @@ class SoundManager : public QObject {
     // bOutputDevices or bInputDevices are set, respectively.
     QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
 
-    // Closes all the open sound devices. Because multiple soundcards might be
-    // open, this method simply runs through the list of all known soundcards
-    // (from PortAudio) and attempts to close them all. Closing a soundcard that
-    // isn't open is safe.
-    void closeDevices();
-
-    // Closes all the devices and empties the list of devices we have.
-    void clearDeviceList();
-
-    // Creates a list of sound devices that PortAudio sees.
+    // Creates a list of sound devices
+    void clearAndQueryDevices();
     void queryDevices();
+    void queryDevicesPortaudio();
+    void queryDevicesMixxx();
 
     // Opens all the devices chosen by the user in the preferences dialog, and
     // establishes the proper connections between them and the mixing engine.
@@ -107,6 +102,10 @@ class SoundManager : public QObject {
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
+    QSharedPointer<EngineNetworkStream> getNetworkStream() const {
+        return m_pNetworkStream;
+    }
+
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
@@ -114,6 +113,15 @@ class SoundManager : public QObject {
     void inputRegistered(AudioInput input, AudioDestination *dest);
 
   private:
+    // Closes all the devices and empties the list of devices we have.
+    void clearDeviceList(bool sleepAfterClosing);
+
+    // Closes all the open sound devices. Because multiple soundcards might be
+    // open, this method simply runs through the list of all known soundcards
+    // (from PortAudio) and attempts to close them all. Closing a soundcard that
+    // isn't open is safe.
+    void closeDevices(bool sleepAfterClosing);
+
     void setJACKName() const;
 
     EngineMaster *m_pMaster;
@@ -132,6 +140,8 @@ class SoundManager : public QObject {
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
+
+    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
 };
 
 #endif

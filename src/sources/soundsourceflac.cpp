@@ -300,8 +300,8 @@ FLAC__StreamDecoderReadStatus SoundSourceFLAC::flacRead(FLAC__byte buffer[],
     }
 }
 
-FLAC__StreamDecoderSeekStatus SoundSourceFLAC::flacSeek(FLAC__uint64 offset) {
-    if (m_file.seek(offset)) {
+FLAC__StreamDecoderSeekStatus SoundSourceFLAC::flacSeek(FLAC__uint64 absolute_byte_offset) {
+    if (m_file.seek(absolute_byte_offset)) {
         return FLAC__STREAM_DECODER_SEEK_STATUS_OK;
     } else {
         qWarning() << "SoundSourceFLAC: An unrecoverable error occurred ("
@@ -343,10 +343,10 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
                 << frame->header.channels << "<>" << getChannelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    if (getFrameRate() != SINT(frame->header.sample_rate)) {
+    if (getSamplingRate() != SINT(frame->header.sample_rate)) {
         qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid sample rate in FLAC frame header"
-                << frame->header.sample_rate << "<>" << getFrameRate();
+                << frame->header.sample_rate << "<>" << getSamplingRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     const SINT numReadableFrames = frame->header.blocksize;
@@ -429,21 +429,21 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
             qWarning() << "Invalid channel count:"
                     << channelCount;
         }
-        const SINT frameRate = metadata->data.stream_info.sample_rate;
-        if (isValidFrameRate(frameRate)) {
-            if (hasFrameRate()) {
+        const SINT samplingRate = metadata->data.stream_info.sample_rate;
+        if (isValidSamplingRate(samplingRate)) {
+            if (hasSamplingRate()) {
                 // already set before -> check for consistency
-                if (getFrameRate() != frameRate) {
-                    qWarning() << "Unexpected frame/sample rate:"
-                            << frameRate << " <> " << getFrameRate();
+                if (getSamplingRate() != samplingRate) {
+                    qWarning() << "Unexpected sampling rate:"
+                            << samplingRate << " <> " << getSamplingRate();
                 }
             } else {
                 // not set before
-                setFrameRate(frameRate);
+                setSamplingRate(samplingRate);
             }
         } else {
-            qWarning() << "Invalid frame/sample rate:"
-                    << frameRate;
+            qWarning() << "Invalid sampling rate:"
+                    << samplingRate;
         }
         const SINT frameCount = metadata->data.stream_info.total_samples;
         DEBUG_ASSERT(isValidFrameCount(frameCount));

@@ -41,7 +41,7 @@ QString getModPlugTypeFromUrl(QUrl url) {
 
 const SINT SoundSourceModPlug::kChannelCount = AudioSource::kChannelCountStereo;
 const SINT SoundSourceModPlug::kBitsPerSample = 16;
-const SINT SoundSourceModPlug::kFrameRate = 44100; // 44.1 kHz
+const SINT SoundSourceModPlug::kSamplingRate = 44100; // 44.1 kHz
 
 unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
@@ -67,7 +67,7 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
         QImage* /*pCoverArt*/) const {
     // The modplug library currently does not support reading cover-art from
     // modplug files -- kain88 (Oct 2014)
-    QFile modFile(getLocalFileNameBytes());
+    QFile modFile(getLocalFileName());
     modFile.open(QIODevice::ReadOnly);
     const QByteArray fileBuf(modFile.readAll());
     modFile.close();
@@ -117,7 +117,7 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     const SampleBuffer::size_type estimateMilliseconds =
             ModPlug::ModPlug_GetLength(m_pModFile);
     const SampleBuffer::size_type estimateSamples =
-            estimateMilliseconds * kChannelCount * kFrameRate;
+            estimateMilliseconds * kChannelCount * kSamplingRate;
     const SampleBuffer::size_type estimateChunks =
             (estimateSamples + (chunkSizeInSamples - 1)) / chunkSizeInSamples;
     const SampleBuffer::size_type sampleBufferCapacity = math_min(
@@ -151,7 +151,7 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
             << " samples unused capacity.";
 
     setChannelCount(kChannelCount);
-    setFrameRate(kFrameRate);
+    setSamplingRate(kSamplingRate);
     setFrameCount(samples2frames(m_sampleBuf.size()));
     m_seekPos = 0;
 

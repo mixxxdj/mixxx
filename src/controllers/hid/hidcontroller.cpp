@@ -46,21 +46,6 @@ void HidReader::run() {
     delete [] data;
 }
 
-QString safeDecodeWideString(wchar_t* pStr, size_t max_length) {
-    if (pStr == NULL) {
-        return QString();
-    }
-    // pStr is untrusted since it might be non-null terminated.
-    wchar_t* tmp = new wchar_t[max_length+1];
-    // wcsnlen is not available on all platforms, so just make a temporary
-    // buffer
-    wcsncpy(tmp, pStr, max_length);
-    tmp[max_length] = 0;
-    QString result = QString::fromWCharArray(tmp);
-    delete [] tmp;
-    return result;
-}
-
 HidController::HidController(const hid_device_info deviceInfo)
         : m_pHidDevice(NULL) {
     // Copy required variables from deviceInfo, which will be freed after
@@ -80,7 +65,7 @@ HidController::HidController(const hid_device_info deviceInfo)
     }
 
     // Don't trust path to be null terminated.
-    hid_path = new char[PATH_MAX+1];
+    hid_path = new char[PATH_MAX + 1];
     strncpy(hid_path, deviceInfo.path, PATH_MAX);
     hid_path[PATH_MAX] = 0;
 
@@ -335,14 +320,35 @@ void HidController::send(QByteArray data, unsigned int reportID) {
         if (debugging()) {
             qWarning() << "Unable to send data to" << getName()
                        << "serial #" << hid_serial << ":"
-                       << QString::fromWCharArray(hid_error(m_pHidDevice));
+                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
         } else {
             qWarning() << "Unable to send data to" << getName() << ":"
-                       << QString::fromWCharArray(hid_error(m_pHidDevice));
+                       << safeDecodeWideString(hid_error(m_pHidDevice), 512);
         }
     } else if (debugging()) {
         qDebug() << result << "bytes sent to" << getName()
                  << "serial #" << hid_serial
                  << "(including report ID of" << reportID << ")";
+    }
+}
+
+//static
+QString HidController::safeDecodeWideString(const wchar_t* pStr, size_t max_length) {
+    if (pStr == NULL) {
+        return QString();
+    }
+    // find a terminating 0 or take all chars
+    int size = 0;
+    while ((size < (int)max_length) && (pStr[size] != 0)) {
+        ++size;
+    }
+    // inlining QString::fromWCharArray()
+    // We cannot use Qts wchar_t functions, since they may work or not
+    // depending on the '/Zc:wchar_t-' build flag in the Qt configs
+    // on Windows build
+    if (sizeof(wchar_t) == sizeof(QChar)) {
+        return QString::fromUtf16((const ushort *)pStr, size);
+    } else {
+        return QString::fromUcs4((uint *)pStr, size);
     }
 }
