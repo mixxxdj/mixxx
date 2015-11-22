@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2015-10-18</description>
+    <description>2015-11-1</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -265,78 +265,74 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>playposition</key>
+        <key>VCI102.rateQuantizedMSB</key>
         <status>0xB0</status>
         <midino>0x1E</midino>
         <options>
-          <fourteen-bit-msb/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>playposition</key>
+        <key>VCI102.rateQuantizedMSB</key>
         <status>0xB1</status>
         <midino>0x1E</midino>
         <options>
-          <fourteen-bit-msb/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>playposition</key>
+        <key>VCI102.rateQuantizedMSB</key>
         <status>0xB2</status>
         <midino>0x1E</midino>
         <options>
-          <fourteen-bit-msb/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>playposition</key>
+        <key>VCI102.rateQuantizedMSB</key>
         <status>0xB3</status>
         <midino>0x1E</midino>
         <options>
-          <fourteen-bit-msb/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>playposition</key>
+        <key>VCI102.rateQuantizedLSB</key>
         <status>0xB0</status>
         <midino>0x2E</midino>
         <options>
-          <fourteen-bit-lsb/>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>playposition</key>
+        <key>VCI102.rateQuantizedLSB</key>
         <status>0xB1</status>
         <midino>0x2E</midino>
         <options>
-          <fourteen-bit-lsb/>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>playposition</key>
+        <key>VCI102.rateQuantizedLSB</key>
         <status>0xB2</status>
         <midino>0x2E</midino>
         <options>
-          <fourteen-bit-lsb/>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>playposition</key>
+        <key>VCI102.rateQuantizedLSB</key>
         <status>0xB3</status>
         <midino>0x2E</midino>
         <options>
-          <fourteen-bit-lsb/>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>

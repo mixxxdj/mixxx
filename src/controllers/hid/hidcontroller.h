@@ -70,6 +70,8 @@ class HidController : public Controller {
     virtual bool matchProductInfo(QHash <QString,QString >);
     virtual void guessDeviceCategory();
 
+    static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);
+
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
 

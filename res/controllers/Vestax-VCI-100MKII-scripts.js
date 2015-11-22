@@ -9,7 +9,7 @@
 
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2015-10-18
+// description: 2015-11-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 var VCI102 = {};
@@ -24,25 +24,34 @@ VCI102.volume = function(ch, midino, value, status, group) {
 
 VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
 
-VCI102.shift = [0, 0];
+VCI102.fxButton = [
+    ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"],
+    ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"]
+];
 
-VCI102.setShift = function(ch, value) {
+VCI102.setFxButton = function(ch, value) {
     var i, j, enabled;
-    VCI102.shift[ch] = value * 2 / 127;
+    if (value) {
+        VCI102.fxButton[ch] =
+            ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
+    } else {
+        VCI102.fxButton[ch] =
+            ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
+    }
     for (i = ch; i < 4; i += 2) {
         enabled = "group_" + VCI102.deck[i] + "_enable";
-        for (j = VCI102.shift[ch] + 1; j <= VCI102.shift[ch] + 2; j++) {
-            engine.trigger("[EffectRack1_EffectUnit" + j + "]", enabled);
+        for (j = 0; j < 2; j++) {
+            engine.trigger(VCI102.fxButton[ch % 2][j], enabled);
         }
     }
 };
 
 VCI102.shiftL = function(ch, midino, value, status, group) {
-    VCI102.setShift(0, value);
+    VCI102.setFxButton(0, value);
 };
 
 VCI102.shiftR = function(ch, midino, value, status, group) {
-    VCI102.setShift(1, value);
+    VCI102.setFxButton(1, value);
 };
 
 VCI102.selectTimer = 0;
@@ -118,14 +127,47 @@ VCI102.jog = function(ch, midino, value, status, group) {
     }
 };
 
-VCI102.rate = [0, 0, 0, 0];
+VCI102.rateEnable = [true, true, true, true];
+
+VCI102.rateValueMSB = [64, 64, 64, 64];  // defaults are at center
 
 VCI102.rateMSB = function(ch, midino, value, status, group) {
-    VCI102.rate[ch] = (64 - value) * 128;
+    // unlock rate control if the change is not caused by a mechanical drift
+    if (VCI102.rateEnable[ch]) {
+        engine.softTakeover(group, "rate", true);
+    } else if (Math.abs(value - VCI102.rateValueMSB[ch]) > 1) {
+        VCI102.rateEnable[ch] = true;
+        engine.softTakeover(group, "rate", false);
+    } else {
+        return;
+    }
+    VCI102.rateValueMSB[ch] = value;
+};
+
+VCI102.rateQuantizedMSB = function(ch, midino, value, status, group) {
+    // lock rate control against a mechanical drift
+    if (VCI102.rateEnable[ch]) {
+        VCI102.rateEnable[ch] = false;
+    }
+    VCI102.rateValueMSB[ch] = value;
+};
+
+VCI102.rate = function(ch, lsb) {
+    return ((64 - VCI102.rateValueMSB[ch]) * 128 - lsb) / 8192;
 };
 
 VCI102.rateLSB = function(ch, midino, value, status, group) {
-    engine.setValue(group, "rate", (VCI102.rate[ch] - value) / 8192);
+    // inhibit rate control after the change by quantized bpm until unlocked
+    if (VCI102.rateEnable[ch]) {
+        engine.setValue(group, "rate", VCI102.rate(ch, value));
+    }
+};
+
+VCI102.rateQuantizedLSB = function(ch, midino, value, status, group) {
+    engine.setValue(
+        group, "bpm", Math.round(
+            (VCI102.rate(ch, value) * engine.getValue(group, "rateRange") + 1
+            ) * engine.getValue(group, "file_bpm")));
 };
 
 VCI102.pitch = function(ch, midino, value, status, group) {
@@ -217,7 +259,7 @@ VCI102.init = function() {
         [0x2C, 0x25, 0x27, 0x28],
         [0x28, 0x25, 0x27, 0x2C]
     ];
-    var LFX = [0x3A, 0x38];
+    var LEDfx = [0x3A, 0x38];
 
     function headMix(value, group, key) {
         var i;
@@ -251,9 +293,9 @@ VCI102.init = function() {
         };
     }
 
-    function makeLFX(ch, midino, shift) {
+    function makeLEDfx(ch, midino, button) {
         return function(value, group, key) {
-            if (VCI102.shift[ch % 2] == shift) {
+            if (group == VCI102.fxButton[ch % 2][button]) {
                 midi.sendShortMsg(0x90 + ch, midino, value * 127);
             }
         };
@@ -265,14 +307,12 @@ VCI102.init = function() {
         engine.connectControl(VCI102.deck[i], "pfl", headMix);
         enabled = "group_" + VCI102.deck[i] + "_enable";
         for (j = 0; j < 2; j++) {
-            for (k = 0; k < 4; k += 2) {
+            led = makeLEDfx(i, LEDfx[j], j);
+            for (k = j + 1; k <= 4; k += 2) {
                 engine.connectControl(
-                    "[EffectRack1_EffectUnit" + (j + k + 1) + "]",
-                    enabled,
-                    makeLFX(i, LFX[j], k));
+                    "[EffectRack1_EffectUnit" + k + "]", enabled, led);
             }
         }
-        engine.softTakeover(VCI102.deck[i], "rate", true);
         engine.softTakeover(VCI102.deck[i], "pitch", true);
     }
     for (i = 1; i <= 4; i++) {

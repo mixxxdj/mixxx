@@ -195,6 +195,9 @@ Section "Mixxx (required)" SecMixxx
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  ; If PDB files are present bundle them. For release builds we will not copy
+  ; PDBs into the distXX folder so they won't get bundled.
+  File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.pdb"
 
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
@@ -206,22 +209,27 @@ Section "Mixxx (required)" SecMixxx
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\promo\${PRODUCT_VERSION}\*"
 
   SetOutPath $INSTDIR\sqldrivers
+  ; Copies both DLLs and PDBs.
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
 
   SetOutPath $INSTDIR\imageformats
+  ; Copies both DLLs and PDBs.
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\imageformats\*"
 
   SetOutPath $INSTDIR\fonts
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\fonts\*"
 
   SetOutPath $INSTDIR\plugins
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\*.dll"
+  ; Copies both DLLs and PDBs.
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\*"
 
   SetOutPath $INSTDIR\plugins\soundsource
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*.dll"
+  ; Copies both DLLs and PDBs.
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*"
 
   SetOutPath $INSTDIR\plugins\vamp
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*.dll"
+  ; Copies both DLLs and PDBs.
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*"
 
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\*.kbd.cfg"
@@ -310,15 +318,16 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
+  Delete $INSTDIR\*.pdb
   Delete $INSTDIR\*.manifest
   Delete $INSTDIR\UninstallMixxx.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
   Delete $INSTDIR\COPYING
-  Delete $INSTDIR\sqldrivers\*.dll
+  Delete $INSTDIR\sqldrivers\*
   RMDir "$INSTDIR\sqldrivers"
-  Delete $INSTDIR\imageformats\*.dll
+  Delete $INSTDIR\imageformats\*
   RMDir "$INSTDIR\imageformats"
   Delete $INSTDIR\fonts\*
   RMDir "$INSTDIR\fonts"
