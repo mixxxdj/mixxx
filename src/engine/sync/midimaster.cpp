@@ -21,7 +21,7 @@ MidiMasterClock::MidiMasterClock(const char* pGroup, SyncableListener* pEngineSy
             new ControlObject(ConfigKey(pGroup, "beat_distance")));
 
     m_pMidiSourceClockRunning.reset(
-            new ControlPushButton(ConfigKey(pGroup, "play")));
+            new ControlPushButton(ConfigKey(pGroup, "run")));
 
     m_pSyncMasterEnabled.reset(
             new ControlPushButton(ConfigKey(pGroup, "sync_master")));
@@ -71,8 +71,8 @@ void MidiMasterClock::slotSyncMasterEnabledChangeRequest(double state) {
 
 double MidiMasterClock::getBeatDistance() const {
     qint64 last_beat = static_cast<qint64>(m_pMidiSourceClockLastBeatTime->get());
-    double raw_percent = MidiSourceClock::beatPercentage(last_beat, Time::elapsed(),
-                                                   m_pMidiSourceClockBpm->get());
+    double raw_percent = MidiSourceClock::beatFraction(last_beat, Time::elapsed(),
+                                                       m_pMidiSourceClockBpm->get());
     raw_percent += m_pMidiSourceClockSyncAdjust->get();
     // Fix beat loop-around.
     return raw_percent - floor(raw_percent);

@@ -30,41 +30,41 @@ class MidiSourceClockTest : public MixxxTest {
 };
 
 TEST_F(MidiSourceClockTest, SimpleTest) {
-    // Simple test for ticking at a very steady rate and then getting the bpm.
+    // Simple test for pulsing at a very steady rate and then getting the bpm.
 
     m_pMidiSourceClock->start();
 
-    // Nanos per tick for 124 bpm midi ticks:
-    //     60secs per min / 124bpm / kPulsesPerQuarter tpb * 1e9 nps
-    // tpb = ticks per beat
+    // Nanos per pulse for 124 bpm midi pulses:
+    //     60secs per min / 124bpm / kPulsesPerQuarter ppb * 1e9 nps
+    // ppb = pulses per beat
     // nps = nanos per second
-    const double nanos_per_tick =
+    const double nanos_per_pulse =
             60.0 / 124 / MidiSourceClock::kPulsesPerQuarter * 1e9;
     // This test should end before the ringbuffer is exhausted and not on
     // a beat.
     for (double t = 0; t < MidiSourceClock::kPulsesPerQuarter * 2.5; ++t) {
-        m_pFakeClock->setTime(static_cast<qint64>(t * nanos_per_tick));
-        m_pMidiSourceClock->tick();
+        m_pFakeClock->setTime(static_cast<qint64>(t * nanos_per_pulse));
+        m_pMidiSourceClock->pulse();
     }
 
     EXPECT_FLOAT_EQ(124.0, m_pMidiSourceClock->bpm());
-    // position 60 is 12 ticks after 48, so 1/2 beat.
-    EXPECT_FLOAT_EQ(0.5, m_pMidiSourceClock->beatPercentage());
+    // position 60 is 12 pulses after 48, so 1/2 beat.
+    EXPECT_FLOAT_EQ(0.5, m_pMidiSourceClock->beatFraction());
 }
 
 TEST_F(MidiSourceClockTest, RingBufferTest) {
     m_pMidiSourceClock->start();
 
-    // Nanos per tick for 124 bpm midi ticks.
-    const double nanos_per_tick =
+    // Nanos per pulse for 124 bpm midi pulses.
+    const double nanos_per_pulse =
             60.0 / 124 / MidiSourceClock::kPulsesPerQuarter * 1e9;
     // This test should exhaust the ringbuffer at least once, and end on
     // a beat.
     for (double t = 0; t < MidiSourceClock::kPulsesPerQuarter * 6; ++t) {
-        m_pFakeClock->setTime(static_cast<qint64>(t * nanos_per_tick));
-        m_pMidiSourceClock->tick();
+        m_pFakeClock->setTime(static_cast<qint64>(t * nanos_per_pulse));
+        m_pMidiSourceClock->pulse();
     }
 
     EXPECT_FLOAT_EQ(124.0, m_pMidiSourceClock->bpm());
-    EXPECT_FLOAT_EQ(0.0, m_pMidiSourceClock->beatPercentage());
+    EXPECT_FLOAT_EQ(0.0, m_pMidiSourceClock->beatFraction());
 }

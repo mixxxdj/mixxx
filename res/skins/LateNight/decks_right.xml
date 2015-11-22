@@ -105,7 +105,7 @@
                                     <Text>RUN</Text>
                                 </State>
                                 <Connection>
-                                    <ConfigKey>[MidiSourceClock],play</ConfigKey>
+                                    <ConfigKey>[MidiSourceClock],run</ConfigKey>
                                     <ButtonState>NoButton</ButtonState>
                                 </Connection>
                             </PushButton>

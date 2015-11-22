@@ -40,7 +40,7 @@ class MidiMasterClock : public QObject, public Clock, public Syncable {
 
     bool isPlaying() const {
         // midi running / not running state
-        return true;
+        return m_pMidiSourceClockRunning->get();
     }
 
     double getBeatDistance() const;

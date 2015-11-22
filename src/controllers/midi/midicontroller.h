@@ -107,9 +107,11 @@ class MidiController : public Controller {
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
     MixxxClock m_mixxxClock;
     MidiSourceClock m_midiSourceClock;
-    QScopedPointer<ControlObjectSlave> m_pClockBpm;
-    QScopedPointer<ControlObjectSlave> m_pClockLastBeat;
-    QScopedPointer<ControlObjectSlave> m_pClockRunning;
+
+    // Slaves are cleaned up by QT.
+    ControlObjectSlave* m_pClockBpm;
+    ControlObjectSlave* m_pClockLastBeat;
+    ControlObjectSlave* m_pClockRunning;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;

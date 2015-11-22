@@ -18,11 +18,11 @@
 
 MidiController::MidiController()
         : Controller(), m_midiSourceClock(&m_mixxxClock) {
+    m_pClockBpm = new ControlObjectSlave("[MidiSourceClock]", "bpm", this);
+    m_pClockLastBeat = new ControlObjectSlave("[MidiSourceClock]",
+                                              "last_beat_time", this);
+    m_pClockRunning = new ControlObjectSlave("[MidiSourceClock]", "play", this);
     setDeviceCategory(tr("MIDI Controller"));
-    m_pClockBpm.reset(new ControlObjectSlave("[MidiSourceClock]", "bpm"));
-    m_pClockLastBeat.reset(
-            new ControlObjectSlave("[MidiSourceClock]", "last_beat_time"));
-    m_pClockRunning.reset(new ControlObjectSlave("[MidiSourceClock]", "play"));
 }
 
 MidiController::~MidiController() {
@@ -457,7 +457,7 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
         if (_newmidivalue >= 64.)
             _newmidivalue = _newmidivalue - 128.;
         //Apply sensitivity to signed value. FIXME
-       // if(sensitivity > 0)
+        // if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
         //Apply new value to current value.
         _newmidivalue = _prevmidivalue + _newmidivalue;
