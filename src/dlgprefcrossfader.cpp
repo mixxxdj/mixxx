@@ -9,6 +9,7 @@
 
 namespace {
 const double kTransformMax = 1000.0;
+const double kTransformMin = 1.0;
 } // anonymous namespace
 
 DlgPrefCrossfader::DlgPrefCrossfader(
@@ -17,7 +18,7 @@ DlgPrefCrossfader::DlgPrefCrossfader(
           m_config(config),
           m_pxfScene(NULL),
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
-          m_transform(1.0),
+          m_transform(kTransformMin),
           m_cal(0.0),
           m_mode(kConfigKey, "xFaderMode"),
           m_curve(kConfigKey, "xFaderCurve"),
@@ -62,7 +63,7 @@ void DlgPrefCrossfader::loadSettings() {
 
     // Range SliderXFader 0 .. 100
     double sliderVal = ((kTransformMax / m_transform) - 1) /
-            (kTransformMax - 1) * SliderXFader->maximum();
+            (kTransformMax - kTransformMin) * SliderXFader->maximum();
     SliderXFader->setValue(SliderXFader->maximum() - (int)sliderVal);
 
     m_xFaderMode =
@@ -205,7 +206,7 @@ void DlgPrefCrossfader::slotUpdateXFader() {
     m_transform = kTransformMax /
             (((double)(SliderXFader->maximum() - SliderXFader->value()) /
                     SliderXFader->maximum() *
-                    (kTransformMax - 1)) + 1);
+                    (kTransformMax - kTransformMin)) + 1);
     m_cal = EngineXfader::getPowerCalibration(m_transform);
     m_config->set(ConfigKey(kConfigKey, "xFaderMode"), ConfigValue(m_xFaderMode));
     m_config->set(ConfigKey(kConfigKey, "xFaderCurve"),
