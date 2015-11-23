@@ -12,7 +12,9 @@
 #ifdef WIN64
 #define WIN32
 #endif
+#ifdef __SHOUTCAST__
 #include <shout/shout.h>
+#endif
 #ifdef WIN64
 #undef WIN32
 #endif
@@ -88,8 +90,10 @@ QStringList Version::dependencyVersions() {
     result
             // Should be accurate.
             << QString("Qt: %1").arg(qVersion())
+#ifdef __SHOUTCAST__
             // Should be accurate.
             << QString("libshout: %1").arg(shout_version(NULL, NULL, NULL))
+#endif
             // The version of the RubberBand headers Mixxx was compiled with.
             << QString("RubberBand: %1").arg(RUBBERBAND_VERSION)
             // The version of the SoundTouch headers Mixxx was compiled with.
