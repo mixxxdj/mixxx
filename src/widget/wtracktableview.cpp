@@ -146,6 +146,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pBpmTwoThirdsAction;
     delete m_pBpmThreeFourthsAction;
     delete m_pBPMMenu;
+    delete m_pReplayGainResetAction;
     delete m_pPurgeAct;
     delete m_pFileBrowserAct;
     delete m_pResetPlayedAct;
@@ -449,6 +450,10 @@ void WTrackTableView::createActions() {
     m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
     connect(m_pClearBeatsAction, SIGNAL(triggered()),
             this, SLOT(slotClearBeats()));
+
+    m_pReplayGainResetAction = new QAction(tr("Reset Replay Gain"), this);
+    connect(m_pReplayGainResetAction, SIGNAL(triggered()),
+            this, SLOT(slotReplayGainReset()));
 }
 
 // slot
@@ -870,7 +875,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pBPMMenu->addAction(m_pClearBeatsAction);
     }
 
-    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+    m_pMenu->addAction(m_pReplayGainResetAction);
+
     m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
         m_pMenu->addAction(m_pReloadMetadataAct);
@@ -893,12 +899,13 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             last.row(), m_iTrackLocationColumn).data().toString();
         info.coverLocation = last.sibling(
             last.row(), m_iCoverLocationColumn).data().toString();
-        m_pCoverMenu->setCoverArt(TrackPointer(), info);
+        m_pCoverMenu->setCoverArt(QString(), info);
         m_pMenu->addMenu(m_pCoverMenu);
     }
 
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
+    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
         m_pRemoveAct->setEnabled(!locked);
         m_pMenu->addAction(m_pRemoveAct);
@@ -1263,7 +1270,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     }
 
     QModelIndexList indices = selectionModel()->selectedRows();
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
 
     TrackModel* trackModel = getTrackModel();
     if (!trackModel) {
@@ -1273,11 +1280,11 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            int iTrackId = pTrack->getId();
-            if (iTrackId == -1) {
+            TrackId trackId(pTrack->getId());
+            if (!trackId.isValid()) {
                 continue;
             }
-            trackIds.append(iTrackId);
+            trackIds.append(trackId);
         }
     }
 
@@ -1341,15 +1348,15 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     }
 
     QModelIndexList indices = selectionModel()->selectedRows();
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (!pTrack) {
             continue;
         }
-        int iTrackId = pTrack->getId();
-        if (iTrackId != -1) {
-            trackIds.append(iTrackId);
+        TrackId trackId(pTrack->getId());
+        if (trackId.isValid()) {
+            trackIds.append(trackId);
         }
     }
    if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
@@ -1403,15 +1410,15 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
     }
 
     QModelIndexList indices = selectionModel()->selectedRows();
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (!pTrack) {
             continue;
         }
-        int iTrackId = pTrack->getId();
-        if (iTrackId != -1) {
-            trackIds.append(iTrackId);
+        TrackId trackId(pTrack->getId());
+        if (trackId.isValid()) {
+            trackIds.append(trackId);
         }
     }
     if (iCrateId == -1) { // i.e. a new crate is suppose to be created
@@ -1466,10 +1473,9 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 
     // Save the selection
     QModelIndexList selection = selectionModel()->selectedRows();
-    QSet<int> trackIds;
-    foreach (QModelIndex index, selection) {
-        int trackId = trackModel->getTrackId(index);
-        trackIds.insert(trackId);
+    QSet<TrackId> trackIds;
+    for (const auto& index: selection) {
+        trackIds.insert(trackModel->getTrackId(index));
     }
 
     sortByColumn(headerSection);
@@ -1485,7 +1491,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     currentSelection->reset(); // remove current selection
 
     QMap<int,int> selectedRows;
-    foreach (int trackId, trackIds) {
+    for (auto  const& trackId: trackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
         // code is broken for playlists because it assumes each trackid is in
@@ -1587,6 +1593,22 @@ void WTrackTableView::slotClearBeats() {
         TrackPointer track = trackModel->getTrack(index);
         if (!track->hasBpmLock()) {
             track->setBeats(BeatsPointer());
+        }
+    }
+}
+
+void WTrackTableView::slotReplayGainReset() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setReplayGain(Mixxx::ReplayGain());
         }
     }
 }
