@@ -4,6 +4,7 @@
 #include "engine/enginefilterbessel4.h"
 #include "controlobject.h"
 #include "engine/enginexfader.h"
+#include "util/rescaler.h"
 
 DlgPrefCrossfader::DlgPrefCrossfader(
         QWidget* parent, ConfigObject<ConfigValue>* config)
@@ -50,14 +51,17 @@ DlgPrefCrossfader::~DlgPrefCrossfader() {
 
 // Loads the config keys and sets the widgets in the dialog to match
 void DlgPrefCrossfader::loadSettings() {
-    // Range xFaderCurve 1 .. kXFaderSteepnessCoeff
+    // Range xFaderCurve EngineXfader::kTransformMin .. EngineXfader::kTransformMax
     m_transform = m_config->getValueString(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve")).toDouble();
 
     // Range SliderXFader 0 .. 100
-    double sliderVal = ((EngineXfader::kTransformMax / m_transform) - 1) /
-            (EngineXfader::kTransformMax - EngineXfader::kTransformMin) * SliderXFader->maximum();
-    SliderXFader->setValue(SliderXFader->maximum() - (int)sliderVal);
+    double sliderVal = RescalerUtils::oneByXToLinear(
+            m_transform,
+            EngineXfader::kTransformMax,
+            SliderXFader->minimum(),
+            SliderXFader->maximum());
+    SliderXFader->setValue(sliderVal);
 
     m_xFaderMode =
             m_config->getValueString(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode")).toInt();
@@ -196,10 +200,11 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 
 // Update and save the crossfader's parameters from the dialog's widgets.
 void DlgPrefCrossfader::slotUpdateXFader() {
-    m_transform = EngineXfader::kTransformMax /
-            (((double)(SliderXFader->maximum() - SliderXFader->value()) /
-                    SliderXFader->maximum() *
-                    (EngineXfader::kTransformMax - EngineXfader::kTransformMin)) + 1);
+    m_transform = RescalerUtils::linearToOneByX(
+            SliderXFader->value(),
+            SliderXFader->minimum(),
+            SliderXFader->maximum(),
+            EngineXfader::kTransformMax);
     m_cal = EngineXfader::getPowerCalibration(m_transform);
     m_config->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"),
             ConfigValue(m_xFaderMode));
