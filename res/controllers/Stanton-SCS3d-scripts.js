@@ -540,7 +540,11 @@ SCS3D.Agent = function(device) {
         return function(value) {
             // Where's the needle?
             // On the first light for zero values, on the last for one.
-            var pos = Math.max(0, Math.min(range, Math.round(value * range)));
+            var pos = null;
+            if (value !== null) {
+                pos = Math.min(range, Math.round(value * range));
+            }
+
             var i = 0;
             for (; i <= range; i++) {
                 var light = lights[i];
@@ -981,12 +985,32 @@ SCS3D.Agent = function(device) {
             var effectunit = '[EffectRack1_EffectUnit' + (nr + 1) + ']';
             var effectunit_effect = '[EffectRack1_EffectUnit' + (nr + 1) + '_Effect1]';
             comm.sysex(device.modeset.slider);
-            watch(effectunit_effect, 'parameter1', Needle(device.slider.left.meter));
-            watch(effectunit_effect, 'parameter2', Needle(device.slider.middle.meter));
-            watch(effectunit_effect, 'parameter3', Needle(device.slider.right.meter));
-            expect(device.slider.left.slide.abs, set(effectunit_effect, 'parameter1'));
-            expect(device.slider.middle.slide.abs, set(effectunit_effect, 'parameter2'));
-            expect(device.slider.right.slide.abs, set(effectunit_effect, 'parameter3'));
+
+            // The first three effect parameters are mapped onto the circle sliders
+            var params = {
+                'parameter1': device.slider.left,
+                'parameter2': device.slider.middle,
+                'parameter3': device.slider.right,
+            };
+
+            for (var paramName in params) (function(slider, paramName) {
+                expect(slider.slide.abs, set(effectunit_effect, paramName));
+
+                // When the control is available for this effect unit, we
+                // show a needle indicator on the meter
+                var updater = Needle(slider.meter);
+                watchmulti({
+                    loaded: [effectunit_effect, paramName+'_loaded'],
+                    value:  [effectunit_effect, paramName]
+                }, function(param) {
+                    if (param.loaded) {
+                        updater(param.value);
+                    } else {
+                        // Don't display the needle
+                        updater(null);
+                    }
+                });
+            })(params[paramName], paramName);
 
             if (held) {
                 // change effect when slider is touched
