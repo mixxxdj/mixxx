@@ -361,7 +361,7 @@ void Tooltips::addStandardTooltips() {
 
     add("keylock")
             << tr("Key-Lock")
-            << tr("Prevents the pitch from from changing when the rate changes.")
+            << tr("Prevents the pitch from changing when the rate changes.")
             << tr("Toggling key-lock during playback may result in a momentary audio glitch.");
 
     // Used in cue/hotcue/loop tooltips below.
