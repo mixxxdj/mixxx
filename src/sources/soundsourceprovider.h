@@ -32,9 +32,9 @@ public:
     // A list of supported file extensions in any order.
     virtual QStringList getSupportedFileExtensions() const = 0;
 
-    // The suggested priority of this provider compared to others
-    // supporting the same file extension(s). Please note that an
-    // application may override the returned value to support
+    // The default cooperative priority of this provider compared to
+    // others supporting the same file extension(s). Please note that
+    // an application may override the returned value to support
     // customization.
     //
     // The priority may vary with the file type that is currently

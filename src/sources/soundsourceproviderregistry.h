@@ -39,11 +39,11 @@ private:
 class SoundSourceProviderRegistry {
 public:
     // Registers a provider for all supported file extensions
-    // with their implicit priority hint.
+    // with their cooperative priority hint.
     void registerProvider(
             const SoundSourceProviderPointer& pProvider);
     // Registers a provider from a plugin library for all supported
-    // file extensions with their implicit priority hint.
+    // file extensions with their cooperative priority hint.
     void registerPluginLibrary(
             const SoundSourcePluginLibraryPointer& pPluginLibrary);
 
