@@ -2,8 +2,6 @@
 
 namespace Mixxx {
 
-/*static*/ const QList<SoundSourceProviderRegistration> SoundSourceProviderRegistry::EMPTY_REGISTRATION_LIST;
-
 void SoundSourceProviderRegistry::registerProvider(
         const SoundSourceProviderPointer& pProvider) {
     const QStringList supportedFileExtensions(
@@ -178,7 +176,7 @@ void SoundSourceProviderRegistry::deregisterPluginLibrary(
     }
 }
 
-const QList<SoundSourceProviderRegistration>&
+QList<SoundSourceProviderRegistration>
 SoundSourceProviderRegistry::getRegistrationsForFileExtension(
         const QString& fileExtension) const {
     FileExtension2RegistrationList::const_iterator i(
@@ -186,7 +184,7 @@ SoundSourceProviderRegistry::getRegistrationsForFileExtension(
     if (m_registry.end() != i) {
         return i.value();
     } else {
-        return EMPTY_REGISTRATION_LIST;
+        return QList<SoundSourceProviderRegistration>();
     }
 }
 

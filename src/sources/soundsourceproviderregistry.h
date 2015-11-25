@@ -90,12 +90,10 @@ public:
     // Returns all registrations for the given file extension.
     // If no providers have been registered for this file extension
     // an empty list will be returned.
-    const QList<SoundSourceProviderRegistration>& getRegistrationsForFileExtension(
+    QList<SoundSourceProviderRegistration> getRegistrationsForFileExtension(
             const QString& fileExtension) const;
 
 private:
-    static const QList<SoundSourceProviderRegistration> EMPTY_REGISTRATION_LIST;
-
     void addRegistrationForFileExtension(
             const QString& fileExtension,
             SoundSourceProviderRegistration registration);
