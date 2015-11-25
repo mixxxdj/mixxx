@@ -200,6 +200,8 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 
 // Update and save the crossfader's parameters from the dialog's widgets.
 void DlgPrefCrossfader::slotUpdateXFader() {
+    // m_transform is in the range of 1 to 1000 while 50 % slider results
+    // to ~2, which represents a medium rounded fader curve.
     m_transform = RescalerUtils::linearToOneByX(
             SliderXFader->value(),
             SliderXFader->minimum(),
