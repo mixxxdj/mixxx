@@ -138,9 +138,9 @@ void SoundSourceProviderRegistry::deregisterProvider(
 void SoundSourceProviderRegistry::deregisterProviderForFileExtension(
         const QString& fileExtension,
         const SoundSourceProviderPointer& pProvider) {
-    auto mapIter(m_registry.find(fileExtension));
-    if (m_registry.end() != mapIter) {
-        QList<SoundSourceProviderRegistration>& registrationsForFileExtension = mapIter.value();
+    auto registryIter(m_registry.find(fileExtension));
+    if (m_registry.end() != registryIter) {
+        QList<SoundSourceProviderRegistration>& registrationsForFileExtension = registryIter.value();
         auto listIter = registrationsForFileExtension.begin();
         while (registrationsForFileExtension.end() != listIter) {
             if (listIter->getProvider() == pProvider) {
@@ -150,16 +150,16 @@ void SoundSourceProviderRegistry::deregisterProviderForFileExtension(
             }
         }
         if (registrationsForFileExtension.isEmpty()) {
-            m_registry.erase(mapIter);
+            m_registry.erase(registryIter);
         }
     }
 }
 
 void SoundSourceProviderRegistry::deregisterPluginLibrary(
         const SoundSourcePluginLibraryPointer& pPluginLibrary) {
-    auto mapIter(m_registry.begin());
-    while (m_registry.end() != mapIter) {
-        QList<SoundSourceProviderRegistration>& registrationsForFileExtension = mapIter.value();
+    auto registryIter(m_registry.begin());
+    while (m_registry.end() != registryIter) {
+        QList<SoundSourceProviderRegistration>& registrationsForFileExtension = registryIter.value();
         auto listIter = registrationsForFileExtension.begin();
         while (registrationsForFileExtension.end() != listIter) {
             if (listIter->getPluginLibrary() == pPluginLibrary) {
@@ -169,9 +169,9 @@ void SoundSourceProviderRegistry::deregisterPluginLibrary(
             }
         }
         if (registrationsForFileExtension.isEmpty()) {
-            mapIter = m_registry.erase(mapIter);
+            registryIter = m_registry.erase(registryIter);
         } else {
-            ++mapIter;
+            ++registryIter;
         }
     }
 }
