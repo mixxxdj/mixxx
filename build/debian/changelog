@@ -1,3 +1,9 @@
+mixxx (2.0.0-rc1-0ubuntu1) precise; urgency=low
+
+  * New upstream release candidate.
+
+ -- Daniel Schürmann <daschuer@mixxx.org>  Thu, 26 Nov 2015 00:28:10 +0100
+
 mixxx (1.12.0-beta1-0ubuntu1) precise; urgency=low
 
   * New upstream beta release.
