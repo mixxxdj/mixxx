@@ -75,8 +75,6 @@ void SoundSourceProviderRegistry::addRegistrationForFileExtension(
     DEBUG_ASSERT(registration.getProvider());
     QList<SoundSourceProviderRegistration>& registrationsForFileExtension =
             m_registry[fileExtension];
-    QList<SoundSourceProviderRegistration>::iterator listIter(
-            registrationsForFileExtension.begin());
     insertRegistration(&registrationsForFileExtension, registration);
 }
 
