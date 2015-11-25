@@ -63,14 +63,6 @@ public:
             const SoundSourceProviderPointer& pProvider,
             SoundSourceProviderPriority providerPriority);
 
-    // Reregister a provider that is already registered with
-    // a new priority. It doesn't matter if the provider is
-    // built-in or provided by a plugin library.
-    void reregisterProviderForFileExtension(
-            const QString& fileExtension,
-            const SoundSourceProviderPointer& pProvider,
-            SoundSourceProviderPriority providerPriority);
-
     // Deregisters a provider for all supported file extensions.
     void deregisterProvider(
             const SoundSourceProviderPointer& pProvider);
