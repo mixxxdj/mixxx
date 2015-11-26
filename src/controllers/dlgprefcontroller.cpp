@@ -356,7 +356,14 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
         return;
     }
 
-    QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
+    const QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
+    // When loading the preset, we only want to load from the same dir as the
+    // preset itself, otherwise when loading from the system-wide dir we'll
+    // start the search in the user's dir find the existing script,
+    // and do nothing.
+    const QFileInfo presetFileInfo(presetPath);
+    QList<QString> presetDirs;
+    presetDirs.append(presetFileInfo.canonicalPath());
 
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
             presetPath, ControllerManager::getPresetPaths(m_pConfig));
@@ -370,7 +377,7 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
         }
 
         QString scriptPath = ControllerManager::getAbsolutePath(
-                it->name, ControllerManager::getPresetPaths(m_pConfig));
+                it->name, presetDirs);
 
 
         QString importedScriptFileName;
