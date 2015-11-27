@@ -258,11 +258,11 @@ SCS3D.Comm = function() {
 
             var last = actual[cid];
 
-            var value = message[2];
+            var value = +message[2];
             if (mask[cid]) {
                 value = mask[cid](value, ticks);
             }
-            if (last === undefined || last != value) {
+            if (last === undefined || last !== value) {
                 midi.sendShortMsg(message[0], message[1], value);
                 actual[cid] = value;
             }
@@ -375,7 +375,7 @@ SCS3D.Comm = function() {
         },
 
         sysex: function(message) {
-            if (message.length == actual_sysex.length) {
+            if (message.length === actual_sysex.length) {
                 var same = true;
                 for (var i in message) {
                     same = same && message[i] === actual_sysex[i];
@@ -548,7 +548,7 @@ SCS3D.Agent = function(device) {
             var i = 0;
             for (; i <= range; i++) {
                 var light = lights[i];
-                var on = i == pos;
+                var on = i === pos;
                 tell([light[0], light[1], +on]);
             }
         };
@@ -976,7 +976,7 @@ SCS3D.Agent = function(device) {
 
     var deckLights = function() {
         for (var i in buttons) {
-            tell(buttons[i].light[deck == i ? 'red' : 'black']);
+            tell(buttons[i].light[deck === +i ? 'red' : 'black']);
         }
     };
 
@@ -1027,7 +1027,7 @@ SCS3D.Agent = function(device) {
                 lightsmask(device.pitch.meter, function(count, nr, value, ticks) {
                     var range = (count) / 2;
                     var center = Math.round(count / 2) - 1; // Zero-based
-                    var lighted = Math.abs(nr - center) == ticks % range;
+                    var lighted = Math.abs(nr - center) === ticks % range;
                     return lighted ? !value : value;
                 });
             } else {
@@ -1056,11 +1056,11 @@ SCS3D.Agent = function(device) {
                 var effectunit_enable = 'group_' + channel + '_enable';
                 if (held) {
                     expect(button.touch, repatch(toggle(assigned_effectunit, effectunit_enable)));
-                    watch(assigned_effectunit, effectunit_enable, fxlight(button.light, deck == i));
+                    watch(assigned_effectunit, effectunit_enable, fxlight(button.light, deck === +i));
                 } else {
                     var activate = repatch(effectModes[channel].engage(i));
                     expect(button.touch, activate);
-                    watch(assigned_effectunit, effectunit_enable, fxlight(button.light, nr == i));
+                    watch(assigned_effectunit, effectunit_enable, fxlight(button.light, nr === +i));
                 }
             }
         };
@@ -1151,7 +1151,7 @@ SCS3D.Agent = function(device) {
                     var len = lengths[4 + exp]; // == Math.pow(2, exp);
 
                     if (len === undefined) return;
-                    if (len == currentLen) return;
+                    if (len === currentLen) return;
                     currentLen = len;
 
                     if (rolling) {
@@ -1275,7 +1275,7 @@ SCS3D.Agent = function(device) {
             var cocked = 0;
 
             var release = function() {
-                if (cocked == 1) engine.setValue(channel, control, 0);
+                if (cocked === 1) engine.setValue(channel, control, 0);
                 if (cocked > 0) cocked -= 1;
             };
             expect(field.touch, function() {
@@ -1316,11 +1316,11 @@ SCS3D.Agent = function(device) {
             var t = held ? [1, 0] : 1;
             centerlights([
                 [0, 0, 0],
-                [t, trigset == 2 ? t : 0, t],
-                [0, trigset == 1 ? t : 0, 0],
+                [t, trigset === 2 ? t : 0, t],
+                [0, trigset === 1 ? t : 0, 0],
                 [0, t, 0],
-                [0, trigset == 1 ? t : 0, 0],
-                [t, trigset == 2 ? t : 0, t],
+                [0, trigset === 1 ? t : 0, 0],
+                [t, trigset === 2 ? t : 0, t],
                 [0, 0, 0]
             ], 1);
         };

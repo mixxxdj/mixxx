@@ -116,7 +116,7 @@ SCS3M.Device = function() {
 
     function Side(side) {
         function either(left, right) {
-            return ('left' == side) ? left : right;
+            return ('left' === side) ? left : right;
         }
 
         function Deck() {
@@ -550,7 +550,7 @@ SCS3M.Agent = function(device) {
             tell(part.deck.light[deck[side].choose('first', 'second')]);
 
             function either(left, right) {
-                return (side == 'left') ? left : right;
+                return (side === 'left') ? left : right;
             }
 
             var channelno = deck[side].choose(either(1, 2), either(3, 4));
