@@ -1600,8 +1600,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>filterLow</key>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
                 <description>MIDI Learned from 513 messages.</description>
                 <status>0xB2</status>
                 <midino>0x0F</midino>
@@ -1630,8 +1630,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>filterLow</key>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
                 <description>MIDI Learned from 550 messages.</description>
                 <status>0xB3</status>
                 <midino>0x0F</midino>
@@ -1640,8 +1640,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>filterMid</key>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
                 <description>MIDI Learned from 560 messages.</description>
                 <status>0xB2</status>
                 <midino>0x0E</midino>
@@ -1660,8 +1660,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>filterLow</key>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter1</key>
                 <description>MIDI Learned from 338 messages.</description>
                 <status>0xB4</status>
                 <midino>0x0F</midino>
@@ -1670,8 +1670,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>filterMid</key>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
                 <description>MIDI Learned from 572 messages.</description>
                 <status>0xB3</status>
                 <midino>0x0E</midino>
@@ -1680,8 +1680,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>filterHigh</key>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
                 <description>MIDI Learned from 651 messages.</description>
                 <status>0xB2</status>
                 <midino>0x0D</midino>
@@ -1700,8 +1700,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
-                <key>filterLow</key>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter1</key>
                 <description>MIDI Learned from 775 messages.</description>
                 <status>0xB5</status>
                 <midino>0x0F</midino>
@@ -1710,8 +1710,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>filterMid</key>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter2</key>
                 <description>MIDI Learned from 378 messages.</description>
                 <status>0xB4</status>
                 <midino>0x0E</midino>
@@ -1720,8 +1720,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>filterHigh</key>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
                 <description>MIDI Learned from 648 messages.</description>
                 <status>0xB3</status>
                 <midino>0x0D</midino>
@@ -1740,8 +1740,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
-                <key>filterMid</key>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter2</key>
                 <description>MIDI Learned from 704 messages.</description>
                 <status>0xB5</status>
                 <midino>0x0E</midino>
@@ -1750,8 +1750,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>filterHigh</key>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter3</key>
                 <description>MIDI Learned from 405 messages.</description>
                 <status>0xB4</status>
                 <midino>0x0D</midino>
@@ -1770,8 +1770,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel4]</group>
-                <key>filterHigh</key>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter3</key>
                 <description>MIDI Learned from 759 messages.</description>
                 <status>0xB5</status>
                 <midino>0x0D</midino>
