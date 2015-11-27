@@ -993,7 +993,7 @@ SCS3D.Agent = function(device) {
                 'parameter3': device.slider.right,
             };
 
-            for (var paramName in params) (function(slider, paramName) {
+            var sliderPatch = function(slider, paramName) {
                 expect(slider.slide.abs, set(effectunit_effect, paramName));
 
                 // When the control is available for this effect unit, we
@@ -1010,7 +1010,11 @@ SCS3D.Agent = function(device) {
                         updater(null);
                     }
                 });
-            })(params[paramName], paramName);
+            };
+
+            for (var paramName in params) {
+                sliderPatch(params[paramName], paramName);
+            }
 
             if (held) {
                 // change effect when slider is touched
