@@ -389,11 +389,35 @@
 				</options>
 			</control>
 			<control>
+				<!-- Left Fast Rewind + Shift-->
+				<status>0x90</status>
+				<midino>0x52</midino>
+				<group>[Channel1]</group>
+				<key>start</key>
+				<description>
+				</description>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
 				<!-- Right Fast Rewind -->
 				<status>0x90</status>
 				<midino>0x37</midino>
 				<group>[Channel2]</group>
 				<key>back</key>
+				<description>
+				</description>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<!-- Right Fast Rewind + Shift-->
+				<status>0x90</status>
+				<midino>0x56</midino>
+				<group>[Channel2]</group>
+				<key>start</key>
 				<description>
 				</description>
 				<options>
@@ -413,11 +437,35 @@
 				</options>
 			</control>
 			<control>
+				<!-- Left Fast Forward + Shift-->
+				<status>0x90</status>
+				<midino>0x53</midino>
+				<group>[Channel1]</group>
+				<key>end</key>
+				<description>
+				</description>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
 				<!-- Right Fast Forward -->
 				<status>0x90</status>
 				<midino>0x38</midino>
 				<group>[Channel2]</group>
 				<key>fwd</key>
+				<description>
+				</description>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<!-- Right Fast Forward + Shift -->
+				<status>0x90</status>
+				<midino>0x57</midino>
+				<group>[Channel2]</group>
+				<key>end</key>
 				<description>
 				</description>
 				<options>
