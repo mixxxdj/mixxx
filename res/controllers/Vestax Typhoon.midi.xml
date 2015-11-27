@@ -8,7 +8,7 @@
   </info>
   <controller id="Vestax Typhoon">
     <scriptfiles>
-      <file filename="Vestax-Typhoon2-6-scripts.js" functionprefix="VestaxTyphoon"/>
+      <file filename="Vestax-Typhoon-scripts.js" functionprefix="VestaxTyphoon"/>
     </scriptfiles>
     <controls>
 		<!--Effect-Controls / Songlist-Controls-->
