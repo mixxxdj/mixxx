@@ -3,7 +3,7 @@
     <info/>
     <controller id="gemini">
         <scriptfiles>
-            <file functionprefix="cdmp7000" filename="gemini_CDMP-7000-scripts.js"/>
+            <file functionprefix="cdmp7000" filename="Gemini_CDMP-7000-scripts.js"/>
         </scriptfiles>
         <controls>
             <control>
