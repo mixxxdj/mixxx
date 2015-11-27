@@ -591,13 +591,13 @@ SCS3M.Agent = function(device) {
             if (sideoverlay.engaged('eq')) {
                 var eff = "[EqualizerRack1_" + channel + "_Effect1]";
                 var op = eqsideheld.choose(set, reset);
-                expect(part.eq.high.slide, op(eff, 'parameter1'));
+                expect(part.eq.low.slide, op(eff, 'parameter1'));
                 expect(part.eq.mid.slide, op(eff, 'parameter2'));
-                expect(part.eq.low.slide, op(eff, 'parameter3'));
+                expect(part.eq.high.slide, op(eff, 'parameter3'));
 
-                watch(eff, 'parameter1', patch(offcenter(part.eq.high.meter.centerbar)));
+                watch(eff, 'parameter1', patch(offcenter(part.eq.low.meter.centerbar)));
                 watch(eff, 'parameter2', patch(offcenter(part.eq.mid.meter.centerbar)));
-                watch(eff, 'parameter3', patch(offcenter(part.eq.low.meter.centerbar)));
+                watch(eff, 'parameter3', patch(offcenter(part.eq.high.meter.centerbar)));
             }
 
             expect(part.modes.eq.touch, repatch(function() {
