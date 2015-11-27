@@ -50,10 +50,10 @@ TEST_F(RescalerUtilsTest, Test) {
     EXPECT_DOUBLE_EQ(result, 0);
 
     result = RescalerUtils::oneByXToLinear(1, 50, 100, 1000);
-    EXPECT_DOUBLE_EQ(result, 101);
+    EXPECT_DOUBLE_EQ(result, 100);
 
     result = RescalerUtils::oneByXToLinear(1, 40, 50, 1000);
-    EXPECT_DOUBLE_EQ(result, 51);
+    EXPECT_DOUBLE_EQ(result, 50);
 
     // Test Roundtrip
     // test upper border
