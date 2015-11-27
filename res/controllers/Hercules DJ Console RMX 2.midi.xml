@@ -590,8 +590,8 @@
 				<!-- Left Knob High 1 -->
 				<status>0xb0</status>
 				<midino>0x3c</midino>
-				<group>[Channel1]</group>
-				<key>filterHigh</key>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<key>parameter3</key>
 				<description>
 				</description>
 				<options>
@@ -602,8 +602,8 @@
 				<!-- Left Knob Mid 1 -->
 				<status>0xb0</status>
 				<midino>0x3e</midino>
-				<group>[Channel1]</group>
-				<key>filterMid</key>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<key>parameter2</key>
 				<description>
 				</description>
 				<options>
@@ -614,8 +614,8 @@
 				<!-- Left Knob Low 1 -->
 				<status>0xb0</status>
 				<midino>0x40</midino>
-				<group>[Channel1]</group>
-				<key>filterLow</key>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<key>parameter1</key>
 				<description>
 				</description>
 				<options>
@@ -659,8 +659,8 @@
 				<!-- Right Knob High 1 -->
 				<status>0xb0</status>
 				<midino>0x4c</midino>
-				<group>[Channel2]</group>
-				<key>filterHigh</key>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<key>parameter3</key>
 				<description>
 				</description>
 				<options>
@@ -671,8 +671,8 @@
 				<!-- Right Knob Mid 1 -->
 				<status>0xb0</status>
 				<midino>0x4e</midino>
-				<group>[Channel2]</group>
-				<key>filterMid</key>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<key>parameter2</key>
 				<description>
 				</description>
 				<options>
@@ -683,8 +683,8 @@
 				<!-- Right Knob Low 1 -->
 				<status>0xb0</status>
 				<midino>0x50</midino>
-				<group>[Channel2]</group>
-				<key>filterLow</key>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<key>parameter1</key>
 				<description>
 				</description>
 				<options>
