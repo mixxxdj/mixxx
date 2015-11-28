@@ -952,6 +952,86 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>PioneerDDJSB2.gainKnobMSB</key>
+                <description>Gain Deck 1 (MSB), Knob: left TRIM (Deck 1 active)</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJSB2.gainKnobLSB</key>
+                <description>Gain Deck 1 (LSB), Knob: left TRIM (Deck 1 active)</description>
+                <status>0xB0</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB2.gainKnobMSB</key>
+                <description>Gain Deck 2 (MSB), Knob: right TRIM (Deck 2 active)</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB2.gainKnobLSB</key>
+                <description>Gain Deck 2 (LSB), Knob: right TRIM (Deck 2 active)</description>
+                <status>0xB1</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSB2.gainKnobMSB</key>
+                <description>Gain Deck 3 (MSB), Knob: left TRIM (Deck 3 active)</description>
+                <status>0xB2</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSB2.gainKnobLSB</key>
+                <description>Gain Deck 3 (LSB), Knob: left TRIM (Deck 3 active)</description>
+                <status>0xB2</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSB2.gainKnobMSB</key>
+                <description>Gain Deck 4 (MSB), Knob: right TRIM (Deck 4 active)</description>
+                <status>0xB3</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSB2.gainKnobLSB</key>
+                <description>Gain Deck 4 (LSB), Knob: right TRIM (Deck 4 active)</description>
+                <status>0xB3</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>PioneerDDJSB2.filterHighKnobMSB</key>
                 <description>High level Deck 1 (MSB), Knob: left HI (Deck 1 active)</description>
                 <status>0xB0</status>

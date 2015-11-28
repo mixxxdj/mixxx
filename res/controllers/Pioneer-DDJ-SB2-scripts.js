@@ -2,8 +2,7 @@ var PioneerDDJSB2 = function () {};
 
 /*
     Find the latest code at https://github.com/dg3nec/mixxx
-
-    
+   
     
     This mapping for the Pioneer DDJ-SB2 was made by DG3NEC, Michael Stahl
     Basing on DDj-SB for Mixxx 1.12 Joan Ardiaca Jové (joan.ardiaca@gmail.com),
@@ -14,13 +13,14 @@ var PioneerDDJSB2 = function () {};
 /* ### to do ###
 - FX1-x Belegung. Shift auf Master, CH3 und CH4
 - Was macht Regler FX wenn FX-Button gedrückt sind? BELEGEN -> Über JS wäre so etwas realisierbar da die Werte nicht vom SB2 differenziert gesendet werden.
+
+ ### D O N E ###
 - "User Option" alternativ VU-Master
 - "User Option" blinken VU-Meter bei AutoDJ
 - VU-Meter Level pro Channel realisieren
 - VU-Meter blinken bei AutoDJ einbauen
 - Deckkonvertierung eleminieren (z.B. PioneerDDJSB2.deckConverter(deck))
- ### D O N E ###
-*/
+- Trim einbinden*/
   
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
