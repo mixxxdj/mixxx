@@ -13,14 +13,13 @@
 #include "util.h"
 #include "util/types.h"
 #include "util/defs.h"
-#include "sampleutil.h"
 #include "lvmixeqbase.h"
 
 class Bessel4LVMixEQEffectGroupState :
         public LVMixEQEffectGroupState<EngineFilterBessel4Low> {
 };
 
-class Bessel4LVMixEQEffect : public GroupEffectProcessor<Bessel4LVMixEQEffectGroupState> {
+class Bessel4LVMixEQEffect : public PerChannelEffectProcessor<Bessel4LVMixEQEffectGroupState> {
   public:
     Bessel4LVMixEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~Bessel4LVMixEQEffect();
@@ -29,13 +28,13 @@ class Bessel4LVMixEQEffect : public GroupEffectProcessor<Bessel4LVMixEQEffectGro
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      Bessel4LVMixEQEffectGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatureState);
+    void processChannel(const ChannelHandle& handle,
+                        Bessel4LVMixEQEffectGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatureState);
 
   private:
     QString debugString() const {

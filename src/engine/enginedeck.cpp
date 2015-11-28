@@ -26,20 +26,21 @@
 
 #include "sampleutil.h"
 
-EngineDeck::EngineDeck(QString group,
+EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        ConfigObject<ConfigValue>* pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
                        EngineChannel::ChannelOrientation defaultOrientation)
-        : EngineChannel(group, defaultOrientation),
+        : EngineChannel(handle_group, defaultOrientation),
           m_pConfig(pConfig),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
+          m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(NULL) {
+          m_sampleBuffer(NULL),
+          m_wasActive(false) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerGroup(getGroup());
+        pEffectsManager->registerChannel(handle_group);
     }
 
     // Set up passthrough utilities and fields
@@ -55,9 +56,9 @@ EngineDeck::EngineDeck(QString group,
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 
     // Set up additional engines
-    m_pPregain = new EnginePregain(group);
-    m_pVUMeter = new EngineVuMeter(group);
-    m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
+    m_pPregain = new EnginePregain(getGroup());
+    m_pVUMeter = new EngineVuMeter(getGroup());
+    m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine);
 }
 
 EngineDeck::~EngineDeck() {
@@ -78,6 +79,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         m_bPassthroughWasActive = true;
         m_sampleBuffer = NULL;
         m_pPregain->setSpeed(1);
+        m_pPregain->setScratching(false);
     } else {
         // If passthrough is no longer enabled, zero out the buffer
         if (m_bPassthroughWasActive) {
@@ -90,6 +92,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         m_pBuffer->process(pOut, iBufferSize);
         m_pBuffer->collectFeatures(&features);
         m_pPregain->setSpeed(m_pBuffer->getSpeed());
+        m_pPregain->setScratching(m_pBuffer->getScratching());
         m_bPassthroughWasActive = false;
     }
 
@@ -101,7 +104,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // volume.
         m_pVUMeter->collectFeatures(&features);
         m_pEngineEffectsManager->process(
-                getGroup(), pOut, iBufferSize,
+                getHandle(), pOut, iBufferSize,
                 static_cast<unsigned int>(m_pSampleRate->get()), features);
     }
     // Update VU meter
@@ -117,11 +120,18 @@ EngineBuffer* EngineDeck::getEngineBuffer() {
 }
 
 bool EngineDeck::isActive() {
+    bool active = false;
     if (m_bPassthroughWasActive && !m_bPassthroughIsActive) {
-        return true;
+        active = true;
+    } else {
+        active = m_pBuffer->isTrackLoaded() || isPassthroughActive();
     }
 
-    return (m_pBuffer->isTrackLoaded() || isPassthroughActive());
+    if (!active && m_wasActive) {
+        m_pVUMeter->reset();
+    }
+    m_wasActive = active;
+    return active;
 }
 
 void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int nFrames) {

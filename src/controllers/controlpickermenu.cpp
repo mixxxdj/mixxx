@@ -151,12 +151,39 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
-    addDeckControl("filterHigh", tr("High EQ"), tr("High EQ knob"), eqMenu, true);
-    addDeckControl("filterMid", tr("Mid EQ"), tr("Mid EQ knob"), eqMenu, true);
-    addDeckControl("filterLow", tr("Low EQ"), tr("Low EQ knob"), eqMenu, true);
-    addDeckControl("filterHighKill", tr("Kill High EQ"), tr("Kill High EQ"), eqMenu);
-    addDeckControl("filterMidKill", tr("Kill Mid EQ"), tr("Kill Mid EQ"), eqMenu);
-    addDeckControl("filterLowKill", tr("Kill Low EQ"), tr("Kill Low EQ"), eqMenu);
+    const int kNumEqRacks = 1;
+    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
+    for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
+        // TODO: Although there is a mode with 4-band EQs, it's not feasible
+        // right now to add support for learning both it and regular 3-band eqs.
+        // Since 3-band is by far the most common, stick with that.
+        const int kMaxEqs = 3;
+        QList<QString> eqNames;
+        eqNames.append(tr("Low EQ"));
+        eqNames.append(tr("Mid EQ"));
+        eqNames.append(tr("High EQ"));
+        for (int deck = 1; deck <= iNumDecks; ++deck) {
+            QMenu* deckMenu = addSubmenu(QString("Deck %1").arg(deck), eqMenu);
+            for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
+                const QString group = EqualizerRack::formatEffectSlotGroupString(
+                        iRackNumber, 0, QString("[Channel%1]").arg(deck));
+                QMenu* bandMenu = addSubmenu(eqNames[effect], deckMenu);
+                QString control = "parameter%1";
+                addPrefixedControl(group, control.arg(effect+1),
+                                   tr("Adjust %1").arg(eqNames[effect]),
+                                   tr("Adjust %1").arg(eqNames[effect]),
+                                   tr("Deck %1").arg(deck),
+                                   bandMenu, true);
+
+                control = "button_parameter%1";
+                addPrefixedControl(group, control.arg(effect+1),
+                                   tr("Kill %1").arg(eqNames[effect]),
+                                   tr("Kill %1").arg(eqNames[effect]),
+                                   tr("Deck %1").arg(deck),
+                                   bandMenu, false);
+            }
+        }
+    }
 
     // Vinyl Control
     QMenu* vinylControlMenu = addSubmenu(tr("Vinyl Control"));
@@ -358,6 +385,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Load Track Into Stopped Deck"),
                        tr("Load selected track into first stopped deck"),
                        m_libraryStr, libraryMenu);
+    addPrefixedControl("[Playlist]", "AutoDjAddBottom",
+                       tr("Add to Auto DJ Queue (bottom)"),
+                       tr("Append the selected track to the Auto DJ Queue"),
+                       m_libraryStr, libraryMenu);
+    addPrefixedControl("[Playlist]", "AutoDjAddTop",
+                       tr("Add to Auto DJ Queue (top)"),
+                       tr("Prepend selected track to the Auto DJ Queue"),
+                       m_libraryStr, libraryMenu);
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
                              tr("Load selected track"), libraryMenu);
@@ -373,8 +408,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* effectsMenu = addSubmenu(tr("Effects"));
 
     // Quick Effect Rack COs
-    const int iNumDecks = ControlObject::get(
-            ConfigKey("[Master]", "num_decks"));
     QMenu* quickEffectMenu = addSubmenu(tr("Quick Effects"), effectsMenu);
     for (int i = 1; i <= iNumDecks; ++i) {
         addPrefixedControl(QString("[QuickEffectRack1_[Channel%1]]").arg(i),
@@ -477,7 +510,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             }
 
             const int iNumSamplers = ControlObject::get(
-                ConfigKey("[Master]", "num_samplers"));
+                    ConfigKey("[Master]", "num_samplers"));
             for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
                  ++iSamplerNumber) {
                 // PlayerManager::groupForSampler is 0-indexed.
@@ -510,7 +543,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             }
 
             const int iNumAuxiliaries = ControlObject::get(
-                ConfigKey("[Master]", "num_auxiliaries"));
+                    ConfigKey("[Master]", "num_auxiliaries"));
             for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
                  ++iAuxiliaryNumber) {
                 QString auxGroup = QString("[Auxiliary%1]").arg(iAuxiliaryNumber);
@@ -691,6 +724,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[PreviewDeck]", "show_previewdeck",
                tr("Preview Deck Show/Hide"),
                tr("Show/hide the preview deck"), guiMenu);
+    addControl("[Master]", "maximize_library",
+               tr("Library Maximize/Restore"),
+               tr("Maximize the track library to take up all the available screen space."), guiMenu);
     addControl("[EffectRack1]", "show",
                tr("Effect Rack Show/Hide"),
                tr("Show/hide the effect rack"), guiMenu);
@@ -990,6 +1026,10 @@ void ControlPickerMenu::addAvailableControl(ConfigKey key,
 }
 
 bool ControlPickerMenu::controlExists(ConfigKey key) const {
+    qDebug() << "LOOKING FOR KEY " << key;
+    foreach(const ConfigKey& key, m_titlesByKey.keys()) {
+        qDebug() << "key: " << key;
+    }
     return m_titlesByKey.contains(key);
 }
 

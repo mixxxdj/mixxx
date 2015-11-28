@@ -7,6 +7,10 @@
 *.pyc
 *.rej
 *_build
+dist32
+dist64
+src/mixxx.rc.include
+src/mixxx.res
 *~
 .#*
 .sconf_temp
@@ -23,3 +27,5 @@ mixxx-test
 src/test/test_data
 res/qrc_mixxx.cc
 res/developer_skins
+src/test/golden_buffers/*.actual
+

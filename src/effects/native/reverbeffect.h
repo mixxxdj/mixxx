@@ -6,11 +6,12 @@
 
 #include <QMap>
 
+#include "Reverb.h"
+
 #include "util.h"
 #include "util/types.h"
 #include "util/defs.h"
 #include "effects/effectprocessor.h"
-#include "effects/native/reverb/Reverb.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "sampleutil.h"
@@ -35,7 +36,7 @@ struct ReverbGroupState {
     double prev_damping;
 };
 
-class ReverbEffect : public GroupEffectProcessor<ReverbGroupState> {
+class ReverbEffect : public PerChannelEffectProcessor<ReverbGroupState> {
   public:
     ReverbEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~ReverbEffect();
@@ -44,13 +45,13 @@ class ReverbEffect : public GroupEffectProcessor<ReverbGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      ReverbGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatures);
+    void processChannel(const ChannelHandle& handle,
+                        ReverbGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

@@ -121,7 +121,7 @@ void VinylControlSignalWidget::paintEvent(QPaintEvent* event) {
             //sweep fades along with signal quality
             painter.setPen(QColor(255, 255, 255, (int)(127.0 * m_fSignalQuality)));
             painter.setBrush(QColor(255, 255, 255, (int)(127.0 * m_fSignalQuality)));
-            painter.drawPie(0, 0, sizeX, sizeY, m_iAngle*16, 6*16);
+            painter.drawPie(0, 0, sizeX, sizeY, m_iAngle*16, 1*16);
         }
 
         if (!m_qImage.isNull()) {

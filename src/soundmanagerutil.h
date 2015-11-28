@@ -62,6 +62,7 @@ public:
         VINYLCONTROL,
         MICROPHONE,
         AUXILIARY,
+        SIDECHAIN,
         INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
@@ -108,6 +109,7 @@ class AudioOutput : public AudioPath {
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
+    bool isHidden();
   protected:
     void setType(AudioPathType type);
 };

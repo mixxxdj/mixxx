@@ -19,7 +19,9 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
           m_iInputDeviceIndex(inputDeviceIndex),
           m_iOutputDeviceIndex(outputDeviceIndex),
           m_pInputStream(NULL),
-          m_pOutputStream(NULL) {
+          m_pOutputStream(NULL),
+          m_cReceiveMsg_index(0),
+          m_bInSysex(false) {
     for (unsigned int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
         // Can be shortened to `m_midiBuffer[k] = {}` with C++11.
         m_midiBuffer[k].message = 0;
@@ -148,8 +150,9 @@ bool PortMidiController::poll() {
     if (!m_pInputStream)
         return false;
 
+    // Returns true if events are available or an error code.
     PmError gotEvents = Pm_Poll(m_pInputStream);
-    if (gotEvents == FALSE) {
+    if (gotEvents == pmNoError) {
         return false;
     }
     if (gotEvents < 0) {
@@ -170,6 +173,7 @@ bool PortMidiController::poll() {
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
             receive(status, 0, 0);
+            continue;
         }
 
         reprocessMessage:

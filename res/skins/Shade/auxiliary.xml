@@ -1,0 +1,128 @@
+<Template>
+		<WidgetGroup>
+			<Pos>0,0</Pos>
+            <MaximumSize>108,50</MaximumSize>
+			<Size>108,50</Size>
+			<Style>QGroupBox { border: 0px solid yellow; border-right: 1px solid #626f87; background: url(skin:/style/style_bg_auxiliary.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
+			<!--<Layout>horizontal</Layout>-->
+			<Children>
+				<!--
+				**********************************************
+				Visual- Volume peak indicator
+				**********************************************
+				-->
+				<StatusLight>
+					<TooltipId>channel_PeakIndicator</TooltipId>
+					<Style></Style>
+					<PathStatusLight>btn_clipping_microphone_over.png</PathStatusLight>
+					<PathBack>btn_clipping_microphone.png</PathBack>
+					<Pos>99,4</Pos>
+					<Connection>
+						<ConfigKey>[Auxiliary<Variable name="auxnum"/>],PeakIndicator</ConfigKey>
+					</Connection>
+				</StatusLight>
+
+				<!--
+				**********************************************
+				Visual - Volume level display
+				**********************************************
+				-->
+				<VuMeter>
+					<TooltipId>channel_VuMeter</TooltipId>
+					<Style></Style>
+					<PathVu>btn_volume_display_microphone_over.png</PathVu>
+					<PathBack>btn_volume_display_microphone.png</PathBack>
+					<Pos>99,12</Pos>
+					<PeakHoldSize>5</PeakHoldSize>
+					<PeakHoldTime>500</PeakHoldTime>
+					<PeakFallTime>50</PeakFallTime>
+					<PeakFallStep>2</PeakFallStep>
+					<Connection>
+						<ConfigKey>[Auxiliary<Variable name="auxnum"/>],VuMeter</ConfigKey>
+					</Connection>
+				</VuMeter>
+
+               <PushButton>
+				    <TooltipId></TooltipId>
+				    <Style></Style>
+				    <NumberStates>2</NumberStates>
+				    <State>
+					    <Number>0</Number>
+					    <Pressed>btn_kill_down.png</Pressed>
+					    <Unpressed>btn_kill.png</Unpressed>
+				    </State>
+				    <State>
+					    <Number>1</Number>
+					    <Pressed>btn_kill_overdown.png</Pressed>
+					    <Unpressed>btn_kill_over.png</Unpressed>
+				    </State>
+				    <Pos>45,30</Pos>
+				    <Connection>
+					    <ConfigKey>[Auxiliary<Variable name="auxnum"/>],mute</ConfigKey>
+					    <ButtonState>LeftButton</ButtonState>
+				    </Connection>
+			    </PushButton>
+
+
+				<Knob>
+					<TooltipId>pregain</TooltipId>
+					<Style></Style>
+					<NumberStates>64</NumberStates>
+					<Path>knobs/knob_rotary_s%1.png</Path>
+					<Pos>66,22</Pos>
+					<Connection>
+						<ConfigKey>[Auxiliary<Variable name="auxnum"/>],pregain</ConfigKey>
+					</Connection>
+				</Knob>
+
+				<PushButton>
+					<TooltipId>orientation</TooltipId>
+					<Style></Style>
+					<NumberStates>3</NumberStates>
+					<State>
+						<Number>0</Number>
+						<Pressed>btn_orientation_sampler_left_over.png</Pressed>
+						<Unpressed>btn_orientation_sampler_left_over.png</Unpressed>
+					</State>
+					<State>
+						<Number>1</Number>
+						<Pressed>btn_orientation_sampler_master.png</Pressed>
+						<Unpressed>btn_orientation_sampler_master.png</Unpressed>
+					</State>
+					<State>
+						<Number>2</Number>
+						<Pressed>btn_orientation_sampler_right_over.png</Pressed>
+						<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
+					</State>
+					<Pos>0,28</Pos>
+					<Connection>
+						<ConfigKey>[Auxiliary<Variable name="auxnum"/>],orientation</ConfigKey>
+						<EmitOnDownPress>true</EmitOnDownPress>
+						<ButtonState>LeftButton</ButtonState>
+					</Connection>
+				</PushButton>
+
+			    <PushButton>
+				    <TooltipId></TooltipId>
+				    <Style></Style>
+				    <NumberStates>2</NumberStates>
+				    <State>
+					    <Number>0</Number>
+					    <Pressed>btn_pfl_fx_down.png</Pressed>
+					    <Unpressed>btn_pfl_fx.png</Unpressed>
+				    </State>
+				    <State>
+					    <Number>1</Number>
+					    <Pressed>btn_pfl_fx_overdown.png</Pressed>
+					    <Unpressed>btn_pfl_fx_over.png</Unpressed>
+				    </State>
+				    <Pos>21,30</Pos>
+				    <Connection>
+					    <ConfigKey>[Auxiliary<Variable name="auxnum"/>],pfl</ConfigKey>
+					    <ButtonState>LeftButton</ButtonState>
+				    </Connection>
+			    </PushButton>
+
+		    </Children>
+		</WidgetGroup>
+</Template>

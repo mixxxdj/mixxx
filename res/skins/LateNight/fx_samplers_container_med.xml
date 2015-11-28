@@ -4,26 +4,31 @@
         <SizePolicy>me,max</SizePolicy>
         <MinimumSize>0,0</MinimumSize>
         <Children>
-            <WidgetStack currentpage="[Master],med_view_curpage" persist="true">
+            <WidgetStack currentpage="[Master],view_curpage" persist="true">
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                    <!-- Need a blank page for when the user just wants the
-                    library.
-                    TODO(owilliams): This doesn't quite work.  Deselecting a button
-                    doesn't always switch to the first tab. -->
-                    <WidgetGroup>
+                    <!-- First page is blank for when the user just wants the library. -->
+                    <WidgetGroup on_hide_select="0">
                         <Layout>vertical</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children/>
                     </WidgetGroup>
-                    <WidgetGroup trigger="[EffectRack1],show_tab" persist="true">
+                    <!-- When any tab is hidden, go back to the first (empty) page. -->
+                    <WidgetGroup trigger="[Microphone],show_microphone" on_hide_select="0">
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                            <Template src="skin:microphone_rack.xml"/>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup trigger="[EffectRack1],show" on_hide_select="0">
                         <Layout>vertical</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
                             <Template src="skin:effect_rack.xml"/>
                         </Children>
                     </WidgetGroup>
-                    <WidgetGroup trigger="[Samplers],show_samplers_tab" persist="true">
+                    <WidgetGroup trigger="[Samplers],show_samplers" on_hide_select="0">
                         <Layout>vertical</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
@@ -31,6 +36,13 @@
                         </Children>
                     </WidgetGroup>
                 </Children>
+                <Connection>
+                  <ConfigKey>[Master],maximize_library</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform>
+                    <Not/>
+                  </Transform>
+                </Connection>
             </WidgetStack>
         </Children>
     </WidgetGroup>

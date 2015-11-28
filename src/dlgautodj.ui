@@ -56,7 +56,7 @@
      <item>
       <widget class="QPushButton" name="pushButtonAddRandom">
        <property name="toolTip">
-        <string>Add a random track from track sources (crates) to the Auto DJ playlist.</string>
+        <string>Add a random track from track sources (crates) or Library to the Auto DJ playlist.</string>
        </property>
        <property name="text">
         <string>Add Random</string>
@@ -130,6 +130,13 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelSelectionInfo">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonAutoDJ">

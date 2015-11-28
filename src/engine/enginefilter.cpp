@@ -85,8 +85,8 @@ void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)
 double processSampleBp(void *bufIn, const double sample)
 {
     double *buf = (double*) bufIn;
-    register double val = sample;
-   register double tmp, fir, iir;
+    double val = sample;
+   double tmp, fir, iir;
    tmp= buf[0]; memmove(buf, buf+1, 15*sizeof(double));
    // use 8.73843261546594e-007 below for unity gain at 100% level
    iir= val * 8.738432615466217e-007;
@@ -136,8 +136,8 @@ double processSampleBp(void *bufIn, const double sample)
 double processSampleHp(void *bufIn, const double sample)
 {
     double *buf = (double*) bufIn;
-    register double val = sample;
-   register double tmp, fir, iir;
+    double val = sample;
+    double tmp, fir, iir;
    tmp= buf[0]; memmove(buf, buf+1, 7*sizeof(double));
    // use 0.3307380993576275 below for unity gain at 100% level
    iir= val * 0.3307380993576274;
@@ -165,8 +165,8 @@ double processSampleHp(void *bufIn, const double sample)
 double processSampleLp(void *bufIn, const double sample)
 {
     double *buf = (double*) bufIn;
-    register double val = sample;
-       register double tmp, fir, iir;
+    double val = sample;
+       double tmp, fir, iir;
    tmp= buf[0]; memmove(buf, buf+1, 7*sizeof(double));
    iir= val * 9.245468558718278e-015;
    iir -= 0.9862009760667707*tmp; fir= tmp;

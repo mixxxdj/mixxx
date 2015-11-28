@@ -1,0 +1,5 @@
+mixxx_library_struct.tar.gz contains a reference library tree that contains symlinks.
+Unpack this somewhere to your mixxx library to check if the library scanner can still handle this. 
+The empty.mp3 must not appear more than one time in your library. 
+This test works only on file systems that support symlinks. 
+ 

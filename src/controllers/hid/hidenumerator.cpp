@@ -71,10 +71,10 @@ QList<Controller*> HidEnumerator::queryDevices() {
         if (isDeviceBlacklisted(cur_dev)) {
             // OS/X and windows use usage_page/usage not interface_number
             qDebug() << "Blacklisting"
-                     << cur_dev->manufacturer_string
-                     << cur_dev->product_string
+                     << HidController::safeDecodeWideString(cur_dev->manufacturer_string, 512)
+                     << HidController::safeDecodeWideString(cur_dev->product_string, 512)
                      << QString("r%1").arg(cur_dev->release_number)
-                     << "S/N" << cur_dev->serial_number
+                     << "S/N" << HidController::safeDecodeWideString(cur_dev->serial_number, 512)
                      << (cur_dev->interface_number == -1 ? QString("Usage Page %1 Usage %2").arg(
                          QString::number(cur_dev->usage_page),
                          QString::number(cur_dev->usage)) :
@@ -84,10 +84,10 @@ QList<Controller*> HidEnumerator::queryDevices() {
 
         // OS/X and windows use usage_page/usage not interface_number
         qDebug() << "Found"
-                 << cur_dev->manufacturer_string
-                 << cur_dev->product_string
+                 << HidController::safeDecodeWideString(cur_dev->manufacturer_string, 512)
+                 << HidController::safeDecodeWideString(cur_dev->product_string, 512)
                  << QString("r%1").arg(cur_dev->release_number)
-                 << "S/N" << cur_dev->serial_number
+                 << "S/N" << HidController::safeDecodeWideString(cur_dev->serial_number, 512)
                  << (cur_dev->interface_number == -1 ? QString("Usage Page %1 Usage %2").arg(
                      QString::number(cur_dev->usage_page),
                      QString::number(cur_dev->usage)) :

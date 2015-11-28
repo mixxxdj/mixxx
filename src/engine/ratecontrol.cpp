@@ -411,9 +411,11 @@ SyncMode RateControl::getSyncMode() const {
 }
 
 double RateControl::calculateSpeed(double baserate, double speed, bool paused,
-                                  int iSamplesPerBuffer,
-                                  bool* reportScratching) {
-    *reportScratching = false;
+                                   int iSamplesPerBuffer,
+                                   bool* pReportScratching,
+                                   bool* pReportReverse) {
+    *pReportScratching = false;
+    *pReportReverse = false;
     double rate = (paused ? 0 : 1.0);
     double searching = m_pRateSearch->get();
     if (searching) {
@@ -430,12 +432,12 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         // "scratch2_indicates_scratching" if they are not scratching,
         // to allow things like key-lock.
         if (useScratch2Value && m_pScratch2Scratching->get()) {
-            *reportScratching = true;
+            *pReportScratching = true;
         }
 
         if (bVinylControlEnabled) {
             if (m_pVCScratching->toBool()) {
-                *reportScratching = true;
+                *pReportScratching = true;
             }
             rate = speed;
         } else {
@@ -477,18 +479,18 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         // If waveform scratch is enabled, override all other controls
         if (m_pScratchController->isEnabled()) {
             rate = m_pScratchController->getRate();
-            *reportScratching = true;
+            *pReportScratching = true;
         } else {
             // If master sync is on, respond to it -- but vinyl and scratch mode always override.
             if (getSyncMode() == SYNC_FOLLOWER && !paused &&
-                !bVinylControlEnabled && !useScratch2Value) {
+                    !bVinylControlEnabled && !useScratch2Value) {
                 if (m_pBpmControl == NULL) {
                     qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
                     return 1.0;
                 }
 
                 double userTweak = 0.0;
-                if (!*reportScratching) {
+                if (!*pReportScratching) {
                     // Only report user tweak if the user is not scratching.
                     userTweak = getTempRate() + wheelFactor + jogFactor;
                 }
@@ -503,10 +505,10 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                     && !m_pScratch2Enable->get()
                     && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
                 rate = -rate;
+                *pReportReverse = true;
             }
         }
     }
-
     return rate;
 }
 
@@ -572,36 +574,26 @@ double RateControl::process(const double rate,
     }
 
     if (m_eRateRampMode == RATERAMP_LINEAR) {
-
-        if (m_ePbCurrent)
-        {
+        if (m_ePbCurrent) {
             // apply ramped pitchbending
             if (m_ePbCurrent == RateControl::RATERAMP_UP) {
                 addRateTemp(m_dTempRateChange);
             } else if (m_ePbCurrent == RateControl::RATERAMP_DOWN) {
                 subRateTemp(m_dTempRateChange);
             }
-        }
-        else if ((m_bTempStarted) || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTemp != 0.0)))
-        {
+        } else if ((m_bTempStarted)
+                || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE)
+                        && (m_dRateTemp != 0.0))) {
             // No buttons pressed, so time to deinitialize
             m_bTempStarted = false;
 
-
-            if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0))
-            {
+            if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD)
+                    && (m_dRateTempRampbackChange == 0.0)) {
                 int period = 2;
-                if (period)
-                    m_dRateTempRampbackChange = fabs(m_dRateTemp / (double)period);
-                else {
-                    resetRateTemp();
-                    return kNoTrigger;
-                }
-
-            }
-            else if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTempRampbackChange == 0.0))
-            {
-
+                m_dRateTempRampbackChange = fabs(
+                        m_dRateTemp / period);
+            } else if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE)
+                    && (m_dRateTempRampbackChange == 0.0)) {
                 if (fabs(m_dRateTemp) < m_dRateTempRampbackChange) {
                     resetRateTemp();
                 } else if (m_dRateTemp > 0) {
@@ -613,9 +605,7 @@ double RateControl::process(const double rate,
                 resetRateTemp();
             }
         }
-    }
-    else if ((m_eRateRampMode == RATERAMP_STEP) && (m_bTempStarted))
-    {
+    } else if ((m_eRateRampMode == RATERAMP_STEP) && (m_bTempStarted)) {
         if (!m_ePbCurrent) {
             m_bTempStarted = false;
             resetRateTemp();

@@ -40,10 +40,19 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
             Qt::DirectConnection);
+    connect(m_pCONumDecks, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotNumDecksControlChanged(double)),
+            Qt::DirectConnection);
     connect(m_pCONumSamplers, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumSamplersControlChanged(double)),
             Qt::DirectConnection);
+    connect(m_pCONumSamplers, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotNumSamplersControlChanged(double)),
+            Qt::DirectConnection);
     connect(m_pCONumPreviewDecks, SIGNAL(valueChanged(double)),
+            this, SLOT(slotNumPreviewDecksControlChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pCONumPreviewDecks, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotNumPreviewDecksControlChanged(double)),
             Qt::DirectConnection);
 
@@ -65,6 +74,8 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
         m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 0, o),
                                         m_pEngine);
     }
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::SIDECHAIN),
+                                    m_pEngine);
 }
 
 PlayerManager::~PlayerManager() {
@@ -156,7 +167,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
     }
 
     bool ok = false;
-    int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt(&ok);
+    int deckNum = group.mid(12,group.lastIndexOf("]")-12).toInt(&ok);
     if (!ok || deckNum <= 0) {
         return false;
     }

@@ -1,9 +1,20 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <cstddef>
+#include <climits>
+
 #include "util/math.h"
 
-#include <climits>
+// TODO(uklotzde): Replace 'const' with 'constexpr' after
+// switching to Visual Studio 2015 on Windows.
+
+// Signed integer type for POT array indices, sizes and pointer
+// arithmetic. Its size (32-/64-bit) depends on the CPU architecture.
+// This should be used for all CSAMLE operations since it is fast and
+// allows compiler auto vectorizing. For Qt container operations use
+// just int as before.
+typedef std::ptrdiff_t SINT;
 
 // 16-bit integer sample data within the asymmetric
 // range [SHRT_MIN, SHRT_MAX].

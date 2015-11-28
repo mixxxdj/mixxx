@@ -218,6 +218,11 @@ function PlayKey(ctrl, deck) {
         this.setled();
     }
 
+    that.onRelease = function()
+    {
+        this.setled();
+    }
+
     return that;
 }
 
@@ -340,7 +345,7 @@ function ZoomKey(dir) {
         }
 
         for ( ch = 1 ; ch <= NLM.numofdecks ; ch++ ) {
-            print("Zoom:" + ZoomKey.zoom);
+            //print("Zoom:" + ZoomKey.zoom);
             var group = "[Channel" + ch + "]";
             engine.setValue(group, "waveform_zoom", ZoomKey.zoom);
         }
@@ -547,6 +552,7 @@ NLM.incomingData = function(channel, control, value, status, group)
         //print("grp: " + group);
 
         //Just to make life easier
+
         var pressed = (value == 127);
         //Translate midi btn into index
         var y = Math.floor(control / 16);

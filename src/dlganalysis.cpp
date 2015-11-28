@@ -83,6 +83,15 @@ void DlgAnalysis::loadSelectedTrackToGroup(QString group, bool play) {
     m_pAnalysisLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 
+void DlgAnalysis::slotSendToAutoDJ() {
+    // append to auto DJ
+    m_pAnalysisLibraryTableView->slotSendToAutoDJ();
+}
+
+void DlgAnalysis::slotSendToAutoDJTop() {
+    m_pAnalysisLibraryTableView->slotSendToAutoDJTop();
+}
+
 void DlgAnalysis::moveSelection(int delta) {
     m_pAnalysisLibraryTableView->moveSelection(delta);
 }
@@ -104,15 +113,14 @@ void DlgAnalysis::analyze() {
     if (m_bAnalysisActive) {
         emit(stopAnalysis());
     } else {
-        QList<int> trackIds;
+        QList<TrackId> trackIds;
 
         QModelIndexList selectedIndexes = m_pAnalysisLibraryTableView->selectionModel()->selectedRows();
         foreach(QModelIndex selectedIndex, selectedIndexes) {
-            bool ok;
-            int trackId = selectedIndex.sibling(
+            TrackId trackId(selectedIndex.sibling(
                 selectedIndex.row(),
-                m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data().toInt(&ok);
-            if (ok) {
+                m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data());
+            if (trackId.isValid()) {
                 trackIds.append(trackId);
             }
         }
@@ -153,7 +161,7 @@ void DlgAnalysis::trackAnalysisProgress(int progress) {
 }
 
 int DlgAnalysis::getNumTracks() {
-	return m_tracksInQueue;
+    return m_tracksInQueue;
 }
 
 void DlgAnalysis::trackAnalysisStarted(int size) {

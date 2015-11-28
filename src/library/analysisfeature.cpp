@@ -27,7 +27,7 @@ AnalysisFeature::AnalysisFeature(QObject* parent,
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(NULL) {
-	setTitleDefault();
+    setTitleDefault();
 }
 
 AnalysisFeature::~AnalysisFeature() {
@@ -67,8 +67,8 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-    connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<int>)),
-            this, SLOT(analyzeTracks(QList<int>)));
+    connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<TrackId>)),
+            this, SLOT(analyzeTracks(QList<TrackId>)));
     connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
             this, SLOT(stopAnalysis()));
 
@@ -108,7 +108,7 @@ void AnalysisFeature::activate() {
     emit(enableCoverArtDisplay(true));
 }
 
-void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
+void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (m_pAnalyserQueue == NULL) {
         // Save the old BPM detection prefs setting (on or off)
         m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
@@ -130,20 +130,21 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
         emit(analysisActive(true));
     }
 
-    foreach(int trackId, trackIds) {
+    for (const auto& trackId: trackIds) {
         TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
         if (pTrack) {
             //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
             m_pAnalyserQueue->queueAnalyseTrack(pTrack);
         }
     }
-    if(trackIds.size() > 0)
-    	setTitleProgress(0, trackIds.size());
+    if (trackIds.size() > 0) {
+        setTitleProgress(0, trackIds.size());
+    }
     emit(trackAnalysisStarted(trackIds.size()));
 }
 
 void AnalysisFeature::slotProgressUpdate(int num_left) {
-	int num_tracks = m_pAnalysisView->getNumTracks();
+    int num_tracks = m_pAnalysisView->getNumTracks();
     if (num_left > 0) {
         int currentTrack = num_tracks - num_left + 1;
         setTitleProgress(currentTrack, num_tracks);
@@ -158,7 +159,7 @@ void AnalysisFeature::stopAnalysis() {
 }
 
 void AnalysisFeature::cleanupAnalyser() {
-	setTitleDefault();
+    setTitleDefault();
     emit(analysisActive(false));
     if (m_pAnalyserQueue != NULL) {
         m_pAnalyserQueue->stop();
@@ -173,12 +174,11 @@ bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<int> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }
 
 bool AnalysisFeature::dragMoveAccept(QUrl url) {
-    QFileInfo file(url.toLocalFile());
-    return SoundSourceProxy::isFilenameSupported(file.fileName());
+    return SoundSourceProxy::isUrlSupported(url);
 }

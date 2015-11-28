@@ -89,14 +89,14 @@ FilterEffect::~FilterEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void FilterEffect::processGroup(const QString& group,
-                                FilterGroupState* pState,
-                                const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples,
-                                const unsigned int sampleRate,
-                                const EffectProcessor::EnableState enableState,
-                                const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+void FilterEffect::processChannel(const ChannelHandle& handle,
+                                  FilterGroupState* pState,
+                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                  const unsigned int numSamples,
+                                  const unsigned int sampleRate,
+                                  const EffectProcessor::EnableState enableState,
+                                  const GroupFeatureState& groupFeatures) {
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
 
@@ -164,7 +164,10 @@ void FilterEffect::processGroup(const QString& group,
                 pOutput, numSamples);
     } else if (pLpfInput == pInput) {
         // Both disabled
-        SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
+        if (pOutput != pInput) {
+            // We need to copy pInput pOutput
+            SampleUtil::copy(pOutput, pInput, numSamples);
+        }
     }
 
     pState->m_loFreq = lpf;

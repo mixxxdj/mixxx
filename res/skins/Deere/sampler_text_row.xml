@@ -12,42 +12,62 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
       <WidgetGroup>
-        <ObjectName>UpperTextRow</ObjectName>
+        <ObjectName>TitleGutter</ObjectName>
         <Layout>horizontal</Layout>
         <!-- When TextRow is laid out, we need to ignore our children. Otherwise
              decks might end up with different widths based on the size of the
              labels in this row -->
         <SizePolicy>i,max</SizePolicy>
         <Children>
-          <Text>
+          <Template src="skin:left_right_display_2state_button.xml">
+            <SetVariable name="TooltipId">play_start</SetVariable>
+            <SetVariable name="ObjectName">SamplerPlayButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_play_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_play_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_play_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_play_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,cue_gotoandplay</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,start_stop</SetVariable>
+            <SetVariable name="display_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
+          </Template>
+
+          <TrackProperty>
             <TooltipId>track_title</TooltipId>
             <SizePolicy>me,min</SizePolicy>
             <Property>title</Property>
             <Group><Variable name="group"/></Group>
-          </Text>
-          <WidgetGroup>
-            <ObjectName>BPMGutter</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <Children>
-              <Key>
-                <Group><Variable name="group"/></Group>
-                <SizePolicy>min,</SizePolicy>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                </Connection>
-              </Key>
-              <NumberBpm>
-                <Group><Variable name="group"/></Group>
-                <SizePolicy>min,</SizePolicy>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                </Connection>
-              </NumberBpm>
-            </Children>
-          </WidgetGroup>
+            <Elide>right</Elide>
+          </TrackProperty>
         </Children>
       </WidgetGroup>
+      <!--
+      <WidgetGroup>
+        <ObjectName>BPMGutter</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,max</SizePolicy>
+        <Children>
+          <Key>
+            <Group><Variable name="group"/></Group>
+            <SizePolicy>min,</SizePolicy>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+            </Connection>
+          </Key>
+          <NumberBpm>
+            <Group><Variable name="group"/></Group>
+            <SizePolicy>min,</SizePolicy>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+            </Connection>
+          </NumberBpm>
+        </Children>
+      </WidgetGroup>
+      -->
     </Children>
   </WidgetGroup>
 </Template>

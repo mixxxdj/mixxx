@@ -21,21 +21,23 @@
 #include <QObject>
 #include <QMessageBox>
 #include <QTextCodec>
+#include <QVector>
+#include <QThread>
+#include <QMutex>
+#include <QSemaphore>
 
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "controlobjectslave.h"
 #include "encoder/encodercallback.h"
-#include "engine/sidechain/sidechainworker.h"
+#include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"
 #include "trackinfoobject.h"
-
-#define SHOUTCAST_DISCONNECTED 0
-#define SHOUTCAST_CONNECTING 1
-#define SHOUTCAST_CONNECTED 2
+#include "util/fifo.h"
 
 class Encoder;
+class ControlPushButton;
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
@@ -44,9 +46,17 @@ typedef struct shout shout_t;
 struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
-class EngineShoutcast : public QObject, public EncoderCallback, public SideChainWorker {
+class EngineShoutcast :
+        public QThread, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
+    enum StatusCOStates {
+        STATUSCO_UNCONNECTED = 0, // IDLE state, no error
+        STATUSCO_CONNECTING = 1, // 10 s max
+        STATUSCO_CONNECTED = 2, // On Air
+        STATUSCO_FAILURE = 3 // Happens when disconnected by an error
+    };
+
     EngineShoutcast(ConfigObject<ConfigValue>* _config);
     virtual ~EngineShoutcast();
 
@@ -55,7 +65,6 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     void process(const CSAMPLE* pBuffer, const int iBufferSize);
 
     void shutdown() {
-        m_bQuit = true;
     }
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
@@ -66,14 +75,28 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     bool serverConnect();
     bool serverDisconnect();
     bool isConnected();
-  public slots:
-    /** Update the libshout struct with info from Mixxx's shoutcast preferences.*/
-    void updateFromPreferences();
-    //    static void wrapper2writePage();
-    //private slots:
-    //    void writePage(unsigned char *header, unsigned char *body,
-    //                   int headerLen, int bodyLen, int count);
+
+    virtual void outputAvailable();
+    virtual void setOutputFifo(FIFO<CSAMPLE>* pOutputFifo);
+
+    virtual bool threadWaiting();
+
+    virtual void run();
+
+  private slots:
+    void slotStatusCO(double v);
+    void slotEnableCO(double v);
+
+  signals:
+    void shoutcastDisconnected();
+    void shoutcastConnected();
+
   private:
+    bool processConnect();
+    void processDisconnect();
+
+    // Update the libshout struct with info from Mixxx's shoutcast preferences.
+    void updateFromPreferences();
     int getActiveTracks();
     // Check if the metadata has changed since the previous check.  We also
     // check when was the last check performed to avoid using too much CPU and
@@ -87,6 +110,15 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     void errorDialog(QString text, QString detailedError);
     void infoDialog(QString text, QString detailedError);
 
+    void serverWrite(unsigned char *header, unsigned char *body,
+               int headerLen, int bodyLen);
+
+#ifndef __WINDOWS__
+    void ignoreSigpipe();
+#endif
+
+    bool writeSingle(const unsigned char *data, size_t len);
+
     QByteArray encodeString(const QString& string);
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
@@ -98,10 +130,9 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     ConfigObject<ConfigValue>* m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
-    ControlObjectSlave* m_pUpdateShoutcastFromPrefs;
+    ControlPushButton* m_pShoutcastEnabled;
     ControlObjectSlave* m_pMasterSamplerate;
-    ControlObject* m_pShoutcastStatus;
-    volatile bool m_bQuit;
+    ControlObject* m_pStatusCO;
     // static metadata according to prefereneces
     bool m_custom_metadata;
     QString m_customArtist;
@@ -118,6 +149,10 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     bool m_protocol_is_icecast2;
     bool m_protocol_is_shoutcast;
     bool m_ogg_dynamic_update;
+    QVector<struct shoutcastCacheObject  *> m_pShoutcastCache;
+    QAtomicInt m_threadWaiting;
+    QSemaphore m_readSema;
+    FIFO<CSAMPLE>* m_pOutputFifo;
 };
 
 #endif

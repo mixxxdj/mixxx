@@ -1,6 +1,3 @@
-// bpmcontrol.h
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #ifndef BPMCONTROL_H
 #define BPMCONTROL_H
 
@@ -9,7 +6,7 @@
 #include "controlobject.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
-#include "tapfilter.h"
+#include "util/tapfilter.h"
 
 class ControlObject;
 class ControlLinPotmeter;
@@ -62,8 +59,16 @@ class BpmControl : public EngineControl {
                                double* dpPrevBeat,
                                double* dpNextBeat,
                                double* dpBeatLength,
-                               double* dpBeatPercentage,
-                               const double beatEpsilon=0.0);
+                               double* dpBeatPercentage);
+
+    // Alternative version that works if the next and previous beat positions
+    // are already known.
+    static bool getBeatContextNoLookup(
+                               const double dPosition,
+                               const double dPrevBeat,
+                               const double dNextBeat,
+                               double* dpBeatLength,
+                               double* dpBeatPercentage);
 
     // Returns the shortest change in percentage needed to achieve
     // target_percentage.
@@ -109,6 +114,11 @@ class BpmControl : public EngineControl {
     ControlObject* m_pQuantize;
     ControlObjectSlave* m_pRateRange;
     ControlObjectSlave* m_pRateDir;
+
+    // ControlObjects that come from QuantizeControl
+    QScopedPointer<ControlObjectSlave> m_pNextBeat;
+    QScopedPointer<ControlObjectSlave> m_pPrevBeat;
+    QScopedPointer<ControlObjectSlave> m_pClosestBeat;
 
     // ControlObjects that come from LoopingControl
     ControlObjectSlave* m_pLoopEnabled;

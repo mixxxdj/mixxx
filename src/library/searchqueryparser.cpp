@@ -23,7 +23,11 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "rating"
                      << "bitrate";
     m_specialFilters << "key"
-                     << "duration";
+                     << "duration"
+	             << "added"
+	             << "dateadded"
+		     << "datetime_added"
+	             << "date_added";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -43,6 +47,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_fieldToSqlColumns["played"] << "timesplayed";
     m_fieldToSqlColumns["rating"] << "rating";
     m_fieldToSqlColumns["location"] << "location";
+    m_fieldToSqlColumns["datetime_added"] << "datetime_added";
 
     m_allFilters.append(m_textFilters);
     m_allFilters.append(m_numericFilters);
@@ -118,12 +123,12 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 m_textFilterMatcher.cap(2), &tokens).trimmed();
 
             if (!argument.isEmpty()) {
-                QueryNode* pNode = new TextFilterNode(
-                    m_database, m_fieldToSqlColumns[field], argument);
+                std::unique_ptr<QueryNode> pNode(std::make_unique<TextFilterNode>(
+                    m_database, m_fieldToSqlColumns[field], argument));
                 if (negate) {
-                    pNode = new NotNode(pNode);
+                    pNode = std::make_unique<NotNode>(std::move(pNode));
                 }
-                pQuery->addNode(pNode);
+                pQuery->addNode(std::move(pNode));
             }
         } else if (m_numericFilterMatcher.indexIn(token) != -1) {
             bool negate = token.startsWith(kNegatePrefix);
@@ -132,12 +137,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 m_numericFilterMatcher.cap(2), &tokens).trimmed();
 
             if (!argument.isEmpty()) {
-                QueryNode* pNode = new NumericFilterNode(
-                    m_fieldToSqlColumns[field], argument);
+                std::unique_ptr<QueryNode> pNode(
+                        std::make_unique<NumericFilterNode>(
+                                m_fieldToSqlColumns[field], argument));
                 if (negate) {
-                    pNode = new NotNode(pNode);
+                    pNode = std::make_unique<NotNode>(std::move(pNode));
                 }
-                pQuery->addNode(pNode);
+                pQuery->addNode(std::move(pNode));
             }
         } else if (m_specialFilterMatcher.indexIn(token) != -1) {
             bool negate = token.startsWith(kNegatePrefix);
@@ -145,27 +151,31 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             QString field = m_specialFilterMatcher.cap(1);
             QString argument = getTextArgument(
                 m_specialFilterMatcher.cap(2), &tokens).trimmed();
-            QueryNode* pNode = NULL;
+            std::unique_ptr<QueryNode> pNode;
             if (!argument.isEmpty()) {
                 if (field == "key") {
                     mixxx::track::io::key::ChromaticKey key =
                             KeyUtils::guessKeyFromText(argument);
                     if (key == mixxx::track::io::key::INVALID) {
-                        pNode = new TextFilterNode(
-                            m_database, m_fieldToSqlColumns[field], argument);
+                        pNode = std::make_unique<TextFilterNode>(
+                                m_database, m_fieldToSqlColumns[field], argument);
                     } else {
-                        pNode = new KeyFilterNode(key, fuzzy);
+                        pNode = std::make_unique<KeyFilterNode>(key, fuzzy);
                     }
                 } else if (field == "duration") {
-                    pNode = new DurationFilterNode(m_fieldToSqlColumns[field],
-                                                   argument);
-                }
+                    pNode = std::make_unique<DurationFilterNode>(
+                            m_fieldToSqlColumns[field], argument);
+                } else if (field == "date_added" || field == "datetime_added" || field == "added" || field == "dateadded") {
+		    field = "datetime_added";
+		    pNode = std::make_unique<TextFilterNode>(
+			m_database, m_fieldToSqlColumns[field], argument);
+		}
             }
-            if (pNode != NULL) {
+            if (pNode) {
                 if (negate) {
-                    pNode = new NotNode(pNode);
+                    pNode = std::make_unique<NotNode>(std::move(pNode));
                 }
-                pQuery->addNode(pNode);
+                pQuery->addNode(std::move(pNode));
             }
         } else {
             // If no advanced search feature matched, treat it as a search term.
@@ -176,30 +186,31 @@ void SearchQueryParser::parseTokens(QStringList tokens,
 
             // Don't trigger on a lone minus sign.
             if (!token.isEmpty()) {
-                QueryNode* pNode = new TextFilterNode(
-                    m_database, searchColumns, token);
+                std::unique_ptr<QueryNode> pNode(
+                        std::make_unique<TextFilterNode>(
+                                m_database, searchColumns, token));
                 if (negate) {
-                    pNode = new NotNode(pNode);
+                    pNode = std::make_unique<NotNode>(std::move(pNode));
                 }
-                pQuery->addNode(pNode);
+                pQuery->addNode(std::move(pNode));
             }
         }
     }
 }
 
-QueryNode* SearchQueryParser::parseQuery(const QString& query,
+std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
                                          const QStringList& searchColumns,
                                          const QString& extraFilter) const {
-    AndNode* pQuery = new AndNode();
+    auto pQuery(std::make_unique<AndNode>());
 
     if (!extraFilter.isEmpty()) {
-        pQuery->addNode(new SqlNode(extraFilter));
+        pQuery->addNode(std::make_unique<SqlNode>(extraFilter));
     }
 
     if (!query.isEmpty()) {
         QStringList tokens = query.split(" ");
-        parseTokens(tokens, searchColumns, pQuery);
+        parseTokens(tokens, searchColumns, pQuery.get());
     }
 
-    return pQuery;
+    return std::move(pQuery);
 }

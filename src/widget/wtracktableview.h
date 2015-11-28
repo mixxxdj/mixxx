@@ -13,7 +13,7 @@
 #include "widget/wlibrarytableview.h"
 #include "dlgtagfetcher.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 class DlgTrackInfo;
 class TrackCollection;
 class WCoverArtMenu;
@@ -29,8 +29,6 @@ class WTrackTableView : public WLibraryTableView {
                     TrackCollection* pTrackCollection, bool sorting = true);
     virtual ~WTrackTableView();
     void contextMenuEvent(QContextMenuEvent * event);
-    void onSearchStarting();
-    void onSearchCleared();
     void onSearch(const QString& text);
     void onShow();
     virtual void keyPressEvent(QKeyEvent* event);
@@ -49,6 +47,10 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
+    void onSearchStarting();
+    void onSearchCleared();
+    void slotSendToAutoDJ();
+    void slotSendToAutoDJTop();
 
   private slots:
     void slotRemove();
@@ -60,8 +62,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotNextDlgTagFetcher();
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
-    void slotSendToAutoDJ();
-    void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
@@ -72,6 +72,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnlockBpm();
     void slotScaleBpm(int);
     void slotClearBeats();
+    void slotReplayGainReset();
     // Signalled 20 times per second (every 50ms) by GuiTick.
     void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
@@ -110,9 +111,9 @@ class WTrackTableView : public WLibraryTableView {
     QModelIndex currentTrackInfoIndex;
 
 
-    ControlObjectThread* m_pNumSamplers;
-    ControlObjectThread* m_pNumDecks;
-    ControlObjectThread* m_pNumPreviewDecks;
+    ControlObjectSlave* m_pNumSamplers;
+    ControlObjectSlave* m_pNumDecks;
+    ControlObjectSlave* m_pNumPreviewDecks;
 
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
@@ -154,6 +155,9 @@ class WTrackTableView : public WLibraryTableView {
 
     // Clear track beats
     QAction* m_pClearBeatsAction;
+
+    // Replay Gain feature
+    QAction *m_pReplayGainResetAction;
 
     bool m_sorting;
 

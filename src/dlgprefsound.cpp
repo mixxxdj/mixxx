@@ -23,6 +23,7 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "util/rlimit.h"
+#include "util/scopedoverridecursor.h"
 #include "controlobjectslave.h"
 
 /**
@@ -77,7 +78,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
                 EngineBuffer::getKeylockEngineName(
                         static_cast<EngineBuffer::KeylockEngine>(i)));
     }
-    keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
 
     initializePaths();
     loadSettings();
@@ -126,7 +126,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     masterMixComboBox->setCurrentIndex(m_pMasterEnabled->get() ? 1 : 0);
     connect(masterMixComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(masterMixChanged(int)));
-    m_pMasterEnabled->connectValueChanged(this, SLOT(masterEnabledChanged(double)));
+    m_pMasterEnabled->connectValueChanged(SLOT(masterEnabledChanged(double)));
 
     m_pMasterMonoMixdown = new ControlObjectSlave("[Master]", "mono_mixdown", this);
     masterOutputModeComboBox->addItem(tr("Stereo"));
@@ -134,7 +134,15 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     masterOutputModeComboBox->setCurrentIndex(m_pMasterMonoMixdown->get() ? 1 : 0);
     connect(masterOutputModeComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(masterOutputModeComboBoxChanged(int)));
-    m_pMasterMonoMixdown->connectValueChanged(this, SLOT(masterMonoMixdownChanged(double)));
+    m_pMasterMonoMixdown->connectValueChanged(SLOT(masterMonoMixdownChanged(double)));
+
+    m_pMasterTalkoverMix = new ControlObjectSlave("[Master]", "talkover_mix", this);
+    micMixComboBox->addItem(tr("Master output"));
+    micMixComboBox->addItem(tr("Broadcast and Recording only"));
+    micMixComboBox->setCurrentIndex((int)m_pMasterTalkoverMix->get());
+    connect(micMixComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(talkoverMixComboBoxChanged(int)));
+    m_pMasterTalkoverMix->connectValueChanged(SLOT(talkoverMixChanged(double)));
 
 
     m_pKeylockEngine =
@@ -184,12 +192,18 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
-    m_pKeylockEngine->set(keylockComboBox->currentIndex());
+    int err = OK;
+    {
+        ScopedWaitCursor cursor;
+        m_pKeylockEngine->set(keylockComboBox->currentIndex());
+        m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
+                       ConfigValue(keylockComboBox->currentIndex()));
 
-    m_config.clearInputs();
-    m_config.clearOutputs();
-    emit(writePaths(&m_config));
-    int err = m_pSoundManager->setConfig(m_config);
+        m_config.clearInputs();
+        m_config.clearOutputs();
+        emit(writePaths(&m_config));
+        err = m_pSoundManager->setConfig(m_config);
+    }
     if (err != OK) {
         QString error;
         QString deviceName(tr("a device"));
@@ -222,7 +236,9 @@ void DlgPrefSound::slotApply() {
  */
 void DlgPrefSound::initializePaths() {
     foreach (AudioOutput out, m_pSoundManager->registeredOutputs()) {
-        addPath(out);
+        if (!out.isHidden()) {
+            addPath(out);
+        }
     }
     foreach (AudioInput in, m_pSoundManager->registeredInputs()) {
         addPath(in);
@@ -230,7 +246,6 @@ void DlgPrefSound::initializePaths() {
 }
 
 void DlgPrefSound::addPath(AudioOutput output) {
-    DlgPrefSoundItem *toInsert;
     // if we already know about this output, don't make a new entry
     foreach (QObject *obj, outputTab->children()) {
         DlgPrefSoundItem *item = qobject_cast<DlgPrefSoundItem*>(obj);
@@ -246,6 +261,8 @@ void DlgPrefSound::addPath(AudioOutput output) {
             }
         }
     }
+
+    DlgPrefSoundItem *toInsert;
     AudioPathType type = output.getType();
     if (AudioPath::isIndexed(type)) {
         toInsert = new DlgPrefSoundItem(outputTab, type,
@@ -365,6 +382,11 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         // "Default (long delay)" = 2 buffer
         deviceSyncComboBox->setCurrentIndex(0);
     }
+
+    // Default keylock is Rubberband.
+    int keylock_engine = m_pConfig->getValueString(
+            ConfigKey("[Master]", "keylock_engine"), "1").toInt();
+    keylockComboBox->setCurrentIndex(keylock_engine);
 
     emit(loadPaths(m_config));
     m_loading = false;
@@ -505,7 +527,8 @@ void DlgPrefSound::settingChanged() {
  * Slot called when the "Query Devices" button is clicked.
  */
 void DlgPrefSound::queryClicked() {
-    m_pSoundManager->queryDevices();
+    ScopedWaitCursor cursor;
+    m_pSoundManager->clearAndQueryDevices();
     updateAPIs();
 }
 
@@ -527,6 +550,10 @@ void DlgPrefSound::slotResetToDefaults() {
 
     headDelaySpinBox->setValue(0.0);
     m_pHeadDelay->set(0.0);
+
+    // Enable talkover master output
+    m_pMasterTalkoverMix->set(0.0);
+    micMixComboBox->setCurrentIndex(0);
 
     settingChanged(); // force the apply button to enable
 }
@@ -565,3 +592,10 @@ void DlgPrefSound::masterMonoMixdownChanged(double value) {
     masterOutputModeComboBox->setCurrentIndex(value ? 1 : 0);
 }
 
+void DlgPrefSound::talkoverMixComboBoxChanged(int value) {
+    m_pMasterTalkoverMix->set((double)value);
+}
+
+void DlgPrefSound::talkoverMixChanged(double value) {
+    micMixComboBox->setCurrentIndex(value ? 1 : 0);
+}

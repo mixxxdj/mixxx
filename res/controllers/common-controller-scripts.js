@@ -17,7 +17,7 @@ String.prototype.toInt = function() {
 
 // Causes script print() calls to appear in the log file as well
 print = function(string) {
-	engine.log(string);
+    engine.log(string);
 }
 
 // ----------------- Generic functions ---------------------
@@ -92,6 +92,37 @@ script.deckFromGroup = function (group) {
 }
 
 /* -------- ------------------------------------------------------
+     script.bindConnections
+   Purpose: Binds multiple controls at once. See an example in Pioneer-DDJ-SB-scripts.js
+   Input:   The group whose controls are to be bound and an object
+            (controlstToFunctions) where the properties' names are
+            controls names and the values are the functions those
+            controls will be bound to.
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.bindConnections = function (group, controlsToFunctions, remove) {
+    var control;
+    remove = (remove === undefined) ? false : remove;
+
+    for (control in controlsToFunctions) {
+        engine.connectControl(group, control, controlsToFunctions[control], remove);
+        if (!remove) {
+            engine.trigger(group, control);
+        }
+    }
+}
+
+/* -------- ------------------------------------------------------
+     script.toggleControl
+   Purpose: Toggles an engine value
+   Input:   Group and control names
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.toggleControl = function (group, control) {
+    engine.setValue(group, control, !(engine.getValue(group, control)));
+}
+
+/* -------- ------------------------------------------------------
      script.absoluteLin
    Purpose: Maps an absolute linear control value to a linear Mixxx control
             value (like Volume: 0..1)
@@ -101,12 +132,48 @@ script.deckFromGroup = function (group) {
    Output:  MixxxControl value corresponding to the knob position
    -------- ------------------------------------------------------ */
 script.absoluteLin = function (value, low, high, min, max) {
-    if (!min) min = 0;
-    if (!max) max = 127;
-    if (value <= min) return low;
-    if (value >= max) return high;
-    else return ((((high - low) / (max-min)) * (value-min)) + low);
+    if (!min) {
+        min = 0;
+    }
+    if (!max) {
+        max = 127;
+    }
+    
+    if (value <= min) {
+        return low;
+    } else if (value >= max) {
+        return high;
+    } else {
+        return ((((high - low) / (max-min)) * (value-min)) + low);
+    }
 }
+
+/* -------- ------------------------------------------------------
+     script.absoluteLinInverse
+   Purpose: Maps a linear Mixxx control value (like balance: -1..1) to an absolute linear value
+            (inverse of the above function)
+   Input:   Control value (e.g. a knob,) MixxxControl values for the lowest and
+            highest points, lowest knob value, highest knob value
+            (Default knob values are standard MIDI 0..127)
+   Output:  Linear value corresponding to the knob position
+   -------- ------------------------------------------------------ */
+script.absoluteLinInverse = function (value, low, high, min, max) {
+    if (!min) {
+        min = 0;
+    }
+    if (!max) {
+        max = 127;
+    }
+    var result = (((value-low)*(max-min))/(high-low)) + min
+    if (result < min) {
+        return min;
+    } else if (result > max) {
+        return max;
+    } else {
+        return result;
+    }
+}
+
 
 /* -------- ------------------------------------------------------
      script.absoluteNonLin
@@ -118,14 +185,55 @@ script.absoluteLin = function (value, low, high, min, max) {
    Output:  MixxxControl value corresponding to the knob position
    -------- ------------------------------------------------------ */
 script.absoluteNonLin = function (value, low, mid, high, min, max) {
-    if (!min) min = 0;
-    if (!max) max = 127;
+    if (!min) {
+        min = 0;
+    }
+    if (!max) {
+        max = 127;
+    }
     var center = (max-min)/2;
-    if (value==center || value==Math.round(center))
+    if (value==center || value==Math.round(center)) {
         return mid;
-    if (value<center)
+    } else if (value<center) {
         return low+(value/(center/(mid-low)));
-    return mid+((value-center)/(center/(high-mid)));
+    } else {
+        return mid+((value-center)/(center/(high-mid)));
+    }
+}
+
+/* -------- ------------------------------------------------------
+     script.absoluteNonLinInverse
+ Purpose: Maps a non-linear Mixxx control to an absolute linear value (inverse of the above function).
+ Helpful for sending MIDI messages to controllers and comparing non-linear Mixxx controls to incoming MIDI values.
+ Input:  MixxxControl value; lowest, middle, and highest MixxxControl value;
+ bottom of output range, top of output range. (Default output range is standard MIDI 0..127)
+ Output: MixxxControl value scaled to output range
+ -------- ------------------------------------------------------ */
+script.absoluteNonLinInverse = function (value, low, mid, high, min, max) {
+    if (!min) {
+        min = 0;
+    }
+    if (!max) {
+        max = 127;
+    }
+    var center = (max-min)/2;
+    var result;
+    
+    if (value==mid) {
+        return center;
+    } else if (value<mid) {
+        result = (center/(mid-low)) * (value-low);
+    } else {
+        result = center + (center/(high-mid)) * (value-mid);
+    }
+    
+    if (result < min) {
+        return min;
+    } else if (result > max) {
+        return max;
+    } else {
+        return result;
+    }
 }
 
 /* -------- ------------------------------------------------------

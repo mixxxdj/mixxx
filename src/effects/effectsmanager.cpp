@@ -62,12 +62,12 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
             this, SIGNAL(availableEffectsUpdated()));
 }
 
-void EffectsManager::registerGroup(const QString& group) {
-    m_pEffectChainManager->registerGroup(group);
+void EffectsManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
+    m_pEffectChainManager->registerChannel(handle_group);
 }
 
-const QSet<QString>& EffectsManager::registeredGroups() const {
-    return m_pEffectChainManager->registeredGroups();
+const QSet<ChannelHandleAndGroup>& EffectsManager::registeredChannels() const {
+    return m_pEffectChainManager->registeredChannels();
 }
 
 const QList<QString> EffectsManager::getAvailableEffects() const {
@@ -248,6 +248,13 @@ void EffectsManager::setupDefaults() {
             this, "org.mixxx.effectchain.echo"));
     pChain->setName(tr("Echo"));
     pEffect = instantiateEffect("org.mixxx.effects.echo");
+    pChain->addEffect(pEffect);
+    m_pEffectChainManager->addEffectChain(pChain);
+
+    pChain = EffectChainPointer(new EffectChain(
+            this, "org.mixxx.effectchain.autopan"));
+    pChain->setName(tr("AutoPan"));
+    pEffect = instantiateEffect("org.mixxx.effects.autopan");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 

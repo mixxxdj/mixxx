@@ -20,7 +20,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
-    manifest.setIsMixingEQ(true); 
+    manifest.setIsMixingEQ(true);
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId("low");
@@ -52,7 +52,7 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    mid->setNeutralPointOnScale(0.5);    
+    mid->setNeutralPointOnScale(0.5);
     mid->setDefault(1.0);
     mid->setMinimum(0);
     mid->setMaximum(4.0);
@@ -148,14 +148,14 @@ LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {
     delete m_pHiFreqCorner;
 }
 
-void LinkwitzRiley8EQEffect::processGroup(const QString& group,
-        LinkwitzRiley8EQEffectGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
-        const EffectProcessor::EnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
+                                            LinkwitzRiley8EQEffectGroupState* pState,
+                                            const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                            const unsigned int numSamples,
+                                            const unsigned int sampleRate,
+                                            const EffectProcessor::EnableState enableState,
+                                            const GroupFeatureState& groupFeatures) {
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
