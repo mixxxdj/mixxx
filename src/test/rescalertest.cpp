@@ -2,6 +2,7 @@
 #include <gmock/gmock.h>
 #include <QDebug>
 
+#include "util/math.h"
 #include "util/rescaler.h"
 
 
@@ -50,16 +51,16 @@ TEST_F(RescalerUtilsTest, Test) {
     EXPECT_DOUBLE_EQ(result, 0);
 
     result = RescalerUtils::oneByXToLinear(1, 50, 100, 1000);
-    EXPECT_DOUBLE_EQ(result, 100);
+    EXPECT_TRUE(fabs(result - 100) < 0.0000000001);
 
     result = RescalerUtils::oneByXToLinear(1, 40, 50, 1000);
-    EXPECT_DOUBLE_EQ(result, 50);
+    EXPECT_TRUE(fabs(result - 50) < 0.0000000001);
 
     // Test Roundtrip
     // test upper border
     result = RescalerUtils::linearToOneByX(50, 0, 100, 1000);
     result = RescalerUtils::oneByXToLinear(result, 1000, 0, 100);
-    EXPECT_DOUBLE_EQ(result, 50);
+    EXPECT_TRUE(fabs(result - 50) < 0.0000000001);
 }
 
 }  // namespace
