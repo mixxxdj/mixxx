@@ -286,7 +286,6 @@ void ControllerManager::stopPolling() {
 
 void ControllerManager::pollDevices() {
     Trace tracer("ControllerManager::pollDevices");
-    // Continue to poll while any device returned data.
     foreach (Controller* pDevice, m_controllers) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
