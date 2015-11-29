@@ -37,6 +37,12 @@ const int kPollIntervalMillis = 5;
 const int kPollIntervalMillis = 1;
 #endif
 
+// Note: A standard Midi device runs at 31.25 kbps,
+// a usual Midi message has 30 bits so we may not expect more than
+// 1000 messages per second
+// PortMidiController uses a buffer of 64 messages which results in
+// Maximum polling interval of 64 ms a theoritical minimum of 1 ms
+
 QString firstAvailableFilename(QSet<QString>& filenames,
                                const QString originalFilename) {
     QString filename = originalFilename;
@@ -280,16 +286,12 @@ void ControllerManager::stopPolling() {
 
 void ControllerManager::pollDevices() {
     Trace tracer("ControllerManager::pollDevices");
-    bool eventsProcessed(false);
     // Continue to poll while any device returned data.
-    do {
-        eventsProcessed = false;
-        foreach (Controller* pDevice, m_controllers) {
-            if (pDevice->isOpen() && pDevice->isPolling()) {
-                eventsProcessed = pDevice->poll() || eventsProcessed;
-            }
+    foreach (Controller* pDevice, m_controllers) {
+        if (pDevice->isOpen() && pDevice->isPolling()) {
+            pDevice->poll();
         }
-    } while (eventsProcessed);
+    }
 }
 
 void ControllerManager::openController(Controller* pController) {

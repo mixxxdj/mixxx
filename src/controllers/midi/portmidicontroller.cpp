@@ -207,7 +207,7 @@ bool PortMidiController::poll() {
                     receive(data, 0, 0);
                 } else {
                     m_cReceiveMsg[m_cReceiveMsg_index++] = data =
-                        (m_midiBuffer[i].message >> shift) & 0xFF;
+                            (m_midiBuffer[i].message >> shift) & 0xFF;
                 }
             }
 
