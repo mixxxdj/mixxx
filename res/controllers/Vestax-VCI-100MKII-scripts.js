@@ -9,18 +9,10 @@
 
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2015-11-1
+// description: 2015-12-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 var VCI102 = {};
-
-VCI102.headVolume = function(ch, midino, value, status, group) {
-    engine.setValue(group, "headVolume", value / 127);
-};
-
-VCI102.volume = function(ch, midino, value, status, group) {
-    engine.setValue(group, "volume", value / 127);
-};
 
 VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
 
@@ -132,14 +124,14 @@ VCI102.rateEnable = [true, true, true, true];
 VCI102.rateValueMSB = [64, 64, 64, 64];  // defaults are at center
 
 VCI102.rateMSB = function(ch, midino, value, status, group) {
-    // unlock rate control if the change is not caused by a mechanical drift
-    if (VCI102.rateEnable[ch]) {
-        engine.softTakeover(group, "rate", true);
-    } else if (Math.abs(value - VCI102.rateValueMSB[ch]) > 1) {
-        VCI102.rateEnable[ch] = true;
-        engine.softTakeover(group, "rate", false);
-    } else {
-        return;
+    // unlock rate control if sync_enabled or not caused by a mechanical drift
+    if (!VCI102.rateEnable[ch]) {
+        if (engine.getValue(group, "sync_enabled")
+            || Math.abs(value - VCI102.rateValueMSB[ch]) > 1) {
+            VCI102.rateEnable[ch] = true;
+        } else {
+            return;
+        }
     }
     VCI102.rateValueMSB[ch] = value;
 };
@@ -275,6 +267,10 @@ VCI102.init = function() {
         }
     }
 
+    function rateTakeover(value, group, key) {
+        engine.softTakeover(group, "rate", value);
+    }
+
     function makeButton(key) {
         VCI102[key] = function(ch, midino, value, status, group) {
             engine.setValue(VCI102.Deck[ch % 2], key, value / 127);
@@ -313,6 +309,8 @@ VCI102.init = function() {
                     "[EffectRack1_EffectUnit" + k + "]", enabled, led);
             }
         }
+        // enable soft takeover for rate if and only if sync_enabled
+        engine.connectControl(VCI102.deck[i], "sync_enabled", rateTakeover);
         engine.softTakeover(VCI102.deck[i], "pitch", true);
     }
     for (i = 1; i <= 4; i++) {
