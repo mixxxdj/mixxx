@@ -107,6 +107,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
+    Q_INVOKABLE void softTakeoverIgnoreNext(QString group, QString name);
     Q_INVOKABLE void brake(int deck, bool activate, double factor=0.9, double rate=1.0);
     Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
 
