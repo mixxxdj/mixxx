@@ -341,7 +341,6 @@ VMS4.effectControl = function(channel, control, value, status, group) {
 VMS4.effectParameterButton = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
 //     deck.Buttons.FXParam.handleEvent(group, value);
-    // Reset pitch only on entrance to center position
     if(value > 0x40) {
         var deckNum = VMS4.GetDeckNum(group);
         deck.controlEffectParameter=!deck.controlEffectParameter;
