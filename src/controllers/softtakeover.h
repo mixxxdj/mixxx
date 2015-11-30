@@ -13,13 +13,11 @@
 
 class ControlObject;
 
-// 3/128 units away from the current is enough to catch fast non-sequential moves
-//  but not cause an audibly noticeable jump.
-
-
 class SoftTakeover {
   public:
-    static const double kDefaultTakeoverThreshold;
+    // 3/128 units away from the current is enough to catch fast non-sequential moves
+    //  but not cause an audibly noticeable jump.
+    static const double kDefaultTakeoverThreshold = 3.0 / 128;
 
     SoftTakeover();
     bool ignore(ControlObject* control, double newParameter);
@@ -50,6 +48,8 @@ class SoftTakeoverCtrl {
     void disable(ControlObject* control);
     // Check to see if the new value for the Control should be ignored
     bool ignore(ControlObject* control, double newMidiParameter);
+    // Ignore the next supplied parameter
+    void ignoreNext(ControlObject* control);
 
   private:
     QHash<ControlObject*, SoftTakeover*> m_softTakeoverHash;

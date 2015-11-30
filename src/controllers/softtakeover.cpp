@@ -60,13 +60,20 @@ bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
     return ignore;
 }
 
+void SoftTakeoverCtrl::ignoreNext(ControlObject* control) {
+    if (control != NULL) {
+        SoftTakeover* pSt = m_softTakeoverHash.value(control);
+        if (pSt) {
+            pSt->ignoreNext();
+        }
+    }
+}
+
 SoftTakeover::SoftTakeover()
     : m_time(0),
       m_prevParameter(0),
       m_dThreshold(kDefaultTakeoverThreshold) {
 }
-
-const double SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
 
 void SoftTakeover::setThreshold(double threshold) {
     m_dThreshold = threshold;
@@ -94,11 +101,11 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
         const double prevDiff = currentParameter - m_prevParameter;
         if ((prevDiff < 0 && difference < 0) ||
                 (prevDiff > 0 && difference > 0)) {
-            // On same site (still on ignore site)
+            // On same side of the current parameter value
             if (fabs(difference) > m_dThreshold && fabs(prevDiff) > m_dThreshold) {
-                // difference is above threshold
+                // differences are above threshold
                 ignore = true;
-                //qDebug() << "ignoring, not near" << newParameter << m_prevParameter << currentParameter;
+                //qDebug() << "SoftTakeover::ignore: ignoring, not near" << newParameter << m_prevParameter << currentParameter;
             }
         }
     }
