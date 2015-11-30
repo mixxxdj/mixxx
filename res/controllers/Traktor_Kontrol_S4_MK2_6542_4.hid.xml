@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="" schemaVersion="1">
+     <info>
+        <name>Traktor Kontrol S4 MK2</name>
+        <author>Owen Williams</author>
+        <description>HID Mapping for S4 MK2</description>
+        <wiki>http://mixxx.org/wiki/doku.php/vestax_vci-400</wiki>
+    </info>
+    <controller id="Traktor">
+        <scriptfiles>
+            <file filename="common-hid-packet-parser.js" functionprefix=""/>
+            <file functionprefix="TraktorS4MK2" filename="Traktor-Kontrol-S4-MK2-hid-scripts.js"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
