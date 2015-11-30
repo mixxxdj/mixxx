@@ -13,14 +13,15 @@ var PioneerDDJSB2 = function () {};
 /* ### to do ###
 - FX1-x Belegung. Shift auf Master, CH3 und CH4
 - Was macht Regler FX wenn FX-Button gedrückt sind? BELEGEN -> Über JS wäre so etwas realisierbar da die Werte nicht vom SB2 differenziert gesendet werden.
-
+- disable SHIFT-FILTER for Gain !
  ### D O N E ###
 - "User Option" alternativ VU-Master
 - "User Option" blinken VU-Meter bei AutoDJ
 - VU-Meter Level pro Channel realisieren
 - VU-Meter blinken bei AutoDJ einbauen
 - Deckkonvertierung eleminieren (z.B. PioneerDDJSB2.deckConverter(deck))
-- Trim einbinden*/
+- Trim einbinden
+*/
   
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
@@ -51,6 +52,9 @@ PioneerDDJSB2.cutVumeter = 0.5;
 // If true VU-Level twinkle if AutoDJ is ON.
 PioneerDDJSB2.twinkleVumeterAutodjOn = true;
 
+// If true, by release browser knob jump forward to "position". 
+PioneerDDJSB2.jumpPreviewEnabled = true;
+PioneerDDJSB2.jumpPreviewPosition = 0.33;
 
 ///////////////////////////////////////////////////////////////
 //                      INIT & SHUTDOWN                      //
@@ -1065,12 +1069,14 @@ PioneerDDJSB2.shiftedRotarySelector = function (channel, control, value, status)
     engine.setValue('[Playlist]', f, Math.abs(delta));
 };
 
-PioneerDDJSB2.rotarySelectorClick = function (channel, control, value, status) { // some adjusted for DDJ-SB2
+PioneerDDJSB2.rotarySelectorClick = function (channel, control, value, status) { // READY some adjusted for DDJ-SB2
     if ( PioneerDDJSB2.rotarySelectorChanged == true ) {
         if (value) {
             engine.setValue('[PreviewDeck1]', 'LoadSelectedTrackAndPlay', true);
         } else {
-            engine.setValue('[PreviewDeck1]', 'playposition', 0.3);
+            if (PioneerDDJSB2.jumpPreviewEnabled) {
+                engine.setValue('[PreviewDeck1]', 'playposition', PioneerDDJSB2.jumpPreviewPosition);
+            };
             PioneerDDJSB2.rotarySelectorChanged = false;
         };
     } else {
