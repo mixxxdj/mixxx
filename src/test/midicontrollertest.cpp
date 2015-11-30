@@ -40,7 +40,7 @@ class MidiControllerTest : public MixxxTest {
 
     void receive(unsigned char status, unsigned char control,
                  unsigned char value) {
-        m_pController->receive(status, control, value);
+        m_pController->receive(status, control, value, 0);
     }
 
     MidiControllerPreset m_preset;

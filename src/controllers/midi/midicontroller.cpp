@@ -161,40 +161,44 @@ void MidiController::destroyOutputHandlers() {
 }
 
 QString formatMidiMessage(unsigned char status, unsigned char control, unsigned char value,
-                          unsigned char channel, unsigned char opCode) {
+                          unsigned char channel, unsigned char opCode, int32_t timestamp) {
+
+    QString prefix = QString("MIDI t:%2 ms ").arg(QString::number(timestamp));
+    //QString prefix = QString("MIDI ");
+
     switch (opCode) {
         case MIDI_PITCH_BEND:
-            return QString("MIDI status 0x%1: pitch bend ch %2, value 0x%3")
+            return prefix + QString("status 0x%1: pitch bend ch %2, value 0x%3")
                     .arg(QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
         case MIDI_SONG_POS:
-            return QString("MIDI status 0x%1: song position 0x%2")
+            return prefix + QString("status 0x%1: song position 0x%2")
                     .arg(QString::number(status, 16).toUpper(),
                          QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
         case MIDI_PROGRAM_CH:
         case MIDI_CH_AFTERTOUCH:
-            return QString("MIDI status 0x%1 (ch %2, opcode 0x%3), value 0x%4")
+            return prefix + QString("status 0x%1 (ch %2, opcode 0x%3), value 0x%4")
                     .arg(QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((status & 255)>>4, 16).toUpper(),
                          QString::number(control, 16).toUpper().rightJustified(2,'0'));
         case MIDI_SONG:
-            return QString("MIDI status 0x%1: select song #%2")
+            return prefix + QString("status 0x%1: select song #%2")
                     .arg(QString::number(status, 16).toUpper(),
                          QString::number(control+1, 10));
         case MIDI_NOTE_OFF:
         case MIDI_NOTE_ON:
         case MIDI_AFTERTOUCH:
         case MIDI_CC:
-            return QString("MIDI status 0x%1 (ch %2, opcode 0x%3), ctrl 0x%4, val 0x%5")
+            return prefix + QString("status 0x%1 (ch %2, opcode 0x%3), ctrl 0x%4, val 0x%5")
                     .arg(QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((status & 255)>>4, 16).toUpper(),
                          QString::number(control, 16).toUpper().rightJustified(2,'0'),
                          QString::number(value, 16).toUpper().rightJustified(2,'0'));
         default:
-            return QString("MIDI status 0x%1")
+            return prefix + QString("status 0x%1")
                     .arg(QString::number(status, 16).toUpper());
     }
 }
@@ -237,12 +241,13 @@ void MidiController::commitTemporaryInputMappings() {
 }
 
 void MidiController::receive(unsigned char status, unsigned char control,
-                             unsigned char value) {
+                             unsigned char value, int32_t timestamp) {
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
     if (debugging()) {
-        qDebug() << formatMidiMessage(status, control, value, channel, opCode);
+        qDebug() << formatMidiMessage(
+                status, control, value, channel, opCode, timestamp);
     }
 
     MidiKey mappingKey(status, control);
