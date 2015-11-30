@@ -228,7 +228,6 @@ VMS4.Deck.prototype.keyLockButtonHandler = function(value) {
 }
 
 VMS4.Deck.prototype.effectParamButtonHandler = function(value) {
-//     // Reset pitch only on entrance to center position
 //     if(value == ButtonState.pressed) {
 //         this.controlEffectParameter=!this.controlEffectParameter;
 //         if (this.controlEffectParameter) {
