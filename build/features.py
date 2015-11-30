@@ -81,19 +81,12 @@ class HID(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        # TODO(XXX) allow external hidapi install, but for now we just use our
-        # internal one.
-        build.env.Append(
-            CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
-
+ 
         if build.platform_is_linux:
-            build.env.ParseConfig(
-                'pkg-config libusb-1.0 --silence-errors --cflags --libs')
-            if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
-                    not conf.CheckHeader('libusb-1.0/libusb.h')):
-                raise Exception(
-                    'Did not find the libusb 1.0 development library or its header file')
-
+            if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
+	        raise Exception('Could not find libhidapi-libusb.')
+	        return
+        
             # Optionally add libpthread and librt. Some distros need this.
             conf.CheckLib(['pthread', 'libpthread'])
             conf.CheckLib(['rt', 'librt'])
@@ -102,10 +95,13 @@ class HID(Feature):
             build.env.Append(CCFLAGS='-pthread')
             build.env.Append(LINKFLAGS='-pthread')
 
-        elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
-            raise Exception('Did not find the setupapi library, exiting.')
-        elif build.platform_is_osx:
-            build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
+        else:
+            build.env.Append(
+                CPPPATH=[self.HIDAPI_INTERNAL_PATH])
+            if build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
+                raise Exception('Did not find the setupapi library, exiting.')
+            elif build.platform_is_osx:
+                build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
 
         build.env.Append(CPPDEFINES='__HID__')
 
@@ -119,10 +115,6 @@ class HID(Feature):
             # setupapi.
             sources.append(
                 os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
-        elif build.platform_is_linux:
-            # hidapi compiles the libusb implementation by default on Linux
-            sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, 'libusb/hid.c'))
         elif build.platform_is_osx:
             sources.append(
                 os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
