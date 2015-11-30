@@ -5,7 +5,7 @@
 * @brief This class handles discovery and enumeration of DJ controllers that use the USB-HID protocol
 */
 
-#include <hidapi.h>
+#include <hidapi/hidapi.h>
 
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hidenumerator.h"
