@@ -348,13 +348,13 @@ VMS4.effectParameterButton = function(channel, control, value, status, group) {
             // Super knob
             deck.Buttons.FXParam.setLed(LedState.on);
             // Ignore the next wet/dry value
-            engine.softTakeoverIgnoreNext("[EffectRack1_EffectUnit"+deckNum+"]","mix");
+            engine.softTakeoverResync("[EffectRack1_EffectUnit"+deckNum+"]","mix");
         }
         else {
             // Wet/dry
             deck.Buttons.FXParam.setLed(LedState.off);
             // Ignore the next Super knob value
-            engine.softTakeoverIgnoreNext("[EffectRack1_EffectUnit"+deckNum+"]","super1");
+            engine.softTakeoverResync("[EffectRack1_EffectUnit"+deckNum+"]","super1");
         }
     }
 }
