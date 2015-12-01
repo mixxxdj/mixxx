@@ -76,6 +76,8 @@ clean:
 	rm -f .sconsign.dblite
 	rm -rf .sconf_temp
 	rm -f $(CURDIR)/debian/tmp
+	rm -f core
+	rm -f mixxx-test
 
 	dh_clean
 
