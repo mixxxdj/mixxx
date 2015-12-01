@@ -4,6 +4,9 @@
 #ifndef BEATUTILS_H_
 #define BEATUTILS_H_
 
+// to tell the msvs compiler about `isnan`
+#include "util/math.h"
+
 #include <QVector>
 
 class BeatUtils {
@@ -16,6 +19,10 @@ class BeatUtils {
             min_bpm >= max_bpm ||
             (bpm >= min_bpm && bpm <= max_bpm)) {
             return bpm;
+        }
+
+        if (isnan(bpm) || isinf(bpm)) {
+            return 0.0;
         }
 
         if (!aboveRange) {

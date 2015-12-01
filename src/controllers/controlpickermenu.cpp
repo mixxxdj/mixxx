@@ -203,7 +203,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("cue_default", tr("Cue"), tr("Cue button"), cueMenu);
     addDeckControl("cue_set", tr("Set Cue"), tr("Set cue point"), cueMenu);
     addDeckControl("cue_goto", tr("Go-To Cue"), tr("Go to cue point"), cueMenu);
-    addDeckControl("cue_gotoandplay", tr("Go-To Cue And Play"),
+    addDeckAndSamplerAndPreviewDeckControl("cue_gotoandplay", tr("Go-To Cue And Play"),
                    tr("Go to cue point and play"), cueMenu);
     addDeckControl("cue_gotoandstop", tr("Go-To Cue And Stop"),
                    tr("Go to cue point and stop"), cueMenu);
