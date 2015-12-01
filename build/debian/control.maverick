@@ -31,7 +31,8 @@ Build-Depends: debhelper (>= 4.0.0),
                libusb-1.0-0-dev, 
                libchromaprint-dev, 
                librubberband-dev, 
-               libsqlite3-dev
+               libsqlite3-dev,
+               libhidapi-dev
 Standards-Version: 3.7.3
 Homepage: http://www.mixxx.org/
 
