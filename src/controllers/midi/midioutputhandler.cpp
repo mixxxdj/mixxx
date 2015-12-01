@@ -17,7 +17,7 @@ MidiOutputHandler::MidiOutputHandler(MidiController* controller,
         : m_pController(controller),
           m_mapping(mapping),
           m_cot(mapping.control),
-          m_lastVal(0) {
+          m_lastVal(-1) { // -1 = virgin
     connect(&m_cot, SIGNAL(valueChanged(double)),
             this, SLOT(controlChanged(double)));
 }
@@ -39,18 +39,17 @@ void MidiOutputHandler::update() {
 }
 
 void MidiOutputHandler::controlChanged(double value) {
-    // Don't send redundant messages.
-    if (value == m_lastVal) {
-        return;
-    }
-
     // Don't update with out of date messages.
     value = m_cot.get();
-    m_lastVal = value;
 
     unsigned char byte3 = m_mapping.output.off;
     if (value >= m_mapping.output.min && value <= m_mapping.output.max) {
         byte3 = m_mapping.output.on;
+    }
+
+    if (static_cast<int>(byte3) == m_lastVal) {
+        // Don't send redundant messages.
+        return;
     }
 
     if (!m_pController->isOpen()) {
@@ -58,10 +57,11 @@ void MidiOutputHandler::controlChanged(double value) {
     } else if (byte3 != 0xFF) {
         if (m_pController->debugging()) {
             qDebug() << "sending MIDI bytes:" << m_mapping.output.status
-                     << ", " << m_mapping.output.control << ", "
+                     << "," << m_mapping.output.control << ","
                      << byte3 ;
         }
         m_pController->sendShortMsg(m_mapping.output.status,
                                     m_mapping.output.control, byte3);
+        m_lastVal = static_cast<int>(byte3);
     }
 }

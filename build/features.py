@@ -64,7 +64,7 @@ class HSS1394(Feature):
 
 
 class HID(Feature):
-    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-pre'
+    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-rc1'
 
     def description(self):
         return "HID controller support"
@@ -120,8 +120,9 @@ class HID(Feature):
             sources.append(
                 os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
         elif build.platform_is_linux:
+            # hidapi compiles the libusb implementation by default on Linux
             sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
+                os.path.join(self.HIDAPI_INTERNAL_PATH, 'libusb/hid.c'))
         elif build.platform_is_osx:
             sources.append(
                 os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))

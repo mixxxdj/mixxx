@@ -110,20 +110,20 @@
         <midino>0x3a</midino>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>filterLow</key>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
         <status>0xB0</status>
         <midino>0x1d</midino>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>filterMid</key>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
         <status>0xB0</status>
         <midino>0x1c</midino>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>filterHigh</key>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
         <status>0xB0</status>
         <midino>0x1b</midino>
       </control>
@@ -206,20 +206,20 @@
         <midino>0x3b</midino>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>filterLow</key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
         <status>0xB0</status>
         <midino>0x24</midino>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>filterMid</key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
         <status>0xB0</status>
         <midino>0x23</midino>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>filterHigh</key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
         <status>0xB0</status>
         <midino>0x22</midino>
       </control>

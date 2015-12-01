@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset mixxxVersion="1.10.1+"
+<MixxxControllerPreset mixxxVersion="2.0.0+" 
 	schemaVersion="1">
 	<info>
 		<!-- In Geany, go to Document and then Fold All for easier format. -->
@@ -241,7 +241,7 @@
 				<status>0x90</status>
 				<midino>0x23</midino>
 				<group>[Channel1]</group>
-				<key>beatsync</key>
+				<key>sync_enabled</key>
 				<description>
 				</description>
 				<options>
@@ -253,7 +253,7 @@
 				<status>0x90</status>
 				<midino>0x34</midino>
 				<group>[Channel2]</group>
-				<key>beatsync</key>
+				<key>sync_enabled</key>
 				<description>
 				</description>
 				<options>
@@ -389,11 +389,35 @@
 				</options>
 			</control>
 			<control>
+				<!-- Left Fast Rewind + Shift-->
+				<status>0x90</status>
+				<midino>0x52</midino>
+				<group>[Channel1]</group>
+				<key>start</key>
+				<description>
+				</description>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
 				<!-- Right Fast Rewind -->
 				<status>0x90</status>
 				<midino>0x37</midino>
 				<group>[Channel2]</group>
 				<key>back</key>
+				<description>
+				</description>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<!-- Right Fast Rewind + Shift-->
+				<status>0x90</status>
+				<midino>0x56</midino>
+				<group>[Channel2]</group>
+				<key>start</key>
 				<description>
 				</description>
 				<options>
@@ -413,11 +437,35 @@
 				</options>
 			</control>
 			<control>
+				<!-- Left Fast Forward + Shift-->
+				<status>0x90</status>
+				<midino>0x53</midino>
+				<group>[Channel1]</group>
+				<key>end</key>
+				<description>
+				</description>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
 				<!-- Right Fast Forward -->
 				<status>0x90</status>
 				<midino>0x38</midino>
 				<group>[Channel2]</group>
 				<key>fwd</key>
+				<description>
+				</description>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<!-- Right Fast Forward + Shift -->
+				<status>0x90</status>
+				<midino>0x57</midino>
+				<group>[Channel2]</group>
+				<key>end</key>
 				<description>
 				</description>
 				<options>
@@ -542,8 +590,8 @@
 				<!-- Left Knob High 1 -->
 				<status>0xb0</status>
 				<midino>0x3c</midino>
-				<group>[Channel1]</group>
-				<key>filterHigh</key>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<key>parameter3</key>
 				<description>
 				</description>
 				<options>
@@ -554,8 +602,8 @@
 				<!-- Left Knob Mid 1 -->
 				<status>0xb0</status>
 				<midino>0x3e</midino>
-				<group>[Channel1]</group>
-				<key>filterMid</key>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<key>parameter2</key>
 				<description>
 				</description>
 				<options>
@@ -566,8 +614,8 @@
 				<!-- Left Knob Low 1 -->
 				<status>0xb0</status>
 				<midino>0x40</midino>
-				<group>[Channel1]</group>
-				<key>filterLow</key>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<key>parameter1</key>
 				<description>
 				</description>
 				<options>
@@ -611,8 +659,8 @@
 				<!-- Right Knob High 1 -->
 				<status>0xb0</status>
 				<midino>0x4c</midino>
-				<group>[Channel2]</group>
-				<key>filterHigh</key>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<key>parameter3</key>
 				<description>
 				</description>
 				<options>
@@ -623,8 +671,8 @@
 				<!-- Right Knob Mid 1 -->
 				<status>0xb0</status>
 				<midino>0x4e</midino>
-				<group>[Channel2]</group>
-				<key>filterMid</key>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<key>parameter2</key>
 				<description>
 				</description>
 				<options>
@@ -635,8 +683,8 @@
 				<!-- Right Knob Low 1 -->
 				<status>0xb0</status>
 				<midino>0x50</midino>
-				<group>[Channel2]</group>
-				<key>filterLow</key>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<key>parameter1</key>
 				<description>
 				</description>
 				<options>
@@ -1148,7 +1196,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>parameter</key>
+                <key>super1</key>
                 <status>0xB0</status>
                 <midino>0x54</midino>
                 <options>
@@ -1157,7 +1205,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>parameter</key>
+                <key>super1</key>
                 <status>0xB0</status>
                 <midino>0x55</midino>
                 <options>
@@ -1502,7 +1550,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>beatsync</key>
+				<key>sync_enabled</key>
 				<description>
 				</description>
 				<minimum>0.5</minimum>
@@ -1586,7 +1634,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>beatsync</key>
+				<key>sync_enabled</key>
 				<description>
 				</description>
 				<minimum>0.5</minimum>
