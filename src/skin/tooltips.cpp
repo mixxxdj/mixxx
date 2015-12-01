@@ -443,8 +443,8 @@ void Tooltips::addStandardTooltips() {
     // TODO(owen): find a better phrase for "the other deck"
     add("sync_reset_key")
             << tr("Sync and Reset Key")
-            << QString("%1: %2").arg(leftClick, tr("Sets the key to a compatible key with the other track key, "
-                                                   "if a key is detected on both."))
+            << QString("%1: %2").arg(leftClick, tr("Sets the pitch to a key that allows a harmonic transition "
+                                                   "from the other track. Requires a detected key on both involved decks."))
             << QString("%1: %2").arg(rightClick, tr("Resets the key to the original track key."));
 
     add("sync_master")
