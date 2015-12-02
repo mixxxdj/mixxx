@@ -2063,14 +2063,14 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>cue_default</key>
+                <key>cue_indicator</key>
                 <status>0x93</status>
                 <midino>0x1B</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>cue_default</key>
+                <key>cue_indicator</key>
                 <status>0x93</status>
                 <midino>0x19</midino>
                 <minimum>0.5</minimum>
@@ -2147,14 +2147,14 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>cue_default</key>
+                <key>cue_indicator</key>
                 <status>0x92</status>
                 <midino>0x1B</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>cue_default</key>
+                <key>cue_indicator</key>
                 <status>0x92</status>
                 <midino>0x19</midino>
                 <minimum>0.5</minimum>
@@ -2217,14 +2217,14 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>cue_default</key>
+                <key>cue_indicator</key>
                 <status>0x95</status>
                 <midino>0x20</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>cue_default</key>
+                <key>cue_indicator</key>
                 <status>0x95</status>
                 <midino>0x1C</midino>
                 <minimum>0.5</minimum>
@@ -2308,14 +2308,14 @@
             </output>
             <output>
                 <group>[Channel3]</group>
-                <key>cue_default</key>
+                <key>cue_indicator</key>
                 <status>0x94</status>
                 <midino>0x20</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel3]</group>
-                <key>cue_default</key>
+                <key>cue_indicator</key>
                 <status>0x94</status>
                 <midino>0x1C</midino>
                 <minimum>0.5</minimum>
