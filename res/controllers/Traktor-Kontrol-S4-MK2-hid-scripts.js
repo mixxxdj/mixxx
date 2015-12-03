@@ -1,3 +1,8 @@
+// TODO:
+// fx knobs
+// snap / master / quant buttons?
+// ******lights******
+
 TraktorS4MK2 = new function() {
    this.controller = new HIDController();
    this.partial_packet = Object();
@@ -8,7 +13,10 @@ TraktorS4MK2 = new function() {
                                    "[Channel2]" : 0,
                                    "[Channel3]" : 0,
                                    "[Channel4]" : 0};
-  this.controller.prev_browse = 0;
+   this.controller.prev_browse = 0;
+   // last tick times for the left and right wheels.
+   this.controller.last_tick_val = [0, 0];
+   this.controller.last_tick_time = [0.0, 0.0];
 }
 
 TraktorS4MK2.callbackPregain = function(field) {
@@ -16,9 +24,9 @@ TraktorS4MK2.callbackPregain = function(field) {
   prev_pregain = TraktorS4MK2.controller.prev_pregain[field.group];
   TraktorS4MK2.controller.prev_pregain[field.group] = field.value;
   var delta = 0;
-  if (prev_pregain == 15 && field.value == 0) {
+  if (prev_pregain === 15 && field.value === 0) {
     delta = 0.05;
-  } else if (prev_pregain == 0 && field.value == 15) {
+  } else if (prev_pregain === 0 && field.value === 15) {
     delta = -0.05;
   } else if (field.value > prev_pregain) {
     delta = 0.05;
@@ -35,9 +43,9 @@ TraktorS4MK2.callbackBrowse = function(field) {
   prev_browse = TraktorS4MK2.controller.prev_browse;
   TraktorS4MK2.controller.prev_browse = field.value;
   var delta = 0;
-  if (prev_browse == 15 && field.value == 0) {
+  if (prev_browse === 15 && field.value === 0) {
     delta = 1;
-  } else if (prev_browse == 0 && field.value == 15) {
+  } else if (prev_browse === 0 && field.value === 15) {
     delta = -1;
   } else if (field.value > prev_browse) {
     delta = 1;
@@ -53,7 +61,7 @@ TraktorS4MK2.scalerEq = function(group, name, value) {
 }
 
 TraktorS4MK2.scalerVolume = function(group, name, value) {
-  if (group == "[Master]") {
+  if (group === "[Master]") {
     return script.absoluteNonLin(value, 0, 1, 4, 16, 4080);
   } else {
     return script.absoluteNonLin(value, 0, 0.25, 1, 16, 4080);
@@ -92,6 +100,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("buttons_left", "!loopsize", 0x13, "B", 0x02);
   MessageShort.addControl("buttons_left", "!loopmove", 0x13, "B", 0x01);
   MessageShort.addControl("buttons_left", "!wheeltouch", 0x11, "B", 0x01);
+  MessageShort.addControl("buttons_left", "jog_wheel", 0x01, "I");
   MessageShort.addControl("buttons_left", "!deckswitch", 0x0F, "B", 0x20);
   MessageShort.addControl("buttons_left", "LoadSelectedTrack", 0x0F, "B", 0x10);
   MessageShort.addControl("buttons_left", "!FX1", 0x12, "B", 0x80);
@@ -119,6 +128,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("buttons_right", "!loopsize", 0x13, "B", 0x10);
   MessageShort.addControl("buttons_right", "!loopmove", 0x13, "B", 0x08);
   MessageShort.addControl("buttons_right", "!wheeltouch", 0x11, "B", 0x02);
+  MessageShort.addControl("buttons_right", "jog_wheel", 0x05, "I");
   MessageShort.addControl("buttons_right", "!deckswitch", 0x0A, "B", 0x20);
   MessageShort.addControl("buttons_right", "LoadSelectedTrack", 0x0A, "B", 0x10);
   MessageShort.addControl("buttons_right", "!FX1", 0x10, "B", 0x08);
@@ -149,6 +159,8 @@ TraktorS4MK2.registerInputPackets = function() {
 
   MessageShort.addControl("[Playlist]", "LoadSelectedIntoFirstStopped", 0x13, "B", 0x04);
 
+  this.controller.setScaler("jog", this.scalerJog);
+  this.controller.setScaler("jog_scratch", this.scalerScratch);
   this.controller.registerInputPacket(MessageShort);
 
   // Most items in the long message are controls that go from 0-4096.  There are also some encoders.
@@ -215,20 +227,20 @@ TraktorS4MK2.shutdown = function() {
 // Mandatory function to receive anything from HID
 TraktorS4MK2.incomingData = function(data, length) {
   // Packets of 21 bytes are message 0x01 and can be handed off right away
-  if (length == 21) {
+  if (length === 21) {
     TraktorS4MK2.controller.parsePacket(data, length);
     return;
   }
 
   // Packets of 64 bytes and 15 bytes are partials.  We have to save the 64 byte portion and then
   // append the 15 bytes when we get it
-  if (length == 64) {
+  if (length === 64) {
     this.partial_packet = data;
     return;
   }
 
-  if (length == 15) {
-    if (this.partial_packet.length != 64) {
+  if (length === 15) {
+    if (this.partial_packet.length !== 64) {
       HIDDebug("Received second half of message but don't have first half, ignoring");
       return;
     }
@@ -250,20 +262,20 @@ TraktorS4MK2.incomingData = function(data, length) {
 TraktorS4MK2.getGroupFromButton = function(name) {
   //HIDDebug("deckswitch status " + this.controller.left_deck_C + " " + this.controller.right_deck_D);
   splitted = name.split(".");
-  if (splitted.length != 2) {
-    HIDDebug("Tried to set from simple packet but not exactly one period in name");
+  if (splitted.length !== 2) {
+    HIDDebug("Tried to set from simple packet but not exactly one period in name: " + name);
     return;
   }
 
-  if (splitted[0][0] == "[") {
+  if (splitted[0][0] === "[") {
     return splitted[0];
-  } else if (splitted[0] == "buttons_left") {
+  } else if (splitted[0] === "buttons_left") {
     if (TraktorS4MK2.controller.left_deck_C) {
       return "[Channel3]";
     } else {
       return "[Channel1]";
     }
-  } else if (splitted[0] == "buttons_right") {
+  } else if (splitted[0] === "buttons_right") {
     if (TraktorS4MK2.controller.right_deck_D) {
       return "[Channel4]";
     } else {
@@ -280,54 +292,121 @@ TraktorS4MK2.getGroupFromButton = function(name) {
 // This is the HID equivalent of saying <script/> for a control.
 TraktorS4MK2.getButtonHandler = function(name) {
   splitted = name.split(".");
-  if (splitted.length != 2) {
+  if (splitted.length !== 2) {
     HIDDebug("Tried to set from simple packet but not exactly one period in name");
     return null;
   }
 
   var button_name = splitted[1];
 
-  if (button_name[0] != "!") {
+  if (button_name[0] !== "!") {
     // Standard Mixxx control, no handler needed;
     return null;
   }
-  if (button_name == "!deckswitch") {
+  if (button_name === "!deckswitch") {
     return TraktorS4MK2.deckSwitchHandler;
+  }
+  if (button_name === "!wheel") {
+    return TraktorS4MK2.wheelHandler;
   }
 
   HIDDebug("Unhandled special button: " + button_name);
+  return undefined;
 }
 
 TraktorS4MK2.deckSwitchHandler = function(field) {
-  if (field.value == 0) {
+  if (field.value === 0) {
     return;
   }
 
   // The group is the currently-assigned value, so set the variable to the opposite.
-  if (field.group == "[Channel1]") {
+  if (field.group === "[Channel1]") {
     TraktorS4MK2.controller.left_deck_C = true;
-  } else if (field.group == "[Channel3]") {
+  } else if (field.group === "[Channel3]") {
     TraktorS4MK2.controller.left_deck_C = false;
-  } else if (field.group == "[Channel2]") {
+  } else if (field.group === "[Channel2]") {
     TraktorS4MK2.controller.right_deck_D = true;
-  } else if (field.group == "[Channel4]") {
+  } else if (field.group === "[Channel4]") {
     TraktorS4MK2.controller.right_deck_D = false;
   } else {
     HIDDebug("Unrecognized packet group: " + field.group);
   }
 }
 
+TraktorS4MK2.scalerJog = function(group, name, value) {
+  // When the wheel is touched, four bytes change, but only the first behaves predictably.
+  // It looks like the wheel is 1024 ticks per revolution.
+  var tickval = value & 0xFF;
+  var timeval = value >>> 16;
+  var prev_tick = 0;
+  var prev_time = 0;
+  if (group[8] === "1" || group[8] === "3") {
+    prev_tick = TraktorS4MK2.controller.last_tick_val[0];
+    prev_time = TraktorS4MK2.controller.last_tick_time[0];
+    TraktorS4MK2.controller.last_tick_val[0] = tickval;
+    TraktorS4MK2.controller.last_tick_time[0] = timeval;
+  } else {
+    prev_tick = TraktorS4MK2.controller.last_tick_val[1];
+    prev_time = TraktorS4MK2.controller.last_tick_time[1];
+    TraktorS4MK2.controller.last_tick_val[1] = tickval;
+    TraktorS4MK2.controller.last_tick_time[1] = timeval;
+  }
+
+  var delta = 0;
+  if (prev_tick >= 250 && tickval <= 5) {
+    HIDDebug("tick loop " + prev_tick + " " + tickval);
+    delta = tickval + 256 - prev_tick;
+    HIDDebug("delta " + delta);
+  } else if (prev_tick <= 5 && tickval >= 250) {
+    delta = tickval - prev_tick - 256;
+    HIDDebug("tick loop " + prev_tick + " " + tickval + " " + delta);
+  } else {
+    delta = tickval - prev_tick;
+  }
+
+  if (prev_time > timeval) {
+    // We looped around.
+    timeval += 0x10000;
+    HIDDebug("loop around " + timeval + " " + prev_time);
+  }
+
+  var velocity = 0.0;
+  if (timeval === prev_time) {
+    // Spinning too fast to detect speed!
+    velocity = delta * 8;
+    HIDDebug("super speed! " + delta);
+  } else {
+    velocity = delta * 5.0 / (timeval - prev_time);
+  }
+
+  //HIDDebug(group + " " + name + " eh " + prev_time + " " + delta + " " + timeval + " " + velocity);
+  return velocity;
+}
+
+TraktorS4MK2.scalerScratch = function(group, name, value) {
+  // When the wheel is touched, four bytes change, but only the first behaves predictably.
+  // It looks like the wheel is 1024 ticks per revolution.
+  HIDDebug("scratch" + group + " " + name + " " + value);
+  return 0;
+}
+
 TraktorS4MK2.shortMessageCallback = function(packet, data) {
   for (name in data) {
     field = data[name];
     //HIDDebug("that happened " + name + " " + field.group);
-    group = TraktorS4MK2.getGroupFromButton(name);
+    group = TraktorS4MK2.getGroupFromButton(field.id);
     field.group = group;
-    var handler = TraktorS4MK2.getButtonHandler(name);
-    if (handler == null) {
-      TraktorS4MK2.controller.processButton(field);
+    if (field.name === "jog_wheel") {
+      TraktorS4MK2.controller.processControl(field);
+      continue;
+    }
+    var handler = TraktorS4MK2.getButtonHandler(field.id);
+    if (handler !== null) {
+      if (handler !== undefined) {
+        handler(field);
+      }
     } else {
-      handler(field);
+      TraktorS4MK2.controller.processButton(field);
     }
   }
   //TraktorS4MK2.controller.processIncomingPacket(packet, data);
