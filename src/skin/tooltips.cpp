@@ -503,11 +503,11 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("If hotcue is set, clears the hotcue."));
 
     // Status displays and toggle buttons
-    add("toggle_recording",
+    add("toggle_recording")
             << tr("Record Mix")
             << tr("Toggle mix recording.");
 
-    add("shoutcast_enabled",
+    add("shoutcast_enabled")
             << tr("Enable Live Broadcasting")
             << tr("Stream your mix over the Internet.")
             << tr("Provides visual feedback for Live Broadcasting status:")
@@ -716,10 +716,10 @@ void Tooltips::addStandardTooltips() {
     add("EffectSlot_parameter")
             << tr("Effect Parameter")
             << tr("Adjusts a parameter of the effect.")
-            << QString("%1: %2").arg(rightClick, resetToDefault)
+            << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("EffectSlot_parameter_link_type")
-            << tr("Super Knob Mode"),
+            << tr("Super Knob Mode")
             << tr("Set how linked effect parameters change when turning the Super Knob.");
 
     add("EffectSlot_button_parameter")
@@ -730,7 +730,7 @@ void Tooltips::addStandardTooltips() {
     // Quick Effect Rack Controls
     add("QuickEffectRack_super1")
             << tr("Quick Effect Super Knob")
-            << tr("Quick Effect Super Knob (control linked effect parameters)")
+            << tr("Quick Effect Super Knob (control linked effect parameters).")
             << QString("%1: %2").arg(rightClick, resetToDefault)
             << tr("Hint: Change the default Quick Effect mode in Preferences -> Equalizers.");
 
