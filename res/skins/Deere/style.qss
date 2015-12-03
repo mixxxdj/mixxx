@@ -135,11 +135,6 @@ QTableView::indicator {
   height: 12px;
 }
 
-QTableView::item:selected {
-  color: #1A1A1A;
-  background-color: #D6D6D6;
-}
-
 QTableView::indicator:checked {
   background: url(skin:/image/style_checkbox_checked.png);
 }
@@ -280,11 +275,6 @@ QTreeView::branch:closed:has-children:has-siblings {
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings {
   border-image: none; image: url(skin:/image/style_branch_open.png);
-}
-
-QTreeView::item:selected {
-  color: #1A1A1A;
-  background-color: #D6D6D6;
 }
 
 /* QSplitter between LibrarySidebar and Library */
