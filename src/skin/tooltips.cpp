@@ -515,7 +515,7 @@ void Tooltips::addStandardTooltips() {
 
     add("passthrough_enabled")
             << tr("Enable Passthrough")
-            << tr("When enabled, the deck directly plays the audio arriving on the input.");
+            << tr("When enabled, the deck directly plays the audio arriving on the vinyl input.");
 
     add("vinylcontrol_enabled")
             << tr("Enable Vinyl Control")
@@ -526,7 +526,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Vinyl Status")
             << tr("Provides visual feedback for vinyl control status:")
             << tr("Green for control enabled.")
-            << tr("Blinking yellow for when the needle reaches the end of the record.");
+            << tr("Blinking yellow for when the needle reaches the end of the record.")
+            << tr("Blue for passthrough enabled.");
 
     add("vinylcontrol_mode")
             << tr("Vinyl Control Mode")
@@ -660,7 +661,7 @@ void Tooltips::addStandardTooltips() {
 
     add("EffectUnit_enabled")
             << tr("Toggle Unit")
-            << tr("Toggle effect unit.");
+            << tr("Enable or disable effect processing.");
 
     add("EffectUnit_mix")
             << tr("Dry/Wet")

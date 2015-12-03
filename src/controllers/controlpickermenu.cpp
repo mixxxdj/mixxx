@@ -448,7 +448,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                effectUnitMenu);
             addPrefixedControl(effectUnitGroup, "enabled",
                                tr("Toggle Unit"),
-                               tr("Toggle effect unit"), descriptionPrefix,
+                               tr("Enable or disable effect processing"), descriptionPrefix,
                                effectUnitMenu, false);
             addPrefixedControl(effectUnitGroup, "mix",
                                tr("Dry/Wet"),
