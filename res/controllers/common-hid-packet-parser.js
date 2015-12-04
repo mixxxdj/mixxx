@@ -1239,7 +1239,9 @@ HIDController.prototype.togglePlay = function(group,field) {
 // to end scratching mode
 HIDController.prototype.enableScratch = function(group,status) {
     var deck = this.resolveDeck(group);
+    HIDDebug("JOG TOUCH");
     if (status) {
+        HIDDebug("scratch on");
         this.isScratchEnabled = true;
         engine.scratchEnable(deck,
             this.scratchintervalsPerRev,
@@ -1250,6 +1252,7 @@ HIDController.prototype.enableScratch = function(group,status) {
         );
         if (this.enableScratchCallback!=undefined) this.enableScratchCallback(true);
     } else {
+        HIDDebug("scratch off");
         this.isScratchEnabled = false;
         engine.scratchDisable(deck,this.rampedScratchDisable);
         if (this.enableScratchCallback!=undefined) this.enableScratchCallback(false);

@@ -1,86 +1,41 @@
 // TODO:
+// loop knobs
 // fx knobs
 // snap / master / quant buttons?
+// scratch handoff like in vestax
 // ******lights******
 
 TraktorS4MK2 = new function() {
-   this.controller = new HIDController();
-   this.partial_packet = Object();
-   this.divisor_map = Object();
-   this.controller.left_deck_C = false;
-   this.controller.right_deck_D = false;
-   this.controller.prev_pregain = {"[Channel1]" : 0,
-                                   "[Channel2]" : 0,
-                                   "[Channel3]" : 0,
-                                   "[Channel4]" : 0};
-   this.controller.prev_browse = 0;
-   // last tick times for the left and right wheels.
-   this.controller.last_tick_val = [0, 0];
-   this.controller.last_tick_time = [0.0, 0.0];
-}
+  this.controller = new HIDController();
+  this.partial_packet = Object();
+  this.divisor_map = Object();
+  this.controller.left_deck_C = false;
+  this.controller.right_deck_D = false;
+  this.controller.prev_pregain = {"[Channel1]" : 0,
+                                 "[Channel2]" : 0,
+                                 "[Channel3]" : 0,
+                                 "[Channel4]" : 0};
+  this.controller.prev_browse = 0;
+  // last tick times for the left and right wheels.
+  this.controller.last_tick_val = [0, 0];
+  this.controller.last_tick_time = [0.0, 0.0];
 
-TraktorS4MK2.callbackPregain = function(field) {
-  // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
-  prev_pregain = TraktorS4MK2.controller.prev_pregain[field.group];
-  TraktorS4MK2.controller.prev_pregain[field.group] = field.value;
-  var delta = 0;
-  if (prev_pregain === 15 && field.value === 0) {
-    delta = 0.05;
-  } else if (prev_pregain === 0 && field.value === 15) {
-    delta = -0.05;
-  } else if (field.value > prev_pregain) {
-    delta = 0.05;
-  } else {
-    delta = -0.05;
-  }
-
-  var cur_pregain = engine.getValue(group, "pregain");
-  engine.setValue(group, "pregain", cur_pregain + delta);
-}
-
-TraktorS4MK2.callbackBrowse = function(field) {
-  // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
-  prev_browse = TraktorS4MK2.controller.prev_browse;
-  TraktorS4MK2.controller.prev_browse = field.value;
-  var delta = 0;
-  if (prev_browse === 15 && field.value === 0) {
-    delta = 1;
-  } else if (prev_browse === 0 && field.value === 15) {
-    delta = -1;
-  } else if (field.value > prev_browse) {
-    delta = 1;
-  } else {
-    delta = -1;
-  }
-
-  engine.setValue("[Playlist]", "SelectTrackKnob", delta);
-}
-
-TraktorS4MK2.scalerEq = function(group, name, value) {
-  return script.absoluteNonLin(value, 0, 1, 4, 16, 4080);
-}
-
-TraktorS4MK2.scalerVolume = function(group, name, value) {
-  if (group === "[Master]") {
-    return script.absoluteNonLin(value, 0, 1, 4, 16, 4080);
-  } else {
-    return script.absoluteNonLin(value, 0, 0.25, 1, 16, 4080);
-  }
-}
-
-TraktorS4MK2.scalerQuickKnob = function(group, name, value) {
-  return script.absoluteLin(value, 0, 1, 16, 4080);
-}
-
-TraktorS4MK2.scalerSlider = function(group, name, value) {
-  return script.absoluteLin(value, -1, 1, 16, 4080);
+  // scratch overrides
+  this.controller.scratchintervalsPerRev = 1024;
+  this.controller.scratchRPM = 33+1/3;
+  this.controller.scratchAlpha = 1.0 / 8;
+  this.controller.scratchBeta = this.controller.scratchAlpha / 8;
+  this.controller.scratchRampOnEnable = true;
+  this.controller.scratchRampOnDisable = true;
 }
 
 TraktorS4MK2.registerInputPackets = function() {
-  MessageShort = new HIDPacket("shortmessage",[0x01],21, this.shortMessageCallback);
-  MessageLong = new HIDPacket("longmessage",[0x02],79, this.longMessageCallback);
+  MessageShort = new HIDPacket("shortmessage", [0x01], 21, this.shortMessageCallback);
+  MessageLong = new HIDPacket("longmessage", [0x02], 79, this.longMessageCallback);
 
-  // Values in the short message are all buttons.
+  // Values in the short message are all buttons, except the jog wheels.
+  // An exclamation point indicates a specially-handled function.  Everything else is a standard
+  // Mixxx control object name.
   MessageShort.addControl("buttons_left", "!shift", 0x0D, "B", 0x08);
   MessageShort.addControl("buttons_left", "sync_enabled", 0x0D, "B", 0x04);
   MessageShort.addControl("buttons_left", "cue_default", 0x0D, "B", 0x02);
@@ -99,7 +54,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("buttons_left", "!reset", 0x0E, "B", 0x01);
   MessageShort.addControl("buttons_left", "!loopsize", 0x13, "B", 0x02);
   MessageShort.addControl("buttons_left", "!loopmove", 0x13, "B", 0x01);
-  MessageShort.addControl("buttons_left", "!wheeltouch", 0x11, "B", 0x01);
+  MessageShort.addControl("buttons_left", "jog_touch", 0x11, "B", 0x01);
   MessageShort.addControl("buttons_left", "jog_wheel", 0x01, "I");
   MessageShort.addControl("buttons_left", "!deckswitch", 0x0F, "B", 0x20);
   MessageShort.addControl("buttons_left", "LoadSelectedTrack", 0x0F, "B", 0x10);
@@ -127,7 +82,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("buttons_right", "!reset", 0x0B, "B", 0x01);
   MessageShort.addControl("buttons_right", "!loopsize", 0x13, "B", 0x10);
   MessageShort.addControl("buttons_right", "!loopmove", 0x13, "B", 0x08);
-  MessageShort.addControl("buttons_right", "!wheeltouch", 0x11, "B", 0x02);
+  MessageShort.addControl("buttons_right", "jog_touch", 0x11, "B", 0x02);
   MessageShort.addControl("buttons_right", "jog_wheel", 0x05, "I");
   MessageShort.addControl("buttons_right", "!deckswitch", 0x0A, "B", 0x20);
   MessageShort.addControl("buttons_right", "LoadSelectedTrack", 0x0A, "B", 0x10);
@@ -161,9 +116,12 @@ TraktorS4MK2.registerInputPackets = function() {
 
   this.controller.setScaler("jog", this.scalerJog);
   this.controller.setScaler("jog_scratch", this.scalerScratch);
+  MessageShort.setCallback("buttons_left", "!deckswitch", this.deckSwitchHandler);
+  MessageShort.setCallback("buttons_right", "!deckswitch", this.deckSwitchHandler);
   this.controller.registerInputPacket(MessageShort);
 
-  // Most items in the long message are controls that go from 0-4096.  There are also some encoders.
+  // Most items in the long message are controls that go from 0-4096.
+  // There are also some 4 bit encoders.
   MessageLong.addControl("buttons_left", "rate", 0x09, "H");
   MessageLong.addControl("buttons_right", "rate", 0x0B, "H");
 
@@ -233,7 +191,7 @@ TraktorS4MK2.incomingData = function(data, length) {
   }
 
   // Packets of 64 bytes and 15 bytes are partials.  We have to save the 64 byte portion and then
-  // append the 15 bytes when we get it
+  // append the 15 bytes when we get it.
   if (length === 64) {
     this.partial_packet = data;
     return;
@@ -244,9 +202,9 @@ TraktorS4MK2.incomingData = function(data, length) {
       HIDDebug("Received second half of message but don't have first half, ignoring");
       return;
     }
-    partial_length = this.partial_packet.length;
     // packet data is a javascript Object with properties that are integers (!).  So it's actually
-    // unordered data.  So "appending" is just setting more properties.
+    // unordered data (!!).  So "appending" is just setting more properties.
+    partial_length = this.partial_packet.length;
     for (var i = 0; i < length; i++) {
       this.partial_packet[partial_length + i] = data[i];
     }
@@ -259,6 +217,38 @@ TraktorS4MK2.incomingData = function(data, length) {
   HIDDebug("Unhandled packet size: " + length);
 }
 
+// The short message handles buttons and jog wheels.
+TraktorS4MK2.shortMessageCallback = function(packet, data) {
+  for (name in data) {
+    field = data[name];
+    //HIDDebug("that happened " + name + " " + field.group);
+    // Rewrite group name from "buttons_X" to "[ChannelY]"
+    group = TraktorS4MK2.getGroupFromButton(field.id);
+    field.group = group;
+    if (field.name === "jog_wheel") {
+      TraktorS4MK2.controller.processControl(field);
+      continue;
+    }
+
+    TraktorS4MK2.controller.processButton(field);
+  }
+}
+
+// There are no buttons handled by the long message, so this is a little simpler.  (Probably
+// both messages could be handled by the same callback.)
+TraktorS4MK2.longMessageCallback = function(packet, data) {
+  for (name in data) {
+    field = data[name];
+    //HIDDebug("that happened " + name + " ");
+    // Rewrite group name from "buttons_X" to "[ChannelY]"
+    group = TraktorS4MK2.getGroupFromButton(field.id);
+    field.group = group;
+    TraktorS4MK2.controller.processControl(field);
+  }
+}
+
+// Utility function for converting mappings like "buttons_left.play" into "[ChannelX].play" based
+// on the state of the deck switches.
 TraktorS4MK2.getGroupFromButton = function(name) {
   //HIDDebug("deckswitch status " + this.controller.left_deck_C + " " + this.controller.right_deck_D);
   splitted = name.split(".");
@@ -287,33 +277,6 @@ TraktorS4MK2.getGroupFromButton = function(name) {
   }
 }
 
-// Many buttons can just be handled by the regular Mixxx code, but others require some special
-// handling.  Those others start with a "!" to indicate they are special.
-// This is the HID equivalent of saying <script/> for a control.
-TraktorS4MK2.getButtonHandler = function(name) {
-  splitted = name.split(".");
-  if (splitted.length !== 2) {
-    HIDDebug("Tried to set from simple packet but not exactly one period in name");
-    return null;
-  }
-
-  var button_name = splitted[1];
-
-  if (button_name[0] !== "!") {
-    // Standard Mixxx control, no handler needed;
-    return null;
-  }
-  if (button_name === "!deckswitch") {
-    return TraktorS4MK2.deckSwitchHandler;
-  }
-  if (button_name === "!wheel") {
-    return TraktorS4MK2.wheelHandler;
-  }
-
-  HIDDebug("Unhandled special button: " + button_name);
-  return undefined;
-}
-
 TraktorS4MK2.deckSwitchHandler = function(field) {
   if (field.value === 0) {
     return;
@@ -333,13 +296,14 @@ TraktorS4MK2.deckSwitchHandler = function(field) {
   }
 }
 
-TraktorS4MK2.scalerJog = function(group, name, value) {
+TraktorS4MK2.wheelDeltas = function(group, value) {
   // When the wheel is touched, four bytes change, but only the first behaves predictably.
   // It looks like the wheel is 1024 ticks per revolution.
   var tickval = value & 0xFF;
   var timeval = value >>> 16;
   var prev_tick = 0;
   var prev_time = 0;
+
   if (group[8] === "1" || group[8] === "3") {
     prev_tick = TraktorS4MK2.controller.last_tick_val[0];
     prev_time = TraktorS4MK2.controller.last_tick_time[0];
@@ -352,73 +316,105 @@ TraktorS4MK2.scalerJog = function(group, name, value) {
     TraktorS4MK2.controller.last_tick_time[1] = timeval;
   }
 
-  var delta = 0;
-  if (prev_tick >= 250 && tickval <= 5) {
-    HIDDebug("tick loop " + prev_tick + " " + tickval);
-    delta = tickval + 256 - prev_tick;
-    HIDDebug("delta " + delta);
-  } else if (prev_tick <= 5 && tickval >= 250) {
-    delta = tickval - prev_tick - 256;
-    HIDDebug("tick loop " + prev_tick + " " + tickval + " " + delta);
-  } else {
-    delta = tickval - prev_tick;
-  }
-
   if (prev_time > timeval) {
-    // We looped around.
+    // We looped around.  Adjust current time so that subtraction works.
     timeval += 0x10000;
-    HIDDebug("loop around " + timeval + " " + prev_time);
+  }
+  var time_delta = timeval - prev_time;
+  if (time_delta === 0) {
+    // Spinning too fast to detect speed!  By not dividing we are guessing it took 1ms.
+    time_delta = 1;
   }
 
-  var velocity = 0.0;
-  if (timeval === prev_time) {
-    // Spinning too fast to detect speed!
-    velocity = delta * 8;
-    HIDDebug("super speed! " + delta);
+  var tick_delta = 0;
+  if (prev_tick >= 200 && tickval <= 100) {
+    tick_delta = tickval + 256 - prev_tick;
+  } else if (prev_tick <= 100 && tickval >= 200) {
+    tick_delta = tickval - prev_tick - 256;
   } else {
-    velocity = delta * 5.0 / (timeval - prev_time);
+    tick_delta = tickval - prev_tick;
   }
+//  HIDDebug(tickval + " " + prev_tick + " " + tick_delta);
+  return [tick_delta, time_delta];
+}
+
+TraktorS4MK2.wheelVelocity = function(group, value) {
+  var deltas = TraktorS4MK2.wheelDeltas(group, value);
+  var tick_delta = deltas[0];
+  var time_delta = deltas[1];
+
+  var velocity = tick_delta / time_delta;
 
   //HIDDebug(group + " " + name + " eh " + prev_time + " " + delta + " " + timeval + " " + velocity);
   return velocity;
 }
 
+TraktorS4MK2.scalerJog = function(group, name, value) {
+  if (engine.getValue(group, "play")) {
+    return TraktorS4MK2.wheelVelocity(group, value) / 2;
+  } else {
+    return TraktorS4MK2.wheelVelocity(group, value) * 2.5;
+  }
+}
+
 TraktorS4MK2.scalerScratch = function(group, name, value) {
-  // When the wheel is touched, four bytes change, but only the first behaves predictably.
-  // It looks like the wheel is 1024 ticks per revolution.
-  HIDDebug("scratch" + group + " " + name + " " + value);
-  return 0;
+  // Return raw tick delta
+  return TraktorS4MK2.wheelDeltas(group, value)[0];
 }
 
-TraktorS4MK2.shortMessageCallback = function(packet, data) {
-  for (name in data) {
-    field = data[name];
-    //HIDDebug("that happened " + name + " " + field.group);
-    group = TraktorS4MK2.getGroupFromButton(field.id);
-    field.group = group;
-    if (field.name === "jog_wheel") {
-      TraktorS4MK2.controller.processControl(field);
-      continue;
-    }
-    var handler = TraktorS4MK2.getButtonHandler(field.id);
-    if (handler !== null) {
-      if (handler !== undefined) {
-        handler(field);
-      }
-    } else {
-      TraktorS4MK2.controller.processButton(field);
-    }
+TraktorS4MK2.callbackPregain = function(field) {
+  // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
+  prev_pregain = TraktorS4MK2.controller.prev_pregain[field.group];
+  TraktorS4MK2.controller.prev_pregain[field.group] = field.value;
+  var delta = 0;
+  if (prev_pregain === 15 && field.value === 0) {
+    delta = 0.05;
+  } else if (prev_pregain === 0 && field.value === 15) {
+    delta = -0.05;
+  } else if (field.value > prev_pregain) {
+    delta = 0.05;
+  } else {
+    delta = -0.05;
   }
-  //TraktorS4MK2.controller.processIncomingPacket(packet, data);
+
+  var cur_pregain = engine.getValue(group, "pregain");
+  engine.setValue(group, "pregain", cur_pregain + delta);
 }
 
-TraktorS4MK2.longMessageCallback = function(packet, data) {
-  for (name in data) {
-    field = data[name];
-    //HIDDebug("that happened " + name + " ");
-    group = TraktorS4MK2.getGroupFromButton(field.id);
-    field.group = group;
-    TraktorS4MK2.controller.processControl(field);
+TraktorS4MK2.callbackBrowse = function(field) {
+  // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
+  prev_browse = TraktorS4MK2.controller.prev_browse;
+  TraktorS4MK2.controller.prev_browse = field.value;
+  var delta = 0;
+  if (prev_browse === 15 && field.value === 0) {
+    delta = 1;
+  } else if (prev_browse === 0 && field.value === 15) {
+    delta = -1;
+  } else if (field.value > prev_browse) {
+    delta = 1;
+  } else {
+    delta = -1;
   }
-  //TraktorS4MK2.controller.processIncomingPacket(packet, data);
+
+  engine.setValue("[Playlist]", "SelectTrackKnob", delta);
+}
+
+TraktorS4MK2.scalerEq = function(group, name, value) {
+  return script.absoluteNonLin(value, 0, 1, 4, 16, 4080);
+}
+
+TraktorS4MK2.scalerVolume = function(group, name, value) {
+  if (group === "[Master]") {
+    return script.absoluteNonLin(value, 0, 1, 4, 16, 4080);
+  } else {
+    return script.absoluteNonLin(value, 0, 0.25, 1, 16, 4080);
+  }
+}
+
+TraktorS4MK2.scalerQuickKnob = function(group, name, value) {
+  return script.absoluteLin(value, 0, 1, 16, 4080);
+}
+
+TraktorS4MK2.scalerSlider = function(group, name, value) {
+  return script.absoluteLin(value, -1, 1, 16, 4080);
 }
