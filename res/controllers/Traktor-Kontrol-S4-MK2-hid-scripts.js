@@ -118,6 +118,7 @@ TraktorS4MK2.registerInputPackets = function() {
   this.controller.setScaler("jog_scratch", this.scalerScratch);
   MessageShort.setCallback("buttons_left", "!deckswitch", this.deckSwitchHandler);
   MessageShort.setCallback("buttons_right", "!deckswitch", this.deckSwitchHandler);
+  // TODO: the rest of the "!" controls.
   this.controller.registerInputPacket(MessageShort);
 
   // Most items in the long message are controls that go from 0-4096.
@@ -234,8 +235,9 @@ TraktorS4MK2.shortMessageCallback = function(packet, data) {
   }
 }
 
-// There are no buttons handled by the long message, so this is a little simpler.  (Probably
-// both messages could be handled by the same callback.)
+// There are no buttons handled by the long message, so this is a little simpler.  (Even though
+// this is very similar to the other handler, it's easier to keep them separate to know what's
+// a control and what's a button.
 TraktorS4MK2.longMessageCallback = function(packet, data) {
   for (name in data) {
     field = data[name];
