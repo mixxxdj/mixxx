@@ -13,8 +13,7 @@
     <Children>
 
       <Template src="skin:left_2state_button.xml">
-        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-        <SetVariable name="TooltipId"></SetVariable>
+        <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
         <SetVariable name="ObjectName"></SetVariable>
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
         <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -29,8 +28,7 @@
       </Template>
 
       <Template src="skin:left_1state_button.xml">
-        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-        <SetVariable name="TooltipId"></SetVariable>
+        <SetVariable name="TooltipId">EffectSlot_clear</SetVariable>
         <SetVariable name="ObjectName"></SetVariable>
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
         <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -50,8 +48,7 @@
       </EffectName>
 
       <Template src="skin:left_1state_button.xml">
-        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-        <SetVariable name="TooltipId"></SetVariable>
+        <SetVariable name="TooltipId">EffectSlot_prev_effect</SetVariable>
         <SetVariable name="ObjectName"></SetVariable>
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
         <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -63,8 +60,7 @@
       </Template>
 
       <Template src="skin:left_1state_button.xml">
-        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-        <SetVariable name="TooltipId"></SetVariable>
+        <SetVariable name="TooltipId">EffectSlot_next_effect</SetVariable>
         <SetVariable name="ObjectName"></SetVariable>
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
         <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
