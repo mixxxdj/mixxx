@@ -11,9 +11,9 @@ var PioneerDDJSB2 = function () {};
     Just as wingcom's and Rudham's work, this mapping is pusblished under the MIT license.
  */
 /* ### to do ###
-- FX1-x Belegung. Shift auf Master, CH3 und CH4
-- Was macht Regler FX wenn FX-Button gedrückt sind? BELEGEN -> Über JS wäre so etwas realisierbar da die Werte nicht vom SB2 differenziert gesendet werden.
-- disable SHIFT-FILTER for Gain !
+differenziert gesendet werden.
+- disable SHIFT-FILTER for Gain !?
+- FX Buttons LEDs werden zusätzlich vom Controller angesteuert -> somit nicht 100% zuverlässig -> Idee: App connect Note sniffern!  
  ### D O N E ###
 - "User Option" alternativ VU-Master
 - "User Option" blinken VU-Meter bei AutoDJ
@@ -21,7 +21,8 @@ var PioneerDDJSB2 = function () {};
 - VU-Meter blinken bei AutoDJ einbauen
 - Deckkonvertierung eleminieren (z.B. PioneerDDJSB2.deckConverter(deck))
 - Trim einbinden
-*/
+- FX1-x Belegung. Shift auf Master, CH3 und CH4
+- Was macht Regler FX wenn FX-Button gedrückt sind? BELEGEN -> Über JS wäre so etwas realisierbar da die Werte nicht vom SB2 */
   
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
@@ -54,7 +55,7 @@ PioneerDDJSB2.twinkleVumeterAutodjOn = true;
 
 // If true, by release browser knob jump forward to "position". 
 PioneerDDJSB2.jumpPreviewEnabled = true;
-PioneerDDJSB2.jumpPreviewPosition = 0.33;
+PioneerDDJSB2.jumpPreviewPosition = 0.5;
 
 ///////////////////////////////////////////////////////////////
 //                      INIT & SHUTDOWN                      //
@@ -92,6 +93,7 @@ PioneerDDJSB2.init = function (id) { // some adjusted for DDJ-SB2
         'group_[Channel1]_enable': 0x00,
         'group_[Channel3]_enable': 0x00,
         'group_[Headphone]_enable': 0x01,
+        'group_[Master]_enable': 0x01,
         'group_[Channel2]_enable': 0x02,
         'group_[Channel4]_enable': 0x02
     };
@@ -164,7 +166,6 @@ PioneerDDJSB2.init = function (id) { // some adjusted for DDJ-SB2
     if (PioneerDDJSB2.twinkleVumeterAutodjOn) {
         PioneerDDJSB2.vu_meter_timer = engine.beginTimer(100,"PioneerDDJSB2.vuMeterTwinkle()");
      }
-   
 };
 
 PioneerDDJSB2.shutdown = function () {
@@ -215,8 +216,6 @@ PioneerDDJSB2.vuMeterTwinkle = function () { // new for DDJ-SB2
         PioneerDDJSB2.valueVuMeter['[Channel4]_enabled'] = 1;
     };
 };
-
-
 
 ///////////////////////////////////////////////////////////////
 //                        AutoDJ                             //
@@ -306,6 +305,9 @@ PioneerDDJSB2.bindNonDeckControlConnections = function (isUnbinding) {
 
     for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
         engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_[Headphone]_enable', 'PioneerDDJSB2.fxLeds', isUnbinding);
+    }
+    for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
+        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_[Master]_enable', 'PioneerDDJSB2.fxLeds', isUnbinding);
     }
     
     if (PioneerDDJSB2.showVumeterMaster) {
@@ -792,8 +794,11 @@ PioneerDDJSB2.fxLeds = function (value, group, control) {
     var deck = PioneerDDJSB2.fxGroups[group],
         ledNumber = PioneerDDJSB2.fxControls[control];
 
-    PioneerDDJSB2.fxLedControl(deck, ledNumber, false, value);
-    PioneerDDJSB2.fxLedControl(deck, ledNumber, true, value);
+    if (PioneerDDJSB2.shiftPressed == 0) {
+        PioneerDDJSB2.fxLedControl(deck, ledNumber, false, value);
+    } else {
+        PioneerDDJSB2.fxLedControl(deck, ledNumber, true, value);
+    };
 };
 
 PioneerDDJSB2.headphoneCueLed = function (value, group, control) {
@@ -1101,45 +1106,52 @@ PioneerDDJSB2.rotarySelectorShiftedClick = function (channel, control, value, st
 
 PioneerDDJSB2.fxKnobMSB = [0, 0];
 PioneerDDJSB2.fxKnobShiftedMSB = [0, 0];
+PioneerDDJSB2.fxKnobParameterSet = false;
 
 PioneerDDJSB2.fxButton = function (channel, control, value, status, group) { // some adjusted for DDJ-SB2
     var deck = channel - 4,
-        button = control - 0x47,
-        channel = PioneerDDJSB2.deckSwitchTable['[Channel' + (button === 0 ? 1 : 2) + ']'];
-
+        button = control - 0x47;
     PioneerDDJSB2.fxButtonPressed[deck][button] = (value === 0x7F);
-
-    if (value) {
-        if (button === 1) {
-            //engine.trigger(group, 'group_[Headphone]_enable');
-            script.toggleControl(group, 'group_[Headphone]_enable');
+    if (!value) {
+        if (PioneerDDJSB2.fxKnobParameterSet) {
+            PioneerDDJSB2.fxKnobParameterSet = false;
         } else {
-            //engine.trigger(group, 'group_' + channel + '_enable');
-            script.toggleControl(group, 'group_' + channel + '_enable');
+            if (button == 0) {
+                script.toggleControl(group, 'group_[Channel1]_enable');
+            } else if (button == 1) {
+                script.toggleControl(group, 'group_[Headphone]_enable');
+            } else if (button == 2) {
+                script.toggleControl(group, 'group_[Channel2]_enable');
+            };
         };
     };
 };
 
-PioneerDDJSB2.fxButtonShifted = function (channel, control, value, status, group) {
-    var button = control - 0x63,
-        channel = PioneerDDJSB2.deckSwitchTable['[Channel' + (button === 0 ? 1 : 2) + ']'];
-
-    if (value) {
-        if (button === 1) {
-            script.toggleControl(group, 'group_[Headphone]_enable');
-        } else {
-            script.toggleControl(group, 'group_' + channel + '_enable');
-        }
-    }
+PioneerDDJSB2.fxButtonShifted = function (channel, control, value, status, group) { // some adjusted for DDJ-SB2
+    var button = control - 0x63;
+    if (!value) {
+        if (button == 0) {
+            script.toggleControl(group, 'group_[Channel3]_enable');
+        } else if (button == 1) {
+            script.toggleControl(group, 'group_[Master]_enable');
+        } else if (button == 2) {
+            script.toggleControl(group, 'group_[Channel4]_enable');
+        };
+    };
 };
 
 PioneerDDJSB2.fxKnobShiftedMSB = function (channel, control, value, status) {
     PioneerDDJSB2.fxKnobShiftedMSB[channel - 4] = value;
 };
 
-PioneerDDJSB2.fxKnobShiftedLSB = function (channel, control, value, status) {
+PioneerDDJSB2.fxKnobShiftedLSB = function (channel, control, value, status) {  // some adjusted for DJ-SB2
     var deck = channel - 4,
         fullValue = (PioneerDDJSB2.fxKnobShiftedMSB[deck] << 7) + value;
+        print("-----------------------");
+        print("channel: " + channel);
+        print("deck: " + deck);
+        print("fullValue: " + fullValue);
+        //print("group: " + group);
 
     if (PioneerDDJSB2.softTakeoverEmulation(deck, 4, PioneerDDJSB2.fxKnobShiftedMSB[deck])) {
         engine.setValue('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'super1', fullValue / 0x3FFF);
@@ -1174,6 +1186,7 @@ PioneerDDJSB2.fxKnobLSB = function (channel, control, value, status) {
                     'parameter' + (parameter + 1),
                     fullValue / 0x3FFF
                 );
+                PioneerDDJSB2.fxKnobParameterSet = true;
             }
         }
     }
