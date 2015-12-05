@@ -33,7 +33,9 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort = new HIDPacket("shortmessage", [0x01], 21, this.shortMessageCallback);
   MessageLong = new HIDPacket("longmessage", [0x02], 79, this.longMessageCallback);
 
-  //Output1 = new HIDPacket("output1", [0x80], 53);
+  Output1 = new HIDPacket("output1", [0x80], 53);
+  Output2 = new HIDPacket("output2", [0x81], 63);
+  Output3 = new HIDPacket("output3", [0x81], 61);
 
   // Values in the short message are all buttons, except the jog wheels.
   // An exclamation point indicates a specially-handled function.  Everything else is a standard
@@ -178,6 +180,17 @@ TraktorS4MK2.registerInputPackets = function() {
 
   //TraktorS4MK2.controller.switchDeck(1);
   //TraktorS4MK2.controller.switchDeck(2);
+
+  Output2.addOutput("deck1", "play", 0x20, "B");
+  Output2.addOutput("deck2", "play", 0x28, "B");
+  this.controller.registerOutputPacket(Output2);
+
+  // Linking outputs is a little tricky, the library doesn't quite do what I want.  But this
+  // method works.
+  this.controller.linkOutput("deck1", "play", "[Channel1]", "play", TraktorS4MK2.outputCallback);
+  engine.connectControl("[Channel3]", "play", TraktorS4MK2.outputCallback);
+  this.controller.linkOutput("deck2", "play", "[Channel2]", "play", TraktorS4MK2.outputCallback);
+  engine.connectControl("[Channel4]", "play", TraktorS4MK2.outputCallback);
 }
 
 TraktorS4MK2.init = function(id) {
@@ -358,7 +371,7 @@ TraktorS4MK2.deckSwitchHandler = function(field) {
   } else {
     HIDDebug("Unrecognized packet group: " + field.group);
   }
-}
+2}
 
 TraktorS4MK2.wheelDeltas = function(group, value) {
   // When the wheel is touched, four bytes change, but only the first behaves predictably.
@@ -481,4 +494,33 @@ TraktorS4MK2.scalerQuickKnob = function(group, name, value) {
 
 TraktorS4MK2.scalerSlider = function(group, name, value) {
   return script.absoluteLin(value, -1, 1, 16, 4080);
+}
+
+TraktorS4MK2.outputCallback = function(value,group,key) {
+    var controller = TraktorS4MK2.controller;
+    //HIDDebug("output? " + group + " " + value + " " + TraktorS4MK2.controller.left_deck_C);
+    var deck_group;
+    if (group == "[Channel1]") {
+      if (TraktorS4MK2.controller.left_deck_C) {
+        return;
+      }
+      deck_group = "deck1";
+    } else if (group == "[Channel3]") {
+      if (!TraktorS4MK2.controller.left_deck_C) {
+        return;
+      }
+      deck_group = "deck1";
+    } else if (group == "[Channel2]") {
+      if (TraktorS4MK2.controller.right_deck_D) {
+        return;
+      }
+      deck_group = "deck2";
+    } else if (group == "[Channel4]") {
+      if (!TraktorS4MK2.controller.right_deck_D) {
+        return;
+      }
+      deck_group = "deck2";
+    }
+
+    TraktorS4MK2.controller.setOutput(deck_group, key, value * 0x7F, true);
 }

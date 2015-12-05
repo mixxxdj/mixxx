@@ -661,6 +661,15 @@ HIDPacket.prototype.send = function() {
             this.pack(packet,field);
         }
     }
+
+    var packet_string = "";
+    for (d in packet.data) {
+      if (packet.data[d] < 0x10) {
+        packet_string += "0";
+      }
+      packet_string += packet.data[d].toString(16) + " ";
+    }
+    HIDDebug("packet: " + packet_string);
     controller.send(packet.data, packet.length, 0);
 }
 
@@ -1451,13 +1460,14 @@ HIDController.prototype.linkOutput = function(group,name,m_group,m_name,callback
         return;
     }
     if (field.mapped_group!=undefined) {
-        HIDDebug("Output already linked: " + led.id);
+        HIDDebug("Output already linked: " + field.mapped_group);
         return;
     }
     controlgroup = this.resolveGroup(m_group);
     field.mapped_group = m_group;
     field.mapped_name = m_name;
     field.mapped_callback = callback;
+    HIDDebug("linking " + controlgroup, m_name);
     engine.connectControl(controlgroup,m_name,callback);
     if (engine.getValue(controlgroup,m_name))
         this.setOutput(m_group,m_name,"on");
@@ -1486,6 +1496,7 @@ HIDController.prototype.unlinkOutput = function(group,name,callback) {
 
 // Set output state to given value
 HIDController.prototype.setOutput = function(group,name,value,send_packet) {
+    HIDDebug("set output " + group + " " + name + " " + value + " " + send_packet);
     var field = this.getOutputField(group,name);
     if (field==undefined) {
         HIDDebug("setOutput: unknown field: " + group+"."+name);
@@ -1493,6 +1504,7 @@ HIDController.prototype.setOutput = function(group,name,value,send_packet) {
     }
     field.value = value<<field.bit_offset;
     field.toggle = value<<field.bit_offset;
+    HIDDebug("vals " + field.value + " " + field.toggle);
     if (send_packet)
         field.packet.send();
 }
