@@ -278,40 +278,40 @@ QTreeView::branch:open:has-children:has-siblings {
 }
 
 /* QSplitter between LibrarySidebar and Library */
-QSplitter#LibrarySplitter::handle {
+#LibrarySplitter::handle {
   image: url(skin:/image/style_handle_horizontal_unchecked.svg);
   background: none;
 }
 
-QSplitter#LibrarySplitter::handle:pressed {
+#LibrarySplitter::handle:pressed {
   image: url(skin:/image/style_handle_horizontal_checked.svg);
   background: none;
 }
 
-QSplitter#LibrarySplitter::handle:horizontal {
+#LibrarySplitter::handle:horizontal {
   width: 6px;
 }
 
-QSplitter#LibrarySplitter::handle:vertical {
+#LibrarySplitter::handle:vertical {
   height: 6px;
 }
 
 /* QSplitter between LibrarySidebar and CoverArt */
-QSplitter#LibraryCoverArtSplitter::handle {
+#LibraryCoverArtSplitter::handle {
   image: url(skin:/image/style_handle_vertical_unchecked.svg);
   background: none;
 }
 
-QSplitter#LibraryCoverArtSplitter::handle:pressed {
+#LibraryCoverArtSplitter::handle:pressed {
   image: url(skin:/image/style_handle_vertical_checked.svg);
   background: none;
 }
 
-QSplitter#LibraryCoverArtSplitter::handle:horizontal {
+#LibraryCoverArtSplitter::handle:horizontal {
   width: 6px;
 }
 
-QSplitter#LibraryCoverArtSplitter::handle:vertical {
+#LibraryCoverArtSplitter::handle:vertical {
   height: 6px;
 }
 
@@ -450,51 +450,49 @@ WLibrary QRadioButton::indicator:unchecked {
 
 /* Scroll bars */
 QScrollBar:horizontal {
-  border: 1px solid #585858;
+  border-top: 1px solid #141414;
   min-width: 12px;
   height: 15px;
-  background: #1A1A1A;
-  border-radius: 3px;
-  padding: 1px;
+  background: #222222;
+  padding: 3px;
 }
 QScrollBar:vertical {
-  border: 1px solid #585858;
+  border-left: 1px solid #141414;
   min-height: 12px;
   width: 15px;
-  background: #1A1A1A;
-  border-radius: 3px;
-  padding: 1px;
+  background: #222222;
+  padding: 3px;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 QScrollBar::add-page, QScrollBar::sub-page {
-  min-width: 15px;
-  min-height: 15px;
-  border: 2px;
-  background-color: #1A1A1A;
-  border-radius: 3px;
+  background: none;
 }
 QScrollBar::handle:horizontal {
   min-width: 25px;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #085172, stop:1 #042E41);
+  background: #5F5F5F;
   border-radius: 3px;
-  border: 1px solid #085172;
+  border: none;
 }
 QScrollBar::handle:vertical {
   min-height: 25px;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #085172, stop:1 #042E41);
+  background: #5F5F5F;
   border-radius: 3px;
-  border: 1px solid #085172;
+  border: none;
 }
+QScrollBar::handle:horizontal:hover, QScrollBar::handle:vertical:hover {
+  background: #B3B3B3;
+}
+
 /* Turn off buttons */
 QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
   width: 0px;
   height: 0px;
-  border: 0px solid white;
+  border: none;
 }
 QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
-  border: 0px solid white;
+  border: none;
 }
 
 /*******************************************************************************
@@ -535,17 +533,17 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   font: 12px/14px;
   background-color: none;
   text-align: left;
-  margin: 0.5em 0.5em 0.5em 0.5em;
+  margin: 0.5em;
 }
 
-#SkinSettings WPushButton {
+#SkinSettings > #h3 WPushButton {
   font: 12px/14px;
   background-color: none;
   text-transform: none;
   border: none;
 }
 
-#SkinSettings WPushButton:hover {
+#SkinSettings > #h3 WPushButton:hover {
   background: #222222;
 }
 
