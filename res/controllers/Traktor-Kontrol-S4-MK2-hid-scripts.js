@@ -33,64 +33,66 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort = new HIDPacket("shortmessage", [0x01], 21, this.shortMessageCallback);
   MessageLong = new HIDPacket("longmessage", [0x02], 79, this.longMessageCallback);
 
+  //Output1 = new HIDPacket("output1", [0x80], 53);
+
   // Values in the short message are all buttons, except the jog wheels.
   // An exclamation point indicates a specially-handled function.  Everything else is a standard
   // Mixxx control object name.
-  MessageShort.addControl("buttons_left", "!shift", 0x0D, "B", 0x08);
-  MessageShort.addControl("buttons_left", "sync_enabled", 0x0D, "B", 0x04);
-  MessageShort.addControl("buttons_left", "cue_default", 0x0D, "B", 0x02);
-  MessageShort.addControl("buttons_left", "play", 0x0D, "B", 0x01);
-  MessageShort.addControl("buttons_left", "hotcue_1_activate", 0x0D, "B", 0x80);
-  MessageShort.addControl("buttons_left", "hotcue_2_activate", 0x0D, "B", 0x40);
-  MessageShort.addControl("buttons_left", "hotcue_3_activate", 0x0D, "B", 0x20);
-  MessageShort.addControl("buttons_left", "hotcue_4_activate", 0x0D, "B", 0x10);
-  MessageShort.addControl("buttons_left", "!play1", 0x0E, "B", 0x80);
-  MessageShort.addControl("buttons_left", "!play2", 0x0E, "B", 0x40);
-  MessageShort.addControl("buttons_left", "!play3", 0x0E, "B", 0x20);
-  MessageShort.addControl("buttons_left", "!play4", 0x0E, "B", 0x10);
-  MessageShort.addControl("buttons_left", "loop_out", 0x0E, "B", 0x08);
-  MessageShort.addControl("buttons_left", "loop_in", 0x0E, "B", 0x04);
-  MessageShort.addControl("buttons_left", "!flux", 0x0E, "B", 0x02);
-  MessageShort.addControl("buttons_left", "!reset", 0x0E, "B", 0x01);
-  MessageShort.addControl("buttons_left", "!loopsize", 0x13, "B", 0x02);
-  MessageShort.addControl("buttons_left", "!loopmove", 0x13, "B", 0x01);
-  MessageShort.addControl("buttons_left", "jog_touch", 0x11, "B", 0x01);
-  MessageShort.addControl("buttons_left", "jog_wheel", 0x01, "I");
-  MessageShort.addControl("buttons_left", "!deckswitch", 0x0F, "B", 0x20);
-  MessageShort.addControl("buttons_left", "LoadSelectedTrack", 0x0F, "B", 0x10);
-  MessageShort.addControl("buttons_left", "!FX1", 0x12, "B", 0x80);
-  MessageShort.addControl("buttons_left", "!FX2", 0x12, "B", 0x40);
-  MessageShort.addControl("buttons_left", "!FX3", 0x12, "B", 0x20);
-  MessageShort.addControl("buttons_left", "!FX4", 0x12, "B", 0x10);
-  MessageShort.addControl("buttons_left", "!FXMode", 0x11, "B", 0x08);
+  MessageShort.addControl("deck1", "!shift", 0x0D, "B", 0x08);
+  MessageShort.addControl("deck1", "sync_enabled", 0x0D, "B", 0x04);
+  MessageShort.addControl("deck1", "cue_default", 0x0D, "B", 0x02);
+  MessageShort.addControl("deck1", "play", 0x0D, "B", 0x01);
+  MessageShort.addControl("deck1", "hotcue_1_activate", 0x0D, "B", 0x80);
+  MessageShort.addControl("deck1", "hotcue_2_activate", 0x0D, "B", 0x40);
+  MessageShort.addControl("deck1", "hotcue_3_activate", 0x0D, "B", 0x20);
+  MessageShort.addControl("deck1", "hotcue_4_activate", 0x0D, "B", 0x10);
+  MessageShort.addControl("deck1", "!play1", 0x0E, "B", 0x80);
+  MessageShort.addControl("deck1", "!play2", 0x0E, "B", 0x40);
+  MessageShort.addControl("deck1", "!play3", 0x0E, "B", 0x20);
+  MessageShort.addControl("deck1", "!play4", 0x0E, "B", 0x10);
+  MessageShort.addControl("deck1", "loop_out", 0x0E, "B", 0x08);
+  MessageShort.addControl("deck1", "loop_in", 0x0E, "B", 0x04);
+  MessageShort.addControl("deck1", "!flux", 0x0E, "B", 0x02);
+  MessageShort.addControl("deck1", "!reset", 0x0E, "B", 0x01);
+  MessageShort.addControl("deck1", "!loopsize", 0x13, "B", 0x02);
+  MessageShort.addControl("deck1", "!loopmove", 0x13, "B", 0x01);
+  MessageShort.addControl("deck1", "jog_touch", 0x11, "B", 0x01);
+  MessageShort.addControl("deck1", "jog_wheel", 0x01, "I");
+  MessageShort.addControl("deck1", "!deckswitch", 0x0F, "B", 0x20);
+  MessageShort.addControl("deck1", "LoadSelectedTrack", 0x0F, "B", 0x10);
+  MessageShort.addControl("deck1", "!FX1", 0x12, "B", 0x80);
+  MessageShort.addControl("deck1", "!FX2", 0x12, "B", 0x40);
+  MessageShort.addControl("deck1", "!FX3", 0x12, "B", 0x20);
+  MessageShort.addControl("deck1", "!FX4", 0x12, "B", 0x10);
+  MessageShort.addControl("deck1", "!FXMode", 0x11, "B", 0x08);
 
-  MessageShort.addControl("buttons_right", "!shift", 0x0C, "B", 0x08);
-  MessageShort.addControl("buttons_right", "sync_enabled", 0x0C, "B", 0x04);
-  MessageShort.addControl("buttons_right", "cue_default", 0x0C, "B", 0x02);
-  MessageShort.addControl("buttons_right", "play", 0x0C, "B", 0x01);
-  MessageShort.addControl("buttons_right", "hotcue_1_activate", 0x0C, "B", 0x80);
-  MessageShort.addControl("buttons_right", "hotcue_2_activate", 0x0C, "B", 0x40);
-  MessageShort.addControl("buttons_right", "hotcue_3_activate", 0x0C, "B", 0x20);
-  MessageShort.addControl("buttons_right", "hotcue_4_activate", 0x0C, "B", 0x10);
-  MessageShort.addControl("buttons_right", "!play1", 0x0B, "B", 0x80);
-  MessageShort.addControl("buttons_right", "!play2", 0x0B, "B", 0x40);
-  MessageShort.addControl("buttons_right", "!play3", 0x0B, "B", 0x20);
-  MessageShort.addControl("buttons_right", "!play4", 0x0B, "B", 0x10);
-  MessageShort.addControl("buttons_right", "loop_out", 0x0B, "B", 0x08);
-  MessageShort.addControl("buttons_right", "loop_in", 0x0B, "B", 0x04);
-  MessageShort.addControl("buttons_right", "!flux", 0x0B, "B", 0x02);
-  MessageShort.addControl("buttons_right", "!reset", 0x0B, "B", 0x01);
-  MessageShort.addControl("buttons_right", "!loopsize", 0x13, "B", 0x10);
-  MessageShort.addControl("buttons_right", "!loopmove", 0x13, "B", 0x08);
-  MessageShort.addControl("buttons_right", "jog_touch", 0x11, "B", 0x02);
-  MessageShort.addControl("buttons_right", "jog_wheel", 0x05, "I");
-  MessageShort.addControl("buttons_right", "!deckswitch", 0x0A, "B", 0x20);
-  MessageShort.addControl("buttons_right", "LoadSelectedTrack", 0x0A, "B", 0x10);
-  MessageShort.addControl("buttons_right", "!FX1", 0x10, "B", 0x08);
-  MessageShort.addControl("buttons_right", "!FX2", 0x10, "B", 0x04);
-  MessageShort.addControl("buttons_right", "!FX3", 0x10, "B", 0x02);
-  MessageShort.addControl("buttons_right", "!FX4", 0x10, "B", 0x01);
-  MessageShort.addControl("buttons_right", "!FXMode", 0x11, "B", 0x04);
+  MessageShort.addControl("deck2", "!shift", 0x0C, "B", 0x08);
+  MessageShort.addControl("deck2", "sync_enabled", 0x0C, "B", 0x04);
+  MessageShort.addControl("deck2", "cue_default", 0x0C, "B", 0x02);
+  MessageShort.addControl("deck2", "play", 0x0C, "B", 0x01);
+  MessageShort.addControl("deck2", "hotcue_1_activate", 0x0C, "B", 0x80);
+  MessageShort.addControl("deck2", "hotcue_2_activate", 0x0C, "B", 0x40);
+  MessageShort.addControl("deck2", "hotcue_3_activate", 0x0C, "B", 0x20);
+  MessageShort.addControl("deck2", "hotcue_4_activate", 0x0C, "B", 0x10);
+  MessageShort.addControl("deck2", "!play1", 0x0B, "B", 0x80);
+  MessageShort.addControl("deck2", "!play2", 0x0B, "B", 0x40);
+  MessageShort.addControl("deck2", "!play3", 0x0B, "B", 0x20);
+  MessageShort.addControl("deck2", "!play4", 0x0B, "B", 0x10);
+  MessageShort.addControl("deck2", "loop_out", 0x0B, "B", 0x08);
+  MessageShort.addControl("deck2", "loop_in", 0x0B, "B", 0x04);
+  MessageShort.addControl("deck2", "!flux", 0x0B, "B", 0x02);
+  MessageShort.addControl("deck2", "!reset", 0x0B, "B", 0x01);
+  MessageShort.addControl("deck2", "!loopsize", 0x13, "B", 0x10);
+  MessageShort.addControl("deck2", "!loopmove", 0x13, "B", 0x08);
+  MessageShort.addControl("deck2", "jog_touch", 0x11, "B", 0x02);
+  MessageShort.addControl("deck2", "jog_wheel", 0x05, "I");
+  MessageShort.addControl("deck2", "!deckswitch", 0x0A, "B", 0x20);
+  MessageShort.addControl("deck2", "LoadSelectedTrack", 0x0A, "B", 0x10);
+  MessageShort.addControl("deck2", "!FX1", 0x10, "B", 0x08);
+  MessageShort.addControl("deck2", "!FX2", 0x10, "B", 0x04);
+  MessageShort.addControl("deck2", "!FX3", 0x10, "B", 0x02);
+  MessageShort.addControl("deck2", "!FX4", 0x10, "B", 0x01);
+  MessageShort.addControl("deck2", "!FXMode", 0x11, "B", 0x04);
 
   MessageShort.addControl("[Channel1]", "pfl", 0x0F, "B", 0x40);
   MessageShort.addControl("[EffectRack1_EffectUnit1]","group_[Channel1]_enable", 0x12, "B", 0x02);
@@ -116,15 +118,15 @@ TraktorS4MK2.registerInputPackets = function() {
 
   this.controller.setScaler("jog", this.scalerJog);
   this.controller.setScaler("jog_scratch", this.scalerScratch);
-  MessageShort.setCallback("buttons_left", "!deckswitch", this.deckSwitchHandler);
-  MessageShort.setCallback("buttons_right", "!deckswitch", this.deckSwitchHandler);
+  MessageShort.setCallback("deck1", "!deckswitch", this.deckSwitchHandler);
+  MessageShort.setCallback("deck2", "!deckswitch", this.deckSwitchHandler);
   // TODO: the rest of the "!" controls.
   this.controller.registerInputPacket(MessageShort);
 
   // Most items in the long message are controls that go from 0-4096.
   // There are also some 4 bit encoders.
-  MessageLong.addControl("buttons_left", "rate", 0x09, "H");
-  MessageLong.addControl("buttons_right", "rate", 0x0B, "H");
+  MessageLong.addControl("deck1", "rate", 0x09, "H");
+  MessageLong.addControl("deck2", "rate", 0x0B, "H");
 
   MessageLong.addControl("[Channel1]", "volume", 0x37, "H");
   MessageLong.addControl("[QuickEffectRack1_[Channel1]]", "super1", 0x1D, "H");
@@ -173,14 +175,74 @@ TraktorS4MK2.registerInputPackets = function() {
   this.controller.setScaler("crossfader", this.scalerSlider);
   this.controller.setScaler("rate", this.scalerSlider);
   this.controller.registerInputPacket(MessageLong);
+
+  //TraktorS4MK2.controller.switchDeck(1);
+  //TraktorS4MK2.controller.switchDeck(2);
 }
 
 TraktorS4MK2.init = function(id) {
   // initial lights setup etc?
   TraktorS4MK2.registerInputPackets()
+  //var data_strings = ["80 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0A 0A 0A 0A 0A 0A 0A 0A 0A 00 7F 00 00 00 00 0A 0A 0A 0A 0A 0A",
+  //                    "81 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 7F 0A 0A 0A 0A 0A 7F 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A",
+  //                    "82 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 00 00 7F 7F 7F 7F 7F 7F 00 00 7F 7F 7F 7F 7F 00 00 00 7F 7F 7F 7F 7F 7F 00 00 7F 7F 7F 7F 7F 00 00 00"];
+  //                   00 01 02 03  04 05 06 07  08 09 0A 0B  0C 0D 0E 0F
+  var data_strings = ["80 00 00 00  00 00 00 00  0A 00 00 00  00 00 00 00  \n" +
+                      "0A 00 00 00  00 00 00 00  0A 00 00 00  00 00 00 00  \n" +
+                      "0A 0A 0A 0A  0A 0A 0A 0A  0A 00 7F 00  00 00 00 0A  \n" +
+                      "0A 0A 0A 0A  0A",
+                      "81 00 00 7F  7F 03 7F 0B  03 7F 0B 03  7F 0B 03 7F  \n" +
+                      "0B 03 7F 0B  03 00 7f 03  7F 0A 0A 0A  00 7f 0A 0A  \n" +
+                      "00 7f 0A 0A  0A 0A 0A 0A  7F 0A 0a 0A  0a 0a 7f 0a  \n" +
+                      "0a 0a 0a 0a  7F 0A 0A 0A  0a 0a 0a 0a  0a 0a 0a",
+                      "82 0a 0A 0A  0a 0a 0a 0A  0A 0A 0A 0A  0a 0a 0A 0A  \n" +
+                      "0a 0a 0a 0a  0a 0a 0a 0a  0A 0A 0a 0a  00 00 00 00  \n" +
+                      "7f 00 00 7f  00 7F 7F 7F  7F 7F 7f 7f  00 7F 7F 7F  \n" +
+                      "7F 7F 7F 00  00 7F 7F 7F  7F 7F 00 7f  00"];
+  var data = [Object(), Object(), Object()];
+
+  HIDDebug("here2");
+
+  for (i = 0; i < 3; i++) {
+    var ok = true;
+    var splitted = data_strings[i].split(/\s+/);
+    HIDDebug("i" + i + " " + splitted);
+    data[i].length = splitted.length;
+    for (j = 0; j < splitted.length; j++) {
+      var byte_str = splitted[j];
+      if (byte_str.length !== 2) {
+        ok = false;
+        HIDDebug("not two characters?? " + byte_str);
+      }
+      var b = parseInt(byte_str, 16);
+      if (b < 0 || b > 255) {
+        ok = false;
+        HIDDebug("number out of range: " + byte_str + " " + b);
+      }
+      data[i][j] = b;
+    }
+    if (ok) {
+      HIDDebug("so what the length? " + data[i].length);
+      controller.send(data[i], data[i].length, 0);
+    }
+  }
+
+  HIDDebug("done init");
 }
 
 TraktorS4MK2.shutdown = function() {
+  var packet_lengths = [53, 63, 61];
+  for (i = 0; i < packet_lengths.length; i++) {
+    var packet_length = packet_lengths[i];
+    HIDDebug("length? " + packet_length);
+    var data = Object();
+    data.length = packet_length;
+    data[0] = 0x80 + i;
+    for (j = 1; j < packet_length; j++) {
+      data[j] = 0;
+    }
+    controller.send(data, packet_length, 0);
+  }
 }
 
 // Mandatory function to receive anything from HID
@@ -249,7 +311,7 @@ TraktorS4MK2.longMessageCallback = function(packet, data) {
   }
 }
 
-// Utility function for converting mappings like "buttons_left.play" into "[ChannelX].play" based
+// Utility function for converting mappings like "deck1.play" into "[ChannelX].play" based
 // on the state of the deck switches.
 TraktorS4MK2.getGroupFromButton = function(name) {
   //HIDDebug("deckswitch status " + this.controller.left_deck_C + " " + this.controller.right_deck_D);
@@ -261,13 +323,13 @@ TraktorS4MK2.getGroupFromButton = function(name) {
 
   if (splitted[0][0] === "[") {
     return splitted[0];
-  } else if (splitted[0] === "buttons_left") {
+  } else if (splitted[0] === "deck1") {
     if (TraktorS4MK2.controller.left_deck_C) {
       return "[Channel3]";
     } else {
       return "[Channel1]";
     }
-  } else if (splitted[0] === "buttons_right") {
+  } else if (splitted[0] === "deck2") {
     if (TraktorS4MK2.controller.right_deck_D) {
       return "[Channel4]";
     } else {
