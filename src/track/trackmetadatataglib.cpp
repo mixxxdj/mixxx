@@ -614,6 +614,19 @@ void writeMP4Atom(TagLib::MP4::Tag* pTag, const TagLib::String& key,
     }
 }
 
+void writeXiphCommentField(
+        TagLib::Ogg::XiphComment* pTag,
+        const TagLib::String& key,
+        const TagLib::String& str) {
+    if (str.isEmpty()) {
+        // Purge empty fields
+        pTag->removeField(key);
+    } else {
+        const bool replace = true;
+        pTag->addField(key, str, replace);
+    }
+}
+
 } // anonymous namespace
 
 void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
@@ -1024,39 +1037,30 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     // Taglib does not support the update of Vorbis comments.
     // thus, we have to remove the old comment and add the new one
 
-    pTag->removeField("ALBUMARTIST");
-    pTag->addField("ALBUMARTIST",
+    writeXiphCommentField(pTag, "ALBUMARTIST",
             toTagLibString(trackMetadata.getAlbumArtist()));
+    writeXiphCommentField(pTag, "COMPOSER",
+            toTagLibString(trackMetadata.getComposer()));
+    writeXiphCommentField(pTag, "GROUPING",
+            toTagLibString(trackMetadata.getGrouping()));
+    writeXiphCommentField(pTag, "DATE",
+            toTagLibString(trackMetadata.getYear()));
 
-    pTag->removeField("COMPOSER");
-    pTag->addField("COMPOSER", toTagLibString(trackMetadata.getComposer()));
+    // Write both BPM and TEMPO
+    const TagLib::String bpm(
+            toTagLibString(formatBpm(trackMetadata)));
+    writeXiphCommentField(pTag, "BPM", bpm);
+    writeXiphCommentField(pTag, "TEMPO", bpm);
 
-    pTag->removeField("GROUPING");
-    pTag->addField("GROUPING", toTagLibString(trackMetadata.getGrouping()));
+    // Write both INITIALKEY and KEY
+    const TagLib::String key(
+            toTagLibString(trackMetadata.getKey()));
+    writeXiphCommentField(pTag, "INITIALKEY", key);
+    writeXiphCommentField(pTag, "KEY", key);
 
-    pTag->removeField("DATE");
-    pTag->addField("DATE", toTagLibString(trackMetadata.getYear()));
-
-    // Some tools use "BPM" so write that.
-    if (trackMetadata.getBpm().hasValue()) {
-        const TagLib::String bpm(
-                toTagLibString(formatBpm(trackMetadata)));
-        pTag->addField("BPM", bpm);
-        pTag->addField("TEMPO", bpm);
-    } else {
-        pTag->removeField("BPM");
-        pTag->removeField("TEMPO");
-    }
-
-    pTag->addField("INITIALKEY", toTagLibString(trackMetadata.getKey()));
-    pTag->removeField("KEY");
-    pTag->addField("KEY", toTagLibString(trackMetadata.getKey()));
-
-    pTag->removeField("REPLAYGAIN_TRACK_GAIN");
-    pTag->addField("REPLAYGAIN_TRACK_GAIN",
+    writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_GAIN",
             toTagLibString(formatTrackGain(trackMetadata)));
-    pTag->removeField("REPLAYGAIN_TRACK_PEAK");
-    pTag->addField("REPLAYGAIN_TRACK_PEAK",
+    writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_PEAK",
             toTagLibString(formatTrackPeak(trackMetadata)));
 
     return true;
