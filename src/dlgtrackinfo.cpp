@@ -160,7 +160,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtBpm->setText(pTrack->getBpmStr());
     txtKey->setText(pTrack->getKeyText());
     BeatsPointer pBeats = pTrack->getBeats();
-    bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
+    bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM);
     bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
     spinBpm->setEnabled(enableBpmEditing);
     bpmTap->setEnabled(enableBpmEditing);
@@ -444,19 +444,19 @@ void DlgTrackInfo::clear() {
 }
 
 void DlgTrackInfo::slotBpmDouble() {
-    spinBpm->setValue(spinBpm->value() * 2.0);
+    spinBpm->setValue(spinBpm->value() * 2);
 }
 
 void DlgTrackInfo::slotBpmHalve() {
-    spinBpm->setValue(spinBpm->value() / 2.0);
+    spinBpm->setValue(spinBpm->value() / 2);
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    spinBpm->setValue(spinBpm->value() * (2./3.));
+    spinBpm->setValue(spinBpm->value() * 2 / 3);
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    spinBpm->setValue(spinBpm->value() * (3./4.));
+    spinBpm->setValue(spinBpm->value() * 3 / 4);
 }
 
 void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {

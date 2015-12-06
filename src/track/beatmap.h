@@ -40,7 +40,7 @@ class BeatMap : public QObject, public Beats {
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
-                BEATSCAP_MOVEBEAT | BEATSCAP_SET;
+                BEATSCAP_MOVEBEAT;
     }
 
     virtual QByteArray* toByteArray() const;

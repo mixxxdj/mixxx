@@ -30,7 +30,7 @@ class Beats {
         BEATSCAP_TRANSLATE     = 0x0002, // Move all beat markers earlier or later
         BEATSCAP_SCALE         = 0x0004, // Scale beat distance of all beats
         BEATSCAP_MOVEBEAT      = 0x0008, // Move a single Beat
-        BEATSCAP_SET           = 0x0010  // Set new bpm, requires BEATSCAP_SCALE
+        BEATSCAP_SETBPM        = 0x0010  // Set new bpm, requires BEATSCAP_SCALE
     };
     typedef int CapabilitiesFlags; // Allows us to do ORing
 

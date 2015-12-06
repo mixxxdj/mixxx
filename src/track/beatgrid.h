@@ -33,7 +33,7 @@ class BeatGrid : public QObject, public virtual Beats {
     // comments in beats.h
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SET;
+        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SETBPM;
     }
 
     virtual QByteArray* toByteArray() const;
