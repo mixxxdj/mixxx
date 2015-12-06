@@ -612,6 +612,19 @@ void writeMP4Atom(
     }
 }
 
+void writeAPEItem(
+        TagLib::APE::Tag* pTag,
+        const TagLib::String& key,
+        const TagLib::String& str) {
+    if (str.isEmpty()) {
+        // Purge empty items
+        pTag->removeItem(key);
+    } else {
+        const bool replace = true;
+        pTag->addValue(key, str, replace);
+    }
+}
+
 void writeXiphCommentField(
         TagLib::Ogg::XiphComment* pTag,
         const TagLib::String& key,
@@ -1002,24 +1015,20 @@ bool writeTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& t
 
     writeTrackMetadataIntoTag(pTag, trackMetadata);
 
-    pTag->addValue("Album Artist",
-            toTagLibString(trackMetadata.getAlbumArtist()), true);
-    pTag->addValue("Composer",
-            toTagLibString(trackMetadata.getComposer()), true);
-    pTag->addValue("Grouping",
-            toTagLibString(trackMetadata.getGrouping()), true);
-    pTag->addValue("Year",
-            toTagLibString(trackMetadata.getYear()), true);
-    if (trackMetadata.getBpm().hasValue()) {
-        pTag->addValue("BPM",
-                toTagLibString(formatBpm(trackMetadata)), true);
-    } else {
-        pTag->removeItem("BPM");
-    }
-    pTag->addValue("REPLAYGAIN_TRACK_GAIN",
-            toTagLibString(formatTrackGain(trackMetadata)), true);
-    pTag->addValue("REPLAYGAIN_TRACK_PEAK",
-            toTagLibString(formatTrackPeak(trackMetadata)), true);
+    writeAPEItem(pTag, "Album Artist",
+            toTagLibString(trackMetadata.getAlbumArtist()));
+    writeAPEItem(pTag, "Composer",
+            toTagLibString(trackMetadata.getComposer()));
+    writeAPEItem(pTag, "Grouping",
+            toTagLibString(trackMetadata.getGrouping()));
+    writeAPEItem(pTag, "Year",
+            toTagLibString(trackMetadata.getYear()));
+    writeAPEItem(pTag, "BPM",
+            toTagLibString(formatBpm(trackMetadata)));
+    writeAPEItem(pTag, "REPLAYGAIN_TRACK_GAIN",
+            toTagLibString(formatTrackGain(trackMetadata)));
+    writeAPEItem(pTag, "REPLAYGAIN_TRACK_PEAK",
+            toTagLibString(formatTrackPeak(trackMetadata)));
 
     return true;
 }
