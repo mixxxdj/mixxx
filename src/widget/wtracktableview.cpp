@@ -1534,15 +1534,15 @@ void WTrackTableView::slotScaleBpm(int scale) {
         return;
     }
 
-    double scalingFactor=1;
+    double scalingFactor = 1.0;
     if (scale == DOUBLE)
-        scalingFactor = 2;
+        scalingFactor = 2.0;
     else if (scale == HALVE)
-        scalingFactor = 0.5;
+        scalingFactor = 1.0 / 2;
     else if (scale == TWOTHIRDS)
-        scalingFactor = 2./3.;
+        scalingFactor = 2.0 / 3;
     else if (scale == THREEFOURTHS)
-        scalingFactor = 3./4.;
+        scalingFactor = 3.0 / 4;
 
     QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {

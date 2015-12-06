@@ -26,11 +26,11 @@ class Beats {
 
     enum Capabilities {
         BEATSCAP_NONE          = 0x0000,
-        BEATSCAP_ADDREMOVE     = 0x0001,
-        BEATSCAP_TRANSLATE     = 0x0002,
-        BEATSCAP_SCALE         = 0x0004,
-        BEATSCAP_MOVEBEAT      = 0x0008,
-        BEATSCAP_SET           = 0x0010
+        BEATSCAP_ADDREMOVE     = 0x0001, // Add or remove a single beat
+        BEATSCAP_TRANSLATE     = 0x0002, // Move all beat markers earlier or later
+        BEATSCAP_SCALE         = 0x0004, // Scale beat distance of all beats
+        BEATSCAP_MOVEBEAT      = 0x0008, // Move a single Beat
+        BEATSCAP_SET           = 0x0010  // Set new bpm, requires BEATSCAP_SCALE
     };
     typedef int CapabilitiesFlags; // Allows us to do ORing
 
