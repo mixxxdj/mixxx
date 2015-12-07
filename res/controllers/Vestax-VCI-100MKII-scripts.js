@@ -157,10 +157,9 @@ VCI102.rateLSB = function(ch, midino, value, status, group) {
 VCI102.rateQuantizedLSB = function(ch, midino, value, status, group) {
     // not change "bpm" direct but by "rate" to go through soft takeover
     var bpm = engine.getValue(group, "file_bpm");
-    var range = engine.getValue(group, "rateRange") * bpm;
-    engine.setValue(
-        group, "rate",
-        (Math.round(VCI102.rate(ch, value) * range + bpm) - bpm) / range);
+    var range = engine.getValue(group, "rateRange");
+    engine.setValue(group, "rate", (Math.round(
+        (VCI102.rate(ch, value) * range + 1) * bpm) / bpm - 1) / range);
 };
 
 VCI102.pitch = function(ch, midino, value, status, group) {
