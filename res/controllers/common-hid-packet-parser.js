@@ -669,7 +669,7 @@ HIDPacket.prototype.send = function() {
       }
       packet_string += packet.data[d].toString(16) + " ";
     }
-    HIDDebug("packet: " + packet_string);
+    //HIDDebug("packet: " + packet_string);
     controller.send(packet.data, packet.length, 0);
 }
 
@@ -733,7 +733,7 @@ function HIDController () {
     // Output color values to send
     this.LEDColors = {off: 0x0, on: 0x7f};
     // Toggle buttons
-    this.toggleButtons = [ "play", "pfl", "keylock", "quantize", "reverse" ];
+    this.toggleButtons = [ "play", "pfl", "keylock", "quantize", "reverse", "slip_enabled" ];
 
     // Override to set specific colors for multicolor button Output per deck
     this.deckOutputColors = {1: "on", 2: "on", 3: "on", 4: "on"};
@@ -1496,7 +1496,7 @@ HIDController.prototype.unlinkOutput = function(group,name,callback) {
 
 // Set output state to given value
 HIDController.prototype.setOutput = function(group,name,value,send_packet) {
-    HIDDebug("set output " + group + " " + name + " " + value + " " + send_packet);
+    //HIDDebug("set output " + group + " " + name + " " + value + " " + send_packet);
     var field = this.getOutputField(group,name);
     if (field==undefined) {
         HIDDebug("setOutput: unknown field: " + group+"."+name);
@@ -1504,7 +1504,7 @@ HIDController.prototype.setOutput = function(group,name,value,send_packet) {
     }
     field.value = value<<field.bit_offset;
     field.toggle = value<<field.bit_offset;
-    HIDDebug("vals " + field.value + " " + field.toggle);
+    //HIDDebug("vals " + field.value + " " + field.toggle);
     if (send_packet)
         field.packet.send();
 }
