@@ -373,13 +373,6 @@ void readCoverArtFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
     }
 }
 
-void replaceID3v2Frame(TagLib::ID3v2::Tag* pTag, TagLib::ID3v2::Frame* pFrame) {
-    DEBUG_ASSERT(pTag);
-
-    pTag->removeFrames(pFrame->frameID());
-    pTag->addFrame(pFrame);
-}
-
 TagLib::String::Type getID3v2StringType(const TagLib::ID3v2::Tag& tag, bool isNumericOrURL = false) {
     TagLib::String::Type stringType;
     // For an overview of the character encodings supported by
@@ -487,16 +480,20 @@ void writeID3v2TextIdentificationFrame(
         bool isNumericOrURL = false) {
     DEBUG_ASSERT(pTag);
 
-    const TagLib::String::Type stringType =
-            getID3v2StringType(*pTag, isNumericOrURL);
-    auto pFrame =
-            std::make_unique<TagLib::ID3v2::TextIdentificationFrame>(id, stringType);
-    pFrame->setText(toTagLibString(text));
-    replaceID3v2Frame(pTag, pFrame.get());
-    // Now the plain pointer in pFrame is owned and managed
-    // by pTag. We need to release the ownership to avoid
-    // double deletion!
-    pFrame.release();
+    // Remove all existing frames before adding a new one
+    pTag->removeFrames(id);
+    if (!text.isEmpty()) {
+        // Only add non-empty frames
+        const TagLib::String::Type stringType =
+                getID3v2StringType(*pTag, isNumericOrURL);
+        auto pFrame =
+                std::make_unique<TagLib::ID3v2::TextIdentificationFrame>(id, stringType);
+        pFrame->setText(toTagLibString(text));
+        pTag->addFrame(pFrame.get());
+        // Now that the plain pointer in pFrame is owned and managed by
+        // pTag we need to release the ownership to avoid double deletion!
+        pFrame.release();
+    }
 }
 
 void writeID3v2CommentsFrame(
@@ -508,21 +505,27 @@ void writeID3v2CommentsFrame(
             findFirstCommentsFrame(*pTag, description);
     if (nullptr != pFrame) {
         // Modify existing frame
-        pFrame->setDescription(toTagLibString(description));
-        pFrame->setText(toTagLibString(text));
+        if (text.isEmpty()) {
+            // Purge empty frames
+            pTag->removeFrame(pFrame);
+        } else {
+            pFrame->setDescription(toTagLibString(description));
+            pFrame->setText(toTagLibString(text));
+        }
     } else {
-        // Add a new frame
-        const TagLib::String::Type stringType =
-                getID3v2StringType(*pTag, isNumericOrURL);
-        auto pFrame =
-                std::make_unique<TagLib::ID3v2::CommentsFrame>(stringType);
-        pFrame->setDescription(toTagLibString(description));
-        pFrame->setText(toTagLibString(text));
-        pTag->addFrame(pFrame.get());
-        // Now the plain pointer in pFrame is owned and managed
-        // by pTag. We need to release the ownership to avoid
-        // double deletion!
-        pFrame.release();
+        // Add a new (non-empty) frame
+        if (!text.isEmpty()) {
+            const TagLib::String::Type stringType =
+                    getID3v2StringType(*pTag, isNumericOrURL);
+            auto pFrame =
+                    std::make_unique<TagLib::ID3v2::CommentsFrame>(stringType);
+            pFrame->setDescription(toTagLibString(description));
+            pFrame->setText(toTagLibString(text));
+            pTag->addFrame(pFrame.get());
+            // Now that the plain pointer in pFrame is owned and managed by
+            // pTag we need to release the ownership to avoid double deletion!
+            pFrame.release();
+        }
     }
 }
 
@@ -535,21 +538,27 @@ void writeID3v2UserTextIdentificationFrame(
             findFirstUserTextIdentificationFrame(*pTag, description);
     if (nullptr != pFrame) {
         // Modify existing frame
-        pFrame->setDescription(toTagLibString(description));
-        pFrame->setText(toTagLibString(text));
+        if (text.isEmpty()) {
+            // Purge empty frames
+            pTag->removeFrame(pFrame);
+        } else {
+            pFrame->setDescription(toTagLibString(description));
+            pFrame->setText(toTagLibString(text));
+        }
     } else {
-        // Add a new frame
-        const TagLib::String::Type stringType =
-                getID3v2StringType(*pTag, isNumericOrURL);
-        auto pFrame =
-                std::make_unique<TagLib::ID3v2::UserTextIdentificationFrame>(stringType);
-        pFrame->setDescription(toTagLibString(description));
-        pFrame->setText(toTagLibString(text));
-        pTag->addFrame(pFrame.get());
-        // Now the plain pointer in pFrame is owned and managed
-        // by pTag. We need to release the ownership to avoid
-        // double deletion!
-        pFrame.release();
+        // Add a new (non-empty) frame
+        if (!text.isEmpty()) {
+            const TagLib::String::Type stringType =
+                    getID3v2StringType(*pTag, isNumericOrURL);
+            auto pFrame =
+                    std::make_unique<TagLib::ID3v2::UserTextIdentificationFrame>(stringType);
+            pFrame->setDescription(toTagLibString(description));
+            pFrame->setText(toTagLibString(text));
+            pTag->addFrame(pFrame.get());
+            // Now that the plain pointer in pFrame is owned and managed by
+            // pTag we need to release the ownership to avoid double deletion!
+            pFrame.release();
+        }
     }
 }
 
