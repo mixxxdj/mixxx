@@ -90,6 +90,17 @@ void BeatMap::initialize(TrackPointer pTrack, int iSampleRate) {
     }
 }
 
+BeatMap::BeatMap (const BeatMap& other)
+        : QObject(),
+          m_mutex(QMutex::Recursive) {
+    m_iSampleRate = other.m_iSampleRate;
+    m_dCachedBpm = other.m_dCachedBpm;
+    m_dLastFrame = other.m_dLastFrame;
+    moveToThread(other.thread());
+    m_subVersion = other.m_subVersion;
+    m_beats = other.m_beats;
+}
+
 BeatMap::~BeatMap() {
 }
 
@@ -107,6 +118,12 @@ QByteArray* BeatMap::toByteArray() const {
     map.SerializeToString(&output);
     QByteArray* pByteArray = new QByteArray(output.data(), output.length());
     return pByteArray;
+}
+
+BeatsPointer BeatMap::clone() const {
+    QMutexLocker locker(&m_mutex);
+    BeatsPointer other(new BeatMap(*this));
+    return other;
 }
 
 void BeatMap::readByteArray(const QByteArray* pByteArray) {

@@ -52,6 +52,16 @@ BeatGrid::BeatGrid(TrackInfoObject* pTrack, int iSampleRate,
     }
 }
 
+BeatGrid::BeatGrid(const BeatGrid& other)
+        : QObject(),
+          m_mutex(QMutex::Recursive) {
+    m_iSampleRate = other.m_iSampleRate;
+    m_dBeatLength = other.m_dBeatLength;
+    moveToThread(other.thread());
+    m_subVersion = other.m_subVersion;
+    m_grid = other.m_grid;
+}
+
 BeatGrid::~BeatGrid() {
 }
 
@@ -74,6 +84,12 @@ QByteArray* BeatGrid::toByteArray() const {
     QByteArray* pByteArray = new QByteArray(output.data(), output.length());
     // Caller is responsible for delete
     return pByteArray;
+}
+
+BeatsPointer BeatGrid::clone() const {
+    QMutexLocker locker(&m_mutex);
+    BeatsPointer other(new BeatGrid(*this));
+    return other;
 }
 
 void BeatGrid::readByteArray(const QByteArray* pByteArray) {

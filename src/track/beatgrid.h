@@ -37,6 +37,7 @@ class BeatGrid : public QObject, public virtual Beats {
     }
 
     virtual QByteArray* toByteArray() const;
+    virtual BeatsPointer clone() const;
     virtual QString getVersion() const;
     virtual QString getSubVersion() const;
     virtual void setSubVersion(QString subVersion);
@@ -73,6 +74,7 @@ class BeatGrid : public QObject, public virtual Beats {
     void updated();
 
   private:
+    BeatGrid(const BeatGrid& other);
     double firstBeatSample() const;
     double bpm() const;
 

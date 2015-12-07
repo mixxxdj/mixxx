@@ -34,6 +34,7 @@ class BeatMap : public QObject, public Beats {
     // in audio frames may be provided.
     BeatMap(TrackPointer pTrack, int iSampleRate,
             const QVector<double>& beats);
+
     virtual ~BeatMap();
 
     // See method comments in beats.h
@@ -44,6 +45,7 @@ class BeatMap : public QObject, public Beats {
     }
 
     virtual QByteArray* toByteArray() const;
+    BeatsPointer clone() const;
     virtual QString getVersion() const;
     virtual QString getSubVersion() const;
     virtual void setSubVersion(QString subVersion);
@@ -81,6 +83,7 @@ class BeatMap : public QObject, public Beats {
     void updated();
 
   private:
+    BeatMap (const BeatMap& other);
     void initialize(TrackPointer pTrack, int iSampleRate);
     void readByteArray(const QByteArray* pByteArray);
     void createFromBeatVector(const QVector<double>& beats);
