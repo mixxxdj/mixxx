@@ -599,18 +599,16 @@ void writeTrackMetadataIntoTag(
     }
 }
 
-template<typename T>
-inline void writeMP4Atom(TagLib::MP4::Tag* pTag, const TagLib::String& key,
-        const T& value) {
-    pTag->itemListMap()[key] = value;
-}
-
-void writeMP4Atom(TagLib::MP4::Tag* pTag, const TagLib::String& key,
-        const QString& value) {
-    if (value.isEmpty()) {
+void writeMP4Atom(
+        TagLib::MP4::Tag* pTag,
+        const TagLib::String& key,
+        const QString& str) {
+    if (str.isEmpty()) {
+        // Purge empty atoms
         pTag->itemListMap().erase(key);
     } else {
-        writeMP4Atom(pTag, key, TagLib::StringList(toTagLibString(value)));
+        TagLib::StringList strList(toTagLibString(str));
+        pTag->itemListMap()[key] = std::move(strList);
     }
 }
 
