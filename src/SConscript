@@ -176,11 +176,11 @@ if test_bin is not None:
         binary_files.append(test_bin)
         if bundle_pdbs:
                 binary_files.append(
-                        Glob(os.path.join(build.build_dir, 'mixxx-test.pdb'))
+                        Glob(os.path.join(build.build_dir, 'mixxx-test.pdb')))
 
 if bundle_pdbs:
         binary_files.append(
-                Glob(os.path.join(build.build_dir, 'mixxx.pdb'))
+                Glob(os.path.join(build.build_dir, 'mixxx.pdb')))
 
 #Soundsource plugins
 soundsource_plugin_files = soundsource_plugins
