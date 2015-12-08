@@ -522,6 +522,8 @@ TraktorS4MK2.init = function(id) {
 }
 
 TraktorS4MK2.shutdown = function() {
+  // Why do the deck lights stay on?
+
   var packet_lengths = [53, 63, 61];
   for (i = 0; i < packet_lengths.length; i++) {
     var packet_length = packet_lengths[i];
@@ -533,7 +535,7 @@ TraktorS4MK2.shutdown = function() {
     }
     controller.send(data, packet_length, 0);
   }
-  // Key USB light on though.
+  // Keep USB light on though.
   TraktorS4MK2.controller.setOutput("[Master]", "!usblight", 0x7F, true);
 }
 
