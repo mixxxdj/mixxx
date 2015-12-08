@@ -52,9 +52,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     TrackId getTrackId(const QModelIndex& index) const;
     const QLinkedList<int> getTrackRows(TrackId trackId) const;
     void search(const QString& searchText,const QString& extraFilter=QString());
-    void removeTrack(const QModelIndex& index);
     void removeTracks(const QModelIndexList& indices);
-    bool addTrack(const QModelIndex& index, QString location);
     QMimeData* mimeData(const QModelIndexList &indexes) const;
     const QString currentSearch() const;
     bool isColumnInternal(int);
@@ -73,8 +71,6 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     void trackLoaded(QString group, TrackPointer pTrack);
 
   private:
-    void removeTracks(QStringList trackLocations);
-
     void addSearchColumn(int index);
     bool isTrackInUse(const QString& file) const;
     QList<int> m_searchColumns;
