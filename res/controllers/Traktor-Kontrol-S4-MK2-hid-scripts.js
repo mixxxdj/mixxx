@@ -1,7 +1,6 @@
 // TODO:
 // (loop size readout :()
 // snap / master / quant buttons?
-// scratch handoff like in vestax
 
 TraktorS4MK2 = new function() {
   this.controller = new HIDController();
@@ -22,6 +21,10 @@ TraktorS4MK2 = new function() {
                                    "deck2" : 0};
   this.controller.shift_pressed = {"deck1" : false,
                                    "deck2" : false};
+  this.controller.wheelTouchInertiaTimer = {"[Channel1]" : 0,
+                                            "[Channel2]" : 0,
+                                            "[Channel3]" : 0,
+                                            "[Channel4]" : 0};
 
   // last tick times for the left and right wheels.
   this.controller.last_tick_val = [0, 0];
@@ -62,8 +65,8 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "!reset", 0x0E, "B", 0x01);
   MessageShort.addControl("deck1", "beatloop_8_activate", 0x13, "B", 0x02);
   MessageShort.addControl("deck1", "reloop_exit", 0x13, "B", 0x01);
-  MessageShort.addControl("deck1", "jog_touch", 0x11, "B", 0x01);
-  MessageShort.addControl("deck1", "jog_wheel", 0x01, "I");
+  MessageShort.addControl("deck1", "!jog_touch", 0x11, "B", 0x01);
+  MessageShort.addControl("deck1", "!jog_wheel", 0x01, "I");
   MessageShort.addControl("deck1", "!deckswitch", 0x0F, "B", 0x20);
   MessageShort.addControl("deck1", "LoadSelectedTrack", 0x0F, "B", 0x10);
   MessageShort.addControl("deck1", "!FX1", 0x12, "B", 0x80);
@@ -90,8 +93,8 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "!reset", 0x0B, "B", 0x01);
   MessageShort.addControl("deck2", "beatloop_8_activate", 0x13, "B", 0x10);
   MessageShort.addControl("deck2", "reloop_exit", 0x13, "B", 0x08);
-  MessageShort.addControl("deck2", "jog_touch", 0x11, "B", 0x02);
-  MessageShort.addControl("deck2", "jog_wheel", 0x05, "I");
+  MessageShort.addControl("deck2", "!jog_touch", 0x11, "B", 0x02);
+  MessageShort.addControl("deck2", "!jog_wheel", 0x05, "I");
   MessageShort.addControl("deck2", "!deckswitch", 0x0A, "B", 0x20);
   MessageShort.addControl("deck2", "LoadSelectedTrack", 0x0A, "B", 0x10);
   MessageShort.addControl("deck2", "!FX1", 0x10, "B", 0x08);
@@ -123,8 +126,6 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("[Playlist]", "LoadSelectedIntoFirstStopped", 0x13, "B", 0x04);
   MessageShort.addControl("[PreviewDeck1]", "!previewdeck", 0x0F, "B", 0x01);
 
-  this.controller.setScaler("jog", this.scalerJog);
-  this.controller.setScaler("jog_scratch", this.scalerScratch);
   MessageShort.setCallback("deck1", "!shift", this.shiftHandler);
   MessageShort.setCallback("deck2", "!shift", this.shiftHandler);
   MessageShort.setCallback("deck1", "!cue_default", this.cueHandler);
@@ -135,6 +136,10 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.setCallback("deck2", "!deckswitch", this.deckSwitchHandler);
   MessageShort.setCallback("deck1", "!sync_enabled", this.syncEnabledHandler);
   MessageShort.setCallback("deck2", "!sync_enabled", this.syncEnabledHandler);
+  MessageShort.setCallback("deck1", "!jog_touch", this.jogTouchHandler);
+  MessageShort.setCallback("deck2", "!jog_touch", this.jogTouchHandler);
+  MessageShort.setCallback("deck1", "!jog_wheel", this.jogMoveHandler);
+  MessageShort.setCallback("deck2", "!jog_wheel", this.jogMoveHandler);
   MessageShort.setCallback("[PreviewDeck1]", "!previewdeck", this.previewDeckHandler);
   // TODO: the rest of the "!" controls.
   this.controller.registerInputPacket(MessageShort);
@@ -574,7 +579,7 @@ TraktorS4MK2.shortMessageCallback = function(packet, data) {
     // Rewrite group name from "buttons_X" to "[ChannelY]"
     group = TraktorS4MK2.getGroupFromButton(field.id);
     field.group = group;
-    if (field.name === "jog_wheel") {
+    if (field.name === "!jog_wheel") {
       TraktorS4MK2.controller.processControl(field);
       continue;
     }
@@ -734,6 +739,73 @@ TraktorS4MK2.previewDeckHandler = function(field) {
   //}
 }
 
+// Jog wheel touch code taken from VCI400.  It should be moved into common-hid-packet-parser.js
+TraktorS4MK2.jogTouchHandler = function(field) {
+  if (TraktorS4MK2.controller.wheelTouchInertiaTimer[field.group] != 0) {
+    // The wheel was touched again, reset the timer.
+    engine.stopTimer(TraktorS4MK2.controller.wheelTouchInertiaTimer[field.group]);
+    TraktorS4MK2.controller.wheelTouchInertiaTimer[field.group] = 0;
+  }
+  if (field.value !== 0) {
+    var deckNumber = TraktorS4MK2.controller.resolveDeck(group);
+    engine.scratchEnable(deckNumber, 1024, 33.3333, 0.125, 0.125/8, true);
+  } else {
+    // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
+    // Depending on how fast the platter was moving, lengthen the time we'll wait.
+    var scratchRate = Math.abs(engine.getValue(field.group, "scratch2"));
+    var inertiaTime = Math.pow(1.8, scratchRate) * 50;
+    if (inertiaTime < 100) {
+      // Just do it now.
+      TraktorS4MK2.finishJogTouch(field.group);
+    } else {
+      TraktorS4MK2.controller.wheelTouchInertiaTimer[field.group] = engine.beginTimer(
+          inertiaTime, "TraktorS4MK2.finishJogTouch(\"" + field.group + "\")", true);
+    }
+  }
+}
+
+TraktorS4MK2.finishJogTouch = function(group) {
+  TraktorS4MK2.controller.wheelTouchInertiaTimer[group] = 0;
+  var deckNumber = TraktorS4MK2.controller.resolveDeck(group);
+  // No vinyl button (yet)
+  /*if (this.vinylActive) {
+    // Vinyl button still being pressed, don't disable scratch mode yet.
+    this.wheelTouchInertiaTimer[group] = engine.beginTimer(
+        100, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishJogTouch()", true);
+    return;
+  }*/
+  var play = engine.getValue(group, "play");
+  if (play != 0) {
+    // If we are playing, just hand off to the engine.
+    engine.scratchDisable(deckNumber, true);
+  } else {
+    // If things are paused, there will be a non-smooth handoff between scratching and jogging.
+    // Instead, keep scratch on until the platter is not moving.
+    var scratchRate = Math.abs(engine.getValue(group, "scratch2"));
+    if (scratchRate < 0.01) {
+      // The platter is basically stopped, now we can disable scratch and hand off to jogging.
+      engine.scratchDisable(deckNumber, false);
+    } else {
+      // Check again soon.
+      TraktorS4MK2.controller.wheelTouchInertiaTimer[group] = engine.beginTimer(
+              100, "TraktorS4MK2.finishJogTouch(\"" + group + "\")", true);
+    }
+  }
+}
+
+TraktorS4MK2.jogMoveHandler = function(field) {
+  var deltas = TraktorS4MK2.wheelDeltas(field.group, field.value);
+  var tick_delta = deltas[0];
+  var time_delta = deltas[1];
+
+  var velocity = TraktorS4MK2.scalerJog(tick_delta, time_delta);
+  engine.setValue(field.group, "jog", velocity);
+  if (engine.getValue(field.group, "scratch2_enable")) {
+    var deckNumber = TraktorS4MK2.controller.resolveDeck(group);
+    engine.scratchTick(deckNumber, tick_delta);
+  }
+};
+
 TraktorS4MK2.wheelDeltas = function(group, value) {
   // When the wheel is touched, four bytes change, but only the first behaves predictably.
   // It looks like the wheel is 1024 ticks per revolution.
@@ -772,32 +844,16 @@ TraktorS4MK2.wheelDeltas = function(group, value) {
   } else {
     tick_delta = tickval - prev_tick;
   }
-//  HIDDebug(tickval + " " + prev_tick + " " + tick_delta);
+  //HIDDebug(group + " " + tickval + " " + prev_tick + " " + tick_delta);
   return [tick_delta, time_delta];
 }
 
-TraktorS4MK2.wheelVelocity = function(group, value) {
-  var deltas = TraktorS4MK2.wheelDeltas(group, value);
-  var tick_delta = deltas[0];
-  var time_delta = deltas[1];
-
-  var velocity = tick_delta / time_delta;
-
-  //HIDDebug(group + " " + name + " eh " + prev_time + " " + delta + " " + timeval + " " + velocity);
-  return velocity;
-}
-
-TraktorS4MK2.scalerJog = function(group, name, value) {
+TraktorS4MK2.scalerJog = function(tick_delta, time_delta) {
   if (engine.getValue(group, "play")) {
-    return TraktorS4MK2.wheelVelocity(group, value) / 2;
+    return (tick_delta / time_delta) / 2;
   } else {
-    return TraktorS4MK2.wheelVelocity(group, value) * 2.5;
+    return (tick_delta / time_delta) * 2.5;
   }
-}
-
-TraktorS4MK2.scalerScratch = function(group, name, value) {
-  // Return raw tick delta
-  return TraktorS4MK2.wheelDeltas(group, value)[0];
 }
 
 TraktorS4MK2.callbackPregain = function(field) {
