@@ -1,7 +1,4 @@
 // TODO:
-// fx knobs / lights
-// loop knobs
-// shift button stuff
 // (loop size readout :()
 // snap / master / quant buttons?
 // scratch handoff like in vestax
@@ -19,6 +16,13 @@ TraktorS4MK2 = new function() {
                                  "[Channel3]" : 0,
                                  "[Channel4]" : 0};
   this.controller.prev_browse = 0;
+  this.controller.prev_loopmove = {"deck1" : 0,
+                                   "deck2" : 0};
+  this.controller.prev_loopsize = {"deck1" : 0,
+                                   "deck2" : 0};
+  this.controller.shift_pressed = {"deck1" : false,
+                                   "deck2" : false};
+
   // last tick times for the left and right wheels.
   this.controller.last_tick_val = [0, 0];
   this.controller.last_tick_time = [0.0, 0.0];
@@ -42,8 +46,8 @@ TraktorS4MK2.registerInputPackets = function() {
   // Mixxx control object name.
   MessageShort.addControl("deck1", "!shift", 0x0D, "B", 0x08);
   MessageShort.addControl("deck1", "!sync_enabled", 0x0D, "B", 0x04);
-  MessageShort.addControl("deck1", "cue_default", 0x0D, "B", 0x02);
-  MessageShort.addControl("deck1", "play", 0x0D, "B", 0x01);
+  MessageShort.addControl("deck1", "!cue_default", 0x0D, "B", 0x02);
+  MessageShort.addControl("deck1", "!play", 0x0D, "B", 0x01);
   MessageShort.addControl("deck1", "hotcue_1_activate", 0x0D, "B", 0x80);
   MessageShort.addControl("deck1", "hotcue_2_activate", 0x0D, "B", 0x40);
   MessageShort.addControl("deck1", "hotcue_3_activate", 0x0D, "B", 0x20);
@@ -56,8 +60,8 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "loop_in", 0x0E, "B", 0x04);
   MessageShort.addControl("deck1", "slip_enabled", 0x0E, "B", 0x02);
   MessageShort.addControl("deck1", "!reset", 0x0E, "B", 0x01);
-  MessageShort.addControl("deck1", "!loopsize", 0x13, "B", 0x02);
-  MessageShort.addControl("deck1", "!loopmove", 0x13, "B", 0x01);
+  MessageShort.addControl("deck1", "beatloop_8_activate", 0x13, "B", 0x02);
+  MessageShort.addControl("deck1", "reloop_exit", 0x13, "B", 0x01);
   MessageShort.addControl("deck1", "jog_touch", 0x11, "B", 0x01);
   MessageShort.addControl("deck1", "jog_wheel", 0x01, "I");
   MessageShort.addControl("deck1", "!deckswitch", 0x0F, "B", 0x20);
@@ -66,12 +70,12 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "!FX2", 0x12, "B", 0x40);
   MessageShort.addControl("deck1", "!FX3", 0x12, "B", 0x20);
   MessageShort.addControl("deck1", "!FX4", 0x12, "B", 0x10);
-  MessageShort.addControl("deck1", "!FXMode", 0x11, "B", 0x08);
+  MessageShort.addControl("[EffectRack1_EffectUnit1]", "next_chain", 0x11, "B", 0x08);
 
   MessageShort.addControl("deck2", "!shift", 0x0C, "B", 0x08);
   MessageShort.addControl("deck2", "!sync_enabled", 0x0C, "B", 0x04);
-  MessageShort.addControl("deck2", "cue_default", 0x0C, "B", 0x02);
-  MessageShort.addControl("deck2", "play", 0x0C, "B", 0x01);
+  MessageShort.addControl("deck2", "!cue_default", 0x0C, "B", 0x02);
+  MessageShort.addControl("deck2", "!play", 0x0C, "B", 0x01);
   MessageShort.addControl("deck2", "hotcue_1_activate", 0x0C, "B", 0x80);
   MessageShort.addControl("deck2", "hotcue_2_activate", 0x0C, "B", 0x40);
   MessageShort.addControl("deck2", "hotcue_3_activate", 0x0C, "B", 0x20);
@@ -84,8 +88,8 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "loop_in", 0x0B, "B", 0x04);
   MessageShort.addControl("deck2", "slip_enabled", 0x0B, "B", 0x02);
   MessageShort.addControl("deck2", "!reset", 0x0B, "B", 0x01);
-  MessageShort.addControl("deck2", "!loopsize", 0x13, "B", 0x10);
-  MessageShort.addControl("deck2", "!loopmove", 0x13, "B", 0x08);
+  MessageShort.addControl("deck2", "beatloop_8_activate", 0x13, "B", 0x10);
+  MessageShort.addControl("deck2", "reloop_exit", 0x13, "B", 0x08);
   MessageShort.addControl("deck2", "jog_touch", 0x11, "B", 0x02);
   MessageShort.addControl("deck2", "jog_wheel", 0x05, "I");
   MessageShort.addControl("deck2", "!deckswitch", 0x0A, "B", 0x20);
@@ -94,7 +98,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "!FX2", 0x10, "B", 0x04);
   MessageShort.addControl("deck2", "!FX3", 0x10, "B", 0x02);
   MessageShort.addControl("deck2", "!FX4", 0x10, "B", 0x01);
-  MessageShort.addControl("deck2", "!FXMode", 0x11, "B", 0x04);
+  MessageShort.addControl("[EffectRack1_EffectUnit2]", "next_chain", 0x11, "B", 0x04);
 
   MessageShort.addControl("[Channel1]", "pfl", 0x0F, "B", 0x40);
   MessageShort.addControl("[EffectRack1_EffectUnit1]","group_[Channel1]_enable", 0x12, "B", 0x02);
@@ -117,13 +121,21 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("[Channel4]", "pregain_set_default", 0x11, "B", 0x80);
 
   MessageShort.addControl("[Playlist]", "LoadSelectedIntoFirstStopped", 0x13, "B", 0x04);
+  MessageShort.addControl("[PreviewDeck1]", "!previewdeck", 0x0F, "B", 0x01);
 
   this.controller.setScaler("jog", this.scalerJog);
   this.controller.setScaler("jog_scratch", this.scalerScratch);
+  MessageShort.setCallback("deck1", "!shift", this.shiftHandler);
+  MessageShort.setCallback("deck2", "!shift", this.shiftHandler);
+  MessageShort.setCallback("deck1", "!cue_default", this.cueHandler);
+  MessageShort.setCallback("deck2", "!cue_default", this.cueHandler);
+  MessageShort.setCallback("deck1", "!play", this.playHandler);
+  MessageShort.setCallback("deck2", "!play", this.playHandler);
   MessageShort.setCallback("deck1", "!deckswitch", this.deckSwitchHandler);
   MessageShort.setCallback("deck2", "!deckswitch", this.deckSwitchHandler);
   MessageShort.setCallback("deck1", "!sync_enabled", this.syncEnabledHandler);
   MessageShort.setCallback("deck2", "!sync_enabled", this.syncEnabledHandler);
+  MessageShort.setCallback("[PreviewDeck1]", "!previewdeck", this.previewDeckHandler);
   // TODO: the rest of the "!" controls.
   this.controller.registerInputPacket(MessageShort);
 
@@ -131,6 +143,24 @@ TraktorS4MK2.registerInputPackets = function() {
   // There are also some 4 bit encoders.
   MessageLong.addControl("deck1", "rate", 0x09, "H");
   MessageLong.addControl("deck2", "rate", 0x0B, "H");
+  MessageLong.addControl("deck1", "!loopmove", 0x01, "B", 0x0F, undefined, true);
+  MessageLong.addControl("deck2", "!loopmove", 0x02, "B", 0xF0, undefined, true);
+  MessageLong.setCallback("deck1", "!loopmove", this.callbackLoopMove);
+  MessageLong.setCallback("deck2", "!loopmove", this.callbackLoopMove);
+  MessageLong.addControl("deck1", "!loopsize", 0x01, "B", 0xF0, undefined, true);
+  MessageLong.addControl("deck2", "!loopsize", 0x03, "B", 0x0F, undefined, true);
+  MessageLong.setCallback("deck1", "!loopsize", this.callbackLoopSize);
+  MessageLong.setCallback("deck2", "!loopsize", this.callbackLoopSize);
+
+  MessageLong.addControl("[EffectRack1_EffectUnit1]", "mix", 0x3F, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect1]", "parameter1", 0x41, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect1]", "parameter2", 0x43, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit1_Effect1]", "parameter3", 0x45, "H");
+
+  MessageLong.addControl("[EffectRack1_EffectUnit2]", "mix", 0x47, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect1]", "parameter1", 0x49, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect1]", "parameter2", 0x4B, "H");
+  MessageLong.addControl("[EffectRack1_EffectUnit2_Effect1]", "parameter3", 0x4D, "H");
 
   MessageLong.addControl("[Channel1]", "volume", 0x37, "H");
   MessageLong.addControl("[QuickEffectRack1_[Channel1]]", "super1", 0x1D, "H");
@@ -172,12 +202,13 @@ TraktorS4MK2.registerInputPackets = function() {
 
   this.controller.setScaler("volume", this.scalerVolume);
   this.controller.setScaler("headMix", this.scalerSlider);
-  this.controller.setScaler("parameter1", this.scalerEq);
-  this.controller.setScaler("parameter2", this.scalerEq);
-  this.controller.setScaler("parameter3", this.scalerEq);
+  this.controller.setScaler("parameter1", this.scalerParameter);
+  this.controller.setScaler("parameter2", this.scalerParameter);
+  this.controller.setScaler("parameter3", this.scalerParameter);
   this.controller.setScaler("super1", this.scalerQuickKnob);
   this.controller.setScaler("crossfader", this.scalerSlider);
   this.controller.setScaler("rate", this.scalerSlider);
+  this.controller.setScaler("mix", this.scalerQuickKnob);
   this.controller.registerInputPacket(MessageLong);
 }
 
@@ -207,6 +238,8 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output1.addOutput("[Channel4]", "PeakIndicator", 0x1F, "B");
 
   Output1.addOutput("[Master]", "!usblight", 0x2A, "B");
+
+  Output1.addOutput("[InternalClock]", "sync_master", 0x30, "B");
   this.controller.registerOutputPacket(Output1);
 
   Output2.addOutput("deck1", "sync_enabled", 0x1E, "B");
@@ -254,6 +287,8 @@ TraktorS4MK2.registerOutputPackets = function() {
   Output2.addOutput("[Channel3]", "!deck_C", 0x31, "B");
   Output2.addOutput("[Channel4]", "!deck_D", 0x37, "B");
 
+  Output2.addOutput("[PreviewDeck1]", "play_indicator", 0x3D, "B");
+
   this.controller.registerOutputPacket(Output2);
 
   Output3.addOutput("[Channel3]", "pfl", 0x17, "B");
@@ -269,6 +304,19 @@ TraktorS4MK2.registerOutputPackets = function() {
 
   Output3.addOutput("deck2", "!deckLight", 0x16, "B");
   Output3.addOutput("deck2", "LoadSelectedTrack", 0x15, "B");
+
+  Output3.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel3]_enable", 0x05, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel3]_enable", 0x06, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x07, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x08, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x09, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x0A, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel4]_enable", 0x0B, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel4]_enable", 0x0C, "B");
+
+  Output3.addOutput("[EffectRack1_EffectUnit1]", "next_chain", 0x11, "B");
+  Output3.addOutput("[EffectRack1_EffectUnit2]", "next_chain", 0x12, "B");
+
   this.controller.registerOutputPacket(Output3);
 
   // Link up control objects to their outputs
@@ -279,8 +327,8 @@ TraktorS4MK2.registerOutputPackets = function() {
   TraktorS4MK2.linkDeckOutputs("hotcue_2_enabled", TraktorS4MK2.outputCueCallback);
   TraktorS4MK2.linkDeckOutputs("hotcue_3_enabled", TraktorS4MK2.outputCueCallback);
   TraktorS4MK2.linkDeckOutputs("hotcue_4_enabled", TraktorS4MK2.outputCueCallback);
-  TraktorS4MK2.linkDeckOutputs("loop_in", TraktorS4MK2.outputCallback);
-  TraktorS4MK2.linkDeckOutputs("loop_out", TraktorS4MK2.outputCallback);
+  TraktorS4MK2.linkDeckOutputs("loop_in", TraktorS4MK2.outputCallbackLoop);
+  TraktorS4MK2.linkDeckOutputs("loop_out", TraktorS4MK2.outputCallbackLoop);
   TraktorS4MK2.linkDeckOutputs("keylock", TraktorS4MK2.outputCallbackDark);
   TraktorS4MK2.linkDeckOutputs("LoadSelectedTrack", TraktorS4MK2.outputCallback);
   TraktorS4MK2.linkDeckOutputs("slip_enabled", TraktorS4MK2.outputCallback);
@@ -298,12 +346,43 @@ TraktorS4MK2.registerOutputPackets = function() {
   TraktorS4MK2.controller.linkOutput("[Channel4]", "PeakIndicator", "[Channel4]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
   TraktorS4MK2.controller.linkOutput("[Master]", "PeakIndicatorL", "[Master]", "PeakIndicatorL", TraktorS4MK2.outputChannelCallbackDark);
   TraktorS4MK2.controller.linkOutput("[Master]", "PeakIndicatorR", "[Master]", "PeakIndicatorR", TraktorS4MK2.outputChannelCallbackDark);
+  TraktorS4MK2.controller.linkOutput("[EffectRack1_EffectUnit1]", "group_[Channel3]_enable",
+                                     "[EffectRack1_EffectUnit1]", "group_[Channel3]_enable", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.controller.linkOutput("[EffectRack1_EffectUnit2]", "group_[Channel3]_enable",
+                                     "[EffectRack1_EffectUnit2]", "group_[Channel3]_enable", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.controller.linkOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable",
+                                     "[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.controller.linkOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable",
+                                     "[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.controller.linkOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable",
+                                     "[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.controller.linkOutput("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable",
+                                     "[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.controller.linkOutput("[EffectRack1_EffectUnit1]", "group_[Channel4]_enable",
+                                     "[EffectRack1_EffectUnit1]", "group_[Channel4]_enable", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.controller.linkOutput("[EffectRack1_EffectUnit2]", "group_[Channel4]_enable",
+                                     "[EffectRack1_EffectUnit2]", "group_[Channel4]_enable", TraktorS4MK2.outputChannelCallback);
+
+  TraktorS4MK2.controller.linkOutput("[EffectRack1_EffectUnit1]", "next_chain",
+                                     "[EffectRack1_EffectUnit1]", "next_chain", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.controller.linkOutput("[EffectRack1_EffectUnit2]", "next_chain",
+                                     "[EffectRack1_EffectUnit2]", "next_chain", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.controller.linkOutput("[PreviewDeck1]", "play_indicator",
+                                     "[PreviewDeck1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
+  TraktorS4MK2.controller.linkOutput("[InternalClock]", "sync_master",
+                                     "[InternalClock]", "sync_master", TraktorS4MK2.outputChannelCallback);
+
 
   // VU meters get special attention
   engine.connectControl("[Channel1]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
   engine.connectControl("[Channel2]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
   engine.connectControl("[Channel3]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
   engine.connectControl("[Channel4]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
+
+  engine.connectControl("[Channel1]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
+  engine.connectControl("[Channel2]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
+  engine.connectControl("[Channel3]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
+  engine.connectControl("[Channel4]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
 }
 
 TraktorS4MK2.linkDeckOutputs = function(key, callback) {
@@ -344,6 +423,12 @@ TraktorS4MK2.lightDeck = function(group) {
     TraktorS4MK2.lightGroup(packet, group, group);
   }
 
+  // FX buttons
+  var packet = this.controller.OutputPackets["output3"];
+  TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit1]");
+  TraktorS4MK2.lightGroup(packet, "[EffectRack1_EffectUnit2]", "[EffectRack1_EffectUnit2]");
+
+  // Selected deck lights
   if (group === "[Channel1]") {
     TraktorS4MK2.controller.setOutput("[Channel1]", "!deck_A", 0x7F, false);
     TraktorS4MK2.controller.setOutput("[Channel3]", "!deck_C", 0x00, false);
@@ -422,6 +507,7 @@ TraktorS4MK2.init = function(id) {
   // Light 3 and 4 first so we get the mixer lights on, then do 1 and 2 since those are active
   // on startup.
   TraktorS4MK2.controller.setOutput("[Master]", "!usblight", 0x7F, true);
+  TraktorS4MK2.lightDeck("[PreviewDeck1]");
   TraktorS4MK2.lightDeck("[Channel3]");
   TraktorS4MK2.lightDeck("[Channel4]");
   TraktorS4MK2.lightDeck("[Channel1]");
@@ -485,7 +571,6 @@ TraktorS4MK2.incomingData = function(data, length) {
 TraktorS4MK2.shortMessageCallback = function(packet, data) {
   for (name in data) {
     field = data[name];
-    //HIDDebug("that happened " + name + " " + field.group);
     // Rewrite group name from "buttons_X" to "[ChannelY]"
     group = TraktorS4MK2.getGroupFromButton(field.id);
     field.group = group;
@@ -504,7 +589,6 @@ TraktorS4MK2.shortMessageCallback = function(packet, data) {
 TraktorS4MK2.longMessageCallback = function(packet, data) {
   for (name in data) {
     field = data[name];
-    //HIDDebug("that happened " + name + " ");
     // Rewrite group name from "buttons_X" to "[ChannelY]"
     group = TraktorS4MK2.getGroupFromButton(field.id);
     field.group = group;
@@ -542,6 +626,12 @@ TraktorS4MK2.getGroupFromButton = function(name) {
   }
 }
 
+TraktorS4MK2.shiftHandler = function(field) {
+  var splitted = field.id.split(".");
+  var group = splitted[0];
+  TraktorS4MK2.controller.shift_pressed[group] = field.value;
+}
+
 TraktorS4MK2.deckSwitchHandler = function(field) {
   if (field.value === 0) {
     return;
@@ -567,24 +657,81 @@ TraktorS4MK2.deckSwitchHandler = function(field) {
 
 TraktorS4MK2.syncEnabledHandler = function(field) {
   var now = Date.now();
-  if (field.value === 1) {
-    // The group is the currently-assigned value, so set the variable to the opposite.
-    TraktorS4MK2.controller.sync_enabled_time[field.group] = now;
-    engine.setValue(field.group, "sync_enabled", 1);
+
+  var splitted = field.id.split(".");
+  var group = splitted[0];
+  // If shifted, just toggle.
+  // TODO(later version): actually make this enable explicit master.
+  if (TraktorS4MK2.controller.shift_pressed[group]) {
+    if (field.value === 0) {
+      return;
+    }
+    var synced = engine.getValue(field.group, "sync_enabled");
+    engine.setValue(field.group, "sync_enabled", !synced);
   } else {
-    var cur_enabled = engine.getValue(field.group, "sync_enabled");
-    if (!cur_enabled) {
-      // If disabled, and switching to disable... stay disabled.
-      engine.setValue(field.group, "sync_enabled", 0);
-      return;
-    }
-    // was enabled, and button has been let go.  maybe latch it.
-    if (now - TraktorS4MK2.controller.sync_enabled_time[field.group] > 300) {
+    if (field.value === 1) {
+      // The group is the currently-assigned value, so set the variable to the opposite.
+      TraktorS4MK2.controller.sync_enabled_time[field.group] = now;
       engine.setValue(field.group, "sync_enabled", 1);
-      return;
+    } else {
+      var cur_enabled = engine.getValue(field.group, "sync_enabled");
+      if (!cur_enabled) {
+        // If disabled, and switching to disable... stay disabled.
+        engine.setValue(field.group, "sync_enabled", 0);
+        return;
+      }
+      // was enabled, and button has been let go.  maybe latch it.
+      if (now - TraktorS4MK2.controller.sync_enabled_time[field.group] > 300) {
+        engine.setValue(field.group, "sync_enabled", 1);
+        return;
+      }
+      engine.setValue(field.group, "sync_enabled", 0);
     }
-    engine.setValue(field.group, "sync_enabled", 0);
   }
+}
+
+TraktorS4MK2.cueHandler = function(field) {
+  if (field.value === 0) {
+    return;
+  }
+  var splitted = field.id.split(".");
+  var group = splitted[0];
+  if (TraktorS4MK2.controller.shift_pressed[group]) {
+    engine.setValue(field.group, "start_stop", 1);
+  } else {
+    engine.setValue(field.group, "cue_default", 1);
+    engine.setValue(field.group, "cue_default", 0);
+  }
+}
+
+TraktorS4MK2.playHandler = function(field) {
+  if (field.value === 0) {
+    return;
+  }
+  var splitted = field.id.split(".");
+  var group = splitted[0];
+  if (TraktorS4MK2.controller.shift_pressed[group]) {
+    var locked = engine.getValue(field.group, "keylock");
+    engine.setValue(field.group, "keylock", !locked);
+  } else {
+    var playing = engine.getValue(field.group, "play");
+    engine.setValue(field.group, "play", !playing);
+  }
+}
+
+TraktorS4MK2.previewDeckHandler = function(field) {
+  if (field.value === 0) {
+    return;
+  }
+  // TODO: figure out a way to know if the browse position has changed.  If not, the preview
+  // button should pause / resume. If it has changed, preview button loads new track.
+  /*if (engine.getValue("[PreviewDeck1]", "play")) {
+    engine.setValue("[PreviewDeck1]", "cue_gotoandstop", 1);
+    engine.setValue("[PreviewDeck1]", "cue_gotoandstop", 0);
+  } else {*/
+  engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
+  engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 0);
+  //}
 }
 
 TraktorS4MK2.wheelDeltas = function(group, value) {
@@ -672,6 +819,47 @@ TraktorS4MK2.callbackPregain = function(field) {
   engine.setValue(group, "pregain", cur_pregain + delta);
 }
 
+TraktorS4MK2.callbackLoopMove = function(field) {
+  // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
+  var splitted = field.id.split(".");
+  var group = splitted[0]
+  prev_loopmove = TraktorS4MK2.controller.prev_loopmove[group];
+  TraktorS4MK2.controller.prev_loopmove[group] = field.value;
+  var delta = 0;
+  if (prev_loopmove === 15 && field.value === 0) {
+    delta = 1;
+  } else if (prev_loopmove === 0 && field.value === 15) {
+    delta = -1;
+  } else if (field.value > prev_loopmove) {
+    delta = 1;
+  } else {
+    delta = -1;
+  }
+
+  engine.setValue(field.group, "loop_move", delta);
+}
+
+TraktorS4MK2.callbackLoopSize = function(field) {
+  var splitted = field.id.split(".");
+  var group = splitted[0]
+  prev_loopsize = TraktorS4MK2.controller.prev_loopsize[group];
+  TraktorS4MK2.controller.prev_loopsize[group] = field.value;
+  var delta = 0;
+  if (prev_loopsize === 15 && field.value === 0) {
+    engine.setValue(field.group, "loop_double", 1);
+    engine.setValue(field.group, "loop_double", 0);
+  } else if (prev_loopsize === 0 && field.value === 15) {
+    engine.setValue(field.group, "loop_halve", 1);
+    engine.setValue(field.group, "loop_halve", 0);
+  } else if (field.value > prev_loopsize) {
+    engine.setValue(field.group, "loop_double", 1);
+    engine.setValue(field.group, "loop_double", 0);
+  } else {
+    engine.setValue(field.group, "loop_halve", 1);
+    engine.setValue(field.group, "loop_halve", 0);
+  }
+}
+
 TraktorS4MK2.callbackBrowse = function(field) {
   // TODO: common-hid-packet-parser looks like it should do deltas, but I can't get them to work.
   prev_browse = TraktorS4MK2.controller.prev_browse;
@@ -690,8 +878,8 @@ TraktorS4MK2.callbackBrowse = function(field) {
   engine.setValue("[Playlist]", "SelectTrackKnob", delta);
 }
 
-TraktorS4MK2.scalerEq = function(group, name, value) {
-  return script.absoluteNonLin(value, 0, 1, 4, 16, 4080);
+TraktorS4MK2.scalerParameter = function(group, name, value) {
+  return script.absoluteLin(value, 0, 1, 16, 4080);
 }
 
 TraktorS4MK2.scalerVolume = function(group, name, value) {
@@ -738,7 +926,6 @@ TraktorS4MK2.resolveDeckIfActive = function(group) {
 
 TraktorS4MK2.outputChannelCallback = function(value,group,key) {
   var controller = TraktorS4MK2.controller;
-  //HIDDebug("output channel? " + group + " " + key + " " + value + " " + TraktorS4MK2.controller.left_deck_C);
   var led_value = 0x05;
   if (value) {
     led_value = 0x7F;
@@ -770,6 +957,20 @@ TraktorS4MK2.outputCallback = function(value,group,key) {
   TraktorS4MK2.controller.setOutput(deck_group, key, led_value, !TraktorS4MK2.controller.freeze_lights);
 }
 
+TraktorS4MK2.outputCallbackLoop = function(value,group,key) {
+  var controller = TraktorS4MK2.controller;
+  var deck_group = TraktorS4MK2.resolveDeckIfActive(group);
+  if (deck_group === undefined) {
+    return;
+  }
+
+  var led_value = 0x09;
+  if (engine.getValue(group, "loop_enabled")) {
+    led_value = 0x7F;
+  }
+  TraktorS4MK2.controller.setOutput(deck_group, key, led_value, !TraktorS4MK2.controller.freeze_lights);
+}
+
 TraktorS4MK2.outputCallbackDark = function(value,group,key) {
   var controller = TraktorS4MK2.controller;
   var deck_group = TraktorS4MK2.resolveDeckIfActive(group);
@@ -787,7 +988,6 @@ TraktorS4MK2.outputCallbackDark = function(value,group,key) {
 TraktorS4MK2.outputCueCallback = function(value, group, key) {
  var deck_group = TraktorS4MK2.resolveDeckIfActive(group);
   if (deck_group === undefined) {
-    HIDDebug("nope " + group);
     return;
   }
 
@@ -805,7 +1005,6 @@ TraktorS4MK2.outputCueCallback = function(value, group, key) {
 
 TraktorS4MK2.onVuMeterChanged = function(value, group, key) {
   // VU is drawn on 6 segments, the 7th indicates clip.
-
   var VuOffsets = {"[Channel1]" : 0x09,
                    "[Channel2]" : 0x11,
                    "[Channel3]" : 0x01,
@@ -831,4 +1030,14 @@ TraktorS4MK2.onVuMeterChanged = function(value, group, key) {
   }
   var packet_ob = TraktorS4MK2.controller.OutputPackets["output1"];
   packet_ob.send();
+}
+
+TraktorS4MK2.onLoopEnabledChanged = function(value, group, key) {
+  var deck = TraktorS4MK2.resolveDeckIfActive(group);
+  if (deck === undefined) {
+    return;
+  }
+
+  TraktorS4MK2.outputCallbackLoop(value, group, "loop_in");
+  TraktorS4MK2.outputCallbackLoop(value, group, "loop_out");
 }

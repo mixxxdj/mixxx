@@ -733,7 +733,9 @@ function HIDController () {
     // Output color values to send
     this.LEDColors = {off: 0x0, on: 0x7f};
     // Toggle buttons
-    this.toggleButtons = [ "play", "pfl", "keylock", "quantize", "reverse", "slip_enabled" ];
+    this.toggleButtons = [ "play", "pfl", "keylock", "quantize", "reverse", "slip_enabled",
+                           "group_[Channel1]_enable", "group_[Channel2]_enable",
+                           "group_[Channel3]_enable", "group_[Channel4]_enable" ];
 
     // Override to set specific colors for multicolor button Output per deck
     this.deckOutputColors = {1: "on", 2: "on", 3: "on", 4: "on"};
@@ -747,10 +749,10 @@ function HIDController () {
     this.valid_groups = [
     "[Channel1]","[Channel2]","[Channel3]","[Channel4]",
     "[Sampler1]","[Sampler2]","[Sampler3]","[Sampler4]",
-    "[Master]","[Effects]","[Playlist]","[Flanger]",
-    "[Microphone]"
-]
-
+    "[Master]", "[PreviewDeck1]", "[Effects]","[Playlist]","[Flanger]",
+    "[Microphone]", "[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]",
+    "[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]",
+    "[InternalClock]" ];
 
     // Set to value in ms to update Outputs periodically
     this.OutputUpdateInterval = undefined;
@@ -1084,6 +1086,15 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
     }
 }
 
+HIDController.prototype.isParameterControl = function(control) {
+    if (control.substr(0, 5) === "super") {
+        return true;
+    } else if (control.substr(0, 9) === "parameter") {
+        return true;
+    }
+    return false;
+}
+
 // Get active group for this field
 HIDController.prototype.getActiveFieldGroup = function(field) {
     if (field.mapped_group!=undefined) {
@@ -1212,7 +1223,11 @@ HIDController.prototype.processControl = function(field) {
     } else {
         if (scaler!=undefined)
             value = scaler(group,control,value);
-        engine.setValue(group,control,value);
+        if (this.isParameterControl(control)) {
+            engine.setParameter(group, control, value);
+        } else {
+            engine.setValue(group,control,value);
+        }
     }
 }
 
@@ -1467,7 +1482,7 @@ HIDController.prototype.linkOutput = function(group,name,m_group,m_name,callback
     field.mapped_group = m_group;
     field.mapped_name = m_name;
     field.mapped_callback = callback;
-    HIDDebug("linking " + controlgroup, m_name);
+    HIDDebug("trying " + controlgroup + " " + m_name);
     engine.connectControl(controlgroup,m_name,callback);
     if (engine.getValue(controlgroup,m_name))
         this.setOutput(m_group,m_name,"on");
