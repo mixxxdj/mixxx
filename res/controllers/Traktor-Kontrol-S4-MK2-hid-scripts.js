@@ -5,14 +5,9 @@
 /*      For Mixxx version 2.0                                   */
 /****************************************************************/
 
-
 // TODO:
 // * Loop size readout / selection
 // * Find a use for snap / master / other unused buttons?
-
-TraktorS4MK2 = new function() {
-}
-
 
 
 // ==== Friendly User Configuration ====
@@ -22,20 +17,27 @@ TraktorS4MK2 = new function() {
 //    released playback will resume where the track would have been without the loop.
 // To choose sample launching, set the word in quotes below to SAMPLES, all caps.  For
 // rolls, change the word to LOOPROLLS (no space).
-TraktorS4MK2.RemixSlotButtonAction = "SAMPLES";
+RemixSlotButtonAction = "SAMPLES";
 
 
-
-
-TraktorS4MK2.construct = function() {
+TraktorS4MK2 = new function() {
   this.controller = new HIDController();
+  // TODO: Decide if these should be part of this.controller instead.
   this.partial_packet = Object();
   this.divisor_map = Object();
+  this.RemixSlotButtonAction = RemixSlotButtonAction;
+
   // When true, packets will not be sent to the controller.  Good for doing mass updates.
   this.controller.freeze_lights = false;
+
+  // Active deck switches -- common-hid-packet-parser only has one active deck status per
+  // Controller object.
   this.controller.left_deck_C = false;
   this.controller.right_deck_D = false;
+  // The controller has a single quantize button, and we remember its state independent of
+  // other channels.  (The user may toggle channel quantize in the GUI)
   this.controller.master_quantize = false;
+  // Previous values, used for calculating deltas for encoder knobs.
   this.controller.prev_pregain = {"[Channel1]" : 0,
                                  "[Channel2]" : 0,
                                  "[Channel3]" : 0,
@@ -52,12 +54,13 @@ TraktorS4MK2.construct = function() {
                                             "[Channel3]" : 0,
                                             "[Channel4]" : 0};
 
-  // last tick times for the left and right wheels.
+  // TODO: convert to Object()s for easier logic.
   this.controller.last_tick_val = [0, 0];
   this.controller.last_tick_time = [0.0, 0.0];
   this.controller.sync_enabled_time = Object();
 
   // scratch overrides
+  // TODO: these can probably be removed, or should be used in my custom scratch code.
   this.controller.scratchintervalsPerRev = 1024;
   this.controller.scratchRPM = 33+1/3;
   this.controller.scratchAlpha = 1.0 / 8;
@@ -73,6 +76,8 @@ TraktorS4MK2.registerInputPackets = function() {
   // Values in the short message are all buttons, except the jog wheels.
   // An exclamation point indicates a specially-handled function.  Everything else is a standard
   // Mixxx control object name.
+  // "deck1" and "deck2" refer to the left deck or right deck, and may be Channel1 or 3 depending
+  // on the deck switch state.  These are keywords in the HID library.
   MessageShort.addControl("deck1", "!shift", 0x0D, "B", 0x08);
   MessageShort.addControl("deck1", "!sync_enabled", 0x0D, "B", 0x04);
   MessageShort.addControl("deck1", "!cue_default", 0x0D, "B", 0x02);
@@ -289,7 +294,6 @@ TraktorS4MK2.registerOutputPackets = function() {
 
   Output1.addOutput("[Master]", "!usblight", 0x2A, "B");
   Output1.addOutput("[Master]", "!quantize", 0x31, "B");
-
   Output1.addOutput("[InternalClock]", "sync_master", 0x30, "B");
   this.controller.registerOutputPacket(Output1);
 
@@ -340,6 +344,8 @@ TraktorS4MK2.registerOutputPackets = function() {
 
   Output2.addOutput("[PreviewDeck1]", "play_indicator", 0x3D, "B");
 
+  // Note: this logic means remix button actions are not switchable without reloading the script.
+  // Once we have support for controller preferences, this can be changed.
   if (TraktorS4MK2.RemixSlotButtonAction === "SAMPLES") {
     Output2.addOutput("[Sampler1]", "play_indicator", 0x19, "B");
     Output2.addOutput("[Sampler2]", "play_indicator", 0x1A, "B");
@@ -447,7 +453,6 @@ TraktorS4MK2.registerOutputPackets = function() {
     TraktorS4MK2.linkDeckOutputs("beatlooproll_1_activate", TraktorS4MK2.outputCallback);
   }
 
-
   // VU meters get special attention
   engine.connectControl("[Channel1]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
   engine.connectControl("[Channel2]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
@@ -461,7 +466,7 @@ TraktorS4MK2.registerOutputPackets = function() {
 }
 
 TraktorS4MK2.linkDeckOutputs = function(key, callback) {
-  // Linking outputs is a little tricky, the library doesn't quite do what I want.  But this
+  // Linking outputs is a little tricky because the library doesn't quite do what I want.  But this
   // method works.
   TraktorS4MK2.controller.linkOutput("deck1", key, "[Channel1]", key, callback);
   engine.connectControl("[Channel3]", key, callback);
@@ -480,8 +485,8 @@ TraktorS4MK2.lightGroup = function(packet, output_group_name, co_group_name) {
     if (field.name[0] === "!") {
       continue;
     }
-    var value = engine.getValue(co_group_name, field.name);
     if (field.mapped_callback) {
+      var value = engine.getValue(co_group_name, field.name);
       field.mapped_callback(value, co_group_name, field.name);
     }
     // No callback, no light!
@@ -489,7 +494,7 @@ TraktorS4MK2.lightGroup = function(packet, output_group_name, co_group_name) {
 }
 
 TraktorS4MK2.lightDeck = function(group) {
-  // Freeze the lights while we do this update.
+  // Freeze the lights while we do this update so we don't spam HID.
   this.controller.freeze_lights = true;
   for (var packet_name in this.controller.OutputPackets) {
     packet = this.controller.OutputPackets[packet_name];
@@ -541,8 +546,10 @@ TraktorS4MK2.pointlessLightShow = function() {
   packets[1].length = 63;
   packets[2].length = 61;
 
+  // Fade up all lights evenly from 0 to 0x7F
   for (k = 0; k < 0x7F; k+=0x05) {
     for (var i = 0; i < packets.length; i++) {
+      // Packet header
       packets[i][0] = 0x80 + i;
       for (j = 1; j < packets[i].length; j++) {
         packets[i][j] = k;
@@ -568,7 +575,8 @@ TraktorS4MK2.init = function(id) {
   TraktorS4MK2.registerInputPackets()
   TraktorS4MK2.registerOutputPackets()
 
-  // Initialize master quantize based on the state of Channel1.  It's the best we can do for now.
+  // Initialize master quantize based on the state of Channel1.  It's the best we can do for now
+  // until we have controller preferences.
   TraktorS4MK2.master_quantize = engine.getValue("[Channel1]", "quantize");
   engine.setValue("[Channel1]", "quantize", TraktorS4MK2.master_quantize);
   engine.setValue("[Channel2]", "quantize", TraktorS4MK2.master_quantize);
@@ -576,10 +584,10 @@ TraktorS4MK2.init = function(id) {
   engine.setValue("[Channel4]", "quantize", TraktorS4MK2.master_quantize);
   TraktorS4MK2.controller.setOutput("[Master]", "!quantize", 0x7F * TraktorS4MK2.master_quantize, true);
 
-  // Light 3 and 4 first so we get the mixer lights on, then do 1 and 2 since those are active
-  // on startup.
   TraktorS4MK2.controller.setOutput("[Master]", "!usblight", 0x7F, true);
   TraktorS4MK2.lightDeck("[PreviewDeck1]");
+  // Light 3 and 4 first so we get the mixer lights on, then do 1 and 2 since those are active
+  // on startup.
   TraktorS4MK2.lightDeck("[Channel3]");
   TraktorS4MK2.lightDeck("[Channel4]");
   TraktorS4MK2.lightDeck("[Channel1]");
@@ -589,6 +597,8 @@ TraktorS4MK2.init = function(id) {
 }
 
 TraktorS4MK2.debugLights = function() {
+  // Call this if you want to just send raw packets to the controller (good for figuring out what
+  // bytes do what).
   //var data_strings = ["80 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0A 0A 0A 0A 0A 0A 0A 0A 0A 00 7F 00 00 00 00 0A 0A 0A 0A 0A 0A",
   //                    "81 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0B 03 00 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 7F 0A 0A 0A 0A 0A 7F 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A",
   //                    "82 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 0A 00 00 7F 7F 7F 7F 7F 7F 00 00 7F 7F 7F 7F 7F 00 00 00 7F 7F 7F 7F 7F 7F 00 00 7F 7F 7F 7F 7F 00 00 00"];
@@ -632,8 +642,6 @@ TraktorS4MK2.debugLights = function() {
 }
 
 TraktorS4MK2.shutdown = function() {
-  // Why do the deck lights stay on?
-
   var packet_lengths = [53, 63, 61];
   for (i = 0; i < packet_lengths.length; i++) {
     var packet_length = packet_lengths[i];
@@ -651,7 +659,7 @@ TraktorS4MK2.shutdown = function() {
   }
 }
 
-// Mandatory function to receive anything from HID
+// Called by Mixxx -- mandatory function to receive anything from HID
 TraktorS4MK2.incomingData = function(data, length) {
   // Packets of 21 bytes are message 0x01 and can be handed off right away
   if (length === 21) {
@@ -690,7 +698,7 @@ TraktorS4MK2.incomingData = function(data, length) {
 TraktorS4MK2.shortMessageCallback = function(packet, data) {
   for (name in data) {
     field = data[name];
-    // Rewrite group name from "buttons_X" to "[ChannelY]"
+    // Rewrite group name from "deckX" to "[ChannelY]"
     group = TraktorS4MK2.getGroupFromButton(field.id);
     field.group = group;
     if (field.name === "!jog_wheel") {
@@ -708,7 +716,7 @@ TraktorS4MK2.shortMessageCallback = function(packet, data) {
 TraktorS4MK2.longMessageCallback = function(packet, data) {
   for (name in data) {
     field = data[name];
-    // Rewrite group name from "buttons_X" to "[ChannelY]"
+    // Rewrite group name from "deckX" to "[ChannelY]"
     group = TraktorS4MK2.getGroupFromButton(field.id);
     field.group = group;
     TraktorS4MK2.controller.processControl(field);
@@ -788,7 +796,6 @@ TraktorS4MK2.syncEnabledHandler = function(field) {
     engine.setValue(field.group, "sync_enabled", !synced);
   } else {
     if (field.value === 1) {
-      // The group is the currently-assigned value, so set the variable to the opposite.
       TraktorS4MK2.controller.sync_enabled_time[field.group] = now;
       engine.setValue(field.group, "sync_enabled", 1);
     } else {
@@ -866,6 +873,7 @@ TraktorS4MK2.jogTouchHandler = function(field) {
     // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
     // Depending on how fast the platter was moving, lengthen the time we'll wait.
     var scratchRate = Math.abs(engine.getValue(field.group, "scratch2"));
+    // Note: inertiaTime multiplier is controller-specific and should be factored out.
     var inertiaTime = Math.pow(1.8, scratchRate) * 2;
     if (inertiaTime < 100) {
       // Just do it now.
@@ -1211,6 +1219,7 @@ TraktorS4MK2.outputCueCallback = function(value, group, key) {
   }
 
   var RGB_value = [0, 0, 0];
+  // Use different colors for decks 1/2 and 3/4 that match LateNight (red and blue).
   if (group === "[Channel1]" || group === "[Channel2]") {
     if (value === 1) {
       RGB_value = [0x40, 0x02, 0x02];
@@ -1238,18 +1247,19 @@ TraktorS4MK2.onVuMeterChanged = function(value, group, key) {
                    "[Channel4]" : 0x19};
 
   // Figure out number of fully-illuminated segments.
-  var fullIllum = Math.floor(value * 6.0);
+  var scaledValue = value * 6.0;
+  var fullIllumCount = Math.floor(scaledValue);
 
   // Figure out how much the partially-illuminated segment is illuminated.
-  var partialIllum = Math.floor((value % 6) * 0x7F);
+  var partialIllum = (scaledValue - fullIllumCount) * 0x7F
 
   var packet_ob = TraktorS4MK2.controller.OutputPackets["output1"];
   for (i = 0; i < 6; i++) {
     var key = "!" + "VuMeter" + i;
-    if (i < fullIllum) {
+    if (i < fullIllumCount) {
       // Don't update lights until they're all done.
       TraktorS4MK2.controller.setOutput(group, key, 0x7F, false);
-    } else if (i == fullIllum) {
+    } else if (i == fullIllumCount) {
       TraktorS4MK2.controller.setOutput(group, key, partialIllum, false);
     } else {
       TraktorS4MK2.controller.setOutput(group, key, 0x00, false);
