@@ -1149,7 +1149,6 @@ TraktorS4MK2.resolveDeckIfActive = function(group) {
 }
 
 TraktorS4MK2.outputChannelCallback = function(value,group,key) {
-  var controller = TraktorS4MK2.controller;
   var led_value = 0x05;
   if (value) {
     led_value = 0x7F;
@@ -1158,7 +1157,6 @@ TraktorS4MK2.outputChannelCallback = function(value,group,key) {
 }
 
 TraktorS4MK2.outputChannelCallbackDark = function(value,group,key) {
-  var controller = TraktorS4MK2.controller;
   var led_value = 0x00;
   if (value) {
     led_value = 0x7F;
@@ -1167,7 +1165,6 @@ TraktorS4MK2.outputChannelCallbackDark = function(value,group,key) {
 }
 
 TraktorS4MK2.outputCallback = function(value,group,key) {
-  var controller = TraktorS4MK2.controller;
   //HIDDebug("output2? " + group + " " + key + " " + value + " " + TraktorS4MK2.controller.left_deck_C);
   var deck_group = TraktorS4MK2.resolveDeckIfActive(group);
   if (deck_group === undefined) {
@@ -1182,7 +1179,6 @@ TraktorS4MK2.outputCallback = function(value,group,key) {
 }
 
 TraktorS4MK2.outputCallbackLoop = function(value,group,key) {
-  var controller = TraktorS4MK2.controller;
   var deck_group = TraktorS4MK2.resolveDeckIfActive(group);
   if (deck_group === undefined) {
     return;
@@ -1196,7 +1192,6 @@ TraktorS4MK2.outputCallbackLoop = function(value,group,key) {
 }
 
 TraktorS4MK2.outputCallbackDark = function(value,group,key) {
-  var controller = TraktorS4MK2.controller;
   var deck_group = TraktorS4MK2.resolveDeckIfActive(group);
   if (deck_group === undefined) {
     return;
