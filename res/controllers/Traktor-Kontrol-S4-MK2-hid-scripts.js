@@ -866,7 +866,7 @@ TraktorS4MK2.jogTouchHandler = function(field) {
     // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
     // Depending on how fast the platter was moving, lengthen the time we'll wait.
     var scratchRate = Math.abs(engine.getValue(field.group, "scratch2"));
-    var inertiaTime = Math.pow(1.8, scratchRate) * 50;
+    var inertiaTime = Math.pow(1.8, scratchRate) * 2;
     if (inertiaTime < 100) {
       // Just do it now.
       TraktorS4MK2.finishJogTouch(field.group);
