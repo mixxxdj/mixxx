@@ -749,6 +749,7 @@ function HIDController () {
     this.valid_groups = [
     "[Channel1]","[Channel2]","[Channel3]","[Channel4]",
     "[Sampler1]","[Sampler2]","[Sampler3]","[Sampler4]",
+    "[Sampler5]","[Sampler6]","[Sampler7]","[Sampler8]",
     "[Master]", "[PreviewDeck1]", "[Effects]","[Playlist]","[Flanger]",
     "[Microphone]", "[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]",
     "[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]",
