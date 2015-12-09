@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset mixxxVersion="" schemaVersion="1">
+<MixxxControllerPreset mixxxVersion="2.0.0" schemaVersion="1">
      <info>
         <name>Traktor Kontrol S4 MK2</name>
         <author>Owen Williams</author>
@@ -12,7 +12,7 @@
     <controller id="Traktor">
         <scriptfiles>
             <file filename="common-hid-packet-parser.js" functionprefix=""/>
-            <file functionprefix="TraktorS4MK2" filename="Traktor-Kontrol-S4-MK2-hid-scripts.js"/>
+            <file filename="Traktor-Kontrol-S4-MK2-hid-scripts.js" functionprefix="TraktorS4MK2"/>
         </scriptfiles>
     </controller>
 </MixxxControllerPreset>

@@ -255,10 +255,10 @@ TraktorS4MK2.registerInputPackets = function() {
   this.controller.setScaler("parameter1", this.scalerParameter);
   this.controller.setScaler("parameter2", this.scalerParameter);
   this.controller.setScaler("parameter3", this.scalerParameter);
-  this.controller.setScaler("super1", this.scalerQuickKnob);
+  this.controller.setScaler("super1", this.scalerParameter);
   this.controller.setScaler("crossfader", this.scalerSlider);
   this.controller.setScaler("rate", this.scalerSlider);
-  this.controller.setScaler("mix", this.scalerQuickKnob);
+  this.controller.setScaler("mix", this.scalerParameter);
   this.controller.registerInputPacket(MessageLong);
 }
 
@@ -1107,6 +1107,8 @@ TraktorS4MK2.callbackBrowse = function(field) {
 TraktorS4MK2.scalerParameter = function(group, name, value) {
   return script.absoluteLin(value, 0, 1, 16, 4080);
 }
+// Tell the HIDController script to use setParameter instead of setValue.
+TraktorS4MK2.scalerParameter.useSetParameter = true;
 
 TraktorS4MK2.scalerVolume = function(group, name, value) {
   if (group === "[Master]") {
@@ -1114,10 +1116,6 @@ TraktorS4MK2.scalerVolume = function(group, name, value) {
   } else {
     return script.absoluteNonLin(value, 0, 0.25, 1, 16, 4080);
   }
-}
-
-TraktorS4MK2.scalerQuickKnob = function(group, name, value) {
-  return script.absoluteLin(value, 0, 1, 16, 4080);
 }
 
 TraktorS4MK2.scalerSlider = function(group, name, value) {

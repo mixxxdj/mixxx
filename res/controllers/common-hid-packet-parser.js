@@ -1087,15 +1087,6 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
     }
 }
 
-HIDController.prototype.isParameterControl = function(control) {
-    if (control.substr(0, 5) === "super") {
-        return true;
-    } else if (control.substr(0, 9) === "parameter") {
-        return true;
-    }
-    return false;
-}
-
 // Get active group for this field
 HIDController.prototype.getActiveFieldGroup = function(field) {
     if (field.mapped_group!=undefined) {
@@ -1222,13 +1213,17 @@ HIDController.prototype.processControl = function(field) {
             field_delta = scaler(group,control,field_delta);
         engine.setValue(group,control,field_delta);
     } else {
-        if (scaler!=undefined)
+        if (scaler!=undefined) {
             value = scaler(group,control,value);
-        if (this.isParameterControl(control)) {
-            engine.setParameter(group, control, value);
-        } else {
-            engine.setValue(group,control,value);
+            // See the Traktor S4 script for how to use this.  If the scaler function has this
+            // parameter set to true, we use the effects-engine setParameter call instead of
+            // setValue.
+            if (scaler.useSetParameter) {
+                engine.setParameter(group, control, value);
+                return;
+            }
         }
+        engine.setValue(group,control,value);
     }
 }
 
