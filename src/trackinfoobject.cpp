@@ -45,6 +45,8 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
     m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
 
+    qRegisterMetaType<Mixxx::ReplayGain>("Mixxx::ReplayGain");
+
     // Parse the metadata from file. This is not a quick operation!
     m_bHeaderParsed = false;
     if (parseHeader) {
