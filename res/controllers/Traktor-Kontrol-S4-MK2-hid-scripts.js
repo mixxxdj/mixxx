@@ -6,6 +6,7 @@
 /****************************************************************/
 
 // TODO:
+// * Soft takeover for rate slider
 // * Loop size readout / selection
 // * Find a use for snap / master / other unused buttons?
 
@@ -198,6 +199,10 @@ TraktorS4MK2.registerInputPackets = function() {
   // There are also some 4 bit encoders.
   MessageLong.addControl("deck1", "rate", 0x09, "H");
   MessageLong.addControl("deck2", "rate", 0x0B, "H");
+  engine.softTakeover("[Channel1]", "rate", true);
+  engine.softTakeover("[Channel2]", "rate", true);
+  engine.softTakeover("[Channel3]", "rate", true);
+  engine.softTakeover("[Channel4]", "rate", true);
   MessageLong.addControl("deck1", "!loopmove", 0x01, "B", 0x0F, undefined, true);
   MessageLong.addControl("deck2", "!loopmove", 0x02, "B", 0xF0, undefined, true);
   MessageLong.setCallback("deck1", "!loopmove", this.callbackLoopMove);
