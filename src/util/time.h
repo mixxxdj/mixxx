@@ -30,8 +30,9 @@ class Time {
         return s_timer.elapsed();
     }
 
-    static uint elapsedMsecs() {
-        return (uint)(s_timer.elapsed() / 1000);
+    // Returns the time elapsed since Mixxx started up in milliseconds.
+    static qint64 elapsedMsecs() {
+        return s_timer.elapsed() / 1000;
     }
 
     // The standard way of formatting a time in seconds. Used for display of
