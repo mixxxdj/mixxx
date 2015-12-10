@@ -33,6 +33,8 @@ struct AudioSourceConfig;
 // closed upon destruction.
 class AudioSource: public UrlResource, public AudioSignal {
 public:
+    static const SampleLayout kSampleLayout = SampleLayout::Interleaved;
+
     // Returns the total number of sample frames.
     inline SINT getFrameCount() const {
         return m_frameCount;
@@ -216,14 +218,12 @@ private:
 // Parameters for configuring audio sources
 class AudioSourceConfig: public AudioSignal {
 public:
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-    // NOTE(uklotzde): Inheriting constructors are supported since VS2015.
-    AudioSourceConfig() {}
-    AudioSourceConfig(SINT channelCount, SINT samplingRate): AudioSignal(channelCount, samplingRate) {}
-#else
-    // Inherit constructors from base class
-    using AudioSignal::AudioSignal;
-#endif
+    AudioSourceConfig()
+        : AudioSignal(AudioSource::kSampleLayout) {
+    }
+    AudioSourceConfig(SINT channelCount, SINT samplingRate)
+        : AudioSignal(AudioSource::kSampleLayout, channelCount, samplingRate) {
+    }
 
     using AudioSignal::setChannelCount;
     using AudioSignal::resetChannelCount;
