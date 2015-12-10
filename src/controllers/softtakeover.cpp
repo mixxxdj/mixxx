@@ -13,6 +13,12 @@
 #include "util/math.h"
 #include "util/time.h"
 
+// 3/128 units away from the current is enough to catch fast non-sequential moves
+//  but not cause an audibly noticeable jump, determined experimentally with
+//  slow-refresh controllers.
+const double SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
+
+
 SoftTakeoverCtrl::SoftTakeoverCtrl() {
 
 }

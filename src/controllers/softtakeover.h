@@ -15,9 +15,8 @@ class ControlObject;
 
 class SoftTakeover {
   public:
-    // 3/128 units away from the current is enough to catch fast non-sequential moves
-    //  but not cause an audibly noticeable jump.
-    static const double kDefaultTakeoverThreshold = 3.0 / 128;
+    // I would initialize it here but that's C++11 coolness. (Because it's a double.)
+    static const double kDefaultTakeoverThreshold;
 
     SoftTakeover();
     bool ignore(ControlObject* control, double newParameter);
