@@ -54,17 +54,23 @@ TEST_F(SoftTakeoverTest, SoftTakeover_IgnoresFirstValue) {
     EXPECT_TRUE(st_control.ignore(co.data(), 5));
 }
 
-TEST_F(SoftTakeoverTest, SoftTakeover_DoesntIgnoreSameValue) {
-    // Range -1.0 to 1.0
-    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -1.0, 1.0));
 
-    SoftTakeoverCtrl st_control;
-    st_control.enable(co.data());
-    // First is always ignored.
-    EXPECT_TRUE(st_control.ignore(co.data(), 0.6));
-    EXPECT_FALSE(st_control.ignore(co.data(), 0.6));
-}
+// This behavior is undefined since it doesn't actually matter what happens
+//  setting the same value since the result is the same. 
+//  E.g. in 1.11 it ignores it, in 2.0 it doesn't.
+
+// TEST_F(SoftTakeoverTest, SoftTakeover_DoesntIgnoreSameValue) {
+//     // Range -1.0 to 1.0
+//     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+//         ConfigKey("[Channel1]", "test_pot"), -1.0, 1.0));
+// 
+//     SoftTakeoverCtrl st_control;
+//     st_control.enable(co.data());
+//     // First is always ignored.
+//     EXPECT_TRUE(st_control.ignore(co.data(), 0.6));
+//     EXPECT_FALSE(st_control.ignore(co.data(), 0.6));
+// }
+
 
 
 /* The meat of the tests
@@ -517,5 +523,234 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewFarMore_Late) {
     Time::setTestElapsedTime(100);
     EXPECT_TRUE(st_control.ignore(co.data(), 100));
 }
+
+// For the ignore cases, check that they work correctly with various signed values
+
+
+// Far away and less than current, within time threshold
+
+TEST_F(SoftTakeoverTest, PrevFarLessNeg_NewFarLessNeg_Soon) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(100);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), -50));
+    EXPECT_TRUE(st_control.ignore(co.data(), -20));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarLessNeg_NewFarLessPos_Soon) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(100);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), -50));
+    EXPECT_TRUE(st_control.ignore(co.data(), 20));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarLessPos_NewFarLessNeg_Soon) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(100);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), 50));
+    EXPECT_TRUE(st_control.ignore(co.data(), -20));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarLessPos_NewFarLessPos_Soon) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(100);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), 50));
+    EXPECT_TRUE(st_control.ignore(co.data(), 20));
+}
+
+
+// Far away and less than current, over time threshold
+
+TEST_F(SoftTakeoverTest, PrevFarLessNeg_NewFarLessNeg_Late) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(100);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), -50));
+    Time::setTestElapsedTime(100);
+    EXPECT_TRUE(st_control.ignore(co.data(), -20));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarLessNeg_NewFarLessPos_Late) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(100);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), -50));
+    Time::setTestElapsedTime(100);
+    EXPECT_TRUE(st_control.ignore(co.data(), 20));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarLessPos_NewFarLessNeg_Late) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(100);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), 50));
+    Time::setTestElapsedTime(100);
+    EXPECT_TRUE(st_control.ignore(co.data(), -20));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarLessPos_NewFarLessPos_Late) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(100);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), 50));
+    Time::setTestElapsedTime(100);
+    EXPECT_TRUE(st_control.ignore(co.data(), 20));
+}
+
+// Far away and more than current, within time threshold
+
+TEST_F(SoftTakeoverTest, PrevFarMoreNeg_NewFarMoreNeg_Soon) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(-200);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), -150));
+    EXPECT_TRUE(st_control.ignore(co.data(), -100));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarMoreNeg_NewFarMorePos_Soon) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(-200);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), -150));
+    EXPECT_TRUE(st_control.ignore(co.data(), 100));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarMorePos_NewFarMoreNeg_Soon) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(-200);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), 150));
+    EXPECT_TRUE(st_control.ignore(co.data(), -100));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarMorePos_NewFarMorePos_Soon) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(-200);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), 150));
+    EXPECT_TRUE(st_control.ignore(co.data(), 100));
+}
+
+// Far away and more than current, over time threshold
+
+TEST_F(SoftTakeoverTest, PrevFarMoreNeg_NewFarMoreNeg_Late) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(-200);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), -150));
+    Time::setTestElapsedTime(100);
+    EXPECT_TRUE(st_control.ignore(co.data(), -100));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarMoreNeg_NewFarMorePos_Late) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(-200);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), -150));
+    Time::setTestElapsedTime(100);
+    EXPECT_TRUE(st_control.ignore(co.data(), 100));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarMorePos_NewFarMoreNeg_Late) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(-200);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), 150));
+    Time::setTestElapsedTime(100);
+    EXPECT_TRUE(st_control.ignore(co.data(), -100));
+}
+
+TEST_F(SoftTakeoverTest, PrevFarMorePos_NewFarMorePos_Late) {
+    QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
+        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+    
+    co->set(-200);
+    SoftTakeoverCtrl st_control;
+    st_control.enable(co.data());
+    
+    // First is always ignored.
+    EXPECT_TRUE(st_control.ignore(co.data(), 150));
+    Time::setTestElapsedTime(100);
+    EXPECT_TRUE(st_control.ignore(co.data(), 100));
+}
+
 
 }  // namespace
