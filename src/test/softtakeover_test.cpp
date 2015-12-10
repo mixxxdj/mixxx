@@ -149,7 +149,7 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 40));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), 45));
 }
 
@@ -163,11 +163,13 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 40));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), 60));
 }
 
-// Ignore this case
+// Ignore this case:
+//  Sides    prev distance   new distance    new value arrives   Ignore
+//  same     close           far             later               TRUE
 TEST_F(SoftTakeoverTest, PrevNearLess_NewFarLess_Late) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
         ConfigKey("[Channel1]", "test_pot"), -250, 250));
@@ -178,11 +180,13 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewFarLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 40));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), 1));
 }
 
-// Ignore this case
+// Ignore this case:
+//  Sides    prev distance   new distance    new value arrives   Ignore
+//  opposite close           far             later               TRUE
 TEST_F(SoftTakeoverTest, PrevNearLess_NewFarMore_Late) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
         ConfigKey("[Channel1]", "test_pot"), -250, 250));
@@ -193,7 +197,7 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewFarMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 40));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), 100));
 }
 
@@ -261,7 +265,7 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 55));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), 45));
 }
 
@@ -275,11 +279,13 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 55));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), 60));
 }
 
-// Ignore this case
+// Ignore this case:
+//  Sides    prev distance   new distance    new value arrives   Ignore
+//  opposite close           far             later               TRUE
 TEST_F(SoftTakeoverTest, PrevNearMore_NewFarLess_Late) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
         ConfigKey("[Channel1]", "test_pot"), -250, 250));
@@ -290,11 +296,13 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewFarLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 55));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), 1));
 }
 
-// Ignore this case
+// Ignore this case:
+//  Sides    prev distance   new distance    new value arrives   Ignore
+//  same     close           far             later               TRUE
 TEST_F(SoftTakeoverTest, PrevNearMore_NewFarMore_Late) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
         ConfigKey("[Channel1]", "test_pot"), -250, 250));
@@ -305,7 +313,7 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewFarMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 55));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), 100));
 }
 
@@ -337,7 +345,9 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Soon) {
     EXPECT_FALSE(st_control.ignore(co.data(), 60));
 }
 
-// Ignore this case
+// Ignore this case:
+//  Sides    prev distance   new distance    new value arrives   Ignore
+//  same     far             far             soon                TRUE
 TEST_F(SoftTakeoverTest, PrevFarLess_NewFarLess_Soon) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
         ConfigKey("[Channel1]", "test_pot"), -250, 250));
@@ -374,7 +384,7 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), -50));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), 45));
 }
 
@@ -388,11 +398,13 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), -50));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), 60));
 }
 
-// Ignore this case
+// Ignore this case:
+//  Sides    prev distance   new distance    new value arrives   Ignore
+//  same     far             far             later               TRUE
 TEST_F(SoftTakeoverTest, PrevFarLess_NewFarLess_Late) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
         ConfigKey("[Channel1]", "test_pot"), -250, 250));
@@ -403,11 +415,13 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewFarLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), -50));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), 1));
 }
 
-// Ignore this case
+// Ignore this case:
+//  Sides    prev distance   new distance    new value arrives   Ignore
+//  opposite far             far             later               TRUE
 TEST_F(SoftTakeoverTest, PrevFarLess_NewFarMore_Late) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
         ConfigKey("[Channel1]", "test_pot"), -250, 250));
@@ -418,7 +432,7 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewFarMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), -50));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), 100));
 }
 
@@ -463,7 +477,9 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewFarLess_Soon) {
     EXPECT_FALSE(st_control.ignore(co.data(), 1));
 }
 
-// Ignore this case
+// Ignore this case:
+//  Sides    prev distance   new distance    new value arrives   Ignore
+//  same     far             far             soon                TRUE
 TEST_F(SoftTakeoverTest, PrevFarMore_NewFarMore_Soon) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
         ConfigKey("[Channel1]", "test_pot"), -250, 250));
@@ -487,7 +503,7 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 120));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), 45));
 }
 
@@ -501,11 +517,13 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 120));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), 60));
 }
 
-// Ignore this case
+// Ignore this case:
+//  Sides    prev distance   new distance    new value arrives   Ignore
+//  opposite far             far             later               TRUE
 TEST_F(SoftTakeoverTest, PrevFarMore_NewFarLess_Late) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
         ConfigKey("[Channel1]", "test_pot"), -250, 250));
@@ -516,11 +534,13 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewFarLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 120));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), 1));
 }
 
-// Ignore this case
+// Ignore this case:
+//  Sides    prev distance   new distance    new value arrives   Ignore
+//  same     far             far             later               TRUE
 TEST_F(SoftTakeoverTest, PrevFarMore_NewFarMore_Late) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
         ConfigKey("[Channel1]", "test_pot"), -250, 250));
@@ -531,7 +551,7 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewFarMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), 120));
-    Time::setTestElapsedTime(100);
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), 100));
 }
 

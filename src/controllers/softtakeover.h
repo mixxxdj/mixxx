@@ -25,6 +25,8 @@ class SoftTakeover {
     bool ignore(ControlObject* control, double newParameter);
     void ignoreNext();
     void setThreshold(double threshold);
+    
+    struct TestAccess;
 
   private:
     // If a new value is received within this amount of time, jump to it
@@ -36,6 +38,12 @@ class SoftTakeover {
     qint64 m_time;
     double m_prevParameter;
     double m_dThreshold;
+};
+
+struct SoftTakeover::TestAccess {
+    static qint64 getTimeThreshold() {
+        return SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS;
+    }
 };
 
 class SoftTakeoverCtrl {
