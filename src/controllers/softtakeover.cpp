@@ -79,7 +79,7 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
     //      of the current value of the control
     //  - it's been awhile since the controller last affected this control
 
-    uint currentTime = Time::elapsedMsecs();
+    qint64 currentTime = Time::elapsedMsecs();
     // We will get a sudden jump if we don't ignore the first value.
     if (m_time == 0) {
         ignore = true;
