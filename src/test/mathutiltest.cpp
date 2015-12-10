@@ -75,17 +75,22 @@ TEST_F(MathUtilTest, Denormal) {
 
     float fDenormal = std::numeric_limits<float>::min() / 2.0f;
     EXPECT_TRUE(std::fpclassify(fDenormal) == FP_SUBNORMAL);
+    EXPECT_NE(0.0f, fDenormal);
 
     double dDenormal = std::numeric_limits<double>::min() / 2.0;
     EXPECT_TRUE(std::fpclassify(dDenormal) == FP_SUBNORMAL);
+    EXPECT_NE(0.0, dDenormal);
 
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 
     fDenormal = std::numeric_limits<float>::min() / 2.0f;
-    dDenormal = std::numeric_limits<double>::min() / 2.0;
     EXPECT_FALSE(std::fpclassify(fDenormal) == FP_SUBNORMAL);
+    EXPECT_EQ(0.0f, fDenormal);
+
+    dDenormal = std::numeric_limits<double>::min() / 2.0;
     EXPECT_FALSE(std::fpclassify(dDenormal) == FP_SUBNORMAL);
+    EXPECT_EQ(0.0, dDenormal);
 #endif
 }
 
