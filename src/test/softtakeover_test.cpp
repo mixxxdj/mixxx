@@ -15,7 +15,7 @@ class SoftTakeoverTest : public MixxxTest {
   protected:
     virtual void SetUp() {
         Time::setTestMode(true);
-        Time::setTestElapsedTime(10);
+        Time::setTestElapsedMsecs(10);
     }
 
     virtual void TearDown() {
@@ -145,9 +145,7 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(40)));
-    // Do it again to get the previous value time to populate
-    EXPECT_FALSE(st_control.ignore(co.data(), co->getParameterForValue(40)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), co->getParameterForValue(45)));
 }
 
@@ -161,7 +159,7 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(40)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), co->getParameterForValue(60)));
 }
 
@@ -178,7 +176,7 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewFarLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(40)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(1)));
 }
 
@@ -195,7 +193,7 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewFarMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(40)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(100)));
 }
 
@@ -263,7 +261,7 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(55)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), co->getParameterForValue(45)));
 }
 
@@ -277,7 +275,7 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(55)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), co->getParameterForValue(60)));
 }
 
@@ -294,7 +292,7 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewFarLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(55)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(1)));
 }
 
@@ -311,7 +309,7 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewFarMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(55)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(100)));
 }
 
@@ -382,7 +380,7 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(-50)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), co->getParameterForValue(45)));
 }
 
@@ -396,7 +394,7 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(-50)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), co->getParameterForValue(60)));
 }
 
@@ -413,7 +411,7 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewFarLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(-50)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(1)));
 }
 
@@ -430,7 +428,7 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewFarMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(-50)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(100)));
 }
 
@@ -501,7 +499,7 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(120)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), co->getParameterForValue(45)));
 }
 
@@ -515,7 +513,7 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(120)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_FALSE(st_control.ignore(co.data(), co->getParameterForValue(60)));
 }
 
@@ -532,7 +530,7 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewFarLess_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(120)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(1)));
 }
 
@@ -549,7 +547,7 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewFarMore_Late) {
     
     // First is always ignored.
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(120)));
-    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold()*2);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold()*2);
     EXPECT_TRUE(st_control.ignore(co.data(), co->getParameterForValue(100)));
 }
 
