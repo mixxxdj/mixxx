@@ -1,7 +1,9 @@
-#include <gtest/gtest.h>
-#include "util/math.h"
+#include <limits>
 
+#include <gtest/gtest.h>
 #include <QtDebug>
+
+#include "util/math.h"
 
 namespace {
 
@@ -28,7 +30,7 @@ const int MathUtilTest::MIN = -10;
 const int MathUtilTest::MAX = 10;
 
 const int MathUtilTest::VALUE_MIN = 2 * MathUtilTest::MIN;
-const int MathUtilTest::VALUE_MAX = 2  * MathUtilTest::MAX;
+const int MathUtilTest::VALUE_MAX = 2 * MathUtilTest::MAX;
 
 TEST_F(MathUtilTest, MathClampUnsafe) {
     for (int i = VALUE_MIN; i <= VALUE_MAX; ++i) {
@@ -44,5 +46,34 @@ TEST_F(MathUtilTest, MathClampUnsafe) {
         }
     }
 }
+
+TEST_F(MathUtilTest, IsNaN) {
+    // Test floats can be recognized as nan.
+    EXPECT_FALSE(isnan(0.0f));
+    EXPECT_TRUE(isnan(std::numeric_limits<float>::quiet_NaN()));
+
+    // Test doubles can be recognized as nan.
+    EXPECT_FALSE(isnan(0.0));
+    EXPECT_TRUE(isnan(std::numeric_limits<double>::quiet_NaN()));
+}
+
+TEST_F(MathUtilTest, IsInf) {
+    // Test floats can be recognized as infinity.
+    EXPECT_FALSE(isinf(0.0f));
+    EXPECT_TRUE(isinf(std::numeric_limits<float>::infinity()));
+
+    // Test doubles can be recognized as infinity.
+    EXPECT_FALSE(isinf(0.0f));
+    EXPECT_TRUE(isinf(std::numeric_limits<double>::infinity()));
+}
+
+TEST_F(MathUtilTest, Denormal) {
+    float fDenormal = std::numeric_limits<float>::min() / 2.0f;
+    EXPECT_TRUE(std::fpclassify(fDenormal) == FP_SUBNORMAL);
+
+    double dDenormal = std::numeric_limits<double>::min() / 2.0;
+    EXPECT_TRUE(std::fpclassify(dDenormal) == FP_SUBNORMAL);
+}
+
 
 }  // namespace

@@ -92,6 +92,9 @@ int EngineNetworkStream::getReadExpected() {
 }
 
 void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
+    if (m_pWorker.isNull()) {
+        return;
+    }
 
     //qDebug() << "EngineNetworkStream::write()" << frames;
     if (!m_pWorker->threadWaiting()) {
@@ -119,6 +122,9 @@ void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
 }
 
 void EngineNetworkStream::writeSilence(int frames) {
+    if (m_pWorker.isNull()) {
+        return;
+    }
     //qDebug() << "EngineNetworkStream::writeSilence()" << frames;
     if (!m_pWorker->threadWaiting()) {
         // no thread waiting, so we can advance the stream without
@@ -152,6 +158,9 @@ void EngineNetworkStream::writeSilence(int frames) {
 }
 
 void EngineNetworkStream::scheduleWorker() {
+    if (m_pWorker.isNull()) {
+        return;
+    }
     if (m_pOutputFifo->readAvailable()
             >= m_numOutputChannels * kNetworkLatencyFrames) {
         m_pWorker->outputAvailable();
@@ -237,5 +246,7 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
 
 void EngineNetworkStream::addWorker(QSharedPointer<NetworkStreamWorker> pWorker) {
     m_pWorker = pWorker;
-    m_pWorker->setOutputFifo(m_pOutputFifo);
+    if (m_pWorker) {
+        m_pWorker->setOutputFifo(m_pOutputFifo);
+    }
 }
