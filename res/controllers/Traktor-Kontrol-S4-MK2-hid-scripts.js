@@ -6,7 +6,6 @@
 /****************************************************************/
 
 // TODO:
-// * Soft takeover for rate slider
 // * Loop size readout / selection
 // * Find a use for snap / master / other unused buttons?
 
@@ -575,7 +574,6 @@ TraktorS4MK2.pointlessLightShow = function() {
 }
 
 TraktorS4MK2.init = function(id) {
-  TraktorS4MK2.construct()
   TraktorS4MK2.pointlessLightShow()
   TraktorS4MK2.registerInputPackets()
   TraktorS4MK2.registerOutputPackets()
