@@ -166,10 +166,21 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
 #        unix_share_path = flags['prefix'] + "/share"
 #        unix_bin_path   = flags['prefix'] + "/bin"
 
+bundle_pdbs = build.platform_is_windows and (
+        build.build_is_debug or
+        SCons.ARGUMENTS.get('bundle_pdbs', '') in ('yes', 'y', '1'))
+
 #Mixxx binary
 binary_files = [mixxx_bin];
 if test_bin is not None:
         binary_files.append(test_bin)
+        if bundle_pdbs:
+                binary_files.append(
+                        Glob(os.path.join(build.build_dir, 'mixxx-test.pdb')))
+
+if bundle_pdbs:
+        binary_files.append(
+                Glob(os.path.join(build.build_dir, 'mixxx.pdb')))
 
 #Soundsource plugins
 soundsource_plugin_files = soundsource_plugins
@@ -220,10 +231,6 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets
 # all files on 2+ builds after a clean.
 dll_files = []
-bundle_pdbs = build.platform_is_windows and (
-        build.build_is_debug or
-        SCons.ARGUMENTS.get('bundle_pdbs', '') in ('yes', 'y', '1'))
-
 if build.toolchain_is_msvs:
         mixxx_winlib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc90-release')
         # skip the MSVC DLLs incase they're in there too
