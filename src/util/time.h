@@ -27,12 +27,28 @@ class Time {
 
     // Returns the time elapsed since Mixxx started up in nanoseconds.
     static qint64 elapsed() {
+        if (s_testMode) {
+            return s_testElapsedTime;
+        }
         return s_timer.elapsed();
     }
 
     // Returns the time elapsed since Mixxx started up in milliseconds.
     static qint64 elapsedMsecs() {
+        if (s_testMode) {
+            return s_testElapsedTime / 1000;
+        }
         return s_timer.elapsed() / 1000;
+    }
+
+    // Enable or disable testing mode. In testing mode we allow tests to set the
+    // elapsed time we will return.
+    static void setTestMode(bool test) {
+        s_testMode = test;
+    }
+
+    static void setTestElapsedTime(qint64 elapsed) {
+        s_testElapsedTime = elapsed;
     }
 
     // The standard way of formatting a time in seconds. Used for display of
@@ -67,6 +83,10 @@ class Time {
 
   private:
     static LLTIMER s_timer;
+
+    // For testing timing related behavior.
+    static bool s_testMode;
+    static qint64 s_testElapsedTime;
 };
 
 #endif /* TIME_H */
