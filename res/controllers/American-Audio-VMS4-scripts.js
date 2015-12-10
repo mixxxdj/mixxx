@@ -228,7 +228,6 @@ VMS4.Deck.prototype.keyLockButtonHandler = function(value) {
 }
 
 VMS4.Deck.prototype.effectParamButtonHandler = function(value) {
-//     // Reset pitch only on entrance to center position
 //     if(value == ButtonState.pressed) {
 //         this.controlEffectParameter=!this.controlEffectParameter;
 //         if (this.controlEffectParameter) {
@@ -342,7 +341,6 @@ VMS4.effectControl = function(channel, control, value, status, group) {
 VMS4.effectParameterButton = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
 //     deck.Buttons.FXParam.handleEvent(group, value);
-    // Reset pitch only on entrance to center position
     if(value > 0x40) {
         var deckNum = VMS4.GetDeckNum(group);
         deck.controlEffectParameter=!deck.controlEffectParameter;
@@ -350,13 +348,13 @@ VMS4.effectParameterButton = function(channel, control, value, status, group) {
             // Super knob
             deck.Buttons.FXParam.setLed(LedState.on);
             // Ignore the next wet/dry value
-            engine.softTakeoverIgnoreNext("[EffectRack1_EffectUnit"+deckNum+"]","mix");
+            engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit"+deckNum+"]","mix");
         }
         else {
             // Wet/dry
             deck.Buttons.FXParam.setLed(LedState.off);
             // Ignore the next Super knob value
-            engine.softTakeoverIgnoreNext("[EffectRack1_EffectUnit"+deckNum+"]","super1");
+            engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit"+deckNum+"]","super1");
         }
     }
 }
