@@ -1441,9 +1441,10 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
 
 /*  -------- ------------------------------------------------------
      Purpose: Ignores the next value for the given ControlObject
-                This is used when an absolute physical control is changed to
-                to operate on a different ControlObject, allowing it to sync up
-                to the soft-takeover state without an abrupt jump.
+                This should be called before or after an absolute physical
+                control (slider or knob with hard limits) is changed to operate
+                on a different ControlObject, allowing it to sync up to the 
+                soft-takeover state without an abrupt jump.
      Input:   ControlObject group and key values
      Output:  -
      -------- ------------------------------------------------------ */

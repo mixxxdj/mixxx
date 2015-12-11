@@ -67,12 +67,16 @@ bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
 }
 
 void SoftTakeoverCtrl::ignoreNext(ControlObject* control) {
-    if (control != NULL) {
-        SoftTakeover* pSt = m_softTakeoverHash.value(control);
-        if (pSt) {
-            pSt->ignoreNext();
-        }
+    if (control == NULL) {
+        return;
     }
+    
+    SoftTakeover* pSt = m_softTakeoverHash.value(control);
+    if (pSt == NULL) {
+        return;
+    }
+
+    pSt->ignoreNext();
 }
 
 SoftTakeover::SoftTakeover()
