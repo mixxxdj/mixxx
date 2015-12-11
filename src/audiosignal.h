@@ -9,19 +9,28 @@ namespace Mixxx {
 // Common properties of audio signals in Mixxx.
 //
 // An audio signal describes a stream of samples for multiple channels.
-// If there is more than one channel, the samples of each channel will
-// be interleaved. The samples from all channels that are coincident
-// in time are called a "frame". Consequently audio signals are streamed
-// frame by frame. With the knowledge about the number of channels sample
-// and frame offsets in the stream can be converted vice versa.
-//
 // Internally each sample is represented by a floating-point value.
 //
 // The properties of an audio signal are immutable and must be constant
 // over time. Therefore all functions for modifying individual properties
-// are declared as "protected" and only available from derived classes.
+// are declared as "protected" and are only available from derived classes.
 class AudioSignal {
 public:
+    // Defines the ordering of how samples from multiple channels are
+    // stored in contiguous buffers:
+    //    - Planar: Channel by channel
+    //    - Interleaved: Frame by frame
+    // The samples from all channels that are coincident in time are
+    // called a "frame" (or more specific "sample frame").
+    //
+    // Example: 10 stereo samples from left (L) and right (R) channel
+    // Planar layout:      LLLLLLLLLLRRRRRRRRRR
+    // Interleaved layout: LRLRLRLRLRLRLRLRLRLR
+    enum class SampleLayout {
+        Planar,
+        Interleaved
+    };
+
     static const SINT kChannelCountZero    = 0;
     static const SINT kChannelCountMono    = 1;
     static const SINT kChannelCountStereo  = 2;
@@ -41,17 +50,24 @@ public:
         return kSamplingRateZero < samplingRate;
     }
 
-    AudioSignal()
-        : m_channelCount(kChannelCountDefault),
+    explicit AudioSignal(SampleLayout sampleLayout)
+        : m_sampleLayout(sampleLayout),
+          m_channelCount(kChannelCountDefault),
           m_samplingRate(kSamplingRateDefault) {
     }
-    AudioSignal(SINT channelCount, SINT samplingRate)
-        : m_channelCount(channelCount),
+    AudioSignal(SampleLayout sampleLayout, SINT channelCount, SINT samplingRate)
+        : m_sampleLayout(sampleLayout),
+          m_channelCount(channelCount),
           m_samplingRate(samplingRate) {
         DEBUG_ASSERT(kChannelCountZero <= m_channelCount);
         DEBUG_ASSERT(kSamplingRateZero <= m_samplingRate);
     }
     virtual ~AudioSignal() {}
+
+    // Returns the ordering of samples in contiguous buffers
+    SampleLayout getSampleLayout() const {
+        return m_sampleLayout;
+    }
 
     // Returns the number of channels.
     SINT getChannelCount() const {
@@ -116,6 +132,7 @@ protected:
     }
 
 private:
+    SampleLayout m_sampleLayout;
     SINT m_channelCount;
     SINT m_samplingRate;
 };
