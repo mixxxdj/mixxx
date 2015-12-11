@@ -67,7 +67,7 @@ TEST_F(SoftTakeoverTest, DoesntIgnoreSameValue) {
     EXPECT_FALSE(st_control.ignore(co.data(), co->getParameterForValue(0.6)));
 }
 
-// These is a corner case that allows for quickly flicking/whipping controls
+// These are corner cases that allow for quickly flicking/whipping controls
 //  from a standstill when the previous knob value matches the current CO value
 TEST_F(SoftTakeoverTest, SuperFastPrevEqCurrent) {
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
