@@ -24,7 +24,7 @@
             <Size>15f,21f</Size>
             <Children>
               <EffectPushButton>
-                <TooltipId><Variable name="TooltipId"/></TooltipId>
+                <TooltipId><Variable name="button_TooltipId"/></TooltipId>
                 <Size>15f,15f</Size>
                 <ObjectName>MixerButton</ObjectName>
                 <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>

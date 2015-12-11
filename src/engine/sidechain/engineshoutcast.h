@@ -128,8 +128,7 @@ class EngineShoutcast :
     long m_iShoutStatus;
     long m_iShoutFailures;
     ConfigObject<ConfigValue>* m_pConfig;
-    Encoder *m_encoder;
-    ControlObject* m_pShoutcastNeedUpdateFromPrefs;
+    Encoder* m_encoder;
     ControlPushButton* m_pShoutcastEnabled;
     ControlObjectSlave* m_pMasterSamplerate;
     ControlObject* m_pStatusCO;

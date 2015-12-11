@@ -36,8 +36,7 @@
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <Template src="skin:left_2state_button.xml">
-                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_enabled</SetVariable>
                 <SetVariable name="ObjectName"></SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -52,8 +51,7 @@
               </Template>
 
               <Template src="skin:left_1state_button.xml">
-                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_clear</SetVariable>
                 <SetVariable name="ObjectName"></SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -65,8 +63,7 @@
               </Template>
 
               <Template src="skin:left_1state_button.xml">
-                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_prev_chain</SetVariable>
                 <SetVariable name="ObjectName"></SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -78,8 +75,7 @@
               </Template>
 
               <Template src="skin:left_1state_button.xml">
-                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-                <SetVariable name="TooltipId"></SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_next_chain</SetVariable>
                 <SetVariable name="ObjectName"></SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -320,6 +316,7 @@
                         <SetVariable name="color">blue</SetVariable>
                       </Template>
                       <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="TooltipId">EffectSlot_button_parameter</SetVariable>
                         <SetVariable name="Effect">3</SetVariable>
                         <SetVariable name="EffectButtonParameter">3</SetVariable>
                       </Template>
@@ -329,6 +326,7 @@
                         <SetVariable name="color">blue</SetVariable>
                       </Template>
                       <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="TooltipId">EffectSlot_button_parameter</SetVariable>
                         <SetVariable name="Effect">3</SetVariable>
                         <SetVariable name="EffectButtonParameter">4</SetVariable>
                       </Template>
@@ -338,6 +336,7 @@
                         <SetVariable name="color">blue</SetVariable>
                       </Template>
                       <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="TooltipId">EffectSlot_button_parameter</SetVariable>
                         <SetVariable name="Effect">3</SetVariable>
                         <SetVariable name="EffectButtonParameter">5</SetVariable>
                       </Template>
@@ -347,6 +346,7 @@
                         <SetVariable name="color">blue</SetVariable>
                       </Template>
                       <Template src="skin:effect_button_parameter.xml">
+                        <SetVariable name="TooltipId">EffectSlot_button_parameter</SetVariable>
                         <SetVariable name="Effect">3</SetVariable>
                         <SetVariable name="EffectButtonParameter">6</SetVariable>
                       </Template>
@@ -380,12 +380,14 @@
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <Template src="skin:knob_with_label.xml">
+                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                 <SetVariable name="control">super1</SetVariable>
                 <SetVariable name="label">Super</SetVariable>
                 <SetVariable name="color">yellow</SetVariable>
               </Template>
 
               <Template src="skin:knob_with_label.xml">
+                <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                 <SetVariable name="control">mix</SetVariable>
                 <SetVariable name="label">Mix</SetVariable>
                 <SetVariable name="color">blue</SetVariable>

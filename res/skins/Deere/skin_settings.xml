@@ -13,20 +13,13 @@
     <Children>
       <WidgetGroup>
         <ObjectName>SkinSettingsTop</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
-        <MinimumSize>-1,36</MinimumSize>
         <Layout>horizontal</Layout>
         <Children>
           <Label>
             <ObjectName>h1</ObjectName>
+            <SizePolicy>e,min</SizePolicy>
             <Text>Skin Settings</Text>
           </Label>
-          <WidgetGroup>
-            <ObjectName>SkinSettingsTop</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <Children/>
-          </WidgetGroup>
           <Template src="skin:left_2state_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="Tooltip">Show/hide skin settings</SetVariable>
