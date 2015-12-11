@@ -28,7 +28,7 @@ class Time {
     // Returns the time elapsed since Mixxx started up in nanoseconds.
     static qint64 elapsed() {
         if (s_testMode) {
-            return s_testElapsed_usecs;
+            return s_testElapsed_nsecs;
         }
         return s_timer.elapsed();
     }
@@ -36,9 +36,9 @@ class Time {
     // Returns the time elapsed since Mixxx started up in milliseconds.
     static qint64 elapsedMsecs() {
         if (s_testMode) {
-            return s_testElapsed_usecs / 1000;
+            return s_testElapsed_nsecs / 1000000;
         }
-        return s_timer.elapsed() / 1000;
+        return (s_timer.elapsed() / 1000000);
     }
 
     // Enable or disable testing mode. In testing mode we allow tests to set the
@@ -48,11 +48,11 @@ class Time {
     }
 
     static void setTestElapsedTime(qint64 elapsed) {
-        s_testElapsed_usecs = elapsed;
+        s_testElapsed_nsecs = elapsed;
     }
     
     static void setTestElapsedMsecs(qint64 elapsed) {
-        s_testElapsed_usecs = elapsed * 1000;
+        s_testElapsed_nsecs = elapsed * 1000000;
     }
 
     // The standard way of formatting a time in seconds. Used for display of
@@ -90,7 +90,7 @@ class Time {
 
     // For testing timing related behavior.
     static bool s_testMode;
-    static qint64 s_testElapsed_usecs;
+    static qint64 s_testElapsed_nsecs;
 };
 
 #endif /* TIME_H */

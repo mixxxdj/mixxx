@@ -62,7 +62,7 @@ bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
 
 SoftTakeover::SoftTakeover()
     : m_time(-1),
-      m_prevParameter(0),
+      m_prevParameter(-1),
       m_dThreshold(kDefaultTakeoverThreshold) {
 }
 
@@ -79,13 +79,13 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
      * - its new value is far away from the current value of the ControlObject
      * AND either of the following:
      *  - its new and previous values are on the opposite side of the current
-     *      value of the ControlObject AND the new one arrives awhile after the
+     *      value of the ControlObject AND the new one arrives long enough after the
      *      previous one (regardless of what the previous value was)
      *  - new and previous values are on the same side of the current value of
      *      the ControlObject AND either:
      *      - the previous value is (also) far from the current CO value
      *          (regardless of the new value's arrival time)
-     *      - the new value arrives awhile after the previous one
+     *      - the new value arrives long enough after the previous one
      *          (regardless of what the previous value was)
      * 
      * Sheesh, this is much easier to show in a truth table!
@@ -111,20 +111,33 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
     } else {
         const double currentParameter = control->getParameter();
         const double difference = currentParameter - newParameter;
-        if (fabs(difference) > m_dThreshold) {
+        if (m_prevParameter != -1 && fabs(difference) > m_dThreshold) {
             // New parameter is far away from current
             const double prevDiff = currentParameter - m_prevParameter;
-            if ((prevDiff > 0 && difference < 0) ||
-                (prevDiff < 0 && difference > 0)) {
+            if (prevDiff * difference <= 0) {
                 // Opposite sides
-                if ((currentTime - m_time) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
-                    // New parameter arrived awhile after the last one that took effect
+                if ((currentTime - m_time) > kSubsequentValueOverrideTimeMsecs) {
+                    // New parameter arrived long enough after the last one that
+                    //  took effect
                     ignore = true;
+                    
+                    // Except if the previous value was the same as the current,
+                    //  we need to process it anyway to allow really fast movements
+                    if (prevDiff == 0) { ignore = false; }
+                    //  This causes bug #1520798 where changing control mappings
+                    //  on-the-fly causes the first message to be processed 
+                    //  regardless when those controls reconnect.
+                    //  The only mitigation is for those controls to
+                    //  call SoftTakeover::ignoreNext() on reconnection
+                    //      - Sean 12/2015
+                    
+                    //if (ignore) {
                     //qDebug() << "ignoring new parameter" << newParameter
-                    //    << "is further than" << m_dThreshold << "from current" 
-                    //    << currentParameter
-                    //    << "on opposite side of" << m_prevParameter << "and arrived"
-                    //    << (currentTime - m_time) << "msecs after it.";
+                    //   << "is further than" << m_dThreshold << "from current" 
+                    //   << currentParameter
+                    //   << "on opposite side of" << m_prevParameter << "and arrived"
+                    //   << (currentTime - m_time) << "msecs after it.";
+                    //}
                 }
             } else {
                 // Same side
@@ -132,18 +145,20 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
                     // Previous parameter is far away from current
                     ignore = true;
                     //qDebug() << "ignoring new parameter" << newParameter
-                    //    << "is further than" << m_dThreshold << "from current" 
-                    //    << currentParameter
-                    //    << "on same side of" << m_prevParameter 
-                    //    << "which is also far from current";
-                } else if ((currentTime - m_time) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
-                    // New parameter arrived awhile after the last one that took effect
+                    //   << "is further than" << m_dThreshold << "from current" 
+                    //   << currentParameter
+                    //   << "on same side of" << m_prevParameter 
+                    //   << "which is also far from current";
+                } else 
+                    if ((currentTime - m_time) > kSubsequentValueOverrideTimeMsecs) {
+                    // New parameter arrived long enough after the last one that
+                    //  took effect
                     ignore = true;
                     //qDebug() << "ignoring new parameter" << newParameter
-                    //    << "is further than" << m_dThreshold << "from current" 
-                    //    << currentParameter
-                    //    << "on same side of" << m_prevParameter << "and arrived"
-                    //    << (currentTime - m_time) << "msecs after it.";
+                    //   << "is further than" << m_dThreshold << "from current" 
+                    //   << currentParameter
+                    //   << "on same side of" << m_prevParameter << "and arrived"
+                    //   << (currentTime - m_time) << "msecs after it.";
                 }
             }
         }
