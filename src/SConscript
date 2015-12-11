@@ -81,6 +81,7 @@ def build_tests():
         test_env = env.Clone()
         test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
         test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
+        test_env.Append(CPPPATH="#lib/benchmark/include")
         test_files = [test_env.StaticObject(filename)
                       if filename !='main.cpp' else filename
                       for filename in test_files]
@@ -92,6 +93,9 @@ def build_tests():
 
         env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
         env.Append(LIBS = 'gmock')
+
+        env.Append(LIBPATH="#lib/benchmark/lib")
+        env.Append(LIBS = 'benchmark')
 
         if build.platform_is_windows:
                 # TODO(rryan): Build Mixxx core as a shared object and link it
