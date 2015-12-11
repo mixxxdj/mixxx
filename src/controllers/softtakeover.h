@@ -13,12 +13,9 @@
 
 class ControlObject;
 
-// 3/128 units away from the current is enough to catch fast non-sequential moves
-//  but not cause an audibly noticeable jump.
-
-
 class SoftTakeover {
   public:
+    // I would initialize it here but that's C++11 coolness. (Because it's a double.)
     static const double kDefaultTakeoverThreshold;
 
     SoftTakeover();
@@ -33,16 +30,16 @@ class SoftTakeover {
     // regardless. This allows quickly whipping controls to work while retaining
     // the benefits of soft-takeover for slower movements.  Setting this too
     // high will defeat the purpose of soft-takeover.
-    static const qint64 SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS = 50;
+    static const qint64 kSubsequentValueOverrideTimeMsecs = 50;
 
-    qint64 m_time;
-    double m_prevParameter;
+    qint64 m_time;  // -1 is a special value that means "uninitialized"
+    double m_prevParameter; // -1 is a special value meaning "uninitialized"
     double m_dThreshold;
 };
 
 struct SoftTakeover::TestAccess {
     static qint64 getTimeThreshold() {
-        return SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS;
+        return kSubsequentValueOverrideTimeMsecs;
     }
 };
 
@@ -58,6 +55,8 @@ class SoftTakeoverCtrl {
     void disable(ControlObject* control);
     // Check to see if the new value for the Control should be ignored
     bool ignore(ControlObject* control, double newMidiParameter);
+    // Ignore the next supplied parameter
+    void ignoreNext(ControlObject* control);
 
   private:
     QHash<ControlObject*, SoftTakeover*> m_softTakeoverHash;
