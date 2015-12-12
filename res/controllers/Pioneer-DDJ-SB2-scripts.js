@@ -13,7 +13,8 @@ var PioneerDDJSB2 = function () {};
 /* ### to do ###
 differenziert gesendet werden.
 - disable SHIFT-FILTER for Gain !?
-- FX Buttons LEDs werden zusätzlich vom Controller angesteuert -> somit nicht 100% zuverlässig -> Idee: App connect Note sniffern!  
+- FX Buttons LEDs werden zusätzlich vom Controller angesteuert -> somit nicht 100% zuverlässig -> Idee: App connect Note sniffern!
+- Sync Longpress wenn an-> Sync aus und langsam auf 0
  ### D O N E ###
 - "User Option" alternativ VU-Master
 - "User Option" blinken VU-Meter bei AutoDJ
@@ -42,6 +43,9 @@ PioneerDDJSB2.jogwheelSensivity = 1.0;
 // Set to 1 to disable jogwheel sensitivity increase when holding shift.
 PioneerDDJSB2.jogwheelShiftMultiplier = 20;
 
+// Time per step (in ms) for pitch speed fade to normal
+PioneerDDJSB2.speedRateToNormalTime = 200;
+
 // If true Level-Meter shows VU-Master left & right. If false shows level of channel: 1/3  2/4 (depending active deck)
 PioneerDDJSB2.showVumeterMaster = false;
 
@@ -58,8 +62,10 @@ PioneerDDJSB2.jumpPreviewEnabled = true;
 PioneerDDJSB2.jumpPreviewPosition = 0.5;
 
 ///////////////////////////////////////////////////////////////
-//                      INIT & SHUTDOWN                      //
+//               INIT, SHUTDOWN & GLOBAL HELPER              //
 ///////////////////////////////////////////////////////////////
+PioneerDDJSB2.longButtonPress = false; // new for DDJ-SB2
+PioneerDDJSB2.speedRateToNormalTimer = new Array(4); // new for DDJ-SB2
 
 PioneerDDJSB2.init = function (id) { // some adjusted for DDJ-SB2
     PioneerDDJSB2.scratchSettings = {
@@ -173,6 +179,28 @@ PioneerDDJSB2.shutdown = function () {
     PioneerDDJSB2.setAllSoftTakeover(true);
     PioneerDDJSB2.bindDeckControlConnections('[Channel3]', true);
     PioneerDDJSB2.bindDeckControlConnections('[Channel4]', true);
+};
+
+PioneerDDJSB2.longButtonPressWait = function () {  // new in DDJ-SB2 for later use
+    engine.stopTimer(PioneerDDJSB2.longButtonPressTimer);
+    PioneerDDJSB2.longButtonPress = true;    
+};
+
+PioneerDDJSB2.speedRateToNormal = function (group, deck) { // new in DDJ-SB2
+    var speed = engine.getValue(group, 'rate');
+    if (speed > 0) {
+        engine.setValue (group, 'rate_perm_down_small', true);
+        if (engine.getValue(group, 'rate') <= 0) {
+            engine.stopTimer(PioneerDDJSB2.speedRateToNormalTimer[deck]);        
+            engine.setValue (group, 'rate', 0);
+        };
+    } else if (speed < 0) {
+        engine.setValue (group, 'rate_perm_up_small', true);
+        if (engine.getValue(group, 'rate') >= 0) {
+            engine.stopTimer(PioneerDDJSB2.speedRateToNormalTimer[deck]);        
+            engine.setValue (group, 'rate', 0);
+        };
+    };
 };
 
 ///////////////////////////////////////////////////////////////
@@ -641,6 +669,13 @@ PioneerDDJSB2.keyLockButton = function (channel, control, value, status, group) 
     }
 };
 
+PioneerDDJSB2.shiftKeyLockButton = function (channel, control, value, status, group) {
+    var deck = status - 0x90;
+    if (value) {
+        PioneerDDJSB2.speedRateToNormalTimer[deck] = engine.beginTimer(PioneerDDJSB2.speedRateToNormalTime, "PioneerDDJSB2.speedRateToNormal('"+group+"', "+deck+")" );
+    };
+};
+
 PioneerDDJSB2.loopInButton = function (channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB2.deckSwitchTable[group], 'loop_in', value ? 1 : 0);
 };
@@ -692,7 +727,7 @@ PioneerDDJSB2.brakeButton = function (channel, control, value, status, group) { 
 PioneerDDJSB2.syncButton = function (channel, control, value, status, group) { // some adjusted for DDJ-SB2
     if (value) {
         script.toggleControl(group, 'sync_enabled');
-    }
+   };
 };
 
 PioneerDDJSB2.quantizeButton = function (channel, control, value, status, group) { // some adjusted for DDJ-SB2

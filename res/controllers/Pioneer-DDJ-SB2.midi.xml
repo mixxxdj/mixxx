@@ -770,8 +770,48 @@
                     <script-binding />
                 </options>
             </control>
-             <control>
+            <control>
                 <group>[Channel1]</group>
+                <key>PioneerDDJSB2.shiftKeyLockButton</key>
+                <description>Shift KeyLock, Button: left SHIFT &amp; KeyLock(Deck 1 active)</description>
+                <status>0x90</status>
+                <midino>0x60</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB2.shiftKeyLockButton</key>
+                <description>Shift KeyLock, Button: right SHIFT &amp; KeyLock(Deck 2 active)</description>
+                <status>0x91</status>
+                <midino>0x60</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJSB2.shiftKeyLockButton</key>
+                <description>Shift KeyLock, Button: left SHIFT &amp; KeyLock(Deck 3 active)</description>
+                <status>0x92</status>
+                <midino>0x60</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJSB2.shiftKeyLockButton</key>
+                <description>Shift KeyLock, Button: right SHIFT &amp; KeyLock(Deck 4 active)</description>
+                <status>0x93</status>
+                <midino>0x60</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel]</group>
                 <key>PioneerDDJSB2.shiftButton</key>
                 <description>Shift Deck 1, Button: left SHIFT (Deck 1 active)</description>
                 <status>0x90</status>
@@ -1453,7 +1493,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJSB2.fxButton</key>
-                <description>FX1-1 (CH1), Button: left FX1-1</description>
+                <description>FX1-1 (Deck1), Button: left FX1-1</description>
                 <status>0x94</status>
                 <midino>0x47</midino>
                 <options>
