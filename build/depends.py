@@ -497,10 +497,10 @@ class FpClassify(Dependence):
     # It is compiled without optimization and allows to use these function 
     # from -ffast-math optimized objects 
     def sources(self, build):
-        # add this file without optimization 
-        env=build.env.Clone()
-        return env.Object('util/fpclassify.cpp', CCFLAGS='')
-
+        # add this file without fast-math flag
+        env = build.env.Clone()
+        env['CCFLAGS'].remove('-ffast-math')
+        return env.Object('util/fpclassify.cpp')
 
 class MixxxCore(Feature):
 
