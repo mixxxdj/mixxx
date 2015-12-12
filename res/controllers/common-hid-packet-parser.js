@@ -661,6 +661,15 @@ HIDPacket.prototype.send = function() {
             this.pack(packet,field);
         }
     }
+
+    //var packet_string = "";
+    //for (d in packet.data) {
+    //  if (packet.data[d] < 0x10) {
+    //    packet_string += "0";
+    //  }
+    //  packet_string += packet.data[d].toString(16) + " ";
+    //}
+    //HIDDebug("packet: " + packet_string);
     controller.send(packet.data, packet.length, 0);
 }
 
@@ -724,7 +733,9 @@ function HIDController () {
     // Output color values to send
     this.LEDColors = {off: 0x0, on: 0x7f};
     // Toggle buttons
-    this.toggleButtons = [ "play", "pfl", "keylock", "quantize", "reverse" ];
+    this.toggleButtons = [ "play", "pfl", "keylock", "quantize", "reverse", "slip_enabled",
+                           "group_[Channel1]_enable", "group_[Channel2]_enable",
+                           "group_[Channel3]_enable", "group_[Channel4]_enable" ];
 
     // Override to set specific colors for multicolor button Output per deck
     this.deckOutputColors = {1: "on", 2: "on", 3: "on", 4: "on"};
@@ -738,10 +749,11 @@ function HIDController () {
     this.valid_groups = [
     "[Channel1]","[Channel2]","[Channel3]","[Channel4]",
     "[Sampler1]","[Sampler2]","[Sampler3]","[Sampler4]",
-    "[Master]","[Effects]","[Playlist]","[Flanger]",
-    "[Microphone]"
-]
-
+    "[Sampler5]","[Sampler6]","[Sampler7]","[Sampler8]",
+    "[Master]", "[PreviewDeck1]", "[Effects]","[Playlist]","[Flanger]",
+    "[Microphone]", "[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]",
+    "[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]",
+    "[InternalClock]" ];
 
     // Set to value in ms to update Outputs periodically
     this.OutputUpdateInterval = undefined;
@@ -1086,7 +1098,7 @@ HIDController.prototype.getActiveFieldGroup = function(field) {
             return "[Channel" + this.activeDeck + "]";
     }
     if (this.valid_groups.indexOf(group)!=-1) {
-        HIDDebug("Resolving group " + group);
+        //HIDDebug("Resolving group " + group);
         return this.resolveGroup(group);
     }
     return group;
@@ -1201,8 +1213,16 @@ HIDController.prototype.processControl = function(field) {
             field_delta = scaler(group,control,field_delta);
         engine.setValue(group,control,field_delta);
     } else {
-        if (scaler!=undefined)
+        if (scaler!=undefined) {
             value = scaler(group,control,value);
+            // See the Traktor S4 script for how to use this.  If the scaler function has this
+            // parameter set to true, we use the effects-engine setParameter call instead of
+            // setValue.
+            if (scaler.useSetParameter) {
+                engine.setParameter(group, control, value);
+                return;
+            }
+        }
         engine.setValue(group,control,value);
     }
 }
@@ -1448,7 +1468,7 @@ HIDController.prototype.linkOutput = function(group,name,m_group,m_name,callback
         return;
     }
     if (field.mapped_group!=undefined) {
-        HIDDebug("Output already linked: " + led.id);
+        HIDDebug("Output already linked: " + field.mapped_group);
         return;
     }
     controlgroup = this.resolveGroup(m_group);

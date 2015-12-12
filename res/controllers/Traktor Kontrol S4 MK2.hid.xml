@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.0.0" schemaVersion="1">
+     <info>
+        <name>Traktor Kontrol S4 MK2</name>
+        <author>Owen Williams</author>
+        <description>HID Mapping for Traktor Kontrol S4 MK2</description>
+        <wiki>http://mixxx.org/wiki/doku.php/traktor_s4_mk2</wiki>
+        <devices>
+            <product protocol="hid" vendor_id="0x17cc" product_id="0x1310" usage_page="0xff01" usage="0x1" interface_number="0x4" />
+        </devices>
+    </info>
+    <controller id="Traktor">
+        <scriptfiles>
+            <file filename="common-hid-packet-parser.js" functionprefix=""/>
+            <file filename="Traktor-Kontrol-S4-MK2-hid-scripts.js" functionprefix="TraktorS4MK2"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
