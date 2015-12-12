@@ -601,6 +601,7 @@ TraktorS4MK2.init = function(id) {
   TraktorS4MK2.controller.setOutput("[Master]", "!quantize", 0x7F * TraktorS4MK2.master_quantize, true);
 
   TraktorS4MK2.controller.setOutput("[Master]", "!usblight", 0x7F, true);
+  TraktorS4MK2.outputChannelCallback(engine.getValue("[InternalClock]", "sync_master"), "[InternalClock]", "sync_master");
   TraktorS4MK2.lightDeck("[PreviewDeck1]");
   // Light 3 and 4 first so we get the mixer lights on, then do 1 and 2 since those are active
   // on startup.
@@ -1240,7 +1241,6 @@ TraktorS4MK2.outputChannelCallbackDark = function(value,group,key) {
 }
 
 TraktorS4MK2.outputCallback = function(value,group,key) {
-  //HIDDebug("output2? " + group + " " + key + " " + value + " " + TraktorS4MK2.controller.left_deck_C);
   var deck_group = TraktorS4MK2.resolveDeckIfActive(group);
   if (deck_group === undefined) {
     return;
