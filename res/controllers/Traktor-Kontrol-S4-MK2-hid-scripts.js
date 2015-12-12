@@ -95,7 +95,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck1", "slip_enabled", 0x0E, "B", 0x02);
   MessageShort.addControl("deck1", "!reset", 0x0E, "B", 0x01);
   MessageShort.addControl("deck1", "beatloop_8_activate", 0x13, "B", 0x02);
-  MessageShort.addControl("deck1", "reloop_exit", 0x13, "B", 0x01);
+  MessageShort.addControl("deck1", "!loop_activate", 0x13, "B", 0x01);
   MessageShort.addControl("deck1", "!jog_touch", 0x11, "B", 0x01);
   MessageShort.addControl("deck1", "!jog_wheel", 0x01, "I");
   MessageShort.addControl("deck1", "!deckswitch", 0x0F, "B", 0x20);
@@ -123,7 +123,7 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.addControl("deck2", "slip_enabled", 0x0B, "B", 0x02);
   MessageShort.addControl("deck2", "!reset", 0x0B, "B", 0x01);
   MessageShort.addControl("deck2", "beatloop_8_activate", 0x13, "B", 0x10);
-  MessageShort.addControl("deck2", "reloop_exit", 0x13, "B", 0x08);
+  MessageShort.addControl("deck2", "!loop_activate", 0x13, "B", 0x08);
   MessageShort.addControl("deck2", "!jog_touch", 0x11, "B", 0x02);
   MessageShort.addControl("deck2", "!jog_wheel", 0x05, "I");
   MessageShort.addControl("deck2", "!deckswitch", 0x0A, "B", 0x20);
@@ -177,6 +177,8 @@ TraktorS4MK2.registerInputPackets = function() {
   MessageShort.setCallback("deck2", "!deckswitch", this.deckSwitchHandler);
   MessageShort.setCallback("deck1", "!sync_enabled", this.syncEnabledHandler);
   MessageShort.setCallback("deck2", "!sync_enabled", this.syncEnabledHandler);
+  MessageShort.setCallback("deck1", "!loop_activate", this.loopActivateHandler);
+  MessageShort.setCallback("deck2", "!loop_activate", this.loopActivateHandler);
   MessageShort.setCallback("deck1", "!jog_touch", this.jogTouchHandler);
   MessageShort.setCallback("deck2", "!jog_touch", this.jogTouchHandler);
   MessageShort.setCallback("deck1", "!jog_wheel", this.jogMoveHandler);
@@ -770,15 +772,20 @@ TraktorS4MK2.deckSwitchHandler = function(field) {
   if (field.group === "[Channel1]") {
     TraktorS4MK2.controller.left_deck_C = true;
     TraktorS4MK2.lightDeck("[Channel3]");
+    // TODO(owen): Uncomment this and similar when the takeover fix is committed.
+    //engine.softTakeoverIgnoreNextValue("[Channel3]", "rate");
   } else if (field.group === "[Channel3]") {
     TraktorS4MK2.controller.left_deck_C = false;
     TraktorS4MK2.lightDeck("[Channel1]");
+    //engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
   } else if (field.group === "[Channel2]") {
     TraktorS4MK2.controller.right_deck_D = true;
     TraktorS4MK2.lightDeck("[Channel4]");
+    //engine.softTakeoverIgnoreNextValue("[Channel4]", "rate");
   } else if (field.group === "[Channel4]") {
     TraktorS4MK2.controller.right_deck_D = false;
     TraktorS4MK2.lightDeck("[Channel2]");
+    //engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
   } else {
     HIDDebug("Traktor S4MK2: Unrecognized packet group: " + field.group);
   }
@@ -815,6 +822,16 @@ TraktorS4MK2.syncEnabledHandler = function(field) {
       }
       engine.setValue(field.group, "sync_enabled", 0);
     }
+  }
+}
+
+TraktorS4MK2.loopActivateHandler = function(field) {
+  var splitted = field.id.split(".");
+  var group = splitted[0];
+  if (TraktorS4MK2.controller.shift_pressed[group]) {
+    engine.setValue(field.group, "pitch_adjust_set_default", field.value);
+  } else {
+    engine.setValue(field.group, "reloop_exit", field.value);
   }
 }
 
@@ -1073,7 +1090,18 @@ TraktorS4MK2.callbackLoopMove = function(field) {
     delta = -1;
   }
 
-  engine.setValue(field.group, "loop_move", delta);
+  // Shift mode: adjust musical key
+  if (TraktorS4MK2.controller.shift_pressed[group]) {
+    if (delta == 1) {
+      engine.setValue(field.group, "pitch_up_small", 1);
+      engine.setValue(field.group, "pitch_up_small", 0);
+    } else {
+      engine.setValue(field.group, "pitch_down_small", 1);
+      engine.setValue(field.group, "pitch_down_small", 0);
+    }
+  } else {
+    engine.setValue(field.group, "loop_move", delta);
+  }
 }
 
 TraktorS4MK2.callbackLoopSize = function(field) {
@@ -1243,6 +1271,8 @@ TraktorS4MK2.outputCueCallback = function(value, group, key) {
 }
 
 TraktorS4MK2.onVuMeterChanged = function(value, group, key) {
+  // This handler is called a lot so it should be as fast as possible.
+
   // VU is drawn on 6 segments, the 7th indicates clip.
   var VuOffsets = {"[Channel1]" : 0x09,
                    "[Channel2]" : 0x11,
@@ -1256,11 +1286,10 @@ TraktorS4MK2.onVuMeterChanged = function(value, group, key) {
   // Figure out how much the partially-illuminated segment is illuminated.
   var partialIllum = (scaledValue - fullIllumCount) * 0x7F
 
-  var packet_ob = TraktorS4MK2.controller.OutputPackets["output1"];
   for (i = 0; i < 6; i++) {
     var key = "!" + "VuMeter" + i;
     if (i < fullIllumCount) {
-      // Don't update lights until they're all done.
+      // Don't update lights until they're all done, so the last term is false.
       TraktorS4MK2.controller.setOutput(group, key, 0x7F, false);
     } else if (i == fullIllumCount) {
       TraktorS4MK2.controller.setOutput(group, key, partialIllum, false);
@@ -1268,16 +1297,10 @@ TraktorS4MK2.onVuMeterChanged = function(value, group, key) {
       TraktorS4MK2.controller.setOutput(group, key, 0x00, false);
     }
   }
-  var packet_ob = TraktorS4MK2.controller.OutputPackets["output1"];
-  packet_ob.send();
+  TraktorS4MK2.controller.OutputPackets["output1"].send();
 }
 
 TraktorS4MK2.onLoopEnabledChanged = function(value, group, key) {
-  var deck = TraktorS4MK2.resolveDeckIfActive(group);
-  if (deck === undefined) {
-    return;
-  }
-
   TraktorS4MK2.outputCallbackLoop(value, group, "loop_in");
   TraktorS4MK2.outputCallbackLoop(value, group, "loop_out");
 }
