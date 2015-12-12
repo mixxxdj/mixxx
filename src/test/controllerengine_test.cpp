@@ -9,6 +9,7 @@
 #include "controlpotmeter.h"
 #include "configobject.h"
 #include "controllers/controllerengine.h"
+#include "controllers/controllerdebug.h"
 #include "test/mixxxtest.h"
 
 namespace {
@@ -21,7 +22,7 @@ class ControllerEngineTest : public MixxxTest {
         new ControlPotmeter(ConfigKey("[Test]", "potmeter"),-1.,1.);
         Controller* pController = NULL;
         cEngine = new ControllerEngine(pController);
-        cEngine->setDebug(true);
+        ControllerDebug::setEnabled(true);
         cEngine->setPopups(false);
     }
 
