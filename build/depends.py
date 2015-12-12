@@ -492,6 +492,14 @@ class ProtoBuf(Dependence):
             raise Exception(
                 "Could not find libprotobuf or its development headers.")
 
+class FpClassify(Dependence):
+    # This is a wrapper arround the fpclassify function that pevents inlining
+    # It is compiled without optimization and allows to use these function 
+    # from -ffast-math optimized objects 
+    def sources(self, build):
+        # add this file without optimization 
+        return build.env.Object('util/fpclassify.cpp', CCFLAGS='')
+
 
 class MixxxCore(Feature):
 
@@ -1187,7 +1195,7 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand, SecurityFramework, CoreServices]
+                Chromaprint, RubberBand, SecurityFramework, CoreServices, FpClassify]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
