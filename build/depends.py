@@ -498,7 +498,8 @@ class FpClassify(Dependence):
     # from -ffast-math optimized objects 
     def sources(self, build):
         # add this file without optimization 
-        return build.env.Object('util/fpclassify.cpp', CCFLAGS='')
+        env=build.env.Clone()
+        return env.Object('util/fpclassify.cpp', CCFLAGS='')
 
 
 class MixxxCore(Feature):

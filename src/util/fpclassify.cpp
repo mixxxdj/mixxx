@@ -25,7 +25,6 @@
 #define isfinite std::isfinite
 #endif
 
-
 int mixxx_fpclassify(float x) {
     return fpclassify(x);
 }
