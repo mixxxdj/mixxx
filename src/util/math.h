@@ -35,6 +35,10 @@ inline bool even(T value) {
     return value % 2 == 0;
 }
 
+#ifdef _MSC_VER
+// Ask VC++ to emit an intrinsic for fabs instead of calling std::fabs.
+#pragma intrinsic(fabs)
+#endif
 
 inline int roundUpToPowerOf2(int v) {
     int power = 1;
