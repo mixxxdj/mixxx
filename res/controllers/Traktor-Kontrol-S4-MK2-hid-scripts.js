@@ -21,6 +21,11 @@
 // To choose sample launching, set the word in quotes below to SAMPLES, all caps.  For
 // rolls, change the word to LOOPROLLS (no space).
 RemixSlotButtonAction = "SAMPLES";
+// The Cue button, when Shift is also held, can have two possible functions:
+// 1. "REWIND": seeks to the very start of the track.
+// 2. "REVERSEROLL": performs a temporary reverse or "censor" effect, where the track
+//    is momentarily played in reverse until the button is released.
+ShiftCueButtonAction = "REWIND";
 
 
 TraktorS4MK2 = new function() {
@@ -29,6 +34,7 @@ TraktorS4MK2 = new function() {
   this.partial_packet = Object();
   this.divisor_map = Object();
   this.RemixSlotButtonAction = RemixSlotButtonAction;
+  this.ShiftCueButtonAction = ShiftCueButtonAction;
 
   // When true, packets will not be sent to the controller.  Good for doing mass updates.
   this.controller.freeze_lights = false;
@@ -859,16 +865,22 @@ TraktorS4MK2.loopActivateHandler = function(field) {
 }
 
 TraktorS4MK2.cueHandler = function(field) {
-  if (field.value === 0) {
-    return;
-  }
   var splitted = field.id.split(".");
   var group = splitted[0];
   if (TraktorS4MK2.controller.shift_pressed[group]) {
-    engine.setValue(field.group, "start_stop", 1);
+    if (TraktorS4MK2.ShiftCueButtonAction == "REWIND") {
+      if (field.value === 0) {
+        return;
+      }
+      engine.setValue(field.group, "start_stop", 1);
+    } else if (TraktorS4MK2.ShiftCueButtonAction == "REVERSEROLL") {
+      engine.setValue(field.group, "reverseroll", field.value);
+    } else {
+      print ("Traktor S4 WARNING: Invalid ShiftCueButtonAction picked.  Must be either REWIND " +
+           "or REVERSEROLL");
+    }
   } else {
-    engine.setValue(field.group, "cue_default", 1);
-    engine.setValue(field.group, "cue_default", 0);
+    engine.setValue(field.group, "cue_default", field.value);
   }
 }
 
