@@ -25,7 +25,7 @@ MidiOutputHandler::MidiOutputHandler(MidiController* controller,
 MidiOutputHandler::~MidiOutputHandler() {
     ConfigKey cKey = m_cot.getKey();
     if (m_pController->debugging()) {
-        qDebug() << QString("Destroying static MIDI output handler on %1 for %2,%3")
+        QDebug(QtDebugMsg) << QString("Destroying static MIDI output handler on %1 for %2,%3")
                 .arg(m_pController->getName(), cKey.group, cKey.item);
     }
 }
@@ -56,7 +56,7 @@ void MidiOutputHandler::controlChanged(double value) {
         qWarning() << "MIDI device" << m_pController->getName() << "not open for output!";
     } else if (byte3 != 0xFF) {
         if (m_pController->debugging()) {
-            qDebug() << "sending MIDI bytes:" << m_mapping.output.status
+            QDebug(QtDebugMsg) << "sending MIDI bytes:" << m_mapping.output.status
                      << "," << m_mapping.output.control << ","
                      << byte3 ;
         }

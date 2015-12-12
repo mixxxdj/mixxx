@@ -33,7 +33,7 @@ Controller::~Controller() {
 void Controller::startEngine()
 {
     if (debugging()) {
-        qDebug() << "  Starting engine";
+        QDebug(QtDebugMsg) << "  Starting engine";
     }
     if (m_pEngine != NULL) {
         qWarning() << "Controller: Engine already exists! Restarting:";
@@ -44,7 +44,7 @@ void Controller::startEngine()
 
 void Controller::stopEngine() {
     if (debugging()) {
-        qDebug() << "  Shutting down engine";
+        QDebug(QtDebugMsg) << "  Shutting down engine";
     }
     if (m_pEngine == NULL) {
         qWarning() << "Controller::stopEngine(): No engine exists!";
@@ -117,7 +117,7 @@ void Controller::receive(const QByteArray data) {
                         .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
                         .arg(spacer);
         }
-        qDebug() << message;
+        QDebug(QtDebugMsg) << message;
     }
 
     foreach (QString function, m_pEngine->getScriptFunctionPrefixes()) {

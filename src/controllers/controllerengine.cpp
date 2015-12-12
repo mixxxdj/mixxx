@@ -94,7 +94,7 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
             continue;
         }
         if (m_bDebug) {
-            qDebug() << "ControllerEngine: Executing" << prefixName << "." << function;
+            QDebug(QtDebugMsg) << "ControllerEngine: Executing" << prefixName << "." << function;
         }
         init.call(prefix, args);
     }
@@ -1106,9 +1106,9 @@ int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
         qWarning() << "Script timer could not be created";
     } else if (m_bDebug) {
         if (oneShot)
-            qDebug() << "Starting one-shot timer:" << timerId;
+            QDebug(QtDebugMsg) << "Starting one-shot timer:" << timerId;
         else
-            qDebug() << "Starting timer:" << timerId;
+            QDebug(QtDebugMsg) << "Starting timer:" << timerId;
     }
     return timerId;
 }
@@ -1124,7 +1124,7 @@ void ControllerEngine::stopTimer(int timerId) {
         return;
     }
     if (m_bDebug) {
-        qDebug() << "Killing timer:" << timerId;
+        QDebug(QtDebugMsg) << "Killing timer:" << timerId;
     }
 
     killTimer(timerId);

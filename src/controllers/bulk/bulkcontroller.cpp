@@ -210,7 +210,7 @@ int BulkController::close() {
         disconnect(m_pReader, SIGNAL(incomingData(QByteArray)),
                    this, SLOT(receive(QByteArray)));
         m_pReader->stop();
-        if (debugging()) qDebug() << "  Waiting on reader to finish";
+        if (debugging()) QDebug(QtDebugMsg) << "  Waiting on reader to finish";
         m_pReader->wait();
         delete m_pReader;
         m_pReader = NULL;
@@ -222,7 +222,7 @@ int BulkController::close() {
 
     // Close device
     if (debugging()) {
-        qDebug() << "  Closing device";
+        QDebug(QtDebugMsg) << "  Closing device";
     }
     libusb_close(m_phandle);
     m_phandle = NULL;
@@ -252,7 +252,7 @@ void BulkController::send(QByteArray data) {
         qWarning() << "Unable to send data to" << getName()
                    << "serial #" << m_sUID;
     } else if (debugging()) {
-        qDebug() << ret << "bytes sent to" << getName()
+        QDebug(QtDebugMsg) << ret << "bytes sent to" << getName()
                  << "serial #" << m_sUID;
     }
 }

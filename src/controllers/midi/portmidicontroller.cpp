@@ -66,7 +66,7 @@ int PortMidiController::open() {
     if (m_pInputDeviceInfo) {
         if (isInputDevice()) {
             if (debugging()) {
-                qDebug() << "PortMidiController: Opening"
+                QDebug(QtDebugMsg) << "PortMidiController: Opening"
                          << m_pInputDeviceInfo->name << "index"
                          << m_iInputDeviceIndex << "for input";
             }
@@ -87,7 +87,7 @@ int PortMidiController::open() {
     if (m_pOutputDeviceInfo) {
         if (isOutputDevice()) {
             if (debugging()) {
-                qDebug() << "PortMidiController: Opening"
+                QDebug(QtDebugMsg) << "PortMidiController: Opening"
                          << m_pOutputDeviceInfo->name << "index"
                          << m_iOutputDeviceIndex << "for output";
             }

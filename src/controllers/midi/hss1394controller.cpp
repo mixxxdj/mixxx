@@ -89,7 +89,7 @@ int Hss1394Controller::open() {
     }
 
     if (debugging()) {
-        qDebug() << "Hss1394Controller: Opening" << getName() << "index" << m_iDeviceIndex;
+        QDebug(QtDebugMsg) << "Hss1394Controller: Opening" << getName() << "index" << m_iDeviceIndex;
     }
 
     using namespace hss1394;

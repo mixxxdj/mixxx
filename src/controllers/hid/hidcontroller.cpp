@@ -214,7 +214,7 @@ int HidController::open() {
 
     // Open device by path
     if (debugging()) {
-        qDebug() << "Opening HID device"
+        QDebug(QtDebugMsg) << "Opening HID device"
                  << getName() << "by HID path" << hid_path;
     }
     m_pHidDevice = hid_open_path(hid_path);
@@ -222,7 +222,7 @@ int HidController::open() {
     // If that fails, try to open device with vendor/product/serial #
     if (m_pHidDevice == NULL) {
         if (debugging())
-            qDebug() << "Failed. Trying to open with make, model & serial no:"
+            QDebug(QtDebugMsg) << "Failed. Trying to open with make, model & serial no:"
                 << hid_vendor_id << hid_product_id << hid_serial;
         m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, hid_serial_raw);
     }
@@ -279,7 +279,7 @@ int HidController::close() {
                    this, SLOT(receive(QByteArray)));
         m_pReader->stop();
         hid_set_nonblocking(m_pHidDevice, 1);   // Quit blocking
-        if (debugging()) qDebug() << "  Waiting on reader to finish";
+        if (debugging()) QDebug(QtDebugMsg) << "  Waiting on reader to finish";
         m_pReader->wait();
         delete m_pReader;
         m_pReader = NULL;
@@ -291,7 +291,7 @@ int HidController::close() {
 
     // Close device
     if (debugging()) {
-        qDebug() << "  Closing device";
+        QDebug(QtDebugMsg) << "  Closing device";
     }
     hid_close(m_pHidDevice);
     setOpen(false);
@@ -326,7 +326,7 @@ void HidController::send(QByteArray data, unsigned int reportID) {
                        << safeDecodeWideString(hid_error(m_pHidDevice), 512);
         }
     } else if (debugging()) {
-        qDebug() << result << "bytes sent to" << getName()
+        QDebug(QtDebugMsg) << result << "bytes sent to" << getName()
                  << "serial #" << hid_serial
                  << "(including report ID of" << reportID << ")";
     }
