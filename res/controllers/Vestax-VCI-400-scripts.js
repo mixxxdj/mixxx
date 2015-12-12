@@ -908,8 +908,10 @@ VestaxVCI400.pitchKnob = function (channel, control, value, status, group) {
         } else {
             if(jogValue > 0) {
                   engine.setValue(deck.group, "pitch_down_small", 1);
+                  engine.setValue(deck.group, "pitch_down_small", 0);
             } else {
                   engine.setValue(deck.group, "pitch_up_small", 1);
+                  engine.setValue(deck.group, "pitch_up_small", 0);
             }
         }
     }
