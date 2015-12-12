@@ -1,6 +1,6 @@
 // this is a wapper around the fpclassify functions which prevents inlining 
 // It is compiled without optization 
-// The rest of the source of Mixxx is compiled with -ffast-math, which braks 
+// The rest of the source of Mixxx is compiled with -ffast-math, which breaks 
 // the fpclassify functions
 
 #include <cmath>
