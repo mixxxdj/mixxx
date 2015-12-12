@@ -25,17 +25,25 @@ class SoftTakeover {
     bool ignore(ControlObject* control, double newParameter);
     void ignoreNext();
     void setThreshold(double threshold);
+    
+    struct TestAccess;
 
   private:
     // If a new value is received within this amount of time, jump to it
     // regardless. This allows quickly whipping controls to work while retaining
     // the benefits of soft-takeover for slower movements.  Setting this too
     // high will defeat the purpose of soft-takeover.
-    static const uint SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS = 50;
+    static const qint64 SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS = 50;
 
-    uint m_time;
+    qint64 m_time;
     double m_prevParameter;
     double m_dThreshold;
+};
+
+struct SoftTakeover::TestAccess {
+    static qint64 getTimeThreshold() {
+        return SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS;
+    }
 };
 
 class SoftTakeoverCtrl {
