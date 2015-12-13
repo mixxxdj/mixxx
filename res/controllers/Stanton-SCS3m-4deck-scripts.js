@@ -435,10 +435,13 @@ SCS3M.Agent = function(device) {
     }
 
     // relative control
-    function budge(channel, control) {
+    function budge(channel, control, factor) {
+        if (factor === undefined) factor = 1;
+        var mult = factor / 128;
+
         return function(offset) {
             engine.setValue(channel, control,
-                engine.getValue(channel, control) + (offset - 64) / 128
+                engine.getValue(channel, control) + (offset - 64) * mult
             );
         };
     }
@@ -580,8 +583,9 @@ SCS3M.Agent = function(device) {
             if (!master.engaged()) {
                 modeset(part.pitch.mode.absolute);
                 if (sideoverlay.engaged('eq')) {
+                    modeset(part.pitch.mode.relative);
                     expect(part.pitch.slide, eqsideheld.choose(
-                        set(effectchannel, 'super1'),
+                        budge(effectchannel, 'super1', 0.5),
                         reset(effectchannel, 'super1')
                     ));
                     watch(effectchannel, 'super1', offcenter(patch(part.pitch.meter.centerbar)));
