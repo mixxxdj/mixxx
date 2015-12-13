@@ -1440,6 +1440,24 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
 }
 
 /*  -------- ------------------------------------------------------
+     Purpose: Ignores the next value for the given ControlObject
+                This should be called before or after an absolute physical
+                control (slider or knob with hard limits) is changed to operate
+                on a different ControlObject, allowing it to sync up to the 
+                soft-takeover state without an abrupt jump.
+     Input:   ControlObject group and key values
+     Output:  -
+     -------- ------------------------------------------------------ */
+void ControllerEngine::softTakeoverIgnoreNextValue(QString group, QString name) {
+    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
+    if (!pControl) {
+        return;
+    }
+    
+    m_st.ignoreNext(pControl);
+}
+
+/*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional),
              delay (optional), rate (optional)

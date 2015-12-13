@@ -1,0 +1,52 @@
+"Previous supplied value","New supplied value","Prev sign","New sign","Correct result"
+"Near & less than current","Near & less than current, shortly after previous",,,FALSE
+"Near & less than current","Near & greater than current, shortly after previous",,,FALSE
+"Near & less than current","Far & less than current, shortly after previous",,,FALSE
+"Near & less than current","Far & greater than current, shortly after previous",,,FALSE
+"Near & less than current","Near & less than current, awhile after previous",,,FALSE
+"Near & less than current","Near & greater than current, awhile after previous",,,FALSE
+"Near & less than current","Far & less than current, awhile after previous",,,FALSE
+"Near & less than current","Far & greater than current, awhile after previous",,,FALSE
+"Near & greater than current","Near & less than current, shortly after previous",,,FALSE
+"Near & greater than current","Near & greater than current, shortly after previous",,,FALSE
+"Near & greater than current","Far & less than current, shortly after previous",,,FALSE
+"Near & greater than current","Far & greater than current, shortly after previous",,,FALSE
+"Near & greater than current","Near & less than current, awhile after previous",,,FALSE
+"Near & greater than current","Near & greater than current, awhile after previous",,,FALSE
+"Near & greater than current","Far & less than current, awhile after previous",,,FALSE
+"Near & greater than current","Far & greater than current, awhile after previous",,,FALSE
+"Far & less than current","Near & less than current, shortly after previous",,,FALSE
+"Far & less than current","Near & greater than current, shortly after previous",,,FALSE
+"Far & less than current","Far & less than current, shortly after previous",,,TRUE
+"Far & less than current","Far & greater than current, shortly after previous",,,FALSE
+"Far & less than current","Near & less than current, awhile after previous",,,FALSE
+"Far & less than current","Near & greater than current, awhile after previous",,,FALSE
+"Far & less than current","Far & less than current, awhile after previous",,,TRUE
+"Far & less than current","Far & greater than current, awhile after previous",,,FALSE
+"Far & greater than current","Near & less than current, shortly after previous",,,FALSE
+"Far & greater than current","Near & greater than current, shortly after previous",,,FALSE
+"Far & greater than current","Far & less than current, shortly after previous",,,FALSE
+"Far & greater than current","Far & greater than current, shortly after previous",,,TRUE
+"Far & greater than current","Near & less than current, awhile after previous",,,FALSE
+"Far & greater than current","Near & greater than current, awhile after previous",,,FALSE
+"Far & greater than current","Far & less than current, awhile after previous",,,FALSE
+"Far & greater than current","Far & greater than current, awhile after previous",,,TRUE
+,,,,
+"The above results come from 1.11's results with the Google tests I (sean) wrote",,,,
+,,,,
+"Far & less than current","Far & less than current, shortly after previous","neg","neg",TRUE
+"Far & less than current","Far & less than current, shortly after previous","neg","pos",TRUE
+"Far & less than current","Far & less than current, shortly after previous","pos","neg",TRUE
+"Far & less than current","Far & less than current, shortly after previous","pos","pos",TRUE
+"Far & less than current","Far & less than current, awhile after previous","neg","neg",TRUE
+"Far & less than current","Far & less than current, awhile after previous","neg","pos",TRUE
+"Far & less than current","Far & less than current, awhile after previous","pos","neg",TRUE
+"Far & less than current","Far & less than current, awhile after previous","pos","pos",TRUE
+"Far & greater than current","Far & greater than current, shortly after previous","neg","neg",TRUE
+"Far & greater than current","Far & greater than current, shortly after previous","neg","pos",TRUE
+"Far & greater than current","Far & greater than current, shortly after previous","pos","neg",TRUE
+"Far & greater than current","Far & greater than current, shortly after previous","pos","pos",TRUE
+"Far & greater than current","Far & greater than current, awhile after previous","neg","neg",TRUE
+"Far & greater than current","Far & greater than current, awhile after previous","neg","pos",TRUE
+"Far & greater than current","Far & greater than current, awhile after previous","pos","neg",TRUE
+"Far & greater than current","Far & greater than current, awhile after previous","pos","pos",TRUE
