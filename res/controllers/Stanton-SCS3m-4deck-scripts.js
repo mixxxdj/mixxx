@@ -35,7 +35,10 @@ SCS3M.receive = function(channel, control, value, status) {
     SCS3M.agent.receive(status, control, value);
 };
 
-/* midi map */
+/* Midi map of the SCS.3m device
+ *
+ * Thanks to Sean M. Pappalardo for the original SCS3 mappings.
+ */
 SCS3M.Device = function() {
     var NoteOn = 0x90;
     var NoteOff = 0x80;

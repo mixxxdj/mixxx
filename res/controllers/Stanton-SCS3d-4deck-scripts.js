@@ -35,7 +35,10 @@ SCS3D.receive = function(channel, control, value, status) {
 };
 
 
-/* MIDI map */
+/* Midi map of the SCS.3d device
+ *
+ * Thanks to Sean M. Pappalardo for the original SCS3 mappings.
+ */
 SCS3D.Device = function() {
     var NoteOn = 0x90;
     var NoteOff = 0x80;
