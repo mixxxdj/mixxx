@@ -30,11 +30,12 @@
                                         <Pressed>btn_prev_down.png</Pressed>
                                       </State>
                                       <Connection>
-                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_down_small</ConfigKey>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_down</ConfigKey>
                                         <ButtonState>LeftButton</ButtonState>
                                       </Connection>
                                       <Connection>
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_down_small</ConfigKey>
+                                        <ButtonState>RightButton</ButtonState>
                                       </Connection>
                                    </PushButton>
                                    <PushButton>
@@ -71,11 +72,12 @@
                                         <Pressed>btn_next_down.png</Pressed>
                                       </State>
                                       <Connection>
-                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up</ConfigKey>
                                         <ButtonState>LeftButton</ButtonState>
                                       </Connection>
                                       <Connection>
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>
+                                        <ButtonState>RightButton</ButtonState>
                                       </Connection>
                                   </PushButton>
                                </Children>
