@@ -577,6 +577,9 @@ void BeatMap::scale(double dScalePercentage) {
 }
 
 void BeatMap::setBpm(double dBpm) {
+    DEBUG_ASSERT(!"BeatMap::setBpm() not implemented");
+    return;
+
     /*
      * One of the problems of beattracking algorithms is the so called "octave error"
      * that is, calculated bpm is a power-of-two fraction of the bpm of the track.

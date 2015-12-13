@@ -52,6 +52,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmClear();
     void slotBpmConstChanged(int state);
     void slotBpmTap(double averageLength, int numSamples);
+    void slotSpinBpmValueChanged(double value);
 
     void reloadTrackMetadata();
     void updateTrackMetadata();
@@ -76,7 +77,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     bool m_trackHasBeatMap;
 
     QScopedPointer<TapFilter> m_pTapFilter;
-    double m_dLastBpm;
+    double m_dLastTapedBpm;
 
     DlgTagFetcher& m_DlgTagFetcher;
 
