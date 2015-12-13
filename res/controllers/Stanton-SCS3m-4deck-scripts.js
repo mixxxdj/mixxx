@@ -213,12 +213,9 @@ SCS3M.Agent = function(device) {
     // the last sent message for each controller.
     var last = {};
 
-    // Keeps a queue of commands to perform
-    // This is necessary because some messages must be sent with delay lest
-    // the device becomes confused
+    // Queue of messages to send delayed after modeset()
     var loading = false;
     var throttling = false;
-    var slow = [];
     var pipe = [];
 
     // Handlers for received messages
@@ -347,41 +344,34 @@ SCS3M.Agent = function(device) {
     }
 
     function modeset(messages) {
-        slow.push(messages);
-        if (!throttling) flushModeset();
+        var sent = true;
+
+        // Modeset messages are comprised of the actual modeset message and
+        // a termination message that must be sent after.
+        var message = messages[0];
+
+        if (message) {
+            if (message.length > 3) {
+                midi.sendSysexMsg(message, message.length);
+            } else {
+                sent = send(message);
+                if (sent && messages[1]) {
+                    // Only send termination message when modeset message was sent
+                    send(messages[1], true, true);
+                }
+            }
+        }
+
+        if (sent) {
+            // after modesetting, we have to wait for the device to settle
+            if (!throttling) {
+                throttling = engine.beginTimer(20, flushModeset);
+            }
+        }
     }
 
     var flushModeset = function() {
         var message;
-
-        var messages;
-        while (messages = slow.shift()) {
-            var sent = true;
-
-            // Modeset messages are comprised of the actual modeset message and
-            // a termination message that must be sent after.
-            message = messages[0];
-
-            if (message) {
-                if (message.length > 3) {
-                    midi.sendSysexMsg(message, message.length);
-                } else {
-                    sent = send(message);
-                    if (sent && messages[1]) {
-                        // Only send termination message when modeset message was sent
-                        send(messages[1], true, true);
-                    }
-                }
-            }
-
-            if (sent) {
-                // after modesetting, we have to wait for the device to settle
-                if (!throttling) {
-                    throttling = engine.beginTimer(20, flushModeset);
-                }
-                return;
-            }
-        }
 
         // Now we can flush the rest of the messages
         // on init, some controls are left unlit if the messages are sent
