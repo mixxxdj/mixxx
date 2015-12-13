@@ -1301,7 +1301,7 @@ WPushButton[value="2"]:hover {
   font: bold 10px;
 }
 
-#BeatJumpNext, #BeatLoopButton, #LoopMoveNext, #HotcueButton {
+#BeatJumpValue, #BeatLoopButton, #LoopMoveValue, #HotcueButton {
   font: bold 9px;
 }
 
