@@ -791,20 +791,19 @@ TraktorS4MK2.deckSwitchHandler = function(field) {
   if (field.group === "[Channel1]") {
     TraktorS4MK2.controller.left_deck_C = true;
     TraktorS4MK2.lightDeck("[Channel3]");
-    // TODO(owen): Uncomment this and similar when the takeover fix is committed.
-    //engine.softTakeoverIgnoreNextValue("[Channel3]", "rate");
+    engine.softTakeoverIgnoreNextValue("[Channel3]", "rate");
   } else if (field.group === "[Channel3]") {
     TraktorS4MK2.controller.left_deck_C = false;
     TraktorS4MK2.lightDeck("[Channel1]");
-    //engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
+    engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
   } else if (field.group === "[Channel2]") {
     TraktorS4MK2.controller.right_deck_D = true;
     TraktorS4MK2.lightDeck("[Channel4]");
-    //engine.softTakeoverIgnoreNextValue("[Channel4]", "rate");
+    engine.softTakeoverIgnoreNextValue("[Channel4]", "rate");
   } else if (field.group === "[Channel4]") {
     TraktorS4MK2.controller.right_deck_D = false;
     TraktorS4MK2.lightDeck("[Channel2]");
-    //engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
+    engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
   } else {
     HIDDebug("Traktor S4MK2: Unrecognized packet group: " + field.group);
   }
