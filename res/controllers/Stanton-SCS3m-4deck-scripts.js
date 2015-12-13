@@ -581,7 +581,6 @@ SCS3M.Agent = function(device) {
             ], patch(beatlight(part.deck.light, deck[side].choose(0, 1))));
 
             if (!master.engaged()) {
-                modeset(part.pitch.mode.absolute);
                 if (sideoverlay.engaged('eq')) {
                     modeset(part.pitch.mode.relative);
                     expect(part.pitch.slide, eqsideheld.choose(
@@ -644,6 +643,7 @@ SCS3M.Agent = function(device) {
                 }
 
                 if (sideoverlay.engaged(tnr)) {
+                    modeset(part.pitch.mode.absolute);
                     expect(part.pitch.slide, eqsideheld.choose(
                         set(effectunit, 'mix'),
                         reset(effectunit, 'mix')
@@ -712,11 +712,13 @@ SCS3M.Agent = function(device) {
         expect(device.master.touch, repatch(master.engage));
         expect(device.master.release, repatch(master.cancel));
         if (master.engaged()) {
+            modeset(device.left.pitch.mode.absolute);
             watch("[Master]", "headMix", patch(device.left.pitch.meter.centerbar));
             expect(device.left.pitch.slide,
                 eqheld.left.engaged() || fxheld.left.engaged() ? reset('[Master]', 'headMix') : set('[Master]', 'headMix')
             );
 
+            modeset(device.right.pitch.mode.absolute);
             watch("[Master]", "balance", patch(device.right.pitch.meter.centerbar));
             expect(device.right.pitch.slide,
                 eqheld.right.engaged() || fxheld.right.engaged() ? reset('[Master]', 'balance') : set('[Master]', 'balance')
