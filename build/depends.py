@@ -501,7 +501,7 @@ class FpClassify(Dependence):
     # It is compiled without optimization and allows to use these function 
     # from -ffast-math optimized objects 
     def sources(self, build):
-        # add this file without fast-math or flag
+        # add this file without fast-math flag
         env = build.env.Clone()
         if '-ffast-math' in env['CCFLAGS']: 
                 env['CCFLAGS'].remove('-ffast-math')
