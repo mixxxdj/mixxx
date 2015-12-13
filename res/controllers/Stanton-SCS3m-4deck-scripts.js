@@ -7,6 +7,7 @@
 /* global midi                                                        */
 /* global SCS3M:true                                                  */
 /* jshint -W097                                                       */
+/* jshint -W084                                                       */
 /* jshint laxbreak: true                                              */
 ////////////////////////////////////////////////////////////////////////
 
@@ -90,9 +91,8 @@ SCS3M.Device = function() {
             meter: Meter(id, lights),
             slide: [CC, id],
             mode: {
-                absolute: [CM, id, 0x70],
-                relative: [CM, id, 0x71],
-                end: [CM, id, 0x7F]
+                absolute: [[CM, id, 0x70], [CM, id, 0x7F]],
+                relative: [[CM, id, 0x71], [CM, id, 0x7F]],
             }
         };
     }
@@ -120,6 +120,9 @@ SCS3M.Device = function() {
         }
 
         function Deck() {
+            // The left deck button has a higher address than the right button,
+            // for all the other controls the left one has a lower address.
+            // I wonder why.
             var id = either(0x10, 0x0F);
             return {
                 light: function(bits) {
@@ -190,6 +193,17 @@ SCS3M.Device = function() {
     };
 };
 
+// debugging helper
+var printmess = function(message, text) {
+    var i;
+    var s = '';
+
+    for (i in message) {
+        s = s + ('0' + message[i].toString(16)).slice(-2);
+    }
+    print("Midi " + s + (text ? ' ' + text : ''));
+};
+
 SCS3M.Agent = function(device) {
     // Cache last sent bytes to avoid sending duplicates.
     // The second byte of each message (controller id) is used as key to hold
@@ -199,10 +213,9 @@ SCS3M.Agent = function(device) {
     // Keeps a queue of commands to perform
     // This is necessary because some messages must be sent with delay lest
     // the device becomes confused
-    var loading = true;
+    var loading = false;
     var throttling = false;
     var slow = [];
-    var slowterm = [];
     var pipe = [];
 
     // Handlers for received messages
@@ -231,7 +244,6 @@ SCS3M.Agent = function(device) {
         var handler = receivers[address];
         if (handler) {
             handler(value);
-            return;
         }
     }
 
@@ -267,8 +279,8 @@ SCS3M.Agent = function(device) {
             // The device does not light meters again if they haven't changed from last value before resetting flat mode
             // so we send each control some bullshit values which causes awful flicker during startup
             // The trigger will then set things straight
-            tell(handler(100));
-            tell(handler(-100));
+            handler(100);
+            handler(-100);
         }
 
         engine.trigger(channel, control);
@@ -302,6 +314,11 @@ SCS3M.Agent = function(device) {
     // Returns whether the massage was sent
     // False is returned if the mesage was sent before.
     function send(message, force, extra) {
+        if (!message){
+            print("SCS3 warning: send function received invalid message");
+            return; // :-(
+        }
+
         var address = (message[0] << 8) + message[1];
 
         if (!force && last[address] === message[2]) {
@@ -326,67 +343,58 @@ SCS3M.Agent = function(device) {
         send(message);
     }
 
-    // Some messages take a while to be digested by the device
-    // They are put into the slow queue
-    function tellslowly(messages) {
+    function modeset(messages) {
         slow.push(messages);
-        throttle();
+        if (!throttling) flushModeset();
     }
 
-    function tick() {
+    var flushModeset = function() {
         var message;
+
         var messages;
-        var sent = false;
+        while (messages = slow.shift()) {
+            var sent = true;
 
-        // Send messages that terminate the previous slow command
-        // These need to be sent with delay as well
-        message = slowterm.shift();
-        if (message) {
-            send(message, true, true);
-            return;
-        }
+            // Modeset messages are comprised of the actual modeset message and
+            // a termination message that must be sent after.
+            message = messages[0];
 
-        // Send messages where the device needs a pause after
-        while (slow.length) {
-            messages = slow.shift();
-
-            // There are usually two messages, one to tell the device
-            // what to do, and one to terminate the command
-            message = messages.shift();
-
-            // Drop by drop
-            if (message.length > 3) {
-                midi.sendSysexMsg(message, message.length);
-
-                // We're done, sysex doesn't have termination command
-                return;
-            } else {
-                sent = send(message);
-
-                // Only send termination commands if the command itself was sent
-                if (sent) {
-                    slowterm = messages;
-                    return;
+            if (message) {
+                if (message.length > 3) {
+                    midi.sendSysexMsg(message, message.length);
+                } else {
+                    sent = send(message);
+                    if (sent && messages[1]) {
+                        // Only send termination message when modeset message was sent
+                        send(messages[1], true, true);
+                    }
                 }
             }
-        }
-        // And flush
 
+            if (sent) {
+                // after modesetting, we have to wait for the device to settle
+                if (!throttling) {
+                    throttling = engine.beginTimer(20, flushModeset);
+                }
+                return;
+            }
+        }
+
+        // Now we can flush the rest of the messages
+        // on init, some controls are left unlit if the messages are sent
+        // without delay. The causes are unclear. Sending only a few messages
+        // per tick seems to work ok.
+        var limit = 5; // Determined experimentally
         while (pipe.length) {
             message = pipe.shift();
-            sent = message && send(message); // Bug: There are undefined values in the queue, ignoring them
-
-            // Device seems overwhelmed by flurry of messages on init, go easy
-            if (loading && sent) return;
+            send(message);
+            if (loading && limit-- < 1) return;
         }
 
-        // Open the pipe
-        if (throttling) {
-            engine.stopTimer(throttling);
-            throttling = false;
-        }
+        if (throttling) engine.stopTimer(throttling);
+        throttling = false;
         loading = false;
-    }
+    };
 
     // Map engine values in the range [0..1] to lights
     // translator maps from [0..1] to a midi message (three bytes)
@@ -522,7 +530,6 @@ SCS3M.Agent = function(device) {
 
     function repatch(handler) {
         return function(value) {
-            throttle();
             handler(value);
             clear();
             patchage();
@@ -539,15 +546,18 @@ SCS3M.Agent = function(device) {
                 return function(value) {
                     handler(value);
                     var lightval = deck[side].choose(1, 0); // First deck is the upper one
-                    tellslowly([part.eq.high.meter.centerbar(lightval)]);
-                    tellslowly([part.eq.mid.meter.centerbar(lightval)]);
-                    tellslowly([part.eq.low.meter.centerbar(lightval)]);
+                    tell(part.eq.high.meter.centerbar(lightval));
+                    tell(part.eq.mid.meter.centerbar(lightval));
+                    tell(part.eq.low.meter.centerbar(lightval));
+
+                    // hack: use modeset to cause a delay before the lights are
+                    // reset
+                    modeset([]);
                 };
             }
 
             // Switch deck/channel when button is touched
             expect(part.deck.touch, deckflash(repatch(deck[side].toggle)));
-            tell(part.deck.light[deck[side].choose('first', 'second')]);
 
             function either(left, right) {
                 return (side === 'left') ? left : right;
@@ -575,10 +585,7 @@ SCS3M.Agent = function(device) {
             ], patch(beatlight(part.deck.light, deck[side].choose(0, 1))));
 
             if (!master.engaged()) {
-                tellslowly([
-                    part.pitch.mode.absolute,
-                    part.pitch.mode.end
-                ]);
+                modeset(part.pitch.mode.absolute);
                 if (sideoverlay.engaged('eq')) {
                     expect(part.pitch.slide, eqsideheld.choose(
                         set(effectchannel, 'super1'),
@@ -674,20 +681,14 @@ SCS3M.Agent = function(device) {
 
             if (!master.engaged()) {
                 if (fxsideheld.engaged()) {
-                    tellslowly([
-                        part.gain.mode.relative,
-                        part.gain.mode.end
-                    ]);
+                    modeset(part.gain.mode.relative);
                     expect(part.gain.slide, eqsideheld.choose(
                         budge(channel, 'pregain'),
                         reset(channel, 'pregain')
                     ));
                     watch(channel, 'pregain', patch(offcenter(part.gain.meter.needle)));
                 } else {
-                    tellslowly([
-                        part.gain.mode.absolute,
-                        part.gain.mode.end
-                    ]);
+                    modeset(part.gain.mode.absolute);
                     expect(part.gain.slide, set(channel, 'volume'));
                     watch(channel, 'volume', patch(part.gain.meter.bar));
                 }
@@ -724,17 +725,11 @@ SCS3M.Agent = function(device) {
                 eqheld.right.engaged() || fxheld.right.engaged() ? reset('[Master]', 'balance') : set('[Master]', 'balance')
             );
 
-            tellslowly([
-                device.left.gain.mode.relative,
-                device.left.gain.mode.end
-            ]);
+            modeset(device.left.gain.mode.relative);
             watch("[Master]", "headVolume", patch(device.left.gain.meter.centerbar));
             expect(device.left.gain.slide, budge('[Master]', 'headVolume'));
 
-            tellslowly([
-                device.right.gain.mode.relative,
-                device.right.gain.mode.end
-            ]);
+            modeset(device.right.gain.mode.relative);
             watch("[Master]", "volume", patch(device.right.gain.meter.centerbar));
             expect(device.right.gain.slide, budge('[Master]', 'volume'));
 
@@ -758,17 +753,10 @@ SCS3M.Agent = function(device) {
         });
     }
 
-    function throttle() {
-        if (!throttling) {
-            throttling = engine.beginTimer(20, tick);
-        }
-    }
-
     return {
         start: function() {
             loading = true;
-            throttle();
-            tellslowly([device.flat]);
+            modeset([device.flat]);
             patchage();
         },
         receive: receive,
