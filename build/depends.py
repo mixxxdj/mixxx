@@ -493,13 +493,18 @@ class ProtoBuf(Dependence):
                 "Could not find libprotobuf or its development headers.")
 
 class FpClassify(Dependence):
+
+    def enabled(self, build):
+        return build.toolchain_is_gnu
+
     # This is a wrapper arround the fpclassify function that pevents inlining
     # It is compiled without optimization and allows to use these function 
     # from -ffast-math optimized objects 
     def sources(self, build):
-        # add this file without fast-math flag
+        # add this file without fast-math or flag
         env = build.env.Clone()
-        env['CCFLAGS'].remove('-ffast-math')
+        if '-ffast-math' in env['CCFLAGS']: 
+                env['CCFLAGS'].remove('-ffast-math')
         return env.Object('util/fpclassify.cpp')
 
 class MixxxCore(Feature):
