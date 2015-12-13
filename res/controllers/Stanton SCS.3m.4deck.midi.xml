@@ -21,14 +21,11 @@
           <script-binding/>
         </options>
       </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0xB0</status>
-        <midino>0x09</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
+
+      <!-- volume sliders -->
+      <control><key>SCS3M.receive</key><status>0xB0</status><midino>0x08</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0xB0</status><midino>0x09</midino><options><script-binding/></options></control>
+
       <control>
         <key>SCS3M.receive</key>
         <status>0x80</status>
@@ -97,14 +94,6 @@
         <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x0B</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0xB0</status>
-        <midino>0x08</midino>
         <options>
           <script-binding/>
         </options>
