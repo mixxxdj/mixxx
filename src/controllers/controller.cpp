@@ -9,6 +9,7 @@
 #include <QScriptValue>
 
 #include "controllers/controller.h"
+#include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 
 Controller::Controller()
@@ -17,12 +18,7 @@ Controller::Controller()
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
-          m_bDebug(false),
           m_bLearning(false) {
-    // Get --controllerDebug command line option
-    QStringList commandLineArgs = QApplication::arguments();
-    m_bDebug = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive) ||
-            commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
 }
 
 Controller::~Controller() {
@@ -32,9 +28,7 @@ Controller::~Controller() {
 
 void Controller::startEngine()
 {
-    if (debugging()) {
-        qDebug() << "  Starting engine";
-    }
+    controllerDebug("  Starting engine");
     if (m_pEngine != NULL) {
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
@@ -43,9 +37,7 @@ void Controller::startEngine()
 }
 
 void Controller::stopEngine() {
-    if (debugging()) {
-        qDebug() << "  Shutting down engine";
-    }
+    controllerDebug("  Shutting down engine");
     if (m_pEngine == NULL) {
         qWarning() << "Controller::stopEngine(): No engine exists!";
         return;
@@ -106,7 +98,7 @@ void Controller::receive(const QByteArray data) {
     }
 
     int length = data.size();
-    if (debugging()) {
+    if (ControllerDebug::enabled()) {
         // Formatted packet display
         QString message = QString("%1: %2 bytes:\n").arg(m_sDeviceName).arg(length);
         for(int i=0; i<length; i++) {
@@ -117,7 +109,7 @@ void Controller::receive(const QByteArray data) {
                         .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
                         .arg(spacer);
         }
-        qDebug() << message;
+        controllerDebug(message);
     }
 
     foreach (QString function, m_pEngine->getScriptFunctionPrefixes()) {

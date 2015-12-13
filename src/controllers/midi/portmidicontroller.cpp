@@ -8,6 +8,7 @@
  */
 
 #include "controllers/midi/portmidicontroller.h"
+#include "controllers/controllerdebug.h"
 
 PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
                                        const PmDeviceInfo* outputDeviceInfo,
@@ -65,11 +66,9 @@ int PortMidiController::open() {
 
     if (m_pInputDeviceInfo) {
         if (isInputDevice()) {
-            if (debugging()) {
-                qDebug() << "PortMidiController: Opening"
+            controllerDebug("PortMidiController: Opening"
                          << m_pInputDeviceInfo->name << "index"
-                         << m_iInputDeviceIndex << "for input";
-            }
+                         << m_iInputDeviceIndex << "for input");
 
             err = Pm_OpenInput(&m_pInputStream,
                                m_iInputDeviceIndex,
@@ -86,11 +85,9 @@ int PortMidiController::open() {
     }
     if (m_pOutputDeviceInfo) {
         if (isOutputDevice()) {
-            if (debugging()) {
-                qDebug() << "PortMidiController: Opening"
+            controllerDebug("PortMidiController: Opening"
                          << m_pOutputDeviceInfo->name << "index"
-                         << m_iOutputDeviceIndex << "for output";
-            }
+                         << m_iOutputDeviceIndex << "for output");
 
             err = Pm_OpenOutput(&m_pOutputStream,
                                 m_iOutputDeviceIndex,

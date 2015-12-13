@@ -70,10 +70,6 @@ class ControllerEngine : public QObject {
     // Get the errors for a source file that was evaluated()'d
     const QStringList getErrors(QString filename);
 
-    void setDebug(bool bDebug) {
-        m_bDebug = bDebug;
-    }
-
     void setPopups(bool bPopups) {
         m_bPopups = bPopups;
     }
@@ -170,7 +166,6 @@ class ControllerEngine : public QObject {
     double getDeckRate(const QString& group);
 
     Controller* m_pController;
-    bool m_bDebug;
     bool m_bPopups;
     QMultiHash<ConfigKey, ControllerEngineConnection> m_connectedControls;
     QList<QString> m_scriptFunctionPrefixes;
