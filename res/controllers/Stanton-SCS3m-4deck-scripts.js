@@ -238,6 +238,8 @@ SCS3M.Agent = function(device) {
         }
     }
 
+    // This function receives Midi messages from the SCS.3m
+    // See the XML mapping for all the messages caught
     function receive(type, control, value) {
         var address = (type << 8) + control;
         var handler = receivers[address];
@@ -246,11 +248,16 @@ SCS3M.Agent = function(device) {
         }
     }
 
+    // Register a handler to listen for messages
+    // control: an array with at least two message bytes (type and control id)
+    // handler: callback function that will be called each time a value is received
     function expect(control, handler) {
         var address = (control[0] << 8) + control[1];
         receivers[address] = handler;
     }
 
+    // Register a handler for changes in engine values
+    // This is an abstraction over engine.getParameter()
     function watch(channel, control, handler) {
         // Silly indirection through a registry that keeps all watched controls
         var ctrl = channel + control;
@@ -285,6 +292,10 @@ SCS3M.Agent = function(device) {
         engine.trigger(channel, control);
     }
 
+    // Register a handler for multiple engine values. It will be called
+    // everytime one of the values changes.
+    // controls: list of channel/control pairs to watch
+    // handler: will receive list of control values as parameter in same order
     function watchmulti(controls, handler) {
         var values = [];
         var wait = controls.length;
@@ -333,6 +344,7 @@ SCS3M.Agent = function(device) {
         return true;
     }
 
+    // Wrapper function for send() that delays messages after modesetting
     function tell(message) {
         if (throttling) {
             pipe.push(message);
@@ -342,6 +354,14 @@ SCS3M.Agent = function(device) {
         send(message);
     }
 
+    // Send modeset messages to the device
+    //
+    // messages: list of one or two messages to send
+    //
+    // Either provide a pair of messages to set a slider to a different
+    // mode, or send just one long message in the list. Transmission of
+    // subsequent messages will be delayed to give the device some time to apply
+    // the changes.
     function modeset(messages) {
         var sent = true;
 
@@ -372,8 +392,8 @@ SCS3M.Agent = function(device) {
     var flushModeset = function() {
         var message;
 
-        // Now we can flush the rest of the messages
-        // on init, some controls are left unlit if the messages are sent
+        // Now we can flush the rest of the messages.
+        // On init, some controls are left unlit if the messages are sent
         // without delay. The causes are unclear. Sending only a few messages
         // per tick seems to work ok.
         var limit = 5; // Determined experimentally
