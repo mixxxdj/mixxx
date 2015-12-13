@@ -1706,13 +1706,10 @@ SCS3D.Agent = function(device) {
 
         var activeMode = mode[deck];
 
-        if (activeMode.held() === 'eq') {
-            expect(device.gain.slide.rel, budge(channel, 'pregain'));
-            watch(channel, 'pregain', Needle(device.gain.meter));
-        } else {
-            expect(device.gain.slide.abs, set(channel, 'volume'));
-            watch(channel, 'volume', Bar(device.gain.meter));
-        }
+        // reset gain when EQ is held
+        var gainOp = activeMode.held() === 'eq' ? reset : budge;
+        expect(device.gain.slide.rel, gainOp(channel, 'pregain'));
+        watch(channel, 'pregain', Needle(device.gain.meter));
 
         tell(device.mode.fx.light.black);
         tell(device.mode.eq.light.black);
