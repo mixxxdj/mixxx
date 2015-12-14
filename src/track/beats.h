@@ -32,9 +32,9 @@ class Beats {
         BEATSCAP_NONE          = 0x0000,
         BEATSCAP_ADDREMOVE     = 0x0001, // Add or remove a single beat
         BEATSCAP_TRANSLATE     = 0x0002, // Move all beat markers earlier or later
-        BEATSCAP_SCALE         = 0x0004, // Scale beat distance of all beats
+        BEATSCAP_SCALE         = 0x0004, // Scale beat distance bay a fixed ratio
         BEATSCAP_MOVEBEAT      = 0x0008, // Move a single Beat
-        BEATSCAP_SETBPM        = 0x0010  // Set new bpm, requires BEATSCAP_SCALE
+        BEATSCAP_SETBPM        = 0x0010  // Set new bpm, beat grid only
     };
     typedef int CapabilitiesFlags; // Allows us to do ORing
 

@@ -186,7 +186,6 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
 void DlgTrackInfo::reloadTrackBeats(TrackPointer pTrack) {
     BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats) {
-        // overwrite Track bpm with the average beats bpm from beats
         spinBpm->setValue(pBeats->getBpm());
         m_pBeatsClone = pBeats->clone();
     } else {
@@ -194,7 +193,6 @@ void DlgTrackInfo::reloadTrackBeats(TrackPointer pTrack) {
         spinBpm->setValue(0.0);
     }
     m_trackHasBeatMap = pBeats && !(pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM);
-    //bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
     bpmConst->setChecked(!m_trackHasBeatMap);
     bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
     spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
@@ -458,7 +456,6 @@ void DlgTrackInfo::clear() {
     txtLocation->setPlainText("");
     txtBitrate->setText("");
     txtBpm->setText("");
-    m_pBeatsClone.clear();
 
     m_cueMap.clear();
     cueTable->clearContents();
