@@ -6,6 +6,10 @@
 #include <QByteArray>
 #include <QSharedPointer>
 
+namespace {
+    double kMaxBpm = 500;
+}
+
 class Beats;
 typedef QSharedPointer<Beats> BeatsPointer;
 
@@ -33,6 +37,13 @@ class Beats {
         BEATSCAP_SETBPM        = 0x0010  // Set new bpm, requires BEATSCAP_SCALE
     };
     typedef int CapabilitiesFlags; // Allows us to do ORing
+
+    enum BPMScale {
+        DOUBLE,
+        HALVE,
+        TWOTHIRDS,
+        THREEFOURTHS,
+    };
 
     virtual Beats::CapabilitiesFlags getCapabilities() const = 0;
 
@@ -111,6 +122,10 @@ class Beats {
     // BPM returns -1.
     virtual double getBpmAroundPosition(double curSample, int n) const = 0;
 
+    virtual double getMaxBpm() const {
+        return kMaxBpm;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
@@ -130,7 +145,7 @@ class Beats {
 
     // Scale the position of every beat in the song by dScalePercentage. Beats
     // class must have the capability BEATSCAP_SCALE.
-    virtual void scale(double dScalePercentage) = 0;
+    virtual void scale(enum BPMScale scale) = 0;
 
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.

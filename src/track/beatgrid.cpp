@@ -344,20 +344,34 @@ void BeatGrid::translate(double dNumSamples) {
     emit(updated());
 }
 
-void BeatGrid::scale(double dScalePercentage) {
-    QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
+void BeatGrid::scale(enum BPMScale scale) {
+    double bpm = getBpm();
+
+    switch (scale) {
+    case DOUBLE:
+        bpm *= 2;
+        break;
+    case HALVE:
+        bpm *= 1.0 / 2;
+        break;
+    case TWOTHIRDS:
+        bpm *= 2.0 / 3;
+        break;
+    case THREEFOURTHS:
+        bpm *= 3.0 / 4;
+        break;
+    default:
+        DEBUG_ASSERT(!"scale value invalid");
         return;
     }
-    double newBpm = bpm() * dScalePercentage;
-    m_grid.mutable_bpm()->set_bpm(newBpm);
-    m_dBeatLength = (60.0 * m_iSampleRate / newBpm) * kFrameSize;
-    locker.unlock();
-    emit(updated());
+    setBpm(bpm);
 }
 
 void BeatGrid::setBpm(double dBpm) {
     QMutexLocker locker(&m_mutex);
+    if (dBpm > getMaxBpm()) {
+        dBpm = getMaxBpm();
+    }
     m_grid.mutable_bpm()->set_bpm(dBpm);
     m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
     locker.unlock();

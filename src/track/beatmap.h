@@ -76,7 +76,7 @@ class BeatMap : public QObject, public Beats {
     virtual void removeBeat(double dBeatSample);
     virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     virtual void translate(double dNumSamples);
-    virtual void scale(double dScalePercentage);
+    virtual void scale(enum BPMScale scale);
     virtual void setBpm(double dBpm);
 
   signals:
@@ -93,6 +93,12 @@ class BeatMap : public QObject, public Beats {
                         const mixxx::track::io::Beat& stopBeat) const;
     // For internal use only.
     bool isValid() const;
+
+    void scaleDouble();
+    void scaleTriple();
+    void scaleHalve();
+    void scaleThird();
+    void scaleFourth();
 
     mutable QMutex m_mutex;
     QString m_subVersion;

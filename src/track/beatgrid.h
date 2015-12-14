@@ -67,7 +67,7 @@ class BeatGrid : public QObject, public virtual Beats {
     virtual void removeBeat(double dBeatSample);
     virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     virtual void translate(double dNumSamples);
-    virtual void scale(double dScalePercentage);
+    virtual void scale(enum BPMScale scale);
     virtual void setBpm(double dBpm);
 
   signals:

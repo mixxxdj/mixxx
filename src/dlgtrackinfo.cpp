@@ -469,19 +469,31 @@ void DlgTrackInfo::clear() {
 }
 
 void DlgTrackInfo::slotBpmDouble() {
-    spinBpm->setValue(spinBpm->value() * 2);
+    m_pBeatsClone->scale(Beats::DOUBLE);
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmHalve() {
-    spinBpm->setValue(spinBpm->value() / 2);
+    m_pBeatsClone->scale(Beats::HALVE);
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    spinBpm->setValue(spinBpm->value() * 2 / 3);
+    m_pBeatsClone->scale(Beats::Beats::TWOTHIRDS);
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    spinBpm->setValue(spinBpm->value() * 3 / 4);
+    m_pBeatsClone->scale(Beats::Beats::THREEFOURTHS);
+    // read back the actual value
+    double newValue = m_pBeatsClone->getBpm();
+    spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmClear() {
