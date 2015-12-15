@@ -12,9 +12,6 @@
 <Template>
   <PushButton>
     <TooltipId><Variable name="TooltipId"/></TooltipId>
-    <!-- If no existing tooltip meets your needs, you can create a custom tooltip using the <Tooltip> tag.
-         Translation or internationalization of these tooltips is not currently possible. (2015/06) -->
-    <Tooltip><Variable name="Tooltip"/></Tooltip>
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <MinimumSize><Variable name="MinimumSize"/></MinimumSize>
     <MaximumSize><Variable name="MaximumSize"/></MaximumSize>

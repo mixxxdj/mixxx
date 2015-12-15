@@ -49,6 +49,10 @@
     <SetVariable name="SmallVerticalStretchButtonMaximumSize">15,-1</SetVariable>
     <SetVariable name="SmallVerticalStretchButtonSizePolicy">f,me</SetVariable>
 
+    <SetVariable name="SmallHorizontalStretchLinkButtonMinimumSize">-1,4</SetVariable>
+    <SetVariable name="SmallHorizontalStretchLinkButtonMaximumSize">-1,4</SetVariable>
+    <SetVariable name="SmallHorizontalStretchLinkButtonSizePolicy">me,f</SetVariable>
+
     <SetVariable name="SquareButtonMinimumSize">20,20</SetVariable>
     <SetVariable name="SquareButtonMaximumSize">20,20</SetVariable>
     <SetVariable name="SquareButtonSizePolicy">f,f</SetVariable>

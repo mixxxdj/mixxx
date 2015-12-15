@@ -13,6 +13,12 @@
 #include "util/math.h"
 #include "util/time.h"
 
+// 3/128 units away from the current is enough to catch fast non-sequential moves
+//  but not cause an audibly noticeable jump, determined experimentally with
+//  slow-refresh controllers.
+const double SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
+
+
 SoftTakeoverCtrl::SoftTakeoverCtrl() {
 
 }
@@ -60,13 +66,24 @@ bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
     return ignore;
 }
 
+void SoftTakeoverCtrl::ignoreNext(ControlObject* control) {
+    if (control == NULL) {
+        return;
+    }
+    
+    SoftTakeover* pSt = m_softTakeoverHash.value(control);
+    if (pSt == NULL) {
+        return;
+    }
+
+    pSt->ignoreNext();
+}
+
 SoftTakeover::SoftTakeover()
     : m_time(0),
       m_prevParameter(0),
       m_dThreshold(kDefaultTakeoverThreshold) {
 }
-
-const double SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
 
 void SoftTakeover::setThreshold(double threshold) {
     m_dThreshold = threshold;
@@ -74,19 +91,41 @@ void SoftTakeover::setThreshold(double threshold) {
 
 bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
     bool ignore = false;
-    // We only want to ignore the controller when all of the following are true:
-    //  - its previous and new values are far away from and on the same side
-    //      of the current value of the control
-    //  - it's been awhile since the controller last affected this control
+    /* 
+     * We only want to ignore the controller when:
+     * - its new value is far away from the current value of the ControlObject
+     * AND either of the following:
+     *  - its new and previous values are on the opposite side of the current
+     *      value of the ControlObject AND the new one arrives awhile after the
+     *      previous one (regardless of what the previous value was)
+     *  - new and previous values are on the same side of the current value of
+     *      the ControlObject AND either:
+     *      - the previous value is (also) far from the current CO value
+     *          (regardless of the new value's arrival time)
+     *      - the new value arrives awhile after the previous one
+     *          (regardless of what the previous value was)
+     * 
+     * Sheesh, this is much easier to show in a truth table!
+     * 
+     * Sides    prev distance   new distance    new value arrives   Ignore
+     * opposite close           far             later               TRUE
+     * opposite far             far             later               TRUE
+     * same     close           far             later               TRUE
+     * same     far             far             soon                TRUE
+     * same     far             far             later               TRUE
+     * 
+     *      Don't ignore in every other case.
+     */
 
-    uint currentTime = Time::elapsedMsecs();
+    qint64 currentTime = Time::elapsedMsecs();
     // We will get a sudden jump if we don't ignore the first value.
     if (m_time == 0) {
         ignore = true;
         // Change the stored time (but keep it far away from the current time)
         //  so this block doesn't run again.
         m_time = 1;
-        //qDebug() << "ignoring the first value" << newParameter;
+//         qDebug() << "SoftTakeover::ignore: ignoring the first value"
+//                  << newParameter;
     } else if ((currentTime - m_time) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
         // don't ignore value if a previous one was not ignored in time
         const double currentParameter = control->getParameter();
@@ -94,11 +133,12 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
         const double prevDiff = currentParameter - m_prevParameter;
         if ((prevDiff < 0 && difference < 0) ||
                 (prevDiff > 0 && difference > 0)) {
-            // On same site (still on ignore site)
+            // On same side of the current parameter value
             if (fabs(difference) > m_dThreshold && fabs(prevDiff) > m_dThreshold) {
-                // difference is above threshold
+                // differences are above threshold
                 ignore = true;
-                //qDebug() << "ignoring, not near" << newParameter << m_prevParameter << currentParameter;
+//                 qDebug() << "SoftTakeover::ignore: ignoring, not near"
+//                          << newParameter << m_prevParameter << currentParameter;
             }
         }
     }
