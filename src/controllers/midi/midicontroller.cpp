@@ -10,6 +10,7 @@
 
 #include "controllers/midi/midiutils.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/controllerdebug.h"
 #include "controlobject.h"
 #include "errordialoghandler.h"
 #include "playermanager.h"
@@ -93,16 +94,14 @@ void MidiController::createOutputHandlers() {
         double min = mapping.output.min;
         double max = mapping.output.max;
 
-        if (debugging()) {
-            qDebug() << QString(
+        controllerDebug(QString(
                 "Creating output handler for %1,%2 between %3 and %4 to MIDI out: 0x%5 0x%6, on: 0x%7 off: 0x%8")
-                    .arg(group, key,
-                            QString::number(min), QString::number(max),
-                            QString::number(status, 16).toUpper(),
-                            QString::number(control, 16).toUpper().rightJustified(2,'0'),
-                            QString::number(on, 16).toUpper().rightJustified(2,'0'),
-                            QString::number(off, 16).toUpper().rightJustified(2,'0'));
-        }
+                        .arg(group, key,
+                                QString::number(min), QString::number(max),
+                                QString::number(status, 16).toUpper(),
+                                QString::number(control, 16).toUpper().rightJustified(2,'0'),
+                                QString::number(on, 16).toUpper().rightJustified(2,'0'),
+                                QString::number(off, 16).toUpper().rightJustified(2,'0')));
 
         MidiOutputHandler* moh = new MidiOutputHandler(this, mapping);
         if (!moh->validate()) {
@@ -114,7 +113,7 @@ void MidiController::createOutputHandlers() {
             qWarning() << errorLog;
 
             int deckNum = 0;
-            if (debugging()) {
+            if (ControllerDebug::enabled()) {
                 failures.append(errorLog);
             } else if (PlayerManager::isDeckGroup(group, &deckNum)) {
                 int numDecks = PlayerManager::numDecks();
@@ -241,9 +240,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
-    if (debugging()) {
-        qDebug() << formatMidiMessage(status, control, value, channel, opCode);
-    }
+    controllerDebug(formatMidiMessage(status, control, value, channel, opCode));
 
     MidiKey mappingKey(status, control);
 
@@ -503,9 +500,7 @@ QString formatSysexMessage(QString controllerName, const QByteArray& data) {
 }
 
 void MidiController::receive(QByteArray data) {
-    if (debugging()) {
-        qDebug() << formatSysexMessage(getName(), data);
-    }
+    controllerDebug(formatSysexMessage(getName(), data));
 
     MidiKey mappingKey(data.at(0), 0xFF);
 
