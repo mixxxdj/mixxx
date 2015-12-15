@@ -1,14 +1,11 @@
 # This udev rule allows Mixxx to access HID controllers when running as a normal user
 
-# Allow scanning of USB devices
-SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", GROUP="users"
+# Allow scanning and use of USB HID devices
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{bInterfaceClass}=="03", GROUP="users", MODE="0660"
 
-# Allow communicating with HID devices
-ATTRS{idVendor}=="08e4", ATTRS{bInterfaceClass}=="03", GROUP="users", MODE="0660" # Pioneer
-ATTRS{idVendor}=="06f8", ATTRS{bInterfaceClass}=="03", GROUP="users", MODE="0660" # Hercules
-ATTRS{idVendor}=="17cc", ATTRS{bInterfaceClass}=="03", GROUP="users", MODE="0660" # Native Instruments
-ATTRS{idVendor}=="1157", ATTRS{bInterfaceClass}=="03", GROUP="users", MODE="0660" # Eks
-ATTRS{idVendor}=="057e", ATTRS{bInterfaceClass}=="03", GROUP="users", MODE="0660" # Nintendo
-ATTRS{idVendor}=="054c", ATTRS{bInterfaceClass}=="03", GROUP="users", MODE="0660" # Sony
+# Vendors with USB Bulk-transfer DJ controllers
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="06f8", GROUP="users", MODE="0660" # Hercules
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="15e4", GROUP="users", MODE="0660" # Numark (may be needed for NS7/V7)
 
-KERNEL=="hiddev*", NAME="usb/%k", GROUP="users"
+# This is likely not needed
+#KERNEL=="hiddev*", NAME="usb/%k", GROUP="users"
