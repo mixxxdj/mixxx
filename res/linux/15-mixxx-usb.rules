@@ -1,4 +1,4 @@
-# This udev rule allows Mixxx to access HID controllers when running as a normal user
+# This udev rule allows Mixxx to access HID and USB Bulk controllers when running as a normal user
 
 # Allow scanning and use of USB HID devices
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{bInterfaceClass}=="03", GROUP="users", MODE="0660"

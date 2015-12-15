@@ -217,8 +217,8 @@ dotdesktop_files = Glob('#res/linux/mixxx.desktop')
 #.appdata.xml file for KDE/GNOME AppStream iniative
 dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
 
-#udev rule file for HID controllers
-hidudev_files = Glob('#res/linux/mixxx-usb-hid.rules')
+#udev rule file for USB HID and Bulk controllers
+hidudev_files = Glob('#res/linux/*mixxx-usb.rules')
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
