@@ -119,7 +119,7 @@ TEST_F(SuperLinkTest, Softtakeover) {
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pControlValue->set(0.1);
     // Let enough time pass by to exceed soft-takeover's override interval.
-    Time::setTestElapsedMsecs(52);
+    Time::setTestElapsedMsecs(SoftTakeover::TestAccess::getTimeThreshold() + 2);
     // Ignored by SoftTakeover since it is too far from the current value of
     // 0.1.
     m_pEffectSlot->onChainSuperParameterChanged(0.7);
