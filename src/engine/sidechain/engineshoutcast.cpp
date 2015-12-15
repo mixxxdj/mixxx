@@ -104,9 +104,9 @@ EngineShoutcast::~EngineShoutcast() {
     wait(4000);
 
     // Signal user if thread doesn't die
-    DEBUG_ASSERT_AND_HANDLE(isRunning()) {
+    DEBUG_ASSERT_AND_HANDLE(!isRunning()) {
        qWarning() << "EngineShoutcast:~EngineShoutcast(): Thread didn't die.\
-       Ignored but add this to bug report if problems rise!";
+       Ignored but file a bug report if problems rise!";
     }
 
     delete m_pStatusCO;

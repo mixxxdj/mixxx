@@ -12,7 +12,7 @@
     <SizePolicy>me,max</SizePolicy>
     <!-- Because the spinny hides itself and throws off the size
          calculation we set our minimum size to the spinny size. -->
-    <MinimumSize>-1,100</MinimumSize>
+    <MinimumSize>-1,101</MinimumSize>
     <Children>
       <Visual>
         <TooltipId>waveform_display</TooltipId>

@@ -1183,12 +1183,12 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
+                <key>VestaxVCI400.loadTrack</key>
                 <description>MIDI Learned from 96 messages.</description>
                 <status>0x92</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1223,12 +1223,12 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
+                <key>VestaxVCI400.loadTrack</key>
                 <description>MIDI Learned from 98 messages.</description>
                 <status>0x93</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1273,12 +1273,12 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>LoadSelectedTrack</key>
+                <key>VestaxVCI400.loadTrack</key>
                 <description>MIDI Learned from 100 messages.</description>
                 <status>0x94</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1293,12 +1293,12 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>LoadSelectedTrack</key>
+                <key>VestaxVCI400.loadTrack</key>
                 <description>MIDI Learned from 102 messages.</description>
                 <status>0x95</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1875,20 +1875,20 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
+                <key>VestaxVCI400.loadTrack</key>
                 <status>0xB2</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
+                <key>VestaxVCI400.loadTrack</key>
                 <status>0xB3</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
