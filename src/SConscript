@@ -781,7 +781,8 @@ def BuildUbuntuPackage(target, source, env):
                 print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
                 print
 
-                command = ["ARCH=%s" % arch,
+                command = ["MIXXX_BUILD=%s" % build.build,
+                           "ARCH=%s" % arch,
                            "DIST=%s" % ubuntu_distro]
 
                 if package_target == 'source':
