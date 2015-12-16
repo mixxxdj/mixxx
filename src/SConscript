@@ -218,7 +218,7 @@ dotdesktop_files = Glob('#res/linux/mixxx.desktop')
 dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
 
 #udev rule file for USB HID and Bulk controllers
-hidudev_files = Glob('#res/linux/mixxx-usb.rules')
+hidudev_files = Glob('#res/linux/mixxx.usb.rules')
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
