@@ -321,7 +321,7 @@ if build.platform_is_linux or build.platform_is_bsd:
 
                 # NOTE(rryan): Hack to detect when we're Debian packaging.
                 building_debian_package = 'debian/tmp/usr' in install_root
-                udev_root = '/lib/udev/rules.d' if building_debian_package else '/etc/udev/rules.d'
+                udev_root = '/etc/udev/rules.d'
                 hidudev = env.Install(udev_root, hidudev_files)
 
                 #Makes each of those Install builders get fired off when you run "scons install" :)
@@ -339,7 +339,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', promotracks)
                 env.Alias('install', vamp_plugin)
 
-                if building_debian_package or os.access(udev_root, os.W_OK):
+                if not building_debian_package and os.access(udev_root, os.W_OK):
                         env.Alias('install', hidudev)
 
                 #Delete the old Mixxx installation (because SCONS won't overwrite it)
@@ -754,6 +754,7 @@ def BuildUbuntuPackage(target, source, env):
         print "* Copying Debian build directory from build/debian to debian (cwd: %s)" % os.getcwd()
         print
         os.system('cp -r build/debian .')
+        os.system('cp res/linux/mixxx-usb-hid.rules ./debian/mixxx.mixxx-usb.udev')
 
         for ubuntu_distro in ubuntu_distros:
                 # if a control.$distro file exists, use it

@@ -105,6 +105,8 @@ binary-arch: build install
 	dh_installchangelogs
 	dh_installdocs
 	dh_installexamples
+        # Install mixxx.mixxx-usb.udev.
+	dh_installudev --name=mixxx-usb
 #	dh_install
 	dh_installmenu
 	dh_desktop
