@@ -433,11 +433,13 @@ Result SoundManager::setupDevices() {
         ++devicesAttempted;
         m_pErrorDevice = device;
         // If we have not yet set a clock source then we use the first
-        if (pNewMasterClockRef == NULL) {
+        if (device->getInternalName() != kNetworkDeviceInternalName &&
+                pNewMasterClockRef == NULL) {
             pNewMasterClockRef = device;
             qWarning() << "Output sound device clock reference not set! Using"
                        << device->getDisplayName();
         }
+
         int syncBuffers = m_config.getSyncBuffers();
         // If we are in safe mode and using experimental polling support, use
         // the default of 2 sync buffers instead.
@@ -462,7 +464,7 @@ Result SoundManager::setupDevices() {
         qDebug() << "Using" << pNewMasterClockRef->getDisplayName()
                  << "as output sound device clock reference";
     } else {
-        qDebug() << "No output devices opened, no clock reference device set";
+        qWarning() << "No output devices opened, no clock reference device set";
     }
 
     qDebug() << outputDevicesOpened << "output sound devices opened";
