@@ -834,7 +834,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         }
 #else
 #if defined( __i386__ ) || defined( __i486__ ) || defined( __i586__ ) || \
-         defined( __i686__ ) || defined( __x86_64__ )
+         defined( __i686__ ) || defined( __x86_64__ ) || defined (_M_I86)
         qWarning() << "No SSE: No denormals to zero mode available. EQs and effects may suffer high CPU load";
 #endif
 #endif
