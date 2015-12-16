@@ -318,7 +318,11 @@ if build.platform_is_linux or build.platform_is_bsd:
                 docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
                 icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
                 promotracks = env.Install(os.path.join(unix_share_path, 'mixxx', 'promo'), promotracks_files)
-                hidudev = env.Install('/etc/udev/rules.d', hidudev_files)
+
+                # NOTE(rryan): Hack to detect when we're Debian packaging.
+                building_debian_package = 'debian/tmp/usr' in install_root
+                udev_root = '/lib/udev/rules.d' if building_debian_package else '/etc/udev/rules.d'
+                hidudev = env.Install(udev_root, hidudev_files)
 
                 #Makes each of those Install builders get fired off when you run "scons install" :)
                 env.Alias('install', binary)
@@ -334,7 +338,8 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', icon)
                 env.Alias('install', promotracks)
                 env.Alias('install', vamp_plugin)
-                if os.access('/etc/udev/rules.d', os.W_OK):
+
+                if building_debian_package or os.access(udev_root, os.W_OK):
                         env.Alias('install', hidudev)
 
                 #Delete the old Mixxx installation (because SCONS won't overwrite it)
