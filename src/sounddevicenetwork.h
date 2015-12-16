@@ -2,6 +2,7 @@
 #define SOUNDDEVICENETWORK_H
 
 #include <QString>
+#include <QThread>
 
 #include "sounddevice.h"
 
@@ -11,6 +12,8 @@
 class SoundManager;
 class ControlObjectSlave;
 class EngineNetworkStream;
+class SoundDeviceNetworkThread;
+
 
 class SoundDeviceNetwork : public SoundDevice {
   public:
@@ -30,6 +33,7 @@ class SoundDeviceNetwork : public SoundDevice {
         return 44100;
     }
 
+    void callbackProcessClkRef();
   private:
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     FIFO<CSAMPLE>* m_outputFifo;
@@ -37,10 +41,8 @@ class SoundDeviceNetwork : public SoundDevice {
     bool m_outputDrift;
     bool m_inputDrift;
 
-    // A string describing the last PortAudio error to occur.
+    // A string describing the last error to occur.
     QString m_lastError;
-    // Whether we have set the thread priority to realtime or not.
-    bool m_bSetThreadPriority;
     ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
     ControlObjectSlave* m_pMasterAudioLatencyUsage;
     ControlObjectSlave* m_pMasterAudioLatencyOverload;
@@ -48,6 +50,35 @@ class SoundDeviceNetwork : public SoundDevice {
     static volatile int m_underflowHappend;
     qint64 m_nsInAudioCb;
     int m_framesSinceAudioLatencyUsageUpdate;
+    SoundDeviceNetworkThread* m_pThread;
+    bool m_denormals;
+    qint64 m_lastTime;
+};
+
+class SoundDeviceNetworkThread : public QThread {
+    Q_OBJECT
+  public:
+    SoundDeviceNetworkThread(SoundDeviceNetwork* pParent)
+        : m_pParent(pParent),
+          m_stop(false) {
+    }
+
+    void stop() {
+        m_stop = true;
+    }
+
+    void usleep_(unsigned long t) {
+        usleep(t);
+    }
+
+  private:
+    void run() {
+        while(!m_stop) {
+            m_pParent->callbackProcessClkRef();
+        }
+    }
+    SoundDeviceNetwork* m_pParent;
+    bool m_stop;
 };
 
 #endif // SOUNDDEVICENETWORK_H

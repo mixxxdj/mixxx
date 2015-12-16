@@ -16,6 +16,7 @@
 #include "util/performancetimer.h"
 #include "util/denormalsarezero.h"
 #include "engine/sidechain/enginenetworkstream.h"
+#include "float.h"
 
 // static
 volatile int SoundDeviceNetwork::m_underflowHappend = 0;
@@ -29,10 +30,12 @@ SoundDeviceNetwork::SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
           m_inputFifo(NULL),
           m_outputDrift(false),
           m_inputDrift(false),
-          m_bSetThreadPriority(false),
           m_underflowUpdateCount(0),
           m_nsInAudioCb(0),
-          m_framesSinceAudioLatencyUsageUpdate(0) {
+          m_framesSinceAudioLatencyUsageUpdate(0),
+          m_pThread(NULL),
+          m_denormals(false),
+          m_lastTime(0) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_dSampleRate = 44100.0;
@@ -70,26 +73,25 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
     qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:"
              << bufferMSec << "ms";
 
-    // Create the callback function pointer.
-    if (isClkRefDevice) {
-        // Network device as clock Reference is not yet supported
-        DEBUG_ASSERT(false);
-    } else {
-        // Feet the network device buffer directly from the
-        // clock reference device callback
-        // This is what should work best.
-
-        if (m_iNumOutputChannels) {
-            m_outputFifo = new FIFO<CSAMPLE>(
-                    m_iNumOutputChannels * m_framesPerBuffer * 2);
-        }
-        if (m_iNumInputChannels) {
-            m_inputFifo = new FIFO<CSAMPLE>(
-                    m_iNumInputChannels * m_framesPerBuffer * 2);
-        }
+    // Feet the network device buffer directly from the
+    // clock reference device callback
+    // This is what should work best.
+    if (m_iNumOutputChannels) {
+        m_outputFifo = new FIFO<CSAMPLE>(
+                m_iNumOutputChannels * m_framesPerBuffer * 2);
+    }
+    if (m_iNumInputChannels) {
+        m_inputFifo = new FIFO<CSAMPLE>(
+                m_iNumInputChannels * m_framesPerBuffer * 2);
     }
 
     m_pNetworkStream->startStream(m_dSampleRate);
+
+    // Create the callback Thread if requested
+    if (isClkRefDevice) {
+        m_pThread = new SoundDeviceNetworkThread(this);
+        m_pThread->start(QThread::TimeCriticalPriority);
+    }
 
     return OK;
 }
@@ -109,7 +111,6 @@ Result SoundDeviceNetwork::close() {
         delete m_inputFifo;
         m_inputFifo = NULL;
     }
-    m_bSetThreadPriority = false;
     return OK;
 }
 
@@ -289,4 +290,100 @@ void SoundDeviceNetwork::writeProcess() {
         }
         m_outputFifo->releaseReadRegions(copyCount);
     }
+}
+
+void SoundDeviceNetwork::callbackProcessClkRef() {
+    PerformanceTimer timer;
+    timer.start();
+
+    Trace trace("SoundDeviceNetwork::callbackProcessClkRef %1",
+                getInternalName());
+
+
+    if (!m_denormals) {
+        m_denormals = true;
+        // This disables the denormals calculations, to avoid a
+        // performance penalty of ~20
+        // https://bugs.launchpad.net/mixxx/+bug/1404401
+#ifdef __SSE__
+        if (!_MM_GET_DENORMALS_ZERO_MODE()) {
+            qDebug() << "SSE: Enabling denormals to zero mode";
+            _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+        } else {
+             qDebug() << "SSE: Denormals to zero mode already enabled";
+        }
+
+        if (!_MM_GET_FLUSH_ZERO_MODE()) {
+            qDebug() << "SSE: Enabling flush to zero mode";
+            _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+        } else {
+             qDebug() << "SSE: Flush to zero mode already enabled";
+        }
+        // verify if flush to zero or denormals to zero works
+        // test passes if one of the two flag is set.
+        volatile double doubleMin = DBL_MIN; // the smallest normalized double
+        DEBUG_ASSERT_AND_HANDLE(doubleMin / 2 == 0.0) {
+            qWarning() << "SSE: Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
+        } else {
+            qDebug() << "SSE: Denormals to zero mode is working";
+        }
+#else
+        qWarning() << "No SSE: No denormals to zero mode available. EQs and effects may suffer high CPU load";
+#endif
+    }
+
+    VisualPlayPosition::setTimeInfo(NULL);
+
+    m_framesSinceAudioLatencyUsageUpdate += m_framesPerBuffer;
+    if (m_framesSinceAudioLatencyUsageUpdate
+            > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
+        double secInAudioCb = (double) m_nsInAudioCb / 1000000000.0;
+        m_pMasterAudioLatencyUsage->set(secInAudioCb /
+                (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
+        m_nsInAudioCb = 0;
+        m_framesSinceAudioLatencyUsageUpdate = 0;
+        //qDebug() << m_pMasterAudioLatencyUsage
+        //         << m_pMasterAudioLatencyUsage->get();
+    }
+
+
+    m_pSoundManager->readProcess();
+
+    {
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1",
+                getInternalName());
+        m_pSoundManager->onDeviceOutputCallback(m_framesPerBuffer);
+    }
+
+    m_pSoundManager->writeProcess();
+
+    m_nsInAudioCb += timer.elapsed();
+
+    double bufferMSec = m_framesPerBuffer / m_dSampleRate * 1000;
+    qint64 currentTime = m_pNetworkStream->getStreamTimeUs();
+    qint64 targetTime = m_lastTime + (bufferMSec * 1000);
+    if (currentTime > targetTime) {
+        m_underflowHappend = true;
+        m_lastTime = currentTime;
+    } else {
+        m_pThread->usleep_(targetTime - currentTime);
+        m_lastTime = targetTime;
+    }
+
+    if (m_underflowUpdateCount == 0) {
+         if (m_underflowHappend) {
+             m_pMasterAudioLatencyOverload->set(1.0);
+             m_pMasterAudioLatencyOverloadCount->set(
+                     m_pMasterAudioLatencyOverloadCount->get() + 1);
+             m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_dSampleRate
+                     / m_framesPerBuffer / 1000;
+             m_underflowHappend = 0; // reseting her is not thread save,
+                                     // but that is OK, because we count only
+                                     // 1 underflow each 500 ms
+         } else {
+             m_pMasterAudioLatencyOverload->set(0.0);
+         }
+     } else {
+         --m_underflowUpdateCount;
+     }
 }

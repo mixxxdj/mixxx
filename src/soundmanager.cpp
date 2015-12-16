@@ -433,8 +433,7 @@ Result SoundManager::setupDevices() {
         ++devicesAttempted;
         m_pErrorDevice = device;
         // If we have not yet set a clock source then we use the first
-        if (device->getInternalName() != kNetworkDeviceInternalName &&
-                pNewMasterClockRef == NULL) {
+        if (pNewMasterClockRef == NULL) {
             pNewMasterClockRef = device;
             qWarning() << "Output sound device clock reference not set! Using"
                        << device->getDisplayName();

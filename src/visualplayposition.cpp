@@ -120,6 +120,8 @@ void VisualPlayPosition::setTimeInfo(const PaStreamCallbackTimeInfo* timeInfo) {
     // the timeInfo is valid only just NOW, so measure the time from NOW for
     // later correction
     m_timeInfoTime.start();
-    m_timeInfo = *timeInfo;
+    if (timeInfo) {
+        m_timeInfo = *timeInfo;
+    }
     //qDebug() << "TimeInfo" << (timeInfo->currentTime - floor(timeInfo->currentTime)) << (timeInfo->outputBufferDacTime - floor(timeInfo->outputBufferDacTime));
 }
