@@ -1108,6 +1108,9 @@ class Optimize(Feature):
                         # the sse flags are not set by default on 32 bit builds
                         # but are not supported on arm builds
                         build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = "portable"
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
                 else:
                     self.status = "portable"
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
@@ -1132,6 +1135,9 @@ class Optimize(Feature):
                     # the sse flags are not set by default on 32 bit builds
                     # but are not supported on arm builds
                     build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = "portable"
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
             elif optimize_level == Optimize.LEVEL_LEGACY:
                 if build.architecture_is_x86:
                     self.status = "legacy: pure i386 code"
