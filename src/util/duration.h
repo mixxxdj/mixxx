@@ -2,6 +2,7 @@
 #define UTIL_DURAITON_H
 
 #include <QtGlobal>
+#include <QMetaType>
 #include <QString>
 
 namespace mixxx {
@@ -29,6 +30,8 @@ class Duration {
     static Duration fromNanos(qint64 nanos) {
         return Duration(nanos);
     }
+
+    Duration() : m_timestamp_nanos(0) {}
 
     // Returns the duration as an integer number of seconds (rounded-down).
     inline qint64 toSeconds() const {
@@ -106,5 +109,7 @@ class Duration {
 };
 
 }  // namespace mixxx
+
+Q_DECLARE_METATYPE(mixxx::Duration)
 
 #endif /* UTIL_DURAITON_H */
