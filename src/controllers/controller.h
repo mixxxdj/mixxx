@@ -18,6 +18,7 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/controllerpresetfilehandler.h"
+#include "util/duration.h"
 
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
@@ -76,7 +77,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Handles packets of raw bytes and passes them to an ".incomingData" script
     // function that is assumed to exist. (Sub-classes may want to reimplement
     // this if they have an alternate way of handling such data.)
-    virtual void receive(const QByteArray data);
+    virtual void receive(const QByteArray data, mixxx::Duration timestamp);
 
     // Initializes the controller engine
     virtual void applyPreset(QList<QString> scriptPaths);

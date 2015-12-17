@@ -89,7 +89,7 @@ void Controller::send(QList<int> data, unsigned int length) {
     send(msg);
 }
 
-void Controller::receive(const QByteArray data) {
+void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
     if (m_pEngine == NULL) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
@@ -100,7 +100,8 @@ void Controller::receive(const QByteArray data) {
     int length = data.size();
     if (ControllerDebug::enabled()) {
         // Formatted packet display
-        QString message = QString("%1: %2 bytes:\n").arg(m_sDeviceName).arg(length);
+        QString message = QString("%1: timestamp %2, %3 bytes:\n")
+                .arg(m_sDeviceName).arg(timestamp.formatHex()).arg(length);
         for(int i=0; i<length; i++) {
             QString spacer=" ";
             if ((i+1) % 4 == 0) spacer="  ";
