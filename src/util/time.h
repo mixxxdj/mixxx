@@ -10,6 +10,7 @@
 #include "util/performancetimer.h"
 #include "util/threadcputimer.h"
 #include "util/timer.h"
+#include "util/duration.h"
 
 #define LLTIMER PerformanceTimer
 //#define LLTIMER ThreadCpuTimer
@@ -23,6 +24,14 @@ class Time {
 
     static void start() {
         s_timer.start();
+    }
+
+    // Returns a Duration representing time elapsed since Mixxx started up.
+    static mixxx::Duration elapsedDuration() {
+        if (s_testMode) {
+            return mixxx::Duration::fromNanos(s_testElapsed_nsecs);
+        }
+        return mixxx::Duration::fromNanos(s_timer.elapsed());
     }
 
     // Returns the time elapsed since Mixxx started up in nanoseconds.
@@ -50,7 +59,7 @@ class Time {
     static void setTestElapsedTime(qint64 elapsed) {
         s_testElapsed_nsecs = elapsed;
     }
-    
+
     static void setTestElapsedMsecs(qint64 elapsed) {
         s_testElapsed_nsecs = elapsed * 1000000;
     }
