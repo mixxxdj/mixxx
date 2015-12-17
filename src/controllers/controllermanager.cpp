@@ -13,6 +13,7 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
+#include "util/time.h"
 
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
@@ -286,14 +287,14 @@ void ControllerManager::stopPolling() {
 }
 
 void ControllerManager::pollDevices() {
-    qDebug() << "ControllerManager::pollDevices()";
-    ScopedTimer t("ControllerManager::pollDevices");
-    Trace tracer("ControllerManager::pollDevices");
+    uint start = Time::elapsedMsecs();
     foreach (Controller* pDevice, m_controllers) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }
     }
+    uint end = Time::elapsedMsecs();
+    qDebug() << "ControllerManager::pollDevices()" << end - start << end;
 }
 
 void ControllerManager::openController(Controller* pController) {
