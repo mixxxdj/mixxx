@@ -217,8 +217,8 @@ dotdesktop_files = Glob('#res/linux/mixxx.desktop')
 #.appdata.xml file for KDE/GNOME AppStream iniative
 dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
 
-#udev rule file for HID controllers
-hidudev_files = Glob('#res/linux/mixxx-usb-hid.rules')
+#udev rule file for USB HID and Bulk controllers
+hidudev_files = Glob('#res/linux/mixxx.usb.rules')
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
@@ -754,7 +754,7 @@ def BuildUbuntuPackage(target, source, env):
         print "* Copying Debian build directory from build/debian to debian (cwd: %s)" % os.getcwd()
         print
         os.system('cp -r build/debian .')
-        os.system('cp res/linux/mixxx-usb-hid.rules ./debian/mixxx.mixxx-usb.udev')
+        os.system('cp res/linux/mixxx.usb.rules ./debian/mixxx.mixxx-usb.udev')
 
         for ubuntu_distro in ubuntu_distros:
                 # if a control.$distro file exists, use it
