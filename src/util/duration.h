@@ -1,5 +1,5 @@
-#ifndef UTIL_DURAITON_H
-#define UTIL_DURAITON_H
+#ifndef UTIL_DURATION_H
+#define UTIL_DURATION_H
 
 #include <QtGlobal>
 #include <QMetaType>
@@ -112,4 +112,4 @@ class Duration {
 
 Q_DECLARE_METATYPE(mixxx::Duration)
 
-#endif /* UTIL_DURAITON_H */
+#endif /* UTIL_DURATION_H */
