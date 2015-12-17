@@ -6,6 +6,15 @@
 #include <QString>
 
 namespace mixxx {
+namespace {
+
+const qint64 kMillisPerSecond = 1e3;
+const qint64 kMicrosPerSecond = 1e6;
+const qint64 kNanosPerSecond = 1e9;
+const qint64 kNanosPerMilli = 1e6;
+const qint64 kNanosPerMicro = 1e3;
+
+}  // namespace
 
 // Represents a duration in a type-safe manner. Provides conversion methods to
 // convert between physical units. Durations can be negative.
@@ -90,17 +99,11 @@ class Duration {
                                         QLatin1Char('0'));
     }
 
-    QString formatHumanReadable() const {
+    QString formatNanosWithUnit() const {
         return QString("%1 ns").arg(m_timestamp_nanos);
     }
 
   private:
-    static const qint64 kMillisPerSecond = 1e3;
-    static const qint64 kMicrosPerSecond = 1e6;
-    static const qint64 kNanosPerSecond = 1e9;
-    static const qint64 kNanosPerMilli = 1e6;
-    static const qint64 kNanosPerMicro = 1e3;
-
     Duration(qint64 nanoseconds)
             : m_timestamp_nanos(nanoseconds) {
     }
