@@ -479,6 +479,9 @@ SCS3M.Agent = function(device) {
         var engaged = false;
 
         var held = false;
+        var heldBegin = false;
+
+        var switchExpire = false;
 
         return {
             'change': function(state) {
@@ -487,15 +490,24 @@ SCS3M.Agent = function(device) {
                 engaged = state;
                 return changed;
             },
-            'hold': function() {
-                held = new Date();
+            'hold': function(onHeld) {
+                return function() {
+                    heldBegin = new Date();
+                    switchExpire = engine.beginTimer(110, function() {
+                        engine.stopTimer(switchExpire);
+                        if (heldBegin) {
+                            held = true;
+                            onHeld();
+                        }
+                    });
+                }
             },
             'release': function() {
-                var change = held && (new Date() - held) < 200;
+                var change = heldBegin && (new Date() - heldBegin) < 200;
                 if (change) engaged = !engaged;
                 held = false;
+                heldBegin = false;
                 return change;
-
             },
             'engage': function() {
                 engaged = true;
@@ -507,7 +519,7 @@ SCS3M.Agent = function(device) {
                 engaged = !engaged;
             },
             'held': function() {
-                return !!held;
+                return held;
             },
             'engaged': function() {
                 return engaged;
@@ -574,11 +586,16 @@ SCS3M.Agent = function(device) {
         right: Switch()
     };
 
+    function remap() {
+        clear();
+        patchage();
+    }
+
+    // Remap for chainig with handlers
     function repatch(handler) {
         return function(value) {
             var ret = handler(value);
-            clear();
-            patchage();
+            remap();
             return ret;
         };
     }
@@ -607,7 +624,7 @@ SCS3M.Agent = function(device) {
             }
 
             // Switch deck/channel when button is touched
-            expect(part.deck.touch, repatch(deckside.hold));
+            expect(part.deck.touch, deckside.hold(remap));
             expect(part.deck.release, deckflash(repatch(deckside.release)));
 
             function either(left, right) {
