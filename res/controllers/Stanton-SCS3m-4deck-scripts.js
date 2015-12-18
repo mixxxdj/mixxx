@@ -748,13 +748,25 @@ SCS3M.Agent = function(device) {
                 }
 
                 if (sideoverlay.engaged(tnr)) {
-                    modeset(part.pitch.mode.absolute);
-                    expect(part.pitch.slide, eqsideheld.choose(
-                        set(effectunit, 'mix'),
-                        reset(effectunit, 'mix')
-                    ));
-                    watch(effectunit, 'mix', patch(part.pitch.meter.bar));
-
+                    // Select effect by touching top slider when FX is held
+                    // Otherwise the top slider controls effect wet/dry
+                    if (fxsideheld.engaged()) {
+                        tell(part.pitch.meter.expand(0.3));
+                        expect(
+                            part.pitch.field.left.touch,
+                            setconst(effectunit, 'chain_selector', 1)
+                        );
+                        expect(
+                            part.pitch.field.right.touch,
+                            setconst(effectunit, 'chain_selector', -1)
+                        );
+                    } else {
+                        expect(part.pitch.slide, eqsideheld.choose(
+                            set(effectunit, 'mix'),
+                            reset(effectunit, 'mix')
+                        ));
+                        watch(effectunit, 'mix', patch(part.pitch.meter.bar));
+                    }
                     expect(part.eq.high.slide, fxsideheld.choose(
                         set(effectunit_effect, 'parameter3'),
                         reset(effectunit_effect, 'parameter3')
