@@ -15,7 +15,12 @@
 // amidi -p hw:1 -S F00001601501F7 # flat mode
 // amidi -p hw:1 -S 900302 # 90: note on, 03: id of a touch button, 02: red LED
 
-SCS3M = {};
+SCS3M = {
+    // The device stays in the EQ or FX mode on deck switch
+    // Set this to true if you prefer the device to remember
+    // the mode per-deck and switch to that mode on deck switch.
+    eqModePerDeck: false,
+};
 
 SCS3M.init = function(id) {
     this.device = this.Device();
@@ -537,9 +542,21 @@ SCS3M.Agent = function(device) {
         right: Switch() // off: channel2, on: channel4
     };
 
+    var overlayA = Multiswitch('eq');
+    var overlayB = Multiswitch('eq');
+    var overlayC;
+    var overlayD;
+    if (SCS3M.eqModePerDeck) {
+        overlayC = Multiswitch('eq');
+        overlayD = Multiswitch('eq');
+    } else {
+        overlayC = overlayA;
+        overlayD = overlayB;
+    }
+
     var overlay = {
-        left: Multiswitch('eq'),
-        right: Multiswitch('eq')
+        left: [overlayA, overlayC],
+        right: [overlayB, overlayD],
     };
 
     var eqheld = {
@@ -602,7 +619,7 @@ SCS3M.Agent = function(device) {
             var effectchannel = '[QuickEffectRack1_[Channel' + channelno + ']]';
             var eqsideheld = eqheld[side];
             var touchsideheld = touchheld[side];
-            var sideoverlay = overlay[side];
+            var sideoverlay = overlay[side][deckside.choose(0, 1)];
 
             // Light the corresponding deck (channel 1: A, channel 2: B, channel 3: C, channel 4: D)
             // Make the lights blink on each beat
