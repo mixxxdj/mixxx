@@ -11,10 +11,6 @@
 /* jshint laxbreak: true                                              */
 ////////////////////////////////////////////////////////////////////////
 
-// issues:
-// - blink EQ when not zeroed?
-// - blink FX when one is engaged?
-
 // manually test messages
 // amidi -p hw:1 -S F00001601501F7 # flat mode
 // amidi -p hw:1 -S 900302 # 90: note on, 03: id of a touch button, 02: red LED
