@@ -90,14 +90,22 @@ SCS3M.Device = function() {
         };
     }
 
-    function Slider(id, lights) {
+    function Slider(id, lights, fields) {
+        var touchfields = {};
+        for (var fieldn in fields) {
+            touchfields[fieldn] = {
+                touch: [NoteOn, fields[fieldn]],
+                release: [NoteOff, fields[fieldn]],
+            };
+        }
         return {
             meter: Meter(id, lights),
             slide: [CC, id],
             mode: {
                 absolute: [[CM, id, 0x70], [CM, id, 0x7F]],
                 relative: [[CM, id, 0x71], [CM, id, 0x7F]],
-            }
+            },
+            field: touchfields,
         };
     }
 
@@ -138,7 +146,11 @@ SCS3M.Device = function() {
         }
 
         function Pitch() {
-            return Slider(either(0x00, 0x01), 7);
+            return Slider(either(0x00, 0x01), 7, {
+                left:   either(0x51, 0x54),
+                middle: either(0x52, 0x55),
+                right:  either(0x53, 0x56),
+            });
         }
 
         function Eq() {

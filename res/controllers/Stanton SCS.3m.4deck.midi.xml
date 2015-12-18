@@ -22,6 +22,23 @@
         </options>
       </control>
 
+      <!-- pitch sliders -->
+      <control><key>SCS3M.receive</key><status>0xB0</status><midino>0x00</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x90</status><midino>0x51</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x80</status><midino>0x51</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x90</status><midino>0x52</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x80</status><midino>0x52</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x90</status><midino>0x53</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x80</status><midino>0x53</midino><options><script-binding/></options></control>
+
+      <control><key>SCS3M.receive</key><status>0xB0</status><midino>0x01</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x90</status><midino>0x54</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x80</status><midino>0x54</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x90</status><midino>0x55</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x80</status><midino>0x55</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x90</status><midino>0x56</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x80</status><midino>0x56</midino><options><script-binding/></options></control>
+
       <!-- volume sliders -->
       <control><key>SCS3M.receive</key><status>0xB0</status><midino>0x08</midino><options><script-binding/></options></control>
       <control><key>SCS3M.receive</key><status>0xB0</status><midino>0x09</midino><options><script-binding/></options></control>
@@ -44,14 +61,6 @@
       </control>
       <control>
         <key>SCS3M.receive</key>
-        <status>0x80</status>
-        <midino>0x53</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x06</midino>
         <options>
@@ -68,24 +77,8 @@
       </control>
       <control>
         <key>SCS3M.receive</key>
-        <status>0x90</status>
-        <midino>0x54</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x0A</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0x90</status>
-        <midino>0x00</midino>
         <options>
           <script-binding/>
         </options>
@@ -133,14 +126,6 @@
       <control>
         <key>SCS3M.receive</key>
         <status>0x90</status>
-        <midino>0x53</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0x90</status>
         <midino>0x10</midino>
         <options>
           <script-binding/>
@@ -188,24 +173,8 @@
       </control>
       <control>
         <key>SCS3M.receive</key>
-        <status>0x80</status>
-        <midino>0x51</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x04</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0xB0</status>
-        <midino>0x01</midino>
         <options>
           <script-binding/>
         </options>
@@ -222,14 +191,6 @@
         <key>SCS3M.receive</key>
         <status>0x80</status>
         <midino>0x08</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0x80</status>
-        <midino>0x56</midino>
         <options>
           <script-binding/>
         </options>
@@ -276,22 +237,6 @@
       </control>
       <control>
         <key>SCS3M.receive</key>
-        <status>0xB0</status>
-        <midino>0x00</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0x90</status>
-        <midino>0x51</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x0E</midino>
         <options>
@@ -318,22 +263,6 @@
         <key>SCS3M.receive</key>
         <status>0xB0</status>
         <midino>0x05</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0x80</status>
-        <midino>0x01</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0x90</status>
-        <midino>0x56</midino>
         <options>
           <script-binding/>
         </options>
@@ -380,14 +309,6 @@
       </control>
       <control>
         <key>SCS3M.receive</key>
-        <status>0x80</status>
-        <midino>0x54</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
         <status>0x90</status>
         <midino>0x07</midino>
         <options>
@@ -405,23 +326,7 @@
       <control>
         <key>SCS3M.receive</key>
         <status>0x80</status>
-        <midino>0x00</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0x80</status>
         <midino>0x0B</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <key>SCS3M.receive</key>
-        <status>0x90</status>
-        <midino>0x01</midino>
         <options>
           <script-binding/>
         </options>
