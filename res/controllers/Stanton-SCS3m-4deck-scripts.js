@@ -481,8 +481,6 @@ SCS3M.Agent = function(device) {
         var held = false;
         var heldBegin = false;
 
-        var switchExpire = false;
-
         return {
             'change': function(state) {
                 state = !!(state);
@@ -493,7 +491,7 @@ SCS3M.Agent = function(device) {
             'hold': function(onHeld) {
                 return function() {
                     heldBegin = new Date();
-                    switchExpire = engine.beginTimer(110, function() {
+                    var switchExpire = engine.beginTimer(110, function() {
                         engine.stopTimer(switchExpire);
                         if (heldBegin) {
                             held = true;
