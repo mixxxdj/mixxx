@@ -713,11 +713,17 @@ SCS3M.Agent = function(device) {
                     }(tnr));
                 }
                 expect(touch.release, repatch(touchsideheld.cancel));
+
                 if (sideoverlay.engaged(tnr)) {
-                    watch(effectunit, effectunit_enable, binarylight(touch.light.red, touch.light.purple));
-                    tell(touch.light.purple);
+                    watch(effectunit, effectunit_enable, binarylight(
+                        touch.light.red,
+                        touch.light.purple)
+                    );
                 } else {
-                    watch(effectunit, effectunit_enable, binarylight(touch.light.black, touch.light.blue));
+                    watch(effectunit, effectunit_enable, binarylight(
+                        touch.light.black,
+                        touch.light.blue)
+                    );
                 }
 
                 if (sideoverlay.engaged(tnr)) {
