@@ -601,8 +601,8 @@ SCS3M.Agent = function(device) {
     };
 
     var touchheld = {
-        left: Switch(),
-        right: Switch()
+        left: Multiswitch('none'),
+        right: Multiswitch('none')
     };
 
     function remap() {
@@ -704,9 +704,7 @@ SCS3M.Agent = function(device) {
 
             expect(part.modes.eq.touch, repatch(function() {
                 eqsideheld.engage();
-                if (!touchsideheld.engaged()) {
-                    sideoverlay.cancel();
-                }
+                sideoverlay.cancel();
             }));
             expect(part.modes.eq.release, repatch(eqsideheld.cancel));
             tell(part.modes.eq.light[eqsideheld.choose(sideoverlay.choose('eq', 'blue', 'red'), 'purple')]);
@@ -729,7 +727,7 @@ SCS3M.Agent = function(device) {
                     (function(tnr) { // close over tnr
                         expect(touch.touch, repatch(function() {
                             sideoverlay.engage(tnr);
-                            touchsideheld.engage();
+                            touchsideheld.engage(tnr);
                         }));
                     }(tnr));
                 }
@@ -748,9 +746,9 @@ SCS3M.Agent = function(device) {
                 }
 
                 if (sideoverlay.engaged(tnr)) {
-                    // Select effect by touching top slider when FX is held
+                    // Select effect by touching top slider when button is held
                     // Otherwise the top slider controls effect wet/dry
-                    if (fxsideheld.engaged()) {
+                    if (touchsideheld.engaged(tnr)) {
                         tell(part.pitch.meter.expand(0.3));
                         expect(
                             part.pitch.field.left.touch,
