@@ -728,15 +728,15 @@ SCS3M.Agent = function(device) {
                     ));
                     watch(effectunit, 'mix', patch(part.pitch.meter.bar));
 
-                    expect(part.eq.high.slide, eqsideheld.choose(
+                    expect(part.eq.high.slide, fxsideheld.choose(
                         set(effectunit_effect, 'parameter3'),
                         reset(effectunit_effect, 'parameter3')
                     ));
-                    expect(part.eq.mid.slide, eqsideheld.choose(
+                    expect(part.eq.mid.slide, fxsideheld.choose(
                         set(effectunit_effect, 'parameter2'),
                         reset(effectunit_effect, 'parameter2')
                     ));
-                    expect(part.eq.low.slide, eqsideheld.choose(
+                    expect(part.eq.low.slide, fxsideheld.choose(
                         set(effectunit_effect, 'parameter1'),
                         reset(effectunit_effect, 'parameter1')
                     ));
