@@ -86,7 +86,10 @@ SCS3M.Device = function() {
             },
             bar: function(value) {
                 return [CC, id, 0x28 + zeroclamped(value)];
-            }
+            },
+            expand: function(value) {
+                return [CC, id, 0x3C + zeroclamped(value)];
+            },
         };
     }
 
@@ -458,6 +461,12 @@ SCS3M.Agent = function(device) {
                 value / 127
             );
         };
+    }
+
+    function setconst(channel, control, value) {
+        return function() {
+            engine.setParameter(channel, control, value);
+        }
     }
 
     function reset(channel, control) {
