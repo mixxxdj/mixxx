@@ -603,17 +603,25 @@ SCS3M.Agent = function(device) {
 
             // Light the corresponding deck (channel 1: A, channel 2: B, channel 3: C, channel 4: D)
             // Make the lights blink on each beat
-            function beatlight(translator, activepos) {
+            function beatlight(translator, activepos, held) {
                 return function(bits) {
                     bits = bits.slice(); // clone
-                    bits[activepos] = !bits[activepos]; // Invert the bit for the light that should be on
+                    if (held) {
+                        // When the switch his held, light both LED
+                        // turn them off when beat is active
+                        bits[0] = !bits[0];
+                        bits[1] = !bits[1];
+                    } else {
+                        // Invert the bit for the light that should be on
+                        bits[activepos] = !bits[activepos];
+                    }
                     return translator(bits);
                 };
             }
             watchmulti([
                 ['[Channel' + either(1, 2) + ']', 'beat_active'],
                 ['[Channel' + either(3, 4) + ']', 'beat_active'],
-            ], patch(beatlight(part.deck.light, deckside.choose(0, 1))));
+            ], patch(beatlight(part.deck.light, deckside.choose(0, 1), deckside.held())));
 
             if (!master.engaged()) {
                 modeset(part.pitch.mode.absolute);
