@@ -465,14 +465,29 @@ SCS3M.Agent = function(device) {
         };
     }
 
+    // Switches can be engaged, and they can be held.
+    // A switch that is held for less than 200ms will toggle.
     function Switch() {
         var engaged = false;
+
+        var held = false;
+
         return {
             'change': function(state) {
                 state = !!(state);
                 var changed = engaged !== state;
                 engaged = state;
                 return changed;
+            },
+            'hold': function() {
+                held = new Date();
+            },
+            'release': function() {
+                var change = held && (new Date() - held) < 200;
+                if (change) engaged = !engaged;
+                held = false;
+                return change;
+
             },
             'engage': function() {
                 engaged = true;
@@ -482,6 +497,9 @@ SCS3M.Agent = function(device) {
             },
             'toggle': function() {
                 engaged = !engaged;
+            },
+            'held': function() {
+                return !!held;
             },
             'engaged': function() {
                 return engaged;
@@ -538,9 +556,10 @@ SCS3M.Agent = function(device) {
 
     function repatch(handler) {
         return function(value) {
-            handler(value);
+            var ret = handler(value);
             clear();
             patchage();
+            return ret;
         };
     }
 
