@@ -567,12 +567,15 @@ SCS3M.Agent = function(device) {
 
         function Side(side) {
             var part = device[side];
+            var deckside = deck[side];
 
             // Light the top half or bottom half of the EQ sliders to show chosen deck
             function deckflash(handler) {
                 return function(value) {
-                    handler(value);
-                    var lightval = deck[side].choose(1, 0); // First deck is the upper one
+                    var changed = handler(value);
+                    if (!changed) return;
+
+                    var lightval = deckside.choose(1, 0); // First deck is the upper one
                     tell(part.eq.high.meter.centerbar(lightval));
                     tell(part.eq.mid.meter.centerbar(lightval));
                     tell(part.eq.low.meter.centerbar(lightval));
@@ -584,7 +587,8 @@ SCS3M.Agent = function(device) {
             }
 
             // Switch deck/channel when button is touched
-            expect(part.deck.touch, deckflash(repatch(deck[side].toggle)));
+            expect(part.deck.touch, repatch(deckside.hold));
+            expect(part.deck.release, deckflash(repatch(deckside.release)));
 
             function either(left, right) {
                 return (side === 'left') ? left : right;
@@ -609,7 +613,7 @@ SCS3M.Agent = function(device) {
             watchmulti([
                 ['[Channel' + either(1, 2) + ']', 'beat_active'],
                 ['[Channel' + either(3, 4) + ']', 'beat_active'],
-            ], patch(beatlight(part.deck.light, deck[side].choose(0, 1))));
+            ], patch(beatlight(part.deck.light, deckside.choose(0, 1))));
 
             if (!master.engaged()) {
                 modeset(part.pitch.mode.absolute);
@@ -707,7 +711,7 @@ SCS3M.Agent = function(device) {
             tell(part.modes.fx.light[fxsideheld.choose('blue', 'purple')]);
 
             if (!master.engaged()) {
-                if (fxsideheld.engaged()) {
+                if (deckside.held()) {
                     modeset(part.gain.mode.relative);
                     expect(part.gain.slide, eqsideheld.choose(
                         budge(channel, 'pregain'),
@@ -723,6 +727,11 @@ SCS3M.Agent = function(device) {
 
             watch(channel, 'pfl', binarylight(part.phones.light.blue, part.phones.light.red));
             expect(part.phones.touch, toggle(channel, 'pfl'));
+
+            if (deckside.held()) {
+                expect(device.crossfader.slide, set(channel, "playposition"));
+                watch(channel, "playposition", patch(device.crossfader.meter.needle));
+            }
 
             if (!master.engaged()) {
                 watch(channel, 'VuMeter', vupatch(part.meter.bar));
@@ -764,8 +773,12 @@ SCS3M.Agent = function(device) {
             watch("[Master]", "VuMeterR", vupatch(device.right.meter.bar));
         }
 
-        expect(device.crossfader.slide, set("[Master]", "crossfader"));
-        watch("[Master]", "crossfader", patch(device.crossfader.meter.centerbar));
+        if (deck['left'].held() || deck['right'].held()) {
+            // Needledrop handled in Side()
+        } else {
+            expect(device.crossfader.slide, set("[Master]", "crossfader"));
+            watch("[Master]", "crossfader", patch(device.crossfader.meter.centerbar));
+        }
 
         // Communicate currently selected channel of each deck so SCS3d can read it
         // THIS USES A CONTROL FOR ULTERIOR PURPOSES AND IS VERY NAUGHTY INDEED
