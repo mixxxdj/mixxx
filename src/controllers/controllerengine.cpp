@@ -9,6 +9,7 @@
 #include "controllers/controllerengine.h"
 
 #include "controllers/controller.h"
+#include "controllers/controllerdebug.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "errordialoghandler.h"
@@ -31,7 +32,6 @@ const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 ControllerEngine::ControllerEngine(Controller* controller)
         : m_pEngine(NULL),
           m_pController(controller),
-          m_bDebug(false),
           m_bPopups(false),
           m_pBaClass(NULL) {
     // Handle error dialog buttons
@@ -93,9 +93,7 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
             qWarning() << "ControllerEngine:" << prefixName << "has no" << function << " method";
             continue;
         }
-        if (m_bDebug) {
-            qDebug() << "ControllerEngine: Executing" << prefixName << "." << function;
-        }
+        controllerDebug("ControllerEngine: Executing" << prefixName << "." << function);
         init.call(prefix, args);
     }
 }
@@ -212,11 +210,7 @@ void ControllerEngine::initializeScriptEngine() {
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::loadScriptFiles(QList<QString> scriptPaths,
-                                       const QList<ControllerPreset::ScriptFileInfo>& scripts) {
-    // Set the Debug flag
-    if (m_pController)
-        m_bDebug = m_pController->debugging();
-
+        const QList<ControllerPreset::ScriptFileInfo>& scripts) {
     qDebug() << "ControllerEngine: Loading & evaluating all script code";
 
     m_lastScriptPaths = scriptPaths;
@@ -277,7 +271,7 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
 
     QScriptValueList args;
     args << QScriptValue(m_pController->getName());
-    args << QScriptValue(m_bDebug);
+    args << QScriptValue(ControllerDebug::enabled());
 
     // Call the init method for all the prefixes.
     callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
@@ -542,8 +536,9 @@ bool ControllerEngine::checkException() {
             errorText = tr("Uncaught exception at line %1 in passed code: %2")
                     .arg(QString::number(line), errorMessage);
 
-        scriptErrorDialog(m_bDebug ? QString("%1\nBacktrace:\n%2")
-                          .arg(errorText, backtrace.join("\n")) : errorText);
+        scriptErrorDialog(ControllerDebug::enabled() ?
+                QString("%1\nBacktrace:\n%2")
+                .arg(errorText, backtrace.join("\n")) : errorText);
         return true;
     }
     return false;
@@ -1104,11 +1099,10 @@ int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
     m_timers[timerId] = info;
     if (timerId == 0) {
         qWarning() << "Script timer could not be created";
-    } else if (m_bDebug) {
-        if (oneShot)
-            qDebug() << "Starting one-shot timer:" << timerId;
-        else
-            qDebug() << "Starting timer:" << timerId;
+    } else if (oneShot) {
+        controllerDebug("Starting one-shot timer:" << timerId);
+    } else {
+        controllerDebug("Starting timer:" << timerId);
     }
     return timerId;
 }
@@ -1123,10 +1117,7 @@ void ControllerEngine::stopTimer(int timerId) {
         qWarning() << "Killing timer" << timerId << ": That timer does not exist!";
         return;
     }
-    if (m_bDebug) {
-        qDebug() << "Killing timer:" << timerId;
-    }
-
+    controllerDebug("Killing timer:" << timerId);
     killTimer(timerId);
     m_timers.remove(timerId);
 }
@@ -1437,6 +1428,24 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
     } else {
         m_st.disable(pControl);
     }
+}
+
+/*  -------- ------------------------------------------------------
+     Purpose: Ignores the next value for the given ControlObject
+                This should be called before or after an absolute physical
+                control (slider or knob with hard limits) is changed to operate
+                on a different ControlObject, allowing it to sync up to the 
+                soft-takeover state without an abrupt jump.
+     Input:   ControlObject group and key values
+     Output:  -
+     -------- ------------------------------------------------------ */
+void ControllerEngine::softTakeoverIgnoreNextValue(QString group, QString name) {
+    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
+    if (!pControl) {
+        return;
+    }
+    
+    m_st.ignoreNext(pControl);
 }
 
 /*  -------- ------------------------------------------------------

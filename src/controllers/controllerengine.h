@@ -70,10 +70,6 @@ class ControllerEngine : public QObject {
     // Get the errors for a source file that was evaluated()'d
     const QStringList getErrors(QString filename);
 
-    void setDebug(bool bDebug) {
-        m_bDebug = bDebug;
-    }
-
     void setPopups(bool bPopups) {
         m_bPopups = bPopups;
     }
@@ -107,6 +103,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
+    Q_INVOKABLE void softTakeoverIgnoreNextValue(QString group, QString name);
     Q_INVOKABLE void brake(int deck, bool activate, double factor=0.9, double rate=1.0);
     Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
 
@@ -169,7 +166,6 @@ class ControllerEngine : public QObject {
     double getDeckRate(const QString& group);
 
     Controller* m_pController;
-    bool m_bDebug;
     bool m_bPopups;
     QMultiHash<ConfigKey, ControllerEngineConnection> m_connectedControls;
     QList<QString> m_scriptFunctionPrefixes;
@@ -186,7 +182,7 @@ class ControllerEngine : public QObject {
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
-    QVarLengthArray<uint> m_lastMovement;
+    QVarLengthArray<qint64> m_lastMovement;
     QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
     QVarLengthArray<bool> m_ramp, m_brakeActive;
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;

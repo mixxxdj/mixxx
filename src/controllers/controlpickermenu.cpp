@@ -203,7 +203,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("cue_default", tr("Cue"), tr("Cue button"), cueMenu);
     addDeckControl("cue_set", tr("Set Cue"), tr("Set cue point"), cueMenu);
     addDeckControl("cue_goto", tr("Go-To Cue"), tr("Go to cue point"), cueMenu);
-    addDeckControl("cue_gotoandplay", tr("Go-To Cue And Play"),
+    addDeckAndSamplerAndPreviewDeckControl("cue_gotoandplay", tr("Go-To Cue And Play"),
                    tr("Go to cue point and play"), cueMenu);
     addDeckControl("cue_gotoandstop", tr("Go-To Cue And Stop"),
                    tr("Go to cue point and stop"), cueMenu);
@@ -448,11 +448,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                effectUnitMenu);
             addPrefixedControl(effectUnitGroup, "enabled",
                                tr("Toggle Unit"),
-                               tr("Toggle effect unit"), descriptionPrefix,
+                               tr("Enable or disable effect processing"), descriptionPrefix,
                                effectUnitMenu, false);
             addPrefixedControl(effectUnitGroup, "mix",
                                tr("Dry/Wet"),
-                               tr("Dry/Wet"), descriptionPrefix,
+                               tr("Adjust the balance between the original (dry) and processed (wet) signal."), descriptionPrefix,
                                effectUnitMenu, true);
             addPrefixedControl(effectUnitGroup, "super1",
                                tr("Super Knob"),
@@ -623,7 +623,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
                     addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
                                        tr("Super Knob Mode"),
-                                       tr("3-state Super Knob Link Toggle (unlinked, linear, inverse)"),
+                                       tr("Set how linked effect parameters change when turning the Super Knob."),
                                        parameterDescriptionPrefix,
                                        parameterSlotMenu);
 
