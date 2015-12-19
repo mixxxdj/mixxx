@@ -20,12 +20,19 @@
 #include <portmidi.h>
 #include "controllers/midi/midicontroller.h"
 
-// Mixxx completely stops responding to the controller if more than this number of messages queue up.
-//  Don't lower this (much.) The SCS.1d accumulated 500 messages in a single poll during stress-testing.
-#define MIXXX_PORTMIDI_BUFFER_LEN 1024 /**Number of MIDI messages to buffer*/
-#define MIXXX_PORTMIDI_NO_DEVICE_STRING "None" /**String to display for no MIDI devices present */
+// Mixxx completely stops responding to the controller if more than this number
+// of messages queue up. Don't lower this (much.) The SCS.1d a 3x Speed device
+// accumulated 500 messages in a single poll during stress-testing.
+// A midi message contains 1 .. 4 bytes.
+// The maximum Midi Speed (3x Speed) is around 3125 messages per second
+// if we assume normal 3 Byte messages.
+// a 1024 messages buffer will buffer ~327 ms Midi-Stream
+#define MIXXX_PORTMIDI_BUFFER_LEN 1024
 
-/** A PortMidi-based implementation of MidiController */
+// String to display for no MIDI devices present
+#define MIXXX_PORTMIDI_NO_DEVICE_STRING "None"
+
+// A PortMidi-based implementation of MidiController
 class PortMidiController : public MidiController {
     Q_OBJECT
   public:
