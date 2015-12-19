@@ -15,6 +15,8 @@
 #include "util/timer.h"
 #include "util/time.h"
 
+#include <unistd.h>
+
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
@@ -28,6 +30,7 @@
 #include "controllers/bulk/bulkenumerator.h"
 #endif
 
+namespace {
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
 // Poll every 1ms (where possible) for good controller response
@@ -39,11 +42,23 @@ const int kPollIntervalMillis = 5;
 const int kPollIntervalMillis = 1;
 #endif
 
-// Note: A standard Midi device runs at 31.25 kbps,
-// a usual Midi message has 30 bits so we may not expect more than
-// 1000 messages per second
-// PortMidiController uses a buffer of 64 messages which results in
-// Maximum polling interval of 64 ms a theoritical minimum of 1 ms
+// Note:
+// A standard Midi device runs at 31.25 kbps, with 10 bits / byte
+// 1 byte / 320 microseconds
+// a usual Midi message has 3 byte so we may not expect more than
+// 1042.6 messages per second
+//
+// The MIDI over IEEE-1394:
+// http://www.midi.org/techspecs/rp27v10spec%281394%29.pdf
+// which is also used for USB defines 3 speeds:
+// 1 byte / 320 microseconds
+// 2 bytes / 320 microseconds
+// 3 bytes / 320 microseconds
+// which results in up to 3125 messages per second
+//
+// For instants the SCS.1d, uses the 3 x speed
+
+} // anonymous namespace
 
 QString firstAvailableFilename(QSet<QString>& filenames,
                                const QString originalFilename) {
@@ -68,7 +83,8 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
           // ControllerManager because the CM is moved to its own thread and runs
           // its own event loop.
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
-          m_pollTimer(this) {
+          m_pollTimer(this),
+          m_skipPoll(false) {
     qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
 
     // Create controller mapping paths in the user's home directory.
@@ -287,14 +303,45 @@ void ControllerManager::stopPolling() {
 }
 
 void ControllerManager::pollDevices() {
-    uint start = Time::elapsedMsecs();
+    // Note: this function is called from a high priority thread which
+    // may stall the GUI or may reduce the available CPU time for other
+    // High Priority threads like caching reader or broadcasting more
+    // then desired, if it is called endless loop like.
+    //
+    // This especially happens if a controller like the 3x Speed
+    // Stanton SCS.1D emits more massages than Mixxx is able to handle
+    // or a controller like Hercules RMX2 goes wild. In such a case the
+    // receive buffer is stacked up every call to insane values > 500 messages.
+    //
+    // To avoid this we pick here a strategies similar like the audio
+    // thread. In case pollDevice() takes longer than a call cycle
+    // we are cooperative a skip the next cycle to free at least some
+    // CPU time
+    //
+    // Some random test data form a i5-3317U CPU @ 1.70GHz Running
+    // Ubuntu Trusty:
+    // * Idle poll: ~5 µs.
+    // * 5 messages burst (full midi bandwidth): ~872 µs.
+
+    if (m_skipPoll) {
+        // skip poll in overload situation
+        m_skipPoll = false;
+        //qDebug() << "ControllerManager::pollDevices() skip";
+        return;
+    }
+
+    qint64 start = Time::elapsed();
     foreach (Controller* pDevice, m_controllers) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }
     }
-    uint end = Time::elapsedMsecs();
-    qDebug() << "ControllerManager::pollDevices()" << end - start << end;
+
+    quint64 duration = Time::elapsed() - start;
+    if (duration > kPollIntervalMillis * 1000000) {
+        m_skipPoll = true;
+    }
+    //qDebug() << "ControllerManager::pollDevices()" << duration << start;
 }
 
 void ControllerManager::openController(Controller* pController) {
