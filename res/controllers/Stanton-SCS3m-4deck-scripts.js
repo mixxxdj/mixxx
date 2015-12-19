@@ -466,7 +466,7 @@ SCS3M.Agent = function(device) {
     function setconst(channel, control, value) {
         return function() {
             engine.setParameter(channel, control, value);
-        }
+        };
     }
 
     function reset(channel, control) {
@@ -516,7 +516,7 @@ SCS3M.Agent = function(device) {
                             onHeld();
                         }
                     });
-                }
+                };
             },
             'release': function() {
                 var change = heldBegin && (new Date() - heldBegin) < 200;
@@ -649,7 +649,7 @@ SCS3M.Agent = function(device) {
 
             var channelno = deck[side].choose(either(1, 2), either(3, 4));
             var channel = '[Channel' + channelno + ']';
-            var effectchannel = '[QuickEffectRack1_[Channel' + channelno + ']]';
+            var effectchannel = '[QuickEffectRack1_' + channel + ']';
             var eqsideheld = eqheld[side];
             var touchsideheld = touchheld[side];
             var sideoverlay = overlay[side][deckside.choose(0, 1)];
@@ -855,7 +855,7 @@ SCS3M.Agent = function(device) {
             watch("[Master]", "VuMeterR", vupatch(device.right.meter.bar));
         }
 
-        if (deck['left'].held() || deck['right'].held()) {
+        if (deck.left.held() || deck.right.held()) {
             // Needledrop handled in Side()
         } else {
             expect(device.crossfader.slide, set("[Master]", "crossfader"));
