@@ -43,6 +43,12 @@
       <control><key>SCS3M.receive</key><status>0xB0</status><midino>0x08</midino><options><script-binding/></options></control>
       <control><key>SCS3M.receive</key><status>0xB0</status><midino>0x09</midino><options><script-binding/></options></control>
 
+      <!-- soft buttons -->
+      <control><key>SCS3M.receive</key><status>0x90</status><midino>0x00</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x80</status><midino>0x00</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x90</status><midino>0x01</midino><options><script-binding/></options></control>
+      <control><key>SCS3M.receive</key><status>0x80</status><midino>0x01</midino><options><script-binding/></options></control>
+
       <control>
         <key>SCS3M.receive</key>
         <status>0x80</status>
