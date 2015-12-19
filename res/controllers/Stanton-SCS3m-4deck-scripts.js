@@ -724,12 +724,10 @@ SCS3M.Agent = function(device) {
                 if (fxsideheld.engaged() || master.engaged()) {
                     expect(touch.touch, toggle(effectunit, effectunit_enable));
                 } else {
-                    (function(tnr) { // close over tnr
-                        expect(touch.touch, repatch(function() {
-                            sideoverlay.engage(tnr);
-                            touchsideheld.engage(tnr);
-                        }));
-                    }(tnr));
+                    expect(touch.touch, repatch(function() {
+                        sideoverlay.engage(tnr);
+                        touchsideheld.engage(tnr);
+                    }));
                 }
                 expect(touch.release, repatch(touchsideheld.cancel));
 
