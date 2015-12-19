@@ -151,7 +151,7 @@ bool PortMidiController::poll() {
 
     PmError gotEvents = Pm_Poll(m_pInputStream);
     if (gotEvents == FALSE) {
-        qDebug() << "PortMidiController::poll() no events";
+        //qDebug() << "PortMidiController::poll() no events";
         return false;
     }
     if (gotEvents < 0) {
@@ -161,7 +161,7 @@ bool PortMidiController::poll() {
 
     int numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
 
-    qDebug() << "PortMidiController::poll()" << numEvents;
+    //qDebug() << "PortMidiController::poll()" << numEvents;
 
     if (numEvents < 0) {
         qWarning() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
