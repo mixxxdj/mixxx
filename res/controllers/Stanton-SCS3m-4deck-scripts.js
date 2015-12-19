@@ -476,10 +476,13 @@ SCS3M.Agent = function(device) {
     }
 
     // relative control
-    function budge(channel, control) {
+    function budge(channel, control, factor) {
+        if (factor === undefined) factor = 1;
+        var mult = factor / 128;
+
         return function(offset) {
             engine.setValue(channel, control,
-                engine.getValue(channel, control) + (offset - 64) / 128
+                engine.getValue(channel, control) + (offset - 64) * mult
             );
         };
     }
@@ -677,10 +680,10 @@ SCS3M.Agent = function(device) {
             ], patch(beatlight(part.deck.light, deckside.choose(0, 1), deckside.held())));
 
             if (!master.engaged()) {
-                modeset(part.pitch.mode.absolute);
                 if (sideoverlay.engaged('eq')) {
+                    modeset(part.pitch.mode.relative);
                     expect(part.pitch.slide, eqsideheld.choose(
-                        set(effectchannel, 'super1'),
+                        budge(effectchannel, 'super1', 0.5),
                         reset(effectchannel, 'super1')
                     ));
                     watch(effectchannel, 'super1', offcenter(patch(part.pitch.meter.centerbar)));
@@ -754,12 +757,14 @@ SCS3M.Agent = function(device) {
                             setconst(effectunit, 'chain_selector', -1)
                         );
                     } else {
+                        modeset(part.pitch.mode.absolute);
                         expect(part.pitch.slide, eqsideheld.choose(
                             set(effectunit, 'mix'),
                             reset(effectunit, 'mix')
                         ));
                         watch(effectunit, 'mix', patch(part.pitch.meter.bar));
                     }
+
                     expect(part.eq.high.slide, fxsideheld.choose(
                         set(effectunit_effect, 'parameter3'),
                         reset(effectunit_effect, 'parameter3')
@@ -831,11 +836,13 @@ SCS3M.Agent = function(device) {
         expect(device.master.touch, repatch(master.engage));
         expect(device.master.release, repatch(master.cancel));
         if (master.engaged()) {
+            modeset(device.left.pitch.mode.absolute);
             watch("[Master]", "headMix", patch(device.left.pitch.meter.centerbar));
             expect(device.left.pitch.slide,
                 eqheld.left.engaged() || fxheld.left.engaged() ? reset('[Master]', 'headMix') : set('[Master]', 'headMix')
             );
 
+            modeset(device.right.pitch.mode.absolute);
             watch("[Master]", "balance", patch(device.right.pitch.meter.centerbar));
             expect(device.right.pitch.slide,
                 eqheld.right.engaged() || fxheld.right.engaged() ? reset('[Master]', 'balance') : set('[Master]', 'balance')
