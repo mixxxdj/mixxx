@@ -626,26 +626,9 @@ SCS3M.Agent = function(device) {
             var part = device[side];
             var deckside = deck[side];
 
-            // Light the top half or bottom half of the EQ sliders to show chosen deck
-            function deckflash(handler) {
-                return function(value) {
-                    var changed = handler(value);
-                    if (!changed) return;
-
-                    var lightval = deckside.choose(1, 0); // First deck is the upper one
-                    tell(part.eq.high.meter.centerbar(lightval));
-                    tell(part.eq.mid.meter.centerbar(lightval));
-                    tell(part.eq.low.meter.centerbar(lightval));
-
-                    // hack: use modeset to cause a delay before the lights are
-                    // reset
-                    modeset([]);
-                };
-            }
-
             // Switch deck/channel when button is touched
             expect(part.deck.touch, deckside.hold(remap));
-            expect(part.deck.release, deckflash(repatch(deckside.release)));
+            expect(part.deck.release, repatch(deckside.release));
 
             function either(left, right) {
                 return (side === 'left') ? left : right;
