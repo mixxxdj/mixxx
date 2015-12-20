@@ -43,7 +43,9 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
 }
 
 PortMidiController::~PortMidiController() {
-    close();
+    if (isOpen()) {
+        close();
+    }
 }
 
 int PortMidiController::open() {
