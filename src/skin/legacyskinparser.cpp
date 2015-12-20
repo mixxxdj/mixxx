@@ -408,7 +408,7 @@ LaunchImage* LegacySkinParser::parseLaunchImage(QString skinPath, QWidget* pPare
     }
 
     // This allows image urls like
-    // url(skin:/style/mixxx-icon-logo-symbolic.png);
+    // url(skin:/style/mixxx-icon-logo-symbolic.svg);
     QStringList skinPaths(skinPath);
     QDir::setSearchPaths("skin", skinPaths);
 
