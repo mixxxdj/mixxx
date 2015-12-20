@@ -64,12 +64,6 @@ int PortMidiController::open() {
     m_bInSysex = false;
     m_cReceiveMsg_index = 0;
 
-    PmError err = Pm_Initialize();
-    if (err != pmNoError) {
-        qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
-        return -1;
-    }
-
     if (m_pInputDeviceInfo) {
         if (isInputDevice()) {
             controllerDebug("PortMidiController: Opening"

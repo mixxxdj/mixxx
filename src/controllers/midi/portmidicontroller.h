@@ -43,7 +43,7 @@ class PortMidiController : public MidiController {
   private:
     void sendWord(unsigned int word);
     // The sysex data must already contain the start byte 0xf0 and the end byte
-    // 0xf.7
+    // 0xf7.
     void send(QByteArray data);
 
     virtual bool isPolling() const {
