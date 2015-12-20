@@ -773,7 +773,7 @@ SCS3M.Agent = function(device) {
             expect(part.modes.fx.touch, repatch(fxsideheld.engage));
             expect(part.modes.fx.release, repatch(fxsideheld.cancel));
             tell(part.modes.fx.light[fxsideheld.choose(
-                sideoverlay.choose('eq', 'red', 'blue'),
+                sideoverlay.choose('eq', 'red', 'black'),
                 'purple'
             )]);
 
