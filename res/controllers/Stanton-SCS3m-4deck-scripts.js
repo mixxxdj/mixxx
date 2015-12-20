@@ -495,13 +495,8 @@ SCS3M.Agent = function(device) {
         };
     }
 
-    // Switches can be engaged, and they can be held.
-    // A switch that is held for less than 200ms will toggle.
     function Switch() {
         var engaged = false;
-
-        var held = false;
-        var heldBegin = false;
 
         return {
             'change': function(state) {
@@ -509,26 +504,6 @@ SCS3M.Agent = function(device) {
                 var changed = engaged !== state;
                 engaged = state;
                 return changed;
-            },
-            'hold': function(onHeld) {
-                return function() {
-                    heldBegin = true;
-                    var switchExpire = engine.beginTimer(200, function() {
-                        engine.stopTimer(switchExpire);
-                        if (heldBegin) {
-                            heldBegin = false;
-                            held = true;
-                            onHeld();
-                        }
-                    });
-                };
-            },
-            'release': function() {
-                var change = heldBegin;
-                if (heldBegin) engaged = !engaged;
-                held = false;
-                heldBegin = false;
-                return change;
             },
             'engage': function() {
                 engaged = true;
@@ -539,9 +514,6 @@ SCS3M.Agent = function(device) {
             'toggle': function() {
                 engaged = !engaged;
             },
-            'held': function() {
-                return held;
-            },
             'engaged': function() {
                 return engaged;
             },
@@ -551,11 +523,96 @@ SCS3M.Agent = function(device) {
         };
     }
 
-    function Multiswitch(preset) {
+    function HoldLimit(limit) {
+        var start = false;
+
+        var early = function() {
+            return limit > new Date() - start;
+        };
+
+        return {
+            'hold': function() {
+                start = new Date();
+            },
+
+            'releaseTrigger': function(onEarly) {
+                return function() {
+                    if (!start) return;
+                    if (early()) {
+                        onEarly();
+                    }
+                    start = false;
+                };
+            },
+
+            'early': function() {
+                if (!start) return;
+                return early();
+            },
+
+            'late': function() {
+                if (!start) return;
+                return early();
+            },
+
+            'held': function() {
+                return !!start;
+            },
+
+            'choose': function(normalVal, heldVal) {
+                return start ? heldVal : normalVal;
+            }
+        };
+    }
+
+    // HoldDelayedSwitches can be engaged, and they can be held.
+    // A switch that is held for less than 200 ms will toggle.
+    // After 200ms it will enter held-mode.
+    function HoldDelayedSwitch() {
+        var sw = Switch();
+
+        var held = false;
+        var heldBegin = false;
+
+        sw.hold = function(onHeld) {
+            return function() {
+                heldBegin = true;
+                var switchExpire = engine.beginTimer(200, function() {
+                    engine.stopTimer(switchExpire);
+                    if (heldBegin) {
+                        heldBegin = false;
+                        held = true;
+                        if (onHeld) onHeld();
+                    }
+                });
+            };
+        };
+
+        sw.release = function() {
+            if (heldBegin) sw.toggle();
+            held = false;
+            heldBegin = false;
+        };
+
+        sw.held = function() {
+            return held;
+        };
+
+        return sw;
+    }
+
+    function Multiswitch(preset, initialSubMode) {
         var engaged = preset;
+        var subMode = initialSubMode;
         return {
             'engage': function(pos) {
                 engaged = pos;
+                if (engaged !== preset) {
+                    subMode = pos;
+                }
+            },
+            'engageSub': function() {
+                engaged = subMode;
             },
             'cancel': function() {
                 engaged = preset;
@@ -571,17 +628,17 @@ SCS3M.Agent = function(device) {
 
     var master = Switch(); // Whether master key is held
     var deck = {
-        left: Switch(), // off: channel1, on: channel3
-        right: Switch() // off: channel2, on: channel4
+        left: HoldDelayedSwitch(), // off: channel1, on: channel3
+        right: HoldDelayedSwitch() // off: channel2, on: channel4
     };
 
-    var overlayA = Multiswitch('eq');
-    var overlayB = Multiswitch('eq');
+    var overlayA = Multiswitch('eq', 0);
+    var overlayB = Multiswitch('eq', SCS3M.eqModePerDeck ? 1 : 0);
     var overlayC;
     var overlayD;
     if (SCS3M.eqModePerDeck) {
-        overlayC = Multiswitch('eq');
-        overlayD = Multiswitch('eq');
+        overlayC = Multiswitch('eq', 2);
+        overlayD = Multiswitch('eq', 3);
     } else {
         overlayC = overlayA;
         overlayD = overlayB;
@@ -597,9 +654,9 @@ SCS3M.Agent = function(device) {
         right: Switch()
     };
 
-    var fxheld = {
-        left: Switch(),
-        right: Switch()
+    var fxHeld = {
+        left: HoldLimit(200),
+        right: HoldLimit(200)
     };
 
     var touchheld = {
@@ -694,10 +751,10 @@ SCS3M.Agent = function(device) {
             expect(part.modes.eq.release, repatch(eqsideheld.cancel));
             tell(part.modes.eq.light[eqsideheld.choose(sideoverlay.choose('eq', 'blue', 'red'), 'purple')]);
 
-            var fxsideheld = fxheld[side];
+            var fxHeldSide = fxHeld[side];
 
             var fxMap = function(tnr) {
-                var touch = part.touches[tnr];
+                var softbutton = part.touches[tnr];
                 var fxchannel = channel;
                 if (master.engaged()) {
                     fxchannel = either('[Headphone]', '[Master]');
@@ -706,25 +763,25 @@ SCS3M.Agent = function(device) {
                 var effectunit_enable = 'group_' + fxchannel + '_enable';
                 var effectunit_effect = '[EffectRack1_EffectUnit' + (tnr + 1) + '_Effect1]';
 
-                if (fxsideheld.engaged() || master.engaged()) {
-                    expect(touch.touch, toggle(effectunit, effectunit_enable));
+                if (fxHeldSide.held() || master.engaged()) {
+                    expect(softbutton.touch, toggle(effectunit, effectunit_enable));
                 } else {
-                    expect(touch.touch, repatch(function() {
+                    expect(softbutton.touch, repatch(function() {
                         sideoverlay.engage(tnr);
                         touchsideheld.engage(tnr);
                     }));
                 }
-                expect(touch.release, repatch(touchsideheld.cancel));
+                expect(softbutton.release, repatch(touchsideheld.cancel));
 
                 if (sideoverlay.engaged(tnr)) {
                     watch(effectunit, effectunit_enable, binarylight(
-                        touch.light.red,
-                        touch.light.purple)
+                        softbutton.light.red,
+                        softbutton.light.purple)
                     );
                 } else {
                     watch(effectunit, effectunit_enable, binarylight(
-                        touch.light.black,
-                        touch.light.blue)
+                        softbutton.light.black,
+                        softbutton.light.blue)
                     );
                 }
 
@@ -750,15 +807,15 @@ SCS3M.Agent = function(device) {
                         watch(effectunit, 'mix', patch(part.pitch.meter.bar));
                     }
 
-                    expect(part.eq.high.slide, fxsideheld.choose(
+                    expect(part.eq.high.slide, fxHeldSide.choose(
                         set(effectunit_effect, 'parameter3'),
                         reset(effectunit_effect, 'parameter3')
                     ));
-                    expect(part.eq.mid.slide, fxsideheld.choose(
+                    expect(part.eq.mid.slide, fxHeldSide.choose(
                         set(effectunit_effect, 'parameter2'),
                         reset(effectunit_effect, 'parameter2')
                     ));
-                    expect(part.eq.low.slide, fxsideheld.choose(
+                    expect(part.eq.low.slide, fxHeldSide.choose(
                         set(effectunit_effect, 'parameter1'),
                         reset(effectunit_effect, 'parameter1')
                     ));
@@ -772,10 +829,14 @@ SCS3M.Agent = function(device) {
                 fxMap(tnr);
             }
 
-            expect(part.modes.fx.touch, repatch(fxsideheld.engage));
-            expect(part.modes.fx.release, repatch(fxsideheld.cancel));
-            tell(part.modes.fx.light[fxsideheld.choose(
-                sideoverlay.choose('eq', 'red', 'black'),
+            expect(part.modes.fx.touch,
+                repatch(fxHeldSide.hold)
+            );
+            expect(part.modes.fx.release,
+                repatch(fxHeldSide.releaseTrigger(sideoverlay.engageSub))
+            );
+            tell(part.modes.fx.light[fxHeldSide.choose(
+                sideoverlay.choose('eq', 'red', 'blue'),
                 'purple'
             )]);
 
