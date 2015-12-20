@@ -17,7 +17,7 @@ var PioneerDDJSB2 = function() {};
 ///////////////////////////////////////////////////////////////
 
 // If true the sync button blinks with the beat, if false led is lit when sync is enabled.
-PioneerDDJSB2.blinkingSync = true;
+PioneerDDJSB2.blinkingSync = false;
 
 // If true, the vinyl button activates slip. Vinyl mode is then activated by using shift.
 // Allows toggling slip faster, but is counterintuitive.
