@@ -29,6 +29,9 @@
 // a 1024 messages buffer will buffer ~327 ms Midi-Stream
 #define MIXXX_PORTMIDI_BUFFER_LEN 1024
 
+// Length of SysEx buffer in byte
+#define MIXXX_SYSEX_BUFFER_LEN 1024 
+
 // String to display for no MIDI devices present
 #define MIXXX_PORTMIDI_NO_DEVICE_STRING "None"
 
@@ -66,7 +69,7 @@ class PortMidiController : public MidiController {
     PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
 
     // Storage for SysEx messages
-    unsigned char m_cReceiveMsg[1024];
+    unsigned char m_cReceiveMsg[MIXXX_SYSEX_BUFFER_LEN];
     int m_cReceiveMsg_index;
     bool m_bInSysex;
 };
