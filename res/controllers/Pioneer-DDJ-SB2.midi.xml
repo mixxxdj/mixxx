@@ -4,6 +4,7 @@
         <name>Pioneer DDJ-SB2</name>
         <author>Michael Stahl, DG3NEC</author>
         <description>Pioneer DDJ-SB2</description>
+        <forums>http://mixxx.org/forums/</forums>
     </info>
     <controller id="DDJ-SB2">
         <scriptfiles>
