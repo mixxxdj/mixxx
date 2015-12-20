@@ -766,7 +766,7 @@ PioneerDDJSB2.fxLeds = function(value, group, control) {
     var deck = PioneerDDJSB2.fxGroups[group],
         ledNumber = PioneerDDJSB2.fxControls[control];
 
-    if (PioneerDDJSB2.shiftPressed === 0) {
+    if (PioneerDDJSB2.shiftPressed === false) {
         PioneerDDJSB2.fxLedControl(deck, ledNumber, false, value);
     } else {
         PioneerDDJSB2.fxLedControl(deck, ledNumber, true, value);
