@@ -16,10 +16,11 @@
 // amidi -p hw:1 -S 900302 # 90: note on, 03: id of a touch button, 02: red LED
 
 SCS3M = {
-    // The device stays in the EQ or FX mode on deck switch
-    // Set this to true if you prefer the device to remember
-    // the mode per-deck and switch to that mode on deck switch.
-    eqModePerDeck: false,
+    // The device remembers the selected EQ/FX mode per deck
+    // and switches to that mode on deck-switch. Set this to
+    // false if you prefer the mode to stay the same on
+    // deck-switch.
+    eqModePerDeck: true,
 };
 
 SCS3M.init = function(id) {
