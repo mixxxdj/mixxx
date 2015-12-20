@@ -23,6 +23,7 @@
 // Mixxx completely stops responding to the controller if more than this number of messages queue up.
 //  Don't lower this (much.) The SCS.1d accumulated 500 messages in a single poll during stress-testing.
 #define MIXXX_PORTMIDI_BUFFER_LEN 1024 /**Number of MIDI messages to buffer*/
+#define MIXXX_SYSEX_BUFFER_LEN 1024 /**Length of SysEx buffer*/
 #define MIXXX_PORTMIDI_NO_DEVICE_STRING "None" /**String to display for no MIDI devices present */
 
 /** A PortMidi-based implementation of MidiController */
@@ -59,7 +60,7 @@ class PortMidiController : public MidiController {
     PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
 
     // Storage for SysEx messages
-    unsigned char m_cReceiveMsg[1024];
+    unsigned char m_cReceiveMsg[MIXXX_SYSEX_BUFFER_LEN];
     int m_cReceiveMsg_index;
     bool m_bInSysex;
 };
