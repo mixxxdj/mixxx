@@ -63,10 +63,10 @@ class MidiController : public Controller {
     }
 
   protected slots:
-    void receive(unsigned char status, unsigned char control = 0,
-                 unsigned char value = 0);
+    virtual void receive(unsigned char status, unsigned char control = 0,
+                         unsigned char value = 0);
     // For receiving System Exclusive messages
-    void receive(const QByteArray data);
+    virtual void receive(const QByteArray data);
     virtual int close();
 
   private slots:

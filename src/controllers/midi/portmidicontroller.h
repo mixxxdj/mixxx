@@ -18,7 +18,11 @@
 #define PORTMIDICONTROLLER_H
 
 #include <portmidi.h>
+
+#include <QScopedPointer>
+
 #include "controllers/midi/midicontroller.h"
+#include "controllers/midi/portmididevice.h"
 
 // Mixxx completely stops responding to the controller if more than this number of messages queue up.
 //  Don't lower this (much.) The SCS.1d accumulated 500 messages in a single poll during stress-testing.
@@ -50,18 +54,25 @@ class PortMidiController : public MidiController {
         return true;
     }
 
-    const PmDeviceInfo* m_pInputDeviceInfo;
-    const PmDeviceInfo* m_pOutputDeviceInfo;
-    int m_iInputDeviceIndex;
-    int m_iOutputDeviceIndex;
-    PortMidiStream *m_pInputStream;
-    PortMidiStream *m_pOutputStream;
+    // For testing only so that test fixtures can install mock PortMidiDevices.
+    void setPortMidiInputDevice(PortMidiDevice* device) {
+        m_pInputDevice.reset(device);
+    }
+    void setPortMidiOutputDevice(PortMidiDevice* device) {
+        m_pOutputDevice.reset(device);
+    }
+
+    QScopedPointer<PortMidiDevice> m_pInputDevice;
+    QScopedPointer<PortMidiDevice> m_pOutputDevice;
+
     PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
 
     // Storage for SysEx messages
     unsigned char m_cReceiveMsg[1024];
     int m_cReceiveMsg_index;
     bool m_bInSysex;
+
+    friend class PortMidiControllerTest;
 };
 
 #endif
