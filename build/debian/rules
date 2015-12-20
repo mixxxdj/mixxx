@@ -19,7 +19,7 @@ DEB_BUILD_OPTIONS= noopt
 # optimize=legacy (not recomended) 
 # this sets CCFLAGS=-mtune=generic only 
 # virtualize=0 switches of keeping build files in the cache folder 
-MIXXX_SCONS_FLAGS = optimize=portable virtualize=0
+MIXXX_SCONS_FLAGS = optimize=portable virtualize=0 mad=1 opus=1 localecompare=1 qt_sqlite_plugin=0 build_number_in_title_bar=1 build=$(MIXXX_BUILD)
 
 # If ARCH is set to a different architecture when running pbuilder, pbuilder
 # will be set to create an environment to build packages for the architecture 
@@ -105,6 +105,8 @@ binary-arch: build install
 	dh_installchangelogs
 	dh_installdocs
 	dh_installexamples
+        # Install mixxx.mixxx-usb.udev.
+	dh_installudev --name=mixxx-usb
 #	dh_install
 	dh_installmenu
 	dh_desktop

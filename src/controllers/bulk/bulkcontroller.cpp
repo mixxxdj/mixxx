@@ -94,7 +94,9 @@ BulkController::BulkController(libusb_context* context,
 }
 
 BulkController::~BulkController() {
-    close();
+    if (isOpen()) {
+        close();
+    }
 }
 
 QString BulkController::presetExtension() {

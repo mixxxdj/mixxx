@@ -20,7 +20,9 @@
 #include <portmidi.h>
 #include "controllers/midi/midicontroller.h"
 
-#define MIXXX_PORTMIDI_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/
+// Mixxx completely stops responding to the controller if more than this number of messages queue up.
+//  Don't lower this (much.) The SCS.1d accumulated 500 messages in a single poll during stress-testing.
+#define MIXXX_PORTMIDI_BUFFER_LEN 1024 /**Number of MIDI messages to buffer*/
 #define MIXXX_PORTMIDI_NO_DEVICE_STRING "None" /**String to display for no MIDI devices present */
 
 /** A PortMidi-based implementation of MidiController */
