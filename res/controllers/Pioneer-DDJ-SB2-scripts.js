@@ -5,7 +5,7 @@ var PioneerDDJSB2 = function() {};
    
     
     This mapping for the Pioneer DDJ-SB2 was made by DG3NEC, Michael Stahl
-    Basing on DDj-SB for Mixxx 1.12 Joan Ardiaca Jové (joan.ardiaca@gmail.com),
+    Basing on DDj-SB for Mixxx 2.0 Joan Ardiaca Jové (joan.ardiaca@gmail.com),
     basing on the work of wingcom (wwingcomm@gmail.com, https://github.com/wingcom/Mixxx-Pioneer-DDJ-SB).
     which in turn was based on the work of Hilton Rudham (https://github.com/hrudham/Mixxx-Pioneer-DDJ-SR).
     Just as wingcom's and Rudham's work, this mapping is pusblished under the MIT license.
