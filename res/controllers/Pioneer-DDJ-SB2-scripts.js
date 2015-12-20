@@ -732,7 +732,7 @@ PioneerDDJSB2.fxLedControl = function(deck, ledNumber, shift, active) {
 
 PioneerDDJSB2.padLedControl = function(deck, groupNumber, shiftGroup, ledNumber, shift, active) {
     var padLedsBaseChannel = 0x97,
-        padLedControl = (shiftGroup ? 0x40 : 0x00) + (shift ? 0x08 : 0x00) + (+groupNumber) + (+ledNumber),
+        padLedControl = (shiftGroup ? 0x40 : 0x00) + (shift ? 0x08 : 0x00) + groupNumber + ledNumber,
         midiChannelOffset = PioneerDDJSB2.deckConverter(deck);
 
     if (midiChannelOffset !== null) {
@@ -1185,3 +1185,4 @@ PioneerDDJSB2.softTakeoverEmulation = function(deck, index, currentValue) {
     }
     return false;
 };
+
