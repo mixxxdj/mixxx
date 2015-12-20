@@ -32,12 +32,16 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
     // Note: We prepend the input stream's index to the device's name to prevent
     // duplicate devices from causing mayhem.
     //setDeviceName(QString("%1. %2").arg(QString::number(m_iInputDeviceIndex), inputDeviceInfo->name));
-    setDeviceName(QString("%1").arg(inputDeviceInfo->name));
 
     if (m_pInputDeviceInfo) {
+        setDeviceName(QString("%1").arg(m_pInputDeviceInfo->name));
         setInputDevice(m_pInputDeviceInfo->input);
     }
     if (m_pOutputDeviceInfo) {
+        // In the event of an output-only device, use the output device name.
+        if (m_pInputDeviceInfo == NULL) {
+            setDeviceName(QString("%1").arg(m_pOutputDeviceInfo->name));
+        }
         setOutputDevice(m_pOutputDeviceInfo->output);
     }
 }
