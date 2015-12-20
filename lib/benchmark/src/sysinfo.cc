@@ -18,7 +18,6 @@
 #ifdef BENCHMARK_OS_WINDOWS
 #include <Shlwapi.h>
 #include <Windows.h>
-#include <VersionHelpers.h>
 #else
 #include <fcntl.h>
 #include <sys/resource.h>
@@ -239,8 +238,10 @@ void InitializeSystemInfo() {
   // In NT, read MHz from the registry. If we fail to do so or we're in win9x
   // then make a crude estimate.
   DWORD data, data_size = sizeof(data);
-  if (IsWindowsXPOrGreater() &&
-      SUCCEEDED(
+  // NOTE(rryan): For Mixxx, removed VersionHelpers.h and IsWindowsXPOrGreater()
+  // call since it requires SDK 8.1. We only build Mixxx on >= XP so this isn't
+  // needed.
+  if (SUCCEEDED(
           SHGetValueA(HKEY_LOCAL_MACHINE,
                       "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
                       "~MHz", nullptr, &data, &data_size)))
