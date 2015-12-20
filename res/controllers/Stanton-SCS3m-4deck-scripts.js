@@ -512,10 +512,11 @@ SCS3M.Agent = function(device) {
             },
             'hold': function(onHeld) {
                 return function() {
-                    heldBegin = new Date();
-                    var switchExpire = engine.beginTimer(110, function() {
+                    heldBegin = true;
+                    var switchExpire = engine.beginTimer(200, function() {
                         engine.stopTimer(switchExpire);
                         if (heldBegin) {
+                            heldBegin = false;
                             held = true;
                             onHeld();
                         }
@@ -523,8 +524,8 @@ SCS3M.Agent = function(device) {
                 };
             },
             'release': function() {
-                var change = heldBegin && (new Date() - heldBegin) < 200;
-                if (change) engaged = !engaged;
+                var change = heldBegin;
+                if (heldBegin) engaged = !engaged;
                 held = false;
                 heldBegin = false;
                 return change;
