@@ -337,7 +337,7 @@ void ControllerManager::pollDevices() {
         }
     }
 
-    quint64 duration = Time::elapsed() - start;
+    qint64 duration = Time::elapsed() - start;
     if (duration > kPollIntervalMillis * 1000000) {
         m_skipPoll = true;
     }
