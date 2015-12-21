@@ -104,13 +104,11 @@ Purpose: Resolves a function name to a QScriptValue including
 Input:   -
 Output:  -
 -------- ------------------------------------------------------ */
-QScriptValue ControllerEngine::resolveFunction(QString function, bool useCache) const {
-    if (useCache) {
-        QHash<QString, QScriptValue>::const_iterator i =
-                m_scriptValueCache.find(function);
-        if (i != m_scriptValueCache.end()) {
-            return i.value();
-        }
+QScriptValue ControllerEngine::resolveFunction(QString function) const {
+    QHash<QString, QScriptValue>::const_iterator i =
+            m_scriptValueCache.find(function);
+    if (i != m_scriptValueCache.end()) {
+        return i.value();
     }
 
     QScriptValue object = m_pEngine->globalObject();
@@ -118,12 +116,9 @@ QScriptValue ControllerEngine::resolveFunction(QString function, bool useCache) 
 
     for (int i = 0; i < parts.size(); i++) {
         object = object.property(parts.at(i));
-        if (!object.isValid())
-            return QScriptValue();
-    }
-
-    if (!object.isFunction()) {
-        return QScriptValue();
+        if (!object.isValid()) {
+            break;
+        }
     }
     m_scriptValueCache[function] = object;
     return object;
@@ -432,9 +427,7 @@ bool ControllerEngine::execute(QScriptValue functionObject, QScriptValueList arg
         return false;
     }
 
-    if (checkException())
-        return false;
-    return true;
+    return !checkException();
 }
 /**-------- ------------------------------------------------------
    Purpose: Evaluate & call a script function
@@ -490,21 +483,19 @@ bool ControllerEngine::execute(QString function, const QByteArray data) {
 
 /**-------- ------------------------------------------------------
    Purpose: Evaluate & call a script function
-   Input:   Function name, ponter to data buffer, length of buffer
+   Input:   Function name, pointer to data buffer, length of buffer
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool ControllerEngine::execute(QScriptValue function, const QByteArray data) {
-    if (m_pEngine == NULL) {
+    if (!function.isFunction()) {
+        return false;
+    }
+    if (checkException()) {
         return false;
     }
 
-    if (checkException())
-        return false;
-    if (!function.isFunction())
-        return false;
-
     QScriptValueList args;
-    args << QScriptValue(m_pBaClass->newInstance(data));
+    args << m_pBaClass->newInstance(data);
     args << QScriptValue(data.size());
 
     return execute(function, args);
