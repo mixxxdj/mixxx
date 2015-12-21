@@ -16,10 +16,10 @@ function midi_for_light() {}
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
-var midi_channel = 11; // set midi_channel. Valid range: 1 to 16.  
+var midi_channel = 1; // set midi_channel. Valid range: 1 to 16.  
 var enable_beat = true; // set to false if you not need beat
 var enable_bpm = true; // set to false if you not need BPM
-var enable_mtc_timecode = true; // set to false if you not need midi time code
+var enable_mtc_timecode = false; // set to false if you not need midi time code
 var enable_vu_mono_current = false; // set to false if you not need VU mono current 
 var enable_vu_mono_average_min = false; // set to false if you not need VU mono average min 
 var enable_vu_mono_average_mid = false; // set to false if you not need VU mono average mid
