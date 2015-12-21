@@ -105,8 +105,12 @@ Input:   -
 Output:  -
 -------- ------------------------------------------------------ */
 QScriptValue ControllerEngine::resolveFunction(QString function, bool useCache) const {
-    if (useCache && m_scriptValueCache.contains(function)) {
-        return m_scriptValueCache.value(function);
+    if (useCache) {
+        QHash<QString, QScriptValue>::const_iterator i =
+                m_scriptValueCache.find(function);
+        if (i != m_scriptValueCache.end()) {
+            return i.value();
+        }
     }
 
     QScriptValue object = m_pEngine->globalObject();
