@@ -53,10 +53,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     inline bool isInputDevice() const {
         return m_bIsInputDevice;
     }
-    inline QString getName() const {
+    inline const QString& getName() const {
         return m_sDeviceName;
     }
-    inline QString getCategory() const {
+    inline const QString& getCategory() const {
         return m_sDeviceCategory;
     }
     virtual bool isMappable() const = 0;

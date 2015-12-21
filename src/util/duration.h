@@ -100,7 +100,19 @@ class Duration {
     }
 
     QString formatNanosWithUnit() const {
-        return QString("%1 ns").arg(m_timestamp_nanos);
+        return QString("%1ns").arg(toNanos());
+    }
+
+    QString formatMicrosWithUnit() const {
+        return QString("%1us").arg(toMicros());
+    }
+
+    QString formatMillisWithUnit() const {
+        return QString("%1ms").arg(toMillis());
+    }
+
+    QString formatSecondsWithUnit() const {
+        return QString("%1s").arg(toSeconds());
     }
 
   private:
