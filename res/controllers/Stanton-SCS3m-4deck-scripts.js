@@ -882,13 +882,13 @@ SCS3M.Agent = function(device) {
             modeset(device.left.pitch.mode.absolute);
             watch("[Master]", "headMix", patch(device.left.pitch.meter.centerbar));
             expect(device.left.pitch.slide,
-                eqheld.left.engaged() || fxheld.left.engaged() ? reset('[Master]', 'headMix') : set('[Master]', 'headMix')
+                eqheld.left.engaged() ? reset('[Master]', 'headMix') : set('[Master]', 'headMix')
             );
 
             modeset(device.right.pitch.mode.absolute);
             watch("[Master]", "balance", patch(device.right.pitch.meter.centerbar));
             expect(device.right.pitch.slide,
-                eqheld.right.engaged() || fxheld.right.engaged() ? reset('[Master]', 'balance') : set('[Master]', 'balance')
+                eqheld.right.engaged() ? reset('[Master]', 'balance') : set('[Master]', 'balance')
             );
 
             modeset(device.left.gain.mode.relative);
