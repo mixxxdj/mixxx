@@ -98,6 +98,9 @@ def build_tests():
         env.Append(LIBS = 'benchmark')
 
         if build.platform_is_windows:
+                # For SHGetValueA in Google's benchmark library.
+                env.Append(LIBS = 'Shlwapi')
+
                 # TODO(rryan): Build Mixxx core as a shared object and link it
                 # into mixxx and mixxx-test. We could build both in different
                 # environments right now but then automoc and protoc get run in

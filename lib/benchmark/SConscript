@@ -10,8 +10,6 @@ env.Prepend(CPPPATH = ['./include'])
 # Since we're using C++11 we can use std::chrono and std::regex.
 env.Append(CPPDEFINES = 'HAVE_STD_REGEX')
 env.Append(CPPDEFINES = 'HAVE_STEADY_CLOCK')
-if build.platform_is_windows:
-  env.Append(LIBS = 'Shlwapi')
 if build.compiler_is_clang:
   env.Append(CPPDEFINES = 'HAVE_THREAD_SAFETY_ATTRIBUTES')
 
