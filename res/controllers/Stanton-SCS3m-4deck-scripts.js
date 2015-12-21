@@ -273,29 +273,29 @@ SCS3M.Agent = function(device) {
         receivers[address] = handler;
     }
 
-    // Register a handler for changes in engine values
-    // This is an abstraction over engine.getParameter()
-    function watch(channel, control, handler) {
-        // Silly indirection through a registry that keeps all watched controls
+    function watchRegister(channel, control, handler) {
+        // Indirection through a registry that keeps all watched controls
         var ctrl = channel + control;
 
         if (!watched[ctrl]) {
             watched[ctrl] = [];
             engine.connectControl(channel, control, function(value, group, control) {
                 var handlers = watched[ctrl];
-                if (handlers.length) {
-                    // Fetching parameter value is easier than mapping to [0..1] range ourselves
-                    value = engine.getParameter(group, control);
-
-                    var i = 0;
-                    for (; i < handlers.length; i++) {
-                        handlers[i](value);
-                    }
+                for (var i in handlers) {
+                    handlers[i]();
                 }
             });
         }
 
         watched[ctrl].push(handler);
+    }
+
+    // Register a handler for changes in engine values
+    // This is an abstraction over engine.getParameter()
+    function watch(channel, control, handler) {
+        watchRegister(channel, control, function() {
+            handler(engine.getParameter(channel, control));
+        });
 
         if (loading) {
             // ugly UGLY workaround
@@ -315,22 +315,20 @@ SCS3M.Agent = function(device) {
     // handler: will receive list of control values as parameter in same order
     function watchmulti(controls, handler) {
         var values = [];
-        var wait = controls.length;
-        var i = 0;
-        var watchControl = function(controlpos) {
-            watch(controls[controlpos][0], controls[controlpos][1], function(value) {
-                values[controlpos] = value;
-                if (wait > 1) {
-                    wait -= 1;
-                } else {
-                    handler(values);
-                }
+        var watchControl = function(controlpos, controlgroup) {
+            var channel = controlgroup[0];
+            var control = controlgroup[1];
+            values[controlpos] = engine.getParameter(channel, control);
+            watchRegister(channel, control, function() {
+                values[controlpos] = engine.getParameter(channel, control);
+                handler(values);
             });
         };
 
-        for (; i < controls.length; i++) {
-            watchControl(i);
+        for (var i in controls) {
+            watchControl(i, controls[i]);
         }
+        handler(values);
     }
 
 
