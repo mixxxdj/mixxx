@@ -1,16 +1,11 @@
-////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                               //
-////////////////////////////////////////////////////////////////////////
-/* global engine                                                      */
-/* global script                                                      */
-/* global print                                                       */
-/* global midi                                                        */
-////////////////////////////////////////////////////////////////////////
-
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
 // description: 2015-12-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
+
+// JSHint Configuration
+// global engine
+// global midi
 
 var VCI102 = {};
 
