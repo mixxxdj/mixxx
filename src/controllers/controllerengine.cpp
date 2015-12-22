@@ -207,20 +207,21 @@ void ControllerEngine::initializeScriptEngine() {
 /* -------- ------------------------------------------------------
    Purpose: Load all script files given in the supplied list
    Input:   Global ConfigObject, QString list of file names to load
-   Output:  -
+   Output:  Returns true if no errors occured.
    -------- ------------------------------------------------------ */
-void ControllerEngine::loadScriptFiles(QList<QString> scriptPaths,
-        const QList<ControllerPreset::ScriptFileInfo>& scripts) {
-    qDebug() << "ControllerEngine: Loading & evaluating all script code";
-
+bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
+                                       const QList<ControllerPreset::ScriptFileInfo>& scripts) {
     m_lastScriptPaths = scriptPaths;
 
     // scriptPaths holds the paths to search in when we're looking for scripts
+    bool result = true;
     foreach (const ControllerPreset::ScriptFileInfo& script, scripts) {
-        evaluate(script.name, scriptPaths);
+        if (!evaluate(script.name, scriptPaths)) {
+            result = false;
+        }
 
         if (m_scriptErrors.contains(script.name)) {
-            qDebug() << "Errors occured while loading " << script.name;
+            qDebug() << "Errors occured while loading" << script.name;
         }
     }
 
@@ -228,6 +229,8 @@ void ControllerEngine::loadScriptFiles(QList<QString> scriptPaths,
             this, SLOT(scriptHasChanged(QString)));
 
     emit(initialized());
+
+    return result && m_scriptErrors.isEmpty();
 }
 
 // Slot to run when a script file has changed

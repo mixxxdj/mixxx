@@ -128,7 +128,10 @@ class ControllerEngine : public QObject {
     // Execute a particular function with a data buffer
     //TODO: redo this one
     //bool execute(QString function, const QByteArray data);
-    void loadScriptFiles(QList<QString> scriptPaths,
+
+    // Evaluates all provided script files and returns true if no script errors
+    // occurred while evaluating them.
+    bool loadScriptFiles(const QList<QString>& scriptPaths,
                          const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
