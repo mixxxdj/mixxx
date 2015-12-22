@@ -789,7 +789,8 @@ def BuildUbuntuPackage(target, source, env):
                 if package_target == 'source':
                         # TODO(rryan) we have to figure out the key-signing situation
                         # here.
-                        command.extend(['debuild', '-S', '-sa'])
+                        command.extend(['debuild', '-S', '-sa',
+                                        '--set-envvar=build=' + build.build])
                 else:
                         command.extend(['pdebuild'])
                 result = os.system(' '.join(command))
