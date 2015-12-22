@@ -78,8 +78,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // this if they have an alternate way of handling such data.)
     virtual void receive(const QByteArray data);
 
-    // Initializes the controller engine
-    virtual void applyPreset(QList<QString> scriptPaths);
+    // Initializes the controller engine and returns whether it was successful.
+    virtual bool applyPreset(QList<QString> scriptPaths, bool initializeScripts);
 
     // Puts the controller in and out of learning mode.
     void startLearning();
@@ -150,6 +150,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     bool m_bLearning;
 
     friend class ControllerManager; // accesses lots of our stuff, but in the same thread
+    // For testing.
+    friend class ControllerPresetValidationTest;
 };
 
 #endif
