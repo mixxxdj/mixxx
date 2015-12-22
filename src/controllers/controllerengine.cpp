@@ -266,7 +266,10 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
 
     m_scriptFunctionPrefixes.clear();
     foreach (const ControllerPreset::ScriptFileInfo& script, scripts) {
-        m_scriptFunctionPrefixes.append(script.functionPrefix);
+        // Skip empty prefixes.
+        if (!script.functionPrefix.isEmpty()) {
+            m_scriptFunctionPrefixes.append(script.functionPrefix);
+        }
     }
 
     QScriptValueList args;
@@ -1434,7 +1437,7 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
      Purpose: Ignores the next value for the given ControlObject
                 This should be called before or after an absolute physical
                 control (slider or knob with hard limits) is changed to operate
-                on a different ControlObject, allowing it to sync up to the 
+                on a different ControlObject, allowing it to sync up to the
                 soft-takeover state without an abrupt jump.
      Input:   ControlObject group and key values
      Output:  -
@@ -1444,7 +1447,7 @@ void ControllerEngine::softTakeoverIgnoreNextValue(QString group, QString name) 
     if (!pControl) {
         return;
     }
-    
+
     m_st.ignoreNext(pControl);
 }
 
