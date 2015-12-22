@@ -9,7 +9,7 @@
 	</info>
 	<controller id="midi_for_light Control">
 		<scriptfiles>
-			<file filename="midi_for_light-scripts.js" functionprefix="midi_for_light"/>
+			<file filename="Midi_for_light-scripts.js" functionprefix="midi_for_light"/>
 		</scriptfiles>
 
 		<controls>
