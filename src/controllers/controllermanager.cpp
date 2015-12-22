@@ -72,7 +72,10 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
 
     // Initialize preset info parsers. This object is only for use in the main
     // thread. Do not touch it from within ControllerManager.
-    m_pMainThreadPresetEnumerator = new PresetInfoEnumerator(m_pConfig);
+    QStringList presetSearchPaths;
+    presetSearchPaths << userPresetsPath(m_pConfig)
+                      << resourcePresetsPath(m_pConfig);
+    m_pMainThreadPresetEnumerator = new PresetInfoEnumerator(presetSearchPaths);
 
     // Instantiate all enumerators
     m_enumerators.append(new PortMidiEnumerator());
