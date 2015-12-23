@@ -47,7 +47,7 @@ void Controller::stopEngine() {
     m_pEngine = NULL;
 }
 
-void Controller::applyPreset(QList<QString> scriptPaths) {
+bool Controller::applyPreset(QList<QString> scriptPaths, bool initializeScripts) {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
@@ -55,16 +55,19 @@ void Controller::applyPreset(QList<QString> scriptPaths) {
     // Load the script code into the engine
     if (m_pEngine == NULL) {
         qWarning() << "Controller::applyPreset(): No engine exists!";
-        return;
+        return false;
     }
 
     if (pPreset->scripts.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
-        return;
+        return true;
     }
 
-    m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
-    m_pEngine->initializeScripts(pPreset->scripts);
+    bool success = m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
+    if (initializeScripts) {
+        m_pEngine->initializeScripts(pPreset->scripts);
+    }
+    return success;
 }
 
 void Controller::startLearning() {

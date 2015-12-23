@@ -150,11 +150,14 @@ int PortMidiController::close() {
 
 bool PortMidiController::poll() {
     // Poll the controller for new data if it's an input device
-    if (!m_pInputStream)
+    if (!m_pInputStream) {
+        qDebug() << "PortMidiController::poll() no Input Stream";
         return false;
+    }
 
     PmError gotEvents = Pm_Poll(m_pInputStream);
     if (gotEvents == FALSE) {
+        //qDebug() << "PortMidiController::poll() no events";
         return false;
     }
     if (gotEvents < 0) {
@@ -163,6 +166,8 @@ bool PortMidiController::poll() {
     }
 
     int numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
+
+    //qDebug() << "PortMidiController::poll()" << numEvents;
 
     if (numEvents < 0) {
         qWarning() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
