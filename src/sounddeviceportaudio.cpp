@@ -814,10 +814,11 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
         m_bSetThreadPriority = true;
 
+
+#ifdef __SSE__
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
         // https://bugs.launchpad.net/mixxx/+bug/1404401
-#ifdef __SSE__
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";
             _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
@@ -831,17 +832,20 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         } else {
              qDebug() << "SSE: Flush to zero mode already enabled";
         }
+#else
+#if defined( __i386__ ) || defined( __i486__ ) || defined( __i586__ ) || \
+         defined( __i686__ ) || defined( __x86_64__ ) || defined (_M_I86)
+        qWarning() << "No SSE: No denormals to zero mode available. EQs and effects may suffer high CPU load";
+#endif
+#endif
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
         DEBUG_ASSERT_AND_HANDLE(doubleMin / 2 == 0.0) {
-            qWarning() << "SSE: Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
+            qWarning() << "Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
         } else {
-            qDebug() << "SSE: Denormals to zero mode is working";
+            qDebug() << "Denormals to zero mode is working";
         }
-#else
-        qWarning() << "No SSE: No denormals to zero mode available. EQs and effects may suffer high CPU load";
-#endif
     }
 
 #ifdef __SSE__

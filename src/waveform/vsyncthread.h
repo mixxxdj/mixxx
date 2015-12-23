@@ -76,7 +76,7 @@ class VSyncThread : public QThread {
 
 #else
     void initGlxext(QGLWidget* glw);
-    bool glXExtensionSupported(Display *dpy, int screen, const char *extension);
+    //bool glXExtensionSupported(Display *dpy, int screen, const char *extension);
 
     /* Currently unused, but probably part of later a hardware sync solution
     PFNGLXGETVIDEOSYNCSGIPROC glXGetVideoSyncSGI;

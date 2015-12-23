@@ -238,7 +238,7 @@ void BrowseThread::populateModel() {
         item->setData(tio.getBitrate(), Qt::UserRole);
         row_data.insert(COLUMN_BITRATE, item);
 
-        item = new QStandardItem(filepath);
+        item = new QStandardItem(tio.getLocation());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_LOCATION, item);

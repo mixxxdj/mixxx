@@ -207,20 +207,21 @@ void ControllerEngine::initializeScriptEngine() {
 /* -------- ------------------------------------------------------
    Purpose: Load all script files given in the supplied list
    Input:   Global ConfigObject, QString list of file names to load
-   Output:  -
+   Output:  Returns true if no errors occured.
    -------- ------------------------------------------------------ */
-void ControllerEngine::loadScriptFiles(QList<QString> scriptPaths,
-        const QList<ControllerPreset::ScriptFileInfo>& scripts) {
-    qDebug() << "ControllerEngine: Loading & evaluating all script code";
-
+bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
+                                       const QList<ControllerPreset::ScriptFileInfo>& scripts) {
     m_lastScriptPaths = scriptPaths;
 
     // scriptPaths holds the paths to search in when we're looking for scripts
+    bool result = true;
     foreach (const ControllerPreset::ScriptFileInfo& script, scripts) {
-        evaluate(script.name, scriptPaths);
+        if (!evaluate(script.name, scriptPaths)) {
+            result = false;
+        }
 
         if (m_scriptErrors.contains(script.name)) {
-            qDebug() << "Errors occured while loading " << script.name;
+            qDebug() << "Errors occured while loading" << script.name;
         }
     }
 
@@ -228,6 +229,8 @@ void ControllerEngine::loadScriptFiles(QList<QString> scriptPaths,
             this, SLOT(scriptHasChanged(QString)));
 
     emit(initialized());
+
+    return result && m_scriptErrors.isEmpty();
 }
 
 // Slot to run when a script file has changed
@@ -266,7 +269,10 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
 
     m_scriptFunctionPrefixes.clear();
     foreach (const ControllerPreset::ScriptFileInfo& script, scripts) {
-        m_scriptFunctionPrefixes.append(script.functionPrefix);
+        // Skip empty prefixes.
+        if (!script.functionPrefix.isEmpty()) {
+            m_scriptFunctionPrefixes.append(script.functionPrefix);
+        }
     }
 
     QScriptValueList args;
@@ -1434,7 +1440,7 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
      Purpose: Ignores the next value for the given ControlObject
                 This should be called before or after an absolute physical
                 control (slider or knob with hard limits) is changed to operate
-                on a different ControlObject, allowing it to sync up to the 
+                on a different ControlObject, allowing it to sync up to the
                 soft-takeover state without an abrupt jump.
      Input:   ControlObject group and key values
      Output:  -
@@ -1444,7 +1450,7 @@ void ControllerEngine::softTakeoverIgnoreNextValue(QString group, QString name) 
     if (!pControl) {
         return;
     }
-    
+
     m_st.ignoreNext(pControl);
 }
 

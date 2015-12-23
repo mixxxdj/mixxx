@@ -24,8 +24,7 @@
         <file>images/library/ic_library_traktor.png</file>
         <file>images/library/ic_library_unchecked.png</file>
         <file>images/mixxx-icon.png</file>
-        <file>images/mixxx-icon-symbolic.png</file>
-        <file>images/mixxx-icon-logo-symbolic.png</file>
+        <file>images/mixxx-icon-logo-symbolic.svg</file>
         <file>images/preferences/ic_preferences_autodj.png</file>
         <file>images/preferences/ic_preferences_bpmdetect.png</file>
         <file>images/preferences/ic_preferences_broadcast.png</file>

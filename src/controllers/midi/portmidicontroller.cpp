@@ -32,18 +32,24 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
     // Note: We prepend the input stream's index to the device's name to prevent
     // duplicate devices from causing mayhem.
     //setDeviceName(QString("%1. %2").arg(QString::number(m_iInputDeviceIndex), inputDeviceInfo->name));
-    setDeviceName(QString("%1").arg(inputDeviceInfo->name));
 
     if (m_pInputDeviceInfo) {
+        setDeviceName(QString("%1").arg(m_pInputDeviceInfo->name));
         setInputDevice(m_pInputDeviceInfo->input);
     }
     if (m_pOutputDeviceInfo) {
+        // In the event of an output-only device, use the output device name.
+        if (m_pInputDeviceInfo == NULL) {
+            setDeviceName(QString("%1").arg(m_pOutputDeviceInfo->name));
+        }
         setOutputDevice(m_pOutputDeviceInfo->output);
     }
 }
 
 PortMidiController::~PortMidiController() {
-    close();
+    if (isOpen()) {
+        close();
+    }
 }
 
 int PortMidiController::open() {
@@ -144,12 +150,15 @@ int PortMidiController::close() {
 
 bool PortMidiController::poll() {
     // Poll the controller for new data if it's an input device
-    if (!m_pInputStream)
+    if (!m_pInputStream) {
+        qDebug() << "PortMidiController::poll() no Input Stream";
         return false;
+    }
 
     // Returns true if events are available or an error code.
     PmError gotEvents = Pm_Poll(m_pInputStream);
     if (gotEvents == pmNoError) {
+        //qDebug() << "PortMidiController::poll() no events";
         return false;
     }
     if (gotEvents < 0) {
@@ -158,6 +167,8 @@ bool PortMidiController::poll() {
     }
 
     int numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
+
+    //qDebug() << "PortMidiController::poll()" << numEvents;
 
     if (numEvents < 0) {
         qWarning() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
@@ -169,7 +180,7 @@ bool PortMidiController::poll() {
 
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
-            receive(status, 0, 0);
+            receive(status, 0, 0, m_midiBuffer[i].timestamp);
             continue;
         }
 
@@ -183,7 +194,7 @@ bool PortMidiController::poll() {
                 //unsigned char channel = status & 0x0F;
                 unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                 unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-                receive(status, note, velocity);
+                receive(status, note, velocity, m_midiBuffer[i].timestamp);
             }
         }
 
@@ -198,14 +209,14 @@ bool PortMidiController::poll() {
             }
 
             // Collect bytes from PmMessage
-            int data = 0;
+            unsigned char data = 0;
             for (int shift = 0; shift < 32 && (data != MIDI_EOX); shift += 8) {
-                if ((data & 0xF8) == 0xF8) {
-                    // Handle real-time messages at any time
-                    receive(data, 0, 0);
-                } else {
-                    m_cReceiveMsg[m_cReceiveMsg_index++] = data =
-                        (m_midiBuffer[i].message >> shift) & 0xFF;
+                // TODO(rryan): This prevents buffer overflow if the sysex is
+                // larger than 1024 bytes. I don't want to radically change
+                // anything before the 2.0 release so this will do for now.
+                data = (m_midiBuffer[i].message >> shift) & 0xFF;
+                if (m_cReceiveMsg_index < MIXXX_SYSEX_BUFFER_LEN) {
+                    m_cReceiveMsg[m_cReceiveMsg_index++] = data;
                 }
             }
 
@@ -232,6 +243,15 @@ void PortMidiController::sendWord(unsigned int word) {
 }
 
 void PortMidiController::send(QByteArray data) {
+    // PortMidi does not receive a length argument for the buffer we provide to
+    // Pm_WriteSysEx. Instead, it scans for a MIDI_EOX byte to know when the
+    // message is over. If one is not provided, it will overflow the buffer and
+    // cause a segfault.
+    if (!data.endsWith(MIDI_EOX)) {
+        controllerDebug("SysEx message does not end with 0xF7 -- ignoring.");
+        return;
+    }
+
     if (m_pOutputStream) {
         PmError err = Pm_WriteSysEx(m_pOutputStream, 0, (unsigned char*)data.constData());
         if (err != pmNoError) {
