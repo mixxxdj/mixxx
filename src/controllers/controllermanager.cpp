@@ -12,10 +12,7 @@
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "util/cmdlineargs.h"
-#include "util/timer.h"
 #include "util/time.h"
-
-#include <unistd.h>
 
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
