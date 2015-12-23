@@ -39,22 +39,6 @@ const int kPollIntervalMillis = 5;
 const int kPollIntervalMillis = 1;
 #endif
 
-// Note:
-// A standard Midi device runs at 31.25 kbps, with 10 bits / byte
-// 1 byte / 320 microseconds
-// a usual Midi message has 3 byte so we may not expect more than
-// 1042.6 messages per second
-//
-// The MIDI over IEEE-1394:
-// http://www.midi.org/techspecs/rp27v10spec%281394%29.pdf
-// which is also used for USB defines 3 speeds:
-// 1 byte / 320 microseconds
-// 2 bytes / 320 microseconds
-// 3 bytes / 320 microseconds
-// which results in up to 3125 messages per second
-//
-// For instants the SCS.1d, uses the 3 x speed
-
 } // anonymous namespace
 
 QString firstAvailableFilename(QSet<QString>& filenames,
