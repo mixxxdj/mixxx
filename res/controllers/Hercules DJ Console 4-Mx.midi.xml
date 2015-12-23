@@ -3,10 +3,10 @@
     <info>
         <name>Hercules DJ Console 4-Mx (2.0)</name>
         <author>josepma</author>
-        <description>Mapping for Hercules DJ Console 4-Mx</description>
+        <description>Hercules DJ Console 4-Mx (2.0)</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3023</forums>
     </info>
-    <controller id="DJConsole4Mx">
+    <controller id="DJ">
         <scriptfiles>
             <file functionprefix="Hercules4Mx" filename="Hercules-DJ-Console-4-Mx-scripts.js"/>
         </scriptfiles>
@@ -652,6 +652,16 @@
                 </options>
             </control>
             <control>
+                <group>[Master]</group>
+                <key>Hercules4Mx.onSensitivityChange</key>
+                <description>Receives information about the sensitivity setting</description>
+                <status>0xB0</status>
+                <midino>0x46</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel4]</group>
                 <key>Hercules4Mx.FXButton</key>
                 <description>Right Effect button 7</description>
@@ -1183,12 +1193,12 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>rate</key>
-                <description>Right Pitch (14bits LSB). Not used because the Driver resets to 7bit and then the control stops working</description>
+                <key>Hercules4Mx.rateLsb</key>
+                <description>Right Pitch (14bits LSB).</description>
                 <status>0xB0</status>
                 <midino>0x2B</midino>
                 <options>
-                    <fourteen-bit-lsb/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1213,12 +1223,12 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>rate</key>
-                <description>Left Pitch (14bits LSB). Not used because the Driver resets to 7bit and then the control stops working</description>
+                <key>Hercules4Mx.rateLsb</key>
+                <description>Left Pitch (14bits LSB).</description>
                 <status>0xB0</status>
                 <midino>0x2A</midino>
                 <options>
-                    <fourteen-bit-lsb/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1243,12 +1253,12 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>rate</key>
-                <description>Right Pitch (14bits LSB). Not used because the Driver resets to 7bit and then the control stops working</description>
+                <key>Hercules4Mx.rateLsb</key>
+                <description>Right Pitch (14bits LSB).</description>
                 <status>0xB0</status>
                 <midino>0x29</midino>
                 <options>
-                    <fourteen-bit-lsb/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1273,12 +1283,12 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>rate</key>
-                <description>Left Pitch (14bits LSB). Not used because the Driver resets to 7bit and then the control stops working</description>
+                <key>Hercules4Mx.rateLsb</key>
+                <description>Right Pitch (14bits LSB).</description>
                 <status>0xB0</status>
                 <midino>0x28</midino>
                 <options>
-                    <fourteen-bit-lsb/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1528,7 +1538,7 @@
                 <status>0xB0</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1538,7 +1548,7 @@
                 <status>0xB0</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1548,17 +1558,17 @@
                 <status>0xB0</status>
                 <midino>0x1E</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>rate</key>
+                <key>Hercules4Mx.rateMsb</key>
                 <description>Right Pitch (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x1D</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1568,7 +1578,7 @@
                 <status>0xB0</status>
                 <midino>0x1C</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1578,7 +1588,7 @@
                 <status>0xB0</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1608,7 +1618,7 @@
                 <status>0xB0</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1618,7 +1628,7 @@
                 <status>0xB0</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1628,17 +1638,17 @@
                 <status>0xB0</status>
                 <midino>0x16</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>rate</key>
+                <key>Hercules4Mx.rateMsb</key>
                 <description>Left Pitch (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x15</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1648,17 +1658,17 @@
                 <status>0xB0</status>
                 <midino>0x14</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
                 <key>volume</key>
-                <description>Left Volume</description>
+                <description>Left Volume Fader</description>
                 <status>0xB0</status>
                 <midino>0x13</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1688,7 +1698,7 @@
                 <status>0xB0</status>
                 <midino>0x10</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1698,7 +1708,7 @@
                 <status>0xB0</status>
                 <midino>0x0F</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1708,17 +1718,17 @@
                 <status>0xB0</status>
                 <midino>0x0E</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>rate</key>
+                <key>Hercules4Mx.rateMsb</key>
                 <description>Right Pitch (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x0D</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1728,7 +1738,7 @@
                 <status>0xB0</status>
                 <midino>0x0C</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1738,7 +1748,7 @@
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1768,7 +1778,7 @@
                 <status>0xB0</status>
                 <midino>0x08</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1778,7 +1788,7 @@
                 <status>0xB0</status>
                 <midino>0x07</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1788,17 +1798,17 @@
                 <status>0xB0</status>
                 <midino>0x06</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>rate</key>
+                <key>Hercules4Mx.rateMsb</key>
                 <description>Left Pitch (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x05</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1808,17 +1818,17 @@
                 <status>0xB0</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
                 <key>volume</key>
-                <description>Left Volume</description>
+                <description>Left Volume Fader</description>
                 <status>0xB0</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1889,14 +1899,6 @@
                 <description>Left Stop button</description>
                 <status>0x91</status>
                 <midino>0x10</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beat_active</key>
-                <description>Right Sync. Beat Flash</description>
-                <status>0x91</status>
-                <midino>0x31</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2076,14 +2078,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>beat_active</key>
-                <description>LeftSync. Beat Flash</description>
-                <status>0x90</status>
-                <midino>0x11</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
                 <key>button_parameter2</key>
                 <description>Right Kill Mid</description>
@@ -2188,14 +2182,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>beat_active</key>
-                <description>Right Sync. Beat Flash</description>
-                <status>0x90</status>
-                <midino>0x31</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>button_parameter1</key>
                 <description>Left Kill Bass</description>
@@ -2289,14 +2275,6 @@
                 <description>Left Effect 10 led</description>
                 <status>0x90</status>
                 <midino>0x0A</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beat_active</key>
-                <description>LeftSync. Beat Flash</description>
-                <status>0x91</status>
-                <midino>0x11</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>

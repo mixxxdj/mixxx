@@ -1,3 +1,72 @@
+/////////////////////////////////////////////////////////////////////
+//=====================================================
+//_#_ Hercules DJ Console 4-Mx scripts by josepma. _##_
+//_##________ Based partially on the Mk4 script ___###_
+//=====================================================
+// Author: josepma@gmail.com
+//
+// Version 2015-12-12: 
+//        Initial version. 4 decks, jog wheel and scratch, autodj, navigation and effects.
+// Version 2015-12-19: 
+//        Improvements from https://github.com/mixxxdj/mixxx/pull/810
+//        Beat flashing can be configurd on pitch reset led, jog led, sync button or disabled completely.
+//        Option to switch automatically to scratch crossfader curve on scratch mode.
+//        Soft takeover for pitch, volume faders, eq knobs and gain.
+//        Use the 14bit range automatically (8bit actually) for the pitch slider if the controller is configured to use it.
+//        Changed stop button to be cue_gotoandstop.
+//        Removed midi channel configuration. It also required modifying the mapping, so it didn't really work.
+//        Automatically setup some internal values, like 4 decks mode
+//        Support speed sensor on jog wheel and Fx knob. They need to be moved really fast, so it's rarely useful.
+//
+// Usage:
+// ------
+// Check the dedicated controller wiki page at: 
+//    http://mixxx.org/wiki/doku.php/hercules_dj_console_4-mx
+//
+// Variables on Hercules4Mx.userSettings can be modified by users to suit their preferences.
+/////////////////////////////////////////////////////////////////////
+var Hercules4Mx = function() {};
+
+
+// The 4 possible values for the beatFlashLed option below.
+Hercules4Mx.Leds = {
+    "none" : 0,
+    "syncLed" : 0x11,
+    "pitchResetLed" : 0x15,
+    "JogLed" : 0x1A
+};
+// --- Personal preferences configuration ---
+Hercules4Mx.userSettings = {
+    // Indicates if the Headphone/Master mix should automatically be set to master when none of the headphone cue buttons are activated.
+    'autoHeadMix': false,
+    // Enable automatically the headphone cue select (PFL) of the deck when a song is loaded. (Like in virtual-dj)
+    'autoHeadcueOnLoad': true,
+    // Flashing at the rythm of the beat on the led. Use the Leds map above.
+    // Note: if using sync button, then the button will not show sync master state.
+    'beatFlashLed': Hercules4Mx.Leds.JogLed,
+    // KeyRepeat speed for navigating up/down, in milliseconds. 125 is a good value. Lower values make it scroll faster.
+    'naviScrollSpeed': 125,
+    // The controller has two modes to report the crossfader position. The default/beatmix curve, and the scratch curve.
+    // The default curve reports the real position of the control. The scratch curve just crossfades on the edges.
+    // Setting this setting to true, the curve will change to scratch curve when the scratch mode is on (scratch button).
+    // Setting it to false will not change it, so it will use the setting configured in the DJHercules Tray-icon configuration.
+    'crossfaderScratchCurve' : false,
+    // _Scratching_ Playback speed of the virtual vinyl that is being scratched. 45.00 and 33.33 are the common speeeds. (Lower number equals faster scratch)
+    'vinylSpeed': 45,
+    // _Scratching_ You should configure this setting to the same value than in the DJHercules tray icon configuration. (Normal means 1/1).
+    // If crossfaderScratchCurve is true, or the setting is changed while Mixxx is active, this value will be detected automatically.
+    'sensitivity': 1 / 1,
+    // _Scratching_ alpha value for the filter (start with 1/8 (0.125) and tune from there)
+    'alpha': 1 / 8,
+    // _Scratching_ beta value for the filter (start with alpha/32 and tune from there)
+    'beta': (1 / 8) / 32,
+     // This controls the function of the deck C/deck D buttons (changes the setting in the tray-icon configuration, avanced tab)
+     // Deck button mode: deckmode=0 2 Decks only, deckmode=1 2 Decks with deck switch button command, deckmode=2 4 decks.
+     // Since Mixxx supports 4 decks and this mapping is configured for all four decks, the default value is 2.
+     'deckButtonMode': 2
+};
+
+
 ////////////////////////////////////////////////////////////////////////
 // JSHint configuration                                               //
 ////////////////////////////////////////////////////////////////////////
@@ -5,225 +74,163 @@
 /* global script                                                      */
 /* global print                                                       */
 /* global midi                                                        */
-//////////////////////////////////////////////////////////////////////// 
-//=====================================================
-//___ Hercules DJ Console 4-Mx scripts by josepma. ____
-//___________ Based partially on the Mk4 script _______
-//=====================================================
-// Version 2015-12-12: Initial version.
-//
-// Usage:
-// ------
-// Variables on Hercules4Mx.userSettings can be modified by users to suit their preferences.
-// 
-// This mapping and script supports 4 deck mode, jog wheel, scrathing, the whole mixer,
-// an improved method of navigation and loops, hotcues and effects. It also has flashing sync button
-// following the beats of the song.
-// Some options have been modified to do things different than what they were designed for.
-//
-// Things you should know:
-// 
-// 1) Navigation:
-//   .Clicking on Files or Folders switches between the library sidebar and the main list.
-//   .Clicking on Folders when it is already on folders opens/closes the tree branch.
-//   .Press up or down to navigate. If you keep the button pressed, it will continue in that direction
-//   .If you press up or down, keep the button pressed and move any of the jog wheels, the navigation
-//    will follow your wheel movements. You can navigate this way until releasing the up or down key.
-// 2) AutoDJ:
-//   .The "Auto" button is set to work with AutoDJ. In a future release it should be possible to implement
-//    the auto-crossfade feature that it does in virtualDJ, but it didn't seem necessary for now.
-//   .If the application is not in autoDJ mode, pressing the Auto button activates the autoDJ mode.
-//   .If autoDJ mode is activated, Auto button is lit.
-//   .If you press the AutoDJ button when it is in AutoDJ mode, it starts a fade to next song and button will flash.
-//   .If in autoDJ mode and pressing the Files button (and already at "Files"), it will skip the next song.
-//   .AutoDJ mode is deactivated by stopping decks one and two.
-// 3) Scratching:
-//   .In order to be able to scratch, you need to be in scratch mode. That's what the "scratch" button is for.
-//   .If scratch mode, when moving the jog wheels without pressure it will act normally, and when moved with pressure
-//    they will scratch.
-// 4) Song reproduction:
-//   .When a song is loaded on a deck and the "autoHeadcueOnLoad" option is set to true, the headphone cue (PFL) will
-//    automatically switch to that deck, like what Virtual DJ does. This is disabled on AutoDJ.
-//   .If none of the headphone cue buttons (PFL) is active and autoHeadMix is set to true, the cue/Mix knob
-//    will be set to full mix so that the mix is heard on headphones.
-//   .The jog wheels act as usual: when song is stopped they allow fast seeking and when song is playing the speed up or slow down.
-//   .Pitch sliders act the way it is configured in Mixxx (range and direction)
-//   .Sync button will be flashing following the beats of the song, like it does in virtualDJ. In a future release this could be optional.
-//   .Pitch bend buttons sped up or slow down temporarily as configured in Mixxx.
-//   .Pitch range buttons act as key modifiers.
-//   .Pitch reset (pressing both pitch range buttons) resets the key.
-//   .Pitch reset led is lit when key lock is active. In a future version this might change to indicate
-//    that the key is playing at a different pitch than original, which is what i think Virtual DJ does.
-//   .Cue and play work as configured in Mixxx.
-//   .Several controls have the "softtakeover" option enabled, which means that the control will not move in 
-//    the application if the hardware control is far from the position in the application.
-// 5) Effects
-//   .The FX knob in the controller moves the "Fast effect" knob, which is the knob present in the Deck section and
-//    configurable in the "Equalizer" preferences in Mixxx. In a future version, it could also control the "Superknob"
-//    of the active effect.
-//   .If you keep the "shift" button pressed while moving the knob, it will move slowly (more precision).
-//   .There are 12 effects, 6 with Shift disabled and 6 with Shift enabled.
-//   .The first four effects are configured to beatloop loops of size 0.5, 1, 2 and 4. They act like the corresponding buttons in Mixxx.
-//   .If you keep the shift key pressed and press effects 1 and 2, they will set a 0.125 and 0.25th beatloops.
-//   .When a loop is set that isn't one of these four cases, buttons 3 and 4 will be lit to indicate a loop is present.
-//   .If you keep the shift key pressed and press either effects 3 or 4, It will act like pressing the loop end/reloop button.
-//   .The fifth and sixth effects are for reverse play, and reverse and roll.
-//   .From seventh to tenth, they are the first four hotcues, and act like the buttons in Mixxx (if not set, set. if set, play it)
-//   .If you keep the shift key pressed and press either of the four hotcue buttons, the hotcue will get cleared.
-//   .Eleventh and twelveth effects activate the Effects rack 1 and 2 for the specific deck.
-//
-//_____________________________________________________
-var Hercules4Mx = function() {};
-
-Hercules4Mx.userSettings = {
-    // --- DJ Console 4MX tray-icon configuration ---
-    // Midi channel for controls (Tab "advanced") If "1-2", then 0, if "3-4" then 2, if "5-6" then 4...
-    'midiChannelOffset': 0,
-    // Sensitivity (Tab "Main"). Normal means 1/1. You can change the jog wheel sensitivity by either changing this, changing the hercules configuration setting, or both.
-    'sensitivity': 1 / 1,
-
-    // --- Personal preferences configuration ---
-    // Playback speed of the virtual vinyl that is being scratched. 45.00 and 33.33 are the common speeeds. (Lower number equals faster scratch)
-    'vinylSpeed': 45,
-    // alpha value for scratching filter (start with 1/8 (0.125) and tune from there)
-    'alpha': 1 / 8,
-    // beta value for scratching filter (start with alpha/32 and tune from there)
-    'beta': (1 / 8) / 32,
-    // Indicates if the Headphone/Master mix should automatically be set to master when none of the headphone cue buttons are pressed.
-    'autoHeadMix': false,
-    // KeyRepeat speed for navigation up/down, in milliseconds. 250 is a good value. Lower values make it scroll faster
-    'naviScrollSpeed': 250,
-    // VirtualDJ-like automatic switching for headphone cue (PFL) on song load
-    'autoHeadcueOnLoad': true
-};
-
-
-///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 // --- Internal variables ----
 Hercules4Mx.debuglog = false;
 
 Hercules4Mx.navigationStatus = {
-    //Navigation direction 1 up, -1 down, 0 undefined
+    //Navigation direction 1 up, -1 down, 0 do not move
     'direction': 0,
     //Indicator that the up or down buttons are pressed. Separated from direction to avoid a race condition with jogwheel.
-    'enabled': 0,
-    //Indicates if navigating in the sidebar (1) , or in the library (0)
-    'sidebar': 0,
+    'enabled': false,
+    //Indicates if navigating in the sidebar, or in the library
+    'sidebar': false,
     //Holds the timeout event id that does the key-repeat action for moving up or down holding only the key.
-    'timeoutId': 0
+    'timeoutId': null
 };
 
-Hercules4Mx.scratchButton = 0;
+Hercules4Mx.scratchEnabled = false;
 Hercules4Mx.previousHeadMix = 0;
-Hercules4Mx.autoDJfadingId = 0;
-Hercules4Mx.shiftTimerId = 0;
+Hercules4Mx.autoDJfadingId = null;
 Hercules4Mx.shiftPressed = false;
 Hercules4Mx.shiftUsed = false;
+//Assume 14bit mode is disabled by default, and enable it on the first lsb detected.
+Hercules4Mx.pitch14bitMode = false;
+Hercules4Mx.pitchMsbValue = [0x40,0x40,0x40,0x40];
 
-Hercules4Mx.NOnC1 = 0x90 + Hercules4Mx.userSettings.midiChannelOffset;
-Hercules4Mx.NOnC2 = 0x91 + Hercules4Mx.userSettings.midiChannelOffset;
-Hercules4Mx.CC = 0xB0 + Hercules4Mx.userSettings.midiChannelOffset;
+// The Hercules Tray Icon configuration allows to configure a different midi channel for the
+// controller. You will need to change all the status codes in the xml mapping and these three
+// variables if you use any other than the default of midi channels 1-2.
+Hercules4Mx.NOnC1 = 0x90;
+Hercules4Mx.NOnC2 = 0x91;
+Hercules4Mx.CC = 0xB0;
 
 ///////////////////////////////////////////////////////////////////
 // --- Initialization and shutdown ----
 Hercules4Mx.init = function(id, debugging) {
     Hercules4Mx.debuglog = debugging;
+    //ensure all leds are in their default state
     Hercules4Mx.allLedsOff();
+    //Activate Files led.
+    midi.sendShortMsg(Hercules4Mx.NOnC1, 0x3E, 0x7F);
+    
     var i;
     //Shift and deck buttons set to default
     for (i = 0x72; i <= 0x77; i++) {
         midi.sendShortMsg(Hercules4Mx.CC, i, 0x00);
     }
+    // Deck button mode
+    midi.sendShortMsg(Hercules4Mx.CC, 0x78, Hercules4Mx.userSettings.deckButtonMode);
+    // If the crossfader on scratch setting is on, set the value to normal curve by default.
+    if (Hercules4Mx.userSettings.crossfaderScratchCurve) {
+        midi.sendShortMsg(Hercules4Mx.CC, 0x7E, 0x00);
+    }
     // Tell the controller to report all current values to Mixxx (update_all_controls message)
+    // Concretely it reports crossfader, master volume, master headmix, and EQ knobs, gain, pitch slider and vol fader of each channel.
     midi.sendShortMsg(Hercules4Mx.CC, 0x7F, 0x7F);
-    //Activate Files led.
-    midi.sendShortMsg(Hercules4Mx.NOnC1, 0x3E, 0x7F);
 
-    // Connect song load to onSongLoaded event
+    //---Other possible actions:
+    // jog wheel movement sensitivity divisor (i.e. 1/x).
+    // midi.sendShortMsg(Hercules4Mx.CC, 0x79, sens); sens = 0 most sensitive, 0x7F least sensitive. 0x1 normal, 0x2 1/2, 0x4 1/4, and so on.
+    //
+    // ignore jog wheel movement: (codes from 0x7A to 0x7D, one for each deck).
+    // midi.sendShortMsg(Hercules4Mx.CC, 0x7A, enable); enable = 0 obey movement, enable = 0x7F ignore movement
+
+    // Connect several signals to javascript events, like song load, pre-fader-listen, looks or effects
+    for (i = 1; i <= 4; i++) {
+        engine.connectControl("[Channel" + i + "]", "pfl", "Hercules4Mx.onPreFaderListen");
+        engine.connectControl("[Channel" + i + "]", "loop_enabled", "Hercules4Mx.onLoopStateChange");
+        engine.connectControl("[Channel" + i + "]", "loop_start_position", "Hercules4Mx.onLoopStateChange");
+        engine.connectControl("[Channel" + i + "]", "loop_end_position", "Hercules4Mx.onLoopStateChange");
+//        TODO: control when they are enabled, so that FX knob can move the effect unit knob.
+//        engine.connectControl("[EffectRack1_EffectUnit1]", "group_[Channel" + i + "]_enable", "Hercules4Mx.onEffectStateChange");
+//        engine.connectControl("[EffectRack1_EffectUnit2]", "group_[Channel" + i + "]_enable", "Hercules4Mx.onEffectStateChange");
+    }
     if (Hercules4Mx.userSettings.autoHeadcueOnLoad) {
         for (i = 1; i <= 4; i++) {
             engine.connectControl("[Channel" + i + "]", "LoadSelectedTrack", "Hercules4Mx.onSongLoaded");
         }
     }
-    engine.connectControl("[AutoDJ]", "enabled", "Hercules4Mx.onAutoDJ");
-    engine.connectControl("[AutoDJ]", "fade_now", "Hercules4Mx.onAutoDJFade");
-	engine.trigger("[AutoDJ]", "enabled", "Hercules4Mx.onAutoDJ");
-
-    engine.connectControl("[Channel1]", "pfl", "Hercules4Mx.onPreFaderListen");
-    engine.connectControl("[Channel2]", "pfl", "Hercules4Mx.onPreFaderListen");
-    engine.connectControl("[Channel3]", "pfl", "Hercules4Mx.onPreFaderListen");
-    engine.connectControl("[Channel4]", "pfl", "Hercules4Mx.onPreFaderListen");
-
-    engine.connectControl("[Channel1]", "loop_enabled", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel2]", "loop_enabled", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel3]", "loop_enabled", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel4]", "loop_enabled", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel1]", "loop_start_position", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel2]", "loop_start_position", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel3]", "loop_start_position", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel4]", "loop_start_position", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel1]", "loop_end_position", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel2]", "loop_end_position", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel3]", "loop_end_position", "Hercules4Mx.onLoopStateChange");
-    engine.connectControl("[Channel4]", "loop_end_position", "Hercules4Mx.onLoopStateChange");
-
-    engine.connectControl("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", "Hercules4Mx.onEffectStateChange");
-    engine.connectControl("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", "Hercules4Mx.onEffectStateChange");
-    engine.connectControl("[EffectRack1_EffectUnit1]", "group_[Channel3]_enable", "Hercules4Mx.onEffectStateChange");
-    engine.connectControl("[EffectRack1_EffectUnit1]", "group_[Channel4]_enable", "Hercules4Mx.onEffectStateChange");
-    engine.connectControl("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", "Hercules4Mx.onEffectStateChange");
-    engine.connectControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", "Hercules4Mx.onEffectStateChange");
-    engine.connectControl("[EffectRack1_EffectUnit2]", "group_[Channel3]_enable", "Hercules4Mx.onEffectStateChange");
-    engine.connectControl("[EffectRack1_EffectUnit2]", "group_[Channel4]_enable", "Hercules4Mx.onEffectStateChange");
+    if (Hercules4Mx.userSettings.beatFlashLed !== Hercules4Mx.Leds.syncLed ){
+        //Set sync master led indicator
+        for (i = 1; i <= 4; i++) {
+            engine.connectControl("[Channel" + i + "]", "sync_enabled", "Hercules4Mx.onSyncLed");
+        }
+    }
+    if (Hercules4Mx.userSettings.beatFlashLed !== Hercules4Mx.Leds.none) {
+        //Setup beat flashing led
+        for (i = 1; i <= 4; i++) {
+            engine.connectControl("[Channel" + i + "]", "beat_active", "Hercules4Mx.onBeatFlash");
+        }
+    }
+    
+    // Activate soft takeover for the rate sliders. The other sliders and knobs have softtakeover set in the xml mapping.
+    for (i = 1; i <= 4; i++) {
+        engine.softTakeover("[Channel" + i + "]","rate",true);
+        engine.softTakeover("[Channel" + i + "]","rate",true);
+    }
 };
-
 Hercules4Mx.shutdown = function() {
-    Hercules4Mx.allLedsOff();
-    if (Hercules4Mx.navigationStatus.timeoutId !== 0) {
+    if (Hercules4Mx.navigationStatus.timeoutId !== null) {
         engine.stopTimer(Hercules4Mx.navigationStatus.timeoutId);
     }
-    if (Hercules4Mx.autoDJfadingId !== 0) {
+    if (Hercules4Mx.autoDJfadingId !== null) {
         engine.stopTimer(Hercules4Mx.autoDJfadingId);
     }
+    // If the crossfader on scratch setting is on, set the value to normal curve on exit.
+    if (Hercules4Mx.userSettings.crossfaderScratchCurve) {
+        midi.sendShortMsg(Hercules4Mx.CC, 0x7E, 0x00);
+    }
+    //Cleanup leds before exiting.
+    Hercules4Mx.allLedsOff();
 };
 
 //Set all leds to off
 Hercules4Mx.allLedsOff = function() {
     engine.log("Hercules4Mx.allLedsOff: switching leds off");
     // Switch off all LEDs
+    // +0x20 -> the other deck
     // +0x40 -> blinking.
     var i;
-    for (i = 0x1; i <= 0x11; i++) {
+    for (i = 0x3C; i <= 0x3F; i++) { //auto, scratch, files, folders
+        midi.sendShortMsg(Hercules4Mx.NOnC1, i, 0x00);
+        midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x40, 0x00);
+    }
+    for (i = 0x1; i <= 0x11; i++) { // Fx, cue, play, cuesel,stop, sync
         midi.sendShortMsg(Hercules4Mx.NOnC1, i, 0x00);
         midi.sendShortMsg(Hercules4Mx.NOnC2, i, 0x00);
-        midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x40, 0x00);
-        midi.sendShortMsg(Hercules4Mx.NOnC2, i + 0x40, 0x00);
+        midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x20, 0x00);
+        midi.sendShortMsg(Hercules4Mx.NOnC2, i + 0x20, 0x00);
     }
-    for (i = 0x15; i <= 0x1A; i++) {
+    for (i = 0x15; i <= 0x1A; i++) { //pitch led, source, kill,jog touch
         midi.sendShortMsg(Hercules4Mx.NOnC1, i, 0x00);
         midi.sendShortMsg(Hercules4Mx.NOnC2, i, 0x00);
+        midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x20, 0x00);
+        midi.sendShortMsg(Hercules4Mx.NOnC2, i + 0x20, 0x00);
+    }
+    // I've put these on a separate loop so that there are more chances for decks A/B leds to light off when shutdown,
+    // since there is a strange problem where not all messages are delivered.
+    for (i = 0x1; i <= 0x11; i++) { // Fx, cue, play, cuesel,stop, sync
         midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x40, 0x00);
         midi.sendShortMsg(Hercules4Mx.NOnC2, i + 0x40, 0x00);
+        midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x60, 0x00);
+        midi.sendShortMsg(Hercules4Mx.NOnC2, i + 0x60, 0x00);
     }
-    for (i = 0x21; i <= 0x31; i++) {
-        midi.sendShortMsg(Hercules4Mx.NOnC1, i, 0x00);
-        midi.sendShortMsg(Hercules4Mx.NOnC2, i, 0x00);
+    for (i = 0x15; i <= 0x1A; i++) { //pitch led, source, kill,jog touch
         midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x40, 0x00);
         midi.sendShortMsg(Hercules4Mx.NOnC2, i + 0x40, 0x00);
-    }
-    for (i = 0x35; i <= 0x3A; i++) {
-        midi.sendShortMsg(Hercules4Mx.NOnC1, i, 0x00);
-        midi.sendShortMsg(Hercules4Mx.NOnC2, i, 0x00);
-        midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x40, 0x00);
-        midi.sendShortMsg(Hercules4Mx.NOnC2, i + 0x40, 0x00);
-    }
-    for (i = 0x3C; i <= 0x3F; i++) {
-        midi.sendShortMsg(Hercules4Mx.NOnC1, i, 0x00);
-        midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x40, 0x00);
+        midi.sendShortMsg(Hercules4Mx.NOnC1, i + 0x60, 0x00);
+        midi.sendShortMsg(Hercules4Mx.NOnC2, i + 0x60, 0x00);
     }
 };
 ///////////////////////////////////////////////////////////////////
 // --- Events ----
+
+// The jog wheel sensitivity setting has changed. This is reported in two scenarios:
+// when the setting is changed in the tray icon, and when the crossfader curve is changed to beatmix.
+Hercules4Mx.onSensitivityChange = function(value, group, control) {
+    Hercules4Mx.userSettings.sensitivity = 1/value;    
+}
 
 //Action to do when a song is loaded in a deck. virtualDJ automatically enables the headphone cue (PFL)
 Hercules4Mx.onSongLoaded = function(value, group, control) {
@@ -243,6 +250,7 @@ Hercules4Mx.onSongLoaded = function(value, group, control) {
         }
     }
 };
+
 //A change in the loop position or loop state has happened.
 Hercules4Mx.onLoopStateChange = function(value, group, control) {
     engine.log("Hercules4Mx.onLoopStateChange: value, group, control: " + value + ", " + group + ", " + control);
@@ -255,7 +263,7 @@ Hercules4Mx.onLoopStateChange = function(value, group, control) {
     var b3 = engine.getParameter("[Channel" + deck + "]", "beatloop_2_enabled");
     var b4 = engine.getParameter("[Channel" + deck + "]", "beatloop_4_enabled");
     if (!b1 && !b2 && !b3 && !b4) {
-        //If no beatloops set but loop is enabled, lit buttons 3 and 4
+        //If no beatloops set but loop is enabled, light up buttons 3 and 4
         b3 = (finalvalue) ? 1 : 0;
         b4 = b3;
     }
@@ -267,8 +275,8 @@ Hercules4Mx.onLoopStateChange = function(value, group, control) {
 
 // Controls the action to do when the headphone cue (pre-fader-listen) buttons are pressed.
 Hercules4Mx.onPreFaderListen = function(value, group, control) {
-    // If automatic head mix to master is enabled, check what to do.
     if (Hercules4Mx.userSettings.autoHeadMix) {
+        // If automatic head mix to master is enabled, check what to do.
         var pfl1 = engine.getParameter("[Channel1]", "pfl");
         var pfl2 = engine.getParameter("[Channel2]", "pfl");
         var pfl3 = engine.getParameter("[Channel3]", "pfl");
@@ -291,16 +299,16 @@ Hercules4Mx.onAutoDJ = function(value, group, control) {
     midi.sendShortMsg(Hercules4Mx.NOnC1, 0x3C, (value) ? 0x7F : 0x00);
 };
 
-// AutoDJ fade to next is pressed. (seems it isn't called when the fading is done 
-// automatically by AutoDJ instead of button pressed
+// AutoDJ fade to next is pressed. (seems it isn't called when the fading is triggered 
+// automatically by AutoDJ compared to pressing the button in Mixxx/controller)
 Hercules4Mx.onAutoDJFade = function(value, group, control) {
     //Flashing led to indicate fading
     midi.sendShortMsg(Hercules4Mx.NOnC1, 0x7C, 0x7F);
-    if (Hercules4Mx.autoDJfadingId !== 0) {
+    if (Hercules4Mx.autoDJfadingId !== null) {
         //Ensure the timer is off.
         //This is a safety measure in case the button is pressed again within the 5 second delay.
         engine.stopTimer(Hercules4Mx.autoDJfadingId);
-        Hercules4Mx.autoDJfadingId = 0;
+        Hercules4Mx.autoDJfadingId = null;
     }
     //After 5 seconds, restore non-flashing led. It would be perfect if autoDJFade was triggered also
     //when the fading ends, but right now it seems this is not possible. Also, it doesn't seem to be
@@ -309,6 +317,30 @@ Hercules4Mx.onAutoDJFade = function(value, group, control) {
 };
 Hercules4Mx.onAutoDJFadeOff = function() {
     midi.sendShortMsg(Hercules4Mx.NOnC1, 0x7C, 0x00);
+};
+
+//Beat flashing changed state
+Hercules4Mx.onBeatFlash = function(value, group, control) {
+    var deck = script.deckFromGroup(group);
+    var val = (value) ? 0x7F : 0x00;
+    var led = Hercules4Mx.userSettings.beatFlashLed;
+    switch(deck){
+        case 1: midi.sendShortMsg(Hercules4Mx.NOnC1, led, val); break;
+        case 2: midi.sendShortMsg(Hercules4Mx.NOnC1, led+0x20, val); break;
+        case 3: midi.sendShortMsg(Hercules4Mx.NOnC2, led, val); break;
+        case 4: midi.sendShortMsg(Hercules4Mx.NOnC2, led+0x20, val); break;
+    }
+};
+// Deck's Sync led changed state
+Hercules4Mx.onSyncLed = function(value, group, control) {
+    var deck = script.deckFromGroup(group);
+    var val = (value) ? 0x7F : 0x00;
+    switch(deck){
+        case 1: midi.sendShortMsg(Hercules4Mx.NOnC1, 0x11, val); break;
+        case 2: midi.sendShortMsg(Hercules4Mx.NOnC1, 0x31, val); break;
+        case 3: midi.sendShortMsg(Hercules4Mx.NOnC2, 0x11, val); break;
+        case 4: midi.sendShortMsg(Hercules4Mx.NOnC2, 0x31, val); break;
+    }
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -331,7 +363,7 @@ Hercules4Mx.autoDJButton = function(midichan, control, value) {
 //Stop button is pressed in a deck.
 Hercules4Mx.stopButton = function(midichan, control, value, status, group) {
     if (value) {
-        engine.setParameter(group, "start_stop", 1);
+        engine.setParameter(group, "cue_gotoandstop", 1);
 
         var stop1 = engine.getParameter("[Channel1]", "stop");
         var stop2 = engine.getParameter("[Channel2]", "stop");
@@ -349,54 +381,54 @@ Hercules4Mx.navigation = function(midichan, control, value, status, group) {
     if (value) {
         if (control === 0x3E) {
             //FILES
-            if (Hercules4Mx.navigationStatus.sidebar === 0 &&
-                engine.getParameter("[AutoDJ]", "enabled") === 1) {
+            if (Hercules4Mx.navigationStatus.sidebar === false && 
+                    engine.getParameter("[AutoDJ]", "enabled") === 1) {
                 // if autoDJ enabled and we are already at "files", skip next file
                 engine.setParameter("[AutoDJ]", "skip_next", 1);
             } else {
-                Hercules4Mx.navigationStatus.sidebar = 0;
+                Hercules4Mx.navigationStatus.sidebar = false;
                 midi.sendShortMsg(Hercules4Mx.NOnC1, 0x3E, 0x7F);
                 midi.sendShortMsg(Hercules4Mx.NOnC1, 0x3F, 0x00);
             }
         } else if (control === 0x3F) {
             //FOLDERS
-            if (Hercules4Mx.navigationStatus.sidebar === 1) {
+            if (Hercules4Mx.navigationStatus.sidebar ) {
                 //if we are already on sidebar, open/close group
                 engine.setParameter('[Playlist]', 'ToggleSelectedSidebarItem', 1);
             }
-            Hercules4Mx.navigationStatus.sidebar = 1;
+            Hercules4Mx.navigationStatus.sidebar = true;
             midi.sendShortMsg(Hercules4Mx.NOnC1, 0x3E, 0x00);
             midi.sendShortMsg(Hercules4Mx.NOnC1, 0x3F, 0x7F);
         } else if (control === 0x40) {
             //UP
             Hercules4Mx.navigationStatus.direction = -1;
-            Hercules4Mx.navigationStatus.enabled = 1;
+            Hercules4Mx.navigationStatus.enabled = true;
             Hercules4Mx.doNavigate();
         } else if (control === 0x41) {
             //DOWN
             Hercules4Mx.navigationStatus.direction = 1;
-            Hercules4Mx.navigationStatus.enabled = 1;
+            Hercules4Mx.navigationStatus.enabled = true;
             Hercules4Mx.doNavigate();
         }
-        if (Hercules4Mx.navigationStatus.enabled == 1 &&
-            Hercules4Mx.navigationStatus.timeoutId === 0) {
+        if (Hercules4Mx.navigationStatus.enabled &&
+                Hercules4Mx.navigationStatus.timeoutId === null) {
             //Enable key-repeat mode. Cursor will continue moving until button is released.
             Hercules4Mx.navigationStatus.timeoutId = engine.beginTimer(Hercules4Mx.userSettings.naviScrollSpeed, Hercules4Mx.doNavigate);
         }
     } else {
         //On key release disable navigation mode and stop key-repeat.
         Hercules4Mx.navigationStatus.direction = 0;
-        Hercules4Mx.navigationStatus.enabled = 0;
-        if (Hercules4Mx.navigationStatus.timeoutId !== 0) {
+        Hercules4Mx.navigationStatus.enabled = false;
+        if (Hercules4Mx.navigationStatus.timeoutId !== null) {
             engine.stopTimer(Hercules4Mx.navigationStatus.timeoutId);
-            Hercules4Mx.navigationStatus.timeoutId = 0;
+            Hercules4Mx.navigationStatus.timeoutId = null;
         }
     }
 };
 
 // Internal navigate action.
 Hercules4Mx.doNavigate = function() {
-    if (Hercules4Mx.navigationStatus.sidebar === 0) {
+    if (Hercules4Mx.navigationStatus.sidebar === false) {
         if (Hercules4Mx.navigationStatus.direction === 1) {
             engine.setParameter("[Playlist]", "SelectNextTrack", "1");
         } else {
@@ -429,7 +461,8 @@ Hercules4Mx.stateEffectShift = function(midichan, control, value, status, group)
 
 //The effect knob granularity is very coarse, so we compensate it here so that it behaves like an analog one.
 Hercules4Mx.effectKnob = function(midichan, control, value, status, group) {
-    var direction = (value === 0x01) ? 1 : -1;
+    //It has a speed sensor, but you have to move it really fast for it to send something different.
+    var direction = (value < 0x40) ? value : value-0x80;
     var step = 1 / 20;
     if (Hercules4Mx.shiftPressed) {
         //If pressing shift, let's move it slowly.
@@ -441,10 +474,10 @@ Hercules4Mx.effectKnob = function(midichan, control, value, status, group) {
 };
 
 // Any of the FX buttons has been pressed
-// There are 6 physical buttons present, but the controller has a "shift" button 
-// that it uses to sends 12 different messages, depending if it is shifted or not.
-// Since this is a button and it sends a different message to indicate button
-// pressure and button state, I've been able to setup up to 24 different actions.
+// There are 6 physical buttons present per deck, and also a "shift" button used by the controller 
+// itself to switch between messages 1 to 6 and messages 7 to 12, depending if it is enabled or not.
+// Since the shift button also sends a message when it is pressed and when it is released,
+// I've been able to setup up to 24 different actions per deck.
 // I call these additional 12 messages the "shift-pressed" mode.
 Hercules4Mx.FXButton = function(midichan, control, value, status, group) {
     var deck = script.deckFromGroup(group);
@@ -453,12 +486,12 @@ Hercules4Mx.FXButton = function(midichan, control, value, status, group) {
         Hercules4Mx.shiftUsed = true;
     }
     switch (control) {
-        // 1 to 6 and 0x21 to 0x26 are the 6 left deck and right deck buttons respectively, non shifted.
+        // 1 to 6 and 0x21 to 0x26 are the 6 left deck and right deck buttons respectively, with shift disabled.
         // Loop buttons
         case 0x01:
         case 0x21: // K1, beatloop 1/ Loop in
             if (value) {
-                //Loop in in "shift-pressed" mode, beatloop of 1 beat otherwise
+                //beatloop 0.125 in "shift-pressed" mode, beatloop of 0.5 beat otherwise
                 if (Hercules4Mx.shiftPressed) {
                     engine.setValue(group, "beatloop_0.125_toggle", 1);
                 } else {
@@ -469,7 +502,7 @@ Hercules4Mx.FXButton = function(midichan, control, value, status, group) {
         case 0x02:
         case 0x22: // K2, beatloop 2/ Loop out
             if (value) {
-                //Loop out in "shift-pressed" mode, beatloop of 2 beat otherwise
+                //beatlook 0.25 in "shift-pressed" mode, beatloop of 1 beat otherwise
                 if (Hercules4Mx.shiftPressed) {
                     engine.setValue(group, "beatloop_0.25_toggle", 1);
                 } else {
@@ -503,12 +536,10 @@ Hercules4Mx.FXButton = function(midichan, control, value, status, group) {
         case 0x05:
         case 0x25: // K5, reverse play
             engine.setValue(group, "reverse", (value) ? 1 : 0);
-            engine.setValue(group, "reverse", (value) ? 1 : 0);
             break;
         case 0x06:
         case 0x26: // K6, reverse roll play
             engine.setValue(group, "reverseroll", (value) ? 1 : 0);
-            engine.setValue(group, "reverse", (value) ? 1 : 0);
             break;
 
             // 7 to 0xC and 0x27 to 0x3C are the 6 left deck and right deck buttons respectively, with shift enabled.
@@ -519,7 +550,9 @@ Hercules4Mx.FXButton = function(midichan, control, value, status, group) {
                 if (value) {
                     engine.setValue(group, "hotcue_1_clear", 1);
                 }
-            } else engine.setValue(group, "hotcue_1_activate", (value) ? 1 : 0);
+            } else {
+                engine.setValue(group, "hotcue_1_activate", (value) ? 1 : 0);
+            }
             break;
         case 0x08:
         case 0x28: // K8 Hotcue 2 activate/ clear
@@ -527,7 +560,9 @@ Hercules4Mx.FXButton = function(midichan, control, value, status, group) {
                 if (value) {
                     engine.setValue(group, "hotcue_2_clear", 1);
                 }
-            } else engine.setValue(group, "hotcue_2_activate", (value) ? 1 : 0);
+            } else {
+                engine.setValue(group, "hotcue_2_activate", (value) ? 1 : 0);
+            }
             break;
         case 0x09:
         case 0x29: // K9 Hotcue 3 activate/ clear
@@ -535,7 +570,9 @@ Hercules4Mx.FXButton = function(midichan, control, value, status, group) {
                 if (value) {
                     engine.setValue(group, "hotcue_3_clear", 1);
                 }
-            } else engine.setValue(group, "hotcue_3_activate", (value) ? 1 : 0);
+            } else {
+                engine.setValue(group, "hotcue_3_activate", (value) ? 1 : 0);
+            }
             break;
         case 0x0A:
         case 0x2A: // K10 Hotcue 4 activate/ clear
@@ -543,37 +580,35 @@ Hercules4Mx.FXButton = function(midichan, control, value, status, group) {
                 if (value) {
                     engine.setValue(group, "hotcue_4_clear", 1);
                 }
-            } else engine.setValue(group, "hotcue_4_activate", (value) ? 1 : 0);
+            } else {
+                engine.setValue(group, "hotcue_4_activate", (value) ? 1 : 0);
+            }
             break;
             //Effects
         case 0x0B:
         case 0x2B: // K11. Effect Unit 1
-            {
                 if (value) {
                     engine.setParameter("[EffectRack1_EffectUnit1]", "group_[Channel" + deck + "]_enable", !engine.getParameter("[EffectRack1_EffectUnit1]", "group_[Channel" + deck + "]_enable"));
                 }
-            }
             break;
         case 0x0C:
         case 0x2C: // K12. Effect Unit 2
-            {
                 if (value) {
                     engine.setParameter("[EffectRack1_EffectUnit2]", "group_[Channel" + deck + "]_enable", !engine.getParameter("[EffectRack1_EffectUnit2]", "group_[Channel" + deck + "]_enable"));
                 }
-            }
             break;
     }
 };
 
-
-//Jog wheel moved without pressure (for speeding or slowing down, or navigating)
+//Jog wheel moved without pressure (for seeking, speeding or slowing down, or navigating)
 Hercules4Mx.jogWheel = function(midichan, control, value, status, group) {
-    var direction = (value === 0x01) ? 1 : -1;
-    if (Hercules4Mx.navigationStatus.enabled === 1) {
-        if (Hercules4Mx.navigationStatus.timeoutId !== 0) {
+    //It has a speed sensor, but you have to move it really fast for it to send something different.
+    var direction = (value < 0x40) ? value : value-0x80;
+    if (Hercules4Mx.navigationStatus.enabled) {
+        if (Hercules4Mx.navigationStatus.timeoutId !== null) {
             //Stop key-repeat mode. From now on, obey only jog movement until button is released.
             engine.stopTimer(Hercules4Mx.navigationStatus.timeoutId);
-            Hercules4Mx.navigationStatus.timeoutId = 0;
+            Hercules4Mx.navigationStatus.timeoutId = null;
         }
         Hercules4Mx.navigationStatus.direction = direction;
         Hercules4Mx.doNavigate();
@@ -586,18 +621,24 @@ Hercules4Mx.jogWheel = function(midichan, control, value, status, group) {
 // Concretely, it tells if it has to ignore or not the pressure sensor in the jog wheel.
 Hercules4Mx.scratchButton = function(midichan, control, value, status, group) {
     if (value) {
-        if (Hercules4Mx.scratchButton === 1) {
-            Hercules4Mx.scratchButton = 0;
+        if (Hercules4Mx.scratchEnabled ) {
+            Hercules4Mx.scratchEnabled = false;
             midi.sendShortMsg(Hercules4Mx.NOnC1, 0x7D, 0x00);
+            if (Hercules4Mx.userSettings.crossfaderScratchCurve) {
+                midi.sendShortMsg(Hercules4Mx.CC, 0x7E, 0x00);
+            }
         } else {
-            Hercules4Mx.scratchButton = 1;
+            Hercules4Mx.scratchEnabled = true;
             midi.sendShortMsg(Hercules4Mx.NOnC1, 0x7D, 0x7F);
+            if (Hercules4Mx.userSettings.crossfaderScratchCurve) {
+                midi.sendShortMsg(Hercules4Mx.CC, 0x7E, 0x7F);
+            }
         }
     }
 };
 // The pressure action over the jog wheel
 Hercules4Mx.wheelTouch = function(midichan, control, value, status, group) {
-    if (Hercules4Mx.scratchButton === 1 && value) {
+    if (Hercules4Mx.scratchEnabled && value) {
         // If button down
         engine.scratchEnable(script.deckFromGroup(group),
             256 * Hercules4Mx.userSettings.sensitivity,
@@ -611,12 +652,31 @@ Hercules4Mx.wheelTouch = function(midichan, control, value, status, group) {
 };
 //Jog wheel used with pressure (for scratching)
 Hercules4Mx.scratchWheel = function(midichan, control, value, status, group) {
-    if (Hercules4Mx.navigationStatus.enabled === 1 ||
+    if (Hercules4Mx.navigationStatus.enabled ||
         !engine.isScratching(script.deckFromGroup(group))) {
         //If navigating, or not in scratch mode, do jogWheel
         Hercules4Mx.jogWheel(midichan, control, value, status, group);
     } else {
-        var direction = (value === 0x01) ? 1 : -1;
+        //It has a speed sensor, but you have to move it really fast for it to send something different.
+        var direction = (value < 0x40) ? value : value-0x80;
         engine.scratchTick(script.deckFromGroup(group), direction);
     }
+};
+
+// Pitch slider rate change, MSB (Most significant bits in 14bit mode, or directly the value in 7bit)
+Hercules4Mx.rateMsb = function(midichan, control, value, status, group) {
+    if (Hercules4Mx.pitch14bitMode) {
+        var deck = script.deckFromGroup(group);
+        Hercules4Mx.pitchMsbValue[deck-1]=value*0x80;
+    }
+    else {
+        engine.setParameter(group, "rate", value/0x7F);
+    }
+};
+// Pitch slider rate change, LSB (Least significant bits in 14bit mode, not called in 7bit)
+Hercules4Mx.rateLsb = function(midichan, control, value, status, group) {
+    var deck = script.deckFromGroup(group);
+    var msbval = Hercules4Mx.pitchMsbValue[deck-1];
+    Hercules4Mx.pitch14bitMode = true;
+    engine.setParameter(group, "rate", (msbval+value)/0x3FFF);
 };
