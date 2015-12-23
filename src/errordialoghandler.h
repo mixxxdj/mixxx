@@ -140,6 +140,7 @@ class ErrorDialogHandler : public QObject {
             s_pInstance = new ErrorDialogHandler();
         return s_pInstance;
     }
+    static void setEnabled(bool enabled);
 
     virtual ~ErrorDialogHandler();
     // Call this to get a new instance of ErrorDialogProperties to populate with
@@ -172,6 +173,7 @@ class ErrorDialogHandler : public QObject {
     ErrorDialogHandler();
 
     static ErrorDialogHandler *s_pInstance;
+    static bool s_bEnabled;
 
     bool m_errorCondition;
     QList<QString> m_dialogKeys;

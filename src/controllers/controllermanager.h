@@ -90,6 +90,7 @@ class ControllerManager : public QObject {
     QList<Controller*> m_controllers;
     QThread* m_pThread;
     PresetInfoEnumerator* m_pMainThreadPresetEnumerator;
+    bool m_skipPoll;
 };
 
 #endif  // CONTROLLERMANAGER_H
