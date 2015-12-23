@@ -150,11 +150,14 @@ int PortMidiController::close() {
 
 bool PortMidiController::poll() {
     // Poll the controller for new data if it's an input device
-    if (!m_pInputStream)
+    if (!m_pInputStream) {
+        qDebug() << "PortMidiController::poll() no Input Stream";
         return false;
+    }
 
     PmError gotEvents = Pm_Poll(m_pInputStream);
     if (gotEvents == FALSE) {
+        //qDebug() << "PortMidiController::poll() no events";
         return false;
     }
     if (gotEvents < 0) {
@@ -163,6 +166,8 @@ bool PortMidiController::poll() {
     }
 
     int numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
+
+    //qDebug() << "PortMidiController::poll()" << numEvents;
 
     if (numEvents < 0) {
         qWarning() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
@@ -174,7 +179,7 @@ bool PortMidiController::poll() {
 
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
-            receive(status, 0, 0);
+            receive(status, 0, 0, m_midiBuffer[i].timestamp);
             continue;
         }
 
@@ -188,7 +193,7 @@ bool PortMidiController::poll() {
                 //unsigned char channel = status & 0x0F;
                 unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                 unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-                receive(status, note, velocity);
+                receive(status, note, velocity, m_midiBuffer[i].timestamp);
             }
         }
 
