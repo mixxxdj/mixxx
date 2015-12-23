@@ -797,6 +797,7 @@ SCS3M.Agent = function(device) {
                             setconst(effectunit, 'chain_selector', -1)
                         );
                     } else {
+                        modeset(part.pitch.mode.absolute);
                         expect(part.pitch.slide, eqsideheld.choose(
                             set(effectunit, 'mix'),
                             reset(effectunit, 'mix')
