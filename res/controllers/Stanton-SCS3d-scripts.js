@@ -240,8 +240,12 @@ StantonSCS3d.init2 = function () {
     if (StantonSCS3d.spinningPlatter) {
         engine.connectControl("[Channel1]","playposition","StantonSCS3d.circleLEDs1");
         engine.connectControl("[Channel2]","playposition","StantonSCS3d.circleLEDs2");
+        engine.connectControl("[Channel3]","playposition","StantonSCS3d.circleLEDs3");
+        engine.connectControl("[Channel4]","playposition","StantonSCS3d.circleLEDs4");
         engine.connectControl("[Channel1]","duration","StantonSCS3d.durationChange1");
         engine.connectControl("[Channel2]","duration","StantonSCS3d.durationChange2");
+        engine.connectControl("[Channel3]","duration","StantonSCS3d.durationChange3");
+        engine.connectControl("[Channel4]","duration","StantonSCS3d.durationChange4");
     }
     
     //  Initialize the spinning platter LEDs if the mapping is loaded after a song is
@@ -1976,12 +1980,30 @@ StantonSCS3d.circleLEDs2 = function (value) {
     StantonSCS3d.circleLEDs(value);
 }
 
+StantonSCS3d.circleLEDs3 = function (value) {
+    if (StantonSCS3d.deck!=3) return;
+    StantonSCS3d.circleLEDs(value);
+}
+
+StantonSCS3d.circleLEDs4 = function (value) {
+    if (StantonSCS3d.deck!=4) return;
+    StantonSCS3d.circleLEDs(value);
+}
+
 StantonSCS3d.durationChange1 = function (value) {
     StantonSCS3d.trackDuration[1]=value;
 }
 
 StantonSCS3d.durationChange2 = function (value) {
     StantonSCS3d.trackDuration[2]=value;
+}
+
+StantonSCS3d.durationChange3 = function (value) {
+    StantonSCS3d.trackDuration[3]=value;
+}
+
+StantonSCS3d.durationChange4 = function (value) {
+    StantonSCS3d.trackDuration[4]=value;
 }
 
 StantonSCS3d.circleFlash = function (deck) {
