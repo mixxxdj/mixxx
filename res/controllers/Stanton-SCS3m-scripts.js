@@ -773,13 +773,13 @@ SCS3M.Agent = function(device) {
 
                 if (sideoverlay.engaged(tnr)) {
                     watch(effectunit, effectunit_enable, binarylight(
-                        softbutton.light.red,
+                        softbutton.light.blue,
                         softbutton.light.purple)
                     );
                 } else {
                     watch(effectunit, effectunit_enable, binarylight(
                         softbutton.light.black,
-                        softbutton.light.blue)
+                        softbutton.light.red)
                     );
                 }
 
