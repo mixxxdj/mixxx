@@ -176,10 +176,11 @@ bool PortMidiController::poll() {
 
     for (int i = 0; i < numEvents; i++) {
         unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
+        mixxx::Duration timestamp = mixxx::Duration::fromMillis(m_midiBuffer[i].timestamp);
 
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
-            receive(status, 0, 0, m_midiBuffer[i].timestamp);
+            receive(status, 0, 0, timestamp);
             continue;
         }
 
@@ -193,7 +194,7 @@ bool PortMidiController::poll() {
                 //unsigned char channel = status & 0x0F;
                 unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                 unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-                receive(status, note, velocity, m_midiBuffer[i].timestamp);
+                receive(status, note, velocity, timestamp);
             }
         }
 
@@ -223,7 +224,8 @@ bool PortMidiController::poll() {
             if (data == MIDI_EOX) {
                 m_bInSysex = false;
                 const char* buffer = reinterpret_cast<const char*>(m_cReceiveMsg);
-                receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index));
+                receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index),
+                        timestamp);
                 m_cReceiveMsg_index = 0;
             }
         }
