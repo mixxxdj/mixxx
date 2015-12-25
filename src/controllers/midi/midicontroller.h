@@ -63,7 +63,7 @@ class MidiController : public Controller {
     }
 
     void receive(unsigned char status, unsigned char control,
-                 unsigned char value, int32_t timestamp);
+                 unsigned char value, int timestamp);
 
     // For receiving System Exclusive messages
     void receive(const QByteArray data);
