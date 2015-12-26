@@ -52,3 +52,11 @@ bool writeConfig(QIODevice &device, const QSettings::SettingsMap &map) {
 
     return true;
 }
+
+QString MixxxSettings::m_config_fname = "NONE";
+QSettings::Format MixxxSettings::m_format =
+    QSettings::registerFormat("cfg", readConfig, writeConfig);
+
+void registerConfigPath(const QString &config_path) {
+    MixxxSettings::m_config_fname = config_path;
+}
