@@ -13,7 +13,7 @@
 #include <QNetworkDiskCache>
 #include <QNetworkReply>
 
-#include "network.h"
+#include "musicbrainz/network.h"
 
 NetworkAccessManager::NetworkAccessManager(QObject* parent)
                     : QNetworkAccessManager(parent) {
@@ -26,7 +26,7 @@ QNetworkReply* NetworkAccessManager::createRequest(Operation op,
     new_request.setRawHeader("User-Agent", QString("%1 %2").arg(
         QCoreApplication::applicationName(),
         QCoreApplication::applicationVersion()).toUtf8());
-    
+
     if (op == QNetworkAccessManager::PostOperation &&
         !new_request.header(QNetworkRequest::ContentTypeHeader).isValid()) {
         new_request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -39,20 +39,20 @@ QNetworkReply* NetworkAccessManager::createRequest(Operation op,
         new_request.setAttribute(QNetworkRequest::CacheLoadControlAttribute,
                                 QNetworkRequest::PreferCache);
     }
-    
+
     return QNetworkAccessManager::createRequest(op, new_request, outgoingData);
 }
 
 
 NetworkTimeouts::NetworkTimeouts(int timeout_msec, QObject* parent)
-                : QObject(parent), 
+                : QObject(parent),
                   m_timeout_msec(timeout_msec) {
 }
 
 void NetworkTimeouts::addReply(QNetworkReply* reply) {
     if (m_timers.contains(reply))
         return;
-  
+
     connect(reply, SIGNAL(destroyed()), SLOT(replyFinished()));
     connect(reply, SIGNAL(finished()), SLOT(replyFinished()));
     m_timers[reply] = startTimer(m_timeout_msec);

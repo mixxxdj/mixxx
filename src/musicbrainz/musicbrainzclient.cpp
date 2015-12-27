@@ -14,7 +14,7 @@
 #include <QXmlStreamReader>
 #include <QUrl>
 
-#include "musicbrainzclient.h"
+#include "musicbrainz/musicbrainzclient.h"
 
 const QString MusicBrainzClient::m_TrackUrl = "http://musicbrainz.org/ws/2/recording/";
 const QString MusicBrainzClient::m_DateRegex = "^[12]\\d{3}";
