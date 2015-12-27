@@ -22,11 +22,11 @@
 #include <QList>
 #include <QHash>
 
-#include "util/types.h"
-#include "util/defs.h"
 #include "configobject.h"
-#include "soundmanagerconfig.h"
 #include "engine/sidechain/enginenetworkstream.h"
+#include "soundmanagerconfig.h"
+#include "util/result.h"
+#include "util/types.h"
 
 class SoundDevice;
 class EngineMaster;

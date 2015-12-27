@@ -33,8 +33,9 @@ class MockPortMidiController : public PortMidiController {
         PortMidiController::sendSysexMsg(data, length);
     }
 
-    MOCK_METHOD3(receive, void(unsigned char, unsigned char, unsigned char));
-    MOCK_METHOD1(receive, void(const QByteArray));
+    MOCK_METHOD4(receive, void(unsigned char, unsigned char, unsigned char,
+                               mixxx::Duration));
+    MOCK_METHOD2(receive, void(const QByteArray, mixxx::Duration));
 };
 
 class MockPortMidiDevice : public PortMidiDevice {
@@ -225,9 +226,9 @@ TEST_F(PortMidiControllerTest, Poll_Read_Basic) {
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
 
-    EXPECT_CALL(*m_pController, receive(0x90, 0x3C, 0x40))
+    EXPECT_CALL(*m_pController, receive(0x90, 0x3C, 0x40, _))
             .InSequence(read);
-    EXPECT_CALL(*m_pController, receive(0x80, 0x3C, 0x40))
+    EXPECT_CALL(*m_pController, receive(0x80, 0x3C, 0x40, _))
             .InSequence(read);
 
     pollDevice();
@@ -262,11 +263,11 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExWithRealtime) {
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
-    EXPECT_CALL(*m_pController, receive(0xF8, 0x00, 0x00))
+    EXPECT_CALL(*m_pController, receive(0xF8, 0x00, 0x00, _))
             .InSequence(read);
-    EXPECT_CALL(*m_pController, receive(0xFA, 0x00, 0x00))
+    EXPECT_CALL(*m_pController, receive(0xFA, 0x00, 0x00, _))
             .InSequence(read);
-    EXPECT_CALL(*m_pController, receive(sysex))
+    EXPECT_CALL(*m_pController, receive(sysex, _))
             .InSequence(read);
 
     pollDevice();
@@ -297,7 +298,7 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysEx) {
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
-    EXPECT_CALL(*m_pController, receive(sysex))
+    EXPECT_CALL(*m_pController, receive(sysex, _))
             .InSequence(read);
 
     pollDevice();
@@ -337,10 +338,10 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExWithRealtime_IncorrectBehavior) {
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
-    EXPECT_CALL(*m_pController, receive(0xF8, 0x00, 0x00))
+    EXPECT_CALL(*m_pController, receive(0xF8, 0x00, 0x00, _))
             .Times(2)
             .InSequence(read);
-    EXPECT_CALL(*m_pController, receive(sysex))
+    EXPECT_CALL(*m_pController, receive(sysex, _))
             .InSequence(read);
 
     pollDevice();
@@ -366,7 +367,7 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExInterrupted_FollowedByNormalMessag
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
-    EXPECT_CALL(*m_pController, receive(0x90, 0x3C, 0x40))
+    EXPECT_CALL(*m_pController, receive(0x90, 0x3C, 0x40, _))
             .InSequence(read);
 
     pollDevice();
@@ -404,7 +405,7 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExInterrupted_FollowedBySysExMessage
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
-    EXPECT_CALL(*m_pController, receive(sysex))
+    EXPECT_CALL(*m_pController, receive(sysex, _))
             .InSequence(read);
 
     pollDevice();
@@ -475,7 +476,7 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysEx_BufferOverflow) {
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages3.begin(), messages3.end()),
                             Return(messages3.size())));
-    EXPECT_CALL(*m_pController, receive(sysex))
+    EXPECT_CALL(*m_pController, receive(sysex, _))
             .InSequence(read);
 
     pollDevice();

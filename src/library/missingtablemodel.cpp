@@ -53,11 +53,10 @@ MissingTableModel::~MissingTableModel() {
 
 
 void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
 
     foreach (QModelIndex index, indices) {
-        int trackId = getTrackId(index);
-        trackIds.append(trackId);
+        trackIds.append(getTrackId(index));
     }
 
     m_trackDAO.purgeTracks(trackIds);

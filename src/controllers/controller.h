@@ -18,6 +18,7 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/controllerpresetfilehandler.h"
+#include "util/duration.h"
 
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
@@ -52,10 +53,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     inline bool isInputDevice() const {
         return m_bIsInputDevice;
     }
-    inline QString getName() const {
+    inline const QString& getName() const {
         return m_sDeviceName;
     }
-    inline QString getCategory() const {
+    inline const QString& getCategory() const {
         return m_sDeviceCategory;
     }
     virtual bool isMappable() const = 0;
@@ -76,10 +77,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Handles packets of raw bytes and passes them to an ".incomingData" script
     // function that is assumed to exist. (Sub-classes may want to reimplement
     // this if they have an alternate way of handling such data.)
-    virtual void receive(const QByteArray data);
+    virtual void receive(const QByteArray data, mixxx::Duration timestamp);
 
-    // Initializes the controller engine
-    virtual void applyPreset(QList<QString> scriptPaths);
+    // Initializes the controller engine and returns whether it was successful.
+    virtual bool applyPreset(QList<QString> scriptPaths, bool initializeScripts);
 
     // Puts the controller in and out of learning mode.
     void startLearning();
@@ -150,6 +151,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     bool m_bLearning;
 
     friend class ControllerManager; // accesses lots of our stuff, but in the same thread
+    // For testing.
+    friend class ControllerPresetValidationTest;
 };
 
 #endif

@@ -125,6 +125,7 @@ bool PortMidiController::poll() {
         return false;
     }
 
+    // Returns true if events are available or an error code.
     PmError gotEvents = m_pInputDevice->poll();
     if (gotEvents == FALSE) {
         return false;
@@ -136,6 +137,8 @@ bool PortMidiController::poll() {
 
     int numEvents = m_pInputDevice->read(m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
 
+    //qDebug() << "PortMidiController::poll()" << numEvents;
+
     if (numEvents < 0) {
         qWarning() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
         return false;
@@ -143,10 +146,11 @@ bool PortMidiController::poll() {
 
     for (int i = 0; i < numEvents; i++) {
         unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
+        mixxx::Duration timestamp = mixxx::Duration::fromMillis(m_midiBuffer[i].timestamp);
 
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
-            receive(status, 0, 0);
+            receive(status, 0, 0, timestamp);
             continue;
         }
 
@@ -160,7 +164,7 @@ bool PortMidiController::poll() {
                 //unsigned char channel = status & 0x0F;
                 unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                 unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-                receive(status, note, velocity);
+                receive(status, note, velocity, timestamp);
             }
         }
 
@@ -175,20 +179,14 @@ bool PortMidiController::poll() {
             }
 
             // Collect bytes from PmMessage
-            int data = 0;
+            unsigned char data = 0;
             for (int shift = 0; shift < 32 && (data != MIDI_EOX); shift += 8) {
-
-                // NOTE(rryan): According to portmidi.h, I believe this is a
-                // bug: "A real-time message can occur within a sysex message. A
-                // real-time message will always occupy a full PmEvent with the
-                // status byte in the low-order byte of the PmEvent message
-                // field."
-                if ((data & 0xF8) == 0xF8) {
-                    // Handle real-time messages at any time
-                    receive(data, 0, 0);
-                } else {
-                    m_cReceiveMsg[m_cReceiveMsg_index++] = data =
-                        (m_midiBuffer[i].message >> shift) & 0xFF;
+                // TODO(rryan): This prevents buffer overflow if the sysex is
+                // larger than 1024 bytes. I don't want to radically change
+                // anything before the 2.0 release so this will do for now.
+                data = (m_midiBuffer[i].message >> shift) & 0xFF;
+                if (m_cReceiveMsg_index < MIXXX_SYSEX_BUFFER_LEN) {
+                    m_cReceiveMsg[m_cReceiveMsg_index++] = data;
                 }
             }
 
@@ -196,7 +194,8 @@ bool PortMidiController::poll() {
             if (data == MIDI_EOX) {
                 m_bInSysex = false;
                 const char* buffer = reinterpret_cast<const char*>(m_cReceiveMsg);
-                receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index));
+                receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index),
+                        timestamp);
                 m_cReceiveMsg_index = 0;
             }
         }
@@ -216,6 +215,15 @@ void PortMidiController::sendWord(unsigned int word) {
 }
 
 void PortMidiController::send(QByteArray data) {
+    // PortMidi does not receive a length argument for the buffer we provide to
+    // Pm_WriteSysEx. Instead, it scans for a MIDI_EOX byte to know when the
+    // message is over. If one is not provided, it will overflow the buffer and
+    // cause a segfault.
+    if (!data.endsWith(MIDI_EOX)) {
+        controllerDebug("SysEx message does not end with 0xF7 -- ignoring.");
+        return;
+    }
+
     if (m_pOutputDevice.isNull() || !m_pOutputDevice->isOpen()) {
         return;
     }

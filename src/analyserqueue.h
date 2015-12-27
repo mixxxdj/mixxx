@@ -7,10 +7,13 @@
 #include <QWaitCondition>
 #include <QSemaphore>
 
-#include "configobject.h"
+#include <vector>
+
 #include "analyser.h"
-#include "soundsource.h"
+#include "configobject.h"
+#include "sources/audiosource.h"
 #include "trackinfoobject.h"
+#include "util/samplebuffer.h"
 
 class TrackCollection;
 
@@ -58,14 +61,14 @@ class AnalyserQueue : public QThread {
 
     bool isLoadedTrackWaiting(TrackPointer analysingTrack);
     TrackPointer dequeueNextBlocking();
-    bool doAnalysis(TrackPointer tio, const Mixxx::SoundSourcePointer& pSoundSource);
+    bool doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudioSource);
     void emitUpdateProgress(TrackPointer tio, int progress);
     void emptyCheck();
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
-    SAMPLE* m_pSamplesPCM;
-    CSAMPLE* m_pSamples;
+
+    SampleBuffer m_sampleBuffer;
 
     // The processing queue and associated mutex
     QQueue<TrackPointer> m_tioq;

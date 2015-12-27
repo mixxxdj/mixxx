@@ -1,21 +1,12 @@
+#include "sounddevicenetwork.h"
 
 #include <QtDebug>
 
-#include "sounddevicenetwork.h"
-
-#include "soundmanager.h"
-#include "sounddevice.h"
-#include "soundmanagerutil.h"
-#include "controlobject.h"
-#include "visualplayposition.h"
-#include "util/timer.h"
-#include "util/trace.h"
-#include "vinylcontrol/defs_vinylcontrol.h"
-#include "sampleutil.h"
-#include "controlobjectslave.h"
-#include "util/performancetimer.h"
-#include "util/denormalsarezero.h"
 #include "engine/sidechain/enginenetworkstream.h"
+#include "sounddevice.h"
+#include "soundmanager.h"
+#include "soundmanagerutil.h"
+#include "util/sample.h"
 
 // static
 volatile int SoundDeviceNetwork::m_underflowHappend = 0;
@@ -28,11 +19,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
           m_outputFifo(NULL),
           m_inputFifo(NULL),
           m_outputDrift(false),
-          m_inputDrift(false),
-          m_bSetThreadPriority(false),
-          m_underflowUpdateCount(0),
-          m_nsInAudioCb(0),
-          m_framesSinceAudioLatencyUsageUpdate(0) {
+          m_inputDrift(false) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_dSampleRate = 44100.0;
@@ -40,19 +27,9 @@ SoundDeviceNetwork::SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
     m_strDisplayName = QObject::tr("Network stream");
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
     m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
-
-    m_pMasterAudioLatencyOverloadCount = new ControlObjectSlave("[Master]",
-            "audio_latency_overload_count");
-    m_pMasterAudioLatencyUsage = new ControlObjectSlave("[Master]",
-            "audio_latency_usage");
-    m_pMasterAudioLatencyOverload = new ControlObjectSlave("[Master]",
-            "audio_latency_overload");
 }
 
 SoundDeviceNetwork::~SoundDeviceNetwork() {
-    delete m_pMasterAudioLatencyOverloadCount;
-    delete m_pMasterAudioLatencyUsage;
-    delete m_pMasterAudioLatencyOverload;
 }
 
 Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
@@ -109,12 +86,11 @@ Result SoundDeviceNetwork::close() {
         delete m_inputFifo;
         m_inputFifo = NULL;
     }
-    m_bSetThreadPriority = false;
     return OK;
 }
 
 QString SoundDeviceNetwork::getError() const {
-    return m_lastError;
+    return QString();
 }
 
 void SoundDeviceNetwork::readProcess() {

@@ -45,7 +45,7 @@ public:
   private:
     QString getRootViewHtml() const;
 
-    QLinkedList<int> m_recentTracks;
+    QLinkedList<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pGetNewPlaylist;
     int m_playlistId;

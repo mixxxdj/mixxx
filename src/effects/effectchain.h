@@ -6,9 +6,9 @@
 #include <QList>
 #include <QDomDocument>
 
-#include "util.h"
 #include "effects/effect.h"
 #include "engine/channelhandle.h"
+#include "util/class.h"
 
 class EffectsManager;
 class EngineEffectRack;

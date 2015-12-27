@@ -1,3 +1,5 @@
+#include "engine/sidechain/enginenetworkstream.h"
+
 #ifdef __WINDOWS__
 #include <windows.h>
 #include "util/performancetimer.h"
@@ -12,11 +14,7 @@ typedef VOID (WINAPI *PgGetSystemTimeFn)(LPFILETIME);
 static PgGetSystemTimeFn s_pfpgGetSystemTimeFn = NULL;
 #endif
 
-
-
-#include "engine/sidechain/enginenetworkstream.h"
-
-#include "sampleutil.h"
+#include "util/sample.h"
 
 const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Related chunk sizes:

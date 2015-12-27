@@ -247,7 +247,7 @@ Qt::ItemFlags BansheePlaylistModel::readOnlyFlags(const QModelIndex &index) cons
     return defaultFlags;
 }
 
-void BansheePlaylistModel::tracksChanged(QSet<int> trackIds) {
+void BansheePlaylistModel::tracksChanged(QSet<TrackId> trackIds) {
     Q_UNUSED(trackIds);
 }
 
@@ -255,10 +255,10 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
-        if (m_iPreviewDeckTrackId > -1) {
+        if (m_previewDeckTrackId.isValid()) {
             const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_iPreviewDeckTrackId);
-            m_iPreviewDeckTrackId = -1;
+            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
+            m_previewDeckTrackId = TrackId(); // invalidate
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
@@ -269,8 +269,8 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
             for (int row = 0; row < rowCount(); ++row) {
                 QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
                 if (rowUrl.toLocalFile() == pTrack->getLocation()) {
-                    m_iPreviewDeckTrackId =
-                            getFieldString(index(row, 0), CLM_VIEW_ORDER).toInt();
+                    m_previewDeckTrackId =
+                            TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
                     break;
                 }
             }
@@ -278,9 +278,14 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
     }
 }
 
+QVariant BansheePlaylistModel::getFieldVariant(const QModelIndex& index,
+        const QString& fieldName) const {
+    return index.sibling(index.row(), fieldIndex(fieldName)).data();
+}
+
 QString BansheePlaylistModel::getFieldString(const QModelIndex& index,
         const QString& fieldName) const {
-    return index.sibling(index.row(), fieldIndex(fieldName)).data().toString();
+    return getFieldVariant(index, fieldName).toString();
 }
 
 TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {

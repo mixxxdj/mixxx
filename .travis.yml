@@ -10,7 +10,10 @@ sudo: false
   # install dependencies
 addons:
   apt:
+    sources:
+      - ubuntu-toolchain-r-test
     packages:
+      - g++-4.8
       - scons
       - libqt4-dev
       - libqt4-sql-sqlite
@@ -35,6 +38,8 @@ before_install:
   # Virtual X, needed for analyser waveform tests
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
+  - export CXX=g++-4.8
+  - export CC=gcc-4.8
 install:
   - scons test=1 mad=1 localecompare=1
 script:

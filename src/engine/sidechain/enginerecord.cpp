@@ -137,7 +137,7 @@ bool EngineRecord::metaDataHasChanged()
         return false;
 
     if (m_pCurrentTrack) {
-        if ((pTrack->getId() == -1) || (m_pCurrentTrack->getId() == -1)) {
+        if (!pTrack->getId().isValid() || !m_pCurrentTrack->getId().isValid()) {
             if ((pTrack->getArtist() == m_pCurrentTrack->getArtist()) &&
                 (pTrack->getTitle() == m_pCurrentTrack->getArtist())) {
                 return false;
@@ -302,8 +302,7 @@ bool EngineRecord::openFile() {
         LPCWSTR lpcwFilename = (LPCWSTR)m_fileName.utf16();
         m_pSndfile = sf_wchar_open(lpcwFilename, SFM_WRITE, &m_sfInfo);
 #else
-        QByteArray qbaFilename = m_fileName.toLocal8Bit();
-        m_pSndfile = sf_open(qbaFilename.constData(), SFM_WRITE, &m_sfInfo);
+        m_pSndfile = sf_open(m_fileName.toLocal8Bit().constData(), SFM_WRITE, &m_sfInfo);
 #endif
         if (m_pSndfile) {
             sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_TRUE);

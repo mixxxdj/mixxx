@@ -22,7 +22,7 @@
 #include <QList>
 
 #include "soundmanager.h"
-#include "util/defs.h"
+#include "util/result.h"
 
 //Forward declarations
 class SoundDevice;

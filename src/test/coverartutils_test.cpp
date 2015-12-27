@@ -6,7 +6,6 @@
 #include "library/coverartutils.h"
 #include "library/trackcollection.h"
 #include "test/mixxxtest.h"
-#include "soundsourceproxy.h"
 
 // first inherit from MixxxTest to construct a QApplication to be able to
 // construct the default QPixmap in CoverArtCache

@@ -22,14 +22,14 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "util/types.h"
+#include "cachingreader.h"
+#include "configobject.h"
+#include "control/controlvalue.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "trackinfoobject.h"
-#include "configobject.h"
-#include "rotary.h"
-#include "control/controlvalue.h"
-#include "cachingreader.h"
+#include "util/rotary.h"
+#include "util/types.h"
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -125,6 +125,7 @@ class EngineBuffer : public EngineObject {
 
     // Return the current rate (not thread-safe)
     double getSpeed();
+    bool getScratching();
     // Returns current bpm value (not thread-safe)
     double getBpm();
     // Returns the BPM of the loaded track around the current position (not thread-safe)

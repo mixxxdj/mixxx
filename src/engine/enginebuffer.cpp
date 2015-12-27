@@ -1,63 +1,45 @@
-/***************************************************************************
-                          enginebuffer.cpp  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+#include "engine/enginebuffer.h"
 
 #include <QtDebug>
 
-#include "engine/enginebuffer.h"
 #include "cachingreader.h"
-#include "sampleutil.h"
-
-#include "controlpushbutton.h"
-#include "controlindicator.h"
 #include "configobject.h"
-#include "controlpotmeter.h"
+#include "controlindicator.h"
 #include "controllinpotmeter.h"
-#include "engine/enginechannel.h"
-#include "engine/enginebufferscalest.h"
-#include "engine/enginebufferscalerubberband.h"
-#include "engine/enginebufferscalelinear.h"
-#include "engine/sync/enginesync.h"
-#include "engine/engineworkerscheduler.h"
-#include "engine/readaheadmanager.h"
-#include "engine/enginecontrol.h"
-#include "engine/loopingcontrol.h"
-#include "engine/ratecontrol.h"
+#include "controlobjectslave.h"
+#include "controlpotmeter.h"
+#include "controlpushbutton.h"
 #include "engine/bpmcontrol.h"
-#include "engine/keycontrol.h"
-#include "engine/sync/synccontrol.h"
-#include "engine/quantizecontrol.h"
-#include "visualplayposition.h"
-#include "engine/cuecontrol.h"
 #include "engine/clockcontrol.h"
+#include "engine/cuecontrol.h"
+#include "engine/enginebufferscalelinear.h"
+#include "engine/enginebufferscalerubberband.h"
+#include "engine/enginebufferscalest.h"
+#include "engine/enginechannel.h"
+#include "engine/enginecontrol.h"
 #include "engine/enginemaster.h"
-#include "util/timer.h"
-#include "util/math.h"
-#include "util/defs.h"
+#include "engine/engineworkerscheduler.h"
+#include "engine/keycontrol.h"
+#include "engine/loopingcontrol.h"
+#include "engine/quantizecontrol.h"
+#include "engine/ratecontrol.h"
+#include "engine/readaheadmanager.h"
+#include "engine/sync/enginesync.h"
+#include "engine/sync/synccontrol.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
-#include "controlobjectslave.h"
-#include "util/compatibility.h"
+#include "trackinfoobject.h"
 #include "util/assert.h"
+#include "util/compatibility.h"
+#include "util/defs.h"
+#include "util/math.h"
+#include "util/sample.h"
+#include "util/timer.h"
+#include "visualplayposition.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
 #endif
-
-#include "trackinfoobject.h"
 
 const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 const int kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
@@ -286,7 +268,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
-    //m_iRampIter = 0;
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
     df.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -494,14 +475,16 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     verifyPlay(); // verify or update play button and indicator
 }
 
-QString EngineBuffer::getGroup()
-{
+QString EngineBuffer::getGroup() {
     return m_group;
 }
 
-double EngineBuffer::getSpeed()
-{
+double EngineBuffer::getSpeed() {
     return m_speed_old;
+}
+
+bool EngineBuffer::getScratching() {
+    return m_scratching_old;
 }
 
 // WARNING: Always called from the EngineWorker thread pool

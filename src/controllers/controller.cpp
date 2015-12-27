@@ -47,7 +47,7 @@ void Controller::stopEngine() {
     m_pEngine = NULL;
 }
 
-void Controller::applyPreset(QList<QString> scriptPaths) {
+bool Controller::applyPreset(QList<QString> scriptPaths, bool initializeScripts) {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
@@ -55,16 +55,19 @@ void Controller::applyPreset(QList<QString> scriptPaths) {
     // Load the script code into the engine
     if (m_pEngine == NULL) {
         qWarning() << "Controller::applyPreset(): No engine exists!";
-        return;
+        return false;
     }
 
     if (pPreset->scripts.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
-        return;
+        return true;
     }
 
-    m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
-    m_pEngine->initializeScripts(pPreset->scripts);
+    bool success = m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
+    if (initializeScripts) {
+        m_pEngine->initializeScripts(pPreset->scripts);
+    }
+    return success;
 }
 
 void Controller::startLearning() {
@@ -89,7 +92,7 @@ void Controller::send(QList<int> data, unsigned int length) {
     send(msg);
 }
 
-void Controller::receive(const QByteArray data) {
+void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
     if (m_pEngine == NULL) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
@@ -100,7 +103,8 @@ void Controller::receive(const QByteArray data) {
     int length = data.size();
     if (ControllerDebug::enabled()) {
         // Formatted packet display
-        QString message = QString("%1: %2 bytes:\n").arg(m_sDeviceName).arg(length);
+        QString message = QString("%1: t:%2, %3 bytes:\n")
+                .arg(m_sDeviceName).arg(timestamp.formatMillisWithUnit()).arg(length);
         for(int i=0; i<length; i++) {
             QString spacer=" ";
             if ((i+1) % 4 == 0) spacer="  ";

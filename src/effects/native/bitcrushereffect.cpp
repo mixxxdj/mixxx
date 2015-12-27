@@ -1,5 +1,6 @@
 #include "effects/native/bitcrushereffect.h"
-#include "sampleutil.h"
+
+#include "util/sample.h"
 
 // static
 QString BitCrusherEffect::getId() {

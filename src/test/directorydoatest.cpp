@@ -151,7 +151,7 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
             test2 + "/d", SecurityTokenPointer(), false), false);
     trackDAO.addTracksFinish(false);
 
-    QSet<int> ids = directoryDao.relocateDirectory(testdir, testnew);
+    QSet<TrackId> ids = directoryDao.relocateDirectory(testdir, testnew);
     EXPECT_EQ(2, ids.size());
 
     QStringList dirs = directoryDao.getDirs();

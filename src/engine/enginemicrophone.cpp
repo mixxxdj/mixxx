@@ -1,16 +1,15 @@
 // enginemicrophone.cpp
 // created 3/16/2011 by RJ Ryan (rryan@mit.edu)
 
-#include <QtDebug>
-
 #include "engine/enginemicrophone.h"
 
+#include <QtDebug>
+
 #include "configobject.h"
-#include "sampleutil.h"
+#include "controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
-#include "controlaudiotaperpot.h"
-
+#include "util/sample.h"
 
 EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
                                    EffectsManager* pEffectsManager)
