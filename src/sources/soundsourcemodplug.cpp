@@ -2,7 +2,7 @@
 
 #include "metadata/trackmetadata.h"
 #include "util/timer.h"
-#include "sampleutil.h"
+#include "util/sample.h"
 
 #include <QFile>
 

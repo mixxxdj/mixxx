@@ -1,4 +1,4 @@
-#include "circularsamplebuffer.h"
+#include "util/circularsamplebuffer.h"
 
 CircularSampleBuffer::CircularSampleBuffer(SINT capacity)
     : SingularSampleBuffer(capacity),

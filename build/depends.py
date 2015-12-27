@@ -503,12 +503,12 @@ class FpClassify(Dependence):
         return build.toolchain_is_gnu
 
     # This is a wrapper arround the fpclassify function that pevents inlining
-    # It is compiled without optimization and allows to use these function 
-    # from -ffast-math optimized objects 
+    # It is compiled without optimization and allows to use these function
+    # from -ffast-math optimized objects
     def sources(self, build):
         # add this file without fast-math flag
         env = build.env.Clone()
-        if '-ffast-math' in env['CCFLAGS']: 
+        if '-ffast-math' in env['CCFLAGS']:
                 env['CCFLAGS'].remove('-ffast-math')
         return env.Object('util/fpclassify.cpp')
 
@@ -928,11 +928,6 @@ class MixxxCore(Feature):
                    "skin/pixmapsource.cpp",
                    "skin/launchimage.cpp",
 
-                   "sampleutil.cpp",
-                   "samplebuffer.cpp",
-                   "singularsamplebuffer.cpp",
-                   "circularsamplebuffer.cpp",
-
                    "trackinfoobject.cpp",
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
@@ -986,6 +981,10 @@ class MixxxCore(Feature):
                    "util/console.cpp",
                    "util/dbid.cpp",
                    "util/replaygain.cpp",
+                   "util/sample.cpp",
+                   "util/samplebuffer.cpp",
+                   "util/singularsamplebuffer.cpp",
+                   "util/circularsamplebuffer.cpp",
 
                    '#res/mixxx.qrc'
                    ]

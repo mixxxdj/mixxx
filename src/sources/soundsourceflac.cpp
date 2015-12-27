@@ -1,7 +1,7 @@
 #include "sources/soundsourceflac.h"
 
-#include "sampleutil.h"
 #include "util/math.h"
+#include "util/sample.h"
 
 namespace Mixxx {
 

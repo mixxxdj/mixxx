@@ -1,6 +1,6 @@
-#include "samplebuffer.h"
+#include "util/samplebuffer.h"
 
-#include "sampleutil.h"
+#include "util/sample.h"
 
 SampleBuffer::SampleBuffer(SINT size)
         : m_data(SampleUtil::alloc(size)),

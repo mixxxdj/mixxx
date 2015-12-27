@@ -1,9 +1,9 @@
-#include "circularsamplebuffer.h"
-#include "test/mixxxtest.h"
-
 #include <gmock/gmock.h>
 
 #include <QtDebug>
+
+#include "test/mixxxtest.h"
+#include "util/circularsamplebuffer.h"
 
 class CircularSampleBufferTest: public MixxxTest {
 public:

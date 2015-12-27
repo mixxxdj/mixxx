@@ -1,6 +1,6 @@
-#include "singularsamplebuffer.h"
+#include "util/singularsamplebuffer.h"
 
-#include "sampleutil.h"
+#include "util/sample.h"
 
 #define DEBUG_ASSERT_CLASS_INVARIANT_SingularSampleBuffer \
     DEBUG_ASSERT(0 <= m_headOffset); \

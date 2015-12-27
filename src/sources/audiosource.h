@@ -4,7 +4,7 @@
 #include "audiosignal.h"
 #include "urlresource.h"
 
-#include "samplebuffer.h"
+#include "util/samplebuffer.h"
 
 #include "util/defs.h" // Result
 
