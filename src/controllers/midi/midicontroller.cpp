@@ -161,7 +161,7 @@ void MidiController::destroyOutputHandlers() {
 }
 
 QString formatMidiMessage(unsigned char status, unsigned char control, unsigned char value,
-                          unsigned char channel, unsigned char opCode, int32_t timestamp) {
+                          unsigned char channel, unsigned char opCode, int timestamp) {
 
     QString prefix = QString("MIDI t:%2 ms ").arg(QString::number(timestamp));
     //QString prefix = QString("MIDI ");
