@@ -187,8 +187,8 @@ TEST_F(PortMidiControllerTest, WriteSysex_Malformed) {
 
     EXPECT_CALL(*m_mockOutput, isOpen())
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*m_mockOutput, writeSysEx(ByteArrayEquals(sysex)))
-            .WillOnce(Return(pmBadData));
+    EXPECT_CALL(*m_mockOutput, writeSysEx(_))
+            .Times(0);
     m_pController->sendSysexMsg(sysex, sysex.length());
 };
 
@@ -304,15 +304,10 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysEx) {
     pollDevice();
 };
 
-TEST_F(PortMidiControllerTest, Poll_Read_SysExWithRealtime_IncorrectBehavior) {
-    // NOTE(rryan): This test is to document incorrect behavior. The PortMIDI
-    // documentation says that realtime messages that occur during a sysex
-    // message will always be a standalone PmEvent with a realtime status
-    // byte. Our code currently treats any realtime status byte at any position
-    // in a sysex message word as a realtime message. Also, if a realtime status
-    // byte occurs in a message, all subsequent bytes in the same message are
-    // ignored.
-
+TEST_F(PortMidiControllerTest,
+       Poll_Read_SysExWithRealtime_CoincidentalRealtimeByte) {
+    // We used to incorrectly treat an 0xF8 occuring in a SysEx message as a
+    // realtime message. This test verifies that we do not do this anymore.
     std::vector<PmEvent> messages;
     messages.push_back(MakeEvent(0x332211F0, 0x0));
     messages.push_back(MakeEvent(0x6655F844, 0x0));
@@ -325,6 +320,8 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExWithRealtime_IncorrectBehavior) {
     sysex.append(0x33);
     sysex.append(0x44);
     sysex.append(0xF8);
+    sysex.append(0x55);
+    sysex.append(0x66);
     sysex.append(0x77);
     sysex.append(0xF7);
 
@@ -338,9 +335,6 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExWithRealtime_IncorrectBehavior) {
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
                             Return(messages.size())));
-    EXPECT_CALL(*m_pController, receive(0xF8, 0x00, 0x00, _))
-            .Times(2)
-            .InSequence(read);
     EXPECT_CALL(*m_pController, receive(sysex, _))
             .InSequence(read);
 
