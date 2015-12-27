@@ -1,10 +1,10 @@
 #ifndef MIXXX_METADATASOURCE_H
 #define MIXXX_METADATASOURCE_H
 
-#include "metadata/trackmetadata.h"
-#include "util/defs.h" // Result
-
 #include <QImage>
+
+#include "metadata/trackmetadata.h"
+#include "util/result.h"
 
 namespace Mixxx {
 
