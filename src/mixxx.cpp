@@ -126,7 +126,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pUpgrader = new Upgrade;
     m_pConfig = m_pUpgrader->versionUpgrade(args.getSettingsPath());
 
-    registerConfigPath(m_pConfig->getSettingsPath() + "/Mixxx.cfg");
+    registerConfigPath(m_pConfig->getSettingsPath() + "/mixxx_qsettings_temp.cfg");
     MixxxSettings mixxx_settings;
     // I need to explicitely ask for a reference because QSettings doesn't
     // support move in Qt4
