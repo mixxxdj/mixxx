@@ -13,7 +13,7 @@
 namespace Mixxx {
 
 // forward declaration(s)
-struct AudioSourceConfig;
+class AudioSourceConfig;
 
 // Common interface and base class for audio sources.
 //
@@ -32,7 +32,7 @@ struct AudioSourceConfig;
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
 class AudioSource: public UrlResource, public AudioSignal {
-public:
+  public:
     static const SampleLayout kSampleLayout = SampleLayout::Interleaved;
 
     // Returns the total number of sample frames.
@@ -184,7 +184,7 @@ public:
             SINT* pMaxFrameIndexOfInterval,
             SINT maxFrameIndexOfAudioSource);
 
-protected:
+  protected:
     explicit AudioSource(const QUrl& url);
 
     inline static bool isValidFrameCount(SINT frameCount) {
@@ -198,8 +198,8 @@ protected:
             SINT numberOfFrames,
             bool readStereoSamples = false) const;
 
-private:
-    friend struct AudioSourceConfig;
+  private:
+    friend class AudioSourceConfig;
 
     static const SINT kFrameCountZero = 0;
     static const SINT kFrameCountDefault = kFrameCountZero;
@@ -216,8 +216,8 @@ private:
 };
 
 // Parameters for configuring audio sources
-class AudioSourceConfig: public AudioSignal {
-public:
+class AudioSourceConfig : public AudioSignal {
+  public:
     AudioSourceConfig()
         : AudioSignal(AudioSource::kSampleLayout) {
     }
