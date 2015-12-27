@@ -9,7 +9,6 @@
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
 class SoundManager;
-class ControlObjectSlave;
 class EngineNetworkStream;
 
 class SoundDeviceNetwork : public SoundDevice {
@@ -36,18 +35,7 @@ class SoundDeviceNetwork : public SoundDevice {
     FIFO<CSAMPLE>* m_inputFifo;
     bool m_outputDrift;
     bool m_inputDrift;
-
-    // A string describing the last PortAudio error to occur.
-    QString m_lastError;
-    // Whether we have set the thread priority to realtime or not.
-    bool m_bSetThreadPriority;
-    ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
-    ControlObjectSlave* m_pMasterAudioLatencyUsage;
-    ControlObjectSlave* m_pMasterAudioLatencyOverload;
-    int m_underflowUpdateCount;
     static volatile int m_underflowHappend;
-    qint64 m_nsInAudioCb;
-    int m_framesSinceAudioLatencyUsageUpdate;
 };
 
 #endif // SOUNDDEVICENETWORK_H
