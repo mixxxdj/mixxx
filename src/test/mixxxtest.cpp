@@ -15,8 +15,6 @@ QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
 MixxxTest::ApplicationScope::ApplicationScope(int argc, char** argv) {
     DEBUG_ASSERT(!s_pApplication);
 
-    testing::InitGoogleTest(&argc, argv);
-
 #ifdef __FFMPEGFILE__
     av_register_all();
     avcodec_register_all();
@@ -88,4 +86,3 @@ MixxxTest::~MixxxTest() {
     //     switch to use QDir::removeRecursively() once we switched to Qt5.
     QDir_removeRecursively(m_testDataDir);
 }
-

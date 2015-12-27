@@ -22,7 +22,7 @@ class OpenGLES(Feature):
           		return
 		if build.flags['opengles']:
 			build.env.Append(CPPDEFINES='__OPENGLES__')
-	
+
 	def sources(self, build):
 		return []
 
@@ -773,6 +773,7 @@ class TestSuite(Feature):
 
         env = test_env
         SCons.Export('env')
+        SCons.Export('build')
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
@@ -782,6 +783,12 @@ class TestSuite(Feature):
         test_env['LIB_OUTPUT'] = '#/lib/gmock-1.7.0/lib'
 
         env.SConscript(env.File('SConscript', gmock_dir))
+
+        # Build the benchmark library
+        test_env.Append(CPPPATH="#lib/benchmark/include")
+        benchmark_dir = test_env.Dir("#lib/benchmark")
+        test_env['LIB_OUTPUT'] = '#/lib/benchmark/lib'
+        env.SConscript(env.File('SConscript', benchmark_dir))
 
         return []
 
