@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "util/replaygain.h"
+#include "track/replaygain.h"
 
 #include <QtDebug>
 

@@ -936,6 +936,7 @@ class MixxxCore(Feature):
                    "track/keyfactory.cpp",
                    "track/keyutils.cpp",
                    "track/playcounter.cpp",
+                   "track/replaygain.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
@@ -980,7 +981,6 @@ class MixxxCore(Feature):
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
                    "util/dbid.cpp",
-                   "util/replaygain.cpp",
                    "util/sample.cpp",
                    "util/samplebuffer.cpp",
                    "util/singularsamplebuffer.cpp",

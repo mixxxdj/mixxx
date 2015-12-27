@@ -17,7 +17,7 @@ wv_sources = [
     "sources/audiosource.cpp",
     "metadata/trackmetadata.cpp",
     "metadata/trackmetadatataglib.cpp",
-    "util/replaygain.cpp"
+    "track/replaygain.cpp"
 ]
 
 

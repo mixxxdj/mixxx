@@ -12,11 +12,11 @@
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
+#include "track/replaygain.h"
 #include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/trackid.h"
-#include "util/replaygain.h"
 #include "track/playcounter.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
