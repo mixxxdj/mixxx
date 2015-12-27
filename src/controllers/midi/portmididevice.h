@@ -59,7 +59,6 @@ class PortMidiDevice {
         return Pm_Read(m_pStream, buffer, length);
     }
 
-
     virtual PmError writeShort(int32_t message) {
         return Pm_WriteShort(m_pStream, 0, message);
     }
@@ -73,6 +72,5 @@ class PortMidiDevice {
     int m_deviceIndex;
     PortMidiStream* m_pStream;
 };
-
 
 #endif /* CONTROLLERS_MIDI_PORTMIDIDEVICE */
