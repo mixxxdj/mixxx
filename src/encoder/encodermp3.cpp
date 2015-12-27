@@ -147,7 +147,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
      * Otherwise, the lame_enc.dll, libmp3lame.so or libmp3lame.mylib do not comply with the official header lame.h
      * Indicates a modified lame version
      *
-     * Should not happend on Linux, but many lame binaries for Windows are modified.
+     * Should not happen on Linux, but many lame binaries for Windows are modified.
      */
     if(!lame_init ||
        !lame_set_num_channels ||

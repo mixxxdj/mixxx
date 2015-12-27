@@ -35,7 +35,7 @@ class SoundDeviceNetwork : public SoundDevice {
     FIFO<CSAMPLE>* m_inputFifo;
     bool m_outputDrift;
     bool m_inputDrift;
-    static volatile int m_underflowHappend;
+    static volatile int m_underflowHappened;
 };
 
 #endif // SOUNDDEVICENETWORK_H

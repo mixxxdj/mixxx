@@ -96,7 +96,7 @@ class SoundDevicePortAudio : public SoundDevice {
     ControlObjectSlave* m_pMasterAudioLatencyUsage;
     ControlObjectSlave* m_pMasterAudioLatencyOverload;
     int m_underflowUpdateCount;
-    static volatile int m_underflowHappend;
+    static volatile int m_underflowHappened;
     qint64 m_nsInAudioCb;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;

@@ -9,7 +9,7 @@
 #include "util/sample.h"
 
 // static
-volatile int SoundDeviceNetwork::m_underflowHappend = 0;
+volatile int SoundDeviceNetwork::m_underflowHappened = 0;
 
 SoundDeviceNetwork::SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
                                        SoundManager *sm,
@@ -154,7 +154,7 @@ void SoundDeviceNetwork::readProcess() {
     int readCount = inChunkSize;
     if (inChunkSize > readAvailable) {
         readCount = readAvailable;
-        m_underflowHappend = 1;
+        m_underflowHappened = 1;
         //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
     }
     if (readCount) {
@@ -193,7 +193,7 @@ void SoundDeviceNetwork::writeProcess() {
     int writeCount = outChunkSize;
     if (outChunkSize > writeAvailable) {
         writeCount = writeAvailable;
-        m_underflowHappend = 1;
+        m_underflowHappened = 1;
         //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
     }
     //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize;
@@ -233,7 +233,7 @@ void SoundDeviceNetwork::writeProcess() {
             //qDebug() << "SoundDeviceNetwork::writeProcess() Buffer empty";
             // catch up by filling buffer until we are synced
             m_pNetworkStream->writeSilence(writeAvailable - copyCount);
-            m_underflowHappend = 1;
+            m_underflowHappened = 1;
         } else if (writeAvailable > readAvailable + outChunkSize / 2) {
             // try to keep PAs buffer filled up to 0.5 chunks
             if (m_outputDrift) {
