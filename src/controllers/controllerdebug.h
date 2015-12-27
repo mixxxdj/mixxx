@@ -2,7 +2,8 @@
 #define CONTROLLERDEBUG_H
 
 #include <QDebug>
-#include <QApplication>
+
+#include "util/cmdlineargs.h"
 
 class ControllerDebug {
   public:
@@ -22,9 +23,7 @@ class ControllerDebug {
   private:
     ControllerDebug() {
         // Get --controllerDebug command line option
-        QStringList commandLineArgs = QApplication::arguments();
-        m_enabled = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive) ||
-                commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
+        m_enabled = CmdlineArgs::Instance().getMidiDebug();
     }
 
     // Specifies whether or not we should dump incoming data to the console at
