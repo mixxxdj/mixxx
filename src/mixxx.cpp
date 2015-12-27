@@ -131,7 +131,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // I need to explicitely ask for a reference because QSettings doesn't
     // support move in Qt4
     auto& settings = mixxx_settings.getQSettings();
-    settings.setFallbacksEnabled(false);
 
     ControlDoublePrivate::setUserConfig(m_pConfig);
 
