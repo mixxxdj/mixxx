@@ -9,7 +9,7 @@
 #include "controlobject.h"
 #include "soundsourceproxy.h"
 #include "library/coverartutils.h"
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"

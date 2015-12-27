@@ -2,7 +2,7 @@
 
 #include <QtDebug>
 
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "util/samplebuffer.h"

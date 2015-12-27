@@ -711,10 +711,6 @@ class MixxxCore(Feature):
                    "sources/soundsource.cpp",
                    "sources/audiosource.cpp",
 
-                   "metadata/trackmetadata.cpp",
-                   "metadata/trackmetadatataglib.cpp",
-                   "metadata/audiotagger.cpp",
-
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
                    "widget/wbasewidget.cpp",
@@ -937,6 +933,9 @@ class MixxxCore(Feature):
                    "track/keyutils.cpp",
                    "track/playcounter.cpp",
                    "track/replaygain.cpp",
+                   "track/trackmetadata.cpp",
+                   "track/trackmetadatataglib.cpp",
+                   "track/audiotagger.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",

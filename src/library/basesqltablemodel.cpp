@@ -16,7 +16,7 @@
 #include "playermanager.h"
 #include "playerinfo.h"
 #include "track/keyutils.h"
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "util/time.h"
 #include "util/dnd.h"
 #include "util/assert.h"

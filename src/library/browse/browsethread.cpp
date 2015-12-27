@@ -9,7 +9,7 @@
 
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "util/time.h"
 #include "util/trace.h"
 

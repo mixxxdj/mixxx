@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "metadata/trackmetadatataglib.h"
+#include "track/trackmetadatataglib.h"
 
 #include <QtDebug>
 

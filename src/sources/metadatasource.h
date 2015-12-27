@@ -3,7 +3,7 @@
 
 #include <QImage>
 
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "util/result.h"
 
 namespace Mixxx {

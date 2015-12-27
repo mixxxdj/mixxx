@@ -3,7 +3,7 @@
 
 #include <QFileInfo>
 
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "util/result.h"
 #include "util/sandbox.h"
 

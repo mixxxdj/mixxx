@@ -11,7 +11,7 @@
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
-#include "metadata/trackmetadatataglib.h"
+#include "track/trackmetadatataglib.h"
 #include "util/dnd.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
