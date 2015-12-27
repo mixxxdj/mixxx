@@ -770,7 +770,6 @@ class MixxxCore(Feature):
                    "musicbrainz/chromaprinter.cpp",
                    "musicbrainz/musicbrainzclient.cpp",
 
-                   "rotary.cpp",
                    "widget/wtracktableview.cpp",
                    "widget/wtracktableviewheader.cpp",
                    "widget/wlibrarysidebar.cpp",
@@ -985,6 +984,7 @@ class MixxxCore(Feature):
                    "util/samplebuffer.cpp",
                    "util/singularsamplebuffer.cpp",
                    "util/circularsamplebuffer.cpp",
+                   "util/rotary.cpp",
 
                    '#res/mixxx.qrc'
                    ]
