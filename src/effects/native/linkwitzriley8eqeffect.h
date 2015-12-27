@@ -9,7 +9,7 @@
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterlinkwitzriley8.h"
-#include "util.h"
+#include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"

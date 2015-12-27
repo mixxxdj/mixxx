@@ -5,9 +5,9 @@
 #include <QString>
 #include <QtSql>
 
-#include "util.h"
-#include "trackinfoobject.h"
 #include "library/searchquery.h"
+#include "trackinfoobject.h"
+#include "util/class.h"
 
 class SearchQueryParser {
   public:

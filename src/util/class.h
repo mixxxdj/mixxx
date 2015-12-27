@@ -1,5 +1,5 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef MIXXX_UTIL_CLASS_H
+#define MIXXX_UTIL_CLASS_H
 
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class
@@ -7,4 +7,4 @@
   TypeName(const TypeName&);               \
   void operator=(const TypeName&)
 
-#endif /* UTIL_H */
+#endif /* MIXXX_UTIL_CLASS_H */

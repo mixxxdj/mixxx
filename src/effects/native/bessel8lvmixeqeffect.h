@@ -12,7 +12,7 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbessel8.h"
 #include "engine/enginefilterdelay.h"
-#include "util.h"
+#include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"

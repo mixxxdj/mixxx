@@ -7,11 +7,10 @@
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterpansingle.h"
-#include "util.h"
+#include "util/class.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
-
 
 // This class provides a float value that cannot be increased or decreased
 // by more than a given value to avoid clicks.
