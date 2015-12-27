@@ -1,7 +1,7 @@
-#ifndef SINGULARSAMPLEBUFFER_H
-#define SINGULARSAMPLEBUFFER_H
+#ifndef MIXXX_UTIL_SINGULARSAMPLEBUFFER_H
+#define MIXXX_UTIL_SINGULARSAMPLEBUFFER_H
 
-#include "samplebuffer.h"
+#include "util/samplebuffer.h"
 
 // A singular FIFO/LIFO sample buffer with fixed capacity and range
 // checking.
@@ -14,7 +14,7 @@
 class SingularSampleBuffer {
     Q_DISABLE_COPY(SingularSampleBuffer);
 
-public:
+  public:
     SingularSampleBuffer();
     explicit SingularSampleBuffer(SINT capacity);
     virtual ~SingularSampleBuffer() {}
@@ -71,10 +71,10 @@ public:
     // valid for reading as long as no modifying member function is called!
     SampleBuffer::ReadableChunk readFromHead(SINT size);
 
-protected:
+  protected:
     void trim(SampleBuffer& secondaryBuffer);
 
-private:
+  private:
     void swapBuffers(SampleBuffer& secondaryBuffer);
 
     void resetOffsets() {
@@ -87,4 +87,4 @@ private:
     SINT m_tailOffset;
 };
 
-#endif // SINGULARSAMPLEBUFFER_H
+#endif // MIXXX_UTIL_SINGULARSAMPLEBUFFER_H

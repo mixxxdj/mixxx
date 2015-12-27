@@ -12,9 +12,9 @@
 #include <QXmlStreamReader>
 #include <QUrl>
 
-#include "acoustidclient.h"
-#include "gzip.h"
-#include "network.h"
+#include "musicbrainz/acoustidclient.h"
+#include "musicbrainz/gzip.h"
+#include "musicbrainz/network.h"
 
 // see API-KEY site here http://acoustid.org/application/496
 // I registered the KEY for version 1.12 -- kain88 (may 2013)

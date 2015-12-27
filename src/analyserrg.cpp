@@ -1,10 +1,10 @@
 #include <QtDebug>
 #include <replaygain.h>
 
-#include "sampleutil.h"
-#include "trackinfoobject.h"
 #include "analyserrg.h"
+#include "trackinfoobject.h"
 #include "util/math.h"
+#include "util/sample.h"
 
 AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
     m_pConfigReplayGain = _config;

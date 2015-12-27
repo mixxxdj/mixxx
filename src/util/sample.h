@@ -1,8 +1,5 @@
-// sampleutil.h
-// Created 10/5/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef SAMPLEUTIL_H
-#define SAMPLEUTIL_H
+#ifndef MIXXX_UTIL_SAMPLE_H
+#define MIXXX_UTIL_SAMPLE_H
 
 #include <algorithm>
 #include <cstring> // memset
@@ -256,9 +253,9 @@ class SampleUtil {
 
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
     // etc.)
-#include "sampleutil_autogen.h"
+#include "util/sample_autogen.h"
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(SampleUtil::CLIP_STATUS);
 
-#endif /* SAMPLEUTIL_H */
+#endif /* MIXXX_UTIL_SAMPLE_H */

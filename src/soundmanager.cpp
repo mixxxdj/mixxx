@@ -14,6 +14,8 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "soundmanager.h"
+
 #include <QtDebug>
 #include <cstring> // for memcpy and strcmp
 
@@ -22,19 +24,19 @@
 #include <portaudio.h>
 #endif // ifdef __PORTAUDIO__
 
-#include "soundmanager.h"
-#include "sounddevice.h"
-#include "sounddeviceportaudio.h"
-#include "sounddevicenetwork.h"
-#include "engine/enginemaster.h"
-#include "engine/enginebuffer.h"
-#include "soundmanagerutil.h"
+
 #include "controlobject.h"
-#include "vinylcontrol/defs_vinylcontrol.h"
-#include "sampleutil.h"
-#include "util/cmdlineargs.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
+#include "sounddevice.h"
+#include "sounddevicenetwork.h"
+#include "sounddeviceportaudio.h"
+#include "soundmanagerutil.h"
+#include "util/cmdlineargs.h"
+#include "util/sample.h"
 #include "util/sleep.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 #ifdef __PORTAUDIO__
 typedef PaError (*SetJackClientName)(const char *name);

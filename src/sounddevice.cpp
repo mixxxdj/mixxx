@@ -15,15 +15,15 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "sounddevice.h"
+
 #include <QtDebug>
 #include <cstring> // for memcpy and strcmp
 
-#include "sounddevice.h"
-
-#include "soundmanagerutil.h"
 #include "soundmanager.h"
+#include "soundmanagerutil.h"
 #include "util/debug.h"
-#include "sampleutil.h"
+#include "util/sample.h"
 
 SoundDevice::SoundDevice(ConfigObject<ConfigValue>* config, SoundManager* sm)
         : m_pConfig(config),

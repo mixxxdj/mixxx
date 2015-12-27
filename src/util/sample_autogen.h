@@ -1,5 +1,5 @@
-#ifndef SAMPLEUTILAUTOGEN_H
-#define SAMPLEUTILAUTOGEN_H
+#ifndef MIXXX_UTIL_SAMPLEAUTOGEN_H
+#define MIXXX_UTIL_SAMPLEAUTOGEN_H
 ////////////////////////////////////////////////////////
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //
 // SEE scripts/generate_sample_functions.py           //
@@ -8836,4 +8836,4 @@ static inline void copy32WithRampingGain(CSAMPLE* _RESTRICT pDest,
                            pSrc31[i * 2 + 1] * gain31;
     }
 }
-#endif /* SAMPLEUTILAUTOGEN_H */
+#endif /* MIXXX_UTIL_SAMPLEAUTOGEN_H */

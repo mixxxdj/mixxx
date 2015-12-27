@@ -13,9 +13,9 @@
 #include <QVector>
 #include <vamp-hostsdk/vamp-hostsdk.h>
 
-#include "vamp/vamppluginloader.h"
-#include "sampleutil.h"
 #include "configobject.h"
+#include "util/sample.h"
+#include "vamp/vamppluginloader.h"
 
 class VampAnalyser {
   public:

@@ -1,12 +1,6 @@
 #ifndef ANALYSERQUEUE_H
 #define ANALYSERQUEUE_H
 
-#include "configobject.h"
-#include "analyser.h"
-#include "trackinfoobject.h"
-#include "sources/audiosource.h"
-#include "samplebuffer.h"
-
 #include <QList>
 #include <QThread>
 #include <QQueue>
@@ -14,6 +8,12 @@
 #include <QSemaphore>
 
 #include <vector>
+
+#include "analyser.h"
+#include "configobject.h"
+#include "sources/audiosource.h"
+#include "trackinfoobject.h"
+#include "util/samplebuffer.h"
 
 class TrackCollection;
 

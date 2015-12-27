@@ -1,9 +1,9 @@
-#ifndef SAMPLEBUFFER_H
-#define SAMPLEBUFFER_H
-
-#include "util/types.h"
+#ifndef MIXXX_UTIL_SAMPLEBUFFER_H
+#define MIXXX_UTIL_SAMPLEBUFFER_H
 
 #include <algorithm> // std::swap
+
+#include "util/types.h"
 
 // A sample buffer with properly aligned memory to enable SSE optimizations.
 // After construction the content of the buffer is uninitialized. No resize
@@ -150,4 +150,4 @@ inline void swap(SampleBuffer& lhs, SampleBuffer& rhs) {
 
 }  // namespace std
 
-#endif // SAMPLEBUFFER_H
+#endif // MIXXX_UTIL_SAMPLEBUFFER_H

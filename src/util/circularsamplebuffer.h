@@ -1,7 +1,7 @@
-#ifndef CIRCULARSAMPLEBUFFER_H
-#define CIRCULARSAMPLEBUFFER_H
+#ifndef MIXXX_UTIL_CIRCULARSAMPLEBUFFER_H
+#define MIXXX_UTIL_CIRCULARSAMPLEBUFFER_H
 
-#include "singularsamplebuffer.h"
+#include "util/singularsamplebuffer.h"
 
 // A circular FIFO/LIFO sample buffer with fixed capacity, range checking,
 // and double-buffering.
@@ -14,7 +14,7 @@
 // This class is not thread-safe and not intended to be used from multiple
 // threads!
 class CircularSampleBuffer: public SingularSampleBuffer {
-public:
+  public:
     CircularSampleBuffer() {}
     explicit CircularSampleBuffer(SINT capacity);
 
@@ -28,8 +28,8 @@ public:
         SingularSampleBuffer::trim(m_secondaryBuffer);
     }
 
-private:
+  private:
     SampleBuffer m_secondaryBuffer;
 };
 
-#endif // CIRCULARSAMPLEBUFFER_H
+#endif // MIXXX_UTIL_CIRCULARSAMPLEBUFFER_H

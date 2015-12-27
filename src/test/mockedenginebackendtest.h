@@ -6,8 +6,6 @@
 
 #include <QtDebug>
 
-#include "util/types.h"
-#include "util/defs.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include "deck.h"
@@ -17,13 +15,14 @@
 #include "engine/enginechannel.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
-#include "engine/sync/enginesync.h"
 #include "engine/ratecontrol.h"
+#include "engine/sync/enginesync.h"
 #include "previewdeck.h"
 #include "sampler.h"
-#include "sampleutil.h"
-
-#include "mixxxtest.h"
+#include "test/mixxxtest.h"
+#include "util/defs.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 using ::testing::Return;
 using ::testing::_;

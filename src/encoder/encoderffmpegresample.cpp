@@ -17,7 +17,8 @@
  ***************************************************************************/
 
 #include "encoder/encoderffmpegresample.h"
-#include "sampleutil.h"
+
+#include "util/sample.h"
 
 EncoderFfmpegResample::EncoderFfmpegResample(AVCodecContext *codecCtx) {
     m_pCodecCtx = codecCtx;
@@ -151,4 +152,3 @@ unsigned int EncoderFfmpegResample::reSampleMixxx(AVFrame *inframe, quint8 **out
     outbuffer[0] = l_ptrBuf;
     return l_lOutReadBytes;
 }
-

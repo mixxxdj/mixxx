@@ -3,9 +3,9 @@
 
 #include <QColor>
 
-#include "util.h"
-#include "waveform/renderers/waveformrendererabstract.h"
 #include "skin/skincontext.h"
+#include "util/class.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 
 class WaveformRendererPreroll : public WaveformRendererAbstract {
   public:
