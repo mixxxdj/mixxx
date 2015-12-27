@@ -2,7 +2,6 @@
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
-#include "transposeproxymodel.h"
 #include "widget/wanalysislibrarytableview.h"
 #include "library/trackcollection.h"
 #include "dlganalysis.h"
