@@ -23,6 +23,7 @@
 #include "soundmanager.h"
 #include "soundmanagerutil.h"
 #include "util/debug.h"
+#include "util/defs.h"
 #include "util/sample.h"
 
 SoundDevice::SoundDevice(ConfigObject<ConfigValue>* config, SoundManager* sm)

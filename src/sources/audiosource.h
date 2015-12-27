@@ -1,14 +1,12 @@
 #ifndef MIXXX_AUDIOSOURCE_H
 #define MIXXX_AUDIOSOURCE_H
 
-#include "audiosignal.h"
-#include "urlresource.h"
-
-#include "util/samplebuffer.h"
-
-#include "util/defs.h" // Result
-
 #include <QSharedPointer>
+
+#include "audiosignal.h"
+#include "sources/urlresource.h"
+#include "util/result.h"
+#include "util/samplebuffer.h"
 
 namespace Mixxx {
 

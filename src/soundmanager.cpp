@@ -24,7 +24,6 @@
 #include <portaudio.h>
 #endif // ifdef __PORTAUDIO__
 
-
 #include "controlobject.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
@@ -34,6 +33,7 @@
 #include "sounddeviceportaudio.h"
 #include "soundmanagerutil.h"
 #include "util/cmdlineargs.h"
+#include "util/defs.h"
 #include "util/sample.h"
 #include "util/sleep.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
