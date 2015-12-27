@@ -149,6 +149,9 @@ TEST_F(PortMidiControllerTest, OpenClose) {
 };
 
 TEST_F(PortMidiControllerTest, WriteShort) {
+    // Note that Pm_WriteShort takes an int32_t formatted as 0x00B2B1SS where SS
+    // is the status byte, B1 is the first message byte and B2 is the second
+    // message byte.
     Sequence output;
     EXPECT_CALL(*m_mockOutput, isOpen())
             .WillRepeatedly(Return(true));
