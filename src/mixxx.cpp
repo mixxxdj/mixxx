@@ -127,10 +127,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pConfig = m_pUpgrader->versionUpgrade(args.getSettingsPath());
 
     registerConfigPath(m_pConfig->getSettingsPath() + "/mixxx_qsettings_temp.cfg");
-    MixxxSettings mixxx_settings;
+    UserSettings user_settings;
     // I need to explicitely ask for a reference because QSettings doesn't
     // support move in Qt4
-    auto& settings = mixxx_settings.getQSettings();
+    auto& qsettings = user_settings.getQSettings();
 
     ControlDoublePrivate::setUserConfig(m_pConfig);
 

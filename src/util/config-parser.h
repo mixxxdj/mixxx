@@ -7,21 +7,21 @@
 bool readConfig(QIODevice& device, QSettings::SettingsMap& map);
 bool writeConfig(QIODevice& device, const QSettings::SettingsMap& map);
 
-class MixxxSettings {
+class UserSettings {
   public:
-    mixxxsettings() : m_settings(m_config_fname, m_format) {
+    UserSettings() : m_settings(m_config_fname, m_format) {
         if (m_config_fname == "NONE") {
             // throw
         }
-        m_settings.setfallbacksenabled(false);
+        m_settings.setFallbacksEnabled(false);
     }
 
     // prevent moving
-    MixxxSettings(MixxxSettings&& rhs) = delete;
-    MixxxSettings& operator=(MixxxSettings&& rhs) = delete;
+    UserSettings(UserSettings&& rhs) = delete;
+    UserSettings& operator=(UserSettings&& rhs) = delete;
     // prevent copying
-    MixxxSettings(const MixxxSettings& rhs) = delete;
-    MixxxSettings& operator=(const MixxxSettings& rhs) = delete;
+    UserSettings(const UserSettings& rhs) = delete;
+    UserSettings& operator=(const UserSettings& rhs) = delete;
 
     QSettings& getQSettings() { return m_settings; }
 
@@ -33,6 +33,5 @@ class MixxxSettings {
 };
 
 void registerConfigPath(const QString& config_path);
-void userSettings();
 
 #endif  // CONFIG_PARSER_H
