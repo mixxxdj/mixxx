@@ -1,26 +1,26 @@
 /*
- * vampanalyser.h
+ * vampanalyzer.h
  *  Created on: 14/mar/2011
  *      Author: Vittorio Colao
  *      Original ideas taken from Audacity VampEffect class from Chris Cannam.
  */
 
-#ifndef VAMPANALYSER_H_
-#define VAMPANALYSER_H_
+#ifndef ANALYZER_VAMP_VAMPANALYZER_H
+#define ANALYZER_VAMP_VAMPANALYZER_H
 
 #include <QString>
 #include <QList>
 #include <QVector>
 #include <vamp-hostsdk/vamp-hostsdk.h>
 
+#include "analyzer/vamp/vamppluginloader.h"
 #include "configobject.h"
 #include "util/sample.h"
-#include "vamp/vamppluginloader.h"
 
-class VampAnalyser {
+class VampAnalyzer {
   public:
-    VampAnalyser();
-    virtual ~VampAnalyser();
+    VampAnalyzer();
+    virtual ~VampAnalyzer();
 
     bool Init(const QString pluginlibrary, const QString pluginid,
               const int samplerate, const int TotalSamples, bool bFastAnalysis);
@@ -55,4 +55,4 @@ class VampAnalyser {
     int m_iMaxSamplesToAnalyse;
 };
 
-#endif /* VAMPANALYSER_H_ */
+#endif /* ANALYZER_VAMP_VAMPANALYZER_H */

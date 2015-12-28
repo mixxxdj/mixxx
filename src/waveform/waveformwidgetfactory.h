@@ -55,7 +55,7 @@ class WaveformWidgetHolder {
 class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
   public:
-    //TODO merge this enum woth the waveform analyser one
+    //TODO merge this enum with the waveform analyzer one
     enum FilterIndex { All = 0, Low = 1, Mid = 2, High = 3, FilterCount = 4};
 
     bool setConfig(ConfigObject<ConfigValue>* config);

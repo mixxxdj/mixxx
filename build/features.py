@@ -363,7 +363,7 @@ class Vamp(Feature):
     INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
 
     def description(self):
-        return "Vamp Analysers support"
+        return "Vamp Analyzer support"
 
     def enabled(self, build):
         build.flags['vamp'] = util.get_flags(build.env, 'vamp', 1)
@@ -400,9 +400,9 @@ class Vamp(Feature):
                 'pkg-config fftw3 --silence-errors --cflags --libs')
 
     def sources(self, build):
-        sources = ['vamp/vampanalyser.cpp',
-                   'vamp/vamppluginloader.cpp',
-                   'analyserbeats.cpp',
+        sources = ['analyzer/vamp/vampanalyzer.cpp',
+                   'analyzer/vamp/vamppluginloader.cpp',
+                   'analyzer/analyzerbeats.cpp',
                    'dlgprefbeats.cpp']
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH

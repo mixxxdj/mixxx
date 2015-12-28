@@ -134,7 +134,7 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
     }
 
     //Seek to position 0, which forces us to skip over all the header frames.
-    //This makes sure we're ready to just let the Analyser rip and it'll
+    //This makes sure we're ready to just let the Analyzer rip and it'll
     //get the number of samples it expects (ie. no header frames).
     seekSampleFrame(0);
 

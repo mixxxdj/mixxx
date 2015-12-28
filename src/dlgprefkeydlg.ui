@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QCheckBox" name="banalyserenabled">
+    <widget class="QCheckBox" name="banalyzerenabled">
      <property name="toolTip">
       <string>When key detection is enabled, Mixxx detects the musical key of your tracks 
 and allows you to pitch adjust them for harmonic mixing.</string>

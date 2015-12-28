@@ -668,10 +668,10 @@ class MixxxCore(Feature):
                    "cachingreaderchunk.cpp",
                    "cachingreaderworker.cpp",
 
-                   "analyserrg.cpp",
-                   "analyserqueue.cpp",
-                   "analyserwaveform.cpp",
-                   "analyserkey.cpp",
+                   "analyzer/analyzerkey.cpp",
+                   "analyzer/analyzerqueue.cpp",
+                   "analyzer/analyzerwaveform.cpp",
+                   "analyzer/analyzergain.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",

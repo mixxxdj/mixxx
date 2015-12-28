@@ -1,23 +1,23 @@
 /*
- * analyserbeats.cpp
+ * analyzerbeats.cpp
  *
  *  Created on: 16/mar/2011
  *      Author: vittorio
  */
+#include "analyzer/analyzerbeats.h"
 
 #include <QtDebug>
 #include <QVector>
 #include <QHash>
 #include <QString>
 
-#include "trackinfoobject.h"
-#include "track/beatmap.h"
-#include "track/beatfactory.h"
-#include "analyserbeats.h"
-#include "track/beatutils.h"
 #include "track/beat_preferences.h"
+#include "track/beatfactory.h"
+#include "track/beatmap.h"
+#include "track/beatutils.h"
+#include "trackinfoobject.h"
 
-AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue>* pConfig)
+AnalyzerBeats::AnalyzerBeats(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
           m_pVamp(NULL),
           m_bPreferencesReanalyzeOldBpm(false),
@@ -30,10 +30,10 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue>* pConfig)
           m_iMaxBpm(9999) {
 }
 
-AnalyserBeats::~AnalyserBeats() {
+AnalyzerBeats::~AnalyzerBeats() {
 }
 
-bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     if (totalSamples == 0) {
         return false;
     }
@@ -76,9 +76,9 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
             ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
 
     QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_LIBRARY));
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_LIBRARY));
     QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID));
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
 
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
@@ -88,7 +88,7 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     bool bShouldAnalyze = !loadStored(tio);
 
     if (bShouldAnalyze) {
-        m_pVamp = new VampAnalyser();
+        m_pVamp = new VampAnalyzer();
         bShouldAnalyze = m_pVamp->Init(library, pluginID, m_iSampleRate, totalSamples,
                                        m_bPreferencesFastAnalysis);
         if (!bShouldAnalyze) {
@@ -106,7 +106,7 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     return bShouldAnalyze;
 }
 
-bool AnalyserBeats::loadStored(TrackPointer tio) const {
+bool AnalyzerBeats::loadStored(TrackPointer tio) const {
     int iMinBpm;
     int iMaxBpm;
 
@@ -127,12 +127,12 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
     }
 
     QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_LIBRARY));
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_LIBRARY));
     QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID));
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
 
     // At first start config for QM and Vamp does not exist --> set default
-    // TODO(XXX): This is no longer present in initialise. Remove?
+    // TODO(XXX): This is no longer present in initialize. Remove?
     if (library.isEmpty() || library.isNull())
         library = "libmixxxminimal";
     if (pluginID.isEmpty() || pluginID.isNull())
@@ -177,7 +177,7 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
     }
 }
 
-void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyzerBeats::process(const CSAMPLE *pIn, const int iLen) {
     if (m_pVamp == NULL)
         return;
     bool success = m_pVamp->Process(pIn, iLen);
@@ -187,13 +187,13 @@ void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
     }
 }
 
-void AnalyserBeats::cleanup(TrackPointer tio) {
+void AnalyzerBeats::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
     delete m_pVamp;
     m_pVamp = NULL;
 }
 
-void AnalyserBeats::finalise(TrackPointer tio) {
+void AnalyzerBeats::finalize(TrackPointer tio) {
     if (m_pVamp == NULL) {
         return;
     }
@@ -258,7 +258,7 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 }
 
 // static
-QHash<QString, QString> AnalyserBeats::getExtraVersionInfo(
+QHash<QString, QString> AnalyzerBeats::getExtraVersionInfo(
     QString pluginId, bool bPreferencesFastAnalysis) {
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = pluginId;

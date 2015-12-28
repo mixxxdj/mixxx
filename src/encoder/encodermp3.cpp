@@ -43,7 +43,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
      * m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
      *
      * This has solved many segfaults when using and even closing shoutcast
-     * along with LAME.  This bug was detected by using Valgrind memory analyser
+     * along with LAME.  This bug was detected by using Valgrind memory analyzer
      *
      */
     m_bufferInSize(0),

@@ -26,7 +26,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_pGetNewPlaylist = new QAction(tr("Create new history playlist"), this);
     connect(m_pGetNewPlaylist, SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
 
-    // initialised in a new generic slot(get new history playlist purpose)
+    // initialized in a new generic slot(get new history playlist purpose)
     emit(slotGetNewPlaylist());
 
     //construct child model

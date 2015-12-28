@@ -30,7 +30,7 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
           m_bDeleteOnReferenceExpiration(false),
           m_qMutex(QMutex::Recursive) {
     m_id = TrackId();
-    m_analyserProgress = -1;
+    m_analyzerProgress = -1;
 
     m_bDirty = false;
     m_bPlayed = false;
@@ -740,18 +740,18 @@ void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
     emit(waveformSummaryUpdated());
 }
 
-void TrackInfoObject::setAnalyserProgress(int progress) {
+void TrackInfoObject::setAnalyzerProgress(int progress) {
     // progress in 0 .. 1000. QAtomicInt so no need for lock.
-	int oldProgress = m_analyserProgress.fetchAndStoreAcquire(progress);
+	int oldProgress = m_analyzerProgress.fetchAndStoreAcquire(progress);
     if (progress != oldProgress) {
-        m_analyserProgress = progress;
-        emit(analyserProgress(progress));
+        m_analyzerProgress = progress;
+        emit(analyzerProgress(progress));
     }
 }
 
-int TrackInfoObject::getAnalyserProgress() const {
+int TrackInfoObject::getAnalyzerProgress() const {
     // QAtomicInt so no need for lock.
-    return load_atomic(m_analyserProgress);
+    return load_atomic(m_analyzerProgress);
 }
 
 void TrackInfoObject::setCuePoint(float cue) {

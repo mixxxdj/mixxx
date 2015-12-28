@@ -1,17 +1,16 @@
 /*
- * vampanalyser.cpp
+ * vampanalyzer.cpp
  *
  *  Created on: 14/mar/2011
  *      Author: Vittorio Colao
  */
+#include "analyzer/vamp/vampanalyzer.h"
 
 #include <QDir>
 #include <QtDebug>
 #include <QDesktopServices>
 #include <QCoreApplication>
 #include <QStringList>
-
-#include "vamp/vampanalyser.h"
 
 #ifdef __WINDOWS__
     #include <windows.h>
@@ -23,7 +22,7 @@
 using Vamp::Plugin;
 using Vamp::PluginHostAdapter;
 
-void VampAnalyser::initializePluginPaths() {
+void VampAnalyzer::initializePluginPaths() {
     const char* pVampPath = getenv("VAMP_PATH");
     QString vampPath = "";
     if (pVampPath) {
@@ -101,7 +100,7 @@ void VampAnalyser::initializePluginPaths() {
 #endif
 }
 
-VampAnalyser::VampAnalyser()
+VampAnalyzer::VampAnalyzer()
     : m_iSampleCount(0),
       m_iOUT(0),
       m_iRemainingSamples(0),
@@ -116,43 +115,43 @@ VampAnalyser::VampAnalyser()
       m_iMaxSamplesToAnalyse(0) {
 }
 
-VampAnalyser::~VampAnalyser() {
+VampAnalyzer::~VampAnalyzer() {
     delete[] m_pluginbuf;
     delete m_plugin;
 }
 
-bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
+bool VampAnalyzer::Init(const QString pluginlibrary, const QString pluginid,
                         const int samplerate, const int TotalSamples, bool bFastAnalysis) {
     m_iRemainingSamples = TotalSamples;
     m_rate = samplerate;
 
     if (samplerate <= 0.0) {
-        qDebug() << "VampAnalyser: Track has non-positive samplerate";
+        qDebug() << "VampAnalyzer: Track has non-positive samplerate";
         return false;
     }
 
     if (TotalSamples <= 0) {
-        qDebug() << "VampAnalyser: Track has non-positive # of samples";
+        qDebug() << "VampAnalyzer: Track has non-positive # of samples";
         return false;
     }
 
     if (m_plugin != NULL) {
         delete m_plugin;
         m_plugin = NULL;
-        qDebug() << "VampAnalyser: kill plugin";
+        qDebug() << "VampAnalyzer: kill plugin";
     }
 
     VampPluginLoader *loader = VampPluginLoader::getInstance();
     QStringList pluginlist = pluginid.split(":");
     if (pluginlist.size() != 2) {
-        qDebug() << "VampAnalyser: got malformed pluginid: " << pluginid;
+        qDebug() << "VampAnalyzer: got malformed pluginid: " << pluginid;
         return false;
     }
 
     bool isNumber = false;
     int outputnumber = (pluginlist.at(1)).toInt(&isNumber);
     if (!isNumber) {
-        qDebug() << "VampAnalyser: got malformed pluginid: " << pluginid;
+        qDebug() << "VampAnalyzer: got malformed pluginid: " << pluginid;
         return false;
     }
 
@@ -163,7 +162,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
                                   Vamp::HostExt::PluginLoader::ADAPT_ALL_SAFE);
 
     if (!m_plugin) {
-        qDebug() << "VampAnalyser: Cannot load Vamp Plug-in.";
+        qDebug() << "VampAnalyzer: Cannot load Vamp Plug-in.";
         qDebug() << "Please copy libmixxxminimal.so from build dir to one of the following:";
 
         std::vector<std::string> path = PluginHostAdapter::getPluginPath();
@@ -174,36 +173,36 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     }
     Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
     if (outputs.empty()) {
-        qDebug() << "VampAnalyser: Plugin has no outputs!";
+        qDebug() << "VampAnalyzer: Plugin has no outputs!";
         return false;
     }
     SelectOutput(outputnumber);
 
     m_iBlockSize = m_plugin->getPreferredBlockSize();
-    qDebug() << "Vampanalyser BlockSize: " << m_iBlockSize;
+    qDebug() << "Vampanalyzer BlockSize: " << m_iBlockSize;
     if (m_iBlockSize == 0) {
         // A plugin that can handle any block size may return 0. The final block
-        // size will be set in the initialise() call. Since 0 means it is
+        // size will be set in the initialize() call. Since 0 means it is
         // accepting any size, 1024 should be good
         m_iBlockSize = 1024;
-        qDebug() << "Vampanalyser: setting m_iBlockSize to 1024";
+        qDebug() << "Vampanalyzer: setting m_iBlockSize to 1024";
     }
 
     m_iStepSize = m_plugin->getPreferredStepSize();
-    qDebug() << "Vampanalyser StepSize: " << m_iStepSize;
+    qDebug() << "Vampanalyzer StepSize: " << m_iStepSize;
     if (m_iStepSize == 0 || m_iStepSize > m_iBlockSize) {
         // A plugin may return 0 if it has no particular interest in the step
         // size. In this case, the host should make the step size equal to the
         // block size if the plugin is accepting input in the time domain. If
         // the plugin is accepting input in the frequency domain, the host may
         // use any step size. The final step size will be set in the
-        // initialise() call.
+        // initialize() call.
         m_iStepSize = m_iBlockSize;
-        qDebug() << "Vampanalyser: setting m_iStepSize to" << m_iStepSize;
+        qDebug() << "Vampanalyzer: setting m_iStepSize to" << m_iStepSize;
     }
 
     if (!m_plugin->initialise(2, m_iStepSize, m_iBlockSize)) {
-        qDebug() << "VampAnalyser: Cannot initialise plugin";
+        qDebug() << "VampAnalyzer: Cannot initialize plugin";
         return false;
     }
     // Here we are using m_iBlockSize: it cannot be 0
@@ -217,14 +216,14 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     return true;
 }
 
-bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
+bool VampAnalyzer::Process(const CSAMPLE *pIn, const int iLen) {
     if (!m_plugin) {
-        qDebug() << "VampAnalyser: Plugin not loaded";
+        qDebug() << "VampAnalyzer: Plugin not loaded";
         return false;
     }
 
     if (m_pluginbuf[0] == NULL || m_pluginbuf[1] == NULL) {
-        qDebug() << "VampAnalyser: Buffer points to NULL";
+        qDebug() << "VampAnalyzer: Buffer points to NULL";
         return false;
     }
 
@@ -252,7 +251,7 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
          *
          * The following if-block works under optimal conditions
          * If the total number of samples is incorrect
-         * VampAnalyser:End() handles it.
+         * VampAnalyzer:End() handles it.
          */
         if (m_iRemainingSamples <= 0 && iIN == iLen / 2) {
             lastsamples = true;
@@ -308,7 +307,7 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
     return true;
 }
 
-bool VampAnalyser::End() {
+bool VampAnalyzer::End() {
     // If the total number of samples has been estimated incorrectly
     if (m_iRemainingSamples > 0) {
         Vamp::Plugin::FeatureSet features = m_plugin->getRemainingFeatures();
@@ -325,20 +324,20 @@ bool VampAnalyser::End() {
     return true;
 }
 
-bool VampAnalyser::SetParameter(const QString parameter, const double value) {
+bool VampAnalyzer::SetParameter(const QString parameter, const double value) {
     Q_UNUSED(parameter);
     Q_UNUSED(value);
     return true;
 }
 
-void VampAnalyser::SelectOutput(const int outputnumber) {
+void VampAnalyzer::SelectOutput(const int outputnumber) {
     Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
     if (outputnumber >= 0 && outputnumber < int(outputs.size())) {
         m_iOutput = outputnumber;
     }
 }
 
-QVector<double> VampAnalyser::GetInitFramesVector() {
+QVector<double> VampAnalyzer::GetInitFramesVector() {
     QVector<double> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
          fli != m_Results.end(); ++fli) {
@@ -353,7 +352,7 @@ QVector<double> VampAnalyser::GetInitFramesVector() {
     return vectout;
 }
 
-QVector<double> VampAnalyser::GetEndFramesVector() {
+QVector<double> VampAnalyzer::GetEndFramesVector() {
     QVector<double> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
          fli != m_Results.end(); ++fli) {
@@ -369,7 +368,7 @@ QVector<double> VampAnalyser::GetEndFramesVector() {
     return vectout;
 }
 
-QVector<QString> VampAnalyser::GetLabelsVector() {
+QVector<QString> VampAnalyzer::GetLabelsVector() {
     QVector<QString> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
          fli != m_Results.end(); ++fli) {
@@ -378,7 +377,7 @@ QVector<QString> VampAnalyser::GetLabelsVector() {
     return vectout;
 }
 
-QVector<double> VampAnalyser::GetFirstValuesVector() {
+QVector<double> VampAnalyzer::GetFirstValuesVector() {
     QVector<double> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
          fli != m_Results.end(); ++fli) {
@@ -389,7 +388,7 @@ QVector<double> VampAnalyser::GetFirstValuesVector() {
     return vectout;
 }
 
-QVector<double> VampAnalyser::GetLastValuesVector() {
+QVector<double> VampAnalyzer::GetLastValuesVector() {
     QVector<double> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
          fli != m_Results.end(); ++fli) {
