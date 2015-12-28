@@ -50,6 +50,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer track) {
     results->clear();
     m_track = track;
     m_data = Data();
+    m_networkError = NOERROR;
     m_TagFetcher.startFetch(m_track);
 
     disconnect(this, SLOT(updateTrackMetadata(TrackInfoObject*)));
