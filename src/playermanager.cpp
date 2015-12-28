@@ -15,7 +15,7 @@
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "engine/enginemaster.h"
-#include "soundmanager.h"
+#include "soundio/soundmanager.h"
 #include "effects/effectsmanager.h"
 #include "util/stat.h"
 #include "engine/enginedeck.h"

@@ -22,7 +22,7 @@
 
 #include <QString>
 
-#include "sounddevice.h"
+#include "soundio/sounddevice.h"
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 #define CPU_OVERLOAD_DURATION 500 // in ms

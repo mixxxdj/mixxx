@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "sounddeviceportaudio.h"
+#include "soundio/sounddeviceportaudio.h"
 
 #include <portaudio.h>
 #include <float.h>
@@ -29,9 +29,9 @@
 
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "sounddevice.h"
-#include "soundmanager.h"
-#include "soundmanagerutil.h"
+#include "soundio/sounddevice.h"
+#include "soundio/soundmanager.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/denormalsarezero.h"
 #include "util/performancetimer.h"
 #include "util/sample.h"

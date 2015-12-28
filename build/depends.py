@@ -20,7 +20,7 @@ class PortAudio(Dependence):
             conf.CheckLib('advapi32')
 
     def sources(self, build):
-        return ['sounddeviceportaudio.cpp']
+        return ['soundio/sounddeviceportaudio.cpp']
 
 
 class PortMIDI(Dependence):
@@ -943,12 +943,12 @@ class MixxxCore(Feature):
                    "previewdeck.cpp",
                    "playermanager.cpp",
                    "samplerbank.cpp",
-                   "sounddevice.cpp",
-                   "sounddevicenetwork.cpp",
+                   "soundio/sounddevice.cpp",
+                   "soundio/sounddevicenetwork.cpp",
                    "engine/sidechain/enginenetworkstream.cpp",
-                   "soundmanager.cpp",
-                   "soundmanagerconfig.cpp",
-                   "soundmanagerutil.cpp",
+                   "soundio/soundmanager.cpp",
+                   "soundio/soundmanagerconfig.cpp",
+                   "soundio/soundmanagerutil.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
                    "visualplayposition.cpp",

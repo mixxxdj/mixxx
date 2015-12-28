@@ -1,11 +1,11 @@
-#include "sounddevicenetwork.h"
+#include "soundio/sounddevicenetwork.h"
 
 #include <QtDebug>
 
 #include "engine/sidechain/enginenetworkstream.h"
-#include "sounddevice.h"
-#include "soundmanager.h"
-#include "soundmanagerutil.h"
+#include "soundio/sounddevice.h"
+#include "soundio/soundmanager.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/sample.h"
 
 // static

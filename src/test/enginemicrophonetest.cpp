@@ -5,7 +5,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "engine/enginemicrophone.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"

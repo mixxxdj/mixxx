@@ -24,7 +24,7 @@
 
 #include "configobject.h"
 #include "engine/sidechain/enginenetworkstream.h"
-#include "soundmanagerconfig.h"
+#include "soundio/soundmanagerconfig.h"
 #include "util/result.h"
 #include "util/types.h"
 

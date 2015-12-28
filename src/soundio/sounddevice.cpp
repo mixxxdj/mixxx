@@ -15,13 +15,13 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "sounddevice.h"
+#include "soundio/sounddevice.h"
 
 #include <QtDebug>
 #include <cstring> // for memcpy and strcmp
 
-#include "soundmanager.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanager.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/debug.h"
 #include "util/defs.h"
 #include "util/sample.h"

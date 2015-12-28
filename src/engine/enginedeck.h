@@ -25,7 +25,7 @@
 #include "engine/enginechannel.h"
 #include "util/circularbuffer.h"
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class EngineBuffer;
 class EnginePregain;
