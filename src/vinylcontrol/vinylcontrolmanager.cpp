@@ -77,6 +77,7 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
         QString group = PlayerManager::groupForDeck(i);
         m_pVcEnabled.push_back(new ControlObjectThread(group, "vinylcontrol_enabled", this));
         m_pVcEnabled.back()->set(0);
+        m_pProcessor->deckAdded(group);
 
         // Default cueing should be off.
         ControlObject::set(ConfigKey(group, "vinylcontrol_cueing"),

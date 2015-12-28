@@ -15,44 +15,28 @@
 #define SAMPLE_PIPE_FIFO_SIZE 65536
 
 VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<ConfigValue> *pConfig)
-        : QThread(pParent),
+        : QObject(pParent),
           m_pConfig(pConfig),
           m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
           m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_processorsLock(QMutex::Recursive),
-          m_processors(kMaximumVinylControlInputs, NULL),
+          m_processors(kMaximumVinylControlInputs),
+          m_processingActive(false),
           m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
-          m_bReportSignalQuality(false),
-          m_bQuit(false),
-          m_bReloadConfig(false) {
+          m_bReportSignalQuality(false) {
     connect(m_pToggle, SIGNAL(valueChanged(double)),
             this, SLOT(toggleDeck(double)),
             Qt::DirectConnection);
-
-    for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        m_samplePipes[i] = new FIFO<CSAMPLE>(SAMPLE_PIPE_FIFO_SIZE);
-    }
-
-    start(QThread::HighPriority);
+    m_pGuiTick = new ControlObjectSlave("[Master]", "guiTickTime");
+    m_pGuiTick->connectValueChanged(this, SLOT(slotGuiTick(double)));
 }
 
 VinylControlProcessor::~VinylControlProcessor() {
-    m_bQuit = true;
-    m_samplesAvailableSignal.wakeAll();
-    wait();
-
     delete m_pToggle;
     SampleUtil::free(m_pWorkBuffer);
 
     {
-        QMutexLocker locker(&m_processorsLock);
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-            VinylControl* pProcessor = m_processors.at(i);
-            m_processors[i] = NULL;
-            delete pProcessor;
-
-            delete m_samplePipes[i];
-            m_samplePipes[i] = NULL;
+            m_processors[i].clear();
         }
     }
 
@@ -61,95 +45,31 @@ VinylControlProcessor::~VinylControlProcessor() {
     VinylControlXwax::freeLUTs();
 }
 
+void VinylControlProcessor::deckAdded(QString group) {
+    m_VCEnableds.push_back(new ControlObjectSlave(group, "vinylcontrol_enabled"));
+    m_VCEnableds.back()->connectValueChanged(this, SLOT(slotVinylEnabled(double)));
+}
+
 void VinylControlProcessor::setSignalQualityReporting(bool enable) {
     m_bReportSignalQuality = enable;
 }
 
-void VinylControlProcessor::shutdown() {
-    m_bQuit = true;
-    m_samplesAvailableSignal.wakeAll();
-}
-
 void VinylControlProcessor::requestReloadConfig() {
-    m_bReloadConfig = true;
-    m_samplesAvailableSignal.wakeAll();
-}
-
-void VinylControlProcessor::run() {
-    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
-    QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(++id));
-
-    while (!m_bQuit) {
-        Event::start("VinylControlProcessor");
-        if (m_bReloadConfig) {
-            reloadConfig();
-            m_bReloadConfig = false;
-        }
-
-        for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-            QMutexLocker locker(&m_processorsLock);
-            VinylControl* pProcessor = m_processors[i];
-            locker.unlock();
-            FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[i];
-
-            if (pSamplePipe->readAvailable() > 0) {
-                int samplesRead = pSamplePipe->read(m_pWorkBuffer, MAX_BUFFER_LEN);
-
-                if (samplesRead % 2 != 0) {
-                    qWarning() << "VinylControlProcessor received non-even number of samples via sample FIFO.";
-                    samplesRead--;
-                }
-                int framesRead = samplesRead / 2;
-
-                if (pProcessor) {
-                    pProcessor->analyzeSamples(m_pWorkBuffer, framesRead);
-                } else {
-                    // Samples are being written to a non-existent processor. Warning?
-                    qWarning() << "Samples written to non-existent VinylControl processor:" << i;
-                }
-            }
-
-            // TODO(rryan) define a time-based update rate. This will update way
-            // too quickly.
-            if (pProcessor && m_bReportSignalQuality) {
-                VinylSignalQualityReport report;
-                if (pProcessor->writeQualityReport(&report)) {
-                    report.processor = i;
-                    if (m_signalQualityFifo.write(&report, 1) != 1) {
-                        qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << i;
-                    }
-                }
-            }
-        }
-
-        if (m_bQuit) {
-            break;
-        }
-
-        // Wait for a signal from the main thread or engine thread that we
-        // should wake up and process input.
-        Event::end("VinylControlProcessor");
-        m_waitForSampleMutex.lock();
-        m_samplesAvailableSignal.wait(&m_waitForSampleMutex);
-        m_waitForSampleMutex.unlock();
-    }
-}
-
-void VinylControlProcessor::reloadConfig() {
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        QMutexLocker locker(&m_processorsLock);
-        VinylControl* pCurrent = m_processors[i];
+        SharedVC pCurrent;
+        {
+            pCurrent = m_processors[i];
 
-        if (pCurrent == NULL) {
-            continue;
+            if (!pCurrent) {
+                continue;
+            }
+
+            SharedVC pNew = SharedVC(new VinylControlXwax(m_pConfig, kVCGroup.arg(i + 1)));
+            // QSharedPointer assignment is atomic so this shouldn't cause any
+            // problems if the engine thread is active.  Also, no need to specifically
+            // delete the old pointer.
+            m_processors.replace(i, pNew);
         }
-
-        VinylControl *pNew = new VinylControlXwax(
-            m_pConfig, kVCGroup.arg(i + 1));
-        m_processors.replace(i, pNew);
-        locker.unlock();
-        // Delete outside of the critical section to avoid deadlocks.
-        delete pCurrent;
     }
 }
 
@@ -166,15 +86,8 @@ void VinylControlProcessor::onInputConfigured(AudioInput input) {
         return;
     }
 
-    VinylControl *pNew = new VinylControlXwax(
-        m_pConfig, kVCGroup.arg(index + 1));
-
-    QMutexLocker locker(&m_processorsLock);
-    VinylControl* pCurrent = m_processors.at(index);
+    SharedVC pNew = SharedVC(new VinylControlXwax(m_pConfig, kVCGroup.arg(index + 1)));
     m_processors.replace(index, pNew);
-    locker.unlock();
-    // Delete outside of the critical section to avoid deadlocks.
-    delete pCurrent;
 }
 
 void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
@@ -191,22 +104,20 @@ void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
         return;
     }
 
-    QMutexLocker locker(&m_processorsLock);
-    VinylControl* pVC = m_processors.at(index);
-    m_processors.replace(index, NULL);
-    locker.unlock();
-    // Delete outside of the critical section to avoid deadlocks.
-    delete pVC;
+    m_processors[index].clear();
 }
 
 bool VinylControlProcessor::deckConfigured(int index) const {
-    return m_processors[index] != NULL;
+    return m_processors.at(index);
 }
 
 void VinylControlProcessor::receiveBuffer(AudioInput input,
                                           const CSAMPLE* pBuffer,
                                           unsigned int nFrames) {
     ScopedTimer t("VinylControlProcessor::receiveBuffer");
+    if (!m_processingActive) {
+        return;
+    }
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
         return;
@@ -219,28 +130,74 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
         return;
     }
 
-    FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[vcIndex];
-
-    if (pSamplePipe == NULL) {
-        // Should not be possible.
-        return;
-    }
-
     const int kChannels = 2;
     const int nSamples = nFrames * kChannels;
-    int samplesWritten = pSamplePipe->write(pBuffer, nSamples);
 
-    if (samplesWritten < nSamples) {
-        qWarning() << "ERROR: Buffer overflow in VinylControlProcessor. Dropping samples on the floor."
-                   << "VCIndex:" << vcIndex;
+    SharedVC pProcessor = m_processors[vcIndex];
+
+    int framesRead = nSamples / 2;
+    if (pProcessor) {
+        pProcessor->analyzeSamples(pBuffer, framesRead);
+    } else {
+        // Samples are being written to a non-existent processor. Warning?
+        qWarning() << "Samples written to non-existent VinylControl processor:" << vcIndex;
     }
 
-    m_samplesAvailableSignal.wakeAll();
+    // The isEnabled state might have changed after processing.
+    m_processingActive = enabledDeckExists();
+}
+
+void VinylControlProcessor::slotGuiTick(double v) {
+    Q_UNUSED(v)
+
+    if (m_bReportSignalQuality) {
+        for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+            SharedVC pProcessor = m_processors[i];
+            if (!pProcessor) {
+                continue;
+            }
+            VinylSignalQualityReport report;
+            // It's not really a big deal if the quality report bitmap is being
+            // written while we're reading it, so no need to hold the lock.
+            if (pProcessor->writeQualityReport(&report)) {
+                report.processor = i;
+                if (m_signalQualityFifo.write(&report, 1) != 1) {
+                    qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << i;
+                }
+            }
+        }
+    }
+}
+
+void VinylControlProcessor::slotVinylEnabled(double v) {
+    Q_UNUSED(v)
+    m_processingActive = enabledDeckExists();
+}
+
+bool VinylControlProcessor::enabledDeckExists() const {
+    // The internal enabled state of a vinylcontrol only gets
+    // updated when it gets a processing signal, so the
+    // vinylcontrol_enabled signal gets toggled before the isEnabled state
+    // changes.  We have to check both.
+
+    foreach (ControlObjectSlave* vc_enabled, m_VCEnableds) {
+        if (vc_enabled->get()) {
+            return true;
+        }
+    }
+    for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+        SharedVC pProcessor = m_processors.at(i);
+        if (pProcessor && pProcessor->isEnabled()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void VinylControlProcessor::toggleDeck(double value) {
+    int enabled = -1;
     if (!value)
-        return;
+        goto update_enabled;
 
     /** few different cases here:
      * 1. No decks have vinyl control enabled.
@@ -255,15 +212,12 @@ void VinylControlProcessor::toggleDeck(double value) {
      */
 
     // -1 means we haven't found a proxy that's enabled
-    int enabled = -1;
-
-    QMutexLocker locker(&m_processorsLock);
 
     for (int i = 0; i < m_processors.size(); ++i) {
-        VinylControl* pProcessor = m_processors.at(i);
+        SharedVC pProcessor = m_processors.at(i);
         if (pProcessor && pProcessor->isEnabled()) {
             if (enabled > -1) {
-                return; // case 3
+                goto update_enabled; // case 3
             }
             enabled = i;
         }
@@ -278,22 +232,22 @@ void VinylControlProcessor::toggleDeck(double value) {
         } // guaranteed to terminate as there's at least 1 non-null proxy
 
         if (nextProxy == enabled) {
-            return;
+            goto update_enabled;
         }
 
-        VinylControl* pEnabled = m_processors[enabled];
-        VinylControl* pNextProxy = m_processors[nextProxy];
-        locker.unlock();
+        SharedVC pEnabled = m_processors[enabled];
+        SharedVC pNextProxy = m_processors[nextProxy];
         pEnabled->toggleVinylControl(false);
         pNextProxy->toggleVinylControl(true);
     } else if (enabled == -1) {
         // handle case 1, or we just don't have any processors
-        foreach (VinylControl* pProcessor, m_processors) {
+        foreach (SharedVC pProcessor, m_processors) {
             if (pProcessor) {
-                locker.unlock();
                 pProcessor->toggleVinylControl(true);
-                return;
+                goto update_enabled;
             }
         }
     }
+update_enabled:
+    m_processingActive = enabledDeckExists();
 }
