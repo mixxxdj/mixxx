@@ -137,8 +137,8 @@ Hercules4Mx.init = function(id, debugging) {
     // midi.sendShortMsg(Hercules4Mx.CC, 0x7A, enable); enable = 0 obey movement, enable = 0x7F ignore movement
 
     // Connect several signals to javascript events, like song load, pre-fader-listen, loops or effects
-	engine.connectControl("[AutoDJ]","enabled","Hercules4Mx.onAutoDJ");
-	engine.connectControl("[AutoDJ]","fade_now","Hercules4Mx.onAutoDJFade");
+    engine.connectControl("[AutoDJ]","enabled","Hercules4Mx.onAutoDJ");
+    engine.connectControl("[AutoDJ]","fade_now","Hercules4Mx.onAutoDJFade");
     for (i = 1; i <= 4; i++) {
         engine.connectControl("[Channel" + i + "]", "pfl", "Hercules4Mx.onPreFaderListen");
         engine.connectControl("[Channel" + i + "]", "loop_enabled", "Hercules4Mx.onLoopStateChange");
