@@ -180,15 +180,23 @@ inline TagLib::String toTagLibString(const QString& str) {
     return TagLib::String(qba.constData(), TagLib::String::UTF8);
 }
 
-inline bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
+inline QString formatBpm(const TrackMetadata& trackMetadata) {
+    return Bpm::valueToString(trackMetadata.getBpm().getValue());
+}
+
+inline QString formatBpmInteger(const TrackMetadata& trackMetadata) {
+    return QString::number(Bpm::valueToInteger(trackMetadata.getBpm().getValue()));
+}
+
+bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
     DEBUG_ASSERT(pTrackMetadata);
 
-    bool bpmValid = false;
-    double bpm = TrackMetadata::parseBpm(sBpm, &bpmValid);
-    if (bpmValid) {
-        pTrackMetadata->setBpm(bpm);
+    bool isBpmValid = false;
+    const double bpmValue = Bpm::valueFromString(sBpm, &isBpmValid);
+    if (isBpmValid) {
+        pTrackMetadata->setBpm(Bpm(bpmValue));
     }
-    return bpmValid;
+    return isBpmValid;
 }
 
 inline QString formatTrackGain(const TrackMetadata& trackMetadata) {
@@ -196,7 +204,7 @@ inline QString formatTrackGain(const TrackMetadata& trackMetadata) {
     return ReplayGain::ratioToString(trackGainRatio);
 }
 
-void parseTrackGain(
+bool parseTrackGain(
         TrackMetadata* pTrackMetadata,
         const QString& dbGain) {
     DEBUG_ASSERT(pTrackMetadata);
@@ -217,6 +225,7 @@ void parseTrackGain(
         replayGain.setRatio(ratio);
         pTrackMetadata->setReplayGain(replayGain);
     }
+    return isRatioValid;
 }
 
 inline QString formatTrackPeak(const TrackMetadata& trackMetadata) {
@@ -224,7 +233,7 @@ inline QString formatTrackPeak(const TrackMetadata& trackMetadata) {
     return ReplayGain::peakToString(trackGainPeak);
 }
 
-void parseTrackPeak(
+bool parseTrackPeak(
         TrackMetadata* pTrackMetadata,
         const QString& strPeak) {
     DEBUG_ASSERT(pTrackMetadata);
@@ -236,6 +245,7 @@ void parseTrackPeak(
         replayGain.setPeak(peak);
         pTrackMetadata->setReplayGain(replayGain);
     }
+    return isPeakValid;
 }
 
 void readAudioProperties(TrackMetadata* pTrackMetadata,
@@ -856,10 +866,10 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
         const TagLib::MP4::Item& item = getItemListMap(tag)["tmpo"];
 #if TAGLIB_HAS_MP4_ATOM_TYPES
         if (item.atomDataType() == TagLib::MP4::TypeInteger) {
-            pTrackMetadata->setBpm(item.toInt());
+            pTrackMetadata->setBpm(Bpm(item.toInt()));
         }
 #else
-        pTrackMetadata->setBpm(item.toInt());
+        pTrackMetadata->setBpm(Bpm(item.toInt()));
 #endif
     }
     if (getItemListMap(tag).contains("----:com.apple.iTunes:BPM")) {
@@ -920,7 +930,7 @@ bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     // integer and represented as a numerical string."
     // Reference: http://id3.org/id3v2.3.0
     writeID3v2TextIdentificationFrame(pTag, "TBPM",
-            TrackMetadata::formatBpm(trackMetadata.getBpmAsInteger()), true);
+            formatBpmInteger(trackMetadata), true);
     writeID3v2TextIdentificationFrame(pTag, "TKEY", trackMetadata.getKey());
     writeID3v2TextIdentificationFrame(pTag, "TCOM",
             trackMetadata.getComposer());
@@ -980,8 +990,12 @@ bool writeTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& t
             toTagLibString(trackMetadata.getGrouping()), true);
     pTag->addValue("Year",
             toTagLibString(trackMetadata.getYear()), true);
-    pTag->addValue("BPM",
-            toTagLibString(TrackMetadata::formatBpm(trackMetadata.getBpm())), true);
+    if (trackMetadata.getBpm().hasValue()) {
+        pTag->addValue("BPM",
+                toTagLibString(formatBpm(trackMetadata)), true);
+    } else {
+        pTag->removeItem("BPM");
+    }
     pTag->addValue("REPLAYGAIN_TRACK_GAIN",
             toTagLibString(formatTrackGain(trackMetadata)), true);
     pTag->addValue("REPLAYGAIN_TRACK_PEAK",
@@ -1015,14 +1029,16 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     pTag->addField("DATE", toTagLibString(trackMetadata.getYear()));
 
     // Some tools use "BPM" so write that.
-    pTag->removeField("BPM");
-    pTag->addField("BPM",
-            toTagLibString(TrackMetadata::formatBpm(trackMetadata.getBpm())));
-    pTag->removeField("TEMPO");
-    pTag->addField("TEMPO",
-            toTagLibString(TrackMetadata::formatBpm(trackMetadata.getBpm())));
+    if (trackMetadata.getBpm().hasValue()) {
+        const TagLib::String bpm(
+                toTagLibString(formatBpm(trackMetadata)));
+        pTag->addField("BPM", bpm);
+        pTag->addField("TEMPO", bpm);
+    } else {
+        pTag->removeField("BPM");
+        pTag->removeField("TEMPO");
+    }
 
-    pTag->removeField("INITIALKEY");
     pTag->addField("INITIALKEY", toTagLibString(trackMetadata.getKey()));
     pTag->removeField("KEY");
     pTag->addField("KEY", toTagLibString(trackMetadata.getKey()));
@@ -1048,13 +1064,16 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
     writeMP4Atom(pTag, "\251wrt", trackMetadata.getComposer());
     writeMP4Atom(pTag, "\251grp", trackMetadata.getGrouping());
     writeMP4Atom(pTag, "\251day", trackMetadata.getYear());
-    if (trackMetadata.isBpmValid()) {
-        writeMP4Atom(pTag, "tmpo", trackMetadata.getBpmAsInteger());
+    if (trackMetadata.getBpm().hasValue()) {
+        // 16-bit integer value
+        const int tmpoValue =
+                Mixxx::Bpm::valueToInteger(trackMetadata.getBpm().getValue());
+        pTag->itemListMap()["tmpo"] = tmpoValue;
     } else {
         pTag->itemListMap().erase("tmpo");
     }
     writeMP4Atom(pTag, "----:com.apple.iTunes:BPM",
-            TrackMetadata::formatBpm(trackMetadata.getBpm()));
+            formatBpm(trackMetadata));
     writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_gain",
             formatTrackGain(trackMetadata));
     writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_peak",

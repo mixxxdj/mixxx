@@ -113,8 +113,12 @@ void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
 
     // Need to set BPM after sample rate since beat grid creation depends on
     // knowing the sample rate. Bug #1020438.
-    if (trackMetadata.isBpmValid()) {
-        setBpm(trackMetadata.getBpm());
+    if (trackMetadata.getBpm().hasValue() &&
+            ((nullptr == m_pBeats) || !Mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
+        // Only (re-)set the BPM if the beat grid is not valid.
+        // Reason: The BPM value in the metadata might be normalized or rounded,
+        // e.g. ID3v2 only supports integer values!
+        setBpm(trackMetadata.getBpm().getValue());
     }
 
     const QString key(trackMetadata.getKey());
@@ -142,7 +146,7 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
     pTrackMetadata->setDuration(getDuration());
     pTrackMetadata->setBitrate(getBitrate());
     pTrackMetadata->setReplayGain(getReplayGain());
-    pTrackMetadata->setBpm(getBpm());
+    pTrackMetadata->setBpm(Mixxx::Bpm(getBpm()));
     pTrackMetadata->setKey(getKeyText());
 }
 
@@ -362,9 +366,11 @@ void TrackInfoObject::setBeats(BeatsPointer pBeats) {
         }
     }
     m_pBeats = pBeats;
-    double bpm = 0.0;
+    Mixxx::Bpm bpm;
+    double bpmValue = bpm.getValue();
     if (m_pBeats) {
-        bpm = m_pBeats->getBpm();
+        bpmValue = m_pBeats->getBpm();
+        bpm.setValue(bpmValue);
         pObject = dynamic_cast<QObject*>(m_pBeats.data());
         if (pObject) {
             connect(pObject, SIGNAL(updated()),
@@ -373,7 +379,7 @@ void TrackInfoObject::setBeats(BeatsPointer pBeats) {
     }
     setDirty(true);
     lock.unlock();
-    emit(bpmUpdated(bpm));
+    emit(bpmUpdated(bpmValue));
     emit(beatsUpdated());
 }
 
