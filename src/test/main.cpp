@@ -3,7 +3,7 @@
 #include "errordialoghandler.h"
 
 int main(int argc, char **argv) {
-    Console console();
+    Console console;
     // We never want to popup error dialogs when running tests.
     ErrorDialogHandler::setEnabled(false);
     testing::InitGoogleTest(&argc, argv);
