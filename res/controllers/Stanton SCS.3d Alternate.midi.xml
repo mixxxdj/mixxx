@@ -1,16 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="2.0.0+" schemaVersion="1">
   <info>
-    <name>Stanton SCS.3d 4deck</name>
+    <name>Stanton SCS.3d (alternate)</name>
     <author>sbalmer</author>
-    <description>
-        Mapping for the Stanton SCS3 system. This part maps the SCS.3d
-        controller.
-    </description>
+    <description>Alternate mapping for the Stanton SCS.3d controller with somewhat different controls and additional lights.</description>
   </info>
   <controller id="SCS.3d">
     <scriptfiles>
-      <file functionprefix="SCS3D" filename="Stanton-SCS3d-4deck-scripts.js"/>
+      <file functionprefix="SCS3D" filename="Stanton-SCS3d-alternate-scripts.js"/>
     </scriptfiles>
     <controls>
       <!-- central slider -->

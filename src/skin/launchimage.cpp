@@ -41,7 +41,7 @@ LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
     m_pProgressBar->setTextVisible(false);
 
     QHBoxLayout* hbox = new QHBoxLayout(this);
-    QVBoxLayout* vbox = new QVBoxLayout(this);
+    QVBoxLayout* vbox = new QVBoxLayout();
     vbox->addStretch();
     vbox->addWidget(label);
     vbox->addWidget(m_pProgressBar);
