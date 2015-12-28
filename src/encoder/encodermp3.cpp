@@ -122,7 +122,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     get_lame_version__ get_lame_version = (get_lame_version__)m_library->resolve("get_lame_version");
 
 
-    //initalize function pointers
+    // initialize function pointers
     lame_init                   = (lame_init__)m_library->resolve("lame_init");
     lame_set_num_channels       = (lame_set_num_channels__)m_library->resolve("lame_set_num_channels");
     lame_set_in_samplerate      = (lame_set_in_samplerate__)m_library->resolve("lame_set_in_samplerate");
