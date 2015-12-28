@@ -76,7 +76,9 @@ Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
 }
 
 Hss1394Controller::~Hss1394Controller() {
-    close();
+    if (isOpen()) {
+        close();
+    }
 }
 
 int Hss1394Controller::open() {

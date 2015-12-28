@@ -176,11 +176,11 @@ if test_bin is not None:
         binary_files.append(test_bin)
         if bundle_pdbs:
                 binary_files.append(
-                        Glob(os.path.join(build.build_dir, 'mixxx-test.pdb')))
+                        Glob('#' + os.path.join(build.build_dir, 'mixxx-test.pdb')))
 
 if bundle_pdbs:
         binary_files.append(
-                Glob(os.path.join(build.build_dir, 'mixxx.pdb')))
+                Glob('#' + os.path.join(build.build_dir, 'mixxx.pdb')))
 
 #Soundsource plugins
 soundsource_plugin_files = soundsource_plugins
@@ -756,6 +756,17 @@ def BuildUbuntuPackage(target, source, env):
         os.system('cp -r build/debian .')
         os.system('cp res/linux/mixxx.usb.rules ./debian/mixxx.mixxx-usb.udev')
 
+        # Replace environment variables in the rules file.
+        # TODO(rryan) something more elegant? I don't know a better way. When
+        # Ubuntu build servers build us we don't get the chance to pass
+        # environment variables in.
+        with open('debian/rules', 'r') as fr:
+                rules = fr.read()
+                rules = rules.replace('$(MIXXX_BUILD)', build.build)
+
+                with open('debian/rules', 'w') as fw:
+                        fw.write(rules)
+
         for ubuntu_distro in ubuntu_distros:
                 # if a control.$distro file exists, use it
                 if os.path.exists('debian/control.%s' % ubuntu_distro):
@@ -789,7 +800,8 @@ def BuildUbuntuPackage(target, source, env):
                 if package_target == 'source':
                         # TODO(rryan) we have to figure out the key-signing situation
                         # here.
-                        command.extend(['debuild', '-S', '-sa'])
+                        # Preserve the MIXXX_BUILD environment variable.
+                        command.extend(['debuild', '-eMIXXX_BUILD', '-S', '-sa',])
                 else:
                         command.extend(['pdebuild'])
                 result = os.system(' '.join(command))

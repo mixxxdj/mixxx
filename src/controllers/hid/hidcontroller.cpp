@@ -109,7 +109,9 @@ HidController::HidController(const hid_device_info deviceInfo)
 }
 
 HidController::~HidController() {
-    close();
+    if (isOpen()) {
+        close();
+    }
     delete [] hid_path;
     delete [] hid_serial_raw;
 }
