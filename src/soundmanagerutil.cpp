@@ -166,6 +166,8 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QString::fromAscii("Microphone");
     case AUXILIARY:
         return QString::fromAscii("Auxiliary");
+    case SIDECHAIN:
+        return QString::fromAscii("Sidechain");
     }
     return QString::fromAscii("Unknown path type %1").arg(type);
 }
@@ -207,6 +209,8 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case AUXILIARY:
         return QString("%1 %2").arg(QObject::tr("Auxiliary"),
                                     QString::number(index + 1));
+    case SIDECHAIN:
+        return QObject::tr("Sidechain");
     }
     return QObject::tr("Unknown path type %1").arg(type);
 }
@@ -231,6 +235,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
         return AudioPath::MICROPHONE;
     } else if (string == AudioPath::getStringFromType(AudioPath::AUXILIARY).toLower()) {
         return AudioPath::AUXILIARY;
+    } else if (string == AudioPath::getStringFromType(AudioPath::SIDECHAIN).toLower()) {
+        return AudioPath::SIDECHAIN;
     } else {
         return AudioPath::INVALID;
     }
@@ -346,8 +352,14 @@ QList<AudioPathType> AudioOutput::getSupportedTypes() {
     types.append(HEADPHONES);
     types.append(BUS);
     types.append(DECK);
+    types.append(SIDECHAIN);
     return types;
 }
+
+bool AudioOutput::isHidden() {
+    return m_type == SIDECHAIN;
+}
+
 
 /**
  * Implements setting the type of an AudioOutput, using

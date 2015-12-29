@@ -1,6 +1,3 @@
-// dlgtrackinfo.cpp
-// Created 11/10/2009 by RJ Ryan (rryan@mit.edu)
-
 #include <QDesktopServices>
 #include <QtDebug>
 
@@ -10,6 +7,7 @@
 #include "library/coverartutils.h"
 #include "library/dao/cue.h"
 
+const int kFilterLength = 80;
 const int kMinBPM = 30;
 const int kMaxBPM = 240;
 // Maximum allowed interval between beats in milli seconds (calculated from
@@ -20,6 +18,8 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)
             : QDialog(parent),
               m_pLoadedTrack(NULL),
+              m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
+              m_dLastBpm(-1.),
               m_DlgTagFetcher(DlgTagFetcher),
               m_pWCoverArtLabel(new WCoverArtLabel(this)) {
     init();
@@ -68,15 +68,13 @@ void DlgTrackInfo::init() {
     connect(btnCueDelete, SIGNAL(clicked()),
             this, SLOT(cueDelete()));
     connect(bpmTap, SIGNAL(pressed()),
-            this, SLOT(slotBpmTap()));
+            m_pTapFilter.data(), SLOT(tap()));
+    connect(m_pTapFilter.data(), SIGNAL(tapped(double, int)),
+            this, SLOT(slotBpmTap(double, int)));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
     connect(btnOpenFileBrowser, SIGNAL(clicked()),
             this, SLOT(slotOpenInFileBrowser()));
-    m_bpmTapTimer.start();
-    for (int i = 0; i < kFilterLength; ++i) {
-        m_bpmTapFilter[i] = 0.0f;
-    }
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
@@ -161,6 +159,8 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
     txtBpm->setText(pTrack->getBpmStr());
     txtKey->setText(pTrack->getKeyText());
+    const Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+    txtReplayGain->setText(Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
     BeatsPointer pBeats = pTrack->getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
     bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
@@ -172,9 +172,9 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmThreeFourth->setEnabled(enableBpmEditing);
 
     m_loadedCoverInfo = pTrack->getCoverInfo();
-    int reference = pTrack->getId();
+    int reference = pTrack->getId().toInt();
     m_loadedCoverInfo.trackLocation = pTrack->getLocation();
-    m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo.trackLocation, m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         pCache->requestCover(m_loadedCoverInfo, this, reference);
@@ -205,10 +205,10 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
                                   QPixmap pixmap, bool fromCache) {
     Q_UNUSED(fromCache);
     if (pRequestor == this && m_pLoadedTrack &&
-            m_pLoadedTrack->getId() == requestReference) {
+            m_pLoadedTrack->getId().toInt() == requestReference) {
         qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
                  << pixmap.size();
-        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCoverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack->getLocation(), m_loadedCoverInfo, pixmap);
     }
 }
 
@@ -229,7 +229,7 @@ void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
     // TODO(rryan) don't use track ID as a reference
     int reference = 0;
     if (m_pLoadedTrack) {
-        reference = m_pLoadedTrack->getId();
+        reference = m_pLoadedTrack->getId().toInt();
         m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
     }
     CoverArtCache* pCache = CoverArtCache::instance();
@@ -436,13 +436,14 @@ void DlgTrackInfo::clear() {
     txtLocation->setPlainText("");
     txtBitrate->setText("");
     txtBpm->setText("");
+    txtReplayGain->setText("");
 
     m_cueMap.clear();
     cueTable->clearContents();
     cueTable->setRowCount(0);
 
     m_loadedCoverInfo = CoverInfo();
-    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(QString(), m_loadedCoverInfo, QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {
@@ -461,26 +462,16 @@ void DlgTrackInfo::slotBpmThreeFourth() {
     spinBpm->setValue(spinBpm->value() * (3./4.));
 }
 
-void DlgTrackInfo::slotBpmTap() {
-    int elapsed = m_bpmTapTimer.elapsed();
-    m_bpmTapTimer.restart();
-
-    if (elapsed <= kMaxInterval) {
-        // Move back in filter one sample
-        for (int i = 1; i < kFilterLength; ++i) {
-            m_bpmTapFilter[i-1] = m_bpmTapFilter[i];
-        }
-
-        m_bpmTapFilter[kFilterLength-1] = 60000.0f/elapsed;
-        if (m_bpmTapFilter[kFilterLength-1] > kMaxBPM)
-            m_bpmTapFilter[kFilterLength-1] = kMaxBPM;
-
-        double temp = 0.;
-        for (int i = 0; i < kFilterLength; ++i) {
-            temp += m_bpmTapFilter[i];
-        }
-        temp /= kFilterLength;
-        spinBpm->setValue(temp);
+void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
+    Q_UNUSED(numSamples);
+    if (averageLength == 0) {
+        return;
+    }
+    double averageBpm = 60.0 * 1000.0 / averageLength;
+    // average bpm needs to be truncated for this comparison:
+    if (averageBpm != m_dLastBpm) {
+        m_dLastBpm = averageBpm;
+        spinBpm->setValue(averageBpm);
     }
 }
 

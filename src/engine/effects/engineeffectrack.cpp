@@ -1,7 +1,6 @@
 #include "engine/effects/engineeffectrack.h"
 
 #include "engine/effects/engineeffectchain.h"
-#include "sampleutil.h"
 
 EngineEffectRack::EngineEffectRack(int iRackNumber)
         : m_iRackNumber(iRackNumber) {
@@ -10,7 +9,7 @@ EngineEffectRack::EngineEffectRack(int iRackNumber)
 }
 
 EngineEffectRack::~EngineEffectRack() {
-    //qDebug() << "EngineEffectRack::~EngineEffectRack()";
+    //qDebug() << "EngineEffectRack::~EngineEffectRack()" << this;
 }
 
 bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,

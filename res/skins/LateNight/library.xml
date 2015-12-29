@@ -21,8 +21,6 @@
 								<Style>QGroupBox {}</Style>
 								<Layout>vertical</Layout>
 								<Children>
-									<!-- Preview Deck-->
-									<Template src="skin:preview_deck_container.xml"/>
 									<!--Search Input Field-->
 									<SearchBox></SearchBox>
 									<!--Library Tree View-->
@@ -32,7 +30,7 @@
 										<SizePolicy>me,me</SizePolicy>
 										<MinimumSize>100,100</MinimumSize>
 										<Connection>
-											<ConfigKey persist="true" default="false">[Library],show_coverart</ConfigKey>
+											<ConfigKey persist="true">[Library],show_coverart</ConfigKey>
 											<BindProperty>visible</BindProperty>
 										</Connection>
 									</CoverArt>

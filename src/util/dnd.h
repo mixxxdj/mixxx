@@ -174,7 +174,7 @@ class DragAndDropHelper {
 
         // Filter out invalid URLs (eg. files that aren't supported audio
         // filetypes, etc.)
-        if (!SoundSourceProxy::isFilenameSupported(fileInfo.fileName())) {
+        if (!SoundSourceProxy::isFileSupported(fileInfo)) {
             return false;
         }
 

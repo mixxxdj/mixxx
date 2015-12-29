@@ -6,6 +6,7 @@
   */
 
 #include "controllers/midi/hss1394controller.h"
+#include "controllers/controllerdebug.h"
 
 DeviceChannelListener::DeviceChannelListener(QObject* pParent, QString name)
         : QObject(pParent),
@@ -75,7 +76,9 @@ Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
 }
 
 Hss1394Controller::~Hss1394Controller() {
-    close();
+    if (isOpen()) {
+        close();
+    }
 }
 
 int Hss1394Controller::open() {
@@ -88,9 +91,8 @@ int Hss1394Controller::open() {
         return -1;
     }
 
-    if (debugging()) {
-        qDebug() << "Hss1394Controller: Opening" << getName() << "index" << m_iDeviceIndex;
-    }
+    controllerDebug("Hss1394Controller: Opening" << getName() << "index"
+                    << m_iDeviceIndex);
 
     using namespace hss1394;
 

@@ -6,9 +6,12 @@
 
 #include <QObject>
 #include <QMap>
+#include <QMultiHash>
 #include <QSqlDatabase>
+#include <QSet>
 
 #include "library/dao/dao.h"
+#include "track/trackid.h"
 #include "util.h"
 
 #define CRATE_TABLE "crates"
@@ -51,29 +54,34 @@ class CrateDAO : public QObject, public virtual DAO {
     int getCrateId(const int position);
     QString crateName(const int crateId);
     unsigned int crateSize(const int crateId);
-    bool addTrackToCrate(const int trackId, const int crateId);
-    QList<int> getTrackIds(int crateId);
+    bool addTrackToCrate(TrackId trackId, const int crateId);
+    QList<TrackId> getTrackIds(int crateId);
     // This method takes a list of track ids to be added to crate and returns
     // the number of successful insertions.
-    int addTracksToCrate(const int crateId, QList<int>* trackIdList);
+    int addTracksToCrate(const int crateId, QList<TrackId>* trackIdList);
     void copyCrateTracks(const int sourceCrateId, const int tragetCrateId);
-    bool removeTrackFromCrate(const int trackId, const int crateId);
-    bool removeTracksFromCrate(const QList<int>& ids, const int crateId);
+    bool removeTrackFromCrate(TrackId trackId, const int crateId);
+    bool removeTracksFromCrate(const QList<TrackId>& ids, const int crateId);
     // remove tracks from all crates
-    void removeTracksFromCrates(const QList<int>& ids);
+    void removeTracksFromCrates(const QList<TrackId>& ids);
+    bool isTrackInCrate(TrackId trackId, const int crateId);
+    void getCratesTrackIsIn(TrackId trackId, QSet<int>* crateSet) const;
 
   signals:
     void added(int crateId);
     void renamed(int crateId, QString a_strName);
     void deleted(int crateId);
     void changed(int crateId);
-    void trackAdded(int crateId, int trackId);
-    void trackRemoved(int crateId, int trackId);
+    void trackAdded(int crateId, TrackId trackId);
+    void trackRemoved(int crateId, TrackId trackId);
     void lockChanged(int crateId);
     void autoDjChanged(int a_iCrateId, bool a_bIn);
 
   private:
+    void populateCrateMembershipCache();
+
     QSqlDatabase& m_database;
+    QMultiHash<TrackId, int> m_cratesTrackIsIn;
     DISALLOW_COPY_AND_ASSIGN(CrateDAO);
 };
 

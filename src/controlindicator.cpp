@@ -1,21 +1,20 @@
 #include "controlindicator.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
+#include "util/math.h"
 
 ControlIndicator::ControlIndicator(ConfigKey key)
         : ControlObject(key, false),
           m_blinkValue(OFF),
           m_nextSwitchTime(0.0) {
-    m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTickTime"); // Tick time in audio buffer resolution
-    m_pCOTGuiTick50ms = new ControlObjectThread("[Master]", "guiTick50ms");
-    connect(m_pCOTGuiTick50ms, SIGNAL(valueChanged(double)),
-            this, SLOT(slotGuiTick50ms(double)));
+	// Tick time in audio buffer resolution
+    m_pCOTGuiTickTime = new ControlObjectSlave("[Master]", "guiTickTime", this);
+    m_pCOTGuiTick50ms = new ControlObjectSlave("[Master]", "guiTick50ms", this);
+    m_pCOTGuiTick50ms->connectValueChanged(SLOT(slotGuiTick50ms(double)));
     connect(this, SIGNAL(blinkValueChanged()),
             this, SLOT(slotBlinkValueChanged()));
 }
 
 ControlIndicator::~ControlIndicator() {
-    delete m_pCOTGuiTickTime;
-    delete m_pCOTGuiTick50ms;
 }
 
 void ControlIndicator::setBlinkValue(enum BlinkValue bv) {
@@ -29,12 +28,10 @@ void ControlIndicator::slotGuiTick50ms(double cpuTime) {
     if (m_nextSwitchTime <= cpuTime) {
         switch (m_blinkValue) {
         case RATIO1TO1_500MS:
-            toggle();
-            m_nextSwitchTime = cpuTime + 0.5;
+            toggle(0.5);
             break;
         case RATIO1TO1_250MS:
-            toggle();
-            m_nextSwitchTime = cpuTime + 0.25;
+            toggle(0.25);
             break;
         case OFF: // fall through
         case ON: // fall through
@@ -46,7 +43,7 @@ void ControlIndicator::slotGuiTick50ms(double cpuTime) {
 }
 
 void ControlIndicator::slotBlinkValueChanged() {
-    double oldValue = get();
+    bool oldValue = toBool();
 
     switch (m_blinkValue) {
     case OFF:
@@ -60,12 +57,10 @@ void ControlIndicator::slotBlinkValueChanged() {
         }
         break;
     case RATIO1TO1_500MS:
-        toggle();
-        m_nextSwitchTime = m_pCOTGuiTickTime->get() + 0.5;
+        toggle(0.5);
         break;
     case RATIO1TO1_250MS:
-        toggle();
-        m_nextSwitchTime = m_pCOTGuiTickTime->get() + 0.25;
+        toggle(0.25);
         break;
     default:
         // nothing to do
@@ -73,6 +68,17 @@ void ControlIndicator::slotBlinkValueChanged() {
     }
 }
 
-void ControlIndicator::toggle() {
-    set(get()?0.0:1.0);
+void ControlIndicator::toggle(double duration) {
+	double tickTime = m_pCOTGuiTickTime->get();
+	double toggles = floor(tickTime / duration);
+	bool phase = fmod(toggles, 2) >= 1;
+	bool val = toBool();
+	if(val != phase) {
+		// Out of phase, wait until we are in phase
+		m_nextSwitchTime = (toggles + 2) * duration;
+	} else {
+		m_nextSwitchTime = (toggles + 1) * duration;
+	}
+	set(val ? 0.0 : 1.0);
 }
+

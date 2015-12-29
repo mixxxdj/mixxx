@@ -1,6 +1,3 @@
-// bpmcontrol.h
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #ifndef BPMCONTROL_H
 #define BPMCONTROL_H
 
@@ -9,7 +6,7 @@
 #include "controlobject.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
-#include "tapfilter.h"
+#include "util/tapfilter.h"
 
 class ControlObject;
 class ControlLinPotmeter;

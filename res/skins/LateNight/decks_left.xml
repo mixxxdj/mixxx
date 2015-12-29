@@ -16,10 +16,11 @@
                         <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
                         <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
                         <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
-        	        </Template>
+        	          </Template>
                     <WidgetGroup>
                         <ObjectName>Deck</ObjectName>
                         <Layout>horizontal</Layout>
+                        <SizePolicy>me,me</SizePolicy>
                         <Children>
                             <Template src="skin:deck.xml">
                                 <SetVariable name="channum">3</SetVariable>
@@ -35,10 +36,12 @@
                             <BindProperty>visible</BindProperty>
                         </Connection>
                     </WidgetGroup>
+                    <Template src="skin:preview_deck.xml" />
                     <WidgetGroup>
-                      <Layout>vertical</Layout>
-                      <SizePolicy>me,min</SizePolicy>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,me</SizePolicy>
                       <MinimumSize>0,0</MinimumSize>
+                      <MaximumSize>,80</MaximumSize>
                       <Children/>
                     </WidgetGroup>
                 </Children>

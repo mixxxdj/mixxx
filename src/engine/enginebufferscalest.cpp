@@ -44,18 +44,23 @@ static const int kNumChannels = 2;
 EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
       m_bBackwards(false),
-      m_dRateOld(1.0),
-      m_dTempoOld(1.0),
       m_pReadAheadManager(pReadAheadManager) {
     m_pSoundTouch = new soundtouch::SoundTouch();
     m_pSoundTouch->setChannels(kNumChannels);
-    m_pSoundTouch->setRate(m_dRateOld);
-    m_pSoundTouch->setTempo(m_dTempoOld);
+    m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
     m_pSoundTouch->setSampleRate(m_iSampleRate > 0 ? m_iSampleRate : 44100);
 
     buffer_back = new CSAMPLE[kiSoundTouchReadAheadLength*2];
+
+    // Setting the tempo to a very low value will force SoundTouch
+    // to preallocate buffers large enough to (almost certainly)
+    // avoid memory reallocations during playback.
+    m_pSoundTouch->setTempo(0.1);
+    m_pSoundTouch->putSamples(buffer_back, kiSoundTouchReadAheadLength);
+    m_pSoundTouch->clear();
+    m_pSoundTouch->setTempo(m_dTempoRatio);
 }
 
 EngineBufferScaleST::~EngineBufferScaleST() {
@@ -85,33 +90,28 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
 
     // Include baserate in rate_abs so that we do samplerate conversion as part
     // of rate adjustment.
-    double rate_abs = base_rate;
-    double tempo_abs = speed_abs;
+    if (speed_abs != m_dTempoRatio) {
+        // Note: A rate of zero would make Soundtouch crash,
+        // this is caught in getScaled()
+        m_pSoundTouch->setTempo(speed_abs);
+        m_dTempoRatio = speed_abs;
+    }
+    if (base_rate != m_dBaseRate) {
+        m_pSoundTouch->setRate(base_rate);
+        m_dBaseRate = base_rate;
+    }
 
-    // Note that we do not set the tempo if it is zero. This is because of the
-    // above clamping which prevents us from going below MIN_SEEK_SPEED. I think
-    // we should handle this better but I have left the logic in place. rryan
-    // 4/2013.
-    if (tempo_abs != m_dTempoOld && tempo_abs != 0.0) {
-        m_pSoundTouch->setTempo(tempo_abs);
-        m_dTempoOld = tempo_abs;
-    }
-    if (rate_abs != m_dRateOld) {
-        m_pSoundTouch->setRate(rate_abs);
-        m_dRateOld = rate_abs;
-    }
-    if (*pPitchRatio != m_dPitch) {
-        m_pSoundTouch->setPitch(*pPitchRatio);
-        m_dPitch = *pPitchRatio;
+    if (*pPitchRatio != m_dPitchRatio) {
+        // Note: pitch ratio must be positive
+        double pitch = fabs(*pPitchRatio);
+        if (pitch > 0.0) {
+            m_pSoundTouch->setPitch(pitch);
+        }
+        m_dPitchRatio = *pPitchRatio;
     }
 
     // NOTE(rryan) : There used to be logic here that clear()'d when the player
     // changed direction. I removed it because this is handled by EngineBuffer.
-
-    // Used by other methods so we need to keep them up to date.
-    m_dBaseRate = base_rate;
-    m_dTempo = speed_abs;
-    m_dPitch = *pPitchRatio;
 }
 
 void EngineBufferScaleST::setSampleRate(int iSampleRate) {
@@ -130,7 +130,7 @@ void EngineBufferScaleST::clear() {
 double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
     double samplesRead = 0.0;
 
-    if (m_dRateOld == 0 || m_dTempoOld == 0) {
+    if (m_dBaseRate == 0 || m_dTempoRatio == 0 || m_dPitchRatio == 0) {
         SampleUtil::clear(pOutput, buf_size);
         return samplesRead;
     }
@@ -153,7 +153,7 @@ double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
             unsigned int iAvailSamples = m_pReadAheadManager->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
-                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempo,
+                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
                         buffer_back,
                         iLenFrames * kNumChannels);
             unsigned long iAvailFrames = iAvailSamples / kNumChannels;
@@ -185,7 +185,7 @@ double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
     // NOTE(rryan): Why no m_dPitchAdjust here? SoundTouch implements pitch
     // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
     // (*m_dPitchAdjust) so these two cancel out.
-    samplesRead = m_dBaseRate * m_dTempo *
+    samplesRead = m_dBaseRate * m_dTempoRatio *
             total_received_frames * kNumChannels;
 
     return samplesRead;

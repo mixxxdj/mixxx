@@ -19,7 +19,7 @@
 // that is used to read ID3 metadata
 // from a particular folder.
 //
-// The BroseTableModel uses this class.
+// The BrowseTableModel uses this class.
 // Note: Don't call getInstance() from places
 // other than the GUI thread.
 class BrowseTableModel;

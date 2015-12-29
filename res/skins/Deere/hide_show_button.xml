@@ -12,11 +12,15 @@
     <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>
-      <Text>▶</Text>
+      <Text></Text>
+      <Pressed scalemode="STRETCH_ASPECT">icon/ic_unfold_more_48px.svg</Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">icon/ic_unfold_more_48px.svg</Unpressed>
     </State>
     <State>
       <Number>1</Number>
-      <Text>▼</Text>
+      <Text></Text>
+      <Pressed scalemode="STRETCH_ASPECT">icon/ic_unfold_less_48px.svg</Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">icon/ic_unfold_less_48px.svg</Unpressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="control"/></ConfigKey>

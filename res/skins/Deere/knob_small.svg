@@ -1,4 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="20" height="20">
-  <circle cx="10" cy="10" r="8" stroke="black" stroke-width="2" fill="red"/>
-  <line x1="10" y1="10" x2="18" y2="10" stroke="black" stroke-width="2"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="20"
+   height="20"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="knob_small.svg">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="702"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="11.8"
+     inkscape:cx="11.80548"
+     inkscape:cy="10.323929"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <path
+     style="opacity:1;fill:#d2d2d2;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 10.085938 1 A 9 9 0 0 0 1.0859375 10 A 9 9 0 0 0 10.085938 19 A 9 9 0 0 0 18.097656 14.076172 C 17.979327 14.086974 17.86472 14.113281 17.744141 14.113281 L 10.083984 14.113281 C 7.8562041 14.113281 5.9707031 12.227779 5.9707031 10 C 5.9707031 7.7722209 7.8562051 5.8867188 10.083984 5.8867188 L 17.744141 5.8867188 C 17.868742 5.8867188 17.987185 5.9142546 18.109375 5.9257812 A 9 9 0 0 0 10.085938 1 z "
+     id="path4176" />
+  <rect
+     transform="matrix(0,1,-1,0,0,0)"
+     style="opacity:1;fill:#d2d2d2;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="rect4168"
+     width="2.3398778"
+     height="10"
+     x="8.8300619"
+     y="-18.914858"
+     ry="1.1699389" />
 </svg>

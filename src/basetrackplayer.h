@@ -20,6 +20,13 @@ class EffectsManager;
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
+    // The ordering here corresponds to the ordering of the preferences combo box.
+    enum TrackLoadReset {
+        RESET_NONE,
+        RESET_PITCH,
+        RESET_PITCH_AND_SPEED,
+    };
+
     BaseTrackPlayer(QObject* pParent, const QString& group);
     virtual ~BaseTrackPlayer() {}
 
@@ -61,7 +68,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
     void slotUnloadTrack(TrackPointer track);
-    void slotSetReplayGain(double replayGain);
+    void slotSetReplayGain(Mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 
   private:
@@ -72,13 +79,17 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     ControlPotmeter* m_pWaveformZoom;
     ControlObject* m_pEndOfTrack;
 
-    ControlObjectThread* m_pLoopInPoint;
-    ControlObjectThread* m_pLoopOutPoint;
+    ControlObjectSlave* m_pLoopInPoint;
+    ControlObjectSlave* m_pLoopOutPoint;
     ControlObject* m_pDuration;
+
+    // TODO() these COs are reconnected during runtime
+    // This may lock the engine
     ControlObjectThread* m_pBPM;
     ControlObjectThread* m_pKey;
-    ControlObjectThread* m_pReplayGain;
-    ControlObjectThread* m_pPlay;
+
+    ControlObjectSlave* m_pReplayGain;
+    ControlObjectSlave* m_pPlay;
     ControlObjectSlave* m_pLowFilter;
     ControlObjectSlave* m_pMidFilter;
     ControlObjectSlave* m_pHighFilter;
@@ -87,7 +98,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     ControlObjectSlave* m_pHighFilterKill;
     ControlObjectSlave* m_pPreGain;
     ControlObjectSlave* m_pSpeed;
-    ControlObjectSlave* m_pPitch;
+    ControlObjectSlave* m_pPitchAdjust;
     EngineDeck* m_pChannel;
 
     bool m_replaygainPending;

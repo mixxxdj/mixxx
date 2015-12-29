@@ -132,6 +132,13 @@
       </spacer>
      </item>
      <item>
+      <widget class="QLabel" name="labelSelectionInfo">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonAutoDJ">
        <property name="toolTip">
         <string>Turn Auto DJ on or off.</string>

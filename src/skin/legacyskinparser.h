@@ -22,10 +22,12 @@ class ControllerManager;
 class SkinContext;
 class WLabel;
 class ControlObject;
+class LaunchImage;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
+    LegacySkinParser();
     LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
@@ -35,6 +37,8 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     virtual bool canParse(QString skinPath);
     virtual QWidget* parseSkin(QString skinPath, QWidget* pParent);
+
+    LaunchImage* parseLaunchImage(QString skinPath, QWidget* pParent);
 
     // Legacy support for looking up the scheme list.
     static QList<QString> getSchemeList(QString qSkinPath);
@@ -122,6 +126,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     ControlObject* controlFromConfigNode(QDomElement element,
                                          const QString& nodeName,
                                          bool* created);
+
+    QString parseLaunchImageStyle(QDomNode node);
 
     ConfigObject<ConfigValue>* m_pConfig;
     MixxxKeyboard* m_pKeyboard;

@@ -83,18 +83,18 @@ public:
     double getWheelFactor() const;
     SyncMode getSyncMode() const;
 
-    /** Set rate change of the temporary pitch rate */
+    // Set rate change of the temporary pitch rate
     void setRateTemp(double v);
-    /** Add a value to the temporary pitch rate */
+    // Add a value to the temporary pitch rate
     void addRateTemp(double v);
-    /** Subtract a value from the temporary pitch rate */
+    // Subtract a value from the temporary pitch rate
     void subRateTemp(double v);
-    /** Reset the temporary pitch rate */
+    // Reset the temporary pitch rate
     void resetRateTemp(void);
-    /** Get the 'Raw' Temp Rate */
+    // Get the 'Raw' Temp Rate
     double getTempRate(void);
 
-    /** Values used when temp and perm rate buttons are pressed */
+    // Values used when temp and perm rate buttons are pressed
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
 
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
@@ -181,7 +181,6 @@ public:
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     // Return speed for temporary rate change
     double m_dRateTempRampbackChange;
-    bool m_reverseChanged;
 };
 
 #endif /* RATECONTROL_H */

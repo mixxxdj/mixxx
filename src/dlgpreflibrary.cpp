@@ -59,7 +59,7 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
 
     // plugins are loaded in src/main.cpp way early in boot so this is safe
     // here, doesn't need done at every slotUpdate
-    QStringList plugins(SoundSourceProxy::supportedFileExtensionsByPlugins());
+    QStringList plugins(SoundSourceProxy::getSupportedFileExtensionsByPlugins());
     if (plugins.length() > 0) {
         pluginsLabel->setText(plugins.join(", "));
     }

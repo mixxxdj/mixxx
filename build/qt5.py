@@ -34,6 +34,7 @@ selection method.
 
 import os.path
 import re
+import sys
 
 import SCons.Action
 import SCons.Builder
@@ -537,6 +538,25 @@ def __qrc_generator(source, target, env, for_signature):
             qrc_stem = src
         return '$QT5_RCC $QT5_QRCFLAGS -name %s $SOURCE -o $TARGET' % qrc_stem
 
+def _find_qtdirs(qt5dir, module):
+    QT5LIBDIR = os.path.join(qt5dir,"lib")
+    QT5INCDIR = os.path.join(qt5dir,"includedir")
+    if sys.platform.startswith('linux'):
+        if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
+            import subprocess
+            try:
+                if not module in ["Qt5DBus", "Qt5Assistant"]:
+                    module5 = module.replace('Qt','Qt5')
+                else:
+                    module5 = module
+                if not os.path.isdir(QT5LIBDIR):
+                    QT5LIBDIR = subprocess.Popen(["pkg-config", "--variable=libdir", module5], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                if not os.path.isdir(QT5INCDIR):
+                    QT5INCDIR = subprocess.Popen(["pkg-config", "--variable=includedir", module5], stdout = subprocess.PIPE).communicate()[0].rstrip()
+            finally:
+                pass
+    return QT5LIBDIR, QT5INCDIR, os.path.join(QT5INCDIR,module)
+
 #
 # Builders
 #
@@ -841,8 +861,6 @@ def generate(env):
         SConsEnvironment.EnableQt5Modules = enable_modules
 
 def enable_modules(self, modules, debug=False, crosscompiling=False) :
-    import sys
-
     validModules = [
         # Qt Essentials
         'QtCore',
@@ -910,22 +928,26 @@ def enable_modules(self, modules, debug=False, crosscompiling=False) :
         try : self.AppendUnique(CPPDEFINES=moduleDefines[module])
         except: pass
     debugSuffix = ''
-    if sys.platform in ["darwin", "linux2"] and not crosscompiling :
+    if (sys.platform.startswith("linux") or sys.platform.startswith("darwin")) and not crosscompiling :
         if debug : debugSuffix = '_debug'
+        # Call _find_qtdirs with QtCore to get at least one initialized for later usage with RPATH
+        qt_dirs = _find_qtdirs("$QT5DIR","QtCore")
         for module in modules :
             if module not in pclessModules : continue
+            qt_dirs = _find_qtdirs("$QT5DIR",module)
             self.AppendUnique(LIBS=[module.replace('Qt','Qt5')+debugSuffix])
-            self.AppendUnique(LIBPATH=[os.path.join("$QT5DIR","lib")])
-            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include")])
-            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include",module)])
+            self.AppendUnique(LIBPATH=[qt_dirs[0]])
+            self.AppendUnique(CPPPATH=[qt_dirs[1]])
+            self.AppendUnique(CPPPATH=[qt_dirs[2]])
         pcmodules = [module.replace('Qt','Qt5')+debugSuffix for module in modules if module not in pclessModules ]
         if 'Qt5DBus' in pcmodules:
-            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include","Qt5DBus")])
+            self.AppendUnique(CPPPATH=[os.path.join(_find_qtdirs("$QT5DIR","Qt5DBus")[2])])
         if "Qt5Assistant" in pcmodules:
-            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include","Qt5Assistant")])
+            self.AppendUnique(CPPPATH=[os.path.join(_find_qtdirs("$QT5DIR","Qt5Assistant")[2])])
             pcmodules.remove("Qt5Assistant")
             pcmodules.append("Qt5AssistantClient")
-        self.AppendUnique(RPATH=[os.path.join("$QT5DIR","lib")])
+        if qt_dirs[0]:
+            self.AppendUnique(RPATH=[qt_dirs[0]])
         self.ParseConfig('pkg-config %s --libs --cflags'% ' '.join(pcmodules))
         self["QT5_MOCCPPPATH"] = self["CPPPATH"]
         return

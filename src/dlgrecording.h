@@ -28,6 +28,8 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     virtual void onSearch(const QString& text);
     virtual void onShow();
     virtual void loadSelectedTrack();
+    virtual void slotSendToAutoDJ();
+    virtual void slotSendToAutoDJTop();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
     virtual void moveSelection(int delta);
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }

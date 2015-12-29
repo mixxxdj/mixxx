@@ -12,6 +12,7 @@
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
+#include "controllers/controllerpresetinfoenumerator.h"
 
 //Forward declaration(s)
 class Controller;
@@ -89,6 +90,7 @@ class ControllerManager : public QObject {
     QList<Controller*> m_controllers;
     QThread* m_pThread;
     PresetInfoEnumerator* m_pMainThreadPresetEnumerator;
+    bool m_skipPoll;
 };
 
 #endif  // CONTROLLERMANAGER_H

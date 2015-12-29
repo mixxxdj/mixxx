@@ -13,7 +13,6 @@
 #include "util.h"
 #include "util/types.h"
 #include "util/defs.h"
-#include "sampleutil.h"
 #include "lvmixeqbase.h"
 
 class Bessel4LVMixEQEffectGroupState :

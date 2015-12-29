@@ -134,6 +134,7 @@ KeyControl::~KeyControl() {
     delete m_pFileKey;
     delete m_pEngineKey;
     delete m_pEngineKeyDistance;
+    delete m_keylockMode;
 }
 
 KeyControl::PitchTempoRatio KeyControl::getPitchTempoRatio() {

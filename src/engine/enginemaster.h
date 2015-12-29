@@ -129,9 +129,10 @@ class EngineMaster : public QObject, public AudioSource {
     const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
     const CSAMPLE* getChannelBuffer(QString name) const;
+    const CSAMPLE* getSidechainBuffer() const;
 
     EngineSideChain* getSideChain() const {
-        return m_pSideChain;
+        return m_pEngineSideChain;
     }
 
     struct ChannelInfo {
@@ -252,6 +253,10 @@ class EngineMaster : public QObject, public AudioSource {
                              sizeof(long double)];
     };
 
+  protected:
+    // The master buffer is protected so it can be accessed by test subclasses.
+    CSAMPLE* m_pMaster;
+
   private:
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
@@ -284,9 +289,10 @@ class EngineMaster : public QObject, public AudioSource {
 
     // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
-    CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;
     CSAMPLE* m_pTalkover;
+
+    CSAMPLE** m_ppSidechain; // points to master or to talkover buffer
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
@@ -305,7 +311,7 @@ class EngineMaster : public QObject, public AudioSource {
     EngineDelay* m_pHeadDelay;
 
     EngineVuMeter* m_pVumeter;
-    EngineSideChain* m_pSideChain;
+    EngineSideChain* m_pEngineSideChain;
 
     ControlPotmeter* m_pCrossfader;
     ControlPotmeter* m_pHeadMix;
