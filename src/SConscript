@@ -696,7 +696,7 @@ def BuildUbuntuPackage(target, source, env):
         # Big hack for beta PPA upload. We need LP to believe that our original
         # package version is always changing otherwise it will reject our orig
         # source tarball.
-        if 'mixxxbetas' in ubuntu_ppa:
+        if ubuntu_ppa and 'mixxxbetas' in ubuntu_ppa:
                 mixxx_version = '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
 
         # Destroy ubuntu/ and create it
