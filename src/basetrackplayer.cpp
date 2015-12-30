@@ -11,7 +11,7 @@
 #include "engine/enginemaster.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "analyserqueue.h"
+#include "analyzer/analyzerqueue.h"
 #include "util/sandbox.h"
 #include "effects/effectsmanager.h"
 

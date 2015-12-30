@@ -5,7 +5,7 @@
 
 #define kConfigKey "[ReplayGain]"
 
-static const int kReplayGainReferenceLUFS = -18; 
+static const int kReplayGainReferenceLUFS = -18;
 
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue> * _config)
@@ -19,8 +19,8 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue>
     //Connections
     connect(EnableGain, SIGNAL(stateChanged(int)),
             this, SLOT(slotSetRGEnabled()));
-    connect(EnableAnalyser, SIGNAL(stateChanged(int)),
-            this, SLOT(slotSetRGAnalyserEnabled()));
+    connect(EnableAnalyzer, SIGNAL(stateChanged(int)),
+            this, SLOT(slotSetRGAnalyzerEnabled()));
     connect(SliderReplayGainBoost, SIGNAL(valueChanged(int)),
             this, SLOT(slotUpdateReplayGainBoost()));
     connect(SliderReplayGainBoost, SIGNAL(sliderReleased()),
@@ -53,9 +53,11 @@ void DlgPrefReplayGain::loadSettings() {
             ConfigKey(kConfigKey, "ReplayGainEnabled"), "1").toInt() == 1;
     EnableGain->setChecked(gainEnabled);
 
-    bool analyserEnabled = config->getValueString(
+    // WARNING: Do not fix the "analyser" spelling here since user config files
+    // contain these strings.
+    bool analyzerEnabled = config->getValueString(
             ConfigKey(kConfigKey, "ReplayGainAnalyserEnabled"), "1").toInt();
-    EnableAnalyser->setChecked(analyserEnabled);
+    EnableAnalyzer->setChecked(analyzerEnabled);
 
     slotUpdate();
     slotUpdateReplayGainBoost();
@@ -64,9 +66,9 @@ void DlgPrefReplayGain::loadSettings() {
 
 void DlgPrefReplayGain::slotResetToDefaults() {
     EnableGain->setChecked(true);
-    // Turn ReplayGain Analyser on by default as it does not give appreciable
+    // Turn ReplayGain Analyzer on by default as it does not give appreciable
     // delay on recent hardware (<5 years old).
-    EnableAnalyser->setChecked(true);
+    EnableAnalyzer->setChecked(true);
     SliderReplayGainBoost->setValue(0);
     setLabelCurrentReplayGainBoost(0);
     SliderDefaultBoost->setValue(-6);
@@ -93,8 +95,10 @@ void DlgPrefReplayGain::slotSetRGEnabled() {
     slotApply();
 }
 
-void DlgPrefReplayGain::slotSetRGAnalyserEnabled() {
-    int enabled = EnableAnalyser->isChecked() ? 1 : 0;
+void DlgPrefReplayGain::slotSetRGAnalyzerEnabled() {
+    // WARNING: Do not fix the "analyser" spelling here since user config files
+    // contain these strings.
+    int enabled = EnableAnalyzer->isChecked() ? 1 : 0;
     config->set(ConfigKey(kConfigKey,"ReplayGainAnalyserEnabled"),
                 ConfigValue(enabled));
     slotApply();

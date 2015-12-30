@@ -1,12 +1,12 @@
 #include <QtDebug>
 #include <replaygain.h>
 
-#include "analyserrg.h"
+#include "analyzer/analyzergain.h"
 #include "trackinfoobject.h"
 #include "util/math.h"
 #include "util/sample.h"
 
-AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
+AnalyzerGain::AnalyzerGain(ConfigObject<ConfigValue> *_config) {
     m_pConfigReplayGain = _config;
     m_bStepControl = false;
     m_pLeftTempBuffer = NULL;
@@ -15,13 +15,13 @@ AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
     m_pReplayGain = new ReplayGain();
 }
 
-AnalyserGain::~AnalyserGain() {
+AnalyzerGain::~AnalyzerGain() {
     delete [] m_pLeftTempBuffer;
     delete [] m_pRightTempBuffer;
     delete m_pReplayGain;
 }
 
-bool AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     if (loadStored(tio) || totalSamples == 0) {
         return false;
     }
@@ -29,20 +29,23 @@ bool AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
     return true;
 }
 
-bool AnalyserGain::loadStored(TrackPointer tio) const {
-    bool bAnalyserEnabled = (bool)m_pConfigReplayGain->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
-    if (tio->getReplayGain().hasRatio() || !bAnalyserEnabled) {
+bool AnalyzerGain::loadStored(TrackPointer tio) const {
+    // WARNING: Do not fix the "analyser" spelling here since user config files
+    // contain these strings.
+    bool bAnalyzerEnabled = (bool)m_pConfigReplayGain->getValueString(
+        ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
+    if (tio->getReplayGain().hasRatio() || !bAnalyzerEnabled) {
         return true;
     }
     return false;
 }
 
-void AnalyserGain::cleanup(TrackPointer tio) {
+void AnalyzerGain::cleanup(TrackPointer tio) {
     m_bStepControl = false;
     Q_UNUSED(tio);
 }
 
-void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyzerGain::process(const CSAMPLE *pIn, const int iLen) {
     if(!m_bStepControl)
         return;
 
@@ -59,7 +62,7 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
     m_bStepControl = m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer, halfLength);
 }
 
-void AnalyserGain::finalise(TrackPointer tio) {
+void AnalyzerGain::finalize(TrackPointer tio) {
     //TODO: We are going to store values as relative peaks so that "0" means that no replaygain has been evaluated.
     // This means that we are going to transform from dB to peaks and viceversa.
     // One may think to digg into replay_gain code and modify it so that

@@ -864,7 +864,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // the speedSliderPitchRatio is not reseted when keylock is enabled.
         // This mode allows to enable keylock
         // while the track is already played. You can reset to the tracks
-        // original pitch by reseting the pitch knob to center. When disabling
+        // original pitch by resetting the pitch knob to center. When disabling
         // keylock the pitch is reset to the linear vinyl pitch.
 
         // The Pitch knob turns if the speed slider is moved without keylock.

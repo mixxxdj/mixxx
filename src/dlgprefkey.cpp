@@ -20,11 +20,11 @@
 #include <QLineEdit>
 #include <QMessageBox>
 
+#include "analyzer/vamp/vampanalyzer.h"
+#include "analyzer/vamp/vamppluginloader.h"
+#include "controlobject.h"
 #include "track/key_preferences.h"
 #include "util/xml.h"
-#include "controlobject.h"
-#include "vamp/vampanalyser.h"
-#include "vamp/vamppluginloader.h"
 
 using Vamp::Plugin;
 using Vamp::PluginHostAdapter;
@@ -36,7 +36,7 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
         : DlgPreferencePage(parent),
           Ui::DlgPrefKeyDlg(),
           m_pConfig(_config),
-          m_bAnalyserEnabled(false),
+          m_bAnalyzerEnabled(false),
           m_bFastAnalysisEnabled(false),
           m_bReanalyzeEnabled(false) {
     setupUi(this);
@@ -72,8 +72,8 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
     // Connections
     connect(plugincombo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(pluginSelected(int)));
-    connect(banalyserenabled, SIGNAL(stateChanged(int)),
-            this, SLOT(analyserEnabled(int)));
+    connect(banalyzerenabled, SIGNAL(stateChanged(int)),
+            this, SLOT(analyzerEnabled(int)));
     connect(bfastAnalysisEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(fastAnalysisEnabled(int)));
     connect(breanalyzeEnabled, SIGNAL(stateChanged(int)),
@@ -95,20 +95,20 @@ DlgPrefKey::~DlgPrefKey() {
 void DlgPrefKey::loadSettings() {
     qDebug() << "DlgPrefKey::loadSettings";
     qDebug() << "Key plugin ID:" << m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
 
     if(m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID)) == "") {
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID)) == "") {
         slotResetToDefaults();
-        slotApply(); // Write to config file so AnalyserKey can get the data
+        slotApply(); // Write to config file so AnalyzerKey can get the data
         return;
     }
 
    QString pluginid = m_pConfig->getValueString(
-       ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
-    m_selectedAnalyser = pluginid;
+       ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
+    m_selectedAnalyzer = pluginid;
 
-    m_bAnalyserEnabled = static_cast<bool>(m_pConfig->getValueString(
+    m_bAnalyzerEnabled = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
 
     m_bFastAnalysisEnabled = static_cast<bool>(m_pConfig->getValueString(
@@ -150,13 +150,13 @@ void DlgPrefKey::loadSettings() {
 }
 
 void DlgPrefKey::slotResetToDefaults() {
-    m_bAnalyserEnabled = true;
+    m_bAnalyzerEnabled = true;
     m_bFastAnalysisEnabled = false;
     m_bReanalyzeEnabled = false;
-    m_selectedAnalyser = VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID;
-    if (!m_listIdentifier.contains(m_selectedAnalyser)) {
+    m_selectedAnalyzer = VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID;
+    if (!m_listIdentifier.contains(m_selectedAnalyzer)) {
         qDebug() << "DlgPrefKey: qm-keydetector Vamp plugin not found";
-        m_bAnalyserEnabled = false;
+        m_bAnalyzerEnabled = false;
     }
 
     radioNotationTraditional->setChecked(true);
@@ -169,12 +169,12 @@ void DlgPrefKey::pluginSelected(int i) {
     if (i == -1) {
         return;
     }
-    m_selectedAnalyser = m_listIdentifier[i];
+    m_selectedAnalyzer = m_listIdentifier[i];
     slotUpdate();
 }
 
-void DlgPrefKey::analyserEnabled(int i) {
-    m_bAnalyserEnabled = static_cast<bool>(i);
+void DlgPrefKey::analyzerEnabled(int i) {
+    m_bAnalyzerEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
@@ -189,20 +189,20 @@ void DlgPrefKey::reanalyzeEnabled(int i){
 }
 
 void DlgPrefKey::slotApply() {
-    int selected = m_listIdentifier.indexOf(m_selectedAnalyser);
+    int selected = m_listIdentifier.indexOf(m_selectedAnalyzer);
     if (selected == -1) {
         return;
     }
 
     m_pConfig->set(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY),
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY),
         ConfigValue(m_listLibrary[selected]));
     m_pConfig->set(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID),
-        ConfigValue(m_selectedAnalyser));
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID),
+        ConfigValue(m_selectedAnalyzer));
     m_pConfig->set(
         ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED),
-        ConfigValue(m_bAnalyserEnabled ? 1 : 0));
+        ConfigValue(m_bAnalyzerEnabled ? 1 : 0));
     m_pConfig->set(
         ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS),
         ConfigValue(m_bFastAnalysisEnabled ? 1 : 0));
@@ -258,17 +258,17 @@ void DlgPrefKey::slotApply() {
 }
 
 void DlgPrefKey::slotUpdate() {
-    plugincombo->setEnabled(m_bAnalyserEnabled);
-    banalyserenabled->setChecked(m_bAnalyserEnabled);
+    plugincombo->setEnabled(m_bAnalyzerEnabled);
+    banalyzerenabled->setChecked(m_bAnalyzerEnabled);
     bfastAnalysisEnabled->setChecked(m_bFastAnalysisEnabled);
     breanalyzeEnabled->setChecked(m_bReanalyzeEnabled);
     slotApply();
 
-    if (!m_bAnalyserEnabled) {
+    if (!m_bAnalyzerEnabled) {
         return;
     }
 
-    int comboselected = m_listIdentifier.indexOf(m_selectedAnalyser);
+    int comboselected = m_listIdentifier.indexOf(m_selectedAnalyzer);
     if (comboselected == -1) {
         qDebug() << "DlgPrefKey: Plugin not found in slotUpdate()";
         return;
@@ -277,7 +277,7 @@ void DlgPrefKey::slotUpdate() {
 }
 
 void DlgPrefKey::populate() {
-   VampAnalyser::initializePluginPaths();
+   VampAnalyzer::initializePluginPaths();
    m_listIdentifier.clear();
    m_listName.clear();
    m_listLibrary.clear();
@@ -297,7 +297,7 @@ void DlgPrefKey::populate() {
                                            + QString::number(ioutput);
                QString displaynametext = QString::fromStdString(plugin->getName());
                qDebug() << "Plugin output displayname:" << displayname << displaynametext;
-               bool goodones = displayname.contains(VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID);
+               bool goodones = displayname.contains(VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID);
 
                if (goodones) {
                    m_listName << displaynametext;

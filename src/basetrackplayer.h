@@ -12,7 +12,6 @@ class ControlObject;
 class ControlPotmeter;
 class ControlObjectThread;
 class ControlObjectSlave;
-class AnalyserQueue;
 class EffectsManager;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the

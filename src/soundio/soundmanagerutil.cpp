@@ -13,7 +13,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
+
 #include "engine/enginechannel.h"
 
 /**

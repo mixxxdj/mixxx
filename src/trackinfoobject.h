@@ -218,8 +218,8 @@ class TrackInfoObject : public QObject {
     ConstWaveformPointer getWaveformSummary() const;
     void setWaveformSummary(ConstWaveformPointer pWaveform);
 
-    void setAnalyserProgress(int progress);
-    int getAnalyserProgress() const;
+    void setAnalyzerProgress(int progress);
+    int getAnalyzerProgress() const;
 
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
@@ -272,7 +272,7 @@ class TrackInfoObject : public QObject {
     void waveformUpdated();
     void waveformSummaryUpdated();
     void coverArtUpdated();
-    void analyserProgress(int progress);
+    void analyzerProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
     void keyUpdated(double key);
@@ -381,7 +381,7 @@ class TrackInfoObject : public QObject {
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
-    QAtomicInt m_analyserProgress; // in 0.1%
+    QAtomicInt m_analyzerProgress; // in 0.1%
 
     CoverArt m_coverArt;
 

@@ -344,7 +344,7 @@ void EngineShoutcast::updateFromPreferences() {
 
     // Initialize m_encoder
     if (m_encoder) {
-        // delete m_encoder if it has been initalized (with maybe) different bitrate
+        // delete m_encoder if it has been initialized (with maybe) different bitrate
         delete m_encoder;
         m_encoder = NULL;
     }

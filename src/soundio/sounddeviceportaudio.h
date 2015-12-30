@@ -22,7 +22,7 @@
 
 #include <QString>
 
-#include "sounddevice.h"
+#include "soundio/sounddevice.h"
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 #define CPU_OVERLOAD_DURATION 500 // in ms
@@ -96,7 +96,7 @@ class SoundDevicePortAudio : public SoundDevice {
     ControlObjectSlave* m_pMasterAudioLatencyUsage;
     ControlObjectSlave* m_pMasterAudioLatencyOverload;
     int m_underflowUpdateCount;
-    static volatile int m_underflowHappend;
+    static volatile int m_underflowHappened;
     qint64 m_nsInAudioCb;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;

@@ -35,7 +35,7 @@ addons:
       - libflac-dev
       - libid3tag0-dev
 before_install:
-  # Virtual X, needed for analyser waveform tests
+  # Virtual X, needed for analyzer waveform tests
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - export CXX=g++-4.8

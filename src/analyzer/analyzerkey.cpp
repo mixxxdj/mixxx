@@ -1,15 +1,16 @@
+#include "analyzerkey.h"
+
 #include <QtDebug>
 #include <QVector>
 
-#include "analyserkey.h"
-#include "track/key_preferences.h"
 #include "proto/keys.pb.h"
+#include "track/key_preferences.h"
 #include "track/keyfactory.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
-AnalyserKey::AnalyserKey(ConfigObject<ConfigValue>* pConfig)
+AnalyzerKey::AnalyzerKey(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
           m_pVamp(NULL),
           m_iSampleRate(0),
@@ -19,11 +20,11 @@ AnalyserKey::AnalyserKey(ConfigObject<ConfigValue>* pConfig)
           m_bPreferencesReanalyzeEnabled(false) {
 }
 
-AnalyserKey::~AnalyserKey() {
+AnalyzerKey::~AnalyzerKey() {
     delete m_pVamp;
 }
 
-bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     if (totalSamples == 0) {
         return false;
     }
@@ -40,13 +41,13 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
         m_pConfig->getValueString(
             ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
     QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY),
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY),
         // TODO(rryan) this default really doesn't belong here.
         "libmixxxminimal");
     QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID),
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID),
         // TODO(rryan) this default really doesn't belong here.
-        VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID);
+        VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID);
 
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
@@ -56,7 +57,7 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     bool bShouldAnalyze = !loadStored(tio);
 
     if (bShouldAnalyze) {
-        m_pVamp = new VampAnalyser();
+        m_pVamp = new VampAnalyzer();
         bShouldAnalyze = m_pVamp->Init(
             library, m_pluginId, sampleRate, totalSamples,
             m_bPreferencesFastAnalysisEnabled);
@@ -75,15 +76,15 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     return bShouldAnalyze;
 }
 
-bool AnalyserKey::loadStored(TrackPointer tio) const {
+bool AnalyzerKey::loadStored(TrackPointer tio) const {
     bool bPreferencesFastAnalysisEnabled = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
 
     QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY));
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY));
     QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
 
     // TODO(rryan): This belongs elsewhere.
     if (library.isEmpty() || library.isNull())
@@ -91,7 +92,7 @@ bool AnalyserKey::loadStored(TrackPointer tio) const {
 
     // TODO(rryan): This belongs elsewhere.
     if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID = VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID;
+        pluginID = VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID;
 
     const Keys& keys = tio->getKeys();
     if (keys.isValid()) {
@@ -122,7 +123,7 @@ bool AnalyserKey::loadStored(TrackPointer tio) const {
     }
 }
 
-void AnalyserKey::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
     if (m_pVamp == NULL)
         return;
     bool success = m_pVamp->Process(pIn, iLen);
@@ -132,13 +133,13 @@ void AnalyserKey::process(const CSAMPLE *pIn, const int iLen) {
     }
 }
 
-void AnalyserKey::cleanup(TrackPointer tio) {
+void AnalyzerKey::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
     delete m_pVamp;
     m_pVamp = NULL;
 }
 
-void AnalyserKey::finalise(TrackPointer tio) {
+void AnalyzerKey::finalize(TrackPointer tio) {
     if (m_pVamp == NULL) {
         return;
     }
@@ -152,7 +153,7 @@ void AnalyserKey::finalise(TrackPointer tio) {
     m_pVamp = NULL;
 
     if (frames.size() == 0 || frames.size() != keys.size()) {
-        qWarning() << "AnalyserKey: Key sequence and list of times do not match.";
+        qWarning() << "AnalyzerKey: Key sequence and list of times do not match.";
         return;
     }
 
@@ -174,7 +175,7 @@ void AnalyserKey::finalise(TrackPointer tio) {
 }
 
 // static
-QHash<QString, QString> AnalyserKey::getExtraVersionInfo(
+QHash<QString, QString> AnalyzerKey::getExtraVersionInfo(
     QString pluginId, bool bPreferencesFastAnalysis) {
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = pluginId;

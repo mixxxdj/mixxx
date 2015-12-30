@@ -7,8 +7,7 @@
  * This is a thread-safe wrapper class around Vamp's
  * PluginLoader class.
  */
-
-#include "vamp/vamppluginloader.h"
+#include "analyzer/vamp/vamppluginloader.h"
 
 using Vamp::Plugin;
 using Vamp::PluginHostAdapter;
@@ -57,7 +56,3 @@ Vamp::Plugin* VampPluginLoader::loadPlugin(
     return m_pVampPluginLoader->loadPlugin(
         key, inputSampleRate, adapterFlags);
 }
-
-
-
-

@@ -2,13 +2,11 @@
 #define DLGTAGFETCHER_H
 
 #include <QDialog>
+#include <QTreeWidget>
+
 #include "ui_dlgtagfetcher.h"
 #include "trackinfoobject.h"
 #include "musicbrainz/tagfetcher.h"
-
-
-class QTreeWidget;
-
 
 class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
   Q_OBJECT

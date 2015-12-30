@@ -1,9 +1,10 @@
+#include "analyzer/analyzerwaveform.h"
+
 #include <QImage>
 #include <QtDebug>
 #include <QTime>
 #include <QtDebug>
 
-#include "analyserwaveform.h"
 #include "engine/engineobject.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilterbessel4.h"
@@ -12,14 +13,14 @@
 #include "trackinfoobject.h"
 #include "waveform/waveformfactory.h"
 
-AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
+AnalyzerWaveform::AnalyzerWaveform(ConfigObject<ConfigValue>* pConfig) :
         m_skipProcessing(false),
         m_waveformData(NULL),
         m_waveformSummaryData(NULL),
         m_stride(0, 0),
         m_currentStride(0),
         m_currentSummaryStride(0) {
-    qDebug() << "AnalyserWaveform::AnalyserWaveform()";
+    qDebug() << "AnalyzerWaveform::AnalyzerWaveform()";
 
     m_filter[0] = 0;
     m_filter[1] = 0;
@@ -35,7 +36,7 @@ AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
 
         //Open the database connection in this thread.
         if (!m_database.open()) {
-            qDebug() << "Failed to open database from analyser thread."
+            qDebug() << "Failed to open database from analyzer thread."
                      << m_database.lastError();
         }
     }
@@ -44,21 +45,21 @@ AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
     m_analysisDao = new AnalysisDao(m_database, pConfig);
 }
 
-AnalyserWaveform::~AnalyserWaveform() {
-    qDebug() << "AnalyserWaveform::~AnalyserWaveform()";
+AnalyzerWaveform::~AnalyzerWaveform() {
+    qDebug() << "AnalyzerWaveform::~AnalyzerWaveform()";
     destroyFilters();
     m_database.close();
     delete m_timer;
     delete m_analysisDao;
 }
 
-bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     m_skipProcessing = false;
 
     m_timer->start();
 
     if (totalSamples == 0) {
-        qWarning() << "AnalyserWaveform::initialise - no waveform/waveform summary";
+        qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
         return false;
     }
 
@@ -66,7 +67,7 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     if (loadStored(tio)) {
         m_skipProcessing = true;
     } else {
-        // Now actually initialize the AnalyserWaveform:
+        // Now actually initialize the AnalyzerWaveform:
         destroyFilters();
         createFilters(sampleRate);
 
@@ -108,7 +109,7 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     return !m_skipProcessing;
 }
 
-bool AnalyserWaveform::loadStored(TrackPointer tio) const {
+bool AnalyzerWaveform::loadStored(TrackPointer tio) const {
     ConstWaveformPointer pTrackWaveform = tio->getWaveform();
     ConstWaveformPointer pTrackWaveformSummary = tio->getWaveformSummary();
     ConstWaveformPointer pLoadedTrackWaveform;
@@ -153,7 +154,7 @@ bool AnalyserWaveform::loadStored(TrackPointer tio) const {
 
     // If we don't need to calculate the waveform/wavesummary, skip.
     if (!missingWaveform && !missingWavesummary) {
-        qDebug() << "AnalyserWaveform::loadStored - Stored waveform loaded";
+        qDebug() << "AnalyzerWaveform::loadStored - Stored waveform loaded";
         if (pLoadedTrackWaveform) {
             tio->setWaveform(pLoadedTrackWaveform);
         }
@@ -165,7 +166,7 @@ bool AnalyserWaveform::loadStored(TrackPointer tio) const {
     return false;
 }
 
-void AnalyserWaveform::createFilters(int sampleRate) {
+void AnalyzerWaveform::createFilters(int sampleRate) {
     // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
     // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
     // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
@@ -178,7 +179,7 @@ void AnalyserWaveform::createFilters(int sampleRate) {
     }
 }
 
-void AnalyserWaveform::destroyFilters() {
+void AnalyzerWaveform::destroyFilters() {
     for (int i = 0; i < FilterCount; ++i) {
         if (m_filter[i]) {
             delete m_filter[i];
@@ -187,7 +188,7 @@ void AnalyserWaveform::destroyFilters() {
     }
 }
 
-void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
+void AnalyzerWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
     if (m_skipProcessing || !m_waveform || !m_waveformSummary)
         return;
 
@@ -235,7 +236,7 @@ void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
 
         if (fmod(m_stride.m_position, m_stride.m_length) < 1) {
             if (m_currentStride + ChannelCount > m_waveform->getDataSize()) {
-                qWarning() << "AnalyserWaveform::process - currentStride >= waveform size";
+                qWarning() << "AnalyzerWaveform::process - currentStride >= waveform size";
                 return;
             }
             m_stride.store(m_waveformData + m_currentStride);
@@ -245,7 +246,7 @@ void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
 
         if (fmod(m_stride.m_position, m_stride.m_averageLength) < 1) {
             if (m_currentSummaryStride + ChannelCount > m_waveformSummary->getDataSize()) {
-                qWarning() << "AnalyserWaveform::process - current summary stride >= waveform summary size";
+                qWarning() << "AnalyzerWaveform::process - current summary stride >= waveform summary size";
                 return;
             }
             m_stride.averageStore(m_waveformSummaryData + m_currentSummaryStride);
@@ -265,11 +266,11 @@ void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
         }
     }
 
-    //qDebug() << "AnalyserWaveform::process - m_waveform->getCompletion()" << m_waveform->getCompletion() << "off" << m_waveform->getDataSize();
-    //qDebug() << "AnalyserWaveform::process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion() << "off" << m_waveformSummary->getDataSize();
+    //qDebug() << "AnalyzerWaveform::process - m_waveform->getCompletion()" << m_waveform->getCompletion() << "off" << m_waveform->getDataSize();
+    //qDebug() << "AnalyzerWaveform::process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion() << "off" << m_waveformSummary->getDataSize();
 }
 
-void AnalyserWaveform::cleanup(TrackPointer tio) {
+void AnalyzerWaveform::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
     if (m_skipProcessing) {
         return;
@@ -288,7 +289,7 @@ void AnalyserWaveform::cleanup(TrackPointer tio) {
     m_waveformSummary.clear();
 }
 
-void AnalyserWaveform::finalise(TrackPointer tio) {
+void AnalyzerWaveform::finalize(TrackPointer tio) {
     if (m_skipProcessing) {
         return;
     }
@@ -323,7 +324,7 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
              << m_timer->elapsed()/1000.0 << "s";
 }
 
-void AnalyserWaveform::storeIfGreater(float* pDest, float source) {
+void AnalyzerWaveform::storeIfGreater(float* pDest, float source) {
     if (*pDest < source) {
         *pDest = source;
     }
