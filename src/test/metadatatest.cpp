@@ -6,7 +6,7 @@
 
 namespace {
 
-const double kBpmValueMax = Mixxx::Bpm::kValueMax;
+const double kBpmValueMax = 300.0;
 
 class MetadataTest : public testing::Test {
   protected:
@@ -60,11 +60,6 @@ TEST_F(MetadataTest, ParseBpmValidRange) {
             parseBpm(inputValues[i], true, expectedValue);
         }
     }
-}
-
-TEST_F(MetadataTest, ParseBpmDecimalScaling) {
-    parseBpm("345678", true, 34.5678);
-    parseBpm("2345678", true, 234.5678);
 }
 
 TEST_F(MetadataTest, ParseBpmInvalid) {

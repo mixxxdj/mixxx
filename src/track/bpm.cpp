@@ -7,7 +7,6 @@ namespace Mixxx {
 
 /*static*/ const double Bpm::kValueUndefined = 0.0;
 /*static*/ const double Bpm::kValueMin = 0.0; // lower bound (exclusive)
-/*static*/ const double Bpm::kValueMax = 300.0; // upper bound (inclusive)
 
 double Bpm::valueFromString(const QString& str, bool* pValid) {
     if (pValid) {
@@ -25,13 +24,6 @@ double Bpm::valueFromString(const QString& str, bool* pValid) {
                 *pValid = true;
             }
             return value;
-        }
-        while (kValueMax < value) {
-            // Some applications might store the BPM as an
-            // integer scaled by a factor of 10 or 100 to
-            // preserve fractional digits.
-            qDebug() << "Scaling BPM value:" << value;
-            value /= 10.0;
         }
         if (isValidValue(value)) {
             if (pValid) {

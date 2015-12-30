@@ -15,7 +15,6 @@ public:
     // Visual Studio 2015 on Windows.
     static const double kValueUndefined;
     static const double kValueMin; // lower bound (exclusive)
-    static const double kValueMax; // upper bound (inclusive)
 
     Bpm()
         : Bpm(kValueUndefined) {
@@ -25,7 +24,7 @@ public:
     }
 
     static bool isValidValue(double value) {
-        return (kValueMin < value) && (kValueMax >= value);
+        return kValueMin < value;
     }
 
     bool hasValue() const {
