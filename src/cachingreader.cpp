@@ -328,8 +328,7 @@ int CachingReader::read(int sample, bool reverse, int numSamples, CSAMPLE* buffe
                 const SINT samplesToCopy = CachingReaderChunk::frames2samples(framesToCopy);
                 
                 if (reverse) {
-//                    pChunk->copySamplesReverse(&buffer[samples_remaining - samples_to_read], chunkSampleOffset, samplesToCopy);
-                    buffer += samplesToCopy;
+                    pChunk->copySamplesReverse(&buffer[numSamples - samplesRead - samplesToCopy], chunkSampleOffset, samplesToCopy);
                 } else {
                     pChunk->copySamples(buffer, chunkSampleOffset, samplesToCopy);
                     buffer += samplesToCopy;

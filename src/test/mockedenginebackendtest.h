@@ -39,7 +39,7 @@ class MockScaler : public EngineBufferScale {
         Q_UNUSED(pOutput);
         m_processedTempo = m_dTempoRatio;
         m_processedPitch = m_dPitchRatio;
-        double samplesRead = round(buf_size * m_dTempo);
+        double samplesRead = round(buf_size * m_dTempoRatio);
         return samplesRead;
     }
 

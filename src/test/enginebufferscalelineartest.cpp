@@ -140,11 +140,11 @@ TEST_F(EngineBufferScaleLinearTest, ScaleConstant) {
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
-    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
+    CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
     m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
     // TODO(rryan) the LERP w/ the previous buffer causes samples 0 and 1 to be
     // 0, for now skip the first two.
-    AssertWholeBufferEquals(pOutput+2, 1.0f, kiLinearScaleReadAheadLength-2);
+    AssertWholeBufferEquals(pOutput+2, 1.0f, kiLinearScaleReadAheadLength - 2);
 
     // Check that the total samples read from the RAMAN is equal to the samples
     // we requested.
@@ -166,16 +166,15 @@ TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
     }
     m_pReadAheadMock->setReadBuffer(readBuffer.data(), readBuffer.size());
 
-    const int totalSamples = kiLinearScaleReadAheadLength;
-    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pScaler->getScaled(pOutput, totalSamples);
+    CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
+    m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
 
-    AssertBufferCycles(pOutput, totalSamples,
+    AssertBufferCycles(pOutput, kiLinearScaleReadAheadLength,
                        readBuffer.data(), readBuffer.size());
 
     // Check that the total samples read from the RAMAN is equal to the samples
     // we requested.
-    ASSERT_EQ(totalSamples, m_pReadAheadMock->getSamplesRead());
+    ASSERT_EQ(kiLinearScaleReadAheadLength, m_pReadAheadMock->getSamplesRead());
 
     SampleUtil::free(pOutput);
 }
@@ -185,8 +184,6 @@ TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
     SetRate(0.0);
     SetRate(1.0);
 
-    const int bufferSize = kiLinearScaleReadAheadLength;
-
     // Read all 1's
     CSAMPLE readBuffer[] = { 1.0f };
     m_pReadAheadMock->setReadBuffer(readBuffer, 1);
@@ -195,17 +192,16 @@ TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
-    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pScaler->getScaled(pOutput, bufferSize);
+    CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
+    m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
 
-    AssertBufferMonotonicallyProgresses(pOutput, 0.0f, 1.0f, bufferSize);
+    AssertBufferMonotonicallyProgresses(pOutput, 0.0f, 1.0f, kiLinearScaleReadAheadLength);
 
     SampleUtil::free(pOutput);
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
     SetRateNoLerp(2.0);
-    const int bufferSize = kiLinearScaleReadAheadLength;
 
     // To prove that the channels don't touch each other, we're using negative
     // values on the first channel and positive values on the second channel. If
@@ -221,23 +217,22 @@ TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
-    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pScaler->getScaled(pOutput, bufferSize);
+    CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
+    m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
 
     CSAMPLE expectedResult[] = { 1.0, 1.0,
                                  -1.0, -1.0 };
-    AssertBufferCycles(pOutput, bufferSize, expectedResult, 4);
+    AssertBufferCycles(pOutput, kiLinearScaleReadAheadLength, expectedResult, 4);
 
     // Check that the total samples read from the RAMAN is double the samples
     // we requested.
-    ASSERT_EQ(bufferSize*2, m_pReadAheadMock->getSamplesRead());
+    ASSERT_EQ(kiLinearScaleReadAheadLength * 2, m_pReadAheadMock->getSamplesRead());
 
     SampleUtil::free(pOutput);
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
     SetRateNoLerp(0.5);
-    const int bufferSize = kiLinearScaleReadAheadLength;
 
     // To prove that the channels don't touch each other, we're using negative
     // values on the first channel and positive values on the second channel. If
@@ -251,26 +246,25 @@ TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
-    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pScaler->getScaled(pOutput, bufferSize);
+    CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
+    m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
 
     CSAMPLE expectedResult[] = { -101.0, 101.0,
                                  -100.0, 100.0,
                                  -99.0, 99.0,
                                  -100.0, 100.0 };
-    AssertBufferCycles(pOutput, bufferSize, expectedResult, 8);
+    AssertBufferCycles(pOutput, kiLinearScaleReadAheadLength, expectedResult, 8);
 
     // Check that the total samples read from the RAMAN is half the samples we
     // requested. TODO(XXX) the extra +2 in this seems very suspicious. We need
     // to find out why this happens.
-    ASSERT_EQ(bufferSize/2+2, m_pReadAheadMock->getSamplesRead());
+    ASSERT_EQ(kiLinearScaleReadAheadLength / 2 + 2, m_pReadAheadMock->getSamplesRead());
 
     SampleUtil::free(pOutput);
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
     SetRateNoLerp(0.5);
-    const int bufferSize = kiLinearScaleReadAheadLength;
 
     // To prove that the channels don't touch each other, we're using negative
     // values on the first channel and positive values on the second channel. If
@@ -289,9 +283,9 @@ TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
                                  -99.0, 99.0,
                                  -100.0, 100.0 };
 
-    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
+    CSAMPLE* pOutput = SampleUtil::alloc(kiLinearScaleReadAheadLength);
 
-    int samplesRemaining = bufferSize;
+    int samplesRemaining = kiLinearScaleReadAheadLength;
     while (samplesRemaining > 0) {
         int toRead = math_min(8, samplesRemaining);
         m_pScaler->getScaled(pOutput, 8);
