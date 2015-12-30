@@ -15,10 +15,11 @@
  ***************************************************************************/
 
 #include "engine/enginevumeter.h"
-#include "controlpotmeter.h"
+
 #include "controlobjectslave.h"
-#include "sampleutil.h"
+#include "controlpotmeter.h"
 #include "util/math.h"
+#include "util/sample.h"
 
 EngineVuMeter::EngineVuMeter(QString group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means

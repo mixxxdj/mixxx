@@ -20,7 +20,7 @@ class PortAudio(Dependence):
             conf.CheckLib('advapi32')
 
     def sources(self, build):
-        return ['sounddeviceportaudio.cpp']
+        return ['soundio/sounddeviceportaudio.cpp']
 
 
 class PortMIDI(Dependence):
@@ -503,12 +503,12 @@ class FpClassify(Dependence):
         return build.toolchain_is_gnu
 
     # This is a wrapper arround the fpclassify function that pevents inlining
-    # It is compiled without optimization and allows to use these function 
-    # from -ffast-math optimized objects 
+    # It is compiled without optimization and allows to use these function
+    # from -ffast-math optimized objects
     def sources(self, build):
         # add this file without fast-math flag
         env = build.env.Clone()
-        if '-ffast-math' in env['CCFLAGS']: 
+        if '-ffast-math' in env['CCFLAGS']:
                 env['CCFLAGS'].remove('-ffast-math')
         return env.Object('util/fpclassify.cpp')
 
@@ -668,10 +668,10 @@ class MixxxCore(Feature):
                    "cachingreaderchunk.cpp",
                    "cachingreaderworker.cpp",
 
-                   "analyserrg.cpp",
-                   "analyserqueue.cpp",
-                   "analyserwaveform.cpp",
-                   "analyserkey.cpp",
+                   "analyzer/analyzerkey.cpp",
+                   "analyzer/analyzerqueue.cpp",
+                   "analyzer/analyzerwaveform.cpp",
+                   "analyzer/analyzergain.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -762,7 +762,7 @@ class MixxxCore(Feature):
                    "widget/wcoverartmenu.cpp",
                    "widget/wsingletoncontainer.cpp",
 
-                   "network.cpp",
+                   "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",
                    "musicbrainz/gzip.cpp",
                    "musicbrainz/crc.c",
@@ -770,7 +770,6 @@ class MixxxCore(Feature):
                    "musicbrainz/chromaprinter.cpp",
                    "musicbrainz/musicbrainzclient.cpp",
 
-                   "rotary.cpp",
                    "widget/wtracktableview.cpp",
                    "widget/wtracktableviewheader.cpp",
                    "widget/wlibrarysidebar.cpp",
@@ -928,11 +927,6 @@ class MixxxCore(Feature):
                    "skin/pixmapsource.cpp",
                    "skin/launchimage.cpp",
 
-                   "sampleutil.cpp",
-                   "samplebuffer.cpp",
-                   "singularsamplebuffer.cpp",
-                   "circularsamplebuffer.cpp",
-
                    "trackinfoobject.cpp",
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
@@ -949,12 +943,12 @@ class MixxxCore(Feature):
                    "previewdeck.cpp",
                    "playermanager.cpp",
                    "samplerbank.cpp",
-                   "sounddevice.cpp",
-                   "sounddevicenetwork.cpp",
+                   "soundio/sounddevice.cpp",
+                   "soundio/sounddevicenetwork.cpp",
                    "engine/sidechain/enginenetworkstream.cpp",
-                   "soundmanager.cpp",
-                   "soundmanagerconfig.cpp",
-                   "soundmanagerutil.cpp",
+                   "soundio/soundmanager.cpp",
+                   "soundio/soundmanagerconfig.cpp",
+                   "soundio/soundmanagerutil.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
                    "visualplayposition.cpp",
@@ -986,6 +980,11 @@ class MixxxCore(Feature):
                    "util/console.cpp",
                    "util/dbid.cpp",
                    "util/replaygain.cpp",
+                   "util/sample.cpp",
+                   "util/samplebuffer.cpp",
+                   "util/singularsamplebuffer.cpp",
+                   "util/circularsamplebuffer.cpp",
+                   "util/rotary.cpp",
 
                    '#res/mixxx.qrc'
                    ]

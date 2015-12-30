@@ -1,11 +1,11 @@
+#include "engine/enginebufferscalelinear.h"
 
 #include <QtDebug>
 
-#include "engine/enginebufferscalelinear.h"
-#include "sampleutil.h"
 #include "track/keyutils.h"
-#include "util/math.h"
 #include "util/assert.h"
+#include "util/math.h"
+#include "util/sample.h"
 
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),

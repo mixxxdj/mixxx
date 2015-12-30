@@ -23,11 +23,11 @@
 #include <SoundTouch.h>
 
 #include "controlobject.h"
-#include "engine/readaheadmanager.h"
 #include "engine/engineobject.h"
+#include "engine/readaheadmanager.h"
 #include "track/keyutils.h"
-#include "sampleutil.h"
 #include "util/math.h"
+#include "util/sample.h"
 
 using namespace soundtouch;
 

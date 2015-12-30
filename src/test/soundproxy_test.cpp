@@ -1,22 +1,21 @@
-#include "test/mixxxtest.h"
+#include <gmock/gmock.h>
 
-#include "soundsourceproxy.h"
+#include <QtDebug>
+
 #include "metadata/trackmetadata.h"
-#include "samplebuffer.h"
+#include "soundsourceproxy.h"
+#include "test/mixxxtest.h"
+#include "util/samplebuffer.h"
 
 #ifdef __FFMPEGFILE__
 #include "sources/soundsourceffmpeg.h"
 #endif
 
-#include <gmock/gmock.h>
-
-#include <QtDebug>
-
 class SoundSourceProxyTest: public MixxxTest {
   protected:
     static QStringList getFileNameSuffixes() {
         QStringList availableFileNameSuffixes;
-        availableFileNameSuffixes << ".aiff" << ".flac" 
+        availableFileNameSuffixes << ".aiff" << ".flac"
                 << "-png.mp3" << ".ogg" << ".opus" << ".wav" << ".wv";
 
 #ifndef __WINDOWS__
@@ -170,6 +169,3 @@ TEST_F(SoundSourceProxyTest, seekForward) {
         }
     }
 }
-
-
-

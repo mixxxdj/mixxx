@@ -11,7 +11,7 @@
 #include <QString>
 #include <QTimerEvent>
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 #include "configobject.h"
 #include "vinylcontrol/vinylsignalquality.h"
 

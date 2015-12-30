@@ -24,7 +24,7 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
 
   private slots:
     void pluginSelected(int i);
-    void analyserEnabled(int i);
+    void analyzerEnabled(int i);
     void fastAnalysisEnabled(int i);
     void reanalyzeEnabled(int i);
 
@@ -42,8 +42,8 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
     QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;
-    QString m_selectedAnalyser;
-    bool m_bAnalyserEnabled;
+    QString m_selectedAnalyzer;
+    bool m_bAnalyzerEnabled;
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyzeEnabled;
 };

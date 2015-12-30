@@ -1,8 +1,8 @@
-#include <QtDebug>
-
 #include "effects/native/reverbeffect.h"
 
-#include "sampleutil.h"
+#include <QtDebug>
+
+#include "util/sample.h"
 
 // static
 QString ReverbEffect::getId() {

@@ -19,6 +19,7 @@
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
+#include "util/duration.h"
 
 class MidiController : public Controller {
     Q_OBJECT
@@ -62,11 +63,12 @@ class MidiController : public Controller {
         send(data, length);
     }
 
+  protected slots:
     void receive(unsigned char status, unsigned char control,
-                 unsigned char value, int32_t timestamp);
+                 unsigned char value, mixxx::Duration timestamp);
 
     // For receiving System Exclusive messages
-    void receive(const QByteArray data);
+    void receive(const QByteArray data, mixxx::Duration timestamp);
     virtual int close();
 
   private slots:
@@ -81,9 +83,11 @@ class MidiController : public Controller {
     void processInputMapping(const MidiInputMapping& mapping,
                              unsigned char status,
                              unsigned char control,
-                             unsigned char value);
+                             unsigned char value,
+                             mixxx::Duration timestamp);
     void processInputMapping(const MidiInputMapping& mapping,
-                             const QByteArray& data);
+                             const QByteArray& data,
+                             mixxx::Duration timestamp);
 
     virtual void sendWord(unsigned int word) = 0;
     double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);

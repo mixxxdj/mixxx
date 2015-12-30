@@ -1,11 +1,11 @@
 #ifndef AUDIOTAGGER_H
 #define AUDIOTAGGER_H
 
-#include "metadata/trackmetadata.h"
-#include "util/sandbox.h"
-#include "util/defs.h" // Result
-
 #include <QFileInfo>
+
+#include "metadata/trackmetadata.h"
+#include "util/result.h"
+#include "util/sandbox.h"
 
 class AudioTagger {
 public:

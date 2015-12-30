@@ -12,7 +12,6 @@
 #include "trackinfoobject.h"
 #include "ui_dlgrecording.h"
 
-class AnalyserQueue;
 class PlaylistTableModel;
 class QSqlTableModel;
 class WTrackTableView;

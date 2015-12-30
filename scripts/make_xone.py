@@ -257,15 +257,6 @@ if MASTER_SYNC_LAYOUT:
             </control>
             <control>
                 <group>[Master]</group>
-                <key>sync_master</key>
-                <status>0x9F</status>
-                <midino>0x0D</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
                 <key>XoneK2.leftBottomKnob</key>
                 <status>0xBF</status>
                 <midino>0x14</midino>

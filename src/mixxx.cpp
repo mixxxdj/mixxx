@@ -26,7 +26,7 @@
 
 #include "mixxx.h"
 
-#include "analyserqueue.h"
+#include "analyzer/analyzerqueue.h"
 #include "controlpotmeter.h"
 #include "controlobjectslave.h"
 #include "deck.h"
@@ -53,8 +53,8 @@
 #include "shoutcast/shoutcastmanager.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
-#include "soundmanager.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanager.h"
+#include "soundio/soundmanagerutil.h"
 #include "soundsourceproxy.h"
 #include "trackinfoobject.h"
 #include "upgrade.h"
@@ -143,7 +143,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #endif
     pApp->processEvents();
 
-    initalize(pApp, args);
+    initialize(pApp, args);
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -152,7 +152,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pSkinLoader;
 }
 
-void MixxxMainWindow::initalize(QApplication* pApp, const CmdlineArgs& args) {
+void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Register custom data types for signal processing
     qRegisterMetaType<TrackId>("TrackId");
     qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");

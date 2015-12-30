@@ -25,7 +25,7 @@ string MixxxBpmDetection::getName() const {
 
 string MixxxBpmDetection::getDescription() const {
     // Return something helpful here!
-    return "Port of Mixxx BPM Analyser";
+    return "Port of Mixxx BPM Analyzer";
 }
 
 string MixxxBpmDetection::getMaker() const {

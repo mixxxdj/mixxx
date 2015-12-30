@@ -1,15 +1,15 @@
 #ifndef TRACKMETADATATAGLIB_H
 #define TRACKMETADATATAGLIB_H
 
-#include "metadata/trackmetadata.h"
-#include "util/defs.h" // Result
-
 #include <taglib/apetag.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/xiphcomment.h>
 #include <taglib/mp4tag.h>
 
 #include <QImage>
+
+#include "metadata/trackmetadata.h"
+#include "util/result.h"
 
 namespace Mixxx {
 

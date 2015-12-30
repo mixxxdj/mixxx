@@ -2,12 +2,13 @@
 // Created 8/2/2009 by RJ Ryan (rryan@mit.edu)
 
 #include "engine/readaheadmanager.h"
-#include "sampleutil.h"
-#include "util/math.h"
-#include "util/defs.h"
+
+#include "cachingreader.h"
 #include "engine/loopingcontrol.h"
 #include "engine/ratecontrol.h"
-#include "cachingreader.h"
+#include "util/defs.h"
+#include "util/math.h"
+#include "util/sample.h"
 
 ReadAheadManager::ReadAheadManager()
         : m_pLoopingControl(NULL),
@@ -18,8 +19,8 @@ ReadAheadManager::ReadAheadManager()
     // For testing only: ReadAheadManagerMock
 }
 
-ReadAheadManager::ReadAheadManager(CachingReader* pReader, 
-                                   LoopingControl* pLoopingControl) 
+ReadAheadManager::ReadAheadManager(CachingReader* pReader,
+                                   LoopingControl* pLoopingControl)
         : m_pLoopingControl(pLoopingControl),
           m_pRateControl(NULL),
           m_iCurrentPosition(0),

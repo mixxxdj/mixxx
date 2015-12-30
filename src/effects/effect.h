@@ -4,10 +4,10 @@
 #include <QSharedPointer>
 #include <QDomDocument>
 
-#include "util.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"
 #include "effects/effectinstantiator.h"
+#include "util/class.h"
 
 class EffectProcessor;
 class EngineEffectChain;

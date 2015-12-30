@@ -22,14 +22,14 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "util/types.h"
+#include "cachingreader.h"
+#include "configobject.h"
+#include "control/controlvalue.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "trackinfoobject.h"
-#include "configobject.h"
-#include "rotary.h"
-#include "control/controlvalue.h"
-#include "cachingreader.h"
+#include "util/rotary.h"
+#include "util/types.h"
 
 //for the writer
 #ifdef __SCALER_DEBUG__
