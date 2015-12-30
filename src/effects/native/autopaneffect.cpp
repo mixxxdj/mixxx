@@ -1,9 +1,12 @@
+// THIS HAS TO BE THE FIRST INCLUDE!!! --kain88 (April 2013)
+// http://stackoverflow.com/a/6563891
+#include "util/math.h"
+
 #include "effects/native/autopaneffect.h"
 
 #include <QtDebug>
 
 #include "util/experiment.h"
-#include "util/math.h"
 #include "util/sample.h"
 
 const float kPositionRampingThreshold = 0.002f;
