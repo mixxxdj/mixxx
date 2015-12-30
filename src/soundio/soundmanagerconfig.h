@@ -24,7 +24,7 @@
 #include <QMultiHash>
 #include <QFileInfo>
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class SoundDevice;
 class SoundManager;

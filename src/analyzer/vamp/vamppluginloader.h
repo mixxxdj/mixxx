@@ -8,8 +8,8 @@
  * PluginLoader class.
  */
 
-#ifndef VAMPPLUGINLOADER_H
-#define VAMPPLUGINLOADER_H
+#ifndef ANALYZER_VAMP_VAMPPLUGINLOADER_H
+#define ANALYZER_VAMP_VAMPPLUGINLOADER_H
 
 #include <QMutex>
 #include <vamp-hostsdk/vamp-hostsdk.h>
@@ -45,4 +45,4 @@ class VampPluginLoader {
     DISALLOW_COPY_AND_ASSIGN(VampPluginLoader);
 };
 
-#endif // VAMPPLUGINLOADER_H
+#endif // ANALYZER_VAMP_VAMPPLUGINLOADER_H

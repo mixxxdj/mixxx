@@ -13,10 +13,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "soundmanagerconfig.h"
-#include "soundmanagerutil.h"
-#include "sounddevice.h"
-#include "soundmanager.h"
+#include "soundio/soundmanagerconfig.h"
+
+#include "soundio/soundmanagerutil.h"
+#include "soundio/sounddevice.h"
+#include "soundio/soundmanager.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 

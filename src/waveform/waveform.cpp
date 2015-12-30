@@ -74,7 +74,7 @@ QByteArray Waveform::toByteArray() const {
 
     io::Waveform::Signal* all = waveform.mutable_signal_all();
     io::Waveform::FilteredSignal* filtered = waveform.mutable_signal_filtered();
-    // TODO(rryan) get the actual cutoff values from analyserwaveform.cpp so
+    // TODO(rryan) get the actual cutoff values from analyzerwaveform.cpp so
     // that if they change we don't have to remember to update these.
 
     // Frequency cutoffs for butterworth filters:

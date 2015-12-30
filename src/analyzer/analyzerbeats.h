@@ -1,28 +1,29 @@
 /* Beat Tracking test via vamp-plugins
- * analyserbeats.h
+ * analyzerbeats.h
  *
  *  Created on: 16/mar/2011
  *      Author: Vittorio Colao
  */
 
-#ifndef ANALYSERBEATS_H_
-#define ANALYSERBEATS_H_
+#ifndef ANALYZER_ANALYZERBEATS_H
+#define ANALYZER_ANALYZERBEATS_H
 
 #include <QHash>
 
-#include "analyser.h"
+#include "analyzer/analyzer.h"
+#include "analyzer/vamp/vampanalyzer.h"
 #include "configobject.h"
-#include "vamp/vampanalyser.h"
 
-class AnalyserBeats: public Analyser {
+class AnalyzerBeats: public Analyzer {
   public:
-    AnalyserBeats(ConfigObject<ConfigValue>* pConfig);
-    virtual ~AnalyserBeats();
-    bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
-    bool loadStored(TrackPointer tio) const;
-    void process(const CSAMPLE *pIn, const int iLen);
-    void cleanup(TrackPointer tio);
-    void finalise(TrackPointer tio);
+    AnalyzerBeats(ConfigObject<ConfigValue>* pConfig);
+    virtual ~AnalyzerBeats();
+
+    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
+    bool loadStored(TrackPointer tio) const override;
+    void process(const CSAMPLE *pIn, const int iLen) override;
+    void cleanup(TrackPointer tio) override;
+    void finalize(TrackPointer tio) override;
 
   private:
     static QHash<QString, QString> getExtraVersionInfo(
@@ -30,7 +31,7 @@ class AnalyserBeats: public Analyser {
     QVector<double> correctedBeats(QVector<double> rawbeats);
 
     ConfigObject<ConfigValue>* m_pConfig;
-    VampAnalyser* m_pVamp;
+    VampAnalyzer* m_pVamp;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;
     bool m_bPreferencesFixedTempo;
@@ -41,4 +42,4 @@ class AnalyserBeats: public Analyser {
     int m_iMinBpm, m_iMaxBpm;
 };
 
-#endif /* ANALYSERVAMPTEST_H_ */
+#endif /* ANALYZER_ANALYZERBEATS_H */

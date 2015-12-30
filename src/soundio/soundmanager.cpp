@@ -14,7 +14,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "soundmanager.h"
+#include "soundio/soundmanager.h"
 
 #include <QtDebug>
 #include <cstring> // for memcpy and strcmp
@@ -28,10 +28,10 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
-#include "sounddevice.h"
-#include "sounddevicenetwork.h"
-#include "sounddeviceportaudio.h"
-#include "soundmanagerutil.h"
+#include "soundio/sounddevice.h"
+#include "soundio/sounddevicenetwork.h"
+#include "soundio/sounddeviceportaudio.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -57,12 +57,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
           m_jackSampleRate(-1),
 #endif
           m_pErrorDevice(NULL) {
-
-#ifdef __PORTAUDIO__
-    qDebug() << "PortAudio version:" << Pa_GetVersion()
-             << "text:" << Pa_GetVersionText();
-#endif
-
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(ConfigKey("[SoundManager]", "status"));

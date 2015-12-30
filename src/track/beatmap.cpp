@@ -579,7 +579,7 @@ void BeatMap::setBpm(double dBpm) {
      * If the new provided bpm is not a power-of-two fraction, we assume that the algorithm failed
      * at all to guess the bpm. I have no idea on how to deal with this.
      * If we assume that bpm does not change along the track, i.e. if we use
-     * fixed tempo approximation (see analyserbeat.*), this should coincide with the
+     * fixed tempo approximation (see analyzerbeat.*), this should coincide with the
      * method in beatgrid.cpp.
      *
      * - vittorio.

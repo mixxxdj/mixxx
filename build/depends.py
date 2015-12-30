@@ -20,7 +20,7 @@ class PortAudio(Dependence):
             conf.CheckLib('advapi32')
 
     def sources(self, build):
-        return ['sounddeviceportaudio.cpp']
+        return ['soundio/sounddeviceportaudio.cpp']
 
 
 class PortMIDI(Dependence):
@@ -668,10 +668,10 @@ class MixxxCore(Feature):
                    "cachingreaderchunk.cpp",
                    "cachingreaderworker.cpp",
 
-                   "analyserrg.cpp",
-                   "analyserqueue.cpp",
-                   "analyserwaveform.cpp",
-                   "analyserkey.cpp",
+                   "analyzer/analyzerkey.cpp",
+                   "analyzer/analyzerqueue.cpp",
+                   "analyzer/analyzerwaveform.cpp",
+                   "analyzer/analyzergain.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -943,12 +943,12 @@ class MixxxCore(Feature):
                    "previewdeck.cpp",
                    "playermanager.cpp",
                    "samplerbank.cpp",
-                   "sounddevice.cpp",
-                   "sounddevicenetwork.cpp",
+                   "soundio/sounddevice.cpp",
+                   "soundio/sounddevicenetwork.cpp",
                    "engine/sidechain/enginenetworkstream.cpp",
-                   "soundmanager.cpp",
-                   "soundmanagerconfig.cpp",
-                   "soundmanagerutil.cpp",
+                   "soundio/soundmanager.cpp",
+                   "soundio/soundmanagerconfig.cpp",
+                   "soundio/soundmanagerutil.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
                    "visualplayposition.cpp",
@@ -1153,6 +1153,12 @@ class MixxxCore(Feature):
             # I used the Windows API in foldertreemodel.cpp
             # to quickly test if a folder has subfolders
             build.env.Append(LIBS='shell32')
+
+            # Causes the cmath headers to declare M_PI and friends.
+            # http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx
+            # We could define this in our headers but then include order
+            # matters since headers we don't control may include cmath first.
+            build.env.Append(CPPDEFINES='_USE_MATH_DEFINES')
 
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')

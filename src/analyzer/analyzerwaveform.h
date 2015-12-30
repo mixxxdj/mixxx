@@ -1,15 +1,15 @@
-#ifndef ANALYSER_WAVEFORM_H
-#define ANALYSER_WAVEFORM_H
+#ifndef ANALYZER_ANALYZERWAVEFORM_H
+#define ANALYZER_ANALYZERWAVEFORM_H
 
 #include <QTime>
 #include <QImage>
 #include <QSqlDatabase>
 #include <limits>
 
+#include "analyzer/analyzer.h"
 #include "configobject.h"
-#include "analyser.h"
-#include "waveform/waveform.h"
 #include "util/math.h"
+#include "waveform/waveform.h"
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP
@@ -136,16 +136,16 @@ struct WaveformStride {
     float m_postScaleConversion;
 };
 
-class AnalyserWaveform : public Analyser {
+class AnalyzerWaveform : public Analyzer {
   public:
-    AnalyserWaveform(ConfigObject<ConfigValue>* pConfig);
-    virtual ~AnalyserWaveform();
+    AnalyzerWaveform(ConfigObject<ConfigValue>* pConfig);
+    virtual ~AnalyzerWaveform();
 
-    bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
-    bool loadStored(TrackPointer tio) const;
-    void process(const CSAMPLE *buffer, const int bufferLength);
-    void cleanup(TrackPointer tio);
-    void finalise(TrackPointer tio);
+    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
+    bool loadStored(TrackPointer tio) const override;
+    void process(const CSAMPLE *buffer, const int bufferLength) override;
+    void cleanup(TrackPointer tio) override;
+    void finalize(TrackPointer tio) override;
 
   private:
     void storeCurentStridePower();
@@ -155,7 +155,6 @@ class AnalyserWaveform : public Analyser {
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
 
-  private:
     bool m_skipProcessing;
 
     WaveformPointer m_waveform;
@@ -180,4 +179,4 @@ class AnalyserWaveform : public Analyser {
 #endif
 };
 
-#endif
+#endif /* ANALYZER_ANALYZERWAVEFORM_H */

@@ -108,7 +108,7 @@ void DlgPrefLibrary::slotHide() {
     }
 }
 
-void DlgPrefLibrary::initialiseDirList() {
+void DlgPrefLibrary::initializeDirList() {
     // save which index was selected
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
@@ -149,7 +149,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
 }
 
 void DlgPrefLibrary::slotUpdate() {
-    initialiseDirList();
+    initializeDirList();
     checkBox_library_scan->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","RescanOnStartup")).toInt());
     checkbox_ID3_sync->setChecked((bool)m_pconfig->getValueString(

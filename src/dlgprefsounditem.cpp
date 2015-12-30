@@ -16,8 +16,8 @@
 #include <QPoint>
 
 #include "dlgprefsounditem.h"
-#include "sounddevice.h"
-#include "soundmanagerconfig.h"
+#include "soundio/sounddevice.h"
+#include "soundio/soundmanagerconfig.h"
 
 /**
  * Constructs a new preferences sound item, representing an AudioPath and SoundDevice

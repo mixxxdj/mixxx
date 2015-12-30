@@ -21,7 +21,7 @@
 #include <QString>
 #include <QList>
 
-#include "soundmanager.h"
+#include "soundio/soundmanager.h"
 #include "util/result.h"
 
 //Forward declarations

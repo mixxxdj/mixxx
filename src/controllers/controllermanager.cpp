@@ -194,14 +194,13 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
-int ControllerManager::slotSetUpDevices() {
+void ControllerManager::slotSetUpDevices() {
     qDebug() << "ControllerManager: Setting up devices";
 
     updateControllerList();
     QList<Controller*> deviceList = getControllerList(false, true);
 
     QSet<QString> filenames;
-    int error = 0;
 
     foreach (Controller* pController, deviceList) {
         QString name = pController->getName();
@@ -243,16 +242,12 @@ int ControllerManager::slotSetUpDevices() {
         int value = pController->open();
         if (value != 0) {
             qWarning() << "There was a problem opening" << name;
-            if (error == 0) {
-                error = value;
-            }
             continue;
         }
         pController->applyPreset(getPresetPaths(m_pConfig), true);
     }
 
     maybeStartOrStopPolling();
-    return error;
 }
 
 void ControllerManager::maybeStartOrStopPolling() {

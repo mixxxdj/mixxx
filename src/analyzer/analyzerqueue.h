@@ -1,5 +1,5 @@
-#ifndef ANALYSERQUEUE_H
-#define ANALYSERQUEUE_H
+#ifndef ANALYZER_ANALYZERQUEUE_H
+#define ANALYZER_ANALYZERQUEUE_H
 
 #include <QList>
 #include <QThread>
@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "analyser.h"
+#include "analyzer/analyzer.h"
 #include "configobject.h"
 #include "sources/audiosource.h"
 #include "trackinfoobject.h"
@@ -17,18 +17,19 @@
 
 class TrackCollection;
 
-class AnalyserQueue : public QThread {
+class AnalyzerQueue : public QThread {
     Q_OBJECT
 
   public:
-    AnalyserQueue(TrackCollection* pTrackCollection);
-    virtual ~AnalyserQueue();
+    AnalyzerQueue(TrackCollection* pTrackCollection);
+    virtual ~AnalyzerQueue();
+
     void stop();
     void queueAnalyseTrack(TrackPointer tio);
 
-    static AnalyserQueue* createDefaultAnalyserQueue(
+    static AnalyzerQueue* createDefaultAnalyzerQueue(
             ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
-    static AnalyserQueue* createAnalysisFeatureAnalyserQueue(
+    static AnalyzerQueue* createAnalysisFeatureAnalyzerQueue(
             ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
 
   public slots:
@@ -39,7 +40,7 @@ class AnalyserQueue : public QThread {
     void trackProgress(int progress);
     void trackDone(TrackPointer track);
     void trackFinished(int size);
-    // Signals from AnalyserQueue Thread:
+    // Signals from AnalyzerQueue Thread:
     void queueEmpty();
     void updateProgress();
 
@@ -47,7 +48,6 @@ class AnalyserQueue : public QThread {
     void run();
 
   private:
-
     struct progress_info {
         TrackPointer current_track;
         int track_progress; // in 0.1 %
@@ -55,9 +55,9 @@ class AnalyserQueue : public QThread {
         QSemaphore sema;
     };
 
-    void addAnalyser(Analyser* an);
+    void addAnalyzer(Analyzer* an);
 
-    QList<Analyser*> m_aq;
+    QList<Analyzer*> m_aq;
 
     bool isLoadedTrackWaiting(TrackPointer analysingTrack);
     TrackPointer dequeueNextBlocking();
@@ -78,4 +78,4 @@ class AnalyserQueue : public QThread {
     int m_queue_size;
 };
 
-#endif
+#endif /* ANALYZER_ANALYZERQUEUE_H */
