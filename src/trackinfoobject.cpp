@@ -305,16 +305,18 @@ void TrackInfoObject::setReplayGain(const Mixxx::ReplayGain& replayGain) {
 }
 
 double TrackInfoObject::getBpm() const {
+    double bpm = Mixxx::Bpm::kValueUndefined;
     QMutexLocker lock(&m_qMutex);
-    if (!m_pBeats) {
-        return 0;
+    if (m_pBeats) {
+        // BPM from beat grid overrides BPM from metadata
+        // Reason: The BPM value in the metadata might be imprecise,
+        // e.g. ID3v2 only supports integer values!
+        double beatsBpm = m_pBeats->getBpm();
+        if (Mixxx::Bpm::isValidValue(beatsBpm)) {
+            bpm = beatsBpm;
+        }
     }
-    // getBpm() returns -1 when invalid.
-    double bpm = m_pBeats->getBpm();
-    if (bpm >= 0.0) {
-        return bpm;
-    }
-    return 0;
+    return bpm;
 }
 
 double TrackInfoObject::setBpm(double bpmValue) {
