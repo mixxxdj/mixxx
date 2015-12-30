@@ -1154,6 +1154,12 @@ class MixxxCore(Feature):
             # to quickly test if a folder has subfolders
             build.env.Append(LIBS='shell32')
 
+            # Causes the cmath headers to declare M_PI and friends.
+            # http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx
+            # We could define this in our headers but then include order
+            # matters since headers we don't control may include cmath first.
+            build.env.Append(CPPDEFINES='_USE_MATH_DEFINES')
+
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
 
