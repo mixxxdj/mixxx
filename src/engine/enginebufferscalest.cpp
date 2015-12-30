@@ -138,7 +138,7 @@ double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
     unsigned int total_received_frames = 0;
     unsigned int total_read_frames = 0;
 
-    unsigned long remaining_frames = buf_size / kNumChannels;
+    unsigned int remaining_frames = buf_size / kNumChannels;
     CSAMPLE* read = pOutput;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
@@ -156,7 +156,7 @@ double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
                         (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
                         buffer_back,
                         iLenFrames * kNumChannels);
-            unsigned long iAvailFrames = iAvailSamples / kNumChannels;
+            unsigned int iAvailFrames = iAvailSamples / kNumChannels;
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
