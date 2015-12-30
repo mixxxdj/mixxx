@@ -1,6 +1,6 @@
 #include "sources/soundsourcemodplug.h"
 
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "util/timer.h"
 #include "util/sample.h"
 

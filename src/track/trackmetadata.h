@@ -3,7 +3,7 @@
 
 #include <QDateTime>
 
-#include "util/replaygain.h"
+#include "track/replaygain.h"
 
 namespace Mixxx {
 

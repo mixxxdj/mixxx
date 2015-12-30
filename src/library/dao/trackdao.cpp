@@ -10,7 +10,7 @@
 
 #include "library/dao/trackdao.h"
 
-#include "metadata/audiotagger.h"
+#include "track/audiotagger.h"
 #include "library/queryutil.h"
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"
@@ -1092,6 +1092,7 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
     PlayCounter playCounter(pTrack->getPlayCounter());
     playCounter.setPlayed(record.value(column).toBool());
     pTrack->setPlayCounter(playCounter);
+    return false;
 }
 
 bool setTrackChannels(const QSqlRecord& record, const int column,

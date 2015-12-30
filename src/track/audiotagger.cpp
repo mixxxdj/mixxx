@@ -1,6 +1,6 @@
-#include "metadata/audiotagger.h"
+#include "track/audiotagger.h"
 
-#include "metadata/trackmetadatataglib.h"
+#include "track/trackmetadatataglib.h"
 
 namespace {
 

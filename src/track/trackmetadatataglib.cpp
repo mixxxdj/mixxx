@@ -1,4 +1,4 @@
-#include "metadata/trackmetadatataglib.h"
+#include "track/trackmetadatataglib.h"
 
 #include "util/assert.h"
 #include "util/memory.h"
