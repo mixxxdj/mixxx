@@ -1092,6 +1092,7 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
     PlayCounter playCounter(pTrack->getPlayCounter());
     playCounter.setPlayed(record.value(column).toBool());
     pTrack->setPlayCounter(playCounter);
+    return false;
 }
 
 bool setTrackChannels(const QSqlRecord& record, const int column,
