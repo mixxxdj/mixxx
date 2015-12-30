@@ -44,8 +44,6 @@ class MockPortMidiDevice : public PortMidiDevice {
             : PortMidiDevice(info, index) {
     }
 
-    MOCK_CONST_METHOD0(info, const PmDeviceInfo*());
-    MOCK_CONST_METHOD0(index, int());
     MOCK_CONST_METHOD0(isOpen, bool());
     MOCK_METHOD1(openInput, PmError(int32_t));
     MOCK_METHOD0(openOutput, PmError());
