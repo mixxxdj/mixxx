@@ -1,3 +1,5 @@
+#include <QStringList>
+
 #include "track/trackmetadatataglib.h"
 
 #include "util/assert.h"
@@ -60,6 +62,45 @@ const QString kFileTypeOggVorbis("ogg");
 const QString kFileTypeOggOpus("opus");
 const QString kFileTypeWAV("wav");
 const QString kFileTypeWavPack("wv");
+
+
+// Separates the track number from the (optional)
+// total number of tracks
+const QString kTrackNumberSeparator("/");
+
+enum class ParseResult {
+    UNKNOWN,
+    EMPTY,
+    VALID,
+    INVALID
+};
+
+std::pair<int, int> parseTrackNumber(const QString& trackNumber, ParseResult* pParseResult = nullptr) {
+    int number = 0;
+    int total = 0;
+    if (trackNumber.trimmed().isEmpty()) {
+        if (pParseResult) {
+            *pParseResult = ParseResult::EMPTY;
+        }
+    } else {
+        const QStringList trackNumberSplit(trackNumber.split(kTrackNumberSeparator));
+        bool valid = (trackNumberSplit.size() >= 1) && (trackNumberSplit.size() <= 2);
+        if (valid && (trackNumberSplit.size() > 0)) {
+            number = trackNumberSplit[0].toInt(&valid);
+            valid = valid && (0 <= number);
+            if (valid && (trackNumberSplit.size() > 1)) {
+                total = trackNumberSplit[1].toInt(&valid);
+                valid = valid && (0 <= total);
+            }
+        }
+        if (pParseResult) {
+            *pParseResult = valid ? ParseResult::VALID : ParseResult::INVALID;
+        }
+    }
+    DEBUG_ASSERT((nullptr == pParseResult) || (ParseResult::UNKNOWN != *pParseResult));
+    return std::make_pair(number, total);
+}
+
 
 inline bool hasID3v2Tag(TagLib::MPEG::File& file) {
 #if TAGLIB_HAS_TAG_CHECK
@@ -703,6 +744,12 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
         }
     }
 
+    const TagLib::ID3v2::FrameList trackNumberFrame(tag.frameListMap()["TRCK"]);
+    if (!trackNumberFrame.isEmpty()) {
+        // Read the track number string without any parsing/validation
+        pTrackMetadata->setTrackNumber(toQStringFirstNotEmpty(trackNumberFrame));
+    }
+
     const TagLib::ID3v2::FrameList bpmFrame(tag.frameListMap()["TBPM"]);
     if (!bpmFrame.isEmpty()) {
         parseBpm(pTrackMetadata, toQStringFirstNotEmpty(bpmFrame));
@@ -756,6 +803,11 @@ void readTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::AP
     // https://picard.musicbrainz.org/docs/mappings
     if (tag.itemListMap().contains("Year")) {
         pTrackMetadata->setYear(toQString(tag.itemListMap()["Year"]));
+    }
+
+    if (tag.itemListMap().contains("Track")) {
+        // Read the track number string without any parsing/validation
+        pTrackMetadata->setTrackNumber(toQString(tag.itemListMap()["Track"]));
     }
 
     if (tag.itemListMap().contains("BPM")) {
@@ -816,6 +868,39 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
     if (tag.fieldListMap().contains("GROUPING")) {
         pTrackMetadata->setGrouping(
                 toQStringFirstNotEmpty(tag.fieldListMap()["GROUPING"]));
+    }
+
+    if (tag.fieldListMap().contains("TRACKNUMBER")) {
+        const QString trackNumberText(
+                toQStringFirstNotEmpty(tag.fieldListMap()["TRACKNUMBER"]));
+        // Try to parse both the track number and the optional total tracks
+        // from this field
+        ParseResult trackNumberParseResult = ParseResult::UNKNOWN;
+        std::pair<int, int> trackNumber(parseTrackNumber(
+                trackNumberText, &trackNumberParseResult));
+        if ((ParseResult::VALID == trackNumberParseResult) &&
+                (0 == trackNumber.second)) {
+            // If parsing of the track number succeeded read the specialized
+            // fields, but only if the total number of tracks is still zero.
+            QString trackTotalText;
+            if (tag.fieldListMap().contains("TRACKTOTAL")) {
+                // recommended field for total tracks
+                trackTotalText = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
+            } else if (tag.fieldListMap().contains("TOTALTRACKS")) {
+                // legacy field for total tracks
+                trackTotalText = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
+            }
+            if (!trackTotalText.trimmed().isEmpty()) {
+                bool totalTracksValid = false;
+                int totalTracks = trackTotalText.toInt(&totalTracksValid);
+                if (totalTracksValid) {
+                    trackNumber.second = totalTracks;
+                }
+            }
+            pTrackMetadata->setTrackNumber(formatTrackNumber(trackNumber));
+        } else {
+            pTrackMetadata->setTrackNumber(trackNumberText);
+        }
     }
 
     // The release date formatted according to ISO 8601. Might
@@ -891,6 +976,13 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
     // Get date/year as string
     if (getItemListMap(tag).contains("\251day")) {
         pTrackMetadata->setYear(toQStringFirstNotEmpty(getItemListMap(tag)["\251day"]));
+    }
+
+    // Read track number/total pair
+    if (getItemListMap(tag).contains("trkn")) {
+        const TagLib::MP4::Item::IntPair trknPair(getItemListMap(tag)["trkn"].toIntPair());
+        const std::pair<int, int> trackNumber(trknPair.first, trknPair.second);
+        pTrackMetadata->setTrackNumber(formatTrackNumber(trackNumber));
     }
 
     // Get BPM
