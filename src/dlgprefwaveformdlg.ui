@@ -147,7 +147,7 @@
         <string/>
        </property>
        <property name="text">
-        <string>OpenGl status</string>
+        <string>OpenGL status</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

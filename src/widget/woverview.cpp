@@ -35,7 +35,6 @@
 
 WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
         WWidget(parent),
-        m_pWaveform(NULL),
         m_pWaveformSourceImage(NULL),
         m_actualCompletion(0),
         m_pixmapDone(false),
@@ -48,22 +47,20 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_iPos(0),
         m_a(1.0),
         m_b(0.0),
-        m_dAnalyserProgress(-1.0),
-        m_bAnalyserFinalizing(false),
+        m_dAnalyzerProgress(-1.0),
+        m_bAnalyzerFinalizing(false),
         m_trackLoaded(false) {
-    m_endOfTrackControl = new ControlObjectThread(
-            m_group, "end_of_track");
-    connect(m_endOfTrackControl, SIGNAL(valueChanged(double)),
-             this, SLOT(onEndOfTrackChange(double)));
-    m_trackSamplesControl = new ControlObjectThread(m_group, "track_samples");
-    m_playControl = new ControlObjectThread(m_group, "play");
+    m_endOfTrackControl = new ControlObjectSlave(
+            m_group, "end_of_track", this);
+    m_endOfTrackControl->connectValueChanged(
+             SLOT(onEndOfTrackChange(double)));
+    m_trackSamplesControl =
+            new ControlObjectSlave(m_group, "track_samples", this);
+    m_playControl = new ControlObjectSlave(m_group, "play", this);
     setAcceptDrops(true);
 }
 
 WOverview::~WOverview() {
-    delete m_endOfTrackControl;
-    delete m_trackSamplesControl;
-    delete m_playControl;
     if (m_pWaveformSourceImage) {
         delete m_pWaveformSourceImage;
     }
@@ -146,7 +143,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     if (!m_bDrag) {
         // Calculate handle position. Clamp the value within 0-1 because that's
         // all we represent with this widget.
-        dParameter = math_clamp_unsafe(dParameter, 0.0, 1.0);
+        dParameter = math_clamp(dParameter, 0.0, 1.0);
 
         int iPos = valueToPosition(dParameter);
         if (iPos != m_iPos) {
@@ -158,10 +155,12 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
 }
 
 void WOverview::slotWaveformSummaryUpdated() {
-    if (!m_pCurrentTrack) {
+    //qDebug() << "WOverview::slotWaveformSummaryUpdated()";
+    TrackPointer pTrack(m_pCurrentTrack);
+    if (!pTrack) {
         return;
     }
-    m_pWaveform = m_pCurrentTrack->getWaveformSummary();
+    m_pWaveform = pTrack->getWaveformSummary();
     // If the waveform is already complete, just draw it.
     if (m_pWaveform && m_pWaveform->getCompletion() == m_pWaveform->getDataSize()) {
         m_actualCompletion = 0;
@@ -171,29 +170,29 @@ void WOverview::slotWaveformSummaryUpdated() {
     }
 }
 
-void WOverview::slotAnalyserProgress(int progress) {
+void WOverview::slotAnalyzerProgress(int progress) {
     if (!m_pCurrentTrack) {
         return;
     }
 
-    double analyserProgress = progress / 1000.0;
+    double analyzerProgress = progress / 1000.0;
     bool finalizing = progress == 999;
 
     bool updateNeeded = drawNextPixmapPart();
     // progress 0 .. 1000
-    if (updateNeeded || (m_dAnalyserProgress != analyserProgress)) {
-        m_dAnalyserProgress = analyserProgress;
-        m_bAnalyserFinalizing = finalizing;
+    if (updateNeeded || (m_dAnalyzerProgress != analyzerProgress)) {
+        m_dAnalyzerProgress = analyzerProgress;
+        m_bAnalyzerFinalizing = finalizing;
         update();
     }
 }
 
 void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
-    //qDebug() << "WOverview::slotLoadNewTrack(TrackPointer pTrack)";
+    // qDebug() << "WOverview::slotLoadNewTrack(TrackPointer pTrack)";
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
-        disconnect(m_pCurrentTrack.data(), SIGNAL(analyserProgress(int)),
+        disconnect(m_pCurrentTrack.data(), SIGNAL(analyzerProgress(int)),
                    this, SLOT(slotAnalyzerProgress(int)));
     }
 
@@ -202,7 +201,7 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
         m_pWaveformSourceImage = NULL;
     }
 
-    m_dAnalyserProgress = -1;
+    m_dAnalyzerProgress = -1;
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
@@ -214,10 +213,10 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
 
         connect(pTrack.data(), SIGNAL(waveformSummaryUpdated()),
                 this, SLOT(slotWaveformSummaryUpdated()));
-        connect(pTrack.data(), SIGNAL(analyserProgress(int)),
-                this, SLOT(slotAnalyserProgress(int)));
+        connect(pTrack.data(), SIGNAL(analyzerProgress(int)),
+                this, SLOT(slotAnalyzerProgress(int)));
 
-        slotAnalyserProgress(pTrack->getAnalyserProgress());
+        slotAnalyzerProgress(pTrack->getAnalyzerProgress());
     }
 }
 
@@ -228,21 +227,24 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
     }
 }
 
-void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
-    if (m_pCurrentTrack) {
+void WOverview::slotUnloadTrack(TrackPointer pTrack) {
+    // it may happen that this call is a delayed call
+    // of a track that was already replaced
+    //qDebug() << "WOverview::slotUnloadTrack(TrackPointer pTrack)";
+    if (pTrack != NULL && pTrack == m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
-        disconnect(m_pCurrentTrack.data(), SIGNAL(analyserProgress(int)),
-                   this, SLOT(slotAnalyserProgress(int)));
-    }
-    m_pCurrentTrack.clear();
-    m_pWaveform = NULL;
-    m_actualCompletion = 0;
-    m_waveformPeak = -1.0;
-    m_pixmapDone = false;
-    m_trackLoaded = false;
+        disconnect(m_pCurrentTrack.data(), SIGNAL(analyzerProgress(int)),
+                   this, SLOT(slotAnalyzerProgress(int)));
 
-    update();
+        m_pCurrentTrack.clear();
+        m_pWaveform.clear();
+        m_actualCompletion = 0;
+        m_waveformPeak = -1.0;
+        m_pixmapDone = false;
+        m_trackLoaded = false;
+        update();
+    }
 }
 
 void WOverview::onEndOfTrackChange(double v) {
@@ -331,14 +333,14 @@ void WOverview::paintEvent(QPaintEvent *) {
             painter.drawImage(rect(), m_waveformImageScaled);
         }
 
-        if (m_dAnalyserProgress != 1.0) {
+        if (m_dAnalyzerProgress != 1.0) {
             // Paint analyzer Progress
             painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
-            painter.drawLine(m_dAnalyserProgress * width(), height()/2,
+            painter.drawLine(m_dAnalyzerProgress * width(), height()/2,
                              width(), height()/2);
         }
 
-        if (m_dAnalyserProgress <= 0.5) { // remove text after progress by wf is recognizable
+        if (m_dAnalyzerProgress <= 0.5) { // remove text after progress by wf is recognizable
             if (m_trackLoaded) {
                 //: Text on waveform overview when file is cached from source
                 paintText(tr("Ready to play, analyzing .."), &painter);
@@ -346,7 +348,7 @@ void WOverview::paintEvent(QPaintEvent *) {
                 //: Text on waveform overview when file is playable but no waveform is visible
                 paintText(tr("Loading track .."), &painter);
             }
-        } else if (m_bAnalyserFinalizing) {
+        } else if (m_bAnalyzerFinalizing) {
             //: Text on waveform overview during finalizing of waveform analysis
             paintText(tr("Finalizing .."), &painter);
         }
@@ -502,29 +504,25 @@ void WOverview::resizeEvent(QResizeEvent *) {
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
-    // Accept the enter event if the thing is a filepath and nothing's playing
-    // in this deck or the settings allow to interrupt the playing deck.
-    if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
-        if ((m_playControl->get() == 0.0 ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_group=="[PreviewDeck1]")) {
-            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
-            if (!files.isEmpty()) {
-                event->acceptProposedAction();
-                return;
-            }
-        }
+    if (DragAndDropHelper::allowLoadToPlayer(m_group,
+                                             m_playControl->get() > 0.0,
+                                             m_pConfig) &&
+            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
+                                               true, false)) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasUrls()) {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
+    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_playControl->get() > 0.0,
+                                             m_pConfig)) {
+        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                *event->mimeData(), m_group, true, false);
         if (!files.isEmpty()) {
             event->accept();
-            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
             return;
         }
     }

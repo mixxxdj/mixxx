@@ -9,16 +9,17 @@
 #include "deck.h"
 #include "sampler.h"
 #include "previewdeck.h"
-#include "analyserqueue.h"
+#include "analyzer/analyzerqueue.h"
 #include "controlobject.h"
 #include "samplerbank.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "engine/enginemaster.h"
-#include "soundmanager.h"
+#include "soundio/soundmanager.h"
 #include "effects/effectsmanager.h"
 #include "util/stat.h"
 #include "engine/enginedeck.h"
+#include "util/assert.h"
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
@@ -31,7 +32,7 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being COs and
         // not COTMs listening to a CO.
-        m_pAnalyserQueue(NULL),
+        m_pAnalyzerQueue(NULL),
         m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"), true, true)),
         m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"), true, true)) {
@@ -39,10 +40,19 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
             Qt::DirectConnection);
+    connect(m_pCONumDecks, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotNumDecksControlChanged(double)),
+            Qt::DirectConnection);
     connect(m_pCONumSamplers, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumSamplersControlChanged(double)),
             Qt::DirectConnection);
+    connect(m_pCONumSamplers, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotNumSamplersControlChanged(double)),
+            Qt::DirectConnection);
     connect(m_pCONumPreviewDecks, SIGNAL(valueChanged(double)),
+            this, SLOT(slotNumPreviewDecksControlChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pCONumPreviewDecks, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotNumPreviewDecksControlChanged(double)),
             Qt::DirectConnection);
 
@@ -64,6 +74,8 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
         m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 0, o),
                                         m_pEngine);
     }
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::SIDECHAIN),
+                                    m_pEngine);
 }
 
 PlayerManager::~PlayerManager() {
@@ -77,8 +89,8 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumSamplers;
     delete m_pCONumDecks;
     delete m_pCONumPreviewDecks;
-    if (m_pAnalyserQueue) {
-        delete m_pAnalyserQueue;
+    if (m_pAnalyzerQueue) {
+        delete m_pAnalyzerQueue;
     }
 }
 
@@ -91,28 +103,28 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
-    m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig,
+    m_pAnalyzerQueue = AnalyzerQueue::createDefaultAnalyzerQueue(m_pConfig,
             pLibrary->getTrackCollection());
 
-    // Connect the player to the analyser queue so that loaded tracks are
+    // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(Deck* pDeck, m_decks) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    // Connect the player to the analyser queue so that loaded tracks are
+    // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(Sampler* pSampler, m_samplers) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    // Connect the player to the analyser queue so that loaded tracks are
+    // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
     foreach(PreviewDeck* pPreviewDeck, m_preview_decks) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 }
 
@@ -120,10 +132,13 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
 unsigned int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlObject* pNumCO = NULL;
+    static ControlObjectSlave* pNumCO = NULL;
     if (pNumCO == NULL) {
-        pNumCO = ControlObject::getControl(
-            ConfigKey("[Master]", "num_decks"));
+        pNumCO = new ControlObjectSlave(ConfigKey("[Master]", "num_decks"));
+        if (!pNumCO->valid()) {
+            delete pNumCO;
+            pNumCO = NULL;
+        }
     }
     return pNumCO ? pNumCO->get() : 0;
 }
@@ -146,13 +161,33 @@ bool PlayerManager::isDeckGroup(const QString& group, int* number) {
 }
 
 // static
+bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
+    if (!group.startsWith("[PreviewDeck")) {
+        return false;
+    }
+
+    bool ok = false;
+    int deckNum = group.mid(12,group.lastIndexOf("]")-12).toInt(&ok);
+    if (!ok || deckNum <= 0) {
+        return false;
+    }
+    if (number != NULL) {
+        *number = deckNum;
+    }
+    return true;
+}
+
+// static
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlObject* pNumCO = NULL;
+    static ControlObjectSlave* pNumCO = NULL;
     if (pNumCO == NULL) {
-        pNumCO = ControlObject::getControl(
-            ConfigKey("[Master]", "num_samplers"));
+        pNumCO = new ControlObjectSlave(ConfigKey("[Master]", "num_samplers"));
+        if (!pNumCO->valid()) {
+            delete pNumCO;
+            pNumCO = NULL;
+        }
     }
     return pNumCO ? pNumCO->get() : 0;
 }
@@ -161,10 +196,14 @@ unsigned int PlayerManager::numSamplers() {
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlObject* pNumCO = NULL;
+    static ControlObjectSlave* pNumCO = NULL;
     if (pNumCO == NULL) {
-        pNumCO = ControlObject::getControl(
-            ConfigKey("[Master]", "num_preview_decks"));
+        pNumCO = new ControlObjectSlave(
+                ConfigKey("[Master]", "num_preview_decks"));
+        if (!pNumCO->valid()) {
+            delete pNumCO;
+            pNumCO = NULL;
+        }
     }
     return pNumCO ? pNumCO->get() : 0;
 }
@@ -236,6 +275,10 @@ void PlayerManager::addConfiguredDecks() {
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
     QString group = groupForDeck(m_decks.count());
+    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+        return;
+    }
+
     int number = m_decks.count() + 1;
 
     EngineChannel::ChannelOrientation orientation = EngineChannel::LEFT;
@@ -245,12 +288,11 @@ void PlayerManager::addDeckInner() {
 
     Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
                            orientation, group);
-    if (m_pAnalyserQueue) {
+    if (m_pAnalyzerQueue) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    Q_ASSERT(!m_players.contains(group));
     m_players[group] = pDeck;
     m_decks.append(pDeck);
 
@@ -291,17 +333,20 @@ void PlayerManager::addSamplerInner() {
     // Do not lock m_mutex here.
     QString group = groupForSampler(m_samplers.count());
 
+    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+        return;
+    }
+
     // All samplers are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
     Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
                                     m_pEffectsManager, orientation, group);
-    if (m_pAnalyserQueue) {
+    if (m_pAnalyzerQueue) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    Q_ASSERT(!m_players.contains(group));
     m_players[group] = pSampler;
     m_samplers.append(pSampler);
 }
@@ -315,6 +360,9 @@ void PlayerManager::addPreviewDeck() {
 void PlayerManager::addPreviewDeckInner() {
     // Do not lock m_mutex here.
     QString group = groupForPreviewDeck(m_preview_decks.count());
+    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+        return;
+    }
 
     // All preview decks are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
@@ -322,12 +370,11 @@ void PlayerManager::addPreviewDeckInner() {
     PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
                                                 m_pEffectsManager, orientation,
                                                 group);
-    if (m_pAnalyserQueue) {
+    if (m_pAnalyzerQueue) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-                m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+                m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    Q_ASSERT(!m_players.contains(group));
     m_players[group] = pPreviewDeck;
     m_preview_decks.append(pPreviewDeck);
 }
@@ -339,7 +386,6 @@ BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
     }
     return NULL;
 }
-
 
 Deck* PlayerManager::getDeck(unsigned int deck) const {
     QMutexLocker locker(&m_mutex);

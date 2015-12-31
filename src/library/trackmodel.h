@@ -13,6 +13,9 @@
     display track lists. */
 class TrackModel {
   public:
+    static const int kHeaderWidthRole = Qt::UserRole + 0;
+    static const int kHeaderNameRole = Qt::UserRole + 1;
+
     TrackModel(QSqlDatabase db,
                const char* settingsNamespace)
             : m_db(db),
@@ -54,11 +57,11 @@ class TrackModel {
     virtual QString getTrackLocation(const QModelIndex& index) const = 0;
 
     // Gets the track ID of the track at the given QModelIndex
-    virtual int getTrackId(const QModelIndex& index) const = 0;
+    virtual TrackId getTrackId(const QModelIndex& index) const = 0;
 
     // Gets the row of the track in the current result set. Returns -1 if the
     // track ID is not present in the result set.
-    virtual const QLinkedList<int> getTrackRows(int trackId) const = 0;
+    virtual const QLinkedList<int> getTrackRows(TrackId trackId) const = 0;
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
@@ -126,6 +129,11 @@ class TrackModel {
     virtual void setDefaultSort(int sortColumn, Qt::SortOrder sortOrder) {
         m_iDefaultSortColumn = sortColumn;
         m_eDefaultSortOrder = sortOrder;
+    }
+
+    virtual bool isColumnSortable(int column) {
+        Q_UNUSED(column);
+        return true;
     }
 
     virtual int fieldIndex(const QString& fieldName) const {

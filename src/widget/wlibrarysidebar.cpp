@@ -44,8 +44,12 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
+        // We don't have a way to ask the LibraryFeatures whether to accept a
+        // drag so for now we accept all drags. Since almost every
+        // LibraryFeature accepts all files in the drop and accepts playlist
+        // drops we default to those flags to DragAndDropHelper.
         QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
+                event->mimeData()->urls(), false, true);
         if (!files.isEmpty()) {
             event->acceptProposedAction();
             return;
@@ -80,13 +84,17 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             bool accepted = true;
             if (sidebarModel) {
+                accepted = false;
                 foreach (QUrl url, urls) {
                     QModelIndex destIndex = this->indexAt(event->pos());
-                    if (!sidebarModel->dragMoveAccept(destIndex, url)) {
-                        //We only need one URL to be invalid for us
-                        //to reject the whole drag...
-                        //(eg. you may have tried to drag two MP3's and an EXE)
-                        accepted = false;
+                    if (sidebarModel->dragMoveAccept(destIndex, url)) {
+                        // We only need one URL to be valid for us
+                        // to accept the whole drag...
+                        // consider we have a long list of valid files, checking all will
+                        // take a lot of time that stales Mixxx and this makes the drop feature useless
+                        // Eg. you may have tried to drag two MP3's and an EXE, the drop is accepted here,
+                        // but the EXE is sorted out later after dropping
+                        accepted = true;
                         break;
                     }
                 }
@@ -203,4 +211,8 @@ bool WLibrarySidebar::event(QEvent* pEvent) {
         updateTooltip();
     }
     return QTreeView::event(pEvent);
+}
+
+void WLibrarySidebar::slotSetFont(const QFont& font) {
+    setFont(font);
 }

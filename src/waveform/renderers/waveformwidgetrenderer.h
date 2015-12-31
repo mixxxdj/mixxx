@@ -7,14 +7,14 @@
 #include <QtDebug>
 
 #include "trackinfoobject.h"
-#include "util.h"
+#include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
 class TrackInfoObject;
-class ControlObjectThread;
+class ControlObjectSlave;
 class VisualPlayPosition;
 class VSyncThread;
 
@@ -35,7 +35,7 @@ class WaveformWidgetRenderer {
     void draw(QPainter* painter, QPaintEvent* event);
 
     inline const char* getGroup() const { return m_group;}
-    const TrackPointer getTrackInfo() const { return m_trackInfoObject;}
+    const TrackPointer getTrackInfo() const { return m_pTrack;}
 
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
@@ -85,7 +85,7 @@ class WaveformWidgetRenderer {
 
   protected:
     const char* m_group;
-    TrackPointer m_trackInfoObject;
+    TrackPointer m_pTrack;
     QList<WaveformRendererAbstract*> m_rendererStack;
     int m_height;
     int m_width;
@@ -105,15 +105,15 @@ class WaveformWidgetRenderer {
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     double m_playPos;
     int m_playPosVSample;
-    ControlObjectThread* m_pRateControlObject;
+    ControlObjectSlave* m_pRateControlObject;
     double m_rate;
-    ControlObjectThread* m_pRateRangeControlObject;
+    ControlObjectSlave* m_pRateRangeControlObject;
     double m_rateRange;
-    ControlObjectThread* m_pRateDirControlObject;
+    ControlObjectSlave* m_pRateDirControlObject;
     double m_rateDir;
-    ControlObjectThread* m_pGainControlObject;
+    ControlObjectSlave* m_pGainControlObject;
     double m_gain;
-    ControlObjectThread* m_pTrackSamplesControlObject;
+    ControlObjectSlave* m_pTrackSamplesControlObject;
     int m_trackSamples;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG

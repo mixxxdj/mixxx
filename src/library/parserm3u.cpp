@@ -88,12 +88,7 @@ QList<QString> ParserM3u::parse(QString sFilename)
         }
 
         file.close();
-
-        if(m_sLocations.count() != 0)
-            return m_sLocations;
-        else
-            return QList<QString>(); // NULL pointer returned when no locations were found
-
+        return m_sLocations;
     }
 
     file.close();
@@ -126,7 +121,7 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
                 return trackLocation;
             } else {
                 // Try relative to m3u dir
-                QString rel = basepath + "/" + trackLocation;
+                QString rel = QDir(basepath).filePath(trackLocation);
                 if (isFilepath(rel)) {
                     return rel;
                 }

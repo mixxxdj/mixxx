@@ -21,8 +21,9 @@
 #include "steadypitch.h"
 #include "util/math.h"
 
-SteadyPitch::SteadyPitch(double threshold)
-    : m_dSteadyPitch(0.0),
+SteadyPitch::SteadyPitch(double threshold, bool assumeSteady)
+    : m_bAssumeSteady(assumeSteady),
+      m_dSteadyPitch(0.0),
       m_dOldSteadyPitch(1.0),       // last-known steady pitch value
       m_dSteadyPitchTime(0.0),      // last track location we had a steady pitch
       m_dLastSteadyDur(0.0),        // last known duration of steadiness
@@ -66,7 +67,7 @@ bool SteadyPitch::resyncDetected(double new_time)
     }
 }
 
-double SteadyPitch::check(double pitch, double time, bool looping=false)
+double SteadyPitch::check(double pitch, double time)
 {
     //return length of time pitch has been steady, 0 if not steady
     if (directionChanged(pitch))
@@ -79,22 +80,25 @@ double SteadyPitch::check(double pitch, double time, bool looping=false)
     if (resyncDetected(time))
     {
         m_dLastTime = time;
-        if (looping)
+        // Rereport the last value since we don't want to interrupt steady
+        // pitch in case of resync due to looping or cuepoints.
+        if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
         {
-            //if looping, rereport the last value since we don't know where the
-            //loop actually is
-            if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
-            {
-                //fabricate an old time by take current time and applying
-                //last known duration
-                m_dSteadyPitchTime = time - (m_dLastSteadyDur * m_iPlayDirection);
-                return m_dLastSteadyDur;
-            }
+            //fabricate an old time by take current time and applying
+            //last known duration
+            m_dSteadyPitchTime = time - (m_dLastSteadyDur * m_iPlayDirection);
+            return m_dLastSteadyDur;
         }
         reset(pitch, time);
         return 0.0;
     }
     m_dLastTime = time;
+
+    // If it's been less than the window-size since we reset, return a value
+    // indicating that we're steady. This is for CDJs which are really accurate.
+    if (m_bAssumeSteady && fabs(time - m_dSteadyPitchTime) <= m_dSteadyPitch) {
+        return m_dSteadyPitch + 1;
+    }
 
     if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
     {
@@ -115,7 +119,6 @@ double SteadyPitch::check(double pitch, double time, bool looping=false)
     return 0.0;
 }
 
-double SteadyPitch::steadyValue(void)
-{
+double SteadyPitch::steadyValue(void) const {
     return m_dOldSteadyPitch;
 }

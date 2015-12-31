@@ -31,10 +31,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // Master Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
     addControl("[Master]", "crossfader", tr("Crossfader"), tr("Master crossfader"), mixerMenu, true);
-    addControl("[Master]", "volume", tr("Master Volume"), tr("Master volume"), mixerMenu, true);
+    addControl("[Master]", "gain", tr("Master Gain"), tr("Master gain"), mixerMenu, true);
     addControl("[Master]", "balance", tr("Master Balance"), tr("Master balance"), mixerMenu, true);
     addControl("[Master]", "delay", tr("Master Delay"), tr("Master delay"), mixerMenu, true);
-    addControl("[Master]", "headVolume", tr("Headphone Volume"), tr("Headphone volume"), mixerMenu, true);
+    addControl("[Master]", "headGain", tr("Headphone Gain"), tr("Headphone gain"), mixerMenu, true);
     addControl("[Master]", "headMix", tr("Headphone Mix"), tr("Headphone mix (pre/main)"), mixerMenu, true);
     addControl("[Master]", "headSplit", tr("Headphone Split Cue"), tr("Toggle headphone split cueing"), mixerMenu);
     addControl("[Master]", "headDelay", tr("Headphone Delay"), tr("Headphone delay"), mixerMenu, true);
@@ -120,38 +120,70 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("beatsync_phase", tr("Sync Phase One-Shot"),
                              tr("One-time beat sync (phase only)"), syncMenu);
 
-    // Rate
-    QMenu* rateMenu = addSubmenu(tr("Pitch and Rate"));
+    // Speed
+    QMenu* speedMenu = addSubmenu(tr("Speed (Pitch/Tempo)"));
     addDeckAndSamplerControl("keylock", tr("Keylock Mode"),
-                             tr("Toggle keylock mode"), rateMenu);
-    addDeckAndSamplerControl("rate", tr("Playback Speed Slider"),
-                             tr("Playback speed control slider"), rateMenu, true);
-    addDeckAndSamplerControl("pitch", tr("Pitch Slider (Musical)"),
-                             tr("Pitch control slider (does not affect speed)"), rateMenu, true);
-    addDeckAndSamplerControl("sync_key", tr("Sync Key"), tr("Match musical key"), rateMenu, true);
-    addDeckAndSamplerControl("rate_perm_up", tr("Rate Up"), tr("Adjust rate up (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_perm_up_small", tr("Rate Up (Fine)"),
-                             tr("Adjust rate up (fine)"), rateMenu);
-    addDeckAndSamplerControl("rate_perm_down", tr("Rate Down"), tr("Adjust rate down (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_perm_down_small", tr("Rate Down (Fine)"),
-                             tr("Adjust rate down (fine)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_up", tr("Pitch-Bend Rate Up"),
-                             tr("Pitch-bend rate up (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_up_small", tr("Pitch-Bend Rate Up (Fine)"),
-                             tr("Pitch-bend rate up (fine)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_down", tr("Pitch-Bend Rate Down"),
-                             tr("Pitch-bend rate down (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_down_small", tr("Pitch-Bend Rate Down (Fine)"),
-                             tr("Pitch-bend rate down (fine)"), rateMenu);
+                             tr("Toggle keylock mode"), speedMenu);
+    addDeckAndSamplerControl("rate", tr("Playback Speed"),
+                             tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
+    addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
+                             tr("Pitch control (does not affect tempo), center is original pitch"), speedMenu, true);
+    addDeckAndSamplerControl("pitch_adjust", tr("Pitch Adjust"),
+                             tr("Adjust pitch from speed slider pitch"), speedMenu, true);
+    addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), speedMenu, true);
+    addDeckAndSamplerControl("reset_key", tr("Reset Key"), tr("Resets key to original"), speedMenu, true);
+    addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
+                             tr("Adjust speed faster (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
+                             tr("Adjust speed faster (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_down", tr("Decrease Speed"),
+                             tr("Adjust speed slower (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_down_small", tr("Increase Speed (Fine)"),
+                             tr("Adjust speed slower (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_up", tr("Temporarily Increase Speed"),
+                             tr("Temporarily increase speed (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_up_small", tr("Temporarily Increase Speed (Fine)"),
+                             tr("Temporarily increase speed (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_down", tr("Temporarily Decrease Speed"),
+                             tr("Temporarily decrease speed (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_down_small", tr("Temporarily Decrease Speed (Fine)"),
+                             tr("Temporarily decrease speed (fine)"), speedMenu);
 
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
-    addDeckControl("filterHigh", tr("High EQ"), tr("High EQ knob"), eqMenu, true);
-    addDeckControl("filterMid", tr("Mid EQ"), tr("Mid EQ knob"), eqMenu, true);
-    addDeckControl("filterLow", tr("Low EQ"), tr("Low EQ knob"), eqMenu, true);
-    addDeckControl("filterHighKill", tr("Kill High EQ"), tr("Kill High EQ"), eqMenu);
-    addDeckControl("filterMidKill", tr("Kill Mid EQ"), tr("Kill Mid EQ"), eqMenu);
-    addDeckControl("filterLowKill", tr("Kill Low EQ"), tr("Kill Low EQ"), eqMenu);
+    const int kNumEqRacks = 1;
+    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
+    for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
+        // TODO: Although there is a mode with 4-band EQs, it's not feasible
+        // right now to add support for learning both it and regular 3-band eqs.
+        // Since 3-band is by far the most common, stick with that.
+        const int kMaxEqs = 3;
+        QList<QString> eqNames;
+        eqNames.append(tr("Low EQ"));
+        eqNames.append(tr("Mid EQ"));
+        eqNames.append(tr("High EQ"));
+        for (int deck = 1; deck <= iNumDecks; ++deck) {
+            QMenu* deckMenu = addSubmenu(QString("Deck %1").arg(deck), eqMenu);
+            for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
+                const QString group = EqualizerRack::formatEffectSlotGroupString(
+                        iRackNumber, 0, QString("[Channel%1]").arg(deck));
+                QMenu* bandMenu = addSubmenu(eqNames[effect], deckMenu);
+                QString control = "parameter%1";
+                addPrefixedControl(group, control.arg(effect+1),
+                                   tr("Adjust %1").arg(eqNames[effect]),
+                                   tr("Adjust %1").arg(eqNames[effect]),
+                                   tr("Deck %1").arg(deck),
+                                   bandMenu, true);
+
+                control = "button_parameter%1";
+                addPrefixedControl(group, control.arg(effect+1),
+                                   tr("Kill %1").arg(eqNames[effect]),
+                                   tr("Kill %1").arg(eqNames[effect]),
+                                   tr("Deck %1").arg(deck),
+                                   bandMenu, false);
+            }
+        }
+    }
 
     // Vinyl Control
     QMenu* vinylControlMenu = addSubmenu(tr("Vinyl Control"));
@@ -171,7 +203,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("cue_default", tr("Cue"), tr("Cue button"), cueMenu);
     addDeckControl("cue_set", tr("Set Cue"), tr("Set cue point"), cueMenu);
     addDeckControl("cue_goto", tr("Go-To Cue"), tr("Go to cue point"), cueMenu);
-    addDeckControl("cue_gotoandplay", tr("Go-To Cue And Play"),
+    addDeckAndSamplerAndPreviewDeckControl("cue_gotoandplay", tr("Go-To Cue And Play"),
                    tr("Go to cue point and play"), cueMenu);
     addDeckControl("cue_gotoandstop", tr("Go-To Cue And Stop"),
                    tr("Go to cue point and stop"), cueMenu);
@@ -353,6 +385,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Load Track Into Stopped Deck"),
                        tr("Load selected track into first stopped deck"),
                        m_libraryStr, libraryMenu);
+    addPrefixedControl("[Playlist]", "AutoDjAddBottom",
+                       tr("Add to Auto DJ Queue (bottom)"),
+                       tr("Append the selected track to the Auto DJ Queue"),
+                       m_libraryStr, libraryMenu);
+    addPrefixedControl("[Playlist]", "AutoDjAddTop",
+                       tr("Add to Auto DJ Queue (top)"),
+                       tr("Prepend selected track to the Auto DJ Queue"),
+                       m_libraryStr, libraryMenu);
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
                              tr("Load selected track"), libraryMenu);
@@ -366,6 +406,17 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Effect Controls
     QMenu* effectsMenu = addSubmenu(tr("Effects"));
+
+    // Quick Effect Rack COs
+    QMenu* quickEffectMenu = addSubmenu(tr("Quick Effects"), effectsMenu);
+    for (int i = 1; i <= iNumDecks; ++i) {
+        addPrefixedControl(QString("[QuickEffectRack1_[Channel%1]]").arg(i),
+                           "super1",
+                           tr("Deck %1 Quick Effect Super Knob").arg(i),
+                           tr("Quick Effect Super Knob (control linked effect parameters)"),
+                           tr("Quick Effect"),
+                           quickEffectMenu);
+    }
 
     const int kNumEffectRacks = 1;
     for (int iRackNumber = 1; iRackNumber <= kNumEffectRacks; ++iRackNumber) {
@@ -397,13 +448,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                effectUnitMenu);
             addPrefixedControl(effectUnitGroup, "enabled",
                                tr("Toggle Unit"),
-                               tr("Toggle effect unit"), descriptionPrefix,
+                               tr("Enable or disable effect processing"), descriptionPrefix,
                                effectUnitMenu, false);
             addPrefixedControl(effectUnitGroup, "mix",
                                tr("Dry/Wet"),
-                               tr("Dry/Wet"), descriptionPrefix,
+                               tr("Adjust the balance between the original (dry) and processed (wet) signal."), descriptionPrefix,
                                effectUnitMenu, true);
-            addPrefixedControl(effectUnitGroup, "parameter",
+            addPrefixedControl(effectUnitGroup, "super1",
                                tr("Super Knob"),
                                tr("Super Knob (control linked effect parameters)"),
                                descriptionPrefix,
@@ -456,11 +507,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                    tr("Assign ") + m_deckStr.arg(iDeckNumber),
                                    groupDescriptionPrefix,
                                    effectUnitGroups);
-
             }
 
             const int iNumSamplers = ControlObject::get(
-                ConfigKey("[Master]", "num_samplers"));
+                    ConfigKey("[Master]", "num_samplers"));
             for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
                  ++iSamplerNumber) {
                 // PlayerManager::groupForSampler is 0-indexed.
@@ -493,7 +543,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             }
 
             const int iNumAuxiliaries = ControlObject::get(
-                ConfigKey("[Master]", "num_auxiliaries"));
+                    ConfigKey("[Master]", "num_auxiliaries"));
             for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
                  ++iAuxiliaryNumber) {
                 QString auxGroup = QString("[Auxiliary%1]").arg(iAuxiliaryNumber);
@@ -573,7 +623,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
                     addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
                                        tr("Super Knob Mode"),
-                                       tr("3-state Super Knob Link Toggle (unlinked, linear, inverse)"),
+                                       tr("Set how linked effect parameters change when turning the Super Knob."),
                                        parameterDescriptionPrefix,
                                        parameterSlotMenu);
 
@@ -602,6 +652,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Auxiliary on/off"),
                                microphoneMenu,
                                false, true);
+    addMicrophoneAndAuxControl("pregain",
+                               tr("Gain"),
+                               tr("Gain knob"), microphoneMenu,
+                               true, true, true);
     addMicrophoneAndAuxControl("volume",
                                tr("Volume Fader"),
                                tr("Volume Fader"), microphoneMenu,
@@ -670,11 +724,16 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[PreviewDeck]", "show_previewdeck",
                tr("Preview Deck Show/Hide"),
                tr("Show/hide the preview deck"), guiMenu);
+    addControl("[Master]", "maximize_library",
+               tr("Library Maximize/Restore"),
+               tr("Maximize the track library to take up all the available screen space."), guiMenu);
+    addControl("[EffectRack1]", "show",
+               tr("Effect Rack Show/Hide"),
+               tr("Show/hide the effect rack"), guiMenu);
     addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
                tr("Show/hide cover art"), guiMenu);
 
-    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");
     for (int i = 1; i <= iNumDecks; ++i) {
@@ -967,6 +1026,10 @@ void ControlPickerMenu::addAvailableControl(ConfigKey key,
 }
 
 bool ControlPickerMenu::controlExists(ConfigKey key) const {
+    qDebug() << "LOOKING FOR KEY " << key;
+    foreach(const ConfigKey& key, m_titlesByKey.keys()) {
+        qDebug() << "key: " << key;
+    }
     return m_titlesByKey.contains(key);
 }
 

@@ -1,0 +1,49 @@
+<Template>
+		<WidgetGroup>
+			<Pos>297,0</Pos>
+            <MaximumSize>90,50</MaximumSize>
+            <Size>93,50</Size>
+			<Style>QGroupBox { border: 0px solid yellow; border-left: 1px solid #626f87; background: url(skin:/style/style_bg_ducking.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
+			<Children>
+			    <PushButton>
+				    <TooltipId></TooltipId>
+				    <Style></Style>
+				    <NumberStates>3</NumberStates>
+				    <State>
+					    <Number>0</Number>
+					    <Pressed>btn_kill_down.png</Pressed>
+					    <Unpressed>btn_kill.png</Unpressed>
+				    </State>
+				    <State>
+					    <Number>1</Number>
+                        <Text>A</Text>
+					    <Pressed>btn_kill_overdown.png</Pressed>
+					    <Unpressed>btn_kill_over.png</Unpressed>
+				    </State>
+				    <State>
+					    <Number>2</Number>
+                        <Text>M</Text>
+					    <Pressed>btn_kill_overdown.png</Pressed>
+					    <Unpressed>btn_kill_over.png</Unpressed>
+				    </State>
+				    <Pos>6,30</Pos>
+				    <Connection>
+					    <ConfigKey>[Master],talkoverDucking</ConfigKey>
+					    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					    <ButtonState>LeftButton</ButtonState>
+				    </Connection>
+			    </PushButton>
+
+				<Knob>
+					<TooltipId></TooltipId>
+					<Style></Style>
+					<NumberStates>64</NumberStates>
+					<Path>knobs/knob_rotary_s%1.png</Path>
+					<Pos>27,22</Pos>
+					<Connection>
+						<ConfigKey>[Master],duckStrength</ConfigKey>
+					</Connection>
+				</Knob>
+			</Children>
+		</WidgetGroup>
+</Template>

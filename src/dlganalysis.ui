@@ -94,7 +94,7 @@
      <item>
       <widget class="QPushButton" name="pushButtonAnalyze">
        <property name="toolTip">
-        <string>Runs beatgrid, key, and replaygain detection on the selected tracks. Does not generate waveforms for the selected tracks to save disk space.</string>
+        <string>Runs beatgrid, key, and ReplayGain detection on the selected tracks. Does not generate waveforms for the selected tracks to save disk space.</string>
        </property>
        <property name="text">
         <string>Analyze</string>

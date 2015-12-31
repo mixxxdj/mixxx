@@ -6,6 +6,8 @@
 #include "controlobjectthread.h"
 
 class ControlObject;
+class ControlPushButton;
+class Library;
 class WLibrary;
 class WLibrarySidebar;
 class MixxxKeyboard;
@@ -32,7 +34,7 @@ class LoadToGroupController : public QObject {
 class LibraryControl : public QObject {
     Q_OBJECT
   public:
-    LibraryControl(QObject* pParent=NULL);
+    LibraryControl(Library* pLibrary);
     virtual ~LibraryControl();
 
     void bindWidget(WLibrary* pLibrary, MixxxKeyboard* pKeyboard);
@@ -50,13 +52,21 @@ class LibraryControl : public QObject {
     void slotSelectPrevSidebarItem(double v);
     void slotToggleSelectedSidebarItem(double v);
     void slotLoadSelectedIntoFirstStopped(double v);
+    void slotAutoDjAddTop(double v);
+    void slotAutoDjAddBottom(double v);
 
     void maybeCreateGroupController(const QString& group);
     void slotNumDecksChanged(double v);
     void slotNumSamplersChanged(double v);
     void slotNumPreviewDecksChanged(double v);
 
+    void slotFontSize(double v);
+    void slotIncrementFontSize(double v);
+    void slotDecrementFontSize(double v);
+
   private:
+    Library* m_pLibrary;
+
     ControlObject* m_pSelectNextTrack;
     ControlObject* m_pSelectPrevTrack;
     ControlObject* m_pSelectTrack;
@@ -67,6 +77,12 @@ class LibraryControl : public QObject {
 
     ControlObject* m_pToggleSidebarItem;
     ControlObject* m_pLoadSelectedIntoFirstStopped;
+    ControlObject* m_pAutoDjAddTop;
+    ControlObject* m_pAutoDjAddBottom;
+
+    ControlObject* m_pFontSizeKnob;
+    ControlPushButton* m_pFontSizeIncrement;
+    ControlPushButton* m_pFontSizeDecrement;
 
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;

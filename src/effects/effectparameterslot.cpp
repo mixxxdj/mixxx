@@ -112,6 +112,7 @@ void EffectParameterSlot::clear() {
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->setAndConfirm(0.0);
     m_pControlLinkType->setAndConfirm(EffectManifestParameter::LINK_NONE);
+    m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);
     emit(updated());
 }
@@ -122,15 +123,23 @@ void EffectParameterSlot::slotParameterValueChanged(double value) {
 }
 
 void EffectParameterSlot::slotLinkTypeChanging(double v) {
-    Q_UNUSED(v);
     m_pSoftTakeover->ignoreNext();
     if (v > EffectManifestParameter::LINK_LINKED) {
         double neutral = m_pEffectParameter->getNeutralPointOnScale();
         if (neutral > 0.0 && neutral < 1.0) {
-            // Button is already a split button
+            // Knob is already a split knob, meaning it has a positive and
+            // negative effect if it's twisted above the neutral point or
+            // below the neutral point.
             // Toggle back to 0
             v = EffectManifestParameter::LINK_NONE;
         }
+    }
+    if (static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_LEFT ||
+            static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_RIGHT) {
+        m_pSoftTakeover->setThreshold(
+                SoftTakeover::kDefaultTakeoverThreshold * 2.0);
+    } else {
+        m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     }
     m_pControlLinkType->setAndConfirm(v);
 }
@@ -140,7 +149,7 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
     m_pSoftTakeover->ignoreNext();
 }
 
-void EffectParameterSlot::onChainParameterChanged(double parameter, bool force) {
+void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != NULL) {
         // Intermediate cast to integer is needed for VC++.
@@ -162,8 +171,8 @@ void EffectParameterSlot::onChainParameterChanged(double parameter, bool force) 
                             // the neutral position must stick where it is
                             neutral = 1.0 - neutral;
                         }
-                        // Button is already a split button
-                        // Match to center position of Super button
+                        // Knob is already a split knob
+                        // Match to center position of Super knob
                         if (parameter <= 0.5) {
                             parameter /= 0.5;
                             parameter *= neutral;
@@ -217,14 +226,18 @@ void EffectParameterSlot::onChainParameterChanged(double parameter, bool force) 
         }
 
         //qDebug() << "onChainParameterChanged" << parameter;
-        if (force || !m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
+        if (force) {
+            m_pControlValue->setParameterFrom(parameter, NULL);
+            // This ensures that softtakover is in sync for following updates
+            m_pSoftTakeover->ignore(m_pControlValue, parameter);
+        } else if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
             m_pControlValue->setParameterFrom(parameter, NULL);
         }
     }
 }
 
 void EffectParameterSlot::syncSofttakeover() {
-    double parameter = m_pControlValue->get();
+    double parameter = m_pControlValue->getParameter();
     m_pSoftTakeover->ignore(m_pControlValue, parameter);
 }
 

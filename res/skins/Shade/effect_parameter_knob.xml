@@ -17,10 +17,10 @@
 		<MaximumSize>-1,45</MaximumSize> 
 		<Children>
 			<EffectParameterName>
-				<MinimumSize>38f,8f</MinimumSize>
 				<Style>
 					WEffectParameter { 
-						font: 10px/8px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						font: 10px/8px sans-serif;
+						font-family: "Open Sans";
 						background-color: transparent; 
 						color: #191F24; 
 						padding-left: 1px; 

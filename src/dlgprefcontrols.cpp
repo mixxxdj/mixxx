@@ -23,6 +23,7 @@
 #include <QLocale>
 #include <QDesktopWidget>
 
+#include "basetrackplayer.h"
 #include "dlgprefcontrols.h"
 #include "configobject.h"
 #include "controlobject.h"
@@ -66,9 +67,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     ComboBoxPosition->addItem(tr("Position"));
     ComboBoxPosition->addItem(tr("Remaining"));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1) {
+    if (m_pConfig->getValueString(ConfigKey("[Controls]", "PositionDisplay")).length() == 0)
+        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"),ConfigValue(0));
+    if (m_pConfig->getValueString(ConfigKey("[Controls]", "PositionDisplay")).toInt() == 1) {
         ComboBoxPosition->setCurrentIndex(1);
         m_pControlPositionDisplay->set(1.0);
     } else {
@@ -79,8 +80,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetPositionDisplay(int)));
 
     // Set default direction as stored in config file
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
+    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).length() == 0)
+        m_pConfig->set(ConfigKey("[Controls]", "RateDir"),ConfigValue(0));
 
     ComboBoxRateDir->clear();
     ComboBoxRateDir->addItem(tr("Up increases speed"));
@@ -88,38 +89,62 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxRateDir, SIGNAL(activated(int)),
             this, SLOT(slotSetRateDir(int)));
 
-    // Set default range as stored in config file
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateRange"),ConfigValue(2));
-
     ComboBoxRateRange->clear();
-    ComboBoxRateRange->addItem(tr("6%"));
-    ComboBoxRateRange->addItem(tr("8% (Technics SL-1210)"));
-    ComboBoxRateRange->addItem(tr("10%"));
-    ComboBoxRateRange->addItem(tr("20%"));
-    ComboBoxRateRange->addItem(tr("30%"));
-    ComboBoxRateRange->addItem(tr("40%"));
-    ComboBoxRateRange->addItem(tr("50%"));
-    ComboBoxRateRange->addItem(tr("60%"));
-    ComboBoxRateRange->addItem(tr("70%"));
-    ComboBoxRateRange->addItem(tr("80%"));
-    ComboBoxRateRange->addItem(tr("90%"));
+    ComboBoxRateRange->addItem(tr("4%"), 4);
+    ComboBoxRateRange->addItem(tr("6% (semitone)"), 6);
+    ComboBoxRateRange->addItem(tr("8% (Technics SL-1210)"), 8);
+    ComboBoxRateRange->addItem(tr("10%"), 10);
+    ComboBoxRateRange->addItem(tr("16%"), 16);
+    ComboBoxRateRange->addItem(tr("24%"), 24);
+    ComboBoxRateRange->addItem(tr("50%"), 50);
+    ComboBoxRateRange->addItem(tr("90%"), 90);
     connect(ComboBoxRateRange, SIGNAL(activated(int)),
             this, SLOT(slotSetRateRange(int)));
+
+    // Set default range as stored in config file
+    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).length() == 0) {
+        // Fall back to old [Controls]RateRange
+        if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0) {
+            m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"), ConfigValue(8));
+        } else {
+            int oldIdx = m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
+            double oldRange = static_cast<double>(oldIdx-1) / 10.0;
+            if (oldIdx == 0) {
+                oldRange = 0.06;
+            }
+            if (oldIdx == 1) {
+                oldRange = 0.08;
+            }
+            m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),
+                           ConfigValue(static_cast<int>(oldRange * 100.)));
+            slotSetRateRangePercent(oldRange * 100.);
+        }
+    }
+
+    ComboBoxKeylockMode->clear();
+    ComboBoxKeylockMode->addItem(tr("Lock original key"));
+    ComboBoxKeylockMode->addItem(tr("Lock current key"));
+    connect(ComboBoxKeylockMode, SIGNAL(activated(int)),
+            this, SLOT(slotKeylockMode(int)));
+    m_keylockMode = m_pConfig->getValueString(
+            ConfigKey("[Controls]", "keylockMode"), "0").toInt();
+    foreach (ControlObjectThread* pControl, m_keylockModeControls) {
+        pControl->slotSet(m_keylockMode);
+    }
 
     //
     // Rate buttons configuration
     //
     //NOTE: THESE DEFAULTS ARE A LIE! You'll need to hack the same values into the static variables
     //      at the top of enginebuffer.cpp
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempLeft")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(QString("4.0")));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","RateTempRight")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(QString("2.0")));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","RatePermLeft")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(QString("0.50")));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","RatePermRight")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(QString("0.05")));
+    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateTempLeft")).length() == 0)
+        m_pConfig->set(ConfigKey("[Controls]", "RateTempLeft"), ConfigValue(QString("4.0")));
+    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateTempRight")).length() == 0)
+        m_pConfig->set(ConfigKey("[Controls]", "RateTempRight"), ConfigValue(QString("2.0")));
+    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RatePermLeft")).length() == 0)
+        m_pConfig->set(ConfigKey("[Controls]", "RatePermLeft"), ConfigValue(QString("0.50")));
+    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RatePermRight")).length() == 0)
+        m_pConfig->set(ConfigKey("[Controls]", "RatePermRight"), ConfigValue(QString("0.05")));
 
     connect(spinBoxTempRateLeft, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetRateTempLeft(double)));
@@ -131,13 +156,13 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetRatePermRight(double)));
 
     spinBoxTempRateLeft->setValue(m_pConfig->getValueString(
-            ConfigKey("[Controls]","RateTempLeft")).toDouble());
+            ConfigKey("[Controls]", "RateTempLeft")).toDouble());
     spinBoxTempRateRight->setValue(m_pConfig->getValueString(
-            ConfigKey("[Controls]","RateTempRight")).toDouble());
+            ConfigKey("[Controls]", "RateTempRight")).toDouble());
     spinBoxPermRateLeft->setValue(m_pConfig->getValueString(
-            ConfigKey("[Controls]","RatePermLeft")).toDouble());
+            ConfigKey("[Controls]", "RatePermLeft")).toDouble());
     spinBoxPermRateRight->setValue(m_pConfig->getValueString(
-            ConfigKey("[Controls]","RatePermRight")).toDouble());
+            ConfigKey("[Controls]", "RatePermRight")).toDouble());
 
     SliderRateRampSensitivity->setEnabled(true);
     SpinBoxRateRampSensitivity->setEnabled(true);
@@ -212,22 +237,25 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     int cueDefaultValue = cueDefault.toInt();
 
     // Update combo box
-    ComboBoxCueDefault->addItem(tr("Mixxx mode"));
-    ComboBoxCueDefault->addItem(tr("Pioneer mode"));
-    ComboBoxCueDefault->addItem(tr("Denon mode"));
-    ComboBoxCueDefault->addItem(tr("Numark mode"));
-    ComboBoxCueDefault->setCurrentIndex(cueDefaultValue);
-
-    slotSetCueDefault(cueDefaultValue);
-    connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
+    // The itemData values are out of order to avoid breaking configurations
+    // when Mixxx mode (no blinking) was introduced.
+    ComboBoxCueDefault->addItem(tr("Mixxx mode"), 0);
+    ComboBoxCueDefault->addItem(tr("Mixxx mode (no blinking)"), 4);
+    ComboBoxCueDefault->addItem(tr("Pioneer mode"), 1);
+    ComboBoxCueDefault->addItem(tr("Denon mode"), 2);
+    ComboBoxCueDefault->addItem(tr("Numark mode"), 3);
+    const int cueDefaultIndex = cueDefaultIndexByData(cueDefaultValue);
+    ComboBoxCueDefault->setCurrentIndex(cueDefaultIndex);
+    slotSetCueDefault(cueDefaultIndex);
+    connect(ComboBoxCueDefault, SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
 
     // Cue recall
-    ComboBoxCueRecall->addItem(tr("On"));
-    ComboBoxCueRecall->addItem(tr("Off"));
-    ComboBoxCueRecall->setCurrentIndex(m_pConfig->getValueString(
+    ComboBoxSeekToCue->addItem(tr("On track load"));
+    ComboBoxSeekToCue->addItem(tr("Off"));
+    ComboBoxSeekToCue->setCurrentIndex(m_pConfig->getValueString(
             ConfigKey("[Controls]", "CueRecall")).toInt());
     //NOTE: for CueRecall, 0 means ON....
-    connect(ComboBoxCueRecall, SIGNAL(activated(int)),
+    connect(ComboBoxSeekToCue, SIGNAL(activated(int)),
             this, SLOT(slotSetCueRecall(int)));
 
     //
@@ -239,44 +267,34 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     ComboBoxSkinconf->clear();
 
-    QDir skinsDir(m_pConfig->getResourcePath() + "skins/");
-    skinsDir.setFilter(QDir::Dirs);
-
-    QList<QFileInfo> list = skinsDir.entryInfoList();
-
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        // Show developer skins
-        QDir developerSkinsDir(m_pConfig->getResourcePath() + "developer_skins/");
-        developerSkinsDir.setFilter(QDir::Dirs);
-        list += developerSkinsDir.entryInfoList();
+    QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
+    QList<QFileInfo> skins;
+    foreach (QDir dir, skinSearchPaths) {
+        dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+        skins.append(dir.entryInfoList());
     }
 
-    QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
-
-    int j=0;
-    for (int i=0; i<list.size(); ++i)
-    {
-        if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
-        {
-            bool size_ok = checkSkinResolution(list.at(i).filePath());
-            if (size_ok) {
-                ComboBoxSkinconf->insertItem(i, list.at(i).fileName());
-            } else {
-                ComboBoxSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list.at(i).fileName());
-            }
-
-            if (list.at(i).filePath() == configuredSkinPath) {
-                ComboBoxSkinconf->setCurrentIndex(j);
-                if (size_ok) {
-                    warningLabel->hide();
-                } else {
-                    warningLabel->show();
-                }
-            }
-            ++j;
+    QString configuredSkinPath = m_pSkinLoader->getSkinPath();
+    QIcon sizeWarningIcon(":/images/preferences/ic_preferences_warning.png");
+    int index = 0;
+    foreach (QFileInfo skinInfo, skins) {
+        bool size_ok = checkSkinResolution(skinInfo.absoluteFilePath());
+        if (size_ok) {
+            ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
+        } else {
+            ComboBoxSkinconf->insertItem(index, sizeWarningIcon, skinInfo.fileName());
         }
-    }
 
+        if (skinInfo.absoluteFilePath() == configuredSkinPath) {
+            ComboBoxSkinconf->setCurrentIndex(index);
+            if (size_ok) {
+                warningLabel->hide();
+            } else {
+                warningLabel->show();
+            }
+        }
+        index++;
+    }
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
@@ -289,7 +307,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     ComboBoxStartInFullscreen->addItem(tr("Off")); // 0
     ComboBoxStartInFullscreen->addItem(tr("On")); // 1
     ComboBoxStartInFullscreen->setCurrentIndex(m_pConfig->getValueString(
-                       ConfigKey("[Config]","StartInFullscreen"),"0").toInt());
+                       ConfigKey("[Config]", "StartInFullscreen"), "0").toInt());
     connect(ComboBoxStartInFullscreen, SIGNAL(activated(int)),
             this, SLOT(slotSetStartInFullscreen(int)));
 
@@ -316,13 +334,25 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(groupBoxRateRamp, SIGNAL(toggled(bool)),
             this, SLOT(slotSetRateRamp(bool)));
     groupBoxRateRamp->setChecked((bool)
-                                 m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt());
+                                 m_pConfig->getValueString(ConfigKey("[Controls]", "RateRamp")).toInt());
 
     // Update Ramp Rate Sensitivity
     connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetRateRampSensitivity(int)));
     SliderRateRampSensitivity->setValue(m_pConfig->getValueString(
             ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
+
+    // Update Speed Auto Reset Slider Box
+    // This corresponds to the enum in basetrackplayer.h TrackLoadReset.
+    ComboBoxResetSpeedAndPitch->addItem(tr("Off"));
+    ComboBoxResetSpeedAndPitch->addItem(tr("Reset key adjustment on track load"));
+    ComboBoxResetSpeedAndPitch->addItem(tr("Reset key and speed on track load"));
+    connect(ComboBoxResetSpeedAndPitch, SIGNAL(activated(int)),
+            this, SLOT(slotUpdateSpeedAutoReset(int)));
+    // TODO: All defaults should only be set in slotResetToDefaults.
+    m_speedAutoReset = m_pConfig->getValueString(
+                    ConfigKey("[Controls]", "SpeedAutoReset"),
+                    QString("%1").arg(BaseTrackPlayer::RESET_PITCH)).toInt();
 
     slotUpdate();
 }
@@ -333,13 +363,13 @@ DlgPrefControls::~DlgPrefControls() {
     qDeleteAll(m_rateDirControls);
     qDeleteAll(m_cueControls);
     qDeleteAll(m_rateRangeControls);
+    qDeleteAll(m_keylockModeControls);
 }
 
-void DlgPrefControls::slotUpdateSchemes()
-{
+void DlgPrefControls::slotUpdateSchemes() {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     QList<QString> schlist = LegacySkinParser::getSchemeList(
-                m_pSkinLoader->getConfiguredSkinPath());
+                m_pSkinLoader->getSkinPath());
 
     ComboBoxSchemeconf->clear();
 
@@ -349,10 +379,11 @@ void DlgPrefControls::slotUpdateSchemes()
         ComboBoxSchemeconf->setCurrentIndex(0);
     } else {
         ComboBoxSchemeconf->setEnabled(true);
+        QString selectedScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
 
-            if (schlist[i] == m_pConfig->getValueString(ConfigKey("[Config]","Scheme"))) {
+            if (schlist[i] == selectedScheme) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
             }
         }
@@ -363,18 +394,23 @@ void DlgPrefControls::slotUpdate() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    double idx = (10. * deck1RateRange) + 1;
-    if (deck1RateRange <= 0.07)
-        idx = 0.;
-    else if (deck1RateRange <= 0.09)
-        idx = 1.;
+    int idx = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
+    if (idx == -1) {
+        ComboBoxRateRange->addItem(QString::number(deck1RateRange * 100.).append("%"),
+                                   deck1RateRange * 100.);
+    }
 
-    ComboBoxRateRange->setCurrentIndex((int)idx);
+    ComboBoxRateRange->setCurrentIndex(idx);
 
-    if (deck1RateDir == 1)
+    if (deck1RateDir == 1) {
         ComboBoxRateDir->setCurrentIndex(0);
-    else
+    } else {
         ComboBoxRateDir->setCurrentIndex(1);
+    }
+
+    ComboBoxKeylockMode->setCurrentIndex(m_keylockMode);
+
+    ComboBoxResetSpeedAndPitch->setCurrentIndex(m_speedAutoReset);
 }
 
 void DlgPrefControls::slotResetToDefaults() {
@@ -384,8 +420,8 @@ void DlgPrefControls::slotResetToDefaults() {
     // Up increases speed.
     ComboBoxRateDir->setCurrentIndex(0);
 
-    // 10% Rate Range
-    ComboBoxRateRange->setCurrentIndex(2);
+    // 8% Rate Range
+    ComboBoxRateRange->setCurrentIndex(ComboBoxRateRange->findData(8));
 
     // Don't load tracks into playing decks.
     ComboBoxAllowTrackLoadToPlayingDeck->setCurrentIndex(0);
@@ -397,7 +433,7 @@ void DlgPrefControls::slotResetToDefaults() {
     ComboBoxCueDefault->setCurrentIndex(0);
 
     // Cue recall on.
-    ComboBoxCueRecall->setCurrentIndex(0);
+    ComboBoxSeekToCue->setCurrentIndex(0);
 
     // Don't start in full screen.
     ComboBoxStartInFullscreen->setCurrentIndex(0);
@@ -416,26 +452,34 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxTempRateRight->setValue(2.0);
     spinBoxPermRateLeft->setValue(0.50);
     spinBoxPermRateRight->setValue(0.05);
+
+    // Speed auto reset combobox
+    m_speedAutoReset = BaseTrackPlayer::RESET_PITCH;
+    ComboBoxResetSpeedAndPitch->setCurrentIndex(BaseTrackPlayer::RESET_PITCH);
+
+    m_keylockMode = 0;
+    ComboBoxKeylockMode->setCurrentIndex(m_keylockMode);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
     QString newLocale = ComboBoxLocale->itemData(pos).toString();
-    m_pConfig->set(ConfigKey("[Config]","Locale"), ConfigValue(newLocale));
+    m_pConfig->set(ConfigKey("[Config]", "Locale"), ConfigValue(newLocale));
     notifyRebootNecessary();
 }
 
 void DlgPrefControls::slotSetRateRange(int pos) {
-    double range = static_cast<double>(pos-1) / 10.0;
-    if (pos == 0)
-        range = 0.06;
-    if (pos == 1)
-        range = 0.08;
+    slotSetRateRangePercent(ComboBoxRateRange->itemData(pos).toInt());
+}
 
-    qDebug() << "slotSetRateRange" << pos << range;
+
+void DlgPrefControls::slotSetRateRangePercent (int rateRangePercent) {
+    double rateRange = rateRangePercent / 100.;
+
+    qDebug() << "slotSetRateRangePercent" << rateRange;
 
     // Set rate range for every group
     foreach (ControlObjectThread* pControl, m_rateRangeControls) {
-        pControl->slotSet(range);
+        pControl->slotSet(rateRange);
     }
 
     // Reset rate for every group
@@ -465,25 +509,29 @@ void DlgPrefControls::slotSetRateDir(int index) {
 
 }
 
+void DlgPrefControls::slotKeylockMode(int index) {
+    m_keylockMode = index;
+}
+
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
-    m_pConfig->set(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck"),
+    m_pConfig->set(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
                    ConfigValue(ComboBoxAllowTrackLoadToPlayingDeck->currentIndex()));
 }
 
-void DlgPrefControls::slotSetCueDefault(int)
+void DlgPrefControls::slotSetCueDefault(int index)
 {
-    int cueIndex = ComboBoxCueDefault->currentIndex();
-    m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(cueIndex));
+    int cueMode = ComboBoxCueDefault->itemData(index).toInt();
+    m_pConfig->set(ConfigKey("[Controls]", "CueDefault"), ConfigValue(cueMode));
 
     // Set cue behavior for every group
     foreach (ControlObjectThread* pControl, m_cueControls) {
-        pControl->slotSet(cueIndex);
+        pControl->slotSet(cueMode);
     }
 }
 
 void DlgPrefControls::slotSetCueRecall(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]","CueRecall"), ConfigValue(ComboBoxCueRecall->currentIndex()));
+    m_pConfig->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(ComboBoxSeekToCue->currentIndex()));
 }
 
 void DlgPrefControls::slotSetStartInFullscreen(int index) {
@@ -508,7 +556,9 @@ void DlgPrefControls::slotSetScheme(int) {
 }
 
 void DlgPrefControls::slotSetSkin(int) {
-    m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
+    ComboBoxSkinconf->repaint(); // without it the combobox sticks to the old value until
+                                 // the new Skin is fully loaded
+    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), ComboBoxSkinconf->currentText());
     m_mixxx->rebootMixxxView();
     checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
@@ -517,7 +567,7 @@ void DlgPrefControls::slotSetSkin(int) {
 
 void DlgPrefControls::slotSetPositionDisplay(int) {
     int positionDisplay = ComboBoxPosition->currentIndex();
-    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(positionDisplay));
+    m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(positionDisplay));
     m_pControlPositionDisplay->set(positionDisplay);
 }
 
@@ -525,44 +575,44 @@ void DlgPrefControls::slotSetPositionDisplay(double v) {
     if (v > 0) {
         // remaining
         ComboBoxPosition->setCurrentIndex(1);
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(1));
+        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(1));
     } else {
         // position
         ComboBoxPosition->setCurrentIndex(0);
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(0));
+        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(0));
     }
 }
 
 void DlgPrefControls::slotSetRateTempLeft(double v) {
     QString str;
     str = str.setNum(v, 'f');
-    m_pConfig->set(ConfigKey("[Controls]","RateTempLeft"),ConfigValue(str));
+    m_pConfig->set(ConfigKey("[Controls]", "RateTempLeft"),ConfigValue(str));
     RateControl::setTemp(v);
 }
 
 void DlgPrefControls::slotSetRateTempRight(double v) {
     QString str;
     str = str.setNum(v, 'f');
-    m_pConfig->set(ConfigKey("[Controls]","RateTempRight"),ConfigValue(str));
+    m_pConfig->set(ConfigKey("[Controls]", "RateTempRight"),ConfigValue(str));
     RateControl::setTempSmall(v);
 }
 
 void DlgPrefControls::slotSetRatePermLeft(double v) {
     QString str;
     str = str.setNum(v, 'f');
-    m_pConfig->set(ConfigKey("[Controls]","RatePermLeft"),ConfigValue(str));
+    m_pConfig->set(ConfigKey("[Controls]", "RatePermLeft"),ConfigValue(str));
     RateControl::setPerm(v);
 }
 
 void DlgPrefControls::slotSetRatePermRight(double v) {
     QString str;
     str = str.setNum(v, 'f');
-    m_pConfig->set(ConfigKey("[Controls]","RatePermRight"),ConfigValue(str));
+    m_pConfig->set(ConfigKey("[Controls]", "RatePermRight"),ConfigValue(str));
     RateControl::setPermSmall(v);
 }
 
 void DlgPrefControls::slotSetRateRampSensitivity(int sense) {
-    m_pConfig->set(ConfigKey("[Controls]","RateRampSensitivity"),
+    m_pConfig->set(ConfigKey("[Controls]", "RateRampSensitivity"),
                    ConfigValue(SliderRateRampSensitivity->value()));
     RateControl::setRateRampSensitivity(sense);
 }
@@ -577,21 +627,25 @@ void DlgPrefControls::slotApply() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    // Write rate range to config file
-    double idx = (10. * deck1RateRange) + 1;
-    if (deck1RateRange <= 0.07)
-        idx = 0.;
-    else if (deck1RateRange <= 0.09)
-        idx = 1.;
-
-    m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)idx));
+    m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),
+                   ConfigValue(static_cast<int>(deck1RateRange * 100)));
 
     // Write rate direction to config file
-    if (deck1RateDir == 1)
-        m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
-    else
-        m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
+    if (deck1RateDir == 1) {
+        m_pConfig->set(ConfigKey("[Controls]", "RateDir"), ConfigValue(0));
+    } else {
+        m_pConfig->set(ConfigKey("[Controls]", "RateDir"), ConfigValue(1));
+    }
 
+    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+            ConfigValue(m_speedAutoReset));
+
+    m_pConfig->set(ConfigKey("[Controls]", "PitchAndKeylockMode"),
+            ConfigValue(m_keylockMode));
+    // Set cue behavior for every group
+    foreach (ControlObjectThread* pControl, m_keylockModeControls) {
+        pControl->slotSet(m_keylockMode);
+    }
 }
 
 //Returns TRUE if skin fits to screen resolution, FALSE otherwise
@@ -643,11 +697,14 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
+        m_keylockModeControls.push_back(new ControlObjectThread(
+                        group, "keylockMode"));
+        m_keylockModeControls.last()->set(m_keylockMode);
     }
 
     m_iNumConfiguredDecks = numdecks;
-    slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
-    slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
+    slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
+    slotSetRateRangePercent(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).toInt());
 }
 
 void DlgPrefControls::slotNumSamplersChanged(double new_count) {
@@ -666,9 +723,27 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
+        m_keylockModeControls.push_back(new ControlObjectThread(
+                        group, "keylockMode"));
+        m_keylockModeControls.last()->set(m_keylockMode);
     }
 
     m_iNumConfiguredSamplers = numsamplers;
-    slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
-    slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
+    slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
+    slotSetRateRangePercent(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).toInt());
+}
+
+void DlgPrefControls::slotUpdateSpeedAutoReset(int i) {
+    m_speedAutoReset = i;
+}
+
+int DlgPrefControls::cueDefaultIndexByData(int userData) const {
+    for (int i = 0; i < ComboBoxCueDefault->count(); ++i) {
+        if (ComboBoxCueDefault->itemData(i).toInt() == userData) {
+            return i;
+        }
+    }
+    qWarning() << "No default cue behavior found for value" << userData
+               << "returning default";
+    return 0;
 }

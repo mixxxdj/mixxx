@@ -9,10 +9,10 @@
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterlinkwitzriley8.h"
-#include "util.h"
-#include "util/types.h"
+#include "util/class.h"
 #include "util/defs.h"
-#include "sampleutil.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 class LinkwitzRiley8EQEffectGroupState {
   public:
@@ -39,7 +39,7 @@ class LinkwitzRiley8EQEffectGroupState {
     int m_hiFreq;
 };
 
-class LinkwitzRiley8EQEffect : public GroupEffectProcessor<LinkwitzRiley8EQEffectGroupState> {
+class LinkwitzRiley8EQEffect : public PerChannelEffectProcessor<LinkwitzRiley8EQEffectGroupState> {
   public:
     LinkwitzRiley8EQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~LinkwitzRiley8EQEffect();
@@ -48,13 +48,13 @@ class LinkwitzRiley8EQEffect : public GroupEffectProcessor<LinkwitzRiley8EQEffec
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      LinkwitzRiley8EQEffectGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE *pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatureState);
+    void processChannel(const ChannelHandle& handle,
+                        LinkwitzRiley8EQEffectGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatureState);
 
   private:
     QString debugString() const {

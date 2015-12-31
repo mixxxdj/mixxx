@@ -8,6 +8,7 @@
 #include "vinylcontrol/vinylsignalquality.h"
 
 class ControlObjectThread;
+class ControlObjectSlave;
 
 class VinylControl : public QObject {
   public:
@@ -33,8 +34,13 @@ class VinylControl : public QObject {
     ControlObjectThread *trackSamples;
     ControlObjectThread *trackSampleRate;
     ControlObjectThread *vinylSeek; //The ControlObject used to change the playback position in the song.
-    ControlObjectThread *controlScratch; //The ControlObject used to seek when the record is spinning fast.
-    ControlObjectThread *rateSlider; //The ControlObject used to change the speed/pitch of the song.
+    // this rate is used in engine buffer for transport
+    // 1.0 = original rate
+    ControlObjectSlave* m_pVCRate;
+    // Reflects the mean value (filtered for display) used of m_pVCRate during VC and
+    // and is used to change the speed/pitch of the song without VC
+    // 0.0 = original rate
+    ControlObjectSlave* m_pRateSlider;
     ControlObjectThread *duration; //The ControlObject used to get the duration of the current song.
     ControlObjectThread *mode; //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
     ControlObjectThread *enabled; //The ControlObject used to get if the vinyl control is enabled or disabled.
@@ -46,6 +52,7 @@ class VinylControl : public QObject {
     ControlObjectThread *rateDir; //direction of rate
     ControlObjectThread *loopEnabled; //looping enabled?
     ControlObjectThread *signalenabled; //show the signal in the skin?
+    ControlObjectThread *reverseButton; // When the user has pressed the "reverse" button.
 
     // The lead-in time...
     int m_iLeadInTime;

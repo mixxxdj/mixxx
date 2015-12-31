@@ -9,7 +9,8 @@
 -->
 <Template>
   <VuMeter>
-    <MinimumSize>100,5</MinimumSize>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <MinimumSize>50,5</MinimumSize>
     <MaximumSize>200,5</MaximumSize>
     <PathVu>vumeter.svg</PathVu>
     <Horizontal>true</Horizontal>

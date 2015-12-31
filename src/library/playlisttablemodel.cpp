@@ -56,9 +56,11 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     }
 
     columns[0] = LIBRARYTABLE_ID;
+    // columns[1] = PLAYLISTTRACKSTABLE_POSITION from above
+    // columns[2] = PLAYLISTTRACKSTABLE_DATETIMEADDED from above
     columns[3] = LIBRARYTABLE_PREVIEW;
     columns[4] = LIBRARYTABLE_COVERART;
-    setTable(playlistTableName, columns[0], columns,
+    setTable(playlistTableName, LIBRARYTABLE_ID, columns,
             m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
@@ -70,7 +72,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
 int PlaylistTableModel::addTracks(const QModelIndex& index,
                                   const QList<QString>& locations) {
-    if (locations.size() == 0) {
+    if (locations.isEmpty()) {
         return 0;
     }
 
@@ -84,10 +86,13 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
 
     QList<QFileInfo> fileInfoList;
     foreach (QString fileLocation, locations) {
-        fileInfoList.append(QFileInfo(fileLocation));
+        QFileInfo fileInfo(fileLocation);
+        if (fileInfo.exists()) {
+            fileInfoList.append(fileInfo);
+        }
     }
 
-    QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_trackDAO.addTracks(fileInfoList, true);
 
     int tracksAdded = m_playlistDao.insertTracksIntoPlaylist(
         trackIds, m_iPlaylistId, position);
@@ -100,8 +105,8 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     return tracksAdded;
 }
 
-bool PlaylistTableModel::appendTrack(int trackId) {
-    if (trackId < 0) {
+bool PlaylistTableModel::appendTrack(TrackId trackId) {
+    if (!trackId.isValid()) {
         return false;
     }
     return m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
@@ -152,8 +157,8 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         // or no move at all
         return;
     } else if (newPosition == 0) {
-        //Dragged out of bounds, which is past the end of the rows...
-        newPosition = rowCount();
+        // Dragged out of bounds, which is past the end of the rows...
+        newPosition = m_playlistDao.getMaxPosition(m_iPlaylistId);
     }
 
     m_playlistDao.moveTrack(m_iPlaylistId, oldPosition, newPosition);
@@ -165,7 +170,7 @@ bool PlaylistTableModel::isLocked() {
 
 void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude) {
     QList<int> positions;
-    QHash<int,int> allIds;
+    QHash<int,TrackId> allIds;
     const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
     const int idColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID);
     int excludePos = -1;
@@ -195,8 +200,8 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     int numOfTracks = rowCount();
     for (int i = 0; i < numOfTracks; i++) {
         int position = index(i, positionColumn).data().toInt();
-        int id = index(i, idColumn).data().toInt();
-        allIds.insert(position, id);
+        TrackId trackId(index(i, idColumn).data());
+        allIds.insert(position, trackId);
     }
     m_playlistDao.shuffleTracks(m_iPlaylistId, positions, allIds);
 }
@@ -223,8 +228,10 @@ bool PlaylistTableModel::isColumnInternal(int column) {
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
         return true;
+    } else if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION)) {
+        return false;
     }
-    return false;
+    return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {

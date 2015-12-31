@@ -51,6 +51,11 @@ class Beats {
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
+    // TODO: We may want all of these find functions to return an integer
+    //       instead of a double.
+    // TODO: We may want to implement these with common code that returns
+    //       the triple of closest, next, and prev.
+
     // Starting from sample dSamples, return the sample of the next beat in the
     // track, or -1 if none exists. If dSamples refers to the location of a
     // beat, dSamples is returned.
@@ -61,8 +66,19 @@ class Beats {
     // beat, dSamples is returned.
     virtual double findPrevBeat(double dSamples) const = 0;
 
+    // Starting from sample dSamples, fill the samples of the previous beat
+    // and next beat.  Either can be -1 if none exists.  If dSamples refers
+    // to the location of the beat, the first value is dSamples, and the second
+    // value is the next beat position.  Non- -1 values are guaranteed to be
+    // even.  Returns false if *at least one* sample is -1.  (Can return false
+    // with one beat successfully filled)
+    virtual bool findPrevNextBeats(double dSamples,
+                                   double* dpPrevBeatSamples,
+                                   double* dpNextBeatSamples) const = 0;
+
     // Starting from sample dSamples, return the sample of the closest beat in
-    // the track, or -1 if none exists.
+    // the track, or -1 if none exists.  Non- -1 values are guaranteed to be
+    // even.
     virtual double findClosestBeat(double dSamples) const = 0;
 
     // Find the Nth beat from sample dSamples. Works with both positive and
@@ -88,6 +104,11 @@ class Beats {
     // Return the average BPM over the range from startSample to endSample,
     // specified in samples if the BPM is valid, otherwise returns -1
     virtual double getBpmRange(double startSample, double stopSample) const = 0;
+
+    // Return the average BPM over the range of n*2 beats centered around
+    // curSample.  (An n of 4 results in an averaging of 8 beats).  Invalid
+    // BPM returns -1.
+    virtual double getBpmAroundPosition(double curSample, int n) const = 0;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations

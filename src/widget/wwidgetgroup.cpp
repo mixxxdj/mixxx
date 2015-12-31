@@ -5,6 +5,7 @@
 #include <QStylePainter>
 #include <QStackedLayout>
 
+#include "skin/skincontext.h"
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 #include "util/debug.h"
@@ -83,10 +84,9 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        QString mode_str = context.selectAttributeString(
-                context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        setPixmapBackground(context.getPixmapSource(context.selectNode(node, "BackPath")),
-                            Paintable::DrawModeFromString(mode_str));
+        QDomElement backPathNode = context.selectElement(node, "BackPath");
+        setPixmapBackground(context.getPixmapSource(backPathNode),
+                            context.selectScaleMode(backPathNode, Paintable::TILE));
     }
 
     QLayout* pLayout = NULL;

@@ -56,7 +56,9 @@ class WOverview : public WWidget {
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dropEvent(QDropEvent* event);
 
-    Waveform* m_pWaveform;
+    ConstWaveformPointer getWaveform() const {
+        return m_pWaveform;
+    }
 
     QImage* m_pWaveformSourceImage;
     QImage m_waveformImageScaled;
@@ -78,7 +80,7 @@ class WOverview : public WWidget {
     void onMarkRangeChange(double v);
 
     void slotWaveformSummaryUpdated();
-    void slotAnalyserProgress(int progress);
+    void slotAnalyzerProgress(int progress);
 
   private:
     // Append the waveform overview pixmap according to available data in waveform
@@ -93,14 +95,14 @@ class WOverview : public WWidget {
 
     const QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;
-    ControlObjectThread* m_endOfTrackControl;
+    ControlObjectSlave* m_endOfTrackControl;
     double m_endOfTrack;
-    ControlObjectThread* m_trackSamplesControl;
-    ControlObjectThread* m_playControl;
-
+    ControlObjectSlave* m_trackSamplesControl;
+    ControlObjectSlave* m_playControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
+    ConstWaveformPointer m_pWaveform;
 
     // True if slider is dragged. Only used when m_bEventWhileDrag is false
     bool m_bDrag;
@@ -119,8 +121,8 @@ class WOverview : public WWidget {
     double m_a;
     double m_b;
 
-    double m_dAnalyserProgress;
-    bool m_bAnalyserFinalizing;
+    double m_dAnalyzerProgress;
+    bool m_bAnalyzerFinalizing;
     bool m_trackLoaded;
 };
 

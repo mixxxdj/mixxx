@@ -6,10 +6,11 @@
 #include <QList>
 #include <QSignalMapper>
 
-#include "util.h"
 #include "effects/effect.h"
 #include "effects/effectslot.h"
 #include "effects/effectchain.h"
+#include "engine/channelhandle.h"
+#include "util/class.h"
 
 class ControlObject;
 class ControlPushButton;
@@ -35,11 +36,11 @@ class EffectChainSlot : public QObject {
     void loadEffectChain(EffectChainPointer pEffectChain);
     EffectChainPointer getEffectChain() const;
 
-    void registerGroup(const QString& group);
+    void registerChannel(const ChannelHandleAndGroup& handle_group);
 
-    double getParameter() const;
-    void setParameter(double value);
-    void setParameterDefaultValue(double value);
+    double getSuperParameter() const;
+    void setSuperParameter(double value);
+    void setSuperParameterDefaultValue(double value);
 
     // Unload the loaded EffectChain.
     void clear();
@@ -94,11 +95,11 @@ class EffectChainSlot : public QObject {
   private slots:
     void slotChainEffectsChanged(bool shouldEmit=true);
     void slotChainNameChanged(const QString& name);
-    void slotChainParameterChanged(double parameter);
+    void slotChainSuperParameterChanged(double parameter);
     void slotChainEnabledChanged(bool enabled);
     void slotChainMixChanged(double mix);
     void slotChainInsertionTypeChanged(EffectChain::InsertionType type);
-    void slotChainGroupStatusChanged(const QString& group, bool enabled);
+    void slotChainChannelStatusChanged(const QString& group, bool enabled);
 
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
     // Clears the effect in the given position in the loaded EffectChain.
@@ -110,12 +111,12 @@ class EffectChainSlot : public QObject {
     void slotControlChainLoaded(double v);
     void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
-    void slotControlChainParameter(double v);
+    void slotControlChainSuperParameter(double v);
     void slotControlChainInsertionType(double v);
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
     void slotControlChainPrevPreset(double v);
-    void slotGroupStatusChanged(const QString& group);
+    void slotChannelStatusChanged(const QString& group);
 
   private:
     QString debugString() const {
@@ -134,16 +135,29 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlChainLoaded;
     ControlPushButton* m_pControlChainEnabled;
     ControlObject* m_pControlChainMix;
-    ControlObject* m_pControlChainParameter;
+    ControlObject* m_pControlChainSuperParameter;
     ControlPushButton* m_pControlChainInsertionType;
     ControlObject* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;
     ControlPushButton* m_pControlChainPrevPreset;
 
-    QMap<QString, ControlObject*> m_groupEnableControls;
+    struct ChannelInfo {
+        // Takes ownership of pEnabled.
+        ChannelInfo(const ChannelHandleAndGroup& handle_group, ControlObject* pEnabled)
+                : handle_group(handle_group),
+                  pEnabled(pEnabled) {
+
+        }
+        ~ChannelInfo() {
+            delete pEnabled;
+        }
+        ChannelHandleAndGroup handle_group;
+        ControlObject* pEnabled;
+    };
+    QMap<QString, ChannelInfo*> m_channelInfoByName;
 
     QList<EffectSlotPointer> m_slots;
-    QSignalMapper m_groupStatusMapper;
+    QSignalMapper m_channelStatusMapper;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };

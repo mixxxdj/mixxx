@@ -356,7 +356,14 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
         return;
     }
 
-    QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
+    const QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
+    // When loading the preset, we only want to load from the same dir as the
+    // preset itself, otherwise when loading from the system-wide dir we'll
+    // start the search in the user's dir find the existing script,
+    // and do nothing.
+    const QFileInfo presetFileInfo(presetPath);
+    QList<QString> presetDirs;
+    presetDirs.append(presetFileInfo.canonicalPath());
 
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
             presetPath, ControllerManager::getPresetPaths(m_pConfig));
@@ -370,7 +377,7 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
         }
 
         QString scriptPath = ControllerManager::getAbsolutePath(
-                it->name, ControllerManager::getPresetPaths(m_pConfig));
+                it->name, presetDirs);
 
 
         QString importedScriptFileName;
@@ -504,6 +511,8 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
         1, new QTableWidgetItem(tr("Function Prefix")));
     m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
         2, new QTableWidgetItem(tr("Built-in")));
+    m_ui.m_pScriptsTableWidget->horizontalHeader()
+            ->setResizeMode(QHeaderView::Stretch);
 
     for (int i = 0; i < preset->scripts.length(); ++i) {
         const ControllerPreset::ScriptFileInfo& script = preset->scripts.at(i);
@@ -523,7 +532,8 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 
         QTableWidgetItem* pScriptBuiltin = new QTableWidgetItem();
         pScriptBuiltin->setCheckState(script.builtin ? Qt::Checked : Qt::Unchecked);
-        pScriptBuiltin->setFlags(pScriptBuiltin->flags() & ~(Qt::ItemIsEditable |
+        pScriptBuiltin->setFlags(pScriptBuiltin->flags() & ~(Qt::ItemIsEnabled |
+                                                             Qt::ItemIsEditable |
                                                              Qt::ItemIsUserCheckable));
         m_ui.m_pScriptsTableWidget->setItem(i, 2, pScriptBuiltin);
     }
@@ -708,6 +718,11 @@ void DlgPrefController::openScript() {
     QModelIndexList selectedIndices = m_ui.m_pScriptsTableWidget->selectionModel()
             ->selection().indexes();
     if (selectedIndices.isEmpty()) {
+         QMessageBox::information(
+                    this,
+                    tr("Mixxx"),
+                    tr("Please select a script from the list to open."),
+                    QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
 

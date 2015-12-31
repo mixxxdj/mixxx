@@ -5,12 +5,12 @@
 #include <QSharedPointer>
 #include <QString>
 
-#include "util.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "effects/effect.h"
 #include "effects/effectparameterslot.h"
 #include "effects/effectbuttonparameterslot.h"
+#include "util/class.h"
 
 class EffectSlot;
 class ControlObjectSlave;
@@ -36,7 +36,7 @@ class EffectSlot : public QObject {
     EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
     EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
 
-    void onChainParameterChanged(double parameter, bool force=false);
+    void onChainSuperParameterChanged(double parameter, bool force=false);
 
     // ensures that Softtakover is bypassed for the following
     // ChainParameterChange. Uses for testing only

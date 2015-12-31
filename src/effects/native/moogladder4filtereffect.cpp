@@ -93,14 +93,15 @@ MoogLadder4FilterEffect::~MoogLadder4FilterEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void MoogLadder4FilterEffect::processGroup(const QString& group,
+void MoogLadder4FilterEffect::processChannel(
+        const ChannelHandle& handle,
         MoogLadder4FilterGroupState* pState,
         const CSAMPLE* pInput, CSAMPLE* pOutput,
         const unsigned int numSamples,
         const unsigned int sampleRate,
         const EffectProcessor::EnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
 
@@ -131,21 +132,38 @@ void MoogLadder4FilterEffect::processGroup(const QString& group,
                 sampleRate, hpf * sampleRate, resonance);
     }
 
+    const CSAMPLE* pLpfInput = pState->m_pBuf;
+    CSAMPLE* pHpfOutput = pState->m_pBuf;
+    if (lpf >= kMaxCorner && pState->m_loFreq >= kMaxCorner) {
+        // Lpf disabled Hpf can write directly to output
+        pHpfOutput = pOutput;
+        pLpfInput = pHpfOutput;
+    }
+
     if (hpf > kMinCorner) {
-        if (lpf < kMaxCorner) {
-            pState->m_pLowFilter->process(pInput, pState->m_pBuf, numSamples);
-            pState->m_pHighFilter->process(pState->m_pBuf, pOutput, numSamples);
-        } else {
-            pState->m_pLowFilter->pauseFilter();
-            pState->m_pHighFilter->process(pInput, pOutput, numSamples);
-        }
+        // hpf enabled, fade-in is handled in the filter when starting from pause
+        pState->m_pHighFilter->process(pInput, pHpfOutput, numSamples);
+    } else if (pState->m_hiFreq > kMinCorner) {
+            // hpf disabling
+            pState->m_pHighFilter->processAndPauseFilter(pInput,
+                    pHpfOutput, numSamples);
     } else {
-        pState->m_pHighFilter->pauseFilter();
-        if (lpf < kMaxCorner) {
-            pState->m_pLowFilter->process(pInput, pOutput, numSamples);
-        } else {
-            pState->m_pLowFilter->pauseFilter();
-            SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
+        // paused LP uses input directly
+        pLpfInput = pInput;
+    }
+
+    if (lpf < kMaxCorner) {
+        // lpf enabled, fade-in is handled in the filter when starting from pause
+        pState->m_pLowFilter->process(pLpfInput, pOutput, numSamples);
+    } else if (pState->m_loFreq < kMaxCorner) {
+        // hpf disabling
+        pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
+                pOutput, numSamples);
+    } else if (pLpfInput == pInput) {
+        // Both disabled
+        if (pOutput != pInput) {
+            // We need to copy pInput pOutput
+            SampleUtil::copy(pOutput, pInput, numSamples);
         }
     }
 

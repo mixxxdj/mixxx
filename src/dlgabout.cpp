@@ -50,6 +50,7 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
     QStringList thisReleaseDevelopers;
     thisReleaseDevelopers
             << "RJ Ryan"
+            << "Sean Pappalardo"
             << "S. Brandt"
             << "Owen Williams"
             << "Daniel Sch&uuml;rmann"
@@ -97,7 +98,28 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
             << "Keith Salisbury"
             << "Irina Grosu"
             << "Callum Styan"
-            << "Rahul Behl";
+            << "Rahul Behl"
+            << "Markus Baertschi"
+            << "Nico Schl&ouml;mer"
+            << "Don Dennis"
+            << "Alexandru Jercaianu"
+            << "Nils Goroll"
+            << "Marco Angerer"
+            << "Ferran Pujol Camins"
+            << "Markus Kl&ouml;sges"
+            << "S&eacute;bastien Blaisot"
+            << "Vladim&iacute;r Dudr"
+            << "Thorsten Munsch"
+            << "Emile Vrijdags"
+            << "Be"
+            << "Neale Pickett"
+            << "St&eacute;phane Guillou"
+            << "Russ Mannex"
+            << "Brendan Austin"
+            << "Lorenz Drescher"
+            << "David Guglielmi"
+            << "JAmes Atwill"
+            << "Chlo&eacute; Avrillon";
 
     QStringList specialThanks;
     specialThanks
@@ -137,7 +159,6 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
             << "Adam Davison"
             << "Garth Dahlstrom"
             << "Albert Santoni"
-            << "Sean Pappalardo"
             << "Phillip Whelan"
             << "Tobias Rafreider"
             << "Bill Good"

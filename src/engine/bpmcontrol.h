@@ -1,13 +1,12 @@
-// bpmcontrol.h
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #ifndef BPMCONTROL_H
 #define BPMCONTROL_H
+
+#include <gtest/gtest_prod.h>
 
 #include "controlobject.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
-#include "tapfilter.h"
+#include "util/tapfilter.h"
 
 class ControlObject;
 class ControlLinPotmeter;
@@ -24,7 +23,7 @@ class BpmControl : public EngineControl {
     virtual ~BpmControl();
 
     double getBpm() const;
-    double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
+    double getLocalBpm() const { return m_pLocalBpm ? m_pLocalBpm->get() : 0.0; }
     // When in master sync mode, ratecontrol calls calcSyncedRate to figure out
     // how fast the track should play back.  The returned rate is usually just
     // the correct pitch to match bpms.  The usertweak argument represents
@@ -45,6 +44,8 @@ class BpmControl : public EngineControl {
                    const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
+    void resetSyncAdjustment();
+    double updateLocalBpm();
     double updateBeatDistance();
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
@@ -58,8 +59,16 @@ class BpmControl : public EngineControl {
                                double* dpPrevBeat,
                                double* dpNextBeat,
                                double* dpBeatLength,
-                               double* dpBeatPercentage,
-                               const double beatEpsilon=0.0);
+                               double* dpBeatPercentage);
+
+    // Alternative version that works if the next and previous beat positions
+    // are already known.
+    static bool getBeatContextNoLookup(
+                               const double dPosition,
+                               const double dPrevBeat,
+                               const double dNextBeat,
+                               double* dpBeatLength,
+                               double* dpBeatPercentage);
 
     // Returns the shortest change in percentage needed to achieve
     // target_percentage.
@@ -106,13 +115,22 @@ class BpmControl : public EngineControl {
     ControlObjectSlave* m_pRateRange;
     ControlObjectSlave* m_pRateDir;
 
+    // ControlObjects that come from QuantizeControl
+    QScopedPointer<ControlObjectSlave> m_pNextBeat;
+    QScopedPointer<ControlObjectSlave> m_pPrevBeat;
+    QScopedPointer<ControlObjectSlave> m_pClosestBeat;
+
     // ControlObjects that come from LoopingControl
     ControlObjectSlave* m_pLoopEnabled;
     ControlObjectSlave* m_pLoopStartPosition;
     ControlObjectSlave* m_pLoopEndPosition;
 
+    ControlObjectSlave* m_pVCEnabled;
+
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
+    // The average bpm around the current playposition;
+    ControlObject* m_pLocalBpm;
     ControlPushButton* m_pAdjustBeatsFaster;
     ControlPushButton* m_pAdjustBeatsSlower;
     ControlPushButton* m_pTranslateBeatsEarlier;
@@ -144,6 +162,7 @@ class BpmControl : public EngineControl {
     double m_dSyncInstantaneousBpm;
     double m_dLastSyncAdjustment;
     bool m_resetSyncAdjustment;
+    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     double m_dUserOffset;
 
     TapFilter m_tapFilter;

@@ -10,6 +10,8 @@ EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
         : m_iParameterSlotNumber(iParameterSlotNumber),
           m_group(group),
           m_pEffectParameter(NULL),
+          m_pControlLoaded(NULL),
+          m_pControlType(NULL),
           m_dChainParameter(0.0) {
 
 }

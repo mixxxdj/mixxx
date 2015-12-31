@@ -33,6 +33,14 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection,
                     tableName, idColumn, columns, false));
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album"
+                  << "location"
+                  << "comment"
+                  << "title"
+                  << "genre";
+    m_trackSource->setSearchColumns(searchColumns);
 
     m_pRhythmboxTrackModel = new BaseExternalTrackModel(
         this, m_pTrackCollection,
@@ -209,8 +217,8 @@ TreeItem* RhythmboxFeature::importPlaylists() {
 
     QSqlQuery query_insert_to_playlist_tracks(m_database);
     query_insert_to_playlist_tracks.prepare(
-        "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
-        "VALUES (:playlist_id, :track_id, :position)");
+            "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
+            "VALUES (:playlist_id, :track_id, :position)");
     //The tree structure holding the playlists
     TreeItem* rootItem = new TreeItem();
 
@@ -250,6 +258,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
         // do error handling
         qDebug() << "Cannot process Rhythmbox music collection";
         qDebug() << "XML ERROR: " << xml.errorString();
+        delete rootItem;
         return NULL;
     }
     db.close();

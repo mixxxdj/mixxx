@@ -20,7 +20,7 @@ class SyncControl : public EngineControl, public Syncable {
     static const double kBpmUnity;
     static const double kBpmHalve;
     static const double kBpmDouble;
-    SyncControl(QString group, ConfigObject<ConfigValue>* pConfig,
+    SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfig,
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
     virtual ~SyncControl();
 
@@ -30,12 +30,14 @@ class SyncControl : public EngineControl, public Syncable {
 
     SyncMode getSyncMode() const;
     void notifySyncModeChanged(SyncMode mode);
+    void notifyOnlyPlayingSyncable();
     void requestSyncPhase();
     bool isPlaying() const;
 
     double getBeatDistance() const;
     void setBeatDistance(double beatDistance);
     double getBaseBpm() const;
+    void setLocalBpm(double local_bpm);
 
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
@@ -113,22 +115,27 @@ class SyncControl : public EngineControl, public Syncable {
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
     double m_beatDistance;
+    double m_prevLocalBpm;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
     QScopedPointer<ControlObject> m_pSyncBeatDistance;
 
-    QScopedPointer<ControlObjectSlave> m_pPlayButton;
-    QScopedPointer<ControlObjectSlave> m_pBpm;
-    QScopedPointer<ControlObjectSlave> m_pFileBpm;
-    QScopedPointer<ControlObjectSlave> m_pRateSlider;
-    QScopedPointer<ControlObjectSlave> m_pRateDirection;
-    QScopedPointer<ControlObjectSlave> m_pRateRange;
-    QScopedPointer<ControlObjectSlave> m_pVCEnabled;
-    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
-    QScopedPointer<ControlObjectSlave> m_pEjectButton;
-    QScopedPointer<ControlObjectSlave> m_pSyncPhaseButton;
+    // These ControlObjectSlaves are created as parent to this and deleted by
+    // the Qt object tree. This helps that they are deleted by the creating
+    // thread, which is required to avoid segfaults.
+    ControlObjectSlave* m_pPlayButton;
+    ControlObjectSlave* m_pBpm;
+    ControlObjectSlave* m_pLocalBpm;
+    ControlObjectSlave* m_pFileBpm;
+    ControlObjectSlave* m_pRateSlider;
+    ControlObjectSlave* m_pRateDirection;
+    ControlObjectSlave* m_pRateRange;
+    ControlObjectSlave* m_pVCEnabled;
+    ControlObjectSlave* m_pPassthroughEnabled;
+    ControlObjectSlave* m_pEjectButton;
+    ControlObjectSlave* m_pSyncPhaseButton;
 };
 
 

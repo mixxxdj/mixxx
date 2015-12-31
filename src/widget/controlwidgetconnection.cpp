@@ -4,18 +4,15 @@
 #include "controlobjectslave.h"
 #include "util/debug.h"
 #include "util/valuetransformer.h"
+#include "util/assert.h"
 
 ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
-                                                 ControlObjectSlave* pControl,
+                                                 const ConfigKey& key,
                                                  ValueTransformer* pTransformer)
         : m_pWidget(pBaseWidget),
-          m_pControl(pControl),
           m_pValueTransformer(pTransformer) {
-    // If pControl is NULL then the creator of ControlWidgetConnection has
-    // screwed up badly enough that we should just crash. This will not go
-    // unnoticed in development.
-    Q_ASSERT(pControl);
-    pControl->connectValueChanged(this, SLOT(slotControlValueChanged(double)));
+    m_pControl = new ControlObjectSlave(key, this);
+    m_pControl->connectValueChanged(SLOT(slotControlValueChanged(double)));
 }
 
 ControlWidgetConnection::~ControlWidgetConnection() {
@@ -45,11 +42,11 @@ double ControlWidgetConnection::getControlParameterForValue(double value) const 
 }
 
 ControlParameterWidgetConnection::ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
-                                                                   ControlObjectSlave* pControl,
+                                                                   const ConfigKey& key,
                                                                    ValueTransformer* pTransformer,
                                                                    DirectionOption directionOption,
                                                                    EmitOption emitOption)
-        : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
+        : ControlWidgetConnection(pBaseWidget, key, pTransformer),
           m_directionOption(directionOption),
           m_emitOption(emitOption) {
 }
@@ -102,10 +99,10 @@ void ControlParameterWidgetConnection::setControlParameterUp(double v) {
 }
 
 ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
-                                                                 ControlObjectSlave* pControl,
+                                                                 const ConfigKey& key,
                                                                  ValueTransformer* pTransformer,
                                                                  const QString& propertyName)
-        : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
+        : ControlWidgetConnection(pBaseWidget, key, pTransformer),
           m_propertyName(propertyName.toAscii()) {
     slotControlValueChanged(m_pControl->get());
 }

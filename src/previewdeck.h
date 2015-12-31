@@ -3,7 +3,7 @@
 
 #include "basetrackplayer.h"
 
-class PreviewDeck : public BaseTrackPlayer {
+class PreviewDeck : public BaseTrackPlayerImpl {
     Q_OBJECT
   public:
     PreviewDeck(QObject* pParent,

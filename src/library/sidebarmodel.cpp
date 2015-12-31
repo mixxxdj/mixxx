@@ -6,6 +6,7 @@
 #include "library/sidebarmodel.h"
 #include "library/treeitem.h"
 #include "library/browse/browsefeature.h"
+#include "util/assert.h"
 
 SidebarModel::SidebarModel(QObject* parent)
         : QAbstractItemModel(parent),
@@ -196,9 +197,13 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
                 } else {
                     return tree_item->dataPath();
                 }
-            } else if (role == Qt::UserRole) {
+            } else if (role == TreeItemModel::kDataPathRole) {
                 // We use Qt::UserRole to ask for the datapath.
                 return tree_item->dataPath();
+            } else if (role == Qt::FontRole) {
+                QFont font;
+                font.setBold(tree_item->isBold());
+                return font;
             } else if (role == Qt::DecorationRole) {
                 return tree_item->getIcon();
             }
@@ -310,8 +315,10 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
      */
 
     const QAbstractItemModel* model = dynamic_cast<QAbstractItemModel*>(sender());
+    DEBUG_ASSERT_AND_HANDLE(model != NULL) {
+        return QModelIndex();
+    }
 
-    Q_ASSERT(model);
     if (index.isValid()) {
        TreeItem* item = (TreeItem*)index.internalPointer();
        translatedIndex = createIndex(index.row(), index.column(), item);
@@ -330,9 +337,10 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
 }
 
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-    Q_UNUSED(topLeft);
-    Q_UNUSED(bottomRight);
     //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
+    QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
+    QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
+    emit(dataChanged(topLeftTranslated, bottomRightTranslated));
 }
 
 void SidebarModel::slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end) {
@@ -380,8 +388,9 @@ void SidebarModel::slotModelReset() {
  */
 void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature, bool selectFeature) {
     featureRenamed(feature);
-    if(selectFeature)
-    	slotFeatureSelect(feature);
+    if (selectFeature) {
+        slotFeatureSelect(feature);
+    }
 }
 
 /* Tobias: This slot is somewhat redundant but I decided

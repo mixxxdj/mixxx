@@ -1,10 +1,10 @@
 #ifndef WAVEFORMRENDERMARK_H
 #define WAVEFORMRENDERMARK_H
 
-#include "waveform/renderers/waveformrendererabstract.h"
-#include "waveformmarkset.h"
-#include "util.h"
 #include "skin/skincontext.h"
+#include "util/class.h"
+#include "waveform/renderers/waveformmarkset.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 
 class WaveformRenderMark : public WaveformRendererAbstract {
   public:

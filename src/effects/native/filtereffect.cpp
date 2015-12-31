@@ -16,7 +16,9 @@ EffectManifest FilterEffect::getManifest() {
     manifest.setName(QObject::tr("Filter"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Allows to fade a song out by sweeping a low or high pass filter"));
+    manifest.setDescription(QObject::tr("The filter changes the tone of the "
+                                        "music by allowing only high or low "
+                                        "frequencies to pass through."));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsForFilterKnob(true);
 
@@ -65,8 +67,8 @@ FilterGroupState::FilterGroupState()
           m_q(0.707106781),
           m_hiFreq(kMinCorner) {
     m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q);
-    m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q);
+    m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q, true);
+    m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q, true);
 }
 
 FilterGroupState::~FilterGroupState() {
@@ -87,14 +89,14 @@ FilterEffect::~FilterEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void FilterEffect::processGroup(const QString& group,
-                                FilterGroupState* pState,
-                                const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples,
-                                const unsigned int sampleRate,
-                                const EffectProcessor::EnableState enableState,
-                                const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+void FilterEffect::processChannel(const ChannelHandle& handle,
+                                  FilterGroupState* pState,
+                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                  const unsigned int numSamples,
+                                  const unsigned int sampleRate,
+                                  const EffectProcessor::EnableState enableState,
+                                  const GroupFeatureState& groupFeatures) {
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
 
@@ -133,25 +135,38 @@ void FilterEffect::processGroup(const QString& group,
         pState->m_pHighFilter->setFrequencyCorners(1, hpf, clampedQ);
     }
 
+    const CSAMPLE* pLpfInput = pState->m_pBuf;
+    CSAMPLE* pHpfOutput = pState->m_pBuf;
+    if (lpf >= kMaxCorner && pState->m_loFreq >= kMaxCorner) {
+        // Lpf disabled Hpf can write directly to output
+        pHpfOutput = pOutput;
+        pLpfInput = pHpfOutput;
+    }
+
     if (hpf > kMinCorner) {
-        if (lpf < kMaxCorner) {
-            // Overlapping
-            pState->m_pLowFilter->process(pInput, pState->m_pBuf, numSamples);
-            pState->m_pHighFilter->process(pState->m_pBuf, pOutput, numSamples);
-        } else {
-            // High Pass
-            pState->m_pLowFilter->pauseFilter();
-            pState->m_pHighFilter->process(pInput, pOutput, numSamples);
-        }
+        // hpf enabled, fade-in is handled in the filter when starting from pause
+        pState->m_pHighFilter->process(pInput, pHpfOutput, numSamples);
+    } else if (pState->m_hiFreq > kMinCorner) {
+            // hpf disabling
+            pState->m_pHighFilter->processAndPauseFilter(pInput,
+                    pHpfOutput, numSamples);
     } else {
-        pState->m_pHighFilter->pauseFilter();
-        if (lpf < kMaxCorner) {
-            // Low Pass
-            pState->m_pLowFilter->process(pInput, pOutput, numSamples);
-        } else {
-            // Bypass
-            pState->m_pLowFilter->pauseFilter();
-            SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
+        // paused LP uses input directly
+        pLpfInput = pInput;
+    }
+
+    if (lpf < kMaxCorner) {
+        // lpf enabled, fade-in is handled in the filter when starting from pause
+        pState->m_pLowFilter->process(pLpfInput, pOutput, numSamples);
+    } else if (pState->m_loFreq < kMaxCorner) {
+        // hpf disabling
+        pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
+                pOutput, numSamples);
+    } else if (pLpfInput == pInput) {
+        // Both disabled
+        if (pOutput != pInput) {
+            // We need to copy pInput pOutput
+            SampleUtil::copy(pOutput, pInput, numSamples);
         }
     }
 

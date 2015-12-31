@@ -23,6 +23,7 @@ class EffectManifest {
   public:
     EffectManifest()
         : m_isMixingEQ(false),
+          m_isMasterEQ(false),
           m_isForFilterKnob(false),
           m_effectRampsFromDry(false) {
     }
@@ -70,6 +71,14 @@ class EffectManifest {
         m_isMixingEQ = value;
     }
 
+    virtual const bool& isMasterEQ() const {
+        return m_isMasterEQ;
+    }
+
+    virtual void setIsMasterEQ(const bool value) {
+        m_isMasterEQ = value;
+    }
+
     virtual const bool& isForFilterKnob() const {
         return m_isForFilterKnob;
     }
@@ -110,6 +119,7 @@ class EffectManifest {
     QString m_description;
     // This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
+    bool m_isMasterEQ;
     // This helps us at DlgPrefEQ's basic selection of Filter knob effects
     bool m_isForFilterKnob;
     QList<EffectManifestParameter> m_parameters;

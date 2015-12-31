@@ -8,8 +8,10 @@
 // column name to index.
 class ColumnCache {
   public:
+
     enum Column {
-        COLUMN_LIBRARYTABLE_ID,
+        COLUMN_LIBRARYTABLE_INVALID = -1,
+        COLUMN_LIBRARYTABLE_ID = 0,
         COLUMN_LIBRARYTABLE_ARTIST,
         COLUMN_LIBRARYTABLE_TITLE,
         COLUMN_LIBRARYTABLE_ALBUM,
@@ -60,6 +62,7 @@ class ColumnCache {
         COLUMN_CRATETRACKSTABLE_TRACKID,
         COLUMN_CRATETRACKSTABLE_CRATEID,
 
+        // NUM_COLUMNS should always be the last item.
         NUM_COLUMNS
     };
 
@@ -81,7 +84,27 @@ class ColumnCache {
         return m_columnIndexByName.value(columnName, -1);
     }
 
+    inline QString columnName(Column column) const {
+        return columnNameForFieldIndex(fieldIndex(column));
+    }
+
+    inline QString columnNameForFieldIndex(int index) const {
+        if (index < 0 || index >= m_columnsByIndex.size()) {
+            return QString();
+        }
+        return m_columnsByIndex.at(index);
+    }
+
+    inline QString columnSortForFieldIndex(int index) const {
+        // Check if there is a special sort clause
+        QString format = m_columnSortByIndex.value(index, "%1");
+        return format.arg(columnNameForFieldIndex(index));
+    }
+
+    QStringList m_columnsByIndex;
+    QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
+    // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
 };
 

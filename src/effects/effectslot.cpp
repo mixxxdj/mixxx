@@ -6,7 +6,7 @@
 #include "controlobjectslave.h"
 
 // The maximum number of effect parameters we're going to support.
-const unsigned int kDefaultMaxParameters = 8;
+const unsigned int kDefaultMaxParameters = 16;
 
 EffectSlot::EffectSlot(const QString& group,
                        const unsigned int iChainNumber,
@@ -244,9 +244,9 @@ void EffectSlot::slotClear(double v) {
     }
 }
 
-void EffectSlot::onChainParameterChanged(double parameter, bool force) {
+void EffectSlot::onChainSuperParameterChanged(double parameter, bool force) {
     for (int i = 0; i < m_parameters.size(); ++i) {
-        m_parameters[i]->onChainParameterChanged(parameter, force);
+        m_parameters[i]->onChainSuperParameterChanged(parameter, force);
     }
 }
 

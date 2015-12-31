@@ -10,7 +10,7 @@
 #include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
 #include "util/circularbuffer.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class EffectsManager;
 class EngineEffectsManager;
@@ -21,7 +21,7 @@ class ControlAudioTaperPot;
 class EngineAux : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineAux(const char* pGroup, EffectsManager* pEffectsManager);
+    EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager);
     virtual ~EngineAux();
 
     bool isActive();
@@ -50,7 +50,6 @@ class EngineAux : public EngineChannel, public AudioDestination {
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
     ControlObject* m_pEnabled;
-    ControlPushButton* m_pPassing;
     ControlAudioTaperPot* m_pPregain;
     ControlObjectSlave* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;

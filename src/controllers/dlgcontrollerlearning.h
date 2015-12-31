@@ -16,7 +16,9 @@
 #include "controllers/ui_dlgcontrollerlearning.h"
 #include "controllers/controlpickermenu.h"
 #include "controllers/midi/midicontroller.h"
+#ifdef __HID__
 #include "controllers/hid/hidcontroller.h"
+#endif
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/controller.h"

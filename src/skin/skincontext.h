@@ -8,9 +8,14 @@
 #include <QScriptEngine>
 #include <QDir>
 #include <QScriptEngineDebugger>
+#include <QtDebug>
 
 #include "configobject.h"
 #include "skin/pixmapsource.h"
+#include "widget/wsingletoncontainer.h"
+#include "widget/wpixmapstore.h"
+
+#define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
 
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
@@ -63,6 +68,8 @@ class SkinContext {
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
     PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
+    Paintable::DrawMode selectScaleMode(const QDomElement& element,
+                                        Paintable::DrawMode defaultDrawMode) const;
 
     QScriptValue evaluateScript(const QString& expression,
                                 const QString& filename=QString(),
@@ -70,6 +77,16 @@ class SkinContext {
     QScriptValue importScriptExtension(const QString& extensionName);
     const QSharedPointer<QScriptEngine> getScriptEngine() const;
     void enableDebugger(bool state) const;
+
+    QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
+
+    void defineSingleton(QString objectName, QWidget* widget) {
+        return m_pSingletons->insertSingleton(objectName, widget);
+    }
+
+    QWidget* getSingletonWidget(QString objectName) const {
+        return m_pSingletons->getSingletonWidget(objectName);
+    }
 
   private:
     QString variableNodeToText(const QDomElement& element) const;
@@ -82,6 +99,10 @@ class SkinContext {
     QSharedPointer<QScriptEngine> m_pScriptEngine;
     QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;
     QScriptValue m_parentGlobal;
+
+    // The SingletonContainer map is passed to child SkinContexts, so that all
+    // templates in the tree can share a single map.
+    QSharedPointer<SingletonMap> m_pSingletons;
 };
 
 #endif /* SKINCONTEXT_H */

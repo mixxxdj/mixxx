@@ -1,8 +1,11 @@
+#include <QDateTime>
+
 #include "dlgdevelopertools.h"
 
 #include "control/control.h"
 #include "util/cmdlineargs.h"
 #include "util/statsmanager.h"
+
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      ConfigObject<ConfigValue>* pConfig)
@@ -48,15 +51,19 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     m_statProxyModel.setSourceModel(&m_statModel);
     statsTable->setModel(&m_statProxyModel);
 
-    QString logFileName = CmdlineArgs::Instance().getSettingsPath() + "/mixxx.log";
+    QString logFileName = QDir(CmdlineArgs::Instance().getSettingsPath()).filePath("mixxx.log");
     m_logFile.setFileName(logFileName);
-    m_logFile.open(QIODevice::ReadOnly | QIODevice::Text);
+    if (!m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "ERROR: Could not open log file";
+    }
 
     // Connect search box signals to the library
     connect(controlSearch, SIGNAL(search(const QString&)),
             this, SLOT(slotControlSearch(const QString&)));
     connect(controlSearch, SIGNAL(searchCleared()),
             this, SLOT(slotControlSearchClear()));
+    connect(controlDump, SIGNAL(clicked()),
+            this, SLOT(slotControlDump()));
 
     // Set up the log search box
     connect(logSearch, SIGNAL(returnPressed()),
@@ -114,8 +121,38 @@ void DlgDeveloperTools::slotControlSearchClear() {
     m_controlProxyModel.setFilterFixedString(QString());
 }
 
+void DlgDeveloperTools::slotControlDump() {
+
+    QString timestamp = QDateTime::currentDateTime()
+            .toString("yyyy-MM-dd_hh'h'mm'm'ss's'");
+    QString dumpFileName = CmdlineArgs::Instance().getSettingsPath() +
+            "/co_dump_" + timestamp + ".csv";
+    QFile dumpFile;
+    // Note: QFile is closed if it falls out of scope
+    dumpFile.setFileName(dumpFileName);
+    if (!dumpFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "open" << dumpFileName << "failed";
+        return;
+    }
+
+    QList<QSharedPointer<ControlDoublePrivate> > controlsList;
+    ControlDoublePrivate::getControls(&controlsList);
+    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it =
+            controlsList.begin(); it != controlsList.end(); ++it) {
+        const QSharedPointer<ControlDoublePrivate>& pControl = *it;
+        if (pControl) {
+            QString line = pControl->getKey().group + "," +
+                           pControl->getKey().item + "," +
+                           QString::number(pControl->get()) + "\n";
+            dumpFile.write(line.toLocal8Bit());
+        }
+    }
+}
+
 void DlgDeveloperTools::slotLogSearch() {
     QString textToFind = logSearch->text();
     m_logCursor = logTextView->document()->find(textToFind, m_logCursor);
     logTextView->setTextCursor(m_logCursor);
 }
+
+

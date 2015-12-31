@@ -1,5 +1,6 @@
 #include "vinylcontrol/vinylcontrol.h"
 #include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "controlobject.h"
 
 VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
@@ -21,8 +22,8 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     trackSamples        = new ControlObjectThread(group, "track_samples");
     trackSampleRate     = new ControlObjectThread(group, "track_samplerate");
     vinylSeek           = new ControlObjectThread(group, "vinylcontrol_seek");
-    controlScratch      = new ControlObjectThread(group, "vinylcontrol_rate");
-    rateSlider          = new ControlObjectThread(group, "rate");    //Range -1.0 to 1.0
+    m_pVCRate = new ControlObjectSlave(group, "vinylcontrol_rate");
+    m_pRateSlider = new ControlObjectSlave(group, "rate");
     playButton          = new ControlObjectThread(group, "play");
     duration            = new ControlObjectThread(group, "duration");
     mode                = new ControlObjectThread(group, "vinylcontrol_mode");
@@ -35,6 +36,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     rateDir             = new ControlObjectThread(group, "rate_dir");
     loopEnabled         = new ControlObjectThread(group, "loop_enabled");
     signalenabled       = new ControlObjectThread(group, "vinylcontrol_signal_enabled");
+    reverseButton       = new ControlObjectThread(group, "reverse");
 
     //Enabled or not -- load from saved value in case vinyl control is restarting
     m_bIsEnabled = wantenabled->get() > 0.0;
@@ -73,13 +75,14 @@ VinylControl::~VinylControl() {
         wantenabled->slotSet(true);
     }
 
+    delete reverseButton;
     delete m_pVinylControlInputGain;
     delete playPos;
     delete trackSamples;
     delete trackSampleRate;
     delete vinylSeek;
-    delete controlScratch;
-    delete rateSlider;
+    delete m_pVCRate;
+    delete m_pRateSlider;
     delete playButton;
     delete duration;
     delete mode;

@@ -15,7 +15,10 @@
 				-->
 				<SizePolicy>me,min</SizePolicy>
 				<MinimumSize>-1,-1</MinimumSize>
-				<SignalColor><Variable name="deck_color" /></SignalColor>
+				<SignalColor><Variable name="signal_color" /></SignalColor>
+                <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+                <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
+                <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
@@ -66,7 +69,7 @@
 		              <Unpressed>btn_spinny1_over.png</Unpressed>
 	              </State>
 	              <Connection>
-		              <ConfigKey persist="true">[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
+		              <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
 		              <ButtonState>LeftButton</ButtonState>
 	              </Connection>
               </PushButton>

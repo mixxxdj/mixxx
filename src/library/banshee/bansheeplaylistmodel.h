@@ -22,7 +22,6 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual bool isColumnInternal(int column);
-    virtual bool isColumnHiddenByDefault(int column);
 
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     TrackModel::CapabilitiesFlags getCapabilities() const;
@@ -37,11 +36,12 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
   private slots:
-    virtual void tracksChanged(QSet<int> trackIds);
+    virtual void tracksChanged(QSet<TrackId> trackIds);
     virtual void trackLoaded(QString group, TrackPointer pTrack);
 
   private:
     QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
+    QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
 
     TrackCollection* m_pTrackCollection;
     BansheeDbConnection* m_pConnection;

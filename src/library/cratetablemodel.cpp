@@ -62,7 +62,7 @@ void CrateTableModel::setTableModel(int crateId) {
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = LIBRARYTABLE_PREVIEW;
     columns[2] = LIBRARYTABLE_COVERART;
-    setTable(tableName, columns[0], columns,
+    setTable(tableName, LIBRARYTABLE_ID, columns,
              m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
@@ -73,15 +73,18 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
     QFileInfo fileInfo(location);
+    if (!fileInfo.exists()) {
+        return false;
+    }
 
     TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
 
     // Adds track, does not insert duplicates, handles unremoving logic.
-    int iTrackId = trackDao.addTrack(fileInfo, true);
+    TrackId trackId(trackDao.addTrack(fileInfo, true));
 
     bool success = false;
-    if (iTrackId >= 0) {
-        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId, m_iCrateId);
+    if (trackId.isValid()) {
+        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(trackId, m_iCrateId);
     }
 
     if (success) {
@@ -102,12 +105,15 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     // the user probably dropped a file from outside Mixxx into this crate.
     QList<QFileInfo> fileInfoList;
     foreach(QString fileLocation, locations) {
-        fileInfoList.append(QFileInfo(fileLocation));
+        QFileInfo fileInfo(fileLocation);
+        if (fileInfo.exists()) {
+            fileInfoList.append(fileInfo);
+        }
     }
 
-    QList<int> trackIDs = m_trackDAO.addTracks(fileInfoList, true);
+    QList<TrackId> trackIds(m_trackDAO.addTracks(fileInfoList, true));
 
-    int tracksAdded = m_crateDAO.addTracksToCrate(m_iCrateId, &trackIDs);
+    int tracksAdded = m_crateDAO.addTracksToCrate(m_iCrateId, &trackIds);
     if (tracksAdded > 0) {
         select();
     }
@@ -124,7 +130,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
 
     if (!locked) {
-        QList<int> trackIds;
+        QList<TrackId> trackIds;
         foreach (QModelIndex index, indices) {
             trackIds.append(getTrackId(index));
         }
@@ -149,11 +155,6 @@ bool CrateTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
         return true;
     }
-    return false;
-}
-
-bool CrateTableModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
     return false;
 }
 

@@ -4,17 +4,17 @@
 #include "engine/enginecontrol.h"
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
+#include "engine/sync/enginesync.h"
 #include "playermanager.h"
 
 EngineControl::EngineControl(QString group,
                              ConfigObject<ConfigValue>* _config)
         : m_group(group),
           m_pConfig(_config),
-          m_dTotalSamples(0),
           m_pEngineMaster(NULL),
           m_pEngineBuffer(NULL),
           m_numDecks(ConfigKey("[Master]", "num_decks")) {
-    m_dCurrentSample.setValue(0);
+    setCurrentSample(0.0, 0.0);
 }
 
 EngineControl::~EngineControl() {
@@ -47,7 +47,7 @@ void EngineControl::trackLoaded(TrackPointer) {
 void EngineControl::trackUnloaded(TrackPointer) {
 }
 
-void EngineControl::hintReader(QVector<Hint>*) {
+void EngineControl::hintReader(HintVector*) {
 }
 
 void EngineControl::setEngineMaster(EngineMaster* pEngineMaster) {
@@ -59,16 +59,23 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
 }
 
 void EngineControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
-    m_dCurrentSample.setValue(dCurrentSample);
-    m_dTotalSamples = dTotalSamples;
+    SampleOfTrack sot;
+    sot.current = dCurrentSample;
+    sot.total = dTotalSamples;
+    m_sampleOfTrack.setValue(sot);
 }
 
 double EngineControl::getCurrentSample() const {
-    return m_dCurrentSample.getValue();
+    return m_sampleOfTrack.getValue().current;
 }
 
 double EngineControl::getTotalSamples() const {
-    return m_dTotalSamples;
+    return m_sampleOfTrack.getValue().total;
+}
+
+bool EngineControl::atEndPosition() const {
+    SampleOfTrack sot = m_sampleOfTrack.getValue();
+    return (sot.current >= sot.total);
 }
 
 QString EngineControl::getGroup() const {
@@ -87,15 +94,15 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
-void EngineControl::seekAbs(double fractionalPosition) {
+void EngineControl::seekAbs(double playPosition) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekAbs(fractionalPosition);
+        m_pEngineBuffer->slotControlSeekAbs(playPosition);
     }
 }
 
-void EngineControl::seekExact(double fractionalPosition) {
+void EngineControl::seekExact(double playPosition) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekExact(fractionalPosition);
+        m_pEngineBuffer->slotControlSeekExact(playPosition);
     }
 }
 
@@ -114,33 +121,15 @@ EngineBuffer* EngineControl::pickSyncTarget() {
     if (!pMaster) {
         return NULL;
     }
-    QString group = getGroup();
-    EngineBuffer* pFirstNonplayingDeck = NULL;
 
-    for (int i = 0; i < m_numDecks.get(); ++i) {
-        QString deckGroup = PlayerManager::groupForDeck(i);
-        if (deckGroup == group) {
-            continue;
-        }
-        EngineChannel* pChannel = pMaster->getChannel(deckGroup);
-        // Only consider channels that have a track loaded and are in the master
-        // mix.
-        if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
-            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
-            if (pBuffer && pBuffer->getBpm() > 0) {
-                // If the deck is playing then go with it immediately.
-                if (fabs(pBuffer->getSpeed()) > 0) {
-                    return pBuffer;
-                }
-                // Otherwise hold out for a deck that might be playing but
-                // remember the first deck that matched our criteria.
-                if (pFirstNonplayingDeck == NULL) {
-                    pFirstNonplayingDeck = pBuffer;
-                }
-            }
-        }
+    EngineSync* pEngineSync = pMaster->getEngineSync();
+    if (pEngineSync == NULL) {
+        return NULL;
     }
-    // No playing decks have a BPM. Go with the first deck that was stopped but
-    // had a BPM.
-    return pFirstNonplayingDeck;
+
+    // TODO(rryan): Remove. This is a linear search over groups in
+    // EngineMaster. We should pass the EngineChannel into EngineControl.
+    EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
+    EngineChannel* pChannel = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
+    return pChannel ? pChannel->getEngineBuffer() : NULL;
 }

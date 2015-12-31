@@ -49,8 +49,16 @@ ValueTransformer* ValueTransformer::parseFromXml(QDomElement transformElement,
             if (ok) {
                 pTransformer->addTransformer(new TransformAdd(addend));
             }
+        } else if (element.nodeName() == "Not") {
+            pTransformer->addTransformer(new TransformNot());
         }
     }
 
     return pTransformer;
+}
+
+ValueTransformer::~ValueTransformer() {
+    foreach (TransformNode* node, m_transformers) {
+        delete node;
+    }
 }

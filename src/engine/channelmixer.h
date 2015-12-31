@@ -1,25 +1,23 @@
 #ifndef CHANNELMIXER_H
 #define CHANNELMIXER_H
 
+#include <QVarLengthArray>
+
 #include "util/types.h"
 #include "engine/enginemaster.h"
 
 class ChannelMixer {
   public:
     static void mixChannels(
-        const QList<EngineMaster::ChannelInfo*>& channels,
         const EngineMaster::GainCalculator& gainCalculator,
-        unsigned int channelBitvector,
-        unsigned int maxChannels,
-        QList<CSAMPLE>* channelGainCache,
+        QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
+        QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
         CSAMPLE* pOutput,
         unsigned int iBufferSize);
     static void mixChannelsRamping(
-        const QList<EngineMaster::ChannelInfo*>& channels,
         const EngineMaster::GainCalculator& gainCalculator,
-        unsigned int channelBitvector,
-        unsigned int maxChannels,
-        QList<CSAMPLE>* channelGainCache,
+        QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels,
+        QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache,
         CSAMPLE* pOutput,
         unsigned int iBufferSize);
 };

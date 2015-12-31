@@ -129,7 +129,7 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor, int requestReference,
     }
 
     if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getId() == requestReference) {
+            m_loadedTrack->getId().toInt() == requestReference) {
         qDebug() << "WCoverArt::slotCoverFound" << pRequestor << info
                  << pixmap.size();
         m_loadedCover = pixmap;
@@ -145,7 +145,7 @@ void WCoverArt::slotTrackCoverArtUpdated() {
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache != NULL) {
             // TODO(rryan): Don't use track id.
-            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId());
+            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId().toInt());
         }
     }
 }
@@ -214,7 +214,7 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     }
 
     if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
-        m_pMenu->setCoverArt(m_loadedTrack, m_lastRequestedCover);
+        m_pMenu->setCoverArt(m_loadedTrack->getLocation(), m_lastRequestedCover);
         m_pMenu->popup(event->globalPos());
     } else if (event->button() == Qt::LeftButton) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
@@ -231,46 +231,33 @@ void WCoverArt::leaveEvent(QEvent*) {
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
     if ((event->buttons() & Qt::LeftButton) && m_loadedTrack) {
-        DragAndDropHelper::dragTrack(m_loadedTrack, this);
+        DragAndDropHelper::dragTrack(m_loadedTrack, this, m_group);
     }
 }
 
 void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
-    // We don't have a group to load the track into.
-    if (m_group.isEmpty()) {
+    // If group is empty then we are a library cover art widget and we don't
+    // accept track drops.
+    if (!m_group.isEmpty() &&
+            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig) &&
+            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
+                                               true, false)) {
+        event->acceptProposedAction();
+    } else {
         event->ignore();
-        return;
     }
-
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
-        if ((!ControlObject::get(ConfigKey(m_group, "play")) ||
-             m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt())) {
-            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
-            if (!files.isEmpty()) {
-                event->acceptProposedAction();
-                return;
-            }
-        }
-    }
-    event->ignore();
 }
 
 void WCoverArt::dropEvent(QDropEvent *event) {
-    // We don't have a group to load the track into.
-    if (m_group.isEmpty()) {
-        event->ignore();
-        return;
-    }
-
-    if (event->mimeData()->hasUrls()) {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
+    // If group is empty then we are a library cover art widget and we don't
+    // accept track drops.
+    if (!m_group.isEmpty() &&
+            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig)) {
+        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                *event->mimeData(), m_group, true, false);
         if (!files.isEmpty()) {
             event->accept();
-            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
             return;
         }
     }

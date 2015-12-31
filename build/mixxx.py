@@ -17,7 +17,7 @@ import util
 
 class MixxxBuild(object):
 
-    def __init__(self, target, machine, build, toolchain, available_features=[]):
+    def __init__(self, target, machine, build, toolchain, available_features):
         self.available_features = available_features
         self.host_platform = self.detect_platform()
         self.host_machine = self.detect_machine()
@@ -147,12 +147,21 @@ class MixxxBuild(object):
             default_qtdir = depends.Qt.DEFAULT_QT4DIRS.get(self.platform, '')
         tools.append('protoc')
 
+        # Try fallback to pkg-config on Linux
+        if not os.path.isdir(default_qtdir) and self.platform == 'linux':
+            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
+                import subprocess
+                try:
+                    default_qtdir = subprocess.Popen(["pkg-config", "--variable=includedir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                finally:
+                    pass
+
         # Ugly hack to check the qtdir argument
         qtdir = Script.ARGUMENTS.get('qtdir',
                                      os.environ.get('QTDIR', default_qtdir))
 
         # Validate the specified qtdir exists
-        if not os.path.exists(qtdir):
+        if not os.path.isdir(qtdir):
             logging.error("QT path does not exist or QT4 is not installed.")
             logging.error(
                 "Please specify your QT path by running 'scons qtdir=[path]'")
@@ -312,8 +321,8 @@ class MixxxBuild(object):
             print 'Automatically detecting Mac OS X SDK.'
 
             # SDK versions in order of precedence.
-            sdk_versions = ( '10.9', '10.8', '10.7', '10.6', '10.5', )
-            clang_sdk_versions = ( '10.9', '10.8', '10.7', )
+            sdk_versions = ( '10.11', '10.10', '10.9', '10.8', '10.7', '10.6', '10.5', )
+            clang_sdk_versions = ( '10.11', '10.10', '10.9', '10.8', '10.7', )
             valid_cpp_lib_versions = ( 'libstdc++', 'libc++', )
 
             # By default use old gcc C++ library version
@@ -341,10 +350,10 @@ class MixxxBuild(object):
                     print "Automatically selected OS X SDK:", sdk_path
 
                     common_flags = ['-isysroot', sdk_path,
-                                    '-mmacosx-version-min=%s' % min_sdk_version]
+                                    '-mmacosx-version-min=%s' % min_sdk_version,
+                                    '-stdlib=%s' % osx_stdlib]
                     link_flags = [
                         '-Wl,-syslibroot,' + sdk_path,
-                        '-stdlib=%s' % osx_stdlib
                     ]
                     self.env.Append(CCFLAGS=common_flags)
                     self.env.Append(LINKFLAGS=common_flags + link_flags)
@@ -423,6 +432,8 @@ class MixxxBuild(object):
         vars.Add('force32', 'Force a 32-bit compile', 0)
         vars.Add('force64', 'Force a 64-bit compile', 0)
         vars.Add('sysroot', 'Specify a custom sysroot', '')
+        vars.Add('debug_assertions_fatal',
+                 'Whether debug assertions are fatal.', False)
 
         for feature_class in self.available_features:
             # Instantiate the feature

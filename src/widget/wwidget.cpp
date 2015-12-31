@@ -20,6 +20,7 @@
 
 #include "widget/wwidget.h"
 #include "controlobjectslave.h"
+#include "util/assert.h"
 
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
@@ -72,7 +73,7 @@ bool WWidget::event(QEvent* e) {
                 eventType = QEvent::MouseButtonRelease;
                 break;
             default:
-                Q_ASSERT(!true);
+                DEBUG_ASSERT(false);
                 break;
             }
 

@@ -7,25 +7,28 @@
 #include <QHideEvent>
 #include <QEvent>
 
+#include "configobject.h"
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "widget/wbasewidget.h"
 #include "widget/wwidget.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 class VisualPlayPosition;
 class VinylControlManager;
 
 class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener {
     Q_OBJECT
   public:
-    WSpinny(QWidget* parent, VinylControlManager* pVCMan);
+    WSpinny(QWidget* parent, const QString& group,
+            ConfigObject<ConfigValue>* pConfig,
+            VinylControlManager* pVCMan);
     virtual ~WSpinny();
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report);
 
-    void setup(QDomNode node, const SkinContext& context, QString group);
+    void setup(QDomNode node, const SkinContext& context);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
 
@@ -64,20 +67,25 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
+    QString m_group;
+    ConfigObject<ConfigValue>* m_pConfig;
     QImage* m_pBgImage;
+    QImage* m_pMaskImage;
     QImage* m_pFgImage;
+    QImage m_fgImageScaled;
     QImage* m_pGhostImage;
-    ControlObjectThread* m_pPlay;
-    ControlObjectThread* m_pPlayPos;
+    QImage m_ghostImageScaled;
+    ControlObjectSlave* m_pPlay;
+    ControlObjectSlave* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
-    ControlObjectThread* m_pTrackSamples;
-    ControlObjectThread* m_pTrackSampleRate;
-    ControlObjectThread* m_pScratchToggle;
-    ControlObjectThread* m_pScratchPos;
-    ControlObjectThread* m_pVinylControlSpeedType;
-    ControlObjectThread* m_pVinylControlEnabled;
-    ControlObjectThread* m_pSignalEnabled;
-    ControlObjectThread* m_pSlipEnabled;
+    ControlObjectSlave* m_pTrackSamples;
+    ControlObjectSlave* m_pTrackSampleRate;
+    ControlObjectSlave* m_pScratchToggle;
+    ControlObjectSlave* m_pScratchPos;
+    ControlObjectSlave* m_pVinylControlSpeedType;
+    ControlObjectSlave* m_pVinylControlEnabled;
+    ControlObjectSlave* m_pSignalEnabled;
+    ControlObjectSlave* m_pSlipEnabled;
 
     TrackPointer m_loadedTrack;
     QPixmap m_loadedCover;
@@ -95,7 +103,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QImage m_qImage;
     int m_iVinylScopeSize;
 
-    QString m_group;
     float m_fAngle; //Degrees
     double m_dAngleCurrentPlaypos;
     double m_dAngleLastPlaypos;

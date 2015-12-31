@@ -4,7 +4,6 @@
         <ObjectName>MixerChannel</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
-        <MinimumSize>0,150</MinimumSize>
         <Children>
             <WidgetGroup>
                 <Layout>horizontal</Layout>
@@ -32,27 +31,26 @@
                             </PushButton>
                         </Children>
                     </WidgetGroup>
-                    <Knob>
-                        <TooltipId>pregain</TooltipId>
-                        <NumberStates>64</NumberStates>
-                        <Path>knobs/knob_rotary_s%1.png</Path>
-                        <Connection>
-                            <ConfigKey>[Channel<Variable name="channum"/>],pregain</ConfigKey>
-                        </Connection>
-                    </Knob>
+                    <Template src="skin:knob_sized.xml">
+                       <SetVariable name="width">48</SetVariable>
+                       <SetVariable name="height">41</SetVariable>
+                       <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+                       <SetVariable name="control">pregain</SetVariable>
+                       <SetVariable name="label">gain</SetVariable>
+                    </Template>
                 </Children>
             </WidgetGroup>
             <Template src="skin:eq_knob.xml">
-                <SetVariable name="parameter">1</SetVariable>
-            </Template>
-            <Template src="skin:eq_knob.xml">
-                <SetVariable name="parameter">2</SetVariable>
+                <SetVariable name="parameter">4</SetVariable>
             </Template>
             <Template src="skin:eq_knob.xml">
                 <SetVariable name="parameter">3</SetVariable>
             </Template>
             <Template src="skin:eq_knob.xml">
-                <SetVariable name="parameter">4</SetVariable>
+                <SetVariable name="parameter">2</SetVariable>
+            </Template>
+            <Template src="skin:eq_knob.xml">
+                <SetVariable name="parameter">1</SetVariable>
             </Template>
             <WidgetGroup>
                 <Layout>horizontal</Layout>
@@ -65,7 +63,7 @@
                         <Size>26,0</Size>
                         <Children>
                             <StatusLight>
-                                <TooltipId>PeakIndicator</TooltipId>
+                                <TooltipId>channel_PeakIndicator</TooltipId>
                                 <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
                                 <PathBack>btn_clipping1.png</PathBack>
                                 <Connection>
@@ -91,14 +89,13 @@
                         <TooltipId>channel_volume</TooltipId>
                         <Handle>knob_volume1.png</Handle>
                         <Slider>slider_volume1.png</Slider>
-                        <Pos>26,153</Pos>
                         <Horizontal>false</Horizontal>
                         <Connection>
                           <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>
                         </Connection>
                       </SliderComposed>
                 </Children>
-            </WidgetGroup>                    
+            </WidgetGroup>
         </Children>
     </WidgetGroup>
 </Template>

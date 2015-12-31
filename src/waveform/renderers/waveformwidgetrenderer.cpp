@@ -4,7 +4,7 @@
 #include "waveform/waveform.h"
 #include "widget/wwidget.h"
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "visualplayposition.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
@@ -14,7 +14,6 @@ const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     : m_group(group),
-      m_trackInfoObject(0),
       m_height(-1),
       m_width(-1),
 
@@ -78,15 +77,15 @@ bool WaveformWidgetRenderer::init() {
     //qDebug() << "WaveformWidgetRenderer::init";
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
-    m_pRateControlObject = new ControlObjectThread(
+    m_pRateControlObject = new ControlObjectSlave(
             m_group, "rate");
-    m_pRateRangeControlObject = new ControlObjectThread(
+    m_pRateRangeControlObject = new ControlObjectSlave(
             m_group, "rateRange");
-    m_pRateDirControlObject = new ControlObjectThread(
+    m_pRateDirControlObject = new ControlObjectSlave(
             m_group, "rate_dir");
-    m_pGainControlObject = new ControlObjectThread(
+    m_pGainControlObject = new ControlObjectSlave(
             m_group, "total_gain");
-    m_pTrackSamplesControlObject = new ControlObjectThread(
+    m_pTrackSamplesControlObject = new ControlObjectSlave(
             m_group, "track_samples");
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
@@ -121,16 +120,19 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust);
     m_visualSamplePerPixel = math_max(1.0, visualSamplePerPixel);
 
-    if (m_trackInfoObject) {
-        m_audioSamplePerPixel = m_visualSamplePerPixel * m_trackInfoObject->getWaveform()->getAudioVisualRatio();
+    TrackPointer pTrack(m_pTrack);
+    ConstWaveformPointer pWaveform = pTrack ? pTrack->getWaveform() : ConstWaveformPointer();
+    if (pWaveform) {
+        m_audioSamplePerPixel = m_visualSamplePerPixel * pWaveform->getAudioVisualRatio();
     } else {
         m_audioSamplePerPixel = 0.0;
     }
 
-    m_playPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
+
+    double truePlayPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
-    if (m_audioSamplePerPixel && m_playPos != -1) {
+    if (m_audioSamplePerPixel && truePlayPos != -1) {
         // Track length in pixels.
         m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
 
@@ -139,8 +141,8 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         double displayedLengthHalf = static_cast<double>(m_width) / m_trackPixelCount / 2.0;
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
-        m_playPos = round(m_playPos * m_trackPixelCount) / m_trackPixelCount; // Avoid pixel jitter in play position
-        m_playPosVSample = m_playPos * m_trackInfoObject->getWaveform()->getDataSize();
+        m_playPos = round(truePlayPos * m_trackPixelCount) / m_trackPixelCount; // Avoid pixel jitter in play position
+        m_playPosVSample = m_playPos * m_trackPixelCount * m_visualSamplePerPixel;
 
         m_firstDisplayedPosition = m_playPos - displayedLengthHalf;
         m_lastDisplayedPosition = m_playPos + displayedLengthHalf;
@@ -249,7 +251,7 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
-    m_trackInfoObject = track;
+    m_pTrack = track;
     //used to postpone first display until track sample is actually available
     m_trackSamples = -1.0;
 

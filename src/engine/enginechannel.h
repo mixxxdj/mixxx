@@ -19,6 +19,7 @@
 #define ENGINECHANNEL_H
 
 #include "engine/engineobject.h"
+#include "engine/channelhandle.h"
 #include "configobject.h"
 
 class ControlObject;
@@ -26,7 +27,6 @@ class EngineBuffer;
 class EnginePregain;
 class EngineFilterBlock;
 class EngineVuMeter;
-class EngineVinylSoundEmu;
 class ControlPushButton;
 
 class EngineChannel : public EngineObject {
@@ -38,19 +38,27 @@ class EngineChannel : public EngineObject {
         RIGHT,
     };
 
-    EngineChannel(QString pGroup, ChannelOrientation defaultOrientation = CENTER);
+    EngineChannel(const ChannelHandleAndGroup& handle_group,
+                  ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineChannel();
 
     virtual ChannelOrientation getOrientation() const;
-    virtual const QString& getGroup() const;
+
+    inline const ChannelHandle& getHandle() const {
+        return m_group.handle();
+    }
+
+    virtual const QString& getGroup() const {
+        return m_group.name();
+    }
 
     virtual bool isActive() = 0;
-    void setPFL(bool enabled);
-    virtual bool isPFL() const;
+    void setPfl(bool enabled);
+    virtual bool isPflEnabled() const;
     void setMaster(bool enabled);
-    virtual bool isMaster() const;
+    virtual bool isMasterEnabled() const;
     void setTalkover(bool enabled);
-    virtual bool isTalkover() const;
+    virtual bool isTalkoverEnabled() const;
 
     virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
     virtual void postProcess(const int iBuffersize) = 0;
@@ -66,7 +74,7 @@ class EngineChannel : public EngineObject {
     void slotOrientationCenter(double v);
 
   private:
-    const QString m_group;
+    const ChannelHandleAndGroup m_group;
     ControlPushButton* m_pMaster;
     ControlPushButton* m_pPFL;
     ControlPushButton* m_pOrientation;

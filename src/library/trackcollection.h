@@ -47,10 +47,11 @@ class BpmDetector;
 /**
    @author Albert Santoni
 */
-class TrackCollection : public QObject
-{
+class TrackCollection : public QObject {
     Q_OBJECT
   public:
+    static const int kRequiredSchemaVersion;
+
     TrackCollection(ConfigObject<ConfigValue>* pConfig);
     virtual ~TrackCollection();
     bool checkForTables();

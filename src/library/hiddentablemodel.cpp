@@ -42,11 +42,10 @@ void HiddenTableModel::setTableModel(int id) {
 }
 
 void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
 
     foreach (QModelIndex index, indices) {
-        int trackId = getTrackId(index);
-        trackIds.append(trackId);
+        trackIds.append(getTrackId(index));
     }
 
     m_trackDAO.purgeTracks(trackIds);
@@ -57,11 +56,10 @@ void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
 }
 
 void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
 
     foreach (QModelIndex index, indices) {
-        int trackId = getTrackId(index);
-        trackIds.append(trackId);
+        trackIds.append(getTrackId(index));
     }
 
     m_trackDAO.unhideTracks(trackIds);
@@ -84,10 +82,6 @@ bool HiddenTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
         return true;
     }
-    return false;
-}
-bool HiddenTableModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
     return false;
 }
 

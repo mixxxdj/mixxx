@@ -1,0 +1,43 @@
+<Template>
+    <WidgetGroup>
+        <ObjectName>UIButtons</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>e,min</SizePolicy>
+        <Children>
+            <WidgetGroup>  <!-- spacer -->
+                <ObjectName>UIButtonMargin</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children></Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>80f,20f</Size>
+                        <TooltipId>maximize_library</TooltipId>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>BIG LIBRARY</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>BIG LIBRARY</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Master],maximize_library</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Master],maximize_library</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+        </Children>
+    </WidgetGroup>
+</Template>

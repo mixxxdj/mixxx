@@ -22,15 +22,9 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     connect(&m_buttonMapper, SIGNAL(mapped(QString)),
             this, SLOT(slotOpenLocalFile(QString)));
 
-    connect(btnOpenSystemPresets, SIGNAL(clicked()),
-            &m_buttonMapper, SLOT(map()));
-    connect(btnOpenLocalPresets, SIGNAL(clicked()),
-            &m_buttonMapper, SLOT(map()));
     connect(btnOpenUserPresets, SIGNAL(clicked()),
             &m_buttonMapper, SLOT(map()));
 
-    m_buttonMapper.setMapping(btnOpenSystemPresets, resourcePresetsPath(m_pConfig));
-    m_buttonMapper.setMapping(btnOpenLocalPresets, localPresetsPath(m_pConfig));
     m_buttonMapper.setMapping(btnOpenUserPresets, userPresetsPath(m_pConfig));
 
     // Connections

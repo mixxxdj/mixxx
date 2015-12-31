@@ -11,7 +11,8 @@
 	<WidgetGroup>
 	    <Layout>horizontal</Layout>
 	    <Style> WEffect, WPushButton { 
-			font: bold 12px/10px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+			font: bold 12px/10px sans-serif;
+			font-family: "Open Sans";
 			background-color: transparent; 
 			color: #191F24; 
 			padding-left: 1px; 
@@ -42,7 +43,8 @@
 				<NumberStates>1</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Text>◀</Text>
+					<Pressed>btn_previous_over.png</Pressed>
+					<Unpressed>btn_previous.png</Unpressed>
 				</State>
 				<Connection>
 		      		<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],prev_effect</ConfigKey>
@@ -53,17 +55,19 @@
 		      	<Style>
 		      		QLabel { qproperty-alignment: AlignCenter; }
 		      	</Style>
-		        <Size>100,-1</Size>
+		        <Size>110,e</Size>
 		        <EffectRack>1</EffectRack>
 		        <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
 		        <Effect><Variable name="effectnum"/></Effect>
+		        <Elide>middle</Elide>
 		    </EffectName>	
 			<PushButton>
 				<Size>20f,20f</Size>
 				<NumberStates>1</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Text>▶</Text>
+					<Pressed>btn_next_over.png</Pressed>
+					<Unpressed>btn_next.png</Unpressed>
 			    </State>
 				<Connection>
 			        <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],next_effect</ConfigKey>

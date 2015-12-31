@@ -12,10 +12,10 @@
 #include "trackinfoobject.h"
 #include "control/controlvalue.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "cachingreader.h"
 
 class EngineMaster;
 class EngineBuffer;
-struct Hint;
 
 const double kNoTrigger = -1;
 
@@ -63,13 +63,14 @@ class EngineControl : public QObject {
     // hintReader allows the EngineControl to provide hints to the reader to
     // indicate that the given portion of a song is a potential imminent seek
     // target.
-    virtual void hintReader(QVector<Hint>* pHintList);
+    virtual void hintReader(HintVector* pHintList);
 
     virtual void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
     virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
+    bool atEndPosition() const;
     QString getGroup() const;
 
     // Called to collect player features for effects processing.
@@ -99,8 +100,12 @@ class EngineControl : public QObject {
     ConfigObject<ConfigValue>* m_pConfig;
 
   private:
-    ControlValueAtomic<double> m_dCurrentSample;
-    double m_dTotalSamples;
+    struct SampleOfTrack {
+        double current;
+        double total;
+    };
+
+    ControlValueAtomic<SampleOfTrack> m_sampleOfTrack;
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pEngineBuffer;
     ControlObjectThread m_numDecks;

@@ -34,24 +34,21 @@
 
 WVuMeter::WVuMeter(QWidget* parent)
         : WWidget(parent),
-          m_iPos(0),
           m_dParameter(0),
-          m_iNoPos(0),
+          m_dPeakParameter(0),
+          m_dLastParameter(0),
+          m_dLastPeakParameter(0),
+          m_iPixmapLength(0),
           m_bHorizontal(false),
           m_iPeakHoldSize(0),
           m_iPeakFallStep(0),
           m_iPeakHoldTime(0),
           m_iPeakFallTime(0),
-          m_iPeakPos(0),
-          m_dPeakParameter(0),
-          m_iPeakHoldCountdown(0),
-          m_iLastPos(0),
-          m_iLastPeakPos(0) {
+          m_dPeakHoldCountdownMs(0) {
     m_timer.start();
 }
 
 WVuMeter::~WVuMeter() {
-    resetPositions();
 }
 
 void WVuMeter::setup(QDomNode node, const SkinContext& context) {
@@ -61,10 +58,18 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "PathBack")) {
-        setPixmapBackground(context.getPixmapSource(context.selectNode(node, "PathBack")));
+        QDomElement backPathNode = context.selectElement(node, "PathBack");
+        // The implicit default in <1.12.0 was FIXED so we keep it for backwards
+        // compatibility.
+        setPixmapBackground(context.getPixmapSource(backPathNode),
+                            context.selectScaleMode(backPathNode, Paintable::FIXED));
     }
 
-    setPixmaps(context.getPixmapSource(context.selectNode(node, "PathVu")), bHorizontal);
+    QDomElement vuNode = context.selectElement(node, "PathVu");
+    // The implicit default in <1.12.0 was FIXED so we keep it for backwards
+    // compatibility.
+    setPixmaps(context.getPixmapSource(vuNode), bHorizontal,
+               context.selectScaleMode(vuNode, Paintable::FIXED));
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
     if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100)
@@ -83,54 +88,39 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
         m_iPeakFallTime = DEFAULT_FALLTIME;
 }
 
-void WVuMeter::resetPositions() {
-    m_pPixmapBack.clear();
-    m_pPixmapVu.clear();
-}
-
-void WVuMeter::setPixmapBackground(PixmapSource source) {
-    m_pPixmapBack = WPixmapStore::getPaintable(source,
-                                               Paintable::TILE);
+void WVuMeter::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
-    } else {
+    } else if (mode == Paintable::FIXED) {
         setFixedSize(m_pPixmapBack->size());
     }
 }
 
 void WVuMeter::setPixmaps(PixmapSource source,
-                          bool bHorizontal) {
-    m_pPixmapVu = WPixmapStore::getPaintable(source,
-                                             Paintable::STRETCH);
+                          bool bHorizontal, Paintable::DrawMode mode) {
+    m_pPixmapVu = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << source.getPath();
     } else {
         m_bHorizontal = bHorizontal;
         if (m_bHorizontal) {
-            m_iNoPos = m_pPixmapVu->width();
+            m_iPixmapLength = m_pPixmapVu->width();
         } else {
-            m_iNoPos = m_pPixmapVu->height();
+            m_iPixmapLength = m_pPixmapVu->height();
         }
     }
 }
 
 void WVuMeter::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dValue);
-    m_iPos = static_cast<int>(dParameter * m_iNoPos);
-    m_dParameter = dParameter;
-    // Range check
-    if (m_iPos > m_iNoPos) {
-        m_iPos = m_iNoPos;
-    } else if (m_iPos < 0) {
-        m_iPos = 0;
-    }
+    m_dParameter = math_clamp(dParameter, 0.0, 1.0);
 
-    if (dParameter > 0.) {
-        setPeak(m_iPos, dParameter);
+    if (dParameter > 0.0) {
+        setPeak(dParameter);
     } else {
         // A 0.0 value is very unlikely except when the VU Meter is disabled
-        m_iPeakPos = 0;
         m_dPeakParameter = 0;
     }
 
@@ -138,21 +128,20 @@ void WVuMeter::onConnectedControlChanged(double dParameter, double dValue) {
     updateState(msecsElapsed);
 }
 
-void WVuMeter::setPeak(int pos, double parameter) {
-    if (pos > m_iPeakPos) {
-        m_iPeakPos = pos;
+void WVuMeter::setPeak(double parameter) {
+    if (parameter > m_dPeakParameter) {
         m_dPeakParameter = parameter;
-        m_iPeakHoldCountdown = m_iPeakHoldTime;
+        m_dPeakHoldCountdownMs = m_iPeakHoldTime;
     }
 }
 
 void WVuMeter::updateState(double msecsElapsed) {
     // If we're holding at a peak then don't update anything
-    m_iPeakHoldCountdown -= msecsElapsed;
-    if (m_iPeakHoldCountdown > 0) {
+    m_dPeakHoldCountdownMs -= msecsElapsed;
+    if (m_dPeakHoldCountdownMs > 0) {
         return;
     } else {
-        m_iPeakHoldCountdown = 0;
+        m_dPeakHoldCountdownMs = 0;
     }
 
     // Otherwise, decrement the peak position by the fall step size times the
@@ -160,14 +149,12 @@ void WVuMeter::updateState(double msecsElapsed) {
     // FallStep times (out of 128 steps) every FallTime milliseconds.
     m_dPeakParameter -= static_cast<double>(m_iPeakFallStep) *
             msecsElapsed /
-            static_cast<double>(m_iPeakFallTime * m_iNoPos);
-    m_dPeakParameter = math_clamp_unsafe(m_dPeakParameter, 0.0, 1.0);
-    m_iPeakPos = math_clamp(static_cast<int>(m_dPeakParameter * m_iNoPos),
-                            0, m_iNoPos);
+            static_cast<double>(m_iPeakFallTime * m_iPixmapLength);
+    m_dPeakParameter = math_clamp(m_dPeakParameter, 0.0, 1.0);
 }
 
 void WVuMeter::maybeUpdate() {
-    if (m_iPos != m_iLastPos || m_iPeakPos != m_iLastPeakPos) {
+    if (m_dParameter != m_dLastParameter || m_dPeakParameter != m_dLastPeakParameter) {
         repaint();
     }
 }
@@ -181,62 +168,73 @@ void WVuMeter::paintEvent(QPaintEvent *) {
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (!m_pPixmapBack.isNull() && !m_pPixmapBack->isNull()) {
-        // Draw background.
-        m_pPixmapBack->draw(0, 0, &p);
+        // Draw background. DrawMode takes care of whether to stretch or not.
+        m_pPixmapBack->draw(rect(), &p);
     }
 
     if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
-        int widgetWidth = width();
-        int widgetHeight = height();
+        const double widgetWidth = width();
+        const double widgetHeight = height();
+        const double pixmapWidth = m_pPixmapVu->width();
+        const double pixmapHeight = m_pPixmapVu->height();
 
         // Draw (part of) vu
         if (m_bHorizontal) {
-            // This is a hack to fix something weird with horizontal VU meters:
-            if (m_iPos == 0)
-                m_iPos = 1;
-
-            int widgetPosition = math_clamp(
-                static_cast<int>(widgetWidth * m_dParameter), 0, widgetWidth);
-
+            const double widgetPosition = math_clamp(widgetWidth * m_dParameter,
+                                                     0.0, widgetWidth);
             QRectF targetRect(0, 0, widgetPosition, widgetHeight);
-            QRectF sourceRect(0, 0, m_iPos,  m_pPixmapVu->height());
+
+            const double pixmapPosition = math_clamp(pixmapWidth * m_dParameter,
+                                                     0.0, pixmapWidth);
+            QRectF sourceRect(0, 0, pixmapPosition,  m_pPixmapVu->height());
             m_pPixmapVu->draw(targetRect, &p, sourceRect);
 
-            if(m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
-                int widgetPeakPosition = math_clamp(
-                    static_cast<int>(widgetWidth * m_dPeakParameter),
-                    0, widgetWidth);
-                int widgetPeakHoldSize = widgetWidth * static_cast<double>(m_iPeakHoldSize) /
-                        static_cast<double>(m_iNoPos);
-                targetRect = QRectF(widgetPeakPosition - m_iPeakHoldSize, 0,
+            if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0) {
+                const double widgetPeakPosition = math_clamp(
+                        widgetWidth * m_dPeakParameter, 0.0, widgetWidth);
+                const double widgetPeakHoldSize = widgetWidth *
+                        static_cast<double>(m_iPeakHoldSize) / pixmapWidth;
+
+                const double pixmapPeakPosition = math_clamp(
+                        pixmapWidth * m_dPeakParameter, 0.0, pixmapWidth);
+                const double pixmapPeakHoldSize = m_iPeakHoldSize;
+
+                targetRect = QRectF(widgetPeakPosition - widgetPeakHoldSize, 0,
                                     widgetPeakHoldSize, widgetHeight);
-                sourceRect = QRectF(m_pPixmapVu->width() - m_iPeakPos, 0,
-                                    m_iPeakHoldSize, m_pPixmapVu->height());
+                sourceRect = QRectF(pixmapPeakPosition - pixmapPeakHoldSize, 0,
+                                    pixmapPeakHoldSize, pixmapHeight);
                 m_pPixmapVu->draw(targetRect, &p, sourceRect);
             }
         } else {
-            int widgetPosition = math_clamp(
-                static_cast<int>(widgetHeight * m_dParameter), 0, widgetHeight);
+            const double widgetPosition = math_clamp(widgetHeight * m_dParameter,
+                                                     0.0, widgetHeight);
             QRectF targetRect(0, widgetHeight - widgetPosition,
                               widgetWidth, widgetPosition);
-            QRectF sourceRect(0, m_iNoPos - m_iPos, m_pPixmapVu->width(),
-                              m_iPos);
+
+            const double pixmapPosition = math_clamp(pixmapHeight * m_dParameter,
+                                                     0.0, pixmapHeight);
+            QRectF sourceRect(0, pixmapHeight - pixmapPosition,
+                              pixmapWidth, pixmapPosition);
             m_pPixmapVu->draw(targetRect, &p, sourceRect);
 
-            if (m_iPeakHoldSize > 0 && m_iPeakPos > 0) {
-                int widgetPeakPosition = math_clamp(
-                    static_cast<int>(widgetHeight * m_dPeakParameter),
-                    0, widgetHeight);
-                int widgetPeakHoldSize = widgetHeight * static_cast<double>(m_iPeakHoldSize) /
-                        static_cast<double>(m_iNoPos);
+            if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0) {
+                const double widgetPeakPosition = math_clamp(
+                        widgetHeight * m_dPeakParameter, 0.0, widgetHeight);
+                const double widgetPeakHoldSize = widgetHeight *
+                        static_cast<double>(m_iPeakHoldSize) / pixmapHeight;
+
+                const double pixmapPeakPosition = math_clamp(
+                        pixmapHeight * m_dPeakParameter, 0.0, pixmapHeight);
+                const double pixmapPeakHoldSize = m_iPeakHoldSize;
+
                 targetRect = QRectF(0, widgetHeight - widgetPeakPosition,
                                     widgetWidth, widgetPeakHoldSize);
-                sourceRect = QRectF(0, m_iNoPos - m_iPeakPos,
-                                    m_pPixmapVu->width(), m_iPeakHoldSize);
+                sourceRect = QRectF(0, pixmapHeight - pixmapPeakPosition,
+                                    pixmapWidth, pixmapPeakHoldSize);
                 m_pPixmapVu->draw(targetRect, &p, sourceRect);
             }
         }
     }
-    m_iLastPos = m_iPos;
-    m_iLastPeakPos = m_iPeakPos;
+    m_dLastParameter = m_dParameter;
+    m_dLastPeakParameter = m_dPeakParameter;
 }

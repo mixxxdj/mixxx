@@ -26,26 +26,21 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
           m_waveformWidget(NULL) {
     setAcceptDrops(true);
 
-    m_pZoom = new ControlObjectSlave(group, "waveform_zoom");
-    m_pZoom->connectValueChanged(this, SLOT(onZoomChange(double)));
+    m_pZoom = new ControlObjectSlave(group, "waveform_zoom", this);
+    m_pZoom->connectValueChanged(SLOT(onZoomChange(double)));
 
     m_pScratchPositionEnable = new ControlObjectSlave(
-            group, "scratch_position_enable");
+            group, "scratch_position_enable", this);
     m_pScratchPosition = new ControlObjectSlave(
-            group, "scratch_position");
+            group, "scratch_position", this);
     m_pWheel = new ControlObjectSlave(
-            group, "wheel");
+            group, "wheel", this);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 }
 
 WWaveformViewer::~WWaveformViewer() {
     //qDebug() << "~WWaveformViewer";
-
-    delete m_pZoom;
-    delete m_pScratchPositionEnable;
-    delete m_pScratchPosition;
-    delete m_pWheel;
 }
 
 void WWaveformViewer::setup(QDomNode node, const SkinContext& context) {
@@ -74,7 +69,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         m_bScratching = true;
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
         double targetPosition = -1.0 * event->pos().x() * audioSamplePerPixel * 2;
-        m_pScratchPosition->slotSet(targetPosition);
+        m_pScratchPosition->set(targetPosition);
         m_pScratchPositionEnable->slotSet(1.0);
     } else if (event->button() == Qt::RightButton) {
         // If we are scratching then disable and reset because the two shouldn't
@@ -98,7 +93,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
         double targetPosition = -1.0 * event->pos().x() * audioSamplePerPixel * 2;
         //qDebug() << "Target:" << targetPosition;
-        m_pScratchPosition->slotSet(targetPosition);
+        m_pScratchPosition->set(targetPosition);
     } else if (m_bBending) {
         QPoint diff = event->pos() - m_mouseAnchor;
         // Start at the middle of [0.0, 1.0], and emit values based on how far
@@ -110,14 +105,14 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         // where this value is handled.
         double v = 0.5 + (diff.x() / 1270.0);
         // clamp to [0.0, 1.0]
-        v = math_clamp_unsafe(v, 0.0, 1.0);
+        v = math_clamp(v, 0.0, 1.0);
         m_pWheel->setParameter(v);
     }
 }
 
 void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
     if (m_bScratching) {
-        m_pScratchPositionEnable->slotSet(0.0);
+        m_pScratchPositionEnable->set(0.0);
         m_bScratching = false;
     }
     if (m_bBending) {
@@ -145,33 +140,23 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
     }
 }
 
-/** DRAG AND DROP **/
-
-void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event) {
-    // Accept the enter event if the thing is a filepath.
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
-        if ((!ControlObject::get(ConfigKey(m_pGroup, "play")) ||
-                m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
-            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
-            if (!files.isEmpty()) {
-                event->acceptProposedAction();
-                return;
-            }
-        }
+void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
+    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
+            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
+                                               true, false)) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }
 
-void WWaveformViewer::dropEvent(QDropEvent * event) {
-    if (event->mimeData()->hasUrls()) {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
+void WWaveformViewer::dropEvent(QDropEvent* event) {
+    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
+        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                *event->mimeData(), m_pGroup, true, false);
         if (!files.isEmpty()) {
             event->accept();
-            emit(trackDropped(files.at(0).canonicalFilePath(), m_pGroup));
+            emit(trackDropped(files.at(0).absoluteFilePath(), m_pGroup));
             return;
         }
     }

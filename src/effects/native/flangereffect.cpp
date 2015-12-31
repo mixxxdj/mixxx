@@ -1,9 +1,8 @@
-// THIS HAS TO BE THE FIRST INCLUDE!!! --kain88 (April 2013)
-// http://stackoverflow.com/a/6563891
-#include "util/math.h"
+#include "effects/native/flangereffect.h"
+
 #include <QtDebug>
 
-#include "effects/native/flangereffect.h"
+#include "util/math.h"
 
 const unsigned int kMaxDelay = 5000;
 const unsigned int kLfoAmplitude = 240;
@@ -28,7 +27,7 @@ EffectManifest FlangerEffect::getManifest() {
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
-    depth->setDescription("Controls the intensity of the effect.");
+    depth->setDescription(QObject::tr("Controls the intensity of the effect."));
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -39,7 +38,7 @@ EffectManifest FlangerEffect::getManifest() {
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay");
     delay->setName(QObject::tr("Delay"));
-    delay->setDescription("Sets the value for the delay length.");
+    delay->setDescription(QObject::tr("Sets the value for the delay length."));
     delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -50,7 +49,7 @@ EffectManifest FlangerEffect::getManifest() {
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
-    period->setDescription("Controls the speed of the effect.");
+    period->setDescription(QObject::tr("Controls the speed of the effect."));
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -73,14 +72,14 @@ FlangerEffect::~FlangerEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void FlangerEffect::processGroup(const QString& group,
-                                 FlangerGroupState* pState,
-                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                 const unsigned int numSamples,
-                                 const unsigned int sampleRate,
-                                 const EffectProcessor::EnableState enableState,
-                                 const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+void FlangerEffect::processChannel(const ChannelHandle& handle,
+                                   FlangerGroupState* pState,
+                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                   const unsigned int numSamples,
+                                   const unsigned int sampleRate,
+                                   const EffectProcessor::EnableState enableState,
+                                   const GroupFeatureState& groupFeatures) {
+    Q_UNUSED(handle);
     Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);

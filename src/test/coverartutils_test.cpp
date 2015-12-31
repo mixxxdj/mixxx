@@ -6,16 +6,12 @@
 #include "library/coverartutils.h"
 #include "library/trackcollection.h"
 #include "test/mixxxtest.h"
-#include "soundsourceproxy.h"
 
 // first inherit from MixxxTest to construct a QApplication to be able to
 // construct the default QPixmap in CoverArtCache
 class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
   protected:
     virtual void SetUp() {
-        // make sure to use the current schema.xml file in the repo
-        config()->set(ConfigKey("[Config]","Path"),
-                      QDir::currentPath().append("/res"));
         m_pTrackCollection = new TrackCollection(config());
     }
 
@@ -35,42 +31,61 @@ class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
     TrackCollection* m_pTrackCollection;
 };
 
-const QString kCoverLocationTest("res/images/library/default_cover.png");
+const QString kCoverLocationTest("res/images/library/cover_default.png");
 const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test.mp3");
+                                 "/src/test/id3-test-data/cover-test-png.mp3");
+const QString kReferencePNGLocationTest(QDir::currentPath() %
+                                 "/src/test/id3-test-data/reference_cover.png");
+const QString kReferenceJPGLocationTest(QDir::currentPath() %
+                                 "/src/test/id3-test-data/cover_test.jpg");
 
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     const QString kTestPath(QDir::currentPath() % "/src/test/id3-test-data/");
     QImage cover;
+    QImage referencePNGImage = QImage(kReferencePNGLocationTest);
+    QImage referenceJPGImage = QImage(kReferenceJPGLocationTest);
+    
     // We never need to acquire security tokens for tests since we don't run
     // them in a sandboxed environment.
+	
     SecurityTokenPointer pToken;
     // aiff
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.aiff",
                                                 pToken);
-    EXPECT_TRUE(!cover.isNull());
+    EXPECT_FALSE(cover.isNull());
+    EXPECT_EQ(referencePNGImage, cover);
     // flac
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.flac",
                                                 pToken);
-    EXPECT_TRUE(!cover.isNull());
-    // mp3
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.mp3",
+    EXPECT_FALSE(cover.isNull());
+    EXPECT_EQ(referencePNGImage, cover);
+    // mp3 - PNG
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test-png.mp3",
                                                 pToken);
-    EXPECT_TRUE(!cover.isNull());
+    EXPECT_FALSE(cover.isNull());
+    EXPECT_EQ(referencePNGImage, cover);
+    // mp3 - JPEG
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test-jpg.mp3",
+                                                pToken);
+    EXPECT_FALSE(cover.isNull());
+    EXPECT_EQ(referenceJPGImage, cover);
     // ogg
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.ogg",
                                                 pToken);
-    EXPECT_TRUE(!cover.isNull());
+    EXPECT_FALSE(cover.isNull());
+    EXPECT_EQ(referencePNGImage, cover);
     // wav
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.wav",
                                                 pToken);
-    EXPECT_TRUE(!cover.isNull());
+    EXPECT_FALSE(cover.isNull());
+    EXPECT_EQ(referencePNGImage, cover);
 
 #ifdef __OPUS__
     // opus
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.opus",
                                                 pToken);
-    EXPECT_TRUE(!cover.isNull());
+    EXPECT_FALSE(cover.isNull());
+    EXPECT_EQ(referencePNGImage, cover);
 #endif
 }
 

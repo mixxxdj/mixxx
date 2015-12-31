@@ -37,13 +37,15 @@ public:
     void decorateChild(TreeItem *pChild, int playlist_id);
 
   private slots:
-    void slotPlayingDeckChanged(int deck);
+    void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
     void slotPlaylistTableChanged(int playlistId);
+    void slotPlaylistContentChanged(int playlistId);
+    void slotPlaylistTableRenamed(int playlistId, QString a_strName);
 
   private:
     QString getRootViewHtml() const;
 
-    QLinkedList<int> m_recentTracks;
+    QLinkedList<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pGetNewPlaylist;
     int m_playlistId;

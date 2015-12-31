@@ -1,7 +1,6 @@
 #include "engine/effects/engineeffectrack.h"
 
 #include "engine/effects/engineeffectchain.h"
-#include "sampleutil.h"
 
 EngineEffectRack::EngineEffectRack(int iRackNumber)
         : m_iRackNumber(iRackNumber) {
@@ -10,6 +9,7 @@ EngineEffectRack::EngineEffectRack(int iRackNumber)
 }
 
 EngineEffectRack::~EngineEffectRack() {
+    //qDebug() << "EngineEffectRack::~EngineEffectRack()" << this;
 }
 
 bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
@@ -41,14 +41,14 @@ bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
     return true;
 }
 
-void EngineEffectRack::process(const QString& group,
+void EngineEffectRack::process(const ChannelHandle& handle,
                                CSAMPLE* pInOut,
                                const unsigned int numSamples,
                                const unsigned int sampleRate,
                                const GroupFeatureState& groupFeatures) {
     foreach (EngineEffectChain* pChain, m_chains) {
         if (pChain != NULL) {
-            pChain->process(group, pInOut, numSamples, sampleRate, groupFeatures);
+            pChain->process(handle, pInOut, numSamples, sampleRate, groupFeatures);
         }
     }
 }

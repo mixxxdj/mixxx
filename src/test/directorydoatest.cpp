@@ -22,9 +22,6 @@ namespace {
 class DirectoryDAOTest : public MixxxTest {
   protected:
     virtual void SetUp() {
-        // make sure to use the current schema.xml file in the repo
-        config()->set(ConfigKey("[Config]","Path"),
-                      QDir::currentPath().append("/res"));
         m_pTrackCollection = new TrackCollection(config());
     }
 
@@ -154,7 +151,7 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
             test2 + "/d", SecurityTokenPointer(), false), false);
     trackDAO.addTracksFinish(false);
 
-    QSet<int> ids = directoryDao.relocateDirectory(testdir, testnew);
+    QSet<TrackId> ids = directoryDao.relocateDirectory(testdir, testnew);
     EXPECT_EQ(2, ids.size());
 
     QStringList dirs = directoryDao.getDirs();

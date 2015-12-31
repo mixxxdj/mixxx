@@ -20,11 +20,11 @@ class Timer {
     // Restart the timer returning the nanoseconds since it was last
     // started/restarted. If report is true, reports the elapsed time to the
     // associated Stat key.
-    int restart(bool report);
+    qint64 restart(bool report);
 
     // Returns nanoseconds since start/restart was called. If report is true,
     // reports the elapsed time to the associated Stat key.
-    int elapsed(bool report);
+    qint64 elapsed(bool report);
 
   protected:
     QString m_key;
@@ -38,12 +38,12 @@ class SuspendableTimer : public Timer {
     SuspendableTimer(const QString& key,
             Stat::ComputeFlags compute = kDefaultComputeFlags);
     void start();
-    int suspend();
+    qint64 suspend();
     void go();
-    int elapsed(bool report);
+    qint64 elapsed(bool report);
 
   private:
-    int m_leapTime;
+    qint64 m_leapTime;
 };
 
 class ScopedTimer {
@@ -53,7 +53,7 @@ class ScopedTimer {
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initalize(QString(key), QString::number(i), compute);
+            initialize(QString(key), QString::number(i), compute);
         }
     }
 
@@ -62,7 +62,7 @@ class ScopedTimer {
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initalize(QString(key), arg ? QString(arg) : QString(), compute);
+            initialize(QString(key), arg ? QString(arg) : QString(), compute);
         }
     }
 
@@ -71,7 +71,7 @@ class ScopedTimer {
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initalize(QString(key), arg, compute);
+            initialize(QString(key), arg, compute);
         }
     }
 
@@ -84,7 +84,7 @@ class ScopedTimer {
         }
     }
 
-    inline void initalize(const QString& key, const QString& arg,
+    inline void initialize(const QString& key, const QString& arg,
                 Stat::ComputeFlags compute = kDefaultComputeFlags) {
         QString strKey;
         if (arg.isEmpty()) {

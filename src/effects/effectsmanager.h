@@ -6,19 +6,21 @@
 #include <QList>
 #include <QSet>
 #include <QScopedPointer>
+#include <QPair>
 
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
-#include "util.h"
-#include "util/fifo.h"
 #include "effects/effect.h"
-#include "effects/effectsbackend.h"
-#include "effects/effectchainslot.h"
 #include "effects/effectchain.h"
 #include "effects/effectchainmanager.h"
+#include "effects/effectchainslot.h"
 #include "effects/effectrack.h"
+#include "effects/effectsbackend.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/message.h"
+#include "util/class.h"
+#include "util/fifo.h"
 
 class EngineEffectsManager;
 
@@ -42,8 +44,8 @@ class EffectsManager : public QObject {
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
-    void registerGroup(const QString& group);
-    const QSet<QString>& registeredGroups() const;
+    void registerChannel(const ChannelHandleAndGroup& handle_group);
+    const QSet<ChannelHandleAndGroup>& registeredChannels() const;
 
     StandardEffectRackPointer addStandardEffectRack();
     StandardEffectRackPointer getStandardEffectRack(int rack);
@@ -63,6 +65,8 @@ class EffectsManager : public QObject {
     // Each entry of the set is a pair containing the effect id and its name
     const QList<QPair<QString, QString> > getEffectNamesFiltered(EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
+    QPair<EffectManifest, EffectsBackend*> getEffectManifestAndBackend(
+            const QString& effectId) const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
@@ -95,6 +99,8 @@ class EffectsManager : public QObject {
     // We need to create Control Objects for Equalizers' frequencies
     ControlPotmeter* m_pLoEqFreq;
     ControlPotmeter* m_pHiEqFreq;
+
+    bool m_underDestruction;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

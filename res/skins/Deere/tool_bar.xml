@@ -9,71 +9,194 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>
-      <PushButton>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>-MIXER</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>+MIXER</Text>
-        </State>
-        <Connection>
-          <ConfigKey persist="true">[Master],hide_mixer</ConfigKey>
-        </Connection>
-      </PushButton>
+      <WidgetGroup>
+        <ObjectName>NotificationsContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <!--
+            Disable the recording button for now. You can start and stop recording from the library.
+            Additionally we now have a statuslight in the toolbars notification section, see below.
+            Re-enable this working button if you like (jus 2015-06)
 
-      <PushButton>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>+LIBRARY</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>-LIBRARY</Text>
-        </State>
-        <Connection>
-          <ConfigKey persist="true">[Master],show_library</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-        </Connection>
-      </PushButton>
+          <PushButton>
+            <TooltipId></TooltipId>
+            <Tooltip>Start / Stop recording</Tooltip>
+            <Size>20f,20f</Size>
+            <NumberStates>3</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Unpressed>
+            </State>
+            <State>
+              <Number>2</Number>
+              <Text></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey>[Recording],toggle_recording</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Recording],status</ConfigKey>
+            </Connection>
+          </PushButton>
+          -->
 
-      <PushButton>
-        <Size>60f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>+MICROPHONE</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>-MICROPHONE</Text>
-        </State>
-        <Connection>
-          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-        </Connection>
-      </PushButton>
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Recording active</SetVariable>
+            <SetVariable name="ObjectName">RecordingNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_recording_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_recording_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_recording_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Recording],status</SetVariable>
+          </Template>
 
-      <PushButton>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>2DECK</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>4DECK</Text>
-        </State>
-        <Connection>
-          <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-        </Connection>
-      </PushButton>
+          <!--
+            You could map the ``[AutoDJ],enabled`` control to a button, and start/stop AutoDJ from anywhere in the GUI,
+            but using the ``Enable AutoDJ`` button in the library is preferable. Reason is only that button guards
+            against enabling AutoDj with an empty queue. You would throw off button states easily. So we stick with
+            just displaying the AutoDJ status here.
+          -->
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">AutoDJ active</SetVariable>
+            <SetVariable name="ObjectName">AutoDjNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_autodj_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_autodj_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_autodj_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[AutoDJ],enabled</SetVariable>
+          </Template>
+
+          <!--
+            No control for enabling Shoutcast available, see https://bugs.launchpad.net/mixxx/+bug/1432647
+            Display only status for now.
+          -->
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Live Broadcasting active</SetVariable>
+            <SetVariable name="ObjectName">LiveBroadcastingNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_broadcast_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_broadcast_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_broadcast_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Shoutcast],status</SetVariable>
+          </Template>
+
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Vinyl Control 1 active</SetVariable>
+            <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel1],vinylcontrol_enabled</SetVariable>
+          </Template>
+
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Vinyl Control 2 active</SetVariable>
+            <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel2],vinylcontrol_enabled</SetVariable>
+          </Template>
+
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Vinyl Control 3 active</SetVariable>
+            <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel3],vinylcontrol_enabled</SetVariable>
+          </Template>
+
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Vinyl Control 4 active</SetVariable>
+            <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel4],vinylcontrol_enabled</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <Template src="skin:spacer_h.xml"></Template>
+
+      <WidgetGroup>
+        <ObjectName>HeadphoneControls</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:knob_label_horizontal.xml">
+            <SetVariable name="TooltipId">headMix</SetVariable>
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">headMix</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
+            <SetVariable name="label">Head Mix</SetVariable>
+          </Template>
+
+          <Template src="skin:knob_label_horizontal.xml">
+            <SetVariable name="TooltipId">headphone_gain</SetVariable>
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">headGain</SetVariable>
+            <SetVariable name="color">red</SetVariable>
+            <SetVariable name="label">Head Gain</SetVariable>
+          </Template>
+
+          <PushButton>
+            <TooltipId>headSplit</TooltipId>
+            <ObjectName>HeadSplit</ObjectName>
+            <Size>55f,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>Split Cue</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>Split Cue</Text>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],headSplit</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>MasterControls</ObjectName>
@@ -81,85 +204,98 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:knob_label_horizontal.xml">
-            <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">headMix</SetVariable>
-            <SetVariable name="label">Head Mix</SetVariable>
-          </Template>
-
-          <Template src="skin:knob_label_horizontal.xml">
-            <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">headVolume</SetVariable>
-            <SetVariable name="label">Head Vol</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <ObjectName>HeadphoneControls</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
-        <Layout>horizontal</Layout>
-        <Children>
-
-          <PushButton>
-            <ObjectName>HeadSplit</ObjectName>
-            <Size>50f,20f</Size>
-            <TooltipId>headsplit</TooltipId>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>STEREO</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>MONO SPLIT</Text>
-            </State>
-            <Connection>
-              <ConfigKey>[Master],headSplit</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-            </Connection>
-          </PushButton>
-
-          <Template src="skin:knob_label_horizontal.xml">
+            <SetVariable name="TooltipId">balance</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">balance</SetVariable>
+            <SetVariable name="color">blue</SetVariable>
             <SetVariable name="label">Balance</SetVariable>
           </Template>
 
           <Template src="skin:knob_label_horizontal.xml">
+            <SetVariable name="TooltipId">master_gain</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">volume</SetVariable>
-            <SetVariable name="label">Volume</SetVariable>
+            <SetVariable name="control">gain</SetVariable>
+            <SetVariable name="color">red</SetVariable>
+            <SetVariable name="label">Gain</SetVariable>
           </Template>
-
         </Children>
       </WidgetGroup>
 
       <WidgetGroup>
-          <ObjectName>MasterVumeter</ObjectName>
-          <SizePolicy>min,min</SizePolicy>
-          <Layout>vertical</Layout>
-          <Children>
-              <Template src="skin:vumeter.xml">
-                  <TooltipId>master_VuMeterL</TooltipId>
-                  <SetVariable name="group">[Master]</SetVariable>
-                  <SetVariable name="control">VuMeterL</SetVariable>
+        <ObjectName>MasterVumeter</ObjectName>
+        <Size>-1me,22min</Size>
+        <MaximumSize>110,-1</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <MaximumSize>110,22</MaximumSize>
+            <Children>
+              <Template src="skin:vumeter_h.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="tooltip_meter">master_VuMeterL</SetVariable>
+                <SetVariable name="tooltip_clip">master_PeakIndicatorL</SetVariable>
               </Template>
-              <Template src="skin:vumeter.xml">
-                  <TooltipId>master_VuMeterR</TooltipId>
-                  <SetVariable name="group">[Master]</SetVariable>
-                  <SetVariable name="control">VuMeterR</SetVariable>
+              <Template src="skin:vumeter_h.xml">
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="tooltip_meter">master_VuMeterR</SetVariable>
+                <SetVariable name="tooltip_clip">master_PeakIndicatorR</SetVariable>
               </Template>
-          </Children>
+            </Children>
+          </WidgetGroup>
+        </Children>
       </WidgetGroup>
 
-      <Time>
-        <ObjectName>Time</ObjectName>
-        <Size>60f,20f</Size>
-        <TooltipId>time</TooltipId>
-        <ShowSeconds>false</ShowSeconds>
-      </Time>
+      <WidgetGroup>
+        <ObjectName></ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Time>
+            <TooltipId>time</TooltipId>
+            <ObjectName>Time</ObjectName>
+            <Size>60f,20f</Size>
+            <ShowSeconds>false</ShowSeconds>
+          </Time>
 
+         <Template src="skin:vumeter_latency.xml">
+           <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
+           <SetVariable name="group">[Master]</SetVariable>
+           <SetVariable name="control">audio_latency_usage</SetVariable>
+         </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="Tooltip">Show/hide skin settings</SetVariable>
+            <SetVariable name="ObjectName">ShowHideSkinSettingsButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Deere],show_skin_settings</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
-
 </Template>

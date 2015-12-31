@@ -44,8 +44,9 @@ public:
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
-    double calculateRate(double baserate, bool paused,
-                         int iSamplesPerBuffer, bool* reportScratching);
+    double calculateSpeed(double baserate, double speed, bool paused,
+                         int iSamplesPerBuffer, bool* pReportScratching,
+                         bool* pReportReverse);
     double getRawRate() const;
 
     // Set rate change when temp rate button is pressed
@@ -56,9 +57,9 @@ public:
     static void setPerm(double v);
     // Set rate change when perm rate small button is pressed
     static void setPermSmall(double v);
-    /** Set Rate Ramp Mode */
+    // Set Rate Ramp Mode
     static void setRateRamp(bool);
-    /** Set Rate Ramp Sensitivity */
+    // Set Rate Ramp Sensitivity
     static void setRateRampSensitivity(int);
     virtual void notifySeek(double dNewPlaypos);
 
@@ -82,18 +83,18 @@ public:
     double getWheelFactor() const;
     SyncMode getSyncMode() const;
 
-    /** Set rate change of the temporary pitch rate */
+    // Set rate change of the temporary pitch rate
     void setRateTemp(double v);
-    /** Add a value to the temporary pitch rate */
+    // Add a value to the temporary pitch rate
     void addRateTemp(double v);
-    /** Subtract a value from the temporary pitch rate */
+    // Subtract a value from the temporary pitch rate
     void subRateTemp(double v);
-    /** Reset the temporary pitch rate */
+    // Reset the temporary pitch rate
     void resetRateTemp(void);
-    /** Get the 'Raw' Temp Rate */
+    // Get the 'Raw' Temp Rate
     double getTempRate(void);
 
-    /** Values used when temp and perm rate buttons are pressed */
+    // Values used when temp and perm rate buttons are pressed
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
 
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
@@ -114,7 +115,6 @@ public:
 
     ControlPushButton* m_pScratch2Enable;
     ControlObject* m_pJog;
-    ControlObject* m_pVCRate;
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
     ControlObject* m_pVCMode;

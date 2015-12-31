@@ -24,7 +24,7 @@
 
 #include "widget/wwidget.h"
 #include "util/cmdlineargs.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 
 ConfigKey::ConfigKey() {
 }
@@ -332,30 +332,19 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
 }
 
 template <class ValueType>
-QString ConfigObject<ValueType>::getResourcePath() {
-    //
-    // Find the config path, path where midi configuration files, skins etc. are stored.
-    // On Unix the search order is whats listed in mixxx.cfg, then UNIX_SHARE_PATH
-    // On Windows it is always (and only) app dir.
-    // On OS X it is the current directory and then the Resources/ dir in the app bundle
-    //
-
-#ifdef __WINDOWS__
-    bool windows = true;
-#else
-    bool windows = false;
-#endif
-
+QString ConfigObject<ValueType>::getResourcePath() const {
     // Try to read in the resource directory from the command line
     QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
-    if (qResourcePath.isNull() || qResourcePath.isEmpty()) {
+    if (qResourcePath.isEmpty()) {
         QDir mixxxDir(QCoreApplication::applicationDirPath());
-        // Always check to see if the path is stored in the configuration
-        // database unless we are running on Windows. See Bug #1392854.
-        if (!windows && getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists()) {
-            qResourcePath = getValueString(ConfigKey("[Config]","Path"));
-        } else if (mixxxDir.cd("res")) {
+        // We used to support using the mixxx.cfg's [Config],Path setting but
+        // this causes issues if you try and use two different versions of Mixxx
+        // on the same computer. See Bug #1392854. We start by checking if we're
+        // running out of a build root ('res' dir exists or our path ends with
+        // '_build') and if not then we fall back on a platform-specific method
+        // of determining the resource path (see comments below).
+        if (mixxxDir.cd("res")) {
             // We are running out of the repository root.
             qResourcePath = mixxxDir.absolutePath();
         } else if (mixxxDir.absolutePath().endsWith("_build") &&
@@ -389,7 +378,7 @@ QString ConfigObject<ValueType>::getResourcePath() {
         //qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
     }
 
-    if (qResourcePath.length() == 0) {
+    if (qResourcePath.isEmpty()) {
         reportCriticalErrorAndQuit("qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
     }
 
@@ -404,7 +393,6 @@ QString ConfigObject<ValueType>::getResourcePath() {
 }
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) {
-
     if (!node.isNull() && node.isElement()) {
         QDomNode ctrl = node.firstChild();
 

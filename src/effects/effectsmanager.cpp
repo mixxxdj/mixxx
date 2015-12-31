@@ -5,6 +5,9 @@
 
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/engineeffectchain.h"
+#include "util/assert.h"
 
 const char* kEqualizerRackName = "[EqualizerChain]";
 const char* kQuickEffectRackName = "[QuickEffectChain]";
@@ -14,7 +17,8 @@ EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pCon
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0),
           m_pLoEqFreq(NULL),
-          m_pHiEqFreq(NULL) {
+          m_pHiEqFreq(NULL),
+          m_underDestruction(false) {
     qRegisterMetaType<EffectChain::InsertionType>("EffectChain::InsertionType");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
@@ -25,9 +29,12 @@ EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pCon
 }
 
 EffectsManager::~EffectsManager() {
+    m_underDestruction = true;
     //m_pEffectChainManager->saveEffectChains();
-    processEffectsResponses();
     delete m_pEffectChainManager;
+    // This must be done here, since the engineRacks are deleted via
+    // the queue
+    processEffectsResponses();
     while (!m_effectsBackends.isEmpty()) {
         EffectsBackend* pBackend = m_effectsBackends.takeLast();
         delete pBackend;
@@ -47,18 +54,20 @@ EffectsManager::~EffectsManager() {
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
-    Q_ASSERT(pBackend);
+    DEBUG_ASSERT_AND_HANDLE(pBackend) {
+        return;
+    }
     m_effectsBackends.append(pBackend);
     connect(pBackend, SIGNAL(effectRegistered()),
             this, SIGNAL(availableEffectsUpdated()));
 }
 
-void EffectsManager::registerGroup(const QString& group) {
-    m_pEffectChainManager->registerGroup(group);
+void EffectsManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
+    m_pEffectChainManager->registerChannel(handle_group);
 }
 
-const QSet<QString>& EffectsManager::registeredGroups() const {
-    return m_pEffectChainManager->registeredGroups();
+const QSet<ChannelHandleAndGroup>& EffectsManager::registeredChannels() const {
+    return m_pEffectChainManager->registeredChannels();
 }
 
 const QList<QString> EffectsManager::getAvailableEffects() const {
@@ -139,14 +148,22 @@ QString EffectsManager::getPrevEffectId(const QString& effectId) {
 
 }
 
-EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const {
+QPair<EffectManifest, EffectsBackend*> EffectsManager::getEffectManifestAndBackend(
+        const QString& effectId) const {
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId)) {
-            return pBackend->getManifest(effectId);
+            return qMakePair(pBackend->getManifest(effectId), pBackend);
         }
     }
 
-    return EffectManifest();
+    EffectsBackend* pBackend = NULL;
+    return qMakePair(EffectManifest(), pBackend);
+}
+
+EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const {
+    QPair<EffectManifest, EffectsBackend*> manifestAndBackend =
+            getEffectManifestAndBackend(effectId);
+    return manifestAndBackend.first;
 }
 
 EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
@@ -197,22 +214,22 @@ void EffectsManager::setupDefaults() {
     pStandardRack->addEffectChainSlot();
 
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.flanger"));
+           this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));
     EffectPointer pEffect = instantiateEffect(
-        "org.mixxx.effects.flanger");
+           "org.mixxx.effects.flanger");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.bitcrusher"));
+            this, "org.mixxx.effectchain.bitcrusher"));
     pChain->setName(tr("BitCrusher"));
     pEffect = instantiateEffect("org.mixxx.effects.bitcrusher");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.filter"));
+            this, "org.mixxx.effectchain.filter"));
     pChain->setName(tr("Filter"));
     pEffect = instantiateEffect("org.mixxx.effects.filter");
     pChain->addEffect(pEffect);
@@ -220,7 +237,7 @@ void EffectsManager::setupDefaults() {
 
 #ifndef __MACAPPSTORE__
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.reverb"));
+            this, "org.mixxx.effectchain.reverb"));
     pChain->setName(tr("Reverb"));
     pEffect = instantiateEffect("org.mixxx.effects.reverb");
     pChain->addEffect(pEffect);
@@ -228,9 +245,16 @@ void EffectsManager::setupDefaults() {
 #endif
 
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.echo"));
+            this, "org.mixxx.effectchain.echo"));
     pChain->setName(tr("Echo"));
     pEffect = instantiateEffect("org.mixxx.effects.echo");
+    pChain->addEffect(pEffect);
+    m_pEffectChainManager->addEffectChain(pChain);
+
+    pChain = EffectChainPointer(new EffectChain(
+            this, "org.mixxx.effectchain.autopan"));
+    pChain->setName(tr("AutoPan"));
+    pEffect = instantiateEffect("org.mixxx.effects.autopan");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
@@ -239,14 +263,34 @@ void EffectsManager::setupDefaults() {
     m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
 
     // Add an EqualizerRack.
-    addEqualizerRack();
+    EqualizerRackPointer pEqRack = addEqualizerRack();
+    // Add Master EQ here, because EngineMaster is already up
+    pEqRack->addEffectChainSlotForGroup("[Master]");
 
     // Add a QuickEffectRack
     addQuickEffectRack();
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
+    if (m_underDestruction) {
+        // Catch all delete Messages since the engine is already down
+        // and we cannot what for a communication cycle
+        if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+            //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+            delete request->RemoveEffectFromChain.pEffect;
+        } else if (request->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+            //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+            delete request->RemoveChainFromRack.pChain;
+        } else if (request->type == EffectsRequest::REMOVE_EFFECT_RACK) {
+            //qDebug() << debugString() << "delete" << request->RemoveEffectRack.pRack;
+            delete request->RemoveEffectRack.pRack;
+        }
+        delete request;
+        return false;
+    }
+
     if (m_pRequestPipe.isNull()) {
+        delete request;
         return false;
     }
 
@@ -255,10 +299,12 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
     processEffectsResponses();
 
     request->request_id = m_nextRequestId++;
+    // TODO(XXX) use preallocated requests to avoid delete calls from engine
     if (m_pRequestPipe->writeMessages(&request, 1) == 1) {
         m_activeRequests[request->request_id] = request;
         return true;
     }
+    delete request;
     return false;
 }
 
@@ -292,6 +338,12 @@ void EffectsManager::processEffectsResponses() {
                 if (pRequest->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
                     //qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
                     delete pRequest->RemoveEffectFromChain.pEffect;
+                } else if (pRequest->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+                    //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+                    delete pRequest->RemoveChainFromRack.pChain;
+                } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_RACK) {
+                    qDebug() << debugString() << "delete" << pRequest->RemoveEffectRack.pRack;
+                    delete pRequest->RemoveEffectRack.pRack;
                 }
             }
 

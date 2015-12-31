@@ -12,6 +12,7 @@
 
 #include "configobject.h"
 #include "controlobject.h"
+#include "engine/bpmcontrol.h"
 #include "engine/sync/synccontrol.h"
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"
@@ -693,7 +694,9 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
                                                         "beat_distance"))->get());
 
     // Enable second deck, beat distance should still match original setting.
-    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(140.0);
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm2->set(140.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
     ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.2);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
@@ -1080,8 +1083,12 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
 TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
     // Confirm that a rate change in an explicit master is instantly communicated
     // to followers.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(128.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(128.0);
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm1->set(128.0);
+    pFileBpm2->set(128.0);
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 128, 0.0);
     m_pTrack1->setBeats(pBeats1);
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 128, 0.0);
@@ -1114,10 +1121,14 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
 }
 
 TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
-    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(70);
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(70);
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(140);
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm2->set(140);
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
@@ -1282,7 +1293,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
         ConfigKey(m_sGroup2, "file_bpm")));
     ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.8);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 130, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 100, 0.0);
     m_pTrack2->setBeats(pBeats2);
     pFileBpm2->set(100.0);
 
@@ -1347,7 +1358,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
 TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     // If a deck has a user tweak, and another deck stops such that the first
     // is used to reseed the master beat distance, make sure the user offset
-    // is taken in to account.  Sigh.
+    // is reset.
     QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
         ConfigKey(m_sGroup1, "file_bpm")));
     pFileBpm1->set(128.0);
@@ -1367,7 +1378,7 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
     // Spin the wheel, causing the useroffset for group1 to get set.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0.2);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0.4);
     for (int i = 0; i < 10; ++i) {
         ProcessBuffer();
     }
@@ -1378,7 +1389,7 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     }
 
     // Stop the second deck.  This causes the master beat distance to get
-    // seeded with the beta distance from deck 1.
+    // seeded with the beat distance from deck 1.
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
 
     // Play a buffer, which is enough to see if the beat distances align.
@@ -1390,4 +1401,42 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
                              - ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                               "beat_distance"))->get());
     EXPECT_LT(difference, .00001);
+
+    EXPECT_FLOAT_EQ(0.0, m_pChannel1->getEngineBuffer()->m_pBpmControl->m_dUserOffset);
+}
+
+TEST_F(EngineSyncTest, MasterBpmNeverZero) {
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(128.0);
+
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    pButtonSyncEnabled1->set(1.0);
+
+    pFileBpm1->set(0.0);
+    EXPECT_EQ(128.0,
+              ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+}
+
+TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
+    // If a track has a zero bpm and a bad beatgrid, make sure the rate
+    // doesn't end up something crazy when sync is enabled..
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(0.0);
+    // Maybe the beatgrid ended up at zero also.
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 0.0, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    pButtonSyncEnabled1->set(1.0);
+
+    ProcessBuffer();
+
+    // 0 bpm is what we want, the sync code will play the track back at rate
+    // 1.0.
+    EXPECT_EQ(0.0,
+              ControlObject::getControl(ConfigKey(m_sGroup1, "local_bpm"))->get());
 }

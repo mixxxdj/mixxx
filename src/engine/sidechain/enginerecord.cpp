@@ -41,7 +41,18 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue>* _config)
         : m_pConfig(_config),
           m_pEncoder(NULL),
           m_pSndfile(NULL),
-          m_iMetaDataLife(0) {
+          m_frames(0),
+          m_recordedDuration(0),
+          m_iMetaDataLife(0),
+          m_cueTrack(0),
+          m_bCueIsEnabled(false) {
+    m_sfInfo.frames = 0;
+    m_sfInfo.samplerate = 0;
+    m_sfInfo.channels = 0;
+    m_sfInfo.format = 0;
+    m_sfInfo.sections = 0;
+    m_sfInfo.seekable = 0;
+
     m_pRecReady = new ControlObjectSlave(RECORDING_PREF_KEY, "status", this);
     m_pSamplerate = new ControlObjectSlave("[Master]", "samplerate", this);
     m_sampleRate = m_pSamplerate->get();
@@ -126,7 +137,7 @@ bool EngineRecord::metaDataHasChanged()
         return false;
 
     if (m_pCurrentTrack) {
-        if ((pTrack->getId() == -1) || (m_pCurrentTrack->getId() == -1)) {
+        if (!pTrack->getId().isValid() || !m_pCurrentTrack->getId().isValid()) {
             if ((pTrack->getArtist() == m_pCurrentTrack->getArtist()) &&
                 (pTrack->getTitle() == m_pCurrentTrack->getArtist())) {
                 return false;
@@ -159,7 +170,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (openFile()) {
             Event::start("EngineRecord recording");
             qDebug("Setting record flag to: ON");
-            m_pRecReady->slotSet(RECORD_ON);
+            m_pRecReady->set(RECORD_ON);
             emit(isRecording(true));  // will notify the RecordingManager
 
             // Since we just started recording, timeout and clear the metadata.
@@ -291,8 +302,7 @@ bool EngineRecord::openFile() {
         LPCWSTR lpcwFilename = (LPCWSTR)m_fileName.utf16();
         m_pSndfile = sf_wchar_open(lpcwFilename, SFM_WRITE, &m_sfInfo);
 #else
-        QByteArray qbaFilename = m_fileName.toLocal8Bit();
-        m_pSndfile = sf_open(qbaFilename.constData(), SFM_WRITE, &m_sfInfo);
+        m_pSndfile = sf_open(m_fileName.toLocal8Bit().constData(), SFM_WRITE, &m_sfInfo);
 #endif
         if (m_pSndfile) {
             sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_TRUE);

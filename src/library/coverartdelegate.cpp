@@ -49,9 +49,6 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
             TRACKLOCATIONSTABLE_LOCATION);
         m_iIdColumn = pTrackModel->fieldIndex(
             LIBRARYTABLE_ID);
-
-        int coverColumn = pTrackModel->fieldIndex(LIBRARYTABLE_COVERART);
-        pTableView->setColumnWidth(coverColumn, 100);
     }
 }
 
@@ -117,7 +114,7 @@ void CoverArtDelegate::paint(QPainter *painter,
 
     // We listen for updates via slotCoverFound above and signal to
     // BaseSqlTableModel when a row's cover is ready.
-    QPixmap pixmap = pCache->requestCover(info, this, info.hash, 100,
+    QPixmap pixmap = pCache->requestCover(info, this, info.hash, option.rect.width(),
                                           m_bOnlyCachedCover, true);
     if (!pixmap.isNull()) {
         int width = math_min(pixmap.width(), option.rect.width());

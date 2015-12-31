@@ -54,7 +54,7 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
             }
         }
         if (sizesList.length() != this->count()) {
-            qDebug() << msg;
+            SKIN_WARNING(node, context) << msg;
             ok = false;
         }
         if (ok) {

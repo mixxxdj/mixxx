@@ -14,6 +14,7 @@ class WTrackText : public WLabel {
   public:
     WTrackText(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget *parent);
     virtual ~WTrackText();
+
   signals:
     void trackDropped(QString fileName, QString group);
 

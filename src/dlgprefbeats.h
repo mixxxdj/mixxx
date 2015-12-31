@@ -2,17 +2,17 @@
 //      Author: vittorio
 
 
-#ifndef DLGPREFBEATS_H_
-#define DLGPREFBEATS_H_
+#ifndef DLGPREFBEATS_H
+#define DLGPREFBEATS_H
 
 #include <QWidget>
 #include <QString>
 #include <QList>
 
-#include "ui_dlgprefbeatsdlg.h"
-#include "vamp/vamppluginloader.h"
+#include "analyzer/vamp/vamppluginloader.h"
 #include "configobject.h"
 #include "preferences/dlgpreferencepage.h"
+#include "ui_dlgprefbeatsdlg.h"
 
 class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     Q_OBJECT
@@ -28,7 +28,7 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
 
   private slots:
     void pluginSelected(int i);
-    void analyserEnabled(int i);
+    void analyzerEnabled(int i);
     void fixedtempoEnabled(int i);
     void offsetEnabled(int i);
     void fastAnalysisEnabled(int i);
@@ -44,10 +44,10 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     ConfigObject<ConfigValue>* m_pconfig;
     QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;
-    QString m_selectedAnalyser;
+    QString m_selectedAnalyzer;
     int m_minBpm;
     int m_maxBpm;
-    bool m_banalyserEnabled, m_bfixedtempoEnabled, m_boffsetEnabled, m_FastAnalysisEnabled, m_bReanalyze;
+    bool m_banalyzerEnabled, m_bfixedtempoEnabled, m_boffsetEnabled, m_FastAnalysisEnabled, m_bReanalyze;
 };
 
-#endif // DLGPREFBEATS_H_
+#endif // DLGPREFBEATS_H

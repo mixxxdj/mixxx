@@ -6,6 +6,7 @@
 #include <QTranslator>
 #include <QDir>
 
+#include "playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryfeature.h"
@@ -20,12 +21,13 @@
 #include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
-#include "library/autodjfeature.h"
+#include "library/autodj/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
 #include "util/sandbox.h"
+#include "util/assert.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
@@ -37,12 +39,16 @@
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
+// The default row height of the library.
+const int Library::kDefaultRowHeightPx = 20;
+
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+                 PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
-        m_pLibraryControl(new LibraryControl),
+        m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
@@ -51,7 +57,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
 
-    addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
+    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
@@ -68,10 +74,10 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
-    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
-    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<int>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
+    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
+    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
     addFeature(m_pAnalysisFeature);
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
@@ -105,6 +111,16 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
         QFileInfo directory(directoryPath);
         bool hasAccess = Sandbox::askForAccess(directory.canonicalFilePath());
         qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
+    }
+
+    m_iTrackTableRowHeight = m_pConfig->getValueString(
+            ConfigKey("[Library]", "RowHeight"),
+            QString::number(kDefaultRowHeightPx)).toInt();
+    QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
+    if (!fontStr.isEmpty()) {
+        m_trackTableFont.fromString(fontStr);
+    } else {
+        m_trackTableFont = QApplication::font();
     }
 }
 
@@ -143,6 +159,10 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
+
+    pSidebarWidget->slotSetFont(m_trackTableFont);
+    connect(this, SIGNAL(setTrackTableFont(QFont)),
+            pSidebarWidget, SLOT(slotSetFont(QFont)));
 }
 
 void Library::bindWidget(WLibrary* pLibraryWidget,
@@ -164,6 +184,16 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
 
+    connect(this, SIGNAL(setTrackTableFont(QFont)),
+            pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(this, SIGNAL(setTrackTableRowHeight(int)),
+            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+
+    connect(this, SIGNAL(searchStarting()),
+            pTrackTableView, SLOT(onSearchStarting()));
+    connect(this, SIGNAL(searchCleared()),
+            pTrackTableView, SLOT(onSearchCleared()));
+
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
@@ -171,10 +201,17 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
         LibraryFeature* feature = feature_it.next();
         feature->bindWidget(pLibraryWidget, pKeyboard);
     }
+
+    // Set the current font and row height on all the WTrackTableViews that were
+    // just connected to us.
+    emit(setTrackTableFont(m_trackTableFont));
+    emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
 }
 
 void Library::addFeature(LibraryFeature* feature) {
-    Q_ASSERT(feature);
+    DEBUG_ASSERT_AND_HANDLE(feature) {
+        return;
+    }
     m_features.push_back(feature);
     m_pSidebarModel->addLibraryFeature(feature);
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
@@ -196,7 +233,9 @@ void Library::addFeature(LibraryFeature* feature) {
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    Q_ASSERT(trackModel);
+    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+        return;
+    }
     emit(showTrackModel(model));
     emit(switchToView(m_sTrackViewName));
     emit(restoreSearch(trackModel->currentSearch()));
@@ -212,20 +251,8 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-    int track_id = track_dao.getTrackId(location);
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(location, true);
-    }
-
-    TrackPointer pTrack;
-    if (track_id < 0) {
-        // Add Track to library failed, create a transient TrackInfoObject
-        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-    } else {
-        pTrack = track_dao.getTrack(track_id);
-    }
+    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
+            .getOrAddTrack(location, true, NULL);
     emit(loadTrackToPlayer(pTrack, group));
 }
 
@@ -324,11 +351,11 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
     QDir directory(newDir);
     Sandbox::createSecurityToken(directory);
 
-    QSet<int> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir, newDir);
+    QSet<TrackId> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir, newDir);
 
     // Clear cache to that all TIO with the old dir information get updated
     m_pTrackCollection->getTrackDAO().clearCache();
-    m_pTrackCollection->getTrackDAO().databaseTracksMoved(movedIds, QSet<int>());
+    m_pTrackCollection->getTrackDAO().databaseTracksMoved(movedIds, QSet<TrackId>());
     // also update the config file if necessary so that downgrading is still
     // possible
     QString conDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
@@ -339,4 +366,14 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
 
 QStringList Library::getDirs() {
     return m_pTrackCollection->getDirectoryDAO().getDirs();
+}
+
+void Library::slotSetTrackTableFont(const QFont& font) {
+    m_trackTableFont = font;
+    emit(setTrackTableFont(font));
+}
+
+void Library::slotSetTrackTableRowHeight(int rowHeight) {
+    m_iTrackTableRowHeight = rowHeight;
+    emit(setTrackTableRowHeight(rowHeight));
 }

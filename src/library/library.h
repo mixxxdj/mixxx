@@ -10,12 +10,14 @@
 #include <QList>
 #include <QObject>
 #include <QAbstractItemModel>
+#include <QFont>
 
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
+#include "library/setlogfeature.h"
 
 class TrackModel;
 class TrackCollection;
@@ -30,12 +32,14 @@ class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
 class MixxxKeyboard;
+class PlayerManagerInterface;
 
 class Library : public QObject {
     Q_OBJECT
 public:
     Library(QObject* parent,
             ConfigObject<ConfigValue>* pConfig,
+            PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
 
@@ -54,6 +58,14 @@ public:
         return m_pTrackCollection;
     }
 
+    inline int getTrackTableRowHeight() const {
+        return m_iTrackTableRowHeight;
+    }
+
+    inline const QFont& getTrackTableFont() const {
+        return m_trackTableFont;
+    }
+
     //static Library* buildDefaultLibrary();
 
     enum RemovalType {
@@ -61,6 +73,8 @@ public:
         HideTracks,
         PurgeTracks
     };
+
+    static const int kDefaultRowHeightPx;
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
@@ -76,6 +90,8 @@ public:
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
+    void slotSetTrackTableFont(const QFont& font);
+    void slotSetTrackTableRowHeight(int rowHeight);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
@@ -90,6 +106,9 @@ public:
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
 
+    void setTrackTableFont(const QFont& font);
+    void setTrackTableRowHeight(int rowHeight);
+
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     SidebarModel* m_pSidebarModel;
@@ -103,6 +122,8 @@ public:
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
+    QFont m_trackTableFont;
+    int m_iTrackTableRowHeight;
 };
 
 #endif /* LIBRARY_H */

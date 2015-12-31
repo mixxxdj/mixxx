@@ -33,7 +33,7 @@ class KnobEventHandler {
         double value = pWidget->getControlParameter() + dist / 127.0;
 
         // Clamp to [0.0, 1.0]
-        value = math_clamp_unsafe(value, 0.0, 1.0);
+        value = math_clamp(value, 0.0, 1.0);
 
         return value;
     }
@@ -89,7 +89,7 @@ class KnobEventHandler {
         double newValue = pWidget->getControlParameter() + wheelDirection;
 
         // Clamp to [0.0, 1.0]
-        newValue = math_clamp_unsafe(newValue, 0.0, 1.0);
+        newValue = math_clamp(newValue, 0.0, 1.0);
 
         pWidget->setControlParameter(newValue);
         pWidget->update();

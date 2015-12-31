@@ -4,10 +4,12 @@
 #include <QHeaderView>
 #include <QPalette>
 #include <QScrollBar>
+#include <QFontMetrics>
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wlibrarytableview.h"
+#include "util/math.h"
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
                                      ConfigObject<ConfigValue>* pConfig,
@@ -37,7 +39,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
     verticalHeader()->hide();
-    verticalHeader()->setDefaultSectionSize(20);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
@@ -65,6 +66,7 @@ void WLibraryTableView::loadVScrollBarPosState() {
 void WLibraryTableView::restoreVScrollBarPos() {
     //Restore the scrollbar's position (scroll to that spot)
     //when the search has been cleared
+    updateGeometries();
     verticalScrollBar()->setValue(m_iSavedVScrollBarPos);
 }
 
@@ -107,5 +109,17 @@ void WLibraryTableView::moveSelection(int delta) {
             delta++;
         }
     }
+}
+
+void WLibraryTableView::setTrackTableFont(const QFont& font) {
+    setFont(font);
+    setTrackTableRowHeight(verticalHeader()->defaultSectionSize());
+}
+
+void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
+    QFontMetrics metrics(font());
+    int fontHeightPx = metrics.height();
+    verticalHeader()->setDefaultSectionSize(math_max(
+            rowHeight, fontHeightPx));
 }
 

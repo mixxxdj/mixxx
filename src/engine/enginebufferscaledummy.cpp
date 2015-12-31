@@ -2,8 +2,7 @@
 
 #include "engine/enginebufferscale.h"
 #include "engine/readaheadmanager.h"
-#include "sampleutil.h"
-
+#include "util/sample.h"
 
 EngineBufferScaleDummy::EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager)
     : EngineBufferScale(),
@@ -17,11 +16,6 @@ EngineBufferScaleDummy::~EngineBufferScaleDummy()
 
 }
 
-double EngineBufferScaleDummy::getNewPlaypos()
-{
-    return m_samplesRead;
-}
-
 void EngineBufferScaleDummy::clear()
 {
 }
@@ -29,7 +23,7 @@ void EngineBufferScaleDummy::clear()
 
 CSAMPLE* EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
-    double rate = m_dBaseRate * m_dSpeedAdjust;
+    double rate = m_dBaseRate * m_dTempoRatio;
     if (rate == 0.0) {
         SampleUtil::clear(m_buffer, buf_size);
         return m_buffer;

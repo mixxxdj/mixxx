@@ -17,7 +17,9 @@ QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
     QDomNode svgNode;
     if (file.open(QIODevice::ReadOnly|QIODevice::Text)) {
         QDomDocument document;
-        document.setContent(&file);
+        if (!document.setContent(&file)) {
+            qDebug() << "ERROR: Failed to set content on QDomDocument";
+        }
         svgNode = document.elementsByTagName("svg").item(0);
         scanTree(&svgNode);
         file.close();
@@ -37,7 +39,7 @@ QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode,
 void SvgParser::scanTree(QDomNode* node) const {
     parseElement(node);
     QDomNodeList children = node->childNodes();
-    for (uint i = 0; i < children.length(); ++i) {
+    for (int i = 0; i < children.count(); ++i) {
         QDomNode child = children.at(i);
         if (child.isElement()) {
             scanTree(&child);
@@ -58,7 +60,7 @@ void SvgParser::parseElement(QDomNode* node) const {
 
             if (!result.isNull()) {
                 QDomNodeList children = node->childNodes();
-                for (uint i = 0; i < children.length(); ++i) {
+                for (int i = 0; i < children.count(); ++i) {
                     node->removeChild(children.at(i));
                 }
 
@@ -100,7 +102,9 @@ void SvgParser::parseElement(QDomNode* node) const {
         QString scriptPath = element.attribute("src");
         if (!scriptPath.isNull()) {
             QFile scriptFile(m_context.getSkinPath(scriptPath));
-            scriptFile.open(QIODevice::ReadOnly|QIODevice::Text);
+            if (!scriptFile.open(QIODevice::ReadOnly|QIODevice::Text)) {
+                qDebug() << "ERROR: Failed to open script file";
+            }
             QTextStream in(&scriptFile);
             QScriptValue result = m_context.evaluateScript(in.readAll(),
                                                            scriptPath);
@@ -128,8 +132,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     // expr-attribute_name="var_name";
     QRegExp nameRx("^expr-([^=\\s]+)$");
     // TODO (jclaveau) : move this pattern definition to the script extension?
-    for (uint i=0; i < attributes.length(); i++) {
-
+    for (int i = 0; i < attributes.count(); i++) {
         QDomAttr attribute = attributes.item(i).toAttr();
         QString attributeValue = attribute.value();
         QString attributeName = attribute.name();
