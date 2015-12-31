@@ -1,6 +1,6 @@
-#include <QStringList>
-
 #include "track/trackmetadatataglib.h"
+
+#include "track/tracknumbers.h"
 
 #include "util/assert.h"
 #include "util/memory.h"
@@ -62,56 +62,6 @@ const QString kFileTypeOggVorbis("ogg");
 const QString kFileTypeOggOpus("opus");
 const QString kFileTypeWAV("wav");
 const QString kFileTypeWavPack("wv");
-
-
-// Separates the track number from the (optional)
-// total number of tracks
-const QString kTrackNumberSeparator("/");
-
-enum class ParseResult {
-    UNKNOWN,
-    EMPTY,
-    VALID,
-    INVALID
-};
-
-std::pair<int, int> parseTrackNumber(const QString& trackNumber, ParseResult* pParseResult = nullptr) {
-    int number = 0;
-    int total = 0;
-    if (trackNumber.trimmed().isEmpty()) {
-        if (pParseResult) {
-            *pParseResult = ParseResult::EMPTY;
-        }
-    } else {
-        const QStringList trackNumberSplit(trackNumber.split(kTrackNumberSeparator));
-        bool valid = (trackNumberSplit.size() >= 1) && (trackNumberSplit.size() <= 2);
-        if (valid && (trackNumberSplit.size() > 0)) {
-            number = trackNumberSplit[0].toInt(&valid);
-            valid = valid && (0 <= number);
-            if (valid && (trackNumberSplit.size() > 1)) {
-                total = trackNumberSplit[1].toInt(&valid);
-                valid = valid && (0 <= total);
-            }
-        }
-        if (pParseResult) {
-            *pParseResult = valid ? ParseResult::VALID : ParseResult::INVALID;
-        }
-    }
-    DEBUG_ASSERT((nullptr == pParseResult) || (ParseResult::UNKNOWN != *pParseResult));
-    return std::make_pair(number, total);
-}
-
-QString formatTrackNumber(std::pair<int, int> trackNumber) {
-    QString result;
-    if ((trackNumber.first > 0) || (trackNumber.second > 0)) {
-        result += QString::number(trackNumber.first);
-        if (trackNumber.second > 0) {
-            result += kTrackNumberSeparator;
-            result += QString::number(trackNumber.second);
-        }
-    }
-    return result;
-}
 
 
 inline bool hasID3v2Tag(TagLib::MPEG::File& file) {
@@ -657,11 +607,11 @@ void writeTrackMetadataIntoTag(
     // corresponding field.
     if (0 == (writeMask & WRITE_TAG_OMIT_TRACK_NUMBER)) {
         // Set the numeric track number if available
-        ParseResult trackNumberParseResult = ParseResult::UNKNOWN;
-        const std::pair<int, int> trackNumber(
-                parseTrackNumber(trackMetadata.getTrackNumber()));
-        if ((ParseResult::VALID == trackNumberParseResult) && (trackNumber.first > 0)) {
-            pTag->setTrack(trackNumber.first);
+        const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
+                TrackNumbers::fromString(trackMetadata.getTrackNumber()));
+        if ((TrackNumbers::ParseResult::VALID == trackNumbersFromString.second) &&
+                trackNumbersFromString.first.hasCurrent()) {
+            pTag->setTrack(trackNumbersFromString.first.getCurrent());
         }
     }
 }
@@ -901,14 +851,13 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
                 toQStringFirstNotEmpty(tag.fieldListMap()["TRACKNUMBER"]));
         // Try to parse both the track number and the optional total tracks
         // from this field
-        ParseResult trackNumberParseResult = ParseResult::UNKNOWN;
-        std::pair<int, int> trackNumber(parseTrackNumber(
-                trackNumberText, &trackNumberParseResult));
-        if ((ParseResult::VALID == trackNumberParseResult) &&
-                (0 == trackNumber.second)) {
+        const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
+                TrackNumbers::fromString(trackNumberText));
+        QString trackTotalText;
+        if ((TrackNumbers::ParseResult::VALID == trackNumbersFromString.second) &&
+                !trackNumbersFromString.first.hasTotal()) {
             // If parsing of the track number succeeded read the specialized
-            // fields, but only if the total number of tracks is still zero.
-            QString trackTotalText;
+            // fields, but only if the total number of tracks is still undefined.
             if (tag.fieldListMap().contains("TRACKTOTAL")) {
                 // recommended field for total tracks
                 trackTotalText = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
@@ -916,15 +865,23 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
                 // legacy field for total tracks
                 trackTotalText = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
             }
-            if (!trackTotalText.trimmed().isEmpty()) {
-                bool totalTracksValid = false;
-                int totalTracks = trackTotalText.toInt(&totalTracksValid);
-                if (totalTracksValid) {
-                    trackNumber.second = totalTracks;
-                }
+            pTrackMetadata->setTrackNumber(trackNumbersFromString.first.toString());
+        }
+        const int trackCurrentValue = trackNumbersFromString.first.getCurrent();
+        int trackTotalValue = TrackNumbers::kValueUndefined;
+        if (!trackTotalText.trimmed().isEmpty()) {
+            bool totalTracksValid = false;
+            trackTotalValue = trackTotalText.toInt(&totalTracksValid);
+            if (!totalTracksValid) {
+                trackTotalValue = TrackNumbers::kValueUndefined;
             }
-            pTrackMetadata->setTrackNumber(formatTrackNumber(trackNumber));
+        }
+        TrackNumbers trackNumbers(trackCurrentValue, trackTotalValue);
+        if (trackNumbers.isValid() && trackNumbers.hasCurrent() && trackNumbers.hasTotal()) {
+            // Combine both numbers from different fields
+            pTrackMetadata->setTrackNumber(trackNumbers.toString());
         } else {
+            // Use the track number field as is
             pTrackMetadata->setTrackNumber(trackNumberText);
         }
     }
@@ -1007,8 +964,8 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
     // Read track number/total pair
     if (getItemListMap(tag).contains("trkn")) {
         const TagLib::MP4::Item::IntPair trknPair(getItemListMap(tag)["trkn"].toIntPair());
-        const std::pair<int, int> trackNumber(trknPair.first, trknPair.second);
-        pTrackMetadata->setTrackNumber(formatTrackNumber(trackNumber));
+        const TrackNumbers trackNumbers(trknPair.first, trknPair.second);
+        pTrackMetadata->setTrackNumber(trackNumbers.toString());
     }
 
     // Get BPM
@@ -1183,20 +1140,19 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     writeTrackMetadataIntoTag(pTag, trackMetadata,
             WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
 
-    ParseResult trackNumberParseResult;
-    const std::pair<int, int> parsedTrackNumber(
-            parseTrackNumber(trackMetadata.getTrackNumber(), &trackNumberParseResult));
-    switch (trackNumberParseResult) {
-    case ParseResult::EMPTY:
+    const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
+            TrackNumbers::fromString(trackMetadata.getTrackNumber()));
+    switch (trackNumbersFromString.second) {
+    case TrackNumbers::ParseResult::EMPTY:
         pTag->removeField("TRACKNUMBER");
         pTag->removeField("TRACKTOTAL"); // recommended field for total tracks
         pTag->removeField("TOTALTRACKS"); // legacy field for total tracks
         break;
-    case ParseResult::VALID:
+    case TrackNumbers::ParseResult::VALID:
         writeXiphCommentField(pTag, "TRACKNUMBER",
-                toTagLibString(QString::number(parsedTrackNumber.first)));
+                toTagLibString(trackNumbersFromString.first.getCurrentText()));
         writeXiphCommentField(pTag, "TRACKTOTAL",
-                toTagLibString(QString::number(parsedTrackNumber.second)));
+                toTagLibString(trackNumbersFromString.first.getTotalText()));
         pTag->removeField("TOTALTRACKS"); // legacy field for total tracks
         break;
     default:
@@ -1242,16 +1198,16 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
             WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
 
     // Write track number/total pair
-    ParseResult trackNumberParseResult;
-    const std::pair<int, int> trackNumber(
-            parseTrackNumber(trackMetadata.getTrackNumber(), &trackNumberParseResult));
-    switch (trackNumberParseResult) {
-    case ParseResult::EMPTY:
+    const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
+            TrackNumbers::fromString(trackMetadata.getTrackNumber()));
+    switch (trackNumbersFromString.second) {
+    case TrackNumbers::ParseResult::EMPTY:
         pTag->itemListMap().erase("trkn");
         break;
-    case ParseResult::VALID:
+    case TrackNumbers::ParseResult::VALID:
         pTag->itemListMap()["trkn"] = TagLib::MP4::Item(
-                trackNumber.first, trackNumber.second);
+                trackNumbersFromString.first.getCurrent(),
+                trackNumbersFromString.first.getTotal());
         break;
     default:
         qWarning() << "Malformed track number" << trackMetadata.getTrackNumber();
