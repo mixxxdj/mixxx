@@ -74,7 +74,7 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
         return QImage();
     } else {
         qDebug() << "CoverArtUtils::loadCover unhandled type";
-        DEBUG_ASSERT(true);
+        DEBUG_ASSERT(false);
         return QImage();
     }
 }
