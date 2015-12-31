@@ -64,11 +64,10 @@ class MidiController : public Controller {
     }
 
   protected slots:
-    void receive(unsigned char status, unsigned char control,
-                 unsigned char value, mixxx::Duration timestamp);
-
+    virtual void receive(unsigned char status, unsigned char control,
+                         unsigned char value, mixxx::Duration timestamp);
     // For receiving System Exclusive messages
-    void receive(const QByteArray data, mixxx::Duration timestamp);
+    virtual void receive(const QByteArray data, mixxx::Duration timestamp);
     virtual int close();
 
   private slots:
