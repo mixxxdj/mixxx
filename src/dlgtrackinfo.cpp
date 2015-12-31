@@ -153,11 +153,11 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtComment->setPlainText(pTrack->getComment());
     spinBpm->setValue(pTrack->getBpm());
     // Non-editable fields
-    txtDuration->setText(pTrack->getDurationStr());
+    txtDuration->setText(pTrack->getDurationText());
     txtLocation->setPlainText(pTrack->getLocation());
     txtType->setText(pTrack->getType());
-    txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
-    txtBpm->setText(pTrack->getBpmStr());
+    txtBitrate->setText(QString(pTrack->getBitrateText()) + (" ") + tr("kbps"));
+    txtBpm->setText(pTrack->getBpmText());
     txtKey->setText(pTrack->getKeyText());
     const Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     txtReplayGain->setText(Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));

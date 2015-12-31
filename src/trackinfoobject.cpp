@@ -213,7 +213,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
     }
 }
 
-QString TrackInfoObject::getDurationStr() const {
+QString TrackInfoObject::getDurationText() const {
     QMutexLocker lock(&m_qMutex);
     int iDuration = m_iDuration;
     lock.unlock();
@@ -348,7 +348,7 @@ double TrackInfoObject::setBpm(double bpmValue) {
     return bpmValue;
 }
 
-QString TrackInfoObject::getBpmStr() const {
+QString TrackInfoObject::getBpmText() const {
     return QString("%1").arg(getBpm(), 3,'f',1);
 }
 
@@ -660,7 +660,7 @@ int TrackInfoObject::getBitrate() const {
     return m_iBitrate;
 }
 
-QString TrackInfoObject::getBitrateStr() const {
+QString TrackInfoObject::getBitrateText() const {
     return QString("%1").arg(getBitrate());
 }
 

@@ -218,7 +218,7 @@ void BrowseThread::populateModel() {
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_DURATION, item);
 
-        item = new QStandardItem(tio.getBpmStr());
+        item = new QStandardItem(tio.getBpmText());
         item->setToolTip(item->text());
         item->setData(tio.getBpm(), Qt::UserRole);
         row_data.insert(COLUMN_BPM, item);
@@ -233,7 +233,7 @@ void BrowseThread::populateModel() {
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_TYPE, item);
 
-        item = new QStandardItem(tio.getBitrateStr());
+        item = new QStandardItem(tio.getBitrateText());
         item->setToolTip(item->text());
         item->setData(tio.getBitrate(), Qt::UserRole);
         row_data.insert(COLUMN_BITRATE, item);
