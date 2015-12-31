@@ -98,12 +98,12 @@ int pixmapIndexFromPercentage(double dPercentage, int numPixmaps) {
 
 void WBattery::update() {
     int minutesLeft = m_pBattery ? m_pBattery->getMinutesLeft() : 0;
-    Battery::ChargingState csChargingState = m_pBattery ?
+    Battery::ChargingState chargingState = m_pBattery ?
             m_pBattery->getChargingState() : Battery::UNKNOWN;
     double dPercentage = m_pBattery ? m_pBattery->getPercentage() : 0;
 
     m_pCurrentPixmap.clear();
-    switch (csChargingState) {
+    switch (chargingState) {
         case Battery::CHARGING:
             if (!m_chargingPixmaps.isEmpty()) {
                 m_pCurrentPixmap = m_chargingPixmaps[

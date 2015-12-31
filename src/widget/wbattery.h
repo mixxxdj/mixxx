@@ -2,14 +2,14 @@
 #define WBATTERY_H
 
 #include <QList>
-#include <QVector>
 #include <QPixmap>
 #include <QScopedPointer>
+#include <QVector>
 
-#include "widget/wlabel.h"
-#include "widget/wwidget.h"
 #include "skin/skincontext.h"
+#include "widget/wlabel.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
 
 class Battery;
 
