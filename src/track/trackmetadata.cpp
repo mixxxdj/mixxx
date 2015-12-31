@@ -4,77 +4,7 @@
 
 namespace Mixxx {
 
-/*static*/ const double TrackMetadata::kBpmUndefined = 0.0;
-/*static*/ const double TrackMetadata::kBpmMin = 0.0; // lower bound (exclusive)
-/*static*/ const double TrackMetadata::kBpmMax = 300.0; // upper bound (inclusive)
-
 /*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
-
-double TrackMetadata::parseBpm(const QString& sBpm, bool* pValid) {
-    if (pValid) {
-        *pValid = false;
-    }
-    if (sBpm.trimmed().isEmpty()) {
-        return kBpmUndefined;
-    }
-    bool bpmValid = false;
-    double bpm = sBpm.toDouble(&bpmValid);
-    if (bpmValid) {
-        if (kBpmUndefined == bpm) {
-            // special case
-            if (pValid) {
-                *pValid = true;
-            }
-            return bpm;
-        }
-        while (kBpmMax < bpm) {
-            // Some applications might store the BPM as an
-            // integer scaled by a factor of 10 or 100 to
-            // preserve fractional digits.
-            qDebug() << "Scaling BPM value:" << bpm;
-            bpm /= 10.0;
-        }
-        if (isBpmValid(bpm)) {
-            if (pValid) {
-                *pValid = true;
-            }
-            return bpm;
-        } else {
-            qDebug() << "Invalid BPM value:" << sBpm << "->" << bpm;
-        }
-    } else {
-        qDebug() << "Failed to parse BPM:" << sBpm;
-    }
-    return kBpmUndefined;
-}
-
-QString TrackMetadata::formatBpm(double bpm) {
-    if (isBpmValid(bpm)) {
-        return QString::number(bpm);
-    } else {
-        return QString();
-    }
-}
-
-QString TrackMetadata::formatBpm(int bpm) {
-    if (isBpmValid(bpm)) {
-        return QString::number(bpm);
-    } else {
-        return QString();
-    }
-}
-
-double TrackMetadata::normalizeBpm(double bpm) {
-    if (isBpmValid(bpm)) {
-        const double normalizedBpm = parseBpm(formatBpm(bpm));
-        // NOTE(uklotzde): Subsequently formatting and parsing the
-        // normalized value should not alter it anymore!
-        DEBUG_ASSERT(normalizedBpm == parseBpm(formatBpm(normalizedBpm)));
-        return normalizedBpm;
-    } else {
-        return bpm;
-    }
-}
 
 int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
     const QDateTime dateTime(parseDateTime(year));
@@ -143,8 +73,7 @@ QString TrackMetadata::formatDuration(int duration) {
 }
 
 TrackMetadata::TrackMetadata()
-    : m_bpm(kBpmUndefined),
-      m_bitrate(0),
+    : m_bitrate(0),
       m_channels(0),
       m_duration(0),
       m_sampleRate(0) {

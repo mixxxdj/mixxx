@@ -3,6 +3,7 @@
 
 #include <QDateTime>
 
+#include "track/bpm.h"
 #include "track/replaygain.h"
 
 namespace Mixxx {
@@ -125,26 +126,14 @@ public:
     static QString formatDuration(int duration);
 
     // beats / minute
-    static const double kBpmUndefined;
-    static const double kBpmMin; // lower bound (exclusive)
-    static const double kBpmMax; // upper bound (inclusive)
-    inline double getBpm() const {
+    Bpm getBpm() const {
         return m_bpm;
     }
-    inline int getBpmAsInteger() const {
-        return round(getBpm());
-    }
-    inline static bool isBpmValid(double bpm) {
-        return (kBpmMin < bpm) && (kBpmMax >= bpm);
-    }
-    inline bool isBpmValid() const {
-        return isBpmValid(getBpm());
-    }
-    inline void setBpm(double bpm) {
+    void setBpm(Bpm bpm) {
         m_bpm = bpm;
     }
-    inline void resetBpm() {
-        m_bpm = kBpmUndefined;
+    void resetBpm() {
+        m_bpm.resetValue();
     }
 
     const ReplayGain& getReplayGain() const {
@@ -156,12 +145,6 @@ public:
     void resetReplayGain() {
         m_replayGain = ReplayGain();
     }
-
-    // Parse and format BPM metadata
-    static double parseBpm(const QString& sBpm, bool* pValid = 0);
-    static QString formatBpm(double bpm);
-    static QString formatBpm(int bpm);
-    static double normalizeBpm(double bpm);
 
     // Parse an format date/time values according to ISO 8601
     inline static QDate parseDate(QString str) {
@@ -198,10 +181,8 @@ private:
     QString m_trackNumber;
     QString m_year;
 
+    Bpm m_bpm;
     ReplayGain m_replayGain;
-
-    // Floating-point fields (in alphabetical order)
-    double m_bpm;
 
     // Integer fields (in alphabetical order)
     int m_bitrate; // kbit/s

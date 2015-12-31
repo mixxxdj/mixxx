@@ -1554,7 +1554,7 @@ void WTrackTableView::slotScaleBpm(int scale) {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        if (!track->hasBpmLock()) { //bpm is not locked
+        if (!track->isBpmLocked()) { //bpm is not locked
             BeatsPointer beats = track->getBeats();
             if (beats != NULL) {
                 beats->scale(scalingFactor);
@@ -1576,7 +1576,7 @@ void WTrackTableView::lockBpm(bool lock) {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        track->setBpmLock(lock);
+        track->setBpmLocked(lock);
     }
 }
 
@@ -1591,7 +1591,7 @@ void WTrackTableView::slotClearBeats() {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        if (!track->hasBpmLock()) {
+        if (!track->isBpmLocked()) {
             track->setBeats(BeatsPointer());
         }
     }

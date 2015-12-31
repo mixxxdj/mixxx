@@ -97,7 +97,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
         } else if (!l_STag.compare("ALBUM")) {
             pTrackMetadata->setAlbum(l_SPayload);
         } else if (!l_STag.compare("BPM")) {
-            pTrackMetadata->setBpm(l_SPayload.toFloat());
+            pTrackMetadata->setBpm(Bpm(l_SPayload.toDouble()));
         } else if (!l_STag.compare("DATE")) {
             // Prefer "DATE" over "YEAR"
             pTrackMetadata->setYear(l_SPayload.trimmed());

@@ -158,6 +158,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     qRegisterMetaType<QSet<TrackId>>("QSet<TrackId>");
     qRegisterMetaType<TrackPointer>("TrackPointer");
     qRegisterMetaType<Mixxx::ReplayGain>("Mixxx::ReplayGain");
+    qRegisterMetaType<Mixxx::Bpm>("Mixxx::Bpm");
 
     ScopedTimer t("MixxxMainWindow::MixxxMainWindow");
     m_runtime_timer.start();

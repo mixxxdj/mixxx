@@ -933,6 +933,7 @@ class MixxxCore(Feature):
                    "track/keyutils.cpp",
                    "track/playcounter.cpp",
                    "track/replaygain.cpp",
+                   "track/bpm.cpp",
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
                    "track/audiotagger.cpp",
