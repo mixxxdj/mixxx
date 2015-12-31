@@ -70,8 +70,11 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(
             cover, true);
         return QImage(coverPath);
+    } else if (info.type == CoverInfo::NONE) {
+        return QImage();
     } else {
-        qDebug() << "CoverArtUtils::loadCover bad type";
+        qDebug() << "CoverArtUtils::loadCover unhandled type";
+        DEBUG_ASSERT(true);
         return QImage();
     }
 }
