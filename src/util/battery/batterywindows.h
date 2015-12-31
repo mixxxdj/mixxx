@@ -1,16 +1,16 @@
-#ifndef BATTERYWINDOWS_H
-#define BATTERYWINDOWS_H
+#ifndef UTIL_BATTERY_BATTERYWINDOWS_H
+#define UTIL_BATTERY_BATTERYWINDOWS_H
 
 #include "util/battery/battery.h"
 
 class BatteryWindows : public Battery {
     Q_OBJECT
   public:
-    BatteryWindows(QObject* pParent=NULL);
+    BatteryWindows(QObject* pParent=nullptr);
     virtual ~BatteryWindows();
 
   protected:
     void read();
 };
 
-#endif /* BATTERYWINDOWS_H */
+#endif /* UTIL_BATTERY_BATTERYWINDOWS_H */

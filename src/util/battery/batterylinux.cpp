@@ -1,9 +1,9 @@
+#include "util/battery/batterylinux.h"
+
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
 #include <QRegExp>
-
-#include "util/battery/batterylinux.h"
 
 // these constants are used to retrieve data from infoFile and stateFile
 const QString BatteryLinux::s_sMaximumCapacityKeyword = "last full capacity";
@@ -27,12 +27,12 @@ void BatteryLinux::read() {
     int maximumCapacity = readMaximumCapacity();
     int currentRate = readCurrentRate();
 
-    m_csChargingState = readChargingState();
+    m_chargingState = readChargingState();
     m_dPercentage = 0.0;
     if (maximumCapacity > 0) {
         m_dPercentage = static_cast<double>(currentCapacity) / maximumCapacity;
     }
-    m_iMinutesLeft = getMinutesLeft(m_csChargingState, currentCapacity,
+    m_iMinutesLeft = getMinutesLeft(m_chargingState, currentCapacity,
                                     maximumCapacity, currentRate);
 }
 

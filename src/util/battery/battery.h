@@ -1,5 +1,5 @@
-#ifndef BATTERY_H
-#define BATTERY_H
+#ifndef UTIL_BATTERY_BATTERY_H
+#define UTIL_BATTERY_BATTERY_H
 
 #include <QTimer>
 
@@ -12,14 +12,14 @@ class Battery : public QObject {
         CHARGING,
         CHARGED,
     };
-    static Battery* getBattery(QObject* parent=NULL);
+    static Battery* getBattery(QObject* parent=nullptr);
     virtual ~Battery();
 
     // returns time until discharged or time until fully charged
     // dependent on the current state
     int getMinutesLeft() { return m_iMinutesLeft; }
     double getPercentage() { return m_dPercentage; }
-    ChargingState getChargingState() { return m_csChargingState; }
+    ChargingState getChargingState() { return m_chargingState; }
 
   public slots:
     // calls read(), checks if state changed, invokes stateChanged
@@ -30,10 +30,10 @@ class Battery : public QObject {
     void stateChanged();
 
   protected:
-    Battery(QObject* parent=NULL);
+    Battery(QObject* parent=nullptr);
     virtual void read() = 0;
 
-    ChargingState m_csChargingState;
+    ChargingState m_chargingState;
     double m_dPercentage;
     int m_iMinutesLeft;
 
@@ -41,4 +41,4 @@ class Battery : public QObject {
     QTimer timer;
 };
 
-#endif /* BATTERY_H */
+#endif /* UTIL_BATTERY_BATTERY_H */

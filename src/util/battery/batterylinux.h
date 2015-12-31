@@ -1,5 +1,5 @@
-#ifndef BATTERYLINUX_H
-#define BATTERYLINUX_H
+#ifndef UTIL_BATTERY_BATTERYLINUX_H
+#define UTIL_BATTERY_BATTERYLINUX_H
 
 #include <QString>
 
@@ -8,7 +8,7 @@
 class BatteryLinux : public Battery {
     Q_OBJECT
   public:
-    BatteryLinux(QObject* pParent=NULL,
+    BatteryLinux(QObject* pParent=nullptr,
                  const QString& infoFile="/proc/acpi/battery/BAT0/info",
                  const QString& stateFile="/proc/acpi/battery/BAT0/state");
     virtual ~BatteryLinux();
@@ -47,4 +47,4 @@ class BatteryLinux : public Battery {
     const QString m_sStateFile;
 };
 
-#endif /* BATTERYLINUX_H */
+#endif /* UTIL_BATTERY_BATTERYLINUX_H */

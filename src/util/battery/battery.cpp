@@ -9,11 +9,11 @@
 #endif
 
 // interval (in ms) of the timer which calls update()
-static const int kiUpdateInterval = 5000;
+const int kiUpdateInterval = 5000;
 
 Battery::Battery(QObject *parent)
         : QObject(parent),
-          m_csChargingState(UNKNOWN),
+          m_chargingState(UNKNOWN),
           m_dPercentage(0.0),
           m_iMinutesLeft(0),
           timer(this) {
@@ -32,17 +32,17 @@ Battery* Battery::getBattery(QObject *parent) {
 #elif defined(Q_OS_MAC)
     return new BatteryMac(parent);
 #else
-    return NULL;
+    return nullptr;
 #endif
 }
 
 void Battery::update() {
     double lastPercentage = m_dPercentage;
     int lastMinutesLeft = m_iMinutesLeft;
-    ChargingState lastChargingState = m_csChargingState;
+    ChargingState lastChargingState = m_chargingState;
     read();
     if (lastPercentage != m_dPercentage ||
-        lastChargingState != m_csChargingState ||
+        lastChargingState != m_chargingState ||
         lastMinutesLeft != m_iMinutesLeft) {
         emit(stateChanged());
     }

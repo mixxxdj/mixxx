@@ -1,16 +1,16 @@
-#ifndef BATTERYMAC_H
-#define BATTERYMAC_H
+#ifndef UTIL_BATTERY_BATTERYMAC_H
+#define UTIL_BATTERY_BATTERYMAC_H
 
 #include "util/battery/battery.h"
 
 class BatteryMac : public Battery {
     Q_OBJECT
   public:
-    BatteryMac(QObject* pParent=NULL);
+    BatteryMac(QObject* pParent=nullptr);
     virtual ~BatteryMac();
 
   protected:
     void read();
 };
 
-#endif /* BATTERYMAC_H */
+#endif /* UTIL_BATTERY_BATTERYMAC_H */

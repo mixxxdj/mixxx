@@ -1,11 +1,12 @@
-#include <QtDebug>
-
 #include "util/battery/batterymac.h"
-#include "util/mac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/ps/IOPowerSources.h>
 #include <IOKit/ps/IOPSKeys.h>
+
+#include <QtDebug>
+
+#include "util/mac.h"
 
 BatteryMac::BatteryMac(QObject* pParent)
         : Battery(pParent) {
@@ -17,16 +18,16 @@ BatteryMac::~BatteryMac() {
 void BatteryMac::read() {
     m_iMinutesLeft = 0;
     m_dPercentage = 0.0;
-    m_csChargingState = Battery::UNKNOWN;
+    m_chargingState = Battery::UNKNOWN;
 
     CFTypeRef powerInfo = IOPSCopyPowerSourcesInfo();
-    if (powerInfo == NULL) {
+    if (powerInfo == nullptr) {
         return;
     }
 
     CFArrayRef powerSources = IOPSCopyPowerSourcesList(powerInfo);
 
-    if (powerSources == NULL) {
+    if (powerSources == nullptr) {
         CFRelease(powerSources);
         return;
     }
@@ -36,7 +37,7 @@ void BatteryMac::read() {
         CFDictionaryRef pSource = IOPSGetPowerSourceDescription(
             powerInfo, CFArrayGetValueAtIndex(powerSources, i));
 
-        if (pSource == NULL) {
+        if (pSource == nullptr) {
             continue;
         }
 
@@ -49,7 +50,7 @@ void BatteryMac::read() {
         int minutes_left = -1;
 
         const void* pValue = CFDictionaryGetValue(pSource, CFSTR(kIOPSNameKey));
-        if (pValue != NULL) {
+        if (pValue != nullptr) {
             name = CFStringToQString((CFStringRef)pValue);
         }
 
@@ -71,27 +72,27 @@ void BatteryMac::read() {
 
         // Property required by Apple spec.
         pValue = CFDictionaryGetValue(pSource, CFSTR(kIOPSIsChargingKey));
-        if (pValue != NULL) {
+        if (pValue != nullptr) {
             is_charging = CFBooleanGetValue((CFBooleanRef)pValue);
         }
 
         // Property required by Apple spec.
         pValue = CFDictionaryGetValue(pSource, CFSTR(kIOPSIsChargedKey));
-        if (pValue != NULL) {
+        if (pValue != nullptr) {
             is_charged = CFBooleanGetValue((CFBooleanRef)pValue);
         }
 
 
         // Property required by Apple spec.
         pValue = CFDictionaryGetValue(pSource, CFSTR(kIOPSCurrentCapacityKey));
-        if (pValue != NULL) {
+        if (pValue != nullptr) {
             CFNumberGetValue((CFNumberRef)pValue, kCFNumberSInt32Type,
                              &current_capacity);
         }
 
         // Property required by Apple spec.
         pValue = CFDictionaryGetValue(pSource, CFSTR(kIOPSMaxCapacityKey));
-        if (pValue != NULL) {
+        if (pValue != nullptr) {
             CFNumberGetValue((CFNumberRef)pValue, kCFNumberSInt32Type,
                              &max_capacity);
         }
@@ -99,13 +100,13 @@ void BatteryMac::read() {
         // Property optional by Apple spec.
         if (is_charging) {
             pValue = CFDictionaryGetValue(pSource, CFSTR(kIOPSTimeToFullChargeKey));
-            if (pValue != NULL) {
+            if (pValue != nullptr) {
                 CFNumberGetValue((CFNumberRef)pValue, kCFNumberSInt32Type,
                                  &minutes_left);
             }
         } else if (!on_ac && !is_charging) {
             pValue = CFDictionaryGetValue(pSource, CFSTR(kIOPSTimeToEmptyKey));
-            if (pValue != NULL) {
+            if (pValue != nullptr) {
                 CFNumberGetValue((CFNumberRef)pValue, kCFNumberSInt32Type,
                                  &minutes_left);
             }
@@ -120,9 +121,9 @@ void BatteryMac::read() {
             // Technically we can be on AC, not charged and not charging. We lie
             // and say that if we are not on battery and we are not charged then
             // we are charging.
-            m_csChargingState = is_charged ? CHARGED : CHARGING;
+            m_chargingState = is_charged ? CHARGED : CHARGING;
         } else {
-            m_csChargingState = DISCHARGING;
+            m_chargingState = DISCHARGING;
         }
 
         if (minutes_left != -1) {
