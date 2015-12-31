@@ -163,7 +163,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtReplayGain->setText(Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
     BeatsPointer pBeats = pTrack->getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
-    bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
+    bool enableBpmEditing = !pTrack->isBpmLocked() && beatsSupportsSet;
     spinBpm->setEnabled(enableBpmEditing);
     bpmTap->setEnabled(enableBpmEditing);
     bpmDouble->setEnabled(enableBpmEditing);
@@ -345,7 +345,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
     m_pLoadedTrack->setComment(txtComment->toPlainText());
 
-    if (!m_pLoadedTrack->hasBpmLock()) {
+    if (!m_pLoadedTrack->isBpmLocked()) {
         m_pLoadedTrack->setBpm(spinBpm->value());
     }
 
