@@ -1,6 +1,6 @@
 #include "soundsourcem4a.h"
 
-#include "sampleutil.h"
+#include "util/sample.h"
 
 #ifdef __WINDOWS__
 #include <io.h>

@@ -68,7 +68,7 @@ class MixxxMainWindow : public QMainWindow {
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
     virtual ~MixxxMainWindow();
 
-    void initalize(QApplication *app, const CmdlineArgs& args);
+    void initialize(QApplication *app, const CmdlineArgs& args);
     void finalize();
 
     // initializes all QActions of the application

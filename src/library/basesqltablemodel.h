@@ -10,7 +10,7 @@
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
 #include "library/columncache.h"
-#include "util.h"
+#include "util/class.h"
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
 // caches the contents of the table and supports lightweight updates.

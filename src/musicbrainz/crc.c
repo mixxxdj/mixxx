@@ -13,7 +13,7 @@
  *    ReflectOut   = True
  *    Algorithm    = table-driven
  *****************************************************************************/
-#include "crc.h"
+#include "musicbrainz/crc.h"
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -128,6 +128,3 @@ crc_t crc_update(crc_t crc, const unsigned char *data, size_t data_len)
     }
     return crc & 0xffffffff;
 }
-
-
-

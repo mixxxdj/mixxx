@@ -15,6 +15,7 @@
 #include "util/compatibility.h"
 #include "util/trace.h"
 #include "controllers/controllerdebug.h"
+#include "util/time.h"
 
 HidReader::HidReader(hid_device* device)
         : QThread(),
@@ -41,7 +42,7 @@ void HidReader::run() {
             Trace process("HidReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData(reinterpret_cast<char*>(data), result);
-            emit(incomingData(outData));
+            emit(incomingData(outData, Time::elapsedDuration()));
         }
     }
     delete [] data;
@@ -251,8 +252,8 @@ int HidController::open() {
         m_pReader = new HidReader(m_pHidDevice);
         m_pReader->setObjectName(QString("HidReader %1").arg(getName()));
 
-        connect(m_pReader, SIGNAL(incomingData(QByteArray)),
-                this, SLOT(receive(QByteArray)));
+        connect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
+                this, SLOT(receive(QByteArray, mixxx::Duration)));
 
         // Controller input needs to be prioritized since it can affect the
         // audio directly, like when scratching
@@ -275,8 +276,8 @@ int HidController::close() {
         qWarning() << "HidReader not present for" << getName()
                    << "yet the device is open!";
     } else {
-        disconnect(m_pReader, SIGNAL(incomingData(QByteArray)),
-                   this, SLOT(receive(QByteArray)));
+        disconnect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
+                   this, SLOT(receive(QByteArray, mixxx::Duration)));
         m_pReader->stop();
         hid_set_nonblocking(m_pHidDevice, 1);   // Quit blocking
         controllerDebug("  Waiting on reader to finish");

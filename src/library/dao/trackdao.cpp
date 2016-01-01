@@ -10,7 +10,7 @@
 
 #include "library/dao/trackdao.h"
 
-#include "metadata/audiotagger.h"
+#include "track/audiotagger.h"
 #include "library/queryutil.h"
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"
@@ -401,14 +401,14 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":bitrate", pTrack->getBitrate());
     m_pQueryLibraryInsert->bindValue(":samplerate", pTrack->getSampleRate());
     m_pQueryLibraryInsert->bindValue(":cuepoint", pTrack->getCuePoint());
-    m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
+    m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->isBpmLocked()? 1 : 0);
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain().getRatio());
     m_pQueryLibraryInsert->bindValue(":replaygain_peak", pTrack->getReplayGain().getPeak());
 
     // We no longer store the wavesummary in the library table.
     m_pQueryLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
 
-    m_pQueryLibraryInsert->bindValue(":timesplayed", pTrack->getTimesPlayed());
+    m_pQueryLibraryInsert->bindValue(":timesplayed", pTrack->getPlayCounter().getTimesPlayed());
     //query.bindValue(":datetime_added", pTrack->getDateAdded());
     m_pQueryLibraryInsert->bindValue(":channels", pTrack->getChannels());
     m_pQueryLibraryInsert->bindValue(":mixxx_deleted", 0);
@@ -1081,13 +1081,17 @@ bool setTrackReplayGainPeak(const QSqlRecord& record, const int column,
 
 bool setTrackTimesPlayed(const QSqlRecord& record, const int column,
                          TrackPointer pTrack) {
-    pTrack->setTimesPlayed(record.value(column).toInt());
+    PlayCounter playCounter(pTrack->getPlayCounter());
+    playCounter.setTimesPlayed(record.value(column).toInt());
+    pTrack->setPlayCounter(playCounter);
     return false;
 }
 
 bool setTrackPlayed(const QSqlRecord& record, const int column,
                     TrackPointer pTrack) {
-    pTrack->setPlayed(record.value(column).toBool());
+    PlayCounter playCounter(pTrack->getPlayCounter());
+    playCounter.setPlayed(record.value(column).toBool());
+    pTrack->setPlayCounter(playCounter);
     return false;
 }
 
@@ -1129,7 +1133,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     } else {
         pTrack->setBpm(bpm);
     }
-    pTrack->setBpmLock(bpmLocked);
+    pTrack->setBpmLocked(bpmLocked);
     return false;
 }
 
@@ -1469,14 +1473,15 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":replaygain", pTrack->getReplayGain().getRatio());
     query.bindValue(":replaygain_peak", pTrack->getReplayGain().getPeak());
     query.bindValue(":rating", pTrack->getRating());
-    query.bindValue(":timesplayed", pTrack->getTimesPlayed());
-    query.bindValue(":played", pTrack->getPlayed() ? 1 : 0);
+    const PlayCounter playCounter(pTrack->getPlayCounter());
+    query.bindValue(":timesplayed", playCounter.getTimesPlayed());
+    query.bindValue(":played", playCounter.isPlayed() ? 1 : 0);
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());
     query.bindValue(":track_id", trackId.toVariant());
 
-    query.bindValue(":bpm_lock", pTrack->hasBpmLock() ? 1 : 0);
+    query.bindValue(":bpm_lock", pTrack->isBpmLocked() ? 1 : 0);
 
     BeatsPointer pBeats = pTrack->getBeats();
     QByteArray* pBeatsBlob = NULL;

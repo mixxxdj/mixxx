@@ -2,15 +2,15 @@
 // created 4/8/2011 by Bill Good (bkgood@gmail.com)
 // shameless stolen from enginemicrophone.cpp (from RJ)
 
-#include <QtDebug>
-
 #include "engine/engineaux.h"
 
+#include <QtDebug>
+
 #include "configobject.h"
-#include "sampleutil.h"
+#include "controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
-#include "controlaudiotaperpot.h"
+#include "util/sample.h"
 
 EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
         : EngineChannel(handle_group, EngineChannel::CENTER),

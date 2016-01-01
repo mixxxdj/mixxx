@@ -26,7 +26,7 @@
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "engine/channelhandle.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 #include "recording/recordingmanager.h"
 
 class EngineWorkerScheduler;

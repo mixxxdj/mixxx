@@ -11,7 +11,7 @@
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
-#include "metadata/trackmetadatataglib.h"
+#include "track/trackmetadatataglib.h"
 #include "util/dnd.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
@@ -345,7 +345,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     trackMetadata.setTitle(this->index(row, COLUMN_TITLE).data().toString());
     trackMetadata.setAlbum(this->index(row, COLUMN_ALBUM).data().toString());
     trackMetadata.setKey(this->index(row, COLUMN_KEY).data().toString());
-    trackMetadata.setBpm(this->index(row, COLUMN_BPM).data().toDouble());
+    trackMetadata.setBpm(Mixxx::Bpm(this->index(row, COLUMN_BPM).data().toDouble()));
     trackMetadata.setComment(this->index(row, COLUMN_COMMENT).data().toString());
     trackMetadata.setTrackNumber(this->index(row, COLUMN_TRACK_NUMBER).data().toString());
     trackMetadata.setYear(this->index(row, COLUMN_YEAR).data().toString());
@@ -362,7 +362,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     } else if (col == COLUMN_ALBUM) {
         trackMetadata.setAlbum(value.toString());
     } else if (col == COLUMN_BPM) {
-        trackMetadata.setBpm(value.toDouble());
+        trackMetadata.setBpm(Mixxx::Bpm(value.toDouble()));
     } else if (col == COLUMN_KEY) {
         trackMetadata.setKey(value.toString());
     } else if (col == COLUMN_TRACK_NUMBER) {

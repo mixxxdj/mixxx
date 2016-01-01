@@ -1,10 +1,9 @@
-#include <QtDebug>
-
 #include "cachingreaderchunk.h"
 
-#include "sampleutil.h"
-#include "util/math.h"
+#include <QtDebug>
 
+#include "util/math.h"
+#include "util/sample.h"
 
 const SINT CachingReaderChunk::kInvalidIndex = -1;
 

@@ -1,15 +1,16 @@
 #ifndef WAVEFORM_H
 #define WAVEFORM_H
 
+#include <vector>
+
 #include <QMutex>
 #include <QByteArray>
 #include <QString>
 #include <QAtomicInt>
 #include <QSharedPointer>
 #include <QMutexLocker>
-#include <vector>
 
-#include "util.h"
+#include "util/class.h"
 #include "util/compatibility.h"
 
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};

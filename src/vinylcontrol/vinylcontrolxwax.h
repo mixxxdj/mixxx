@@ -3,7 +3,7 @@
 
 #include <QTime>
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/steadypitch.h"
 #include "util/types.h"

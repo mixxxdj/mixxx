@@ -15,12 +15,6 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
                                        int inputDeviceIndex,
                                        int outputDeviceIndex)
         : MidiController(),
-          m_pInputDeviceInfo(inputDeviceInfo),
-          m_pOutputDeviceInfo(outputDeviceInfo),
-          m_iInputDeviceIndex(inputDeviceIndex),
-          m_iOutputDeviceIndex(outputDeviceIndex),
-          m_pInputStream(NULL),
-          m_pOutputStream(NULL),
           m_cReceiveMsg_index(0),
           m_bInSysex(false) {
     for (unsigned int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
@@ -32,17 +26,19 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
     // Note: We prepend the input stream's index to the device's name to prevent
     // duplicate devices from causing mayhem.
     //setDeviceName(QString("%1. %2").arg(QString::number(m_iInputDeviceIndex), inputDeviceInfo->name));
-
-    if (m_pInputDeviceInfo) {
-        setDeviceName(QString("%1").arg(m_pInputDeviceInfo->name));
-        setInputDevice(m_pInputDeviceInfo->input);
+    if (inputDeviceInfo) {
+        setDeviceName(QString("%1").arg(inputDeviceInfo->name));
+        setInputDevice(inputDeviceInfo->input);
+        m_pInputDevice.reset(new PortMidiDevice(
+            inputDeviceInfo, inputDeviceIndex));
     }
-    if (m_pOutputDeviceInfo) {
-        // In the event of an output-only device, use the output device name.
-        if (m_pInputDeviceInfo == NULL) {
-            setDeviceName(QString("%1").arg(m_pOutputDeviceInfo->name));
+    if (outputDeviceInfo) {
+        if (inputDeviceInfo == NULL) {
+            setDeviceName(QString("%1").arg(outputDeviceInfo->name));
         }
-        setOutputDevice(m_pOutputDeviceInfo->output);
+        setOutputDevice(outputDeviceInfo->output);
+        m_pOutputDevice.reset(new PortMidiDevice(
+            outputDeviceInfo, outputDeviceIndex));
     }
 }
 
@@ -64,49 +60,26 @@ int PortMidiController::open() {
     m_bInSysex = false;
     m_cReceiveMsg_index = 0;
 
-    PmError err = Pm_Initialize();
-    if (err != pmNoError) {
-        qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
-        return -1;
-    }
+    if (m_pInputDevice && isInputDevice()) {
+        controllerDebug("PortMidiController: Opening"
+                        << m_pInputDevice->info()->name << "index"
+                        << m_pInputDevice->index() << "for input");
+        PmError err = m_pInputDevice->openInput(MIXXX_PORTMIDI_BUFFER_LEN);
 
-    if (m_pInputDeviceInfo) {
-        if (isInputDevice()) {
-            controllerDebug("PortMidiController: Opening"
-                         << m_pInputDeviceInfo->name << "index"
-                         << m_iInputDeviceIndex << "for input");
-
-            err = Pm_OpenInput(&m_pInputStream,
-                               m_iInputDeviceIndex,
-                               NULL, //No drive hacks
-                               MIXXX_PORTMIDI_BUFFER_LEN,
-                               NULL,
-                               NULL);
-
-            if (err != pmNoError) {
-                qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
-                return -2;
-            }
+        if (err != pmNoError) {
+            qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
+            return -2;
         }
     }
-    if (m_pOutputDeviceInfo) {
-        if (isOutputDevice()) {
-            controllerDebug("PortMidiController: Opening"
-                         << m_pOutputDeviceInfo->name << "index"
-                         << m_iOutputDeviceIndex << "for output");
+    if (m_pOutputDevice && isOutputDevice()) {
+        controllerDebug("PortMidiController: Opening"
+                        << m_pOutputDevice->info()->name << "index"
+                        << m_pOutputDevice->index() << "for output");
 
-            err = Pm_OpenOutput(&m_pOutputStream,
-                                m_iOutputDeviceIndex,
-                                NULL, // No driver hacks
-                                0,      // No buffering
-                                NULL, // Use PortTime for timing
-                                NULL, // No time info
-                                0);   // No latency compensation.
-
-            if (err != pmNoError) {
-                qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
-                return -2;
-            }
+        PmError err = m_pOutputDevice->openOutput();
+        if (err != pmNoError) {
+            qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
+            return -2;
         }
     }
 
@@ -126,18 +99,16 @@ int PortMidiController::close() {
 
     int result = 0;
 
-    if (m_pInputStream) {
-        PmError err = Pm_Close(m_pInputStream);
-        m_pInputStream = NULL;
+    if (m_pInputDevice && m_pInputDevice->isOpen()) {
+        PmError err = m_pInputDevice->close();
         if (err != pmNoError) {
             qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
             result = -1;
         }
     }
 
-    if (m_pOutputStream) {
-        PmError err = Pm_Close(m_pOutputStream);
-        m_pOutputStream = NULL;
+    if (m_pOutputDevice && m_pOutputDevice->isOpen()) {
+        PmError err = m_pOutputDevice->close();
         if (err != pmNoError) {
             qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
             result = -1;
@@ -150,15 +121,13 @@ int PortMidiController::close() {
 
 bool PortMidiController::poll() {
     // Poll the controller for new data if it's an input device
-    if (!m_pInputStream) {
-        qDebug() << "PortMidiController::poll() no Input Stream";
+    if (m_pInputDevice.isNull() || !m_pInputDevice->isOpen()) {
         return false;
     }
 
     // Returns true if events are available or an error code.
-    PmError gotEvents = Pm_Poll(m_pInputStream);
-    if (gotEvents == pmNoError) {
-        //qDebug() << "PortMidiController::poll() no events";
+    PmError gotEvents = m_pInputDevice->poll();
+    if (gotEvents == FALSE) {
         return false;
     }
     if (gotEvents < 0) {
@@ -166,7 +135,7 @@ bool PortMidiController::poll() {
         return false;
     }
 
-    int numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
+    int numEvents = m_pInputDevice->read(m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
 
     //qDebug() << "PortMidiController::poll()" << numEvents;
 
@@ -177,10 +146,11 @@ bool PortMidiController::poll() {
 
     for (int i = 0; i < numEvents; i++) {
         unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
+        mixxx::Duration timestamp = mixxx::Duration::fromMillis(m_midiBuffer[i].timestamp);
 
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
-            receive(status, 0, 0, m_midiBuffer[i].timestamp);
+            receive(status, 0, 0, timestamp);
             continue;
         }
 
@@ -194,7 +164,7 @@ bool PortMidiController::poll() {
                 //unsigned char channel = status & 0x0F;
                 unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                 unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-                receive(status, note, velocity, m_midiBuffer[i].timestamp);
+                receive(status, note, velocity, timestamp);
             }
         }
 
@@ -224,7 +194,8 @@ bool PortMidiController::poll() {
             if (data == MIDI_EOX) {
                 m_bInSysex = false;
                 const char* buffer = reinterpret_cast<const char*>(m_cReceiveMsg);
-                receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index));
+                receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index),
+                        timestamp);
                 m_cReceiveMsg_index = 0;
             }
         }
@@ -233,13 +204,14 @@ bool PortMidiController::poll() {
 }
 
 void PortMidiController::sendWord(unsigned int word) {
-    if (m_pOutputStream) {
-        PmError err = Pm_WriteShort(m_pOutputStream, 0, word);
-        if (err != pmNoError) {
-            qDebug() << "PortMidi sendShortMsg error:" << Pm_GetErrorText(err);
-        }
+    if (m_pOutputDevice.isNull() || !m_pOutputDevice->isOpen()) {
+        return;
     }
 
+    PmError err = m_pOutputDevice->writeShort(word);
+    if (err != pmNoError) {
+        qDebug() << "PortMidi sendShortMsg error:" << Pm_GetErrorText(err);
+    }
 }
 
 void PortMidiController::send(QByteArray data) {
@@ -252,11 +224,13 @@ void PortMidiController::send(QByteArray data) {
         return;
     }
 
-    if (m_pOutputStream) {
-        PmError err = Pm_WriteSysEx(m_pOutputStream, 0, (unsigned char*)data.constData());
-        if (err != pmNoError) {
-            qDebug() << "PortMidi sendSysexMsg error:"
-                     << Pm_GetErrorText(err);
-        }
+    if (m_pOutputDevice.isNull() || !m_pOutputDevice->isOpen()) {
+        return;
+    }
+
+    PmError err = m_pOutputDevice->writeSysEx((unsigned char*)data.constData());
+    if (err != pmNoError) {
+        qDebug() << "PortMidi sendSysexMsg error:"
+                 << Pm_GetErrorText(err);
     }
 }

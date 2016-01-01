@@ -31,7 +31,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="EnableAnalyser">
+       <widget class="QCheckBox" name="EnableAnalyzer">
         <property name="toolTip">
          <string>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</string>
         </property>

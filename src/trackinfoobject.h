@@ -8,16 +8,16 @@
 #include <QMutex>
 #include <QObject>
 #include <QSharedPointer>
-#include <QString>
 #include <QWeakPointer>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
+#include "track/replaygain.h"
 #include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/trackid.h"
-#include "util/replaygain.h"
+#include "track/playcounter.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
@@ -33,6 +33,7 @@ namespace Mixxx {
 
 class TrackInfoObject : public QObject {
     Q_OBJECT
+
   public:
     // Initialize track with a QFileInfo class
     explicit TrackInfoObject(const QFileInfo& fileInfo = QFileInfo(),
@@ -43,16 +44,6 @@ class TrackInfoObject : public QObject {
     // Parse file metadata. If no file metadata is present, attempts to extract
     // artist and title information from the filename.
     void parse(bool parseCoverArt);
-
-    // Returns the duration in seconds
-    int getDuration() const;
-    // Set duration in seconds
-    void setDuration(int);
-    // Returns the duration as a string: H:MM:SS
-    QString getDurationStr() const;
-
-    // Accessors for various stats of the file on disk. These are auto-populated
-    // when the TIO is constructed.
 
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
@@ -66,11 +57,12 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
-    Q_PROPERTY(QString bpmFormatted READ getBpmStr STORED false)
+    Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
-    Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
+    Q_PROPERTY(QString durationFormatted READ getDurationText STORED false)
 
+    TrackId getId() const;
 
     QFileInfo getFileInfo() const {
         // Copying a QFileInfo is thread-safe (implicit sharing), no locking needed.
@@ -81,6 +73,7 @@ class TrackInfoObject : public QObject {
         return m_pSecurityToken;
     }
 
+    // Accessors for various stats of the file on disk.
     // Returns absolute path to the file, including the filename.
     QString getLocation() const;
     QString getCanonicalLocation() const;
@@ -99,49 +92,57 @@ class TrackInfoObject : public QObject {
     // Returns whether the file exists on disk or not.
     bool exists() const;
 
-    // Returns ReplayGain
-    Mixxx::ReplayGain getReplayGain() const;
-    // Set ReplayGain
-    void setReplayGain(const Mixxx::ReplayGain&);
-    // Returns BPM
-    double getBpm() const;
-    // Set BPM
-    void setBpm(double);
-    // Returns BPM as a string
-    QString getBpmStr() const;
-    // A track with a locked BPM will not be re-analyzed by the beats or bpm
-    // analyzer.
-    void setBpmLock(bool hasLock);
-    bool hasBpmLock() const;
-    bool getHeaderParsed() const;
-    void setHeaderParsed(bool parsed = true);
-    // Returns the user comment
-    QString getComment() const;
-    // Sets the user commnet
-    void setComment(const QString&);
-    // Returns the file type
-    QString getType() const;
     // Sets the type of the string
     void setType(const QString&);
-    // Returns the bitrate
-    int getBitrate() const;
-    // Returns the bitrate as a string
-    QString getBitrateStr() const;
-    // Sets the bitrate
-    void setBitrate(int);
+    // Returns the file type
+    QString getType() const;
+
+    void setChannels(int iChannels);
+    // Get number of channels
+    int getChannels() const;
+
     // Set sample rate
     void setSampleRate(int iSampleRate);
     // Get sample rate
     int getSampleRate() const;
     // Set number of channels
-    void setChannels(int iChannels);
-    // Get number of channels
-    int getChannels() const;
-    // Output a formatted string with all the info
-    QString getInfo() const;
 
-    QDateTime getDateAdded() const;
+    // Sets the bitrate
+    void setBitrate(int);
+    // Returns the bitrate
+    int getBitrate() const;
+    // Returns the bitrate as a string
+    QString getBitrateText() const;
+
+    // Set duration in seconds
+    void setDuration(int);
+    // Returns the duration in seconds
+    int getDuration() const;
+    // Returns the duration as a string: H:MM:SS
+    QString getDurationText() const;
+
+    // Set BPM
+    double setBpm(double);
+    // Returns BPM
+    double getBpm() const;
+    // Returns BPM as a string
+    QString getBpmText() const;
+
+    // A track with a locked BPM will not be re-analyzed by the beats or bpm
+    // analyzer.
+    void setBpmLocked(bool bpmLocked = true);
+    bool isBpmLocked() const;
+
+    // Set ReplayGain
+    void setReplayGain(const Mixxx::ReplayGain&);
+    // Returns ReplayGain
+    Mixxx::ReplayGain getReplayGain() const;
+
+    void setHeaderParsed(bool parsed = true);
+    bool getHeaderParsed() const;
+
     void setDateAdded(const QDateTime& dateAdded);
+    QDateTime getDateAdded() const;
 
     // Getter/Setter methods for metadata
     // Return title
@@ -168,6 +169,10 @@ class TrackInfoObject : public QObject {
     QString getGenre() const;
     // Set genre
     void setGenre(const QString&);
+    // Returns the user comment
+    QString getComment() const;
+    // Sets the user commnet
+    void setComment(const QString&);
     // Return composer
     QString getComposer() const;
     // Set composer
@@ -180,20 +185,19 @@ class TrackInfoObject : public QObject {
     QString getTrackNumber() const;
     // Set Track Number
     void setTrackNumber(const QString&);
-    // Return number of times the track has been played
-    int getTimesPlayed() const;
-    // Set number of times the track has been played
-    void setTimesPlayed(int t);
-    // Increment times played with one
-    void incTimesPlayed();
-    // Returns true if track has been played this instance
-    bool getPlayed() const;
-    // Set played status and increment or decrement playcount.
-    void setPlayedAndUpdatePlaycount(bool);
-    // Set played status without affecting the playcount
-    void setPlayed(bool bPlayed);
 
-    TrackId getId() const;
+    PlayCounter getPlayCounter() const;
+    void setPlayCounter(const PlayCounter& playCounter);
+    void resetPlayCounter(int iTimesPlayed = 0) {
+        setPlayCounter(PlayCounter(iTimesPlayed));
+    }
+    // Sets played status and increments or decrements the play count
+    void updatePlayCounter(bool bPlayed = true);
+
+    // Only required for the times_played property
+    int getTimesPlayed() const {
+        return getPlayCounter().getTimesPlayed();
+    }
 
     // Returns rating
     int getRating() const;
@@ -205,14 +209,17 @@ class TrackInfoObject : public QObject {
     // Set URL for track
     void setURL(const QString& url);
 
+    // Output a formatted string with artist and title.
+    QString getInfo() const;
+
     ConstWaveformPointer getWaveform();
     void setWaveform(ConstWaveformPointer pWaveform);
 
     ConstWaveformPointer getWaveformSummary() const;
     void setWaveformSummary(ConstWaveformPointer pWaveform);
 
-    void setAnalyserProgress(int progress);
-    int getAnalyserProgress() const;
+    void setAnalyzerProgress(int progress);
+    int getAnalyzerProgress() const;
 
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
@@ -265,7 +272,7 @@ class TrackInfoObject : public QObject {
     void waveformUpdated();
     void waveformSummaryUpdated();
     void coverArtUpdated();
-    void analyserProgress(int progress);
+    void analyzerProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
     void keyUpdated(double key);
@@ -288,6 +295,8 @@ class TrackInfoObject : public QObject {
     // TIO local methods or the TrackDAO.
     void setDirty(bool bDirty);
 
+    void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
+
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
     void setId(TrackId id);
@@ -303,6 +312,10 @@ class TrackInfoObject : public QObject {
 
     // Mutex protecting access to object
     mutable QMutex m_qMutex;
+
+    // The unique ID of track. This value is only set once after the track
+    // has been inserted or is loaded from the library DB.
+    TrackId m_id;
 
     // Flag that indicates whether or not the TIO has changed. This is used by
     // TrackDAO to determine whether or not to write the Track back.
@@ -344,25 +357,20 @@ class TrackInfoObject : public QObject {
     int m_Rating;
     // Bitrate, number of kilobits per second of audio in the track
     int m_iBitrate;
-    // Number of times the track has been played
-    int m_iTimesPlayed;
     // Replay Gain volume
     Mixxx::ReplayGain m_replayGain;
-    // Has this track been played this sessions?
-    bool m_bPlayed;
     // True if header was parsed
     bool m_bHeaderParsed;
-    // Id. Unique ID of track
-    TrackId m_id;
     // Cue point in samples or something
     float m_fCuePoint;
     // Date the track was added to the library
     QDateTime m_dateAdded;
 
+    PlayCounter m_playCounter;
+
     Keys m_keys;
 
-    // BPM lock
-    bool m_bBpmLock;
+    bool m_bBpmLocked;
 
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;
@@ -374,7 +382,7 @@ class TrackInfoObject : public QObject {
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
-    QAtomicInt m_analyserProgress; // in 0.1%
+    QAtomicInt m_analyzerProgress; // in 0.1%
 
     CoverArt m_coverArt;
 
@@ -382,4 +390,4 @@ class TrackInfoObject : public QObject {
     friend class AutoDJProcessorTest;
 };
 
-#endif
+#endif // TRACKINFOOBJECT_H

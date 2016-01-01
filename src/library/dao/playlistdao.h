@@ -8,7 +8,7 @@
 
 #include "library/dao/dao.h"
 #include "track/trackid.h"
-#include "util.h"
+#include "util/class.h"
 
 #define PLAYLIST_TABLE "Playlists"
 #define PLAYLIST_TRACKS_TABLE "PlaylistTracks"

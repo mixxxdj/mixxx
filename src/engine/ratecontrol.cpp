@@ -6,7 +6,7 @@
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
 #include "controlobjectslave.h"
-#include "rotary.h"
+#include "util/rotary.h"
 #include "util/math.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 

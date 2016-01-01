@@ -65,7 +65,7 @@ QString KeyFactory::getPreferredSubVersion(
             it.key().contains(kSubVersionFragmentSeparator) ||
             it.value().contains(kSubVersionKeyValueSeparator) ||
             it.value().contains(kSubVersionFragmentSeparator)) {
-            qDebug() << "ERROR: Your analyser key/value contains invalid characters:"
+            qDebug() << "ERROR: Your analyzer key/value contains invalid characters:"
                      << it.key() << ":" << it.value() << "Skipping.";
             continue;
         }
@@ -99,7 +99,7 @@ Keys KeyFactory::makePreferredKeys(
             pChange->set_frame_position(frame);
         }
         key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, iTotalSamples));
-        key_map.set_source(mixxx::track::io::key::ANALYSER);
+        key_map.set_source(mixxx::track::io::key::ANALYZER);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);
         return keys;
