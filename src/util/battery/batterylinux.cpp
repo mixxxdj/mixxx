@@ -1,100 +1,84 @@
 #include "util/battery/batterylinux.h"
 
-#include <QFile>
-#include <QTextStream>
-#include <QDebug>
-#include <QRegExp>
+// Contains 'signals' so we undefine Qt's 'signals'.
+#undef signals
+#include <upower.h>
 
-// these constants are used to retrieve data from infoFile and stateFile
-const QString BatteryLinux::s_sMaximumCapacityKeyword = "last full capacity";
-const QString BatteryLinux::s_sCurrentCapacityKeyword = "remaining capacity";
-const QString BatteryLinux::s_sChargingStateKeyword = "charging state";
-const QString BatteryLinux::s_sCurrentRateKeyword = "present rate";
+#include <QtDebug>
 
-BatteryLinux::BatteryLinux(QObject* pParent, const QString& infoFile,
-                           const QString& stateFile)
-        : Battery(parent),
-          m_sInfoFile(infoFile),
-          m_sStateFile(stateFile) {
+BatteryLinux::BatteryLinux(QObject* pParent)
+    : Battery(pParent) {
 }
 
 BatteryLinux::~BatteryLinux() {
-
 }
 
 void BatteryLinux::read() {
-    int currentCapacity = readCurrentCapacity();
-    int maximumCapacity = readMaximumCapacity();
-    int currentRate = readCurrentRate();
-
-    m_chargingState = readChargingState();
-    m_dPercentage = 0.0;
-    if (maximumCapacity > 0) {
-        m_dPercentage = static_cast<double>(currentCapacity) / maximumCapacity;
+    UpClient* client = up_client_new();
+    if (client == nullptr) {
+      return;
     }
-    m_iMinutesLeft = getMinutesLeft(m_chargingState, currentCapacity,
-                                    maximumCapacity, currentRate);
-}
 
-Battery::ChargingState BatteryLinux::readChargingState() {
-    QFile qfFile(m_sStateFile);
-    if(!qfFile.open(QFile::ReadOnly)) {
-        qDebug() << "Error opening " << m_sStateFile;
-        return UNKNOWN;
+#if !UP_CHECK_VERSION(0, 9, 99)
+    // Re-enumerate in case a device is added.
+    up_client_enumerate_devices_sync(client, NULL, NULL);
+#endif
+
+    GPtrArray* devices = up_client_get_devices(client);
+    if (devices == nullptr) {
+      return;
     }
-    QTextStream tsFile(&qfFile);
-    QString sOut;
-    while (!(sOut = tsFile.readLine()).isNull()) {
-        if (sOut.contains(s_sChargingStateKeyword)) {
-            // remove the keyword (i.e. "charging state:    ")
-            sOut.remove(QRegExp(s_sChargingStateKeyword + ":*\\s+"));
-            if (sOut == "discharging")
-                return DISCHARGING;
-            if (sOut == "charging")
-                return CHARGING;
-            if (sOut == "charged")
-                return CHARGED;
-            else
-                return UNKNOWN;
+
+    for (guint i = 0; i < devices->len; ++i) {
+      gpointer device = g_ptr_array_index(devices, i);
+      if (device == nullptr) {
+        continue;
+      }
+
+      gboolean online;
+      gdouble percentage;
+      guint state;
+      guint kind;
+      gint64 timeToEmpty;
+      gint64 timeToFull;
+      g_object_get(G_OBJECT(device),
+                   "percentage", &percentage,
+                   "online", &online,
+                   "state", &state,
+                   "kind", &kind,
+                   "time-to-empty", &timeToEmpty,
+                   "time-to-full", &timeToFull,
+                   NULL);
+
+      // qDebug() << "BatteryLinux::read()"
+      //          << "online" << online
+      //          << "percentage" << percentage
+      //          << "state" << state
+      //          << "kind" << kind
+      //          << "timeToEmpty" << timeToEmpty
+      //          << "timeToFull" << timeToFull;
+
+      if (kind == UP_DEVICE_KIND_BATTERY) {
+        if (state == UP_DEVICE_STATE_CHARGING) {
+          m_chargingState = CHARGING;
+        } else if (state == UP_DEVICE_STATE_DISCHARGING) {
+          m_chargingState = DISCHARGING;
+        } else if (state == UP_DEVICE_STATE_FULLY_CHARGED) {
+          m_chargingState = CHARGED;
+        } else {
+          m_chargingState = UNKNOWN;
         }
-    }
-    return UNKNOWN;
-}
 
-int BatteryLinux::getMinutesLeft(ChargingState chargingState, int currentCapacity,
-                                 int maximumCapacity, int currentRate) const {
-    // Prevent division by 0
-    if (currentRate == 0) {
-        return 0;
-    }
-
-    switch (chargingState) {
-        case DISCHARGING:
-            return 60 * currentCapacity / currentRate;
-        case CHARGING:
-            return 60 * (maximumCapacity - currentCapacity) / currentRate;
-        case CHARGED:
-        case UNKNOWN:
-        default:
-            return 0;
-    }
-}
-
-int BatteryLinux::readValue(const QString& sFile, const QString& sKeyword) const {
-    QFile qfFile(sFile);
-    if(!qfFile.open(QFile::ReadOnly)) {
-        qDebug() << "BatteryLinux: Error opening" << sFile;
-        return 0;
-    }
-
-    QTextStream tsFile(&qfFile);
-    QString sOut;
-    while (!(sOut = tsFile.readLine()).isNull()) {
-        if (sOut.contains(sKeyword)) {
-            // remove everything except numbers
-            sOut.remove(QRegExp("\\D"));
-            return sOut.toInt();
+        m_dPercentage = percentage;
+        if (m_chargingState == CHARGING) {
+          m_iMinutesLeft = timeToFull / 60;
+        } else if (m_chargingState == DISCHARGING) {
+          m_iMinutesLeft = timeToEmpty / 60;
         }
+        break;
+      }
     }
-    return 0;
+
+    g_ptr_array_free(devices, TRUE);
+    g_object_unref(client);
 }

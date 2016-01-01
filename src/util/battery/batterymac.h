@@ -10,7 +10,7 @@ class BatteryMac : public Battery {
     virtual ~BatteryMac();
 
   protected:
-    void read();
+    void read() override;
 };
 
 #endif /* UTIL_BATTERY_BATTERYMAC_H */

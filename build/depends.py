@@ -99,6 +99,14 @@ class IOKit(Dependence):
             CPPPATH='/Library/Frameworks/IOKit.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework IOKit')
 
+class UPower(Dependence):
+    """UPower is used to get battery measurements on Linux."""
+    def configure(self, build, conf):
+        if not build.platform_is_linux:
+            return
+        build.env.ParseConfig(
+                'pkg-config upower-glib --silence-errors --cflags --libs')
+
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):
@@ -1255,8 +1263,8 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify]
+                Chromaprint, RubberBand, SecurityFramework, CoreServices,
+                QtScriptByteArray, Reverb, FpClassify, IOKit, UPower]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

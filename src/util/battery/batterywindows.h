@@ -10,7 +10,7 @@ class BatteryWindows : public Battery {
     virtual ~BatteryWindows();
 
   protected:
-    void read();
+    void read() override;
 };
 
 #endif /* UTIL_BATTERY_BATTERYWINDOWS_H */

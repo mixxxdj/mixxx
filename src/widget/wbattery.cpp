@@ -5,7 +5,7 @@
 #include "util/battery/battery.h"
 #include "util/math.h"
 
-WBattery::WBattery(QWidget *parent)
+WBattery::WBattery(QWidget* parent)
         : WWidget(parent),
           m_pBattery(Battery::getBattery(this)) {
     if (m_pBattery) {

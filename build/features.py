@@ -1096,7 +1096,9 @@ class Optimize(Feature):
 
             # the following optimisation flags makes the engine code ~3 times
             # faster, measured on a Atom CPU.
-            build.env.Append(CCFLAGS='-O3 -ffast-math -funroll-loops')
+            build.env.Append(CCFLAGS='-O3')
+            build.env.Append(CCFLAGS='-ffast-math')
+            build.env.Append(CCFLAGS='-funroll-loops')
 
             # set -fomit-frame-pointer when we don't profile.
             # Note: It is only included in -O on machines where it does not
