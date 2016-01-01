@@ -26,6 +26,18 @@ EffectManifest AutoPanEffect::getManifest() {
             "A delay, inversed on each side, is added to increase the "
             "spatial move and the period can be synced with the BPM."));
 
+    // Width : applied on the channel with gain reducing.
+    EffectManifestParameter* width = manifest.addParameter();
+    width->setId("width");
+    width->setName(QObject::tr("Width"));
+    width->setDescription("How far the signal goes on the left or on the right");
+    width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    width->setMinimum(0.0);
+    width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
+    width->setDefault(0.5);
+
     // Period unit
     EffectManifestParameter* periodUnit = manifest.addParameter();
     periodUnit->setId("periodUnit");
@@ -39,7 +51,7 @@ EffectManifest AutoPanEffect::getManifest() {
     periodUnit->setMaximum(1);
 
     // Period
-    // The maximum is at 128 + 1 ollowing 128 as max value and
+    // The maximum is at 128 + 1 allowing 128 as max value and
     // enabling us to pause time when the parameter is above
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
@@ -51,7 +63,7 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     period->setMinimum(0.0625);     // 1 / 16
     period->setMaximum(129.0);      // 128 + 1
-    period->setDefault(8.0);
+    period->setDefault(3.0);
 
     // This parameter controls the easing of the sound from a side to another.
     EffectManifestParameter* smoothing = manifest.addParameter();
@@ -64,19 +76,9 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     smoothing->setMinimum(0.0);
     smoothing->setMaximum(0.5);  // there are two steps per period so max is half
-    smoothing->setDefault(0.0);
-
-    // Width : applied on the channel with gain reducing.
-    EffectManifestParameter* width = manifest.addParameter();
-    width->setId("width");
-    width->setName(QObject::tr("Width"));
-    width->setDescription("How far the signal goes on the left or on the right");
-    width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    width->setMinimum(0.0);
-    width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
-    width->setDefault(0.00);
+    smoothing->setDefault(0.25);
+    // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
+    //                     make the scaleStartParameter for this be 1.
 
     return manifest;
 }
@@ -108,7 +110,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     double width = m_pWidthParameter->value();
     double period = m_pPeriodParameter->value();
     double periodUnit = m_pPeriodUnitParameter->value();
-    double smoothing = m_pSmoothingParameter->value();
+    double smoothing = 0.5-m_pSmoothingParameter->value();
 
     // When the period knob is between max and max-1, the time is paused.
     // Time shouldn't be paused while enabling state as the sound
