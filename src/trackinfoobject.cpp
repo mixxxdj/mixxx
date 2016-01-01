@@ -9,7 +9,7 @@
 #include "controlobject.h"
 #include "soundsourceproxy.h"
 #include "library/coverartutils.h"
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
@@ -30,16 +30,14 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
           m_bDeleteOnReferenceExpiration(false),
           m_qMutex(QMutex::Recursive) {
     m_id = TrackId();
-    m_analyserProgress = -1;
+    m_analyzerProgress = -1;
 
     m_bDirty = false;
-    m_bPlayed = false;
-    m_bBpmLock = false;
+    m_bBpmLocked = false;
+    m_bHeaderParsed = false;
 
     m_iDuration = 0;
     m_iBitrate = 0;
-    m_iTimesPlayed = 0;
-    m_fReplayGain = 0.;
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
@@ -112,15 +110,16 @@ void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
     setSampleRate(trackMetadata.getSampleRate());
     setDuration(trackMetadata.getDuration());
     setBitrate(trackMetadata.getBitrate());
-
-    if (trackMetadata.isReplayGainValid()) {
-        setReplayGain(trackMetadata.getReplayGain());
-    }
+    setReplayGain(trackMetadata.getReplayGain());
 
     // Need to set BPM after sample rate since beat grid creation depends on
     // knowing the sample rate. Bug #1020438.
-    if (trackMetadata.isBpmValid()) {
-        setBpm(trackMetadata.getBpm());
+    if (trackMetadata.getBpm().hasValue() &&
+            ((nullptr == m_pBeats) || !Mixxx::Bpm::isValidValue(m_pBeats->getBpm()))) {
+        // Only (re-)set the BPM if the beat grid is not valid.
+        // Reason: The BPM value in the metadata might be normalized or rounded,
+        // e.g. ID3v2 only supports integer values!
+        setBpm(trackMetadata.getBpm().getValue());
     }
 
     const QString key(trackMetadata.getKey());
@@ -148,14 +147,14 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
     pTrackMetadata->setDuration(getDuration());
     pTrackMetadata->setBitrate(getBitrate());
     pTrackMetadata->setReplayGain(getReplayGain());
-    pTrackMetadata->setBpm(getBpm());
+    pTrackMetadata->setBpm(Mixxx::Bpm(getBpm()));
     pTrackMetadata->setKey(getKeyText());
 }
 
 void TrackInfoObject::parse(bool parseCoverArt) {
     // Log parsing of header information in developer mode. This is useful for
     // tracking down corrupt files.
-    const QString& canonicalLocation = m_fileInfo.canonicalFilePath();
+    const QString canonicalLocation(getCanonicalLocation());
     if (CmdlineArgs::Instance().getDeveloper()) {
         qDebug() << "TrackInfoObject::parse()" << canonicalLocation;
     }
@@ -176,7 +175,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
             // TODO(rryan): Should we re-visit this decision?
             if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
                 Mixxx::TrackMetadata fileNameMetadata;
-                parseMetadataFromFileName(fileNameMetadata, m_fileInfo.fileName());
+                parseMetadataFromFileName(fileNameMetadata, getFileName());
                 if (trackMetadata.getArtist().isEmpty()) {
                     trackMetadata.setArtist(fileNameMetadata.getArtist());
                 }
@@ -201,7 +200,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
                      << canonicalLocation;
 
             // Add basic information derived from the filename
-            parseMetadataFromFileName(trackMetadata, m_fileInfo.fileName());
+            parseMetadataFromFileName(trackMetadata, getFileName());
 
             setHeaderParsed(false);
         }
@@ -214,7 +213,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
     }
 }
 
-QString TrackInfoObject::getDurationStr() const {
+QString TrackInfoObject::getDurationText() const {
     QMutexLocker lock(&m_qMutex);
     int iDuration = m_iDuration;
     lock.unlock();
@@ -289,78 +288,87 @@ bool TrackInfoObject::exists() const {
     return QFile::exists(m_fileInfo.absoluteFilePath());
 }
 
-float TrackInfoObject::getReplayGain() const {
+Mixxx::ReplayGain TrackInfoObject::getReplayGain() const {
     QMutexLocker lock(&m_qMutex);
-    return m_fReplayGain;
+    return m_replayGain;
 }
 
-void TrackInfoObject::setReplayGain(float f) {
+void TrackInfoObject::setReplayGain(const Mixxx::ReplayGain& replayGain) {
     QMutexLocker lock(&m_qMutex);
     //qDebug() << "Reported ReplayGain value: " << m_fReplayGain;
-    if (m_fReplayGain != f) {
-        m_fReplayGain = f;
+    if (m_replayGain != replayGain) {
+        m_replayGain = replayGain;
         setDirty(true);
     }
     lock.unlock();
-    emit(ReplayGainUpdated(f));
+    emit(ReplayGainUpdated(replayGain));
 }
 
 double TrackInfoObject::getBpm() const {
+    double bpm = Mixxx::Bpm::kValueUndefined;
     QMutexLocker lock(&m_qMutex);
-    if (!m_pBeats) {
-        return 0;
+    if (m_pBeats) {
+        // BPM from beat grid overrides BPM from metadata
+        // Reason: The BPM value in the metadata might be imprecise,
+        // e.g. ID3v2 only supports integer values!
+        double beatsBpm = m_pBeats->getBpm();
+        if (Mixxx::Bpm::isValidValue(beatsBpm)) {
+            bpm = beatsBpm;
+        }
     }
-    // getBpm() returns -1 when invalid.
-    double bpm = m_pBeats->getBpm();
-    if (bpm >= 0.0) {
-        return bpm;
-    }
-    return 0;
+    return bpm;
 }
 
-void TrackInfoObject::setBpm(double f) {
-    if (f < 0) {
-        return;
-    }
-
-    QMutexLocker lock(&m_qMutex);
-    // TODO(rryan): Assume always dirties.
-    bool dirty = false;
-    if (f == 0.0) {
-        // If the user sets the BPM to 0, we assume they want to clear the
-        // beatgrid.
+double TrackInfoObject::setBpm(double bpmValue) {
+    if (!Mixxx::Bpm::isValidValue(bpmValue)) {
+        // If the user sets the BPM to an invalid value, we assume
+        // they want to clear the beatgrid.
         setBeats(BeatsPointer());
-        dirty = true;
-    } else if (!m_pBeats) {
-        setBeats(BeatFactory::makeBeatGrid(this, f, 0));
-        dirty = true;
-    } else if (m_pBeats->getBpm() != f) {
-        m_pBeats->setBpm(f);
-        dirty = true;
+        return bpmValue;
     }
 
-    if (dirty) {
+    QMutexLocker lock(&m_qMutex);
+
+    if (!m_pBeats) {
+        // No beat grid available -> create and initialize
+        BeatsPointer pBeats(BeatFactory::makeBeatGrid(this, bpmValue, 0));
+        setBeatsAndUnlock(&lock, pBeats);
+        return bpmValue;
+    }
+
+    // Continue with the regular case
+    if (m_pBeats->getBpm() != bpmValue) {
+        qDebug() << "Updating BPM:" << getLocation();
+        m_pBeats->setBpm(bpmValue);
         setDirty(true);
+        lock.unlock();
+        // Tell the GUI to update the bpm label...
+        //qDebug() << "TrackInfoObject signaling BPM update to" << f;
+        emit(bpmUpdated(bpmValue));
     }
 
-    lock.unlock();
-    // Tell the GUI to update the bpm label...
-    //qDebug() << "TrackInfoObject signaling BPM update to" << f;
-    emit(bpmUpdated(f));
+    return bpmValue;
 }
 
-QString TrackInfoObject::getBpmStr() const
-{
+QString TrackInfoObject::getBpmText() const {
     return QString("%1").arg(getBpm(), 3,'f',1);
 }
 
 void TrackInfoObject::setBeats(BeatsPointer pBeats) {
     QMutexLocker lock(&m_qMutex);
+    setBeatsAndUnlock(&lock, pBeats);
+}
 
+void TrackInfoObject::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     // This whole method is not so great. The fact that Beats is an ABC is
     // limiting with respect to QObject and signals/slots.
 
-    QObject* pObject = NULL;
+    if (m_pBeats == pBeats) {
+        pLock->unlock();
+        return;
+    }
+
+    QObject* pObject = nullptr;
     if (m_pBeats) {
         pObject = dynamic_cast<QObject*>(m_pBeats.data());
         if (pObject) {
@@ -368,19 +376,24 @@ void TrackInfoObject::setBeats(BeatsPointer pBeats) {
                        this, SLOT(slotBeatsUpdated()));
         }
     }
+
+    Mixxx::Bpm bpm;
+    double bpmValue = bpm.getValue();
+
     m_pBeats = pBeats;
-    double bpm = 0.0;
     if (m_pBeats) {
-        bpm = m_pBeats->getBpm();
+        bpmValue = m_pBeats->getBpm();
+        bpm.setValue(bpmValue);
         pObject = dynamic_cast<QObject*>(m_pBeats.data());
         if (pObject) {
             connect(pObject, SIGNAL(updated()),
                     this, SLOT(slotBeatsUpdated()));
         }
     }
+
     setDirty(true);
-    lock.unlock();
-    emit(bpmUpdated(bpm));
+    pLock->unlock();
+    emit(bpmUpdated(bpmValue));
     emit(beatsUpdated());
 }
 
@@ -398,14 +411,12 @@ void TrackInfoObject::slotBeatsUpdated() {
     emit(beatsUpdated());
 }
 
-bool TrackInfoObject::getHeaderParsed()  const
-{
+bool TrackInfoObject::getHeaderParsed()  const {
     QMutexLocker lock(&m_qMutex);
     return m_bHeaderParsed;
 }
 
-void TrackInfoObject::setHeaderParsed(bool parsed)
-{
+void TrackInfoObject::setHeaderParsed(bool parsed) {
     QMutexLocker lock(&m_qMutex);
     if (m_bHeaderParsed != parsed) {
         m_bHeaderParsed = parsed;
@@ -413,12 +424,13 @@ void TrackInfoObject::setHeaderParsed(bool parsed)
     }
 }
 
-QString TrackInfoObject::getInfo()  const
-{
+QString TrackInfoObject::getInfo() const {
     QMutexLocker lock(&m_qMutex);
-    QString artist = m_sArtist.trimmed() == "" ? "" : m_sArtist + ", ";
-    QString sInfo = artist + m_sTitle;
-    return sInfo;
+    if (m_sArtist.trimmed().isEmpty()) {
+        return m_sTitle;
+    } else {
+        return m_sArtist + ", " + m_sTitle;
+    }
 }
 
 QDateTime TrackInfoObject::getDateAdded() const {
@@ -570,46 +582,25 @@ void TrackInfoObject::setTrackNumber(const QString& s) {
     }
 }
 
-int TrackInfoObject::getTimesPlayed() const {
+PlayCounter TrackInfoObject::getPlayCounter() const {
     QMutexLocker lock(&m_qMutex);
-    return m_iTimesPlayed;
+    return m_playCounter;
 }
 
-void TrackInfoObject::setTimesPlayed(int t) {
+void TrackInfoObject::setPlayCounter(const PlayCounter& playCounter) {
     QMutexLocker lock(&m_qMutex);
-    if (t != m_iTimesPlayed) {
-        m_iTimesPlayed = t;
+    if (m_playCounter != playCounter) {
+        m_playCounter = playCounter;
         setDirty(true);
     }
 }
 
-void TrackInfoObject::incTimesPlayed() {
-    setPlayedAndUpdatePlaycount(true);
-}
-
-bool TrackInfoObject::getPlayed() const {
+void TrackInfoObject::updatePlayCounter(bool bPlayed) {
     QMutexLocker lock(&m_qMutex);
-    bool bPlayed = m_bPlayed;
-    return bPlayed;
-}
-
-void TrackInfoObject::setPlayedAndUpdatePlaycount(bool bPlayed) {
-    QMutexLocker lock(&m_qMutex);
-    if (bPlayed) {
-        ++m_iTimesPlayed;
-        setDirty(true);
-    }
-    else if (m_bPlayed && !bPlayed) {
-        m_iTimesPlayed = math_max(0, m_iTimesPlayed - 1);
-        setDirty(true);
-    }
-    m_bPlayed = bPlayed;
-}
-
-void TrackInfoObject::setPlayed(bool bPlayed) {
-    QMutexLocker lock(&m_qMutex);
-    if (bPlayed != m_bPlayed) {
-        m_bPlayed = bPlayed;
+    PlayCounter playCounter(m_playCounter);
+    playCounter.setPlayedAndUpdateTimesPlayed(bPlayed);
+    if (m_playCounter != playCounter) {
+        m_playCounter = playCounter;
         setDirty(true);
     }
 }
@@ -671,7 +662,7 @@ int TrackInfoObject::getBitrate() const {
     return m_iBitrate;
 }
 
-QString TrackInfoObject::getBitrateStr() const {
+QString TrackInfoObject::getBitrateText() const {
     return QString("%1").arg(getBitrate());
 }
 
@@ -690,9 +681,13 @@ TrackId TrackInfoObject::getId() const {
 
 void TrackInfoObject::setId(TrackId trackId) {
     QMutexLocker lock(&m_qMutex);
-    // changing the Id does not make the track dirty because the Id is always
-    // generated by the Database itself
-    m_id = trackId;
+    // The track's id must be set only once and immediately after
+    // the object has been created.
+    DEBUG_ASSERT(trackId.isValid());
+    DEBUG_ASSERT(!m_id.isValid());
+    m_id = std::move(trackId);
+    // Changing the Id does not make the track dirty because the Id is always
+    // generated by the Database itself.
 }
 
 
@@ -744,18 +739,18 @@ void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
     emit(waveformSummaryUpdated());
 }
 
-void TrackInfoObject::setAnalyserProgress(int progress) {
+void TrackInfoObject::setAnalyzerProgress(int progress) {
     // progress in 0 .. 1000. QAtomicInt so no need for lock.
-	int oldProgress = m_analyserProgress.fetchAndStoreAcquire(progress);
+	int oldProgress = m_analyzerProgress.fetchAndStoreAcquire(progress);
     if (progress != oldProgress) {
-        m_analyserProgress = progress;
-        emit(analyserProgress(progress));
+        m_analyzerProgress = progress;
+        emit(analyzerProgress(progress));
     }
 }
 
-int TrackInfoObject::getAnalyserProgress() const {
+int TrackInfoObject::getAnalyzerProgress() const {
     // QAtomicInt so no need for lock.
-    return load_atomic(m_analyserProgress);
+    return load_atomic(m_analyzerProgress);
 }
 
 void TrackInfoObject::setCuePoint(float cue) {
@@ -939,17 +934,17 @@ QString TrackInfoObject::getKeyText() const {
     return KeyUtils::getGlobalKeyText(m_keys);
 }
 
-void TrackInfoObject::setBpmLock(bool bpmLock) {
+void TrackInfoObject::setBpmLocked(bool bpmLocked) {
     QMutexLocker lock(&m_qMutex);
-    if (bpmLock != m_bBpmLock) {
-        m_bBpmLock = bpmLock;
+    if (bpmLocked != m_bBpmLocked) {
+        m_bBpmLocked = bpmLocked;
         setDirty(true);
     }
 }
 
-bool TrackInfoObject::hasBpmLock() const {
+bool TrackInfoObject::isBpmLocked() const {
     QMutexLocker lock(&m_qMutex);
-    return m_bBpmLock;
+    return m_bBpmLocked;
 }
 
 void TrackInfoObject::setCoverInfo(const CoverInfo& info) {

@@ -128,15 +128,14 @@ class CueControl : public EngineControl {
     void detachCue(int hotcueNumber);
     void saveCuePoint(double cuePoint);
 
-    bool m_bHotcueCancel;
     bool m_bPreviewing;
-    bool m_bPreviewingHotcue;
     ControlObject* m_pPlayButton;
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
+    bool m_bypassCueSetByPlay;
 
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControl;

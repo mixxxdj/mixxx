@@ -80,7 +80,7 @@ class WOverview : public WWidget {
     void onMarkRangeChange(double v);
 
     void slotWaveformSummaryUpdated();
-    void slotAnalyserProgress(int progress);
+    void slotAnalyzerProgress(int progress);
 
   private:
     // Append the waveform overview pixmap according to available data in waveform
@@ -121,8 +121,8 @@ class WOverview : public WWidget {
     double m_a;
     double m_b;
 
-    double m_dAnalyserProgress;
-    bool m_bAnalyserFinalizing;
+    double m_dAnalyzerProgress;
+    bool m_bAnalyzerFinalizing;
     bool m_trackLoaded;
 };
 

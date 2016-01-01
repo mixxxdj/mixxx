@@ -344,7 +344,16 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjust Beats Later")
             << tr("When tapped, moves the beatgrid right by a small amount.");
 
-    //this is a special case, in some skins (e.g. Deere) we display a transparent png for bpm_tap on top of visual_bpm
+    add("beats_translate_curpos")
+            << tr("Adjust Beatgrid")
+            << QString("%1: %2").arg(leftClick, tr("Adjust beatgrid so the closest beat is aligned with the current play position."))
+            << QString("%1: %2").arg(rightClick, tr("Adjust beatgrid to match another playing deck."));
+
+    add("beats_translate_match_alignment")
+            << tr("Adjust Beatgrid")
+            << tr("Adjust beatgrid to match another playing deck.");
+
+    //this is a special case, in some skins we might display a transparent png for bpm_tap on top of visual_bpm
     add("bpm_tap_visual_bpm")
             << tr("Tempo and BPM Tap")
             << tempoDisplay
@@ -354,14 +363,9 @@ void Tooltips::addStandardTooltips() {
             << tr("Spinning Vinyl")
             << tr("Show/hide the spinning vinyl section.");
 
-    add("beats_translate_curpos")
-            << tr("Adjust Beatgrid")
-            << QString("%1: %2").arg(leftClick, tr("Adjust beatgrid so the closest beat is aligned with the current play position."))
-            << QString("%1: %2").arg(rightClick, tr("Adjust beatgrid to match another playing deck."));
-
     add("keylock")
             << tr("Key-Lock")
-            << tr("Prevents the pitch from from changing when the rate changes.")
+            << tr("Prevents the pitch from changing when the rate changes.")
             << tr("Toggling key-lock during playback may result in a momentary audio glitch.");
 
     // Used in cue/hotcue/loop tooltips below.
@@ -443,8 +447,8 @@ void Tooltips::addStandardTooltips() {
     // TODO(owen): find a better phrase for "the other deck"
     add("sync_reset_key")
             << tr("Sync and Reset Key")
-            << QString("%1: %2").arg(leftClick, tr("Sets the key to a compatible key with the other track key, "
-                                                   "if a key is detected on both."))
+            << QString("%1: %2").arg(leftClick, tr("Sets the pitch to a key that allows a harmonic transition "
+                                                   "from the other track. Requires a detected key on both involved decks."))
             << QString("%1: %2").arg(rightClick, tr("Resets the key to the original track key."));
 
     add("sync_master")
@@ -498,14 +502,32 @@ void Tooltips::addStandardTooltips() {
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("If hotcue is set, clears the hotcue."));
 
+    // Status displays and toggle buttons
+    add("toggle_recording")
+            << tr("Record Mix")
+            << tr("Toggle mix recording.");
+
+    add("shoutcast_enabled")
+            << tr("Enable Live Broadcasting")
+            << tr("Stream your mix over the Internet.")
+            << tr("Provides visual feedback for Live Broadcasting status:")
+            << tr("disabled, connecting, connected, failure.");
+
+    add("passthrough_enabled")
+            << tr("Enable Passthrough")
+            << tr("When enabled, the deck directly plays the audio arriving on the vinyl input.");
+
     add("vinylcontrol_enabled")
             << tr("Enable Vinyl Control")
             << tr("When disabled, the track is controlled by Mixxx playback controls.")
             << tr("When enabled, the track responds to external vinyl control.");
 
-    add("passthrough_enabled")
-            << tr("Enable Passthrough")
-            << tr("When enabled, the deck directly plays the audio arriving on the input.");
+    add("vinylcontrol_status")
+            << tr("Vinyl Status")
+            << tr("Provides visual feedback for vinyl control status:")
+            << tr("Green for control enabled.")
+            << tr("Blinking yellow for when the needle reaches the end of the record.")
+            << tr("Blue for passthrough enabled.");
 
     add("vinylcontrol_mode")
             << tr("Vinyl Control Mode")
@@ -513,11 +535,12 @@ void Tooltips::addStandardTooltips() {
             << tr("Relative mode - track speed equals needle speed regardless of needle position.")
             << tr("Constant mode - track speed equals last known-steady speed regardless of needle input.");
 
-    add("vinylcontrol_status")
-            << tr("Vinyl Status")
-            << tr("Provides visual feedback for vinyl control status:")
-            << tr("Green for control enabled.")
-            << tr("Blinking yellow for when the needle reaches the end of the record.");
+    add("vinylcontrol_cueing")
+            << tr("Vinyl Cueing Mode")
+            << tr("Determines how cue points are treated in vinyl control Relative mode:")
+            << tr("Off - Cue points ignored.")
+            << tr("One Cue - If needle is dropped after the cue point, track will seek to that cue point.")
+            << tr("Hot Cue - Track will seek to nearest previous hot cue point.");
 
     add("loop_in")
             << tr("Loop-In Marker")
@@ -568,13 +591,6 @@ void Tooltips::addStandardTooltips() {
             << tr("Slip Mode")
             << tr("When active, the playback continues muted in the background during a loop, reverse, scratch etc.")
             << tr("Once disabled, the audible playback will resume where the track would have been.");
-
-    add("vinylcontrol_cueing")
-            << tr("Vinyl Cueing Mode")
-            << tr("Determines how cue points are treated in vinyl control Relative mode:")
-            << tr("Off - Cue points ignored.")
-            << tr("One Cue - If needle is dropped after the cue point, track will seek to that cue point.")
-            << tr("Hot Cue - Track will seek to nearest previous hot cue point.");
 
     add("track_time")
             << tr("Track Time")
@@ -637,4 +653,102 @@ void Tooltips::addStandardTooltips() {
     add("starrating")
             << tr("Star Rating")
             << tr("Assign ratings to individual tracks by clicking the stars.");
+
+    // Effect Unit Controls
+    add("EffectUnit_clear")
+            << tr("Clear Unit")
+            << tr("Clear effect unit.");
+
+    add("EffectUnit_enabled")
+            << tr("Toggle Unit")
+            << tr("Enable or disable effect processing.");
+
+    add("EffectUnit_mix")
+            << tr("Dry/Wet")
+            << tr("Adjust the balance between the original (dry) and processed (wet) signal.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("EffectUnit_super1")
+            << tr("Super Knob")
+            << tr("Super Knob (control linked effect parameters).")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("EffectUnit_insertion_type")
+            << tr("Insert/Send Toggle")
+            << tr("Insert/Send Toggle");
+
+    add("EffectUnit_next_chain")
+            << tr("Next Chain")
+            << tr("Next chain preset.");
+
+    add("EffectUnit_prev_chain")
+            << tr("Previous Chain")
+            << tr("Previous chain preset.");
+
+    add("EffectUnit_chain_selector")
+            << tr("Next/Previous Chain")
+            << tr("Next or previous chain preset.");
+
+    add("EffectUnit_group_enabled")
+            << tr("Assign Effect Chain")
+            << tr("Assign effect unit to the channel output.");
+
+    // Effect Slot Controls
+    add("EffectSlot_clear")
+            << tr("Clear")
+            << tr("Clear the current effect.");
+
+    add("EffectSlot_enabled")
+            << tr("Toggle")
+            << tr("Toggle the current effect.");
+
+    add("EffectSlot_next_effect")
+            << tr("Next")
+            << tr("Switch to the next effect.");
+
+    add("EffectSlot_prev_effect")
+            << tr("Previous")
+            << tr("Switch to the previous effect.");
+
+    add("EffectSlot_effect_selector")
+            << tr("Next or Previous")
+            << tr("Switch to either the next or previous effect.");
+
+    add("EffectSlot_parameter")
+            << tr("Effect Parameter")
+            << tr("Adjusts a parameter of the effect.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("EffectSlot_parameter_link_type")
+            << tr("Super Knob Mode")
+            << tr("Set how linked effect parameters change when turning the Super Knob.");
+
+    add("EffectSlot_button_parameter")
+            << tr("Equalizer Parameter Kill")
+            << tr("Holds the gain of the EQ to zero while active.")
+            << eqKillLatch;
+
+    // Quick Effect Rack Controls
+    add("QuickEffectRack_super1")
+            << tr("Quick Effect Super Knob")
+            << tr("Quick Effect Super Knob (control linked effect parameters).")
+            << QString("%1: %2").arg(rightClick, resetToDefault)
+            << tr("Hint: Change the default Quick Effect mode in Preferences -> Equalizers.");
+
+    add("QuickEffectRack_enabled")
+            << tr("Toggle")
+            << tr("Toggle the current effect.")
+            << eqKillLatch;
+
+    // Equalizer Rack Controls
+    add("EqualizerRack_effect_parameter")
+            << tr("Equalizer Parameter")
+            << tr("Adjusts the gain of the EQ filter.")
+            << QString("%1: %2").arg(rightClick, resetToDefault)
+            << tr("Hint: Change the default EQ mode in Preferences -> Equalizers.");
+
+    add("EqualizerRack_effect_button_parameter")
+            << tr("Equalizer Parameter Kill")
+            << tr("Holds the gain of the EQ to zero while active.")
+            << eqKillLatch;
 }

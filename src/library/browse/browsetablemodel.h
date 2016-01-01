@@ -31,6 +31,7 @@ const int COLUMN_ALBUMARTIST = 16;
 const int COLUMN_GROUPING = 17;
 const int COLUMN_FILE_MODIFIED_TIME = 18;
 const int COLUMN_FILE_CREATION_TIME = 19;
+const int COLUMN_REPLAYGAIN = 20;
 
 
 // The BrowseTable models displays tracks

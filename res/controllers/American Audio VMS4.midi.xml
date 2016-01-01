@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.9.0">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.0.0">
    <info>
-      <name>American Audio VMS4</name>
+      <name>American Audio VMS4/4.1</name>
       <author>Anders Gunnarsson &amp; Sean M. Pappalardo</author>
       <wiki>http://mixxx.org/wiki/doku.php/american_audio_vms4</wiki>
-      <description>American Audio VMS4 controller mapping v1.9.2. Requires scripting.</description>
+      <description>2-deck control/4-deck mixer preset for Mixxx 2.0. Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
    </info>
    <controller id="American Audio VMS4">
       <scriptfiles>
@@ -38,6 +38,7 @@
                 <Script-Binding/>
             </options>
          </control>
+         <!-- Temp pitch bend -->
          <control><!-- on -->
             <group>[Channel1]</group>
             <key>rate_temp_down</key>
@@ -75,8 +76,81 @@
             </options>
          </control>
          <control><!-- on -->
+             <group>[Channel1]</group>
+             <key>rate_temp_down</key>
+             <status>0x90</status>
+             <midino>0x0F</midino>
+             <options>
+                 <Button />
+             </options>
+         </control>
+         <control><!-- off -->
+             <group>[Channel1]</group>
+             <key>rate_temp_down</key>
+             <status>0x80</status>
+             <midino>0x0F</midino>
+             <options>
+                 <Spread64 />
+             </options>
+         </control>
+         <control><!-- on -->
+             <group>[Channel1]</group>
+             <key>rate_temp_up</key>
+             <status>0x90</status>
+             <midino>0x10</midino>
+             <options>
+                 <Button />
+             </options>
+         </control>
+         <control><!-- off -->
+             <group>[Channel1]</group>
+             <key>rate_temp_up</key>
+             <status>0x80</status>
+             <midino>0x10</midino>
+             <options>
+                 <Spread64 />
+             </options>
+         </control>
+         <!-- Key adjust -->
+         <control><!-- on -->
+             <group>[Channel1]</group>
+             <key>pitch_down_small</key>
+             <status>0x91</status>
+             <midino>0x0F</midino>
+             <options>
+                 <Button />
+             </options>
+         </control>
+         <control><!-- off -->
+             <group>[Channel1]</group>
+             <key>pitch_down_small</key>
+             <status>0x81</status>
+             <midino>0x0F</midino>
+             <options>
+                 <Spread64 />
+             </options>
+         </control>
+         <control><!-- on -->
+             <group>[Channel1]</group>
+             <key>pitch_up_small</key>
+             <status>0x91</status>
+             <midino>0x10</midino>
+             <options>
+                 <Button />
+             </options>
+         </control>
+         <control><!-- off -->
+             <group>[Channel1]</group>
+             <key>pitch_up_small</key>
+             <status>0x81</status>
+             <midino>0x10</midino>
+             <options>
+                 <Spread64 />
+             </options>
+         </control>
+         <control><!-- on -->
             <group>[Channel1]</group>
-            <key>beatsync</key>
+            <key>sync_enabled</key>
             <status>0x90</status>
             <midino>0x11</midino>
             <options>
@@ -85,7 +159,7 @@
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>beatsync</key>
+            <key>sync_enabled</key>
             <status>0x80</status>
             <midino>0x11</midino>
             <options>
@@ -93,8 +167,8 @@
             </options>
          </control>
          <control><!-- on -->
-            <group>[Channel1]</group>
-            <key>flanger</key>
+            <group>[EffectRack1_EffectUnit1]</group>
+            <key>group_[Channel1]_enable</key>
             <status>0x90</status>
             <midino>0x1B</midino>
             <options>
@@ -102,15 +176,15 @@
             </options>
          </control>
          <control><!-- off -->
-            <group>[Channel1]</group>
-            <key>flanger</key>
+             <group>[EffectRack1_EffectUnit1]</group>
+             <key>group_[Channel1]_enable</key>
             <status>0x80</status>
             <midino>0x1B</midino>
             <options>
                <Spread64 />
             </options>
          </control>
-         <control><!-- knob1-->
+         <control><!-- Effect select knob L -->
             <group>[Channel1]</group>
             <key>VMS4.effectSelect</key>
             <status>0xB0</status>
@@ -119,7 +193,7 @@
                <Script-Binding/>
             </options>
          </control>
-         <control><!-- knob1 press -->
+         <control><!-- Effect select knob press -->
             <group>[Channel1]</group>
             <key>VMS4.effectSelectPress</key>
             <status>0x90</status>
@@ -128,7 +202,7 @@
                <Script-Binding/>
             </options>
          </control>
-         <control><!-- knob1 release -->
+         <control><!-- Effect select knob release -->
             <group>[Channel1]</group>
             <key>VMS4.effectSelectPress</key>
             <status>0x80</status>
@@ -137,14 +211,32 @@
                <Script-Binding/>
             </options>
          </control>
-         <control><!-- knob2 -->
-            <group>[Flanger]</group>
-            <key>lfoDepth</key>
+         <control><!-- Effect control knob -->
+            <group>[Channel1]</group>
+            <key>VMS4.effectControl</key>
             <status>0xB0</status>
             <midino>0x25</midino>
             <options>
-                <soft-takeover/>
+                <Script-Binding/>
             </options>
+         </control>
+         <control><!-- Effect parameter button press -->
+             <group>[Channel1]</group>
+             <key>VMS4.effectParameterButton</key>
+             <status>0x90</status>
+             <midino>0x1C</midino>
+             <options>
+                 <Script-Binding/>
+             </options>
+         </control>
+         <control><!-- Effect parameter button release -->
+             <group>[Channel1]</group>
+             <key>VMS4.effectParameterButton</key>
+             <status>0x80</status>
+             <midino>0x1C</midino>
+             <options>
+                 <Script-Binding/>
+             </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
@@ -182,6 +274,12 @@
             <status>0x90</status>
             <midino>0x0D</midino>
          </control>
+         <control><!-- off -->
+             <group>[Channel1]</group>
+             <key>play</key>
+             <status>0x80</status>
+             <midino>0x0D</midino>
+         </control>
          <control><!-- Shifted Play -->
             <group>[Channel1]</group>
             <key>start_play</key>
@@ -193,6 +291,18 @@
             <key>start_play</key>
             <status>0x81</status>
             <midino>0x0D</midino>
+         </control>
+         <control><!-- on -->
+            <group>[Channel1]</group>
+            <key>stop</key>
+            <status>0x90</status>
+            <midino>0x0E</midino>
+         </control>
+         <control><!-- off -->
+            <group>[Channel1]</group>
+            <key>stop</key>
+            <status>0x80</status>
+            <midino>0x0E</midino>
          </control>
          <!-- Hot Cues, deck 1 -->
          <control><!-- on -->
@@ -652,9 +762,46 @@
                <Spread64 />
             </options>
          </control>
+         <!-- Key adjust -->
+         <control><!-- on -->
+             <group>[Channel2]</group>
+             <key>pitch_down_small</key>
+             <status>0x91</status>
+             <midino>0x31</midino>
+             <options>
+                 <Button />
+             </options>
+         </control>
+         <control><!-- off -->
+             <group>[Channel2]</group>
+             <key>pitch_down_small</key>
+             <status>0x81</status>
+             <midino>0x31</midino>
+             <options>
+                 <Spread64 />
+             </options>
+         </control>
+         <control><!-- on -->
+             <group>[Channel2]</group>
+             <key>pitch_up_small</key>
+             <status>0x91</status>
+             <midino>0x32</midino>
+             <options>
+                 <Button />
+             </options>
+         </control>
+         <control><!-- off -->
+             <group>[Channel2]</group>
+             <key>pitch_up_small</key>
+             <status>0x81</status>
+             <midino>0x32</midino>
+             <options>
+                 <Spread64 />
+             </options>
+         </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>beatsync</key>
+            <key>sync_enabled</key>
             <status>0x90</status>
             <midino>0x33</midino>
             <options>
@@ -663,7 +810,7 @@
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>beatsync</key>
+            <key>sync_enabled</key>
             <status>0x80</status>
             <midino>0x33</midino>
             <options>
@@ -671,8 +818,8 @@
             </options>
          </control>
          <control><!-- on -->
-            <group>[Channel2]</group>
-            <key>flanger</key>
+            <group>[EffectRack1_EffectUnit2]</group>
+            <key>group_[Channel2]_enable</key>
             <status>0x90</status>
             <midino>0x3D</midino>
             <options>
@@ -680,15 +827,15 @@
             </options>
          </control>
          <control><!-- off -->
-            <group>[Channel2]</group>
-            <key>flanger</key>
+            <group>[EffectRack1_EffectUnit2]</group>
+            <key>group_[Channel2]_enable</key>
             <status>0x80</status>
             <midino>0x3D</midino>
             <options>
                <Spread64 />
             </options>
          </control>
-         <control><!-- knob1-->
+         <control><!-- Effect select knob R -->
             <group>[Channel2]</group>
             <key>VMS4.effectSelect</key>
             <status>0xB0</status>
@@ -697,7 +844,7 @@
                <Script-Binding/>
             </options>
          </control>
-         <control><!-- knob1 press -->
+         <control><!-- Effect select knob press -->
             <group>[Channel2]</group>
             <key>VMS4.effectSelectPress</key>
             <status>0x90</status>
@@ -706,7 +853,7 @@
                <Script-Binding/>
             </options>
          </control>
-         <control><!-- knob1 release -->
+         <control><!-- Effect select knob release -->
             <group>[Channel2]</group>
             <key>VMS4.effectSelectPress</key>
             <status>0x80</status>
@@ -715,14 +862,32 @@
                <Script-Binding/>
             </options>
          </control>
-         <control><!-- knob2 -->
-            <group>[Flanger]</group>
-            <key>lfoDepth</key>
+         <control><!-- Effect control knob -->
+            <group>[Channel2]</group>
+            <key>VMS4.effectControl</key>
             <status>0xB0</status>
             <midino>0x2A</midino>
             <options>
-                <soft-takeover/>
+                <Script-Binding/>
             </options>
+         </control>
+         <control><!-- Effect parameter button press -->
+             <group>[Channel2]</group>
+             <key>VMS4.effectParameterButton</key>
+             <status>0x90</status>
+             <midino>0x3E</midino>
+             <options>
+                 <Script-Binding/>
+             </options>
+         </control>
+         <control><!-- Effect parameter button release -->
+             <group>[Channel2]</group>
+             <key>VMS4.effectParameterButton</key>
+             <status>0x80</status>
+             <midino>0x3E</midino>
+             <options>
+                 <Script-Binding/>
+             </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
@@ -771,6 +936,18 @@
             <key>start_play</key>
             <status>0x81</status>
             <midino>0x2F</midino>
+         </control>
+         <control><!-- on -->
+            <group>[Channel2]</group>
+            <key>stop</key>
+            <status>0x90</status>
+            <midino>0x30</midino>
+         </control>
+         <control><!-- off -->
+            <group>[Channel2]</group>
+            <key>stop</key>
+            <status>0x80</status>
+            <midino>0x30</midino>
          </control>
         <!-- Hot Cues, deck 2 -->
          <control><!-- on -->
@@ -1227,8 +1404,8 @@
             </options>
          </control>
          <control>
-            <group>[Channel1]</group>
-            <key>filterHigh</key>
+            <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+            <key>parameter3</key>
             <status>0xB0</status>
             <midino>0x06</midino>
             <options>
@@ -1236,8 +1413,8 @@
             </options>
          </control>
          <control>
-            <group>[Channel1]</group>
-            <key>filterMid</key>
+            <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+            <key>parameter2</key>
             <status>0xB0</status>
             <midino>0x07</midino>
             <options>
@@ -1245,8 +1422,8 @@
             </options>
          </control>
          <control>
-            <group>[Channel1]</group>
-            <key>filterLow</key>
+            <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+            <key>parameter1</key>
             <status>0xB0</status>
             <midino>0x08</midino>
             <options>
@@ -1292,8 +1469,8 @@
             </options>
          </control>
          <control>
-            <group>[Channel2]</group>
-            <key>filterHigh</key>
+            <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+            <key>parameter3</key>
             <status>0xB0</status>
             <midino>0x0B</midino>
             <options>
@@ -1301,8 +1478,8 @@
             </options>
          </control>
          <control>
-            <group>[Channel2]</group>
-            <key>filterMid</key>
+            <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+            <key>parameter2</key>
             <status>0xB0</status>
             <midino>0x0C</midino>
             <options>
@@ -1310,8 +1487,8 @@
             </options>
          </control>
          <control>
-            <group>[Channel2]</group>
-            <key>filterLow</key>
+            <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+            <key>parameter1</key>
             <status>0xB0</status>
             <midino>0x0D</midino>
             <options>
@@ -1345,6 +1522,137 @@
                <Spread64 />
             </options>
          </control>
+         
+         <!-- Mixer channel 3 -->
+         <control>
+             <group>[Channel3]</group>
+             <key>pregain</key>
+             <status>0xB0</status>
+             <midino>0x00</midino>
+             <options>
+                 <soft-takeover />
+             </options>
+         </control>
+         <control>
+             <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+             <key>parameter3</key>
+             <status>0xB0</status>
+             <midino>0x01</midino>
+             <options>
+                 <soft-takeover />
+             </options>
+         </control>
+         <control>
+             <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+             <key>parameter2</key>
+             <status>0xB0</status>
+             <midino>0x02</midino>
+             <options>
+                 <soft-takeover />
+             </options>
+         </control>
+         <control>
+             <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+             <key>parameter1</key>
+             <status>0xB0</status>
+             <midino>0x03</midino>
+             <options>
+                 <soft-takeover />
+             </options>
+         </control>
+         <control>
+             <group>[Channel3]</group>
+             <key>volume</key>
+             <status>0xB0</status>
+             <midino>0x04</midino>
+             <options>
+                 <soft-takeover />
+             </options>
+         </control>
+         <control><!-- on -->
+             <group>[Channel3]</group>
+             <key>pfl</key>
+             <status>0x90</status>
+             <midino>0x2A</midino>
+             <options>
+                 <Button />
+             </options>
+         </control>
+         <control><!-- off -->
+             <group>[Channel3]</group>
+             <key>pfl</key>
+             <status>0x80</status>
+             <midino>0x2A</midino>
+             <options>
+                 <Spread64 />
+             </options>
+         </control>
+         
+         <!-- Mixer channel 4 -->
+         <control>
+             <group>[Channel4]</group>
+             <key>pregain</key>
+             <status>0xB0</status>
+             <midino>0x0F</midino>
+             <options>
+                 <soft-takeover />
+             </options>
+         </control>
+         <control>
+             <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+             <key>parameter3</key>
+             <status>0xB0</status>
+             <midino>0x10</midino>
+             <options>
+                 <soft-takeover />
+             </options>
+         </control>
+         <control>
+             <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+             <key>parameter2</key>
+             <status>0xB0</status>
+             <midino>0x11</midino>
+             <options>
+                 <soft-takeover />
+             </options>
+         </control>
+         <control>
+             <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+             <key>parameter1</key>
+             <status>0xB0</status>
+             <midino>0x12</midino>
+             <options>
+                 <soft-takeover />
+             </options>
+         </control>
+         <control>
+             <group>[Channel4]</group>
+             <key>volume</key>
+             <status>0xB0</status>
+             <midino>0x13</midino>
+             <options>
+                 <soft-takeover />
+             </options>
+         </control>
+         <control><!-- on -->
+             <group>[Channel4]</group>
+             <key>pfl</key>
+             <status>0x90</status>
+             <midino>0x2D</midino>
+             <options>
+                 <Button />
+             </options>
+         </control>
+         <control><!-- off -->
+             <group>[Channel4]</group>
+             <key>pfl</key>
+             <status>0x80</status>
+             <midino>0x2D</midino>
+             <options>
+                 <Spread64 />
+             </options>
+         </control>
+         
          <!-- Samplers -->
          <!-- 1 -->
          <control>
@@ -1532,14 +1840,14 @@
       <outputs>
         <output>
             <group>[Channel1]</group>
-            <key>play</key>
+            <key>play_indicator</key>
             <status>0x90</status>
             <midino>0x0D</midino>
             <minimum>0.5</minimum>
         </output>
         <output>
             <group>[Channel2]</group>
-            <key>play</key>
+            <key>play_indicator</key>
             <status>0x90</status>
             <midino>0x2F</midino>
             <minimum>0.5</minimum>
@@ -1562,14 +1870,14 @@
         </output>
         <output>
             <group>[Channel1]</group>
-            <key>cue_default</key>
+            <key>cue_indicator</key>
             <status>0x90</status>
             <midino>0x0C</midino>
             <minimum>0.5</minimum>
         </output>
         <output>
             <group>[Channel2]</group>
-            <key>cue_default</key>
+            <key>cue_indicator</key>
             <status>0x90</status>
             <midino>0x2E</midino>
             <minimum>0.5</minimum>
@@ -1586,6 +1894,20 @@
             <key>pfl</key>
             <status>0x90</status>
             <midino>0x2C</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel3]</group>
+            <key>pfl</key>
+            <status>0x90</status>
+            <midino>0x2A</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel4]</group>
+            <key>pfl</key>
+            <status>0x90</status>
+            <midino>0x2D</midino>
             <minimum>0.5</minimum>
         </output>
         <output>
@@ -1618,14 +1940,14 @@
         </output>
         <output>
             <group>[Channel1]</group>
-            <key>beatsync</key>
+            <key>sync_enabled</key>
             <status>0x90</status>
             <midino>0x16</midino>
             <minimum>0.5</minimum>
         </output>
         <output>
             <group>[Channel2]</group>
-            <key>beatsync</key>
+            <key>sync_enabled</key>
             <status>0x90</status>
             <midino>0x38</midino>
             <minimum>0.5</minimum>
@@ -1659,15 +1981,15 @@
             <minimum>0.5</minimum>
         </output>
         <output>
-            <group>[Channel1]</group>
-            <key>flanger</key>
+            <group>[EffectRack1_EffectUnit1]</group>
+            <key>group_[Channel1]_enable</key>
             <status>0x90</status>
             <midino>0x1B</midino>
             <minimum>0.5</minimum>
         </output>
         <output>
-            <group>[Channel2]</group>
-            <key>flanger</key>
+            <group>[EffectRack1_EffectUnit2]</group>
+            <key>group_[Channel2]_enable</key>
             <status>0x90</status>
             <midino>0x3D</midino>
             <minimum>0.5</minimum>
@@ -1900,14 +2222,14 @@
         </output>
         <output>
             <group>[Sampler1]</group>
-            <key>play</key>
+            <key>play_indicator</key>
             <status>0x90</status>
             <midino>0x1D</midino>
             <minimum>0.5</minimum>
         </output>
         <output>
             <group>[Sampler2]</group>
-            <key>play</key>
+            <key>play_indicator</key>
             <status>0x90</status>
             <midino>0x3F</midino>
             <minimum>0.5</minimum>

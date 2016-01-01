@@ -22,7 +22,7 @@ class OpenGLES(Feature):
           		return
 		if build.flags['opengles']:
 			build.env.Append(CPPDEFINES='__OPENGLES__')
-	
+
 	def sources(self, build):
 		return []
 
@@ -64,7 +64,7 @@ class HSS1394(Feature):
 
 
 class HID(Feature):
-    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-pre'
+    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-rc1'
 
     def description(self):
         return "HID controller support"
@@ -120,8 +120,9 @@ class HID(Feature):
             sources.append(
                 os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
         elif build.platform_is_linux:
+            # hidapi compiles the libusb implementation by default on Linux
             sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
+                os.path.join(self.HIDAPI_INTERNAL_PATH, 'libusb/hid.c'))
         elif build.platform_is_osx:
             sources.append(
                 os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
@@ -362,7 +363,7 @@ class Vamp(Feature):
     INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
 
     def description(self):
-        return "Vamp Analysers support"
+        return "Vamp Analyzer support"
 
     def enabled(self, build):
         build.flags['vamp'] = util.get_flags(build.env, 'vamp', 1)
@@ -399,9 +400,9 @@ class Vamp(Feature):
                 'pkg-config fftw3 --silence-errors --cflags --libs')
 
     def sources(self, build):
-        sources = ['vamp/vampanalyser.cpp',
-                   'vamp/vamppluginloader.cpp',
-                   'analyserbeats.cpp',
+        sources = ['analyzer/vamp/vampanalyzer.cpp',
+                   'analyzer/vamp/vamppluginloader.cpp',
+                   'analyzer/analyzerbeats.cpp',
                    'dlgprefbeats.cpp']
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
@@ -772,6 +773,7 @@ class TestSuite(Feature):
 
         env = test_env
         SCons.Export('env')
+        SCons.Export('build')
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
@@ -781,6 +783,12 @@ class TestSuite(Feature):
         test_env['LIB_OUTPUT'] = '#/lib/gmock-1.7.0/lib'
 
         env.SConscript(env.File('SConscript', gmock_dir))
+
+        # Build the benchmark library
+        test_env.Append(CPPPATH="#lib/benchmark/include")
+        benchmark_dir = test_env.Dir("#lib/benchmark")
+        test_env['LIB_OUTPUT'] = '#/lib/benchmark/lib'
+        env.SConscript(env.File('SConscript', benchmark_dir))
 
         return []
 
@@ -971,8 +979,12 @@ class Optimize(Feature):
         return "Optimization and Tuning"
 
     @staticmethod
-    def get_optimization_level():
-        optimize_level = SCons.ARGUMENTS.get('optimize', Optimize.LEVEL_DEFAULT)
+    def get_optimization_level(build):
+        optimize_level = build.env.get('optimize', None)
+        if optimize_level is None:
+            optimize_level = SCons.ARGUMENTS.get('optimize',
+                                                 Optimize.LEVEL_DEFAULT)
+
         try:
             optimize_integer = int(optimize_level)
             if optimize_integer == 0:
@@ -998,7 +1010,7 @@ class Optimize(Feature):
         return optimize_level
 
     def enabled(self, build):
-        build.flags['optimize'] = Optimize.get_optimization_level()
+        build.flags['optimize'] = Optimize.get_optimization_level(build)
         return build.flags['optimize'] != Optimize.LEVEL_OFF
 
     def add_options(self, build, vars):
@@ -1055,7 +1067,7 @@ class Optimize(Feature):
             if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
-                # SSE and SSE2 are core instructions on x64 
+                # SSE and SSE2 are core instructions on x64
                 # and consequently raise a warning message from compiler with this flag on x64.
                 if not build.machine_is_64bit:
                     build.env.Append(CCFLAGS='/arch:SSE2')
@@ -1103,6 +1115,9 @@ class Optimize(Feature):
                         # the sse flags are not set by default on 32 bit builds
                         # but are not supported on arm builds
                         build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = "portable"
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
                 else:
                     self.status = "portable"
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
@@ -1127,6 +1142,9 @@ class Optimize(Feature):
                     # the sse flags are not set by default on 32 bit builds
                     # but are not supported on arm builds
                     build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = "portable"
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
             elif optimize_level == Optimize.LEVEL_LEGACY:
                 if build.architecture_is_x86:
                     self.status = "legacy: pure i386 code"

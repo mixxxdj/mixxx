@@ -14,6 +14,7 @@
     <Size>40f,30f</Size>
     <Children>
       <Template src="skin:small_knob.xml">
+        <SetVariable name="TooltipId">EffectSlot_parameter</SetVariable>
         <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
         <SetVariable name="control">parameter<Variable name="EffectParameter"/></SetVariable>
         <SetVariable name="color"><Variable name="color"/></SetVariable>
@@ -26,6 +27,32 @@
         <Effect><Variable name="Effect"/></Effect>
         <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
       </EffectParameterName>
+
+      <Template src="skin:left_5state_button.xml">
+        <!-- Button has no text/images, qss only -->
+        <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
+        <SetVariable name="ObjectName">EffectSlotParameterLinkTypeButton</SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="SmallHorizontalStretchLinkButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="SmallHorizontalStretchLinkButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="SmallHorizontalStretchLinkButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed"></SetVariable>
+        <SetVariable name="state_0_unpressed"></SetVariable>
+        <SetVariable name="state_1_text"></SetVariable>
+        <SetVariable name="state_1_pressed"></SetVariable>
+        <SetVariable name="state_1_unpressed"></SetVariable>
+        <SetVariable name="state_2_text"></SetVariable>
+        <SetVariable name="state_2_pressed"></SetVariable>
+        <SetVariable name="state_2_unpressed"></SetVariable>
+        <SetVariable name="state_3_text"></SetVariable>
+        <SetVariable name="state_3_pressed"></SetVariable>
+        <SetVariable name="state_3_unpressed"></SetVariable>
+        <SetVariable name="state_4_text"></SetVariable>
+        <SetVariable name="state_4_pressed"></SetVariable>
+        <SetVariable name="state_4_unpressed"></SetVariable>
+        <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
+      </Template>
+
     </Children>
     <Connection>
       <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>

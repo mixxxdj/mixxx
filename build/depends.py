@@ -20,7 +20,7 @@ class PortAudio(Dependence):
             conf.CheckLib('advapi32')
 
     def sources(self, build):
-        return ['sounddeviceportaudio.cpp']
+        return ['soundio/sounddeviceportaudio.cpp']
 
 
 class PortMIDI(Dependence):
@@ -438,7 +438,7 @@ class SoundTouch(Dependence):
 
         # If we do not want optimizations then disable them.
         optimize = (build.flags['optimize'] if 'optimize' in build.flags
-                    else Optimize.get_optimization_level())
+                    else Optimize.get_optimization_level(build))
         if optimize == Optimize.LEVEL_OFF:
             env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
 
@@ -497,6 +497,20 @@ class ProtoBuf(Dependence):
             raise Exception(
                 "Could not find libprotobuf or its development headers.")
 
+class FpClassify(Dependence):
+
+    def enabled(self, build):
+        return build.toolchain_is_gnu
+
+    # This is a wrapper arround the fpclassify function that pevents inlining
+    # It is compiled without optimization and allows to use these function
+    # from -ffast-math optimized objects
+    def sources(self, build):
+        # add this file without fast-math flag
+        env = build.env.Clone()
+        if '-ffast-math' in env['CCFLAGS']:
+                env['CCFLAGS'].remove('-ffast-math')
+        return env.Object('util/fpclassify.cpp')
 
 class QtScriptByteArray(Dependence):
     def configure(self, build, conf):
@@ -654,10 +668,10 @@ class MixxxCore(Feature):
                    "cachingreaderchunk.cpp",
                    "cachingreaderworker.cpp",
 
-                   "analyserrg.cpp",
-                   "analyserqueue.cpp",
-                   "analyserwaveform.cpp",
-                   "analyserkey.cpp",
+                   "analyzer/analyzerkey.cpp",
+                   "analyzer/analyzerqueue.cpp",
+                   "analyzer/analyzerwaveform.cpp",
+                   "analyzer/analyzergain.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -696,10 +710,6 @@ class MixxxCore(Feature):
                    "sources/soundsourcepluginlibrary.cpp",
                    "sources/soundsource.cpp",
                    "sources/audiosource.cpp",
-
-                   "metadata/trackmetadata.cpp",
-                   "metadata/trackmetadatataglib.cpp",
-                   "metadata/audiotagger.cpp",
 
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
@@ -748,7 +758,7 @@ class MixxxCore(Feature):
                    "widget/wcoverartmenu.cpp",
                    "widget/wsingletoncontainer.cpp",
 
-                   "network.cpp",
+                   "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",
                    "musicbrainz/gzip.cpp",
                    "musicbrainz/crc.c",
@@ -756,7 +766,6 @@ class MixxxCore(Feature):
                    "musicbrainz/chromaprinter.cpp",
                    "musicbrainz/musicbrainzclient.cpp",
 
-                   "rotary.cpp",
                    "widget/wtracktableview.cpp",
                    "widget/wtracktableviewheader.cpp",
                    "widget/wlibrarysidebar.cpp",
@@ -914,11 +923,6 @@ class MixxxCore(Feature):
                    "skin/pixmapsource.cpp",
                    "skin/launchimage.cpp",
 
-                   "sampleutil.cpp",
-                   "samplebuffer.cpp",
-                   "singularsamplebuffer.cpp",
-                   "circularsamplebuffer.cpp",
-
                    "trackinfoobject.cpp",
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
@@ -927,6 +931,12 @@ class MixxxCore(Feature):
                    "track/keys.cpp",
                    "track/keyfactory.cpp",
                    "track/keyutils.cpp",
+                   "track/playcounter.cpp",
+                   "track/replaygain.cpp",
+                   "track/bpm.cpp",
+                   "track/trackmetadata.cpp",
+                   "track/trackmetadatataglib.cpp",
+                   "track/audiotagger.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
@@ -935,10 +945,12 @@ class MixxxCore(Feature):
                    "previewdeck.cpp",
                    "playermanager.cpp",
                    "samplerbank.cpp",
-                   "sounddevice.cpp",
-                   "soundmanager.cpp",
-                   "soundmanagerconfig.cpp",
-                   "soundmanagerutil.cpp",
+                   "soundio/sounddevice.cpp",
+                   "soundio/sounddevicenetwork.cpp",
+                   "engine/sidechain/enginenetworkstream.cpp",
+                   "soundio/soundmanager.cpp",
+                   "soundio/soundmanagerconfig.cpp",
+                   "soundio/soundmanagerutil.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
                    "visualplayposition.cpp",
@@ -969,6 +981,11 @@ class MixxxCore(Feature):
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
                    "util/dbid.cpp",
+                   "util/sample.cpp",
+                   "util/samplebuffer.cpp",
+                   "util/singularsamplebuffer.cpp",
+                   "util/circularsamplebuffer.cpp",
+                   "util/rotary.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -1138,6 +1155,12 @@ class MixxxCore(Feature):
             # to quickly test if a folder has subfolders
             build.env.Append(LIBS='shell32')
 
+            # Causes the cmath headers to declare M_PI and friends.
+            # http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx
+            # We could define this in our headers but then include order
+            # matters since headers we don't control may include cmath first.
+            build.env.Append(CPPDEFINES='_USE_MATH_DEFINES')
+
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
 
@@ -1219,7 +1242,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
-                QtScriptByteArray, Reverb]
+                QtScriptByteArray, Reverb, FpClassify]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

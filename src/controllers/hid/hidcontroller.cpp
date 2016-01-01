@@ -14,6 +14,8 @@
 #include "controllers/defs_controllers.h"
 #include "util/compatibility.h"
 #include "util/trace.h"
+#include "controllers/controllerdebug.h"
+#include "util/time.h"
 
 HidReader::HidReader(hid_device* device)
         : QThread(),
@@ -40,24 +42,10 @@ void HidReader::run() {
             Trace process("HidReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData(reinterpret_cast<char*>(data), result);
-            emit(incomingData(outData));
+            emit(incomingData(outData, Time::elapsedDuration()));
         }
     }
     delete [] data;
-}
-
-QString safeDecodeWideString(const wchar_t* pStr, size_t max_length) {
-#ifdef __WINDOWS__
-    // We cannot use Qts wchar_t functions, since the may work or not
-    // depending on the '/Zc:wchar_t-' build flag in the Qt configs
-    if (sizeof(wchar_t) == sizeof(QChar)) {
-        return QString::fromUtf16((const ushort *)pStr, (int)max_length);
-    } else {
-        return QString::fromUcs4((uint *)pStr, (int)max_length);
-    }
-#else
-    return QString::fromWCharArray(pStr, (int)max_length);
-#endif
 }
 
 HidController::HidController(const hid_device_info deviceInfo)
@@ -79,7 +67,7 @@ HidController::HidController(const hid_device_info deviceInfo)
     }
 
     // Don't trust path to be null terminated.
-    hid_path = new char[PATH_MAX+1];
+    hid_path = new char[PATH_MAX + 1];
     strncpy(hid_path, deviceInfo.path, PATH_MAX);
     hid_path[PATH_MAX] = 0;
 
@@ -122,7 +110,9 @@ HidController::HidController(const hid_device_info deviceInfo)
 }
 
 HidController::~HidController() {
-    close();
+    if (isOpen()) {
+        close();
+    }
     delete [] hid_path;
     delete [] hid_serial_raw;
 }
@@ -227,17 +217,14 @@ int HidController::open() {
     }
 
     // Open device by path
-    if (debugging()) {
-        qDebug() << "Opening HID device"
-                 << getName() << "by HID path" << hid_path;
-    }
+    controllerDebug("Opening HID device" << getName() << "by HID path" << hid_path);
+
     m_pHidDevice = hid_open_path(hid_path);
 
     // If that fails, try to open device with vendor/product/serial #
     if (m_pHidDevice == NULL) {
-        if (debugging())
-            qDebug() << "Failed. Trying to open with make, model & serial no:"
-                << hid_vendor_id << hid_product_id << hid_serial;
+        controllerDebug("Failed. Trying to open with make, model & serial no:"
+                << hid_vendor_id << hid_product_id << hid_serial);
         m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, hid_serial_raw);
     }
 
@@ -265,8 +252,8 @@ int HidController::open() {
         m_pReader = new HidReader(m_pHidDevice);
         m_pReader->setObjectName(QString("HidReader %1").arg(getName()));
 
-        connect(m_pReader, SIGNAL(incomingData(QByteArray)),
-                this, SLOT(receive(QByteArray)));
+        connect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
+                this, SLOT(receive(QByteArray, mixxx::Duration)));
 
         // Controller input needs to be prioritized since it can affect the
         // audio directly, like when scratching
@@ -289,11 +276,11 @@ int HidController::close() {
         qWarning() << "HidReader not present for" << getName()
                    << "yet the device is open!";
     } else {
-        disconnect(m_pReader, SIGNAL(incomingData(QByteArray)),
-                   this, SLOT(receive(QByteArray)));
+        disconnect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
+                   this, SLOT(receive(QByteArray, mixxx::Duration)));
         m_pReader->stop();
         hid_set_nonblocking(m_pHidDevice, 1);   // Quit blocking
-        if (debugging()) qDebug() << "  Waiting on reader to finish";
+        controllerDebug("  Waiting on reader to finish");
         m_pReader->wait();
         delete m_pReader;
         m_pReader = NULL;
@@ -304,9 +291,7 @@ int HidController::close() {
     stopEngine();
 
     // Close device
-    if (debugging()) {
-        qDebug() << "  Closing device";
-    }
+    controllerDebug("  Closing device");
     hid_close(m_pHidDevice);
     setOpen(false);
     return 0;
@@ -331,7 +316,7 @@ void HidController::send(QByteArray data, unsigned int reportID) {
 
     int result = hid_write(m_pHidDevice, (unsigned char*)data.constData(), data.size());
     if (result == -1) {
-        if (debugging()) {
+        if (ControllerDebug::enabled()) {
             qWarning() << "Unable to send data to" << getName()
                        << "serial #" << hid_serial << ":"
                        << safeDecodeWideString(hid_error(m_pHidDevice), 512);
@@ -339,9 +324,30 @@ void HidController::send(QByteArray data, unsigned int reportID) {
             qWarning() << "Unable to send data to" << getName() << ":"
                        << safeDecodeWideString(hid_error(m_pHidDevice), 512);
         }
-    } else if (debugging()) {
-        qDebug() << result << "bytes sent to" << getName()
+    } else {
+        controllerDebug(result << "bytes sent to" << getName()
                  << "serial #" << hid_serial
-                 << "(including report ID of" << reportID << ")";
+                 << "(including report ID of" << reportID << ")");
+    }
+}
+
+//static
+QString HidController::safeDecodeWideString(const wchar_t* pStr, size_t max_length) {
+    if (pStr == NULL) {
+        return QString();
+    }
+    // find a terminating 0 or take all chars
+    int size = 0;
+    while ((size < (int)max_length) && (pStr[size] != 0)) {
+        ++size;
+    }
+    // inlining QString::fromWCharArray()
+    // We cannot use Qts wchar_t functions, since they may work or not
+    // depending on the '/Zc:wchar_t-' build flag in the Qt configs
+    // on Windows build
+    if (sizeof(wchar_t) == sizeof(QChar)) {
+        return QString::fromUtf16((const ushort *)pStr, size);
+    } else {
+        return QString::fromUcs4((uint *)pStr, size);
     }
 }

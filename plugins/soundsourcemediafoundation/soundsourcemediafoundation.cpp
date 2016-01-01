@@ -109,9 +109,12 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
     }
 
     // Create the source reader to read the input file.
-    static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
-    hr = MFCreateSourceReaderFromURL(
-            (wchar_t*)getFilename().utf16(),
+    // Note: we cannot use QString::toStdWString since QT 4 is compiled with
+    // '/Zc:wchar_t-' flag and QT 5 not
+    const ushort* const fileNameUtf16 = fileName.utf16();
+    static_assert(sizeof(wchar_t) == sizeof(ushort), "QString::utf16(): wchar_t and ushort have different sizes");
+    HRESULT hr = MFCreateSourceReaderFromURL(
+            reinterpret_cast<const wchar_t*>(fileNameUtf16),
             NULL,
             &m_pReader);
 
@@ -131,7 +134,7 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
     }
 
     //Seek to position 0, which forces us to skip over all the header frames.
-    //This makes sure we're ready to just let the Analyser rip and it'll
+    //This makes sure we're ready to just let the Analyzer rip and it'll
     //get the number of samples it expects (ie. no header frames).
     seekSampleFrame(0);
 
@@ -139,8 +142,6 @@ Result SoundSourceMediaFoundation::tryOpen(const AudioSourceConfig& audioSrcCfg)
 }
 
 void SoundSourceMediaFoundation::close() {
-    delete[] m_wcFilename;
-    m_wcFilename = NULL;
     delete[] m_leftoverBuffer;
     m_leftoverBuffer = NULL;
 
@@ -162,7 +163,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     if (sDebug) {
         qDebug() << "seekSampleFrame()" << frameIndex;
     }
-    qint64 mfSeekTarget(mfFromFrame(frameIndex, getFrameRate()) - 1);
+    qint64 mfSeekTarget(mfFromFrame(frameIndex, getSamplingRate()) - 1);
     // minus 1 here seems to make our seeking work properly, otherwise we will
     // (more often than not, maybe always) seek a bit too far (although not
     // enough for our calculatedFrameFromMF <= nextFrame assertion in ::read).
@@ -250,7 +251,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
 
         if (sDebug) {
             qDebug() << "ReadSample timestamp:" << timestamp << "frame:"
-                    << frameFromMF(timestamp, getFrameRate()) << "dwflags:" << dwFlags;
+                    << frameFromMF(timestamp, getSamplingRate()) << "dwflags:" << dwFlags;
         }
 
         if (dwFlags & MF_SOURCE_READERF_ERROR) {
@@ -290,7 +291,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         SINT bufferLength = samples2frames(bufferLengthInBytes / sizeof(buffer[0]));
 
         if (m_seeking) {
-            qint64 bufferPosition(frameFromMF(timestamp, getFrameRate()));
+            qint64 bufferPosition(frameFromMF(timestamp, getSamplingRate()));
             if (sDebug) {
                 qDebug() << "While seeking to " << m_nextFrame
                         << "WMF put us at" << bufferPosition;
@@ -495,8 +496,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     } else {
         qDebug() << "Number of channels in input stream" << numChannels;
     }
-    if (isValidChannelCount(audioSrcCfg.channelCountHint)) {
-        numChannels = audioSrcCfg.channelCountHint;
+    if (audioSrcCfg.hasChannelCount()) {
+        numChannels = audioSrcCfg.getChannelCount();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_NUM_CHANNELS, numChannels);
         if (FAILED(hr)) {
@@ -519,8 +520,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
     } else {
         qDebug() << "Samples per second in input stream" << samplesPerSecond;
     }
-    if (isValidFrameRate(audioSrcCfg.frameRateHint)) {
-        samplesPerSecond = audioSrcCfg.frameRateHint;
+    if (audioSrcCfg.hasSamplingRate()) {
+        samplesPerSecond = audioSrcCfg.getSamplingRate();
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_SAMPLES_PER_SECOND, samplesPerSecond);
         if (FAILED(hr)) {
@@ -581,7 +582,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const AudioSourceConfig& a
             << "failed to get the actual sample rate";
         return false;
     }
-    setFrameRate(samplesPerSecond);
+    setSamplingRate(samplesPerSecond);
 
     UINT32 leftoverBufferSizeInBytes = 0;
     hr = pAudioType->GetUINT32(MF_MT_SAMPLE_SIZE, &leftoverBufferSizeInBytes);
@@ -612,14 +613,14 @@ bool SoundSourceMediaFoundation::readProperties() {
         return false;
     }
     m_mfDuration = prop.hVal.QuadPart;
-    setFrameCount(frameFromMF(m_mfDuration, getFrameRate()));
+    setFrameCount(frameFromMF(m_mfDuration, getSamplingRate()));
     qDebug() << "SSMF: Frame count" << getFrameCount();
     PropVariantClear(&prop);
 
     // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
     // presentation descriptors, one of which MFSourceReader is not.
     // Therefore, we calculate it ourselves.
-    setBitrate(kBitsPerSample * frames2samples(getFrameRate()));
+    setBitrate(kBitsPerSample * frames2samples(getSamplingRate()));
 
     return true;
 }

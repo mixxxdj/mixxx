@@ -154,11 +154,11 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     m_pResample->openMixxx(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_FLT);
 
     setChannelCount(m_pCodecCtx->channels);
-    setFrameRate(m_pCodecCtx->sample_rate);
+    setSamplingRate(m_pCodecCtx->sample_rate);
     setFrameCount((qint64)round((double)((double)m_pFormatCtx->duration *
                                          (double)m_pCodecCtx->sample_rate) / (double)AV_TIME_BASE));
 
-    qDebug() << "SoundSourceFFmpeg::tryOpen: Samplerate: " << getFrameRate() <<
+    qDebug() << "SoundSourceFFmpeg::tryOpen: Sampling rate: " << getSamplingRate() <<
              ", Channels: " <<
              getChannelCount() << "\n";
     if (getChannelCount() > 2) {

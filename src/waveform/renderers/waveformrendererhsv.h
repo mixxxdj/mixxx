@@ -1,8 +1,8 @@
 #ifndef WAVEFORMRENDERERHSV_H
 #define WAVEFORMRENDERERHSV_H
 
+#include "util/class.h"
 #include "waveformrenderersignalbase.h"
-#include "util.h"
 
 class WaveformRendererHSV : public WaveformRendererSignalBase {
   public:

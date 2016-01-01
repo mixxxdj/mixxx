@@ -5,7 +5,7 @@
       <description>American Audio VMS2 preset based on the American Audio VMS4 preset.</description>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3202</forums>
     </info>
-    <controller id="VMS2 AUDIO MIDI Device MIDI 1">
+    <controller id="American Audio VMS2">
         <scriptfiles>
             <file functionprefix="VMS4" filename="American-Audio-VMS4-scripts.js"/>
         </scriptfiles>

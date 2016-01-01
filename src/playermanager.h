@@ -18,7 +18,7 @@ class BaseTrackPlayer;
 
 class Library;
 class EngineMaster;
-class AnalyserQueue;
+class AnalyzerQueue;
 class SoundManager;
 class EffectsManager;
 class TrackCollection;
@@ -175,7 +175,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
     EngineMaster* m_pEngine;
-    AnalyserQueue* m_pAnalyserQueue;
+    AnalyzerQueue* m_pAnalyzerQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCONumPreviewDecks;

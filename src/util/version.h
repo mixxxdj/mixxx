@@ -22,6 +22,9 @@ class Version {
     // Returns the build flags used to build Mixxx (e.g. "hid=1 modplug=0") or
     // the null string if the flags are unknown.
     static QString buildFlags();
+
+    // Returns a list of the version of each depenency:
+    static QStringList dependencyVersions();
 };
 
 #endif /* VERSION_H */

@@ -5,8 +5,8 @@
  *      Author: asantoni
  */
 
-#ifndef CONTROLVALUEDELEGATE_H_
-#define CONTROLVALUEDELEGATE_H_
+#ifndef CONTROLVALUEDELEGATE_H
+#define CONTROLVALUEDELEGATE_H
 
 #include <QItemDelegate>
 #include <QModelIndex>
@@ -50,4 +50,4 @@ private:
     static QStringList m_microphoneControlValues;
 };
 
-#endif /* CONTROLVALUEDELEGATE_H_ */
+#endif /* CONTROLVALUEDELEGATE_H */

@@ -36,3 +36,7 @@ build/wix/subdirs/*.wxs
 !/build/wix/uuidgen/uuidgen.obj
 !/build/wix/uuidgen/uuidgen.exe
 
+*.obj
+*.pdb
+lib/*/*.lib
+lib/*/lib/*.lib

@@ -509,7 +509,7 @@
           <item>
            <widget class="QPushButton" name="btnOpenScript">
             <property name="text">
-             <string>Open In Text Editor</string>
+             <string>Open Selected File</string>
             </property>
            </widget>
           </item>

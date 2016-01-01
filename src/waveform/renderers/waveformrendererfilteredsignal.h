@@ -1,12 +1,11 @@
 #ifndef WAVEFORMRENDERERFILTEREDSIGNAL_H
 #define WAVEFORMRENDERERFILTEREDSIGNAL_H
 
-#include "waveformrenderersignalbase.h"
-
 #include <vector>
 #include <QLineF>
 
-#include "util.h"
+#include "util/class.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 
 class WaveformRendererFilteredSignal : public WaveformRendererSignalBase {
   public:

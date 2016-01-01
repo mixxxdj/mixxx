@@ -4,13 +4,15 @@
 #include <QObject>
 
 #include "configobject.h"
+#include "engine/sidechain/engineshoutcast.h"
 
-class EngineMaster;
+class SoundManager;
 
 class ShoutcastManager : public QObject {
     Q_OBJECT
   public:
-    ShoutcastManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine);
+    ShoutcastManager(ConfigObject<ConfigValue>* pConfig,
+                     SoundManager* pSoundManager);
     virtual ~ShoutcastManager();
 
     // Returns true if the Shoutcast connection is enabled. Note this only
@@ -26,6 +28,8 @@ class ShoutcastManager : public QObject {
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
+    QSharedPointer<EngineShoutcast> m_pShoutcast;
+    ControlObjectSlave* m_pShoutcastEnabled;
 };
 
 

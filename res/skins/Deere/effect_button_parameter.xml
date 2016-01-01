@@ -19,6 +19,7 @@
           <EffectPushButton>
             <Size>40f,15f</Size>
             <ObjectName>EffectButton</ObjectName>
+            <TooltipId>EffectSlot_button_parameter</TooltipId>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
@@ -37,6 +38,7 @@
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </EffectPushButton>
+
           <EffectButtonParameterName>
             <Size>40f,15f</Size>
             <ObjectName>EffectButtonLabel</ObjectName>

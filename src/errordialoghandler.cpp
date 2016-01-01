@@ -67,6 +67,12 @@ void ErrorDialogProperties::addButton(QMessageBox::StandardButton button) {
 // ---------- ErrorDialogHandler begins here ----------
 
 ErrorDialogHandler* ErrorDialogHandler::s_pInstance = NULL;
+bool ErrorDialogHandler::s_bEnabled = true;
+
+// static
+void ErrorDialogHandler::setEnabled(bool enabled) {
+    s_bEnabled = enabled;
+}
 
 ErrorDialogHandler::ErrorDialogHandler()
         : m_signalMapper(this) {
@@ -88,6 +94,9 @@ ErrorDialogProperties* ErrorDialogHandler::newDialogProperties() {
 
 bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
                                             bool shouldQuit) {
+    if (!s_bEnabled) {
+        return false;
+    }
     ErrorDialogProperties* props = newDialogProperties();
     props->setType(type);
     props->setText(message);
@@ -109,9 +118,15 @@ bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
 }
 
 bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
+    if (!s_bEnabled) {
+        delete props;
+        return false;
+    }
+
     // Make sure the minimum items are set
     QString text = props->getText();
     DEBUG_ASSERT_AND_HANDLE(!text.isEmpty()) {
+        delete props;
         return false;
     }
 

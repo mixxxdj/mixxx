@@ -53,6 +53,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_BPM_LOCK
             << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_BITRATE
+            << "library." + LIBRARYTABLE_REPLAYGAIN
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_DATETIMEADDED
             << "track_locations.location"
