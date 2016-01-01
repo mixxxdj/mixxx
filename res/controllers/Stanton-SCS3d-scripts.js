@@ -70,11 +70,27 @@ StantonSCS3d.hotCues = {    1:{ 0x48: 1, 0x4A: 2, 0x4C: 3, 0x4E: 4, 0x4F: 5, 0x5
 StantonSCS3d.triggerS4 = 0xFF;
 
 // Signals to (dis)connect by mode: Group, Key, Function name
-StantonSCS3d.modeSignals = {"fx":[    ["[Flanger]", "lfoDepth", "StantonSCS3d.FXDepthLEDs"],
-                                      ["[Flanger]", "lfoDelay", "StantonSCS3d.FXDelayLEDs"],
-                                      ["[Flanger]", "lfoPeriod", "StantonSCS3d.FXPeriodLEDs"],
+StantonSCS3d.modeSignals = {
+//                             "fx":[    ["[Flanger]", "lfoDepth", "StantonSCS3d.FXDepthLEDs"],
+//                                       ["[Flanger]", "lfoDelay", "StantonSCS3d.FXDelayLEDs"],
+//                                       ["[Flanger]", "lfoPeriod", "StantonSCS3d.FXPeriodLEDs"],
+//                                       ["CurrentChannel", "reverse", "StantonSCS3d.B11LED"],
+//                                       ["CurrentChannel", "flanger", "StantonSCS3d.B12LED"] ],
+                            "fx":[    ["[EffectRack1_EffectUnit1_Effect1]", "parameter1", "StantonSCS3d.FXS3LEDs"],
+                                      ["[EffectRack1_EffectUnit1_Effect1]", "parameter2", "StantonSCS3d.FXS4LEDs"],
+                                      ["[EffectRack1_EffectUnit1_Effect1]", "parameter3", "StantonSCS3d.FXS5LEDs"],
                                       ["CurrentChannel", "reverse", "StantonSCS3d.B11LED"],
-                                      ["CurrentChannel", "flanger", "StantonSCS3d.B12LED"] ],
+                                      ["[EffectRack1_EffectUnit1]", "group_CurrentChannel_enable", "StantonSCS3d.B12LED"] ],
+                            "fx2":[   ["[EffectRack1_EffectUnit2_Effect1]", "parameter1", "StantonSCS3d.FXS3LEDs"],
+                                      ["[EffectRack1_EffectUnit2_Effect1]", "parameter2", "StantonSCS3d.FXS4LEDs"],
+                                      ["[EffectRack1_EffectUnit2_Effect1]", "parameter3", "StantonSCS3d.FXS5LEDs"],
+                                      ["CurrentChannel", "reverse", "StantonSCS3d.B11LED"],
+                                      ["[EffectRack1_EffectUnit2]", "group_CurrentChannel_enable", "StantonSCS3d.B12LED"] ],
+                            "fx3":[   ["[EffectRack1_EffectUnit3_Effect1]", "parameter1", "StantonSCS3d.FXS3LEDs"],
+                                      ["[EffectRack1_EffectUnit3_Effect1]", "parameter2", "StantonSCS3d.FXS4LEDs"],
+                                      ["[EffectRack1_EffectUnit3_Effect1]", "parameter3", "StantonSCS3d.FXS5LEDs"],
+                                      ["CurrentChannel", "reverse", "StantonSCS3d.B11LED"],
+                                      ["[EffectRack1_EffectUnit3]", "group_CurrentChannel_enable", "StantonSCS3d.B12LED"] ],
                             "eq":[    ["CurrentChannelEQ", "parameter1", "StantonSCS3d.EQLowLEDs"],
                                       ["CurrentChannelEQ", "parameter2", "StantonSCS3d.EQMidLEDs"],
                                       ["CurrentChannelEQ", "parameter3", "StantonSCS3d.EQHighLEDs"],
@@ -251,8 +267,11 @@ StantonSCS3d.init2 = function () {
     //  Initialize the spinning platter LEDs if the mapping is loaded after a song is
     StantonSCS3d.durationChange1(engine.getValue("[Channel1]","duration"));
     StantonSCS3d.durationChange2(engine.getValue("[Channel2]","duration"));
+    StantonSCS3d.durationChange3(engine.getValue("[Channel3]","duration"));
+    StantonSCS3d.durationChange4(engine.getValue("[Channel4]","duration"));
     
-    print ("StantonSCS3d: \""+StantonSCS3d.id+"\" on MIDI channel "+(StantonSCS3d.channel+1)+" initialized.");
+//     print ("StantonSCS3d: \""+StantonSCS3d.id+"\" on MIDI channel "+(StantonSCS3d.channel+1)+" initialized.");
+    print ("StantonSCS3d: \""+StantonSCS3d.id+"\" initialized.");
 }
 
 StantonSCS3d.statusResponse = function (data, length) {
@@ -290,7 +309,8 @@ StantonSCS3d.shutdown = function () {   // called when the MIDI device is closed
     for (i=0x48; i<=0x5c; i++) midi.sendShortMsg(No,i,0x40); // Set surface LEDs to black default
     midi.sendShortMsg(CC,0x7B,0x00);  // Extinguish all LEDs
     
-    print ("StantonSCS3d: \""+StantonSCS3d.id+"\" on MIDI channel "+(StantonSCS3d.channel+1)+" shut down.");
+//     print ("StantonSCS3d: \""+StantonSCS3d.id+"\" on MIDI channel "+(StantonSCS3d.channel+1)+" shut down.");
+    print ("StantonSCS3d: \""+StantonSCS3d.id+"\" shut down.");
 }
 
 StantonSCS3d.stopTimers = function () {
@@ -310,19 +330,23 @@ StantonSCS3d.connectSurfaceSignals = function (channel, disconnect) {
         var group = signalList[i][0];
         if (group=="CurrentChannel") group = "[Channel"+StantonSCS3d.deck+"]";
         if (group=="CurrentChannelEQ") group = "[EqualizerRack1_[Channel"+StantonSCS3d.deck+"]_Effect1]";
-        engine.connectControl(group,signalList[i][1],signalList[i][2],disconnect);
+        
+        var item = signalList[i][1];
+        item = item.replace("CurrentChannel","[Channel"+StantonSCS3d.deck+"]");
+        
+        engine.connectControl(group,item,signalList[i][2],disconnect);
         
         // If connecting a signal, cause it to fire to update the LEDs
-        if (!disconnect) engine.trigger(group,signalList[i][1]);
+        if (!disconnect) engine.trigger(group,item);
 //         if (!disconnect) {
 //             // Alternate:
-//             var command = signalList[i][2]+"("+engine.getValue(group,signalList[i][1])+")";
+//             var command = signalList[i][2]+"("+engine.getValue(group,item)+")";
 // //             print("StantonSCS3d: command="+command);
 //             eval(command);
 //         }
         if (StantonSCS3d.debug) {
-            if (disconnect) print("StantonSCS3d: "+group+","+signalList[i][1]+" disconnected from "+signalList[i][2]);
-            else print("StantonSCS3d: "+group+","+signalList[i][1]+" connected to "+signalList[i][2]);
+            if (disconnect) print("StantonSCS3d: "+group+","+item+" disconnected from "+signalList[i][2]);
+            else print("StantonSCS3d: "+group+","+item+" connected to "+signalList[i][2]);
         }
     }
     // If disconnecting signals, darken the LEDs on the control surface & soft buttons
@@ -364,12 +388,12 @@ StantonSCS3d.connectDeckSignals = function (channel, disconnect, list) {
                     StantonSCS3d.syncLED(currentValue);
                     break;
                 default:    // Cause the signal to fire to update LEDs
-                        engine.trigger(group,name);
+                    engine.trigger(group,name);
 //                     // Alternate:
-//                         var command = signalList[i][2]+"("+engine.getValue(group,name)+")";
-// //                         print("StantonSCS3d: command="+command);
-//                         eval(command);
-                        break;
+//                     var command = signalList[i][2]+"("+engine.getValue(group,name)+")";
+// //                     print("StantonSCS3d: command="+command);
+//                     eval(command);
+                    break;
             }
         }
         if (StantonSCS3d.debug) {
@@ -625,7 +649,7 @@ StantonSCS3d.B11 = function (channel, control, value, status) {
             (currentMode != "deck" || StantonSCS3d.singleDeck)) {
             midi.sendShortMsg(byte1,control,0x01); // Make button red
             // Reset channel pre-fader gain to center
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","pregain",1.0);
+            engine.reset("[Channel"+StantonSCS3d.deck+"]","pregain");
             // Update the LEDs
             var add = StantonSCS3d.BoostCut(9,1.0, 0.0, 1.0, 4.0, 5, 4);
             midi.sendShortMsg(0xB0 + channel,0x07,0x15+add);
@@ -639,7 +663,7 @@ StantonSCS3d.B11 = function (channel, control, value, status) {
                 break;
             case "deck":
                 midi.sendShortMsg(byte1,control,0x01); // Make button red
-                engine.setValue("[Master]","volume",1.0);
+                engine.reset("[Master]","volume");
                 break;
             case "fx":
             case "loop":
@@ -688,7 +712,7 @@ StantonSCS3d.B12 = function (channel, control, value, status, group) {
         switch (currentMode) {
             case "deck":
                 midi.sendShortMsg(byte1,control,0x01); // Make button red
-                engine.setValue("[Master]","balance",0.0); // Reset master balance to center
+                engine.reset("[Master]","balance"); // Reset master balance to center
                 break;
             case "fx":
                 engine.setValue("[Channel"+StantonSCS3d.deck+"]","flanger",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","flanger"));
@@ -705,7 +729,7 @@ StantonSCS3d.B12 = function (channel, control, value, status, group) {
             case "loop2":
             case "loop3":
                 midi.sendShortMsg(byte1,control,0x01); // Make button red
-                engine.setValue("[Channel"+StantonSCS3d.deck+"]","rate",0);
+                engine.reset("[Channel"+StantonSCS3d.deck+"]","rate");
             default:
                 // Pitch range toggle
                 midi.sendShortMsg(byte1,control,0x01); // Make button red
@@ -1877,40 +1901,49 @@ StantonSCS3d.crossFaderLEDs = function (value) {
     midi.sendShortMsg(byte1,0x01,0x15+add);
 }
 
-StantonSCS3d.EQLEDs = function (value,control) {
-    var add = StantonSCS3d.BoostCut(7,value, 0, 1, 4, 3, 3);
+StantonSCS3d.EQLEDs = function (value,control,item) {
+    var group = "[EqualizerRack1_[Channel"+StantonSCS3d.deck+"]_Effect1]";
+//     var add = StantonSCS3d.BoostCut(7,value, 0, 1, 4, 3, 3);
+    var add = StantonSCS3d.BoostCut(7,
+                                    engine.getParameterForValue(group, item, value),
+                                    0.0, 0.5, 1.0, 3, 3);
     var byte1 = 0xB0 + StantonSCS3d.channel;
     midi.sendShortMsg(byte1,control,0x15+add);
 }
 
 StantonSCS3d.EQLowLEDs = function (value) {
-    StantonSCS3d.EQLEDs(value,0x0C);
+    StantonSCS3d.EQLEDs(value,0x0C,"parameter1");
 }
 
 StantonSCS3d.EQMidLEDs = function (value) {
-    StantonSCS3d.EQLEDs(value,0x01);
+    StantonSCS3d.EQLEDs(value,0x01,"parameter2");
 }
 
 StantonSCS3d.EQHighLEDs = function (value) {
-    StantonSCS3d.EQLEDs(value,0x0E);
+    StantonSCS3d.EQLEDs(value,0x0E,"parameter3");
 }
 
-StantonSCS3d.FXDepthLEDs = function (value) {
-    var add = StantonSCS3d.Peak7(value,0,1);
+StantonSCS3d.FXSliderLEDs = function (value,control,item) {
+    var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
+    var index = currentMode.charAt(currentMode.length-1);
+    if (index != "2" && index != "3") index = "1";
+    var group = "[EffectRack1_EffectUnit"+index+"_Effect1]";
+    var add = StantonSCS3d.Peak7(engine.getParameterForValue(group, item, value),
+                                 0.0, 1.0);
     var byte1 = 0xB0 + StantonSCS3d.channel;
-    midi.sendShortMsg(byte1,0x0C,0x28+add);
+    midi.sendShortMsg(byte1,control,0x28+add);
 }
 
-StantonSCS3d.FXDelayLEDs = function (value) {
-    var add = StantonSCS3d.Peak7(value,50,10000);
-    var byte1 = 0xB0 + StantonSCS3d.channel;
-    midi.sendShortMsg(byte1,0x01,0x28+add);
+StantonSCS3d.FXS3LEDs = function (value) {
+    StantonSCS3d.FXSliderLEDs(value,0x0C,"parameter1");
 }
 
-StantonSCS3d.FXPeriodLEDs = function (value) {
-    var add = StantonSCS3d.Peak7(value,50000,2000000);
-    var byte1 = 0xB0 + StantonSCS3d.channel;
-    midi.sendShortMsg(byte1,0x0E,0x28+add);
+StantonSCS3d.FXS4LEDs = function (value) {
+    StantonSCS3d.FXSliderLEDs(value,0x01,"parameter2");
+}
+
+StantonSCS3d.FXS5LEDs = function (value) {
+    StantonSCS3d.FXSliderLEDs(value,0x0E,"parameter3");
 }
 
 StantonSCS3d.VUMeterLEDs = function (value) {
@@ -2125,7 +2158,6 @@ StantonSCS3d.circleLEDs = function (value) {
 
 /* TODO:
  * - Update effects mode
- * - Replace deprecated controls
  * - Alter Loop mode buttons so circle swiping results in incremental loop size changes
  * - Alter Trig mode to combine sets of two buttons (top two and bottom two on each row)
  * 
