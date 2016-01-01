@@ -3,14 +3,14 @@
 #include <QtDebug>
 #include <QScopedPointer>
 
-#include "mixxxtest.h"
 #include "cachingreader.h"
 #include "controlobject.h"
 #include "engine/loopingcontrol.h"
 #include "engine/readaheadmanager.h"
-#include "sampleutil.h"
-#include "util/defs.h"
+#include "test/mixxxtest.h"
 #include "util/assert.h"
+#include "util/defs.h"
+#include "util/sample.h"
 
 class StubReader : public CachingReader {
   public:

@@ -157,7 +157,7 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSo
     if (!m_pSoundSource->isValid()) {
         qWarning() << "Invalid file:" << m_pSoundSource->getUrlString()
                 << "channels" << m_pSoundSource->getChannelCount()
-                << "frame rate" << m_pSoundSource->getChannelCount();
+                << "sampling rate" << m_pSoundSource->getSamplingRate();
         return m_pAudioSource;
     }
     if (m_pSoundSource->isEmpty()) {
@@ -168,7 +168,7 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSo
     // Overwrite metadata with actual audio properties
     if (m_pTrack) {
         m_pTrack->setChannels(m_pSoundSource->getChannelCount());
-        m_pTrack->setSampleRate(m_pSoundSource->getFrameRate());
+        m_pTrack->setSampleRate(m_pSoundSource->getSamplingRate());
         if (m_pSoundSource->hasDuration()) {
             m_pTrack->setDuration(m_pSoundSource->getDuration());
         }

@@ -25,7 +25,7 @@
 #include "engine/enginechannel.h"
 #include "util/circularbuffer.h"
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class EngineBuffer;
 class EnginePregain;
@@ -87,6 +87,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
+    bool m_wasActive;
 };
 
 #endif

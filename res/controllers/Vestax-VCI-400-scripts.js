@@ -473,7 +473,6 @@ VestaxVCI400.Deck.prototype.init = function() {
     engine.connectControl("[Sampler3]","track_samples", "VestaxVCI400.Decks."+this.deckIdentifier+".onSampler3DurationChanged");
     engine.connectControl("[Sampler4]","track_samples", "VestaxVCI400.Decks."+this.deckIdentifier+".onSampler4DurationChanged");
 
-    engine.connectControl(this.group, "eject", "VestaxVCI400.Decks."+this.deckIdentifier+".onToggleLightsChanged");
     engine.connectControl(this.group, "quantize", "VestaxVCI400.Decks."+this.deckIdentifier+".onToggleLightsChanged");
     engine.connectControl(this.group, "keylock", "VestaxVCI400.Decks."+this.deckIdentifier+".onToggleLightsChanged");
 };
@@ -590,7 +589,6 @@ VestaxVCI400.setToggleLights = function (group) {
     } else {
         chan = "0x9D";
     }
-    midi.sendShortMsg(chan, "0x01", engine.getValue(group, "eject") > 0.5 ? 0x7F : 0);
 
     midi.sendShortMsg(chan, "0x03", engine.getValue(group, "quantize") > 0.5 ? 0x7F : 0);
     midi.sendShortMsg(chan, "0x04", engine.getValue(group, "keylock") > 0.5 ? 0x7F : 0);
@@ -715,11 +713,6 @@ VestaxVCI400.Deck.prototype.onVinyl = function(value) {
 }
 
 VestaxVCI400.fx1ToggleButton1 = function (channel, control, value, status, group) {
-    if (VestaxVCI400.Decks.A.isActive) {
-        engine.setValue("[Channel1]", "eject", value);
-    } else {
-        engine.setValue("[Channel3]", "eject", value);
-    }
 }
 
 VestaxVCI400.fx1ToggleButton2 = function (channel, control, value, status, group) {
@@ -740,11 +733,6 @@ VestaxVCI400.fx1ToggleButton4 = function (channel, control, value, status, group
 }
 
 VestaxVCI400.fx2ToggleButton1 = function (channel, control, value, status, group) {
-    if (VestaxVCI400.Decks.B.isActive) {
-        engine.setValue("[Channel2]", "eject", value);
-    } else {
-        engine.setValue("[Channel4]", "eject", value);
-    }
 }
 
 VestaxVCI400.fx2ToggleButton2 = function (channel, control, value, status, group) {
@@ -762,6 +750,14 @@ VestaxVCI400.fx2ToggleButton4 = function (channel, control, value, status, group
     var group = VestaxVCI400.Decks.B.isActive ? "[Channel2]" : "[Channel4]";
     var curval = engine.getValue(group, "keylock");
     engine.setValue(group, "keylock", !curval);
+}
+
+VestaxVCI400.loadTrack = function (channel, control, value, status, group) {
+    if (VestaxVCI400.shiftActive) {
+        engine.setValue(group, "eject", value);
+    } else {
+        engine.setValue(group, "LoadSelectedTrack", value);
+    }
 }
 
 VestaxVCI400.fx1Knob = function (channel, control, value, status, group) {
@@ -908,8 +904,10 @@ VestaxVCI400.pitchKnob = function (channel, control, value, status, group) {
         } else {
             if(jogValue > 0) {
                   engine.setValue(deck.group, "pitch_down_small", 1);
+                  engine.setValue(deck.group, "pitch_down_small", 0);
             } else {
                   engine.setValue(deck.group, "pitch_up_small", 1);
+                  engine.setValue(deck.group, "pitch_up_small", 0);
             }
         }
     }

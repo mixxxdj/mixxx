@@ -95,8 +95,8 @@ public:
         return os << dbId.m_value;
     }
 
-    friend QDebug& operator<<(QDebug& qdebug, const DbId& dbId) {
-        return qdebug << dbId.m_value;
+    friend QDebug operator<<(QDebug debug, const DbId& dbId) {
+        return debug << dbId.m_value;
     }
 
     friend uint qHash(const DbId& dbId) {

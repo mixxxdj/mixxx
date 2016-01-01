@@ -39,6 +39,7 @@ public:
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
     void slotPlaylistTableChanged(int playlistId);
+    void slotPlaylistContentChanged(int playlistId);
     void slotPlaylistTableRenamed(int playlistId, QString a_strName);
 
   private:

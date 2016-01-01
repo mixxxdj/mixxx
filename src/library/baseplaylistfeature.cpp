@@ -79,7 +79,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this, SLOT(slotPlaylistTableRenamed(int,QString)));
 
     connect(&m_playlistDao, SIGNAL(changed(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+            this, SLOT(slotPlaylistContentChanged(int)));
 
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
@@ -571,6 +571,26 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     }
     return m_childModel.index(selected_row, 0);
 }
+
+void BasePlaylistFeature::updateChildModel(int selected_id) {
+    buildPlaylistList();
+
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        int playlist_id = it->first;
+        QString playlist_name = it->second;
+
+        if (selected_id == playlist_id) {
+            TreeItem* item = m_childModel.getItem(indexFromPlaylistId(playlist_id));
+            item->setData(playlist_name, QString::number(playlist_id));
+            decorateChild(item, playlist_id);
+        }
+
+    }
+}
+
+
 
 /**
   * Clears the child model dynamically, but the invisible root item remains

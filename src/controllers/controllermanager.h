@@ -67,7 +67,7 @@ class ControllerManager : public QObject {
     // Open whatever controllers are selected in the preferences. This currently
     // only runs on start-up but maybe should instead be signaled by the
     // preferences dialog on apply, and only open/close changed devices
-    int slotSetUpDevices();
+    void slotSetUpDevices();
     void slotShutdown();
     bool loadPreset(Controller* pController,
                     ControllerPresetPointer preset);
@@ -90,6 +90,7 @@ class ControllerManager : public QObject {
     QList<Controller*> m_controllers;
     QThread* m_pThread;
     PresetInfoEnumerator* m_pMainThreadPresetEnumerator;
+    bool m_skipPoll;
 };
 
 #endif  // CONTROLLERMANAGER_H

@@ -14,7 +14,7 @@ class QProgressBar;
 //    <LaunchImageStyle>
 //        LaunchImage { background-color: #202020; }
 //        QLabel {
-//            image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+//            image: url(skin:/style/mixxx-icon-logo-symbolic.svg);
 //            padding:0;
 //            margin:0;
 //            border:none;

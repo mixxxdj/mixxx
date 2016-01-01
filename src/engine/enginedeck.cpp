@@ -15,16 +15,16 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "engine/enginedeck.h"
+
 #include "controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginedeck.h"
+#include "engine/enginefilterbessel4.h"
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
-#include "engine/enginefilterbessel4.h"
-
-#include "sampleutil.h"
+#include "util/sample.h"
 
 EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        ConfigObject<ConfigValue>* pConfig,
@@ -37,7 +37,8 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(NULL) {
+          m_sampleBuffer(NULL),
+          m_wasActive(false) {
     if (pEffectsManager != NULL) {
         pEffectsManager->registerChannel(handle_group);
     }
@@ -119,11 +120,18 @@ EngineBuffer* EngineDeck::getEngineBuffer() {
 }
 
 bool EngineDeck::isActive() {
+    bool active = false;
     if (m_bPassthroughWasActive && !m_bPassthroughIsActive) {
-        return true;
+        active = true;
+    } else {
+        active = m_pBuffer->isTrackLoaded() || isPassthroughActive();
     }
 
-    return (m_pBuffer->isTrackLoaded() || isPassthroughActive());
+    if (!active && m_wasActive) {
+        m_pVUMeter->reset();
+    }
+    m_wasActive = active;
+    return active;
 }
 
 void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int nFrames) {

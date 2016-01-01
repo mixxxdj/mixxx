@@ -53,7 +53,6 @@ private:
     HRESULT m_hrCoInitialize;
     HRESULT m_hrMFStartup;
     IMFSourceReader *m_pReader;
-    wchar_t *m_wcFilename;
     SINT m_nextFrame;
     CSAMPLE *m_leftoverBuffer;
     SINT m_leftoverBufferSize;

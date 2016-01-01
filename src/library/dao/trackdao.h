@@ -15,7 +15,7 @@
 #include "configobject.h"
 #include "library/dao/dao.h"
 #include "trackinfoobject.h"
-#include "util.h"
+#include "util/class.h"
 
 #define LIBRARY_TABLE "library"
 
@@ -148,9 +148,14 @@ class TrackDAO : public QObject, public virtual DAO {
     void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);
-    bool detectMovedFiles(QSet<TrackId>* pTracksMovedSetOld,
-            QSet<TrackId>* pTracksMovedSetNew, volatile const bool* pCancel);
-    bool verifyRemainingTracks(volatile const bool* pCancel);
+    bool detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
+                          QSet<TrackId>* pTracksMovedSetNew,
+                          const QStringList& addedTracks,
+                          volatile const bool* pCancel);
+
+    bool verifyRemainingTracks(
+            const QStringList& libraryRootDirs,
+            volatile const bool* pCancel);
     void detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                                         QSet<TrackId>* pTracksChanged);
 

@@ -87,10 +87,10 @@ class LibraryScanner : public QThread {
 
   private slots:
     void slotStartScan();
-    void slotFinishScan();
+    void slotFinishHashedScan();
+    void slotFinishUnhashedScan();
 
     // ScannerTask signal handlers.
-    void slotTaskDone(bool success);
     void slotDirectoryHashedAndScanned(const QString& directoryPath,
                                    bool newDirectory, int hash);
     void slotDirectoryUnchanged(const QString& directoryPath);
@@ -119,8 +119,7 @@ class LibraryScanner : public QThread {
     // CANCELING -> IDLE
     bool changeScannerState(LibraryScanner::ScannerState newState);
 
-    void cleanUpScan(const QStringList& verifiedTracks,
-            const QStringList& verifiedDirectories);
+    void cleanUpScan();
 
     // The library trackcollection. Do not touch this from the library scanner
     // thread.
@@ -150,6 +149,8 @@ class LibraryScanner : public QThread {
     QSemaphore m_stateSema;
     // this is accessed main and LibraryScanner thread
     volatile ScannerState m_state;
+
+    QStringList m_libraryRootDirs;
 };
 
 #endif

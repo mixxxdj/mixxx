@@ -3,9 +3,9 @@
 
 #include <QColor>
 
-#include "waveform/renderers/waveformrendererabstract.h"
-#include "util.h"
 #include "skin/skincontext.h"
+#include "util/class.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 
 class ControlObjectThread;
 
