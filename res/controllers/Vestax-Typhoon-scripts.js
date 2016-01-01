@@ -1,344 +1,675 @@
-// Script file for Mixxx Vestax Typhoon mapping
-// Bill Good, Oct 31, 2010
-// Parts of addButton and handleEvent are the work of Anders Gunnarsson
+// Script for custom Vestax Typhoon Mapping by bestani
+// A few parts are taken from Bill Good's Vestax Typhoon Mapping
 
-// move vu's to script? or fix bug in midi output saving
+//Maybe I'll add some constants for changing some behaviours
 
-VestaxTyphoon = new function() {
-    this.group = "[Master]";
-    this.decks = [];
-    this.buttons = [];
-    this.controls = [];
-    this.lights = [];
+VestaxTyphoon = new function(){
+	this.pitchParams = [];
+	this.loopJog = [];
+	this.joged=[];
+	this.jogTouch=[];
+	this.pitchPos=[];
 }
 
-VestaxTyphoon.DECK_LIGHTS = [0x32, 0x35, 0x33, 0x24, 0x25, 0x46, 0x42, 0x21, 0x20, 0x29, 0x2a, 0x2b,
-    0x2c, 0x2d];
-VestaxTyphoon.MISC_LIGHTS = [0x26, 0x29, 0x28, 0x2a];
-VestaxTyphoon.SCRATCH_TIMER_PERIOD = 20; // timer period in milliseconds,
-// mixxx enforces a minimum of 20.
+VestaxTyphoon.init = function(id){
+	VestaxTyphoon.alt = {
+		"[Channel1]": false,
+		"[Channel2]": false,
+	}
 
-VestaxTyphoon.init = function(id) {
-    VestaxTyphoon.decks = {
-        "L": new VestaxTyphoon.Deck(1,"[Channel1]"),
-        "R": new VestaxTyphoon.Deck(2,"[Channel2]")
-    };
+	VestaxTyphoon.groupToUnit = {
+		"[Channel1]": "[EffectRack1_EffectUnit1_Effect1]",
+		"[Channel2]": "[EffectRack1_EffectUnit2_Effect1]",
+	}
 
-    VestaxTyphoon.addButton("songlist", new VestaxTyphoon.Button(2, 0x26, true), "handleSongList");
-    VestaxTyphoon.lights["killwheels"] = new VestaxTyphoon.Light(2, 0x2a);
-    VestaxTyphoon.lights["killwheels"].off();
+	VestaxTyphoon.shift = false;
 
-    // clear everything
-    for (var light in VestaxTyphoon.DECK_LIGHTS) {
-        new VestaxTyphoon.Light(0, VestaxTyphoon.DECK_LIGHTS[light]).off();
-        new VestaxTyphoon.Light(1, VestaxTyphoon.DECK_LIGHTS[light]).off();
-        for (var j = 0; j < 10000000; ++j);
-    }
-    for (var light in VestaxTyphoon.MISC_LIGHTS) {
-        new VestaxTyphoon.Light(2, VestaxTyphoon.MISC_LIGHTS[light]).off();
-        for (var j = 0; j < 10000000; ++j);
-    }
-    // make the eqs do some pretty things
-/*    var vu = [0x29, 0x2a, 0x2b, 0x2c, 0x2d];
-    for (var light in vu) {
-        new VestaxTyphoon.Light(0, vu[light]).on();
-        new VestaxTyphoon.Light(1, vu[light]).on();
-        for (var j = 0; j < 20000000; ++j);
-    }
-    for (var light in vu) {
-        new VestaxTyphoon.Light(0, vu[light]).off();
-        new VestaxTyphoon.Light(1, vu[light]).off();
-        for (var j = 0; j < 20000000; ++j);
-    }*/
+	VestaxTyphoon.pitchParams["[Channel1]Offset"]=1;
+	VestaxTyphoon.pitchParams["[Channel1]Factor"]=-2;
+	VestaxTyphoon.pitchParams["[Channel2]Offset"]=1;
+	VestaxTyphoon.pitchParams["[Channel2]Factor"]=-2;
+
+	VestaxTyphoon.pitchPos["[Channel1]"]=1;
+	VestaxTyphoon.pitchPos["[Channel2]"]=1;
+
+	VestaxTyphoon.setTransportLights("[Channel1]");
+	VestaxTyphoon.setTransportLights("[Channel2]");
+
+	VestaxTyphoon.loopJog["[Channel1]"]=0; //0=off, 1=in, 2=out, 3=in out
+	VestaxTyphoon.loopJog["[Channel2]"]=0; //0=off, 1=in, 2=out, 3=in out
+
+	VestaxTyphoon.joged["[Channel1]"]=false;
+	VestaxTyphoon.joged["[Channel2]"]=false;
+
+	VestaxTyphoon.jogTouch["[Channel1]"]=false;
+	VestaxTyphoon.jogTouch["[Channel2]"]=false;
+
+	VestaxTyphoon.loops.pressed==false;
+
+	/*Makes that the sync buttons flash to the beatgrid. I think that could be annoying: remove the next two lines or make them a comment if you don't like*/
+	engine.connectControl("[Channel1]","beat_active","VestaxTyphoon.ch1_beatflash");
+	engine.connectControl("[Channel2]","beat_active","VestaxTyphoon.ch2_beatflash");
+
+	engine.connectControl("[Channel1]","VuMeter","VestaxTyphoon.ch1_vu");
+	engine.connectControl("[Channel2]","VuMeter","VestaxTyphoon.ch2_vu");
+
+	engine.softTakeover("[Channel1]","filterLow",true);
+	engine.softTakeover("[Channel1]","filterMid",true);
+	engine.softTakeover("[Channel1]","filterHigh",true);
+
+	engine.softTakeover("[Channel2]","filterLow",true);
+	engine.softTakeover("[Channel2]","filterMid",true);
+	engine.softTakeover("[Channel2]","filterHigh",true);
 }
 
-VestaxTyphoon.shutdown = function(id) {
-    // clear everything
-    for (var light in VestaxTyphoon.DECK_LIGHTS) {
-        new VestaxTyphoon.Light(0, VestaxTyphoon.DECK_LIGHTS[light]).off();
-        new VestaxTyphoon.Light(1, VestaxTyphoon.DECK_LIGHTS[light]).off();
-        for (var j = 0; j < 10000000; ++j);
-    }
-    for (var light in VestaxTyphoon.MISC_LIGHTS) {
-        new VestaxTyphoon.Light(2, VestaxTyphoon.MISC_LIGHTS[light]).off();
-        for (var j = 0; j < 10000000; ++j);
-    }
+VestaxTyphoon.DeckLoad = function(channel, control, value, status, group){
+	//print("Channel: " + channel + "; Control: " + control + "; Value: " + value + "; Status: "+status + "; Group: "+ group);
+	if(group=="[Channel1]"){
+		if(value==0x7f){
+			if(engine.getValue(group,"play")){
+				engine.connectControl("[Channel1]","VuMeter","VestaxTyphoon.ch1_vu",true);
+				engine.connectControl("[Channel1]","playposition","VestaxTyphoon.ch1_playpos");
+			} else {
+				engine.setValue(group,"LoadSelectedTrack",true);
+			}
+		}else{
+			if(engine.getValue(group,"play")){
+				engine.connectControl("[Channel1]","VuMeter","VestaxTyphoon.ch1_vu");
+				engine.connectControl("[Channel1]","playposition","VestaxTyphoon.ch1_playpos",true);
+			} else {
+				engine.setValue(group,"LoadSelectedTrack",false);
+			}
+		}
+	}
+
+	if(group=="[Channel2]"){
+		if(value==0x7f){
+			if(engine.getValue(group,"play")){
+				engine.connectControl("[Channel2]","VuMeter","VestaxTyphoon.ch2_vu",true);
+				engine.connectControl("[Channel2]","playposition","VestaxTyphoon.ch2_playpos");
+			} else {
+				engine.setValue(group,"LoadSelectedTrack",true);
+			}
+		}else{
+			if(engine.getValue(group,"play")){
+				engine.connectControl("[Channel2]","VuMeter","VestaxTyphoon.ch2_vu");
+				engine.connectControl("[Channel2]","playposition","VestaxTyphoon.ch2_playpos",true);
+			} else {
+				engine.setValue(group,"LoadSelectedTrack",false);
+			}
+		}
+	}
 }
 
-VestaxTyphoon.GetDeck = function(group) {
-    var groupToDeck = {
-        "[Channel1]": "L",
-        "[Channel2]": "R",
-    };
-    try {
-        return this.decks[groupToDeck[group]];
-    } catch (ex) {
-        return null;
-    }
+VestaxTyphoon.ch1_playpos = function(value){
+	var duration = engine.getValue("[Channel1]","duration");
+	var alarm=60; //Track Ending indication (red led) in seconds*/
+	if(value>0.0){
+		midi.sendShortMsg(0x90,0x29,0x7f)
+	} else {
+		midi.sendShortMsg(0x90,0x29,0x00)
+	}
+
+	if(value>0.25){
+		midi.sendShortMsg(0x90,0x2a,0x7f)
+	} else {
+		midi.sendShortMsg(0x90,0x2a,0x00)
+	}
+
+	if(value>0.5){
+		midi.sendShortMsg(0x90,0x2b,0x7f)
+	} else {
+		midi.sendShortMsg(0x90,0x2b,0x00)
+	}
+
+	if(value>0.75){
+		midi.sendShortMsg(0x90,0x2c,0x7f)
+	} else {
+		midi.sendShortMsg(0x90,0x2c,0x00)
+	}
+
+	if(value*duration > duration-alarm){
+		midi.sendShortMsg(0x90,0x2d,0x7f)
+	} else {
+		midi.sendShortMsg(0x90,0x2d,0x00)
+	}
 }
 
-VestaxTyphoon.addButton = function(buttonName, button, eventHandler) {
-    button.group = this.group;
-    button.parent = this;
+VestaxTyphoon.ch2_playpos = function(value){
+	var duration = engine.getValue("[Channel2]","duration");
+	var alarm=60; //Track Ending indication (red led) in seconds*/
+	if(value>0.0){
+		midi.sendShortMsg(0x91,0x29,0x7f)
+	} else {
+		midi.sendShortMsg(0x91,0x29,0x00)
+	}
 
-    if (eventHandler) {
-       var executionEnvironment = button;
-       function handler(value) {
-          try {
-              executionEnvironment[eventHandler]();
-          } catch (ex) {
-              print("exception in executing handler for button " + buttonName + ": " + ex);
-          }
-       }
-       button.handler = handler;
-    }
-    this.buttons[buttonName] = button;
-    var control_map = this.controls[button.control];
-    if (control_map) {
-        control_map.push(button);
-    } else {
-        this.controls[button.control] = [button];
-    }
+	if(value>0.25){
+		midi.sendShortMsg(0x91,0x2a,0x7f)
+	} else {
+		midi.sendShortMsg(0x91,0x2a,0x00)
+	}
+
+	if(value>0.5){
+		midi.sendShortMsg(0x91,0x2b,0x7f)
+	} else {
+		midi.sendShortMsg(0x91,0x2b,0x00)
+	}
+
+	if(value>0.75){
+		midi.sendShortMsg(0x91,0x2c,0x7f)
+	} else {
+		midi.sendShortMsg(0x91,0x2c,0x00)
+	}
+
+	if(value*duration > duration-alarm){
+		midi.sendShortMsg(0x91,0x2d,0x7f)
+	} else {
+		midi.sendShortMsg(0x91,0x2d,0x00)
+	}
 }
 
-VestaxTyphoon.handleEvent = function(channel, control, value, status, group) {
-    var deck = VestaxTyphoon.GetDeck(group);
-    if (deck != null) {
-        deck.handleEvent(channel, control, value, status, group);
-    }
-    try {
-        var buttons = VestaxTyphoon.controls[control];
-    } catch (ex) {
-        return;
-    }
-    for (var button in buttons) {
-        buttons[button].handleEvent(value);
-    }
+VestaxTyphoon.ch1_vu = function(value){
+	if(value>0.2){
+		midi.sendShortMsg(0x90,0x29,0x7f)
+	} else {
+		midi.sendShortMsg(0x90,0x29,0x00)
+	}
+
+	if(value>0.4){
+		midi.sendShortMsg(0x90,0x2a,0x7f)
+	} else {
+		midi.sendShortMsg(0x90,0x2a,0x00)
+	}
+
+	if(value>0.6){
+		midi.sendShortMsg(0x90,0x2b,0x7f)
+	} else {
+		midi.sendShortMsg(0x90,0x2b,0x00)
+	}
+
+	if(value>0.8){
+		midi.sendShortMsg(0x90,0x2c,0x7f)
+	} else {
+		midi.sendShortMsg(0x90,0x2c,0x00)
+	}
+
+	if(engine.getValue("[Channel1]","PeakIndicator")==true){
+		midi.sendShortMsg(0x90,0x2d,0x7f)
+	} else {
+		midi.sendShortMsg(0x90,0x2d,0x00)
+	}
 }
 
-VestaxTyphoon.ButtonState = {"released": 0x00, "pressed": 0x7F};
+VestaxTyphoon.ch2_vu = function(value){
+	if(value>0.2){
+		midi.sendShortMsg(0x91,0x29,0x7f)
+	} else {
+		midi.sendShortMsg(0x91,0x29,0x00)
+	}
 
-VestaxTyphoon.Button = function(channel, control, makeLight, lightControl) {
-    this.channel = channel;
-    this.control = control;
-    this.group = null;
-    this.state = VestaxTyphoon.ButtonState.released;
-    this.handler = null;
-    this.parent = null;
-    if (makeLight) {
-        if (lightControl) {
-            this.light = new VestaxTyphoon.Light(this.channel, lightControl);
-        } else {
-            this.light = new VestaxTyphoon.Light(this.channel, this.control);
-        }
-    } else {
-        this.light = null;
-    }
+	if(value>0.4){
+		midi.sendShortMsg(0x91,0x2a,0x7f)
+	} else {
+		midi.sendShortMsg(0x91,0x2a,0x00)
+	}
+
+	if(value>0.6){
+		midi.sendShortMsg(0x91,0x2b,0x7f)
+	} else {
+		midi.sendShortMsg(0x91,0x2b,0x00)
+	}
+
+	if(value>0.8){
+		midi.sendShortMsg(0x91,0x2c,0x7f)
+	} else {
+		midi.sendShortMsg(0x91,0x2c,0x00)
+	}
+
+	if(engine.getValue("[Channel2]","PeakIndicator")==true){
+		midi.sendShortMsg(0x91,0x2d,0x7f)
+	} else {
+		midi.sendShortMsg(0x91,0x2d,0x00)
+	}
 }
 
-VestaxTyphoon.LightState = {"on": 0x7f, "off": 0x00};
+VestaxTyphoon.boolToLight = function(value){
+	if(value){
+		return 0x7f;
+	} else {
+		return 0x00;
+	}
+} //by Bill Good
 
-VestaxTyphoon.Light = function(channel, control) {
-    this.channel = channel;
-    this.control = control;
-    this.state = VestaxTyphoon.LightState.off;
-    this.on = function() {
-        midi.sendShortMsg(0x90 + this.channel, this.control, VestaxTyphoon.LightState.on);
-        this.state = VestaxTyphoon.LightState.on;
-    }
-    this.off = function() {
-        midi.sendShortMsg(0x90 + this.channel, this.control, VestaxTyphoon.LightState.off);
-        this.state = VestaxTyphoon.LightState.off;
-    }
+
+VestaxTyphoon.groupToControl = {
+	"[Channel1]": 0x90,
+	"[Channel2]": 0x91,
 }
 
-VestaxTyphoon.Button.prototype.handleEvent = function(value) {
-    this.state = value;
-    this.handler();
+VestaxTyphoon.groupToDeck = {
+	"[Channel1]": 1,
+	"[Channel2]": 2,
 }
 
-VestaxTyphoon.Deck = function(deckNum, group) {
-    this.deckNum = deckNum;
-    this.group = group;
-    this.vinylMode = true;
-    this.scratching = false;
-    this.buttons = [];
-    this.controls = [];
-    this.lights = [];
-    this.addButton("loop_open", new VestaxTyphoon.Button(deckNum-1, 0x21, true), "handleLoopOpen");
-    this.addButton("loop_close", new VestaxTyphoon.Button(deckNum-1, 0x42, true), "handleLoopClose");
-    this.addButton("sync", new VestaxTyphoon.Button(deckNum-1, 0x46, true), "handleSync");
-    this.addButton("cue", new VestaxTyphoon.Button(deckNum-1, 0x35, true), "handleCue");
-    this.addButton("cup", new VestaxTyphoon.Button(deckNum-1, 0x33, true), "handleCup");
-    this.addButton("filter", new VestaxTyphoon.Button(deckNum-1, 0x24, true), "handleFilter");
-    this.addButton("back", new VestaxTyphoon.Button(deckNum-1, 0x36, true, 0x32), "handleBack");
-    this.addButton("rw", new VestaxTyphoon.Button(deckNum-1, 0x37, true, 0x35), "handleRW");
-    this.addButton("ff", new VestaxTyphoon.Button(deckNum-1, 0x38, true, 0x33), "handleFF");
-// this next one is basically useless since we don't need touch for jog, maybe useful later?
-//    this.addButton("wheeltouch", new VestaxTyphoon.Button(deckNum-1, 0x2e), "handleWheelTouch");
-    this.addButton("wheeltouchfilter", new VestaxTyphoon.Button(deckNum-1, 0x2f), "handleWheelTouchFilter");
-    this.addButton("jog", new VestaxTyphoon.Button(deckNum-1, 0x10), "handleWheel");
-    this.addButton("scratch", new VestaxTyphoon.Button(deckNum-1, 0x11), "handleWheel");
-
-    this.lights["vu1"] = new VestaxTyphoon.Light(deckNum-1, 0x29);
-    this.lights["vu2"] = new VestaxTyphoon.Light(deckNum-1, 0x2a);
-    this.lights["vu3"] = new VestaxTyphoon.Light(deckNum-1, 0x2b);
-    this.lights["vu4"] = new VestaxTyphoon.Light(deckNum-1, 0x2c);
-    this.lights["vu5"] = new VestaxTyphoon.Light(deckNum-1, 0x2d);
+VestaxTyphoon.slipShift = function (channel, control, value, status, group) {
+	if(value==0x7f){
+		VestaxTyphoon.shift=true;
+		engine.setValue("[Channel1]","slip_enabled",true);
+		engine.setValue("[Channel2]","slip_enabled",true);
+		midi.sendShortMsg(0x92, 0x26, 0x7f);
+	}else{
+		VestaxTyphoon.shift=false;
+		engine.setValue("[Channel1]","slip_enabled",false);
+		engine.setValue("[Channel2]","slip_enabled",false);
+		midi.sendShortMsg(0x92, 0x26, 0x00);
+	}
 }
 
-VestaxTyphoon.Deck.prototype.addButton = VestaxTyphoon.addButton;
-
-VestaxTyphoon.Deck.prototype.handleEvent = function(channel, control, value, status, group) {
-    try {
-        var buttons = this.controls[control];
-    } catch (ex) {
-        return;
-    }
-    if (buttons) {
-        for (var button in buttons) {
-            buttons[button].handleEvent(value);
-        }
-    }
+VestaxTyphoon.changeMode = function (channel, control, value, status, group) {
+		if (VestaxTyphoon.alt[group] == true) {
+			if(value == 0x7f){
+				VestaxTyphoon.alt[group] = false;
+				engine.setValue("[QuickEffectRack1_"+group+"]", "super1", 0.5);
+				midi.sendShortMsg(0x90 + channel, control, 0x00);
+				VestaxTyphoon.setTransportLights(group);
+				if(group=="[Channel1]"){
+					engine.connectControl("[Channel1]","play","VestaxTyphoon.ch1_playing");
+				}else if (group=="[Channel2]"){
+					engine.connectControl("[Channel2]","play","VestaxTyphoon.ch2_playing");
+				}
+			}
+		} else {
+			if(value == 0x7f){
+				VestaxTyphoon.alt[group] = true;
+				midi.sendShortMsg(0x90 + channel, control, 0x7f);
+				VestaxTyphoon.setHotcueLights(group,false);
+				if(group=="[Channel1]"){
+					engine.connectControl("[Channel1]","play","VestaxTyphoon.ch1_playing",true);
+				}else if (group=="[Channel2]"){
+					engine.connectControl("[Channel2]","play","VestaxTyphoon.ch2_playing",true);
+				}
+			}
+		}
 }
 
-VestaxTyphoon.Button.prototype.handleSongList = function() {
-    if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        engine.setValue("[Playlist]", "SelectNextPlaylist", 1);
-        this.light.on();
-    } else {
-        engine.setValue("[Playlist]", "SelectNextPlaylist", 0);
-        this.light.off();
-    }
+VestaxTyphoon.setTransportLights = function(group){
+	//Play
+	midi.sendShortMsg(VestaxTyphoon.groupToControl[group], 0x32, VestaxTyphoon.boolToLight(engine.getValue(group,"play")) );
+	//turn off other lights
+	midi.sendShortMsg(VestaxTyphoon.groupToControl[group], 0x33, 0x00);
+	midi.sendShortMsg(VestaxTyphoon.groupToControl[group], 0x35, 0x00);
 }
 
-VestaxTyphoon.Button.prototype.handleLoopOpen = function() {
-    if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        engine.setValue(this.group, "loop_in", 1);
-        this.light.on();
-    } else {
-        engine.setValue(this.group, "loop_in", 0);
-        this.light.off();
-    }
+/*connected light controls*/
+VestaxTyphoon.ch1_playing = function(value) { //playbutton light
+	if(value==true){
+		midi.sendShortMsg(0x90, 0x32, 0x7f);
+	}else{
+		midi.sendShortMsg(0x90, 0x32, 0x00);
+	}
 }
 
-VestaxTyphoon.Button.prototype.handleLoopClose = function() {
-    if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        engine.setValue(this.group, "loop_out", 1);
-        this.light.on();
-    } else {
-        engine.setValue(this.group, "loop_out", 0);
-        this.light.off();
-    }
+VestaxTyphoon.ch2_playing = function(value) { //playbutton light
+	if(value==true){
+		midi.sendShortMsg(0x91, 0x32, 0x7f);
+	}else{
+		midi.sendShortMsg(0x91, 0x32, 0x00);
+	}
 }
 
-VestaxTyphoon.Button.prototype.handleSync = function() {
-    if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        engine.setValue(this.group, "beatsync", 1);
-        this.light.on();
-    } else {
-        engine.setValue(this.group, "beatsync", 0);
-        this.light.off();
-    }
+VestaxTyphoon.ch1_beatflash = function(value){ //sync button flash
+	if(value==true){
+		midi.sendShortMsg(0x90, 0x46, 0x7f);
+	}else{
+		midi.sendShortMsg(0x90, 0x46, 0x00);
+	}
 }
 
-VestaxTyphoon.Button.prototype.handleCue = function() {
-    if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        engine.setValue(this.group, "cue_default", 1);
-        this.light.on();
-    } else {
-        engine.setValue(this.group, "cue_default", 0);
-        // shut off rw so that we don't get stuck in rw if the user lets go
-        // of shift before letting go of cue/rw
-        engine.setValue(this.group, "back", 0);
-        this.light.off();
-    }
+VestaxTyphoon.ch2_beatflash = function(value){ //sync button flash
+	if(value==true){
+		midi.sendShortMsg(0x91, 0x46, 0x7f);
+	}else{
+		midi.sendShortMsg(0x91, 0x46, 0x00);
+	}
 }
 
-VestaxTyphoon.Button.prototype.handleCup = function() {
-    if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        engine.setValue(this.group, "cue_goto", 1);
-        this.light.on();
-    } else {
-        engine.setValue(this.group, "cue_goto", 0);
-        // shut off ff so that we don't get stuck in ff if the user lets go
-        // of shift before letting go of cup/ff
-        engine.setValue(this.group, "fwd", 0);
-        this.light.off();
-    }
+VestaxTyphoon.setHotcueLights = function(group){
+	//Play - Hotcue1
+	midi.sendShortMsg(VestaxTyphoon.groupToControl[group], 0x32, VestaxTyphoon.boolToLight(engine.getValue(group,"hotcue_1_enabled")) );
+	//Cue - Hotcue2
+	midi.sendShortMsg(VestaxTyphoon.groupToControl[group], 0x35, VestaxTyphoon.boolToLight(engine.getValue(group,"hotcue_2_enabled")) );
+	//Cup - Hotcue3
+	midi.sendShortMsg(VestaxTyphoon.groupToControl[group], 0x33, VestaxTyphoon.boolToLight(engine.getValue(group,"hotcue_3_enabled")) );
 }
 
-VestaxTyphoon.Button.prototype.handleFilter = function() {
-    if (this.state == VestaxTyphoon.ButtonState.released) return;
-    if (this.light.state == VestaxTyphoon.LightState.off) {
-        this.light.on();
-    } else {
-        this.light.off();
-        // kill scratch
-        if (this.parent.buttons["wheeltouchfilter"].timer > 0) {
-            engine.stopTimer(this.parent.buttons["wheeltouchfilter"].timer);
-            this.parent.buttons["wheeltouchfilter"].timer = 0;
-        }
-        engine.scratchDisable(this.parent.deckNum);
-    }
+VestaxTyphoon.playh1 = function (channel, control, value, status, group) {
+	if (VestaxTyphoon.alt[group] == false) {
+		if (engine.getValue(group,"play") == true) {
+			if (value == 0x7f) {
+				engine.setValue(group,"play",false);
+				midi.sendShortMsg(0x90 + channel, control, 0x00);
+			}else{
+				midi.sendShortMsg(0x90 + channel, control, VestaxTyphoon.boolToLight(engine.getValue(group,"play")) );
+			}
+		} else {
+			if (value == 0x7f) {
+				engine.setValue(group,"play",true);
+				midi.sendShortMsg(0x90 + channel, control, 0x7f);
+				if(group=="[Channel1]"){
+					engine.connectControl("[Channel1]","play","VestaxTyphoon.ch1_playing");
+				}else if (group=="[Channel2]"){
+					engine.connectControl("[Channel2]","play","VestaxTyphoon.ch2_playing");
+				}
+			}
+		}
+	} else {
+		if(VestaxTyphoon.loopJog[group]==3 && engine.getValue(group,"hotcue_1_enabled")){//if loop pressed and hotcue available
+			var scale = engine.getValue(group,"loop_end_position")-engine.getValue(group,"loop_start_position");
+			var start = engine.getValue(group,"hotcue_1_position");
+			if(engine.getValue(group,"loop_start_position")<start){//fixes non looping behaviour when first moving loop out with a hotcue before the loop start
+				engine.setValue(group,"loop_end_position",start+scale);
+				engine.setValue(group,"loop_start_position",start);
+			}else{
+				engine.setValue(group,"loop_start_position",start);
+				engine.setValue(group,"loop_end_position",start+scale);
+			}
+			VestaxTyphoon.joged[group]=true;
+			if(engine.getValue(group,"loop_enabled")){
+				engine.setValue(group,"hotcue_1_activate",true);
+			}
+		}else{
+			engine.setValue(group,"hotcue_1_activate",(value == 0x7f))
+		}
+		midi.sendShortMsg(0x90 + channel, control, 0x7f);
+	}
 }
 
-VestaxTyphoon.Button.prototype.handleBack = function() {
-    if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        engine.setValue(this.group, "play", 0);
-        engine.setValue(this.group, "playposition", 0);
-        this.light.on();
-    } else {
-        this.light.off();
-    }
+VestaxTyphoon.cueh2 = function (channel, control, value, status, group) {
+	if (VestaxTyphoon.alt[group] == false) {
+		engine.setValue(group,"cue_default",(value == 0x7f));
+		engine.setValue(group, "back", false);
+		midi.sendShortMsg(0x90 + channel, control, value);
+		midi.sendShortMsg(0x90 + channel, 0x32, value);
+	} else {
+		if(VestaxTyphoon.loopJog[group]==3 && engine.getValue(group,"hotcue_2_enabled")){//if loop pressed and hotcue available
+			var scale = engine.getValue(group,"loop_end_position")-engine.getValue(group,"loop_start_position");
+			var start = engine.getValue(group,"hotcue_2_position");
+			if(engine.getValue(group,"loop_start_position")<start){//fixes non looping behaviour when first moving loop out with a hotcue before the loop start
+				engine.setValue(group,"loop_end_position",start+scale);
+				engine.setValue(group,"loop_start_position",start);
+			}else{
+				engine.setValue(group,"loop_start_position",start);
+				engine.setValue(group,"loop_end_position",start+scale);
+			}
+			VestaxTyphoon.joged[group]=true;
+			if(engine.getValue(group,"loop_enabled")){
+				engine.setValue(group,"hotcue_2_activate",true);
+			}
+		}else{
+			engine.setValue(group,"hotcue_2_activate",(value == 0x7f))
+		}
+		midi.sendShortMsg(0x90 + channel, control, 0x7f);
+	}
 }
 
-VestaxTyphoon.Button.prototype.handleRW = function() {
-    if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        engine.setValue(this.group, "back", 1);
-        this.light.on();
-    } else {
-        engine.setValue(this.group, "back", 0);
-        this.light.off();
-    }
+VestaxTyphoon.cuph3 = function (channel, control, value, status, group) {
+	if (VestaxTyphoon.alt[group] == false) {
+		engine.setValue(group,"cue_goto",(value == 0x7f));
+		midi.sendShortMsg(0x90 + channel, control, value);
+		engine.setValue(group, "fwd", false);
+		midi.sendShortMsg(0x90 + channel, 0x32, engine.getValue(group,"play"));
+	} else {
+		if(VestaxTyphoon.loopJog[group]==3 && engine.getValue(group,"hotcue_3_enabled")){//if loop pressed and hotcue available
+			var scale = engine.getValue(group,"loop_end_position")-engine.getValue(group,"loop_start_position");
+			var start = engine.getValue(group,"hotcue_3_position");
+			if(engine.getValue(group,"loop_start_position")<start){//fixes non looping behaviour when first moving loop out with a hotcue before the loop start
+				engine.setValue(group,"loop_end_position",start+scale);
+				engine.setValue(group,"loop_start_position",start);
+			}else{
+				engine.setValue(group,"loop_start_position",start);
+				engine.setValue(group,"loop_end_position",start+scale);
+			}
+			VestaxTyphoon.joged[group]=true;
+			if(engine.getValue(group,"loop_enabled")){
+				engine.setValue(group,"hotcue_3_activate",true);
+			}
+		}else{
+			engine.setValue(group,"hotcue_3_activate",(value == 0x7f))
+		}
+		midi.sendShortMsg(0x90 + channel, control, 0x7f);
+	}
 }
 
-VestaxTyphoon.Button.prototype.handleFF = function() {
-    if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        engine.setValue(this.group, "fwd", 1);
-        this.light.on();
-    } else {
-        engine.setValue(this.group, "fwd", 0);
-        this.light.off();
-    }
+VestaxTyphoon.begd1 = function (channel, control, value, status, group) {
+	if (VestaxTyphoon.alt[group] == false) {
+        engine.setValue(group, "play", 0);
+        engine.setValue(group, "playposition", 0);
+		midi.sendShortMsg(0x90 + channel, 0x32, 0x00);
+	} else {
+		engine.setValue(group,"hotcue_1_clear",(value == 0x7f))
+		midi.sendShortMsg(0x90 + channel, 0x32, 0x00);
+	}
 }
 
-VestaxTyphoon.Button.prototype.handleWheelTouchFilter = function() {
-    if (this.state == VestaxTyphoon.ButtonState.pressed) {
-        if (this.timer > 0) {
-            engine.stopTimer(this.timer);
-            this.timer = 0;
-        }
-        engine.scratchEnable(this.parent.deckNum, 300, 33+(1.0/3), 1.0/8, (1.0/8)/32);
-    } else {
-        this.callback = function() {
-            var last_fire = (new Date()).valueOf() - VestaxTyphoon.SCRATCH_TIMER_PERIOD;
-            if (this.lastTick < last_fire) {
-                engine.scratchDisable(this.parent.deckNum);
-                engine.stopTimer(this.timer);
-                this.timer = 0;
-            }
-        }
-        this.timer = engine.beginTimer(VestaxTyphoon.SCRATCH_TIMER_PERIOD,
-            "VestaxTyphoon.GetDeck(\"" + this.group + "\").buttons[\"wheeltouchfilter\"].callback()");
-    }
+VestaxTyphoon.rrd2 = function (channel, control, value, status, group) {
+	if (VestaxTyphoon.alt[group] == false) {
+        engine.setValue(group, "back", (value==0x7f));
+	} else {
+		engine.setValue(group,"hotcue_2_clear",(value == 0x7f))
+		midi.sendShortMsg(0x90 + channel, 0x35, 0x00);
+	}
 }
 
-VestaxTyphoon.Button.prototype.handleWheel = function() {
-    if (engine.getValue(this.group, "scratch2_enable")) {
-        engine.scratchTick(this.parent.deckNum, this.state - 0x40);
-        this.parent.buttons["wheeltouchfilter"].lastTick = (new Date()).valueOf();
-    } else {
-        engine.setValue(this.group, "jog", this.state - 0x40);
-    }
+VestaxTyphoon.ffd3 = function (channel, control, value, status, group) {
+	if (VestaxTyphoon.alt[group] == false) {
+        engine.setValue(group, "fwd", (value==0x7f));
+	} else {
+		engine.setValue(group,"hotcue_3_clear",(value == 0x7f))
+		midi.sendShortMsg(0x90 + channel, 0x33, 0x00);
+	}
 }
+
+VestaxTyphoon.eqLow = function(channel, control, value, status, group) {
+	if(VestaxTyphoon.shift){
+		engine.setParameter(VestaxTyphoon.groupToUnit[group], "parameter1", value/127);
+	}else{
+		engine.setParameter(group, "filterLow", value/127); //deprecated in 1.12?
+	}
+}
+
+VestaxTyphoon.eqMid = function(channel, control, value, status, group) {
+	if(VestaxTyphoon.shift){
+		engine.setParameter(VestaxTyphoon.groupToUnit[group], "parameter2", value/127);
+	}else{
+		engine.setParameter(group, "filterMid", value/127); //deprecated in 1.12?
+	}
+}
+
+VestaxTyphoon.eqHigh = function(channel, control, value, status, group) {
+	if(VestaxTyphoon.shift){
+		engine.setParameter(VestaxTyphoon.groupToUnit[group], "parameter3", value/127);
+	}else{
+		engine.setParameter(group, "filterHigh", value/127); //deprecated in 1.12?
+	}
+}
+
+VestaxTyphoon.relPitch = function(channel, control, value, status, group) {
+	if(control == "0x22") {
+		VestaxTyphoon.pitchParams[group+"Offset"]=engine.getValue(group,"rate")+0.1-1/135; //offset failure correction
+		VestaxTyphoon.pitchParams[group+"Factor"]=-0.2; //Relative Sensivity
+	}
+	else if(control == "0x23") {
+		VestaxTyphoon.pitchParams[group+"Offset"]=1;
+		VestaxTyphoon.pitchParams[group+"Factor"]=-2;
+	}
+}
+
+VestaxTyphoon.setPitch = function(channel, control, value, status, group) {
+	engine.setValue(group,"rate",VestaxTyphoon.pitchParams[group+"Offset"]+1/127+VestaxTyphoon.pitchParams[group+"Factor"]*value/(127));
+	VestaxTyphoon.pitchPos[group]=value;
+}
+
+VestaxTyphoon.wheelTouch = function(channel, control, value, status, group){
+	if(value == 0x7f){
+		if(VestaxTyphoon.loopJog[group]==0){
+			engine.scratchEnable(VestaxTyphoon.groupToDeck[group],300, 33+(1.0/3), 1.0/8, (1.0/8)/32);
+		}
+		VestaxTyphoon.jogTouch[group]=true;
+	} else {
+		engine.scratchDisable(VestaxTyphoon.groupToDeck[group]);
+		VestaxTyphoon.jogTouch[group]=false;
+	}
+}
+
+VestaxTyphoon.wheelTurn = function(channel, control, value, status, group){
+    if (VestaxTyphoon.jogTouch[group]) {
+		switch(VestaxTyphoon.loopJog[group]){
+			case 0:	engine.scratchTick(VestaxTyphoon.groupToDeck[group], value - 0x40);
+					/*if(engine.getValue(group,"play")){
+						engine.scratchTick(VestaxTyphoon.groupToDeck[group], value - 0x40);
+					}else{
+						engine.scratchTick(VestaxTyphoon.groupToDeck[group], value - 0x40); //*(VestaxTyphoon.pitchPos[group]/4+1)); //improve
+					}*/
+					break;
+			case 1:	engine.setValue(group, "loop_start_position", engine.getValue(group,"loop_start_position") + 20*(value -0x40));
+					break;
+			case 2:	engine.setValue(group, "loop_end_position", engine.getValue(group,"loop_end_position") + 20*(value - 0x40));
+					break;
+			case 3:	engine.setValue(group, "loop_start_position", engine.getValue(group,"loop_start_position") + 20*(value -0x40));
+					engine.setValue(group, "loop_end_position", engine.getValue(group,"loop_end_position") + 20*(value - 0x40));
+					VestaxTyphoon.joged[group]=true;
+					break;
+		}
+	} else {
+		switch(VestaxTyphoon.loopJog[group]){
+			case 0:
+					if (control==0x11){
+						engine.setValue("[QuickEffectRack1_"+group+"]", "super1", engine.getValue("[QuickEffectRack1_"+group+"]", "super1") + (value - 0x40)/0xff);
+					}else{
+						engine.setValue(group, "jog", value - 0x40);
+					}
+					break;
+			case 1:	engine.setValue(group, "loop_start_position", engine.getValue(group,"loop_start_position") + 5*(value -0x40));
+					break;
+			case 2:	engine.setValue(group, "loop_end_position", engine.getValue(group,"loop_end_position") + 5*(value - 0x40));
+					break;
+			case 3:	engine.setValue(group, "loop_start_position", engine.getValue(group,"loop_start_position") + 5*(value -0x40));
+					engine.setValue(group, "loop_end_position", engine.getValue(group,"loop_end_position") + 5*(value - 0x40));
+					VestaxTyphoon.joged[group]=true;
+					break;
+		}
+	}
+}
+
+VestaxTyphoon.loopInMinus = function(channel, control, value, status, group){
+	if(!VestaxTyphoon.alt[group]){//Filter off
+		if(value == 0x7f){
+			if(engine.getValue(group,"loop_enabled")==true){
+				engine.setValue(group,"loop_halve",true);
+			}else{
+				engine.setValue(group,"beatloop_2_activate",true);
+			}
+			midi.sendShortMsg(0x90+channel,0x21,0x7f);
+		}else{
+			engine.setValue(group,"loop_halve",false);
+			engine.setValue(group,"beatloop_2_activate",false);
+			midi.sendShortMsg(0x90+channel,0x21,0x00);
+		}
+	}else{//Filter on
+		if (value == 0x7f){
+			if(VestaxTyphoon.loopJog[group]==3){//Wenn Loop gedrückt
+				var end = engine.getValue(group,"loop_start_position");
+				engine.setValue(group,"loop_start_position",2*end - engine.getValue(group,"loop_end_position"));
+				engine.setValue(group,"loop_end_position",end);
+				VestaxTyphoon.joged[group]=true;
+			}else{//Nur Loop In gedrückt
+				if(engine.getValue(group,"loop_enabled")==false){
+					engine.setValue(group,"loop_in",true);
+				}else{
+					VestaxTyphoon.loopJog[group]=1;//Loop out bewegen
+				}
+			}
+			midi.sendShortMsg(0x90+channel,0x21,0x00);
+		}else{
+			engine.setValue(group,"loop_in",false);
+			if(VestaxTyphoon.loopJog[group]!=3){
+				VestaxTyphoon.loopJog[group]=0;
+			}
+			midi.sendShortMsg(0x90+channel,0x21,0x00);
+		}
+	}
+}
+
+VestaxTyphoon.loops = function(channel,control,value,status,group){
+	if(!VestaxTyphoon.alt[group]){//Filter off
+		if(value == 0x7f){
+			if(engine.getValue(group,"loop_enabled")==true){
+				engine.setValue(group,"reloop_exit",true);
+			}else{
+				engine.setValue(group,"beatloop_4_activate",true);
+			}
+		}else{
+			engine.setValue(group,"loop_halve",false);
+			engine.setValue(group,"beatloop_2_activate",false);
+			engine.setValue(group,"reloop_exit",false);
+		}
+	}else{//Filter on
+		if(value == 0x7f){
+			VestaxTyphoon.loopJog[group]=3;
+		}else{
+			if(VestaxTyphoon.joged[group]==false){//Loop nicht bewegt
+				if(engine.getValue(group,"loop_enabled")==false){
+					engine.setValue(group,"reloop_exit",true);
+				}else{
+					engine.setValue(group,"reloop_exit",true);
+				}
+			}else{
+				VestaxTyphoon.joged[group]=false;
+			}
+			VestaxTyphoon.loopJog[group]=0;
+		}
+	}
+}
+
+VestaxTyphoon.loopOutPlus = function(channel, control, value, status, group){
+	if(!VestaxTyphoon.alt[group]){//Filter off
+		if(value == 0x7f){
+			if(engine.getValue(group,"loop_enabled")==true){
+				engine.setValue(group,"loop_double",true);
+			}else{
+				engine.setValue(group,"beatloop_8_activate",true);
+			}
+			midi.sendShortMsg(0x90+channel,0x42,0x7f);
+		}
+		else{
+			engine.setValue(group,"loop_double",false);
+			engine.setValue(group,"beatloop_8_activate",false);
+			midi.sendShortMsg(0x90+channel,0x42,0x00);
+		}
+	}else{//Filter on
+		if (value == 0x7f){
+			if(VestaxTyphoon.loopJog[group]==3){//Wenn Loop gedrückt
+				var start = engine.getValue(group,"loop_end_position");
+				engine.setValue(group,"loop_end_position",2*start - engine.getValue(group,"loop_start_position"));
+				engine.setValue(group,"loop_start_position",start);
+				VestaxTyphoon.joged[group]=true;
+			}else{//Nur Loop Out gedrückt
+				if(engine.getValue(group,"loop_enabled")==false){
+					engine.setValue(group,"loop_out",true);
+				}else{
+					VestaxTyphoon.loopJog[group]=2;//Loop out bewegen
+				}
+			}
+			midi.sendShortMsg(0x90+channel,0x42,0x7f);
+		}else{
+			engine.setValue(group,"loop_out",false);
+			if(VestaxTyphoon.loopJog[group]!=3){
+				VestaxTyphoon.loopJog[group]=0;
+			}
+			midi.sendShortMsg(0x90+channel,0x42,0x00);
+		}
+	}
+}
+
+//TODO --- Loop halve / double on deactivated loop --- Jog Loop to Cue Point

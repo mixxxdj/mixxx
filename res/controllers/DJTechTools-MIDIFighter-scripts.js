@@ -61,25 +61,26 @@ MIDIFighter.init = function(id) {
     MIDIFighter.id = id;
     print("MIDI Fighter " + MIDIFighter.id + " initialized.");
 
-    MIDIFighter.map_button(1, {'group': '[Channel1]', 'item': 'hotcue_1_activate'});
-    MIDIFighter.map_button(2, {'group': '[Channel1]', 'item': 'hotcue_2_activate'});
-    MIDIFighter.map_button(3, {'group': '[Channel1]', 'item': 'hotcue_3_activate'});
-    MIDIFighter.map_button(4, {'group': '[Channel1]', 'item': 'hotcue_4_activate'});
+    // Channels are ordered the same way the waveforms are onscreen.
+    MIDIFighter.map_button(1, {'group': '[Channel3]', 'item': 'hotcue_1_activate'});
+    MIDIFighter.map_button(2, {'group': '[Channel3]', 'item': 'hotcue_2_activate'});
+    MIDIFighter.map_button(3, {'group': '[Channel3]', 'item': 'hotcue_3_activate'});
+    MIDIFighter.map_button(4, {'group': '[Channel3]', 'item': 'hotcue_4_activate'});
 
-    MIDIFighter.map_button(5, {'group': '[Channel1]', 'item': 'hotcue_5_activate'});
-    MIDIFighter.map_button(6, {'group': '[Channel1]', 'item': 'hotcue_6_activate'});
-    MIDIFighter.map_button(7, {'group': '[Channel1]', 'item': 'hotcue_7_activate'});
-    MIDIFighter.map_button(8, {'group': '[Channel1]', 'item': 'hotcue_8_activate'});
+    MIDIFighter.map_button(5, {'group': '[Channel1]', 'item': 'hotcue_1_activate'});
+    MIDIFighter.map_button(6, {'group': '[Channel1]', 'item': 'hotcue_2_activate'});
+    MIDIFighter.map_button(7, {'group': '[Channel1]', 'item': 'hotcue_3_activate'});
+    MIDIFighter.map_button(8, {'group': '[Channel1]', 'item': 'hotcue_4_activate'});
 
     MIDIFighter.map_button(9, {'group': '[Channel2]', 'item': 'hotcue_1_activate'});
     MIDIFighter.map_button(10, {'group': '[Channel2]', 'item': 'hotcue_2_activate'});
     MIDIFighter.map_button(11, {'group': '[Channel2]', 'item': 'hotcue_3_activate'});
     MIDIFighter.map_button(12, {'group': '[Channel2]', 'item': 'hotcue_4_activate'});
 
-    MIDIFighter.map_button(13, {'group': '[Channel2]', 'item': 'hotcue_5_activate'});
-    MIDIFighter.map_button(14, {'group': '[Channel2]', 'item': 'hotcue_6_activate'});
-    MIDIFighter.map_button(15, {'group': '[Channel2]', 'item': 'hotcue_7_activate'});
-    MIDIFighter.map_button(16, {'group': '[Channel2]', 'item': 'hotcue_8_activate'});
+    MIDIFighter.map_button(13, {'group': '[Channel4]', 'item': 'hotcue_1_activate'});
+    MIDIFighter.map_button(14, {'group': '[Channel4]', 'item': 'hotcue_2_activate'});
+    MIDIFighter.map_button(15, {'group': '[Channel4]', 'item': 'hotcue_3_activate'});
+    MIDIFighter.map_button(16, {'group': '[Channel4]', 'item': 'hotcue_4_activate'});
 }
 
 MIDIFighter.shutdown = function() {

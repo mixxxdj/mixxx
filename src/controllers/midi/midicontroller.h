@@ -62,16 +62,16 @@ class MidiController : public Controller {
         send(data, length);
     }
 
-  protected slots:
-    void receive(unsigned char status, unsigned char control = 0,
-                 unsigned char value = 0);
+    void receive(unsigned char status, unsigned char control,
+                 unsigned char value, int32_t timestamp);
+
     // For receiving System Exclusive messages
     void receive(const QByteArray data);
     virtual int close();
 
   private slots:
     // Initializes the engine and static output mappings.
-    void applyPreset(QList<QString> scriptPaths);
+    bool applyPreset(QList<QString> scriptPaths, bool initializeScripts);
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();

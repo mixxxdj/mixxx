@@ -531,6 +531,12 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_trackSamplesOld = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
+    // Reset slip mode
+    m_pSlipButton->set(0);
+    m_slipEnabled = 0;
+    m_bSlipEnabledProcessing = false;
+    m_dSlipPosition = 0.;
+    m_dSlipRate = 0;
     // Reset the pitch value for the new track.
     m_pause.unlock();
 

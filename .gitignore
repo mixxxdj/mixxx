@@ -29,3 +29,7 @@ res/qrc_mixxx.cc
 res/developer_skins
 src/test/golden_buffers/*.actual
 
+*.obj
+*.pdb
+lib/*/*.lib
+lib/*/lib/*.lib

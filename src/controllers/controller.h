@@ -58,9 +58,6 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     inline QString getCategory() const {
         return m_sDeviceCategory;
     }
-    inline bool debugging() const {
-        return m_bDebug;
-    }
     virtual bool isMappable() const = 0;
     inline bool isLearning() const {
         return m_bLearning;
@@ -81,8 +78,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // this if they have an alternate way of handling such data.)
     virtual void receive(const QByteArray data);
 
-    // Initializes the controller engine
-    virtual void applyPreset(QList<QString> scriptPaths);
+    // Initializes the controller engine and returns whether it was successful.
+    virtual bool applyPreset(QList<QString> scriptPaths, bool initializeScripts);
 
     // Puts the controller in and out of learning mode.
     void startLearning();
@@ -150,12 +147,11 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     bool m_bIsInputDevice;
     // Indicates whether or not the device has been opened for input/output.
     bool m_bIsOpen;
-    // Specifies whether or not we should dump incoming data to the console at
-    // runtime. This is useful for end-user debugging and script-writing.
-    bool m_bDebug;
     bool m_bLearning;
 
     friend class ControllerManager; // accesses lots of our stuff, but in the same thread
+    // For testing.
+    friend class ControllerPresetValidationTest;
 };
 
 #endif

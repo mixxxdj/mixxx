@@ -118,7 +118,7 @@ QString SoundDeviceNetwork::getError() const {
 }
 
 void SoundDeviceNetwork::readProcess() {
-    if (!m_inputFifo || !m_pNetworkStream) return;
+    if (!m_inputFifo || !m_pNetworkStream || !m_iNumInputChannels) return;
 
     int inChunkSize = m_framesPerBuffer * m_iNumInputChannels;
     int readAvailable = m_pNetworkStream->getReadExpected()

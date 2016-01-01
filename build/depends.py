@@ -438,7 +438,7 @@ class SoundTouch(Dependence):
 
         # If we do not want optimizations then disable them.
         optimize = (build.flags['optimize'] if 'optimize' in build.flags
-                    else Optimize.get_optimization_level())
+                    else Optimize.get_optimization_level(build))
         if optimize == Optimize.LEVEL_OFF:
             env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
 
@@ -497,6 +497,20 @@ class ProtoBuf(Dependence):
             raise Exception(
                 "Could not find libprotobuf or its development headers.")
 
+class FpClassify(Dependence):
+
+    def enabled(self, build):
+        return build.toolchain_is_gnu
+
+    # This is a wrapper arround the fpclassify function that pevents inlining
+    # It is compiled without optimization and allows to use these function 
+    # from -ffast-math optimized objects 
+    def sources(self, build):
+        # add this file without fast-math flag
+        env = build.env.Clone()
+        if '-ffast-math' in env['CCFLAGS']: 
+                env['CCFLAGS'].remove('-ffast-math')
+        return env.Object('util/fpclassify.cpp')
 
 class QtScriptByteArray(Dependence):
     def configure(self, build, conf):
@@ -1222,7 +1236,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
-                QtScriptByteArray, Reverb]
+                QtScriptByteArray, Reverb, FpClassify]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

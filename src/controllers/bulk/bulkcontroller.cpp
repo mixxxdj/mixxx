@@ -10,6 +10,7 @@
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/controllerdebug.h"
 #include "util/compatibility.h"
 #include "util/trace.h"
 
@@ -93,7 +94,9 @@ BulkController::BulkController(libusb_context* context,
 }
 
 BulkController::~BulkController() {
-    close();
+    if (isOpen()) {
+        close();
+    }
 }
 
 QString BulkController::presetExtension() {
@@ -210,7 +213,7 @@ int BulkController::close() {
         disconnect(m_pReader, SIGNAL(incomingData(QByteArray)),
                    this, SLOT(receive(QByteArray)));
         m_pReader->stop();
-        if (debugging()) qDebug() << "  Waiting on reader to finish";
+        controllerDebug("  Waiting on reader to finish");
         m_pReader->wait();
         delete m_pReader;
         m_pReader = NULL;
@@ -221,9 +224,7 @@ int BulkController::close() {
     stopEngine();
 
     // Close device
-    if (debugging()) {
-        qDebug() << "  Closing device";
-    }
+    controllerDebug("  Closing device");
     libusb_close(m_phandle);
     m_phandle = NULL;
     setOpen(false);
@@ -251,8 +252,8 @@ void BulkController::send(QByteArray data) {
     if (ret < 0) {
         qWarning() << "Unable to send data to" << getName()
                    << "serial #" << m_sUID;
-    } else if (debugging()) {
-        qDebug() << ret << "bytes sent to" << getName()
-                 << "serial #" << m_sUID;
+    } else {
+        controllerDebug(ret << "bytes sent to" << getName()
+                 << "serial #" << m_sUID);
     }
 }

@@ -3,11 +3,11 @@
 
 #define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 9
 // SoundSource Plugin API version history:
-//   9 - Mixxx 1.13.0 - New classes AudioSignal and ReplayGain
-//   8 - Mixxx 1.13.0 - New SoundSource Plugin API
-//   7 - Mixxx 1.13.0 - New SoundSource/AudioSource API
-//   6 - Mixxx 1.12.0 - Cover art support
-//   5 - Mixxx 1.12.0 - Add album artist and grouping fields to SoundSource
+//   9 - Mixxx 2.1.0 - New classes AudioSignal and ReplayGain
+//   8 - Mixxx 2.1.0 - New SoundSource Plugin API
+//   7 - Mixxx 2.1.0 - New SoundSource/AudioSource API
+//   6 - Mixxx 2.0.0 - Cover art support
+//   5 - Mixxx 2.0.0 - Add album artist and grouping fields to SoundSource
 //   4 - Mixxx 1.11.0 - Add composer field to SoundSource
 //   3 - Mixxx 1.10.0 - Add freeing function for extensions
 //   2 - Mixxx 1.9.0  - Add key code

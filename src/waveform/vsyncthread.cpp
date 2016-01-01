@@ -1,5 +1,4 @@
 #include <QThread>
-#include <QGLWidget>
 #include <QGLFormat>
 #include <QTime>
 #include <QtDebug>
@@ -132,8 +131,12 @@ void VSyncThread::swapGl(QGLWidget* glw, int index) {
     glw->swapBuffers();
 #else
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#ifdef QT_OPENGL_ES_2
+    glw->swapBuffers();
+#else
     const QX11Info *xinfo = qt_x11Info(glw);
     glXSwapBuffers(xinfo->display(), glw->winId());
+#endif
 #else
     glw->swapBuffers();
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
