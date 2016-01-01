@@ -14,6 +14,10 @@ BatteryLinux::~BatteryLinux() {
 }
 
 void BatteryLinux::read() {
+    m_iMinutesLeft = 0;
+    m_dPercentage = 0.0;
+    m_chargingState = Battery::UNKNOWN;
+
     UpClient* client = up_client_new();
     if (client == nullptr) {
       return;
