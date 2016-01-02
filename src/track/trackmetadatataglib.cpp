@@ -734,8 +734,10 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
 
     const TagLib::ID3v2::FrameList trackNumberFrame(tag.frameListMap()["TRCK"]);
     if (!trackNumberFrame.isEmpty()) {
-        // Read the track number string without any parsing/validation
-        pTrackMetadata->setTrackNumber(toQStringFirstNotEmpty(trackNumberFrame));
+        const std::pair<QString, QString> splitted(
+                TrackNumbers::splitString(toQStringFirstNotEmpty(trackNumberFrame)));
+        pTrackMetadata->setTrackNumber(splitted.first);
+        pTrackMetadata->setTrackTotal(splitted.second);
     }
 
     const TagLib::ID3v2::FrameList bpmFrame(tag.frameListMap()["TBPM"]);
@@ -794,8 +796,10 @@ void readTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::AP
     }
 
     if (tag.itemListMap().contains("Track")) {
-        // Read the track number string without any parsing/validation
-        pTrackMetadata->setTrackNumber(toQString(tag.itemListMap()["Track"]));
+        const std::pair<QString, QString> splitted(
+                TrackNumbers::splitString(toQString(tag.itemListMap()["Track"])));
+        pTrackMetadata->setTrackNumber(splitted.first);
+        pTrackMetadata->setTrackTotal(splitted.second);
     }
 
     if (tag.itemListMap().contains("BPM")) {
@@ -859,49 +863,19 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
     }
 
     if (tag.fieldListMap().contains("TRACKNUMBER")) {
-        const QString trackNumberText(
-                toQStringFirstNotEmpty(tag.fieldListMap()["TRACKNUMBER"]));
-        // Try to parse both the track number and the optional total tracks
-        // from this field
-        const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
-                TrackNumbers::fromString(trackNumberText));
-        QString trackTotalText;
-        if (TrackNumbers::ParseResult::VALID == trackNumbersFromString.second) {
-            pTrackMetadata->setTrackNumber(trackNumbersFromString.first.toString());
-            if (!trackNumbersFromString.first.hasTotal()) {
-                // If parsing of the track number succeeded read the specialized
-                // fields for total tracks, but only if the total number of tracks
-                // is still undefined. Some applications might write the ID3v2 style
-                // string "<current>/<total>" into the track number field.
-                // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
-                // the proposed field name, but some applications use "TOTALTRACKS".
-                if (tag.fieldListMap().contains("TRACKTOTAL")) {
-                    // primary/proposed field for total tracks
-                    trackTotalText = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
-                }
-                if (trackTotalText.isEmpty() && tag.fieldListMap().contains("TOTALTRACKS")) {
-                    // secondary/alternative field for total tracks
-                    trackTotalText = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
-                }
+        std::pair<QString, QString> splitted(
+                TrackNumbers::splitString(toQStringFirstNotEmpty(tag.fieldListMap()["TRACKNUMBER"])));
+        if (splitted.second.isEmpty()) {
+            if (tag.fieldListMap().contains("TRACKTOTAL")) {
+                // primary/proposed field for total tracks
+                splitted.second = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
+            } else if (tag.fieldListMap().contains("TOTALTRACKS")) {
+                // secondary/alternative field for total tracks
+                splitted.second = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
             }
         }
-        const int trackCurrentValue = trackNumbersFromString.first.getCurrent();
-        int trackTotalValue = TrackNumbers::kValueUndefined;
-        if (!trackTotalText.trimmed().isEmpty()) {
-            bool totalTracksValid = false;
-            trackTotalValue = trackTotalText.toInt(&totalTracksValid);
-            if (!totalTracksValid) {
-                trackTotalValue = TrackNumbers::kValueUndefined;
-            }
-        }
-        TrackNumbers trackNumbers(trackCurrentValue, trackTotalValue);
-        if (trackNumbers.isValid() && trackNumbers.hasCurrent() && trackNumbers.hasTotal()) {
-            // Combine both numbers from different fields
-            pTrackMetadata->setTrackNumber(trackNumbers.toString());
-        } else {
-            // Use the track number field as is
-            pTrackMetadata->setTrackNumber(trackNumberText);
-        }
+        pTrackMetadata->setTrackNumber(splitted.first);
+        pTrackMetadata->setTrackTotal(splitted.second);
     }
 
     // The release date formatted according to ISO 8601. Might
@@ -983,7 +957,9 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
     if (getItemListMap(tag).contains("trkn")) {
         const TagLib::MP4::Item::IntPair trknPair(getItemListMap(tag)["trkn"].toIntPair());
         const TrackNumbers trackNumbers(trknPair.first, trknPair.second);
-        pTrackMetadata->setTrackNumber(trackNumbers.toString());
+        const std::pair<QString, QString> splitted(trackNumbers.toSplitString());
+        pTrackMetadata->setTrackNumber(splitted.first);
+        pTrackMetadata->setTrackTotal(splitted.second);
     }
 
     // Get BPM
@@ -1058,7 +1034,9 @@ bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     writeID3v2CommentsFrame(pTag, trackMetadata.getComment());
 
     writeID3v2TextIdentificationFrame(pTag, "TRCK",
-            trackMetadata.getTrackNumber());
+            TrackNumbers::joinStrings(
+                    trackMetadata.getTrackNumber(),
+                    trackMetadata.getTrackTotal()));
 
     // NOTE(uklotz): Need to overwrite the TDRC frame if it
     // already exists. TagLib (1.9.x) writes a TDRC frame
@@ -1127,7 +1105,9 @@ bool writeTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& t
     // part of the tag with the custom string from the track metadata
     // (pass-through without any further validation)
     writeAPEItem(pTag, "Track",
-            toTagLibString(trackMetadata.getTrackNumber()));
+            toTagLibString(TrackNumbers::joinStrings(
+                    trackMetadata.getTrackNumber(),
+                    trackMetadata.getTrackTotal())));
 
     writeAPEItem(pTag, "Year",
             toTagLibString(trackMetadata.getYear()));
@@ -1158,31 +1138,16 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     writeTrackMetadataIntoTag(pTag, trackMetadata,
             WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
 
-    const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
-            TrackNumbers::fromString(trackMetadata.getTrackNumber()));
     // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
     // the proposed field name, but some applications use "TOTALTRACKS".
-    switch (trackNumbersFromString.second) {
-    case TrackNumbers::ParseResult::EMPTY:
-        pTag->removeField("TRACKNUMBER");
-        pTag->removeField("TRACKTOTAL"); // recommended field for total tracks
-        pTag->removeField("TOTALTRACKS"); // legacy field for total tracks
-        break;
-    case TrackNumbers::ParseResult::VALID:
-        writeXiphCommentField(pTag, "TRACKNUMBER",
-                toTagLibString(trackNumbersFromString.first.getCurrentText()));
-        writeXiphCommentField(pTag, "TRACKTOTAL",
-                toTagLibString(trackNumbersFromString.first.getTotalText()));
-        // Remove the secondary/alternative field for total tracks to prevent
-        // inconsistencies if the tags are edited again by another external
-        // application that is unaware of "TRACKTOTAL".
-        pTag->removeField("TOTALTRACKS");
-        break;
-    default:
-        qWarning() << "Invalid track number:"
-            << trackMetadata.getTrackNumber() << "->"
-            << trackNumbersFromString.first.toString();
-    }
+    writeXiphCommentField(pTag, "TRACKNUMBER",
+            toTagLibString(trackMetadata.getTrackNumber()));
+    writeXiphCommentField(pTag, "TRACKTOTAL",
+            toTagLibString(trackMetadata.getTrackTotal()));
+    // Remove the secondary/alternative field for total tracks to prevent
+    // inconsistencies if the tags are edited again by another external
+    // application that is unaware of "TRACKTOTAL".
+    pTag->removeField("TOTALTRACKS");
 
     writeXiphCommentField(pTag, "DATE",
             toTagLibString(trackMetadata.getYear()));
@@ -1224,7 +1189,10 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
 
     // Write track number/total pair
     const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
-            TrackNumbers::fromString(trackMetadata.getTrackNumber()));
+            TrackNumbers::fromString(
+                    TrackNumbers::joinStrings(
+                            trackMetadata.getTrackNumber(),
+                            trackMetadata.getTrackTotal())));
     switch (trackNumbersFromString.second) {
     case TrackNumbers::ParseResult::EMPTY:
         pTag->itemListMap().erase("trkn");

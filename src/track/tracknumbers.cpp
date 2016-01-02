@@ -44,6 +44,32 @@ std::pair<TrackNumbers, TrackNumbers::ParseResult> TrackNumbers::fromString(
     }
 }
 
+//static
+std::pair<QString, QString> TrackNumbers::splitString(
+        const QString& str,
+        const QString& separator) {
+    const int splitIndex = str.indexOf(separator);
+    if (0 <= splitIndex) {
+        return std::make_pair(
+                str.left(splitIndex),
+                str.right(str.length() - (splitIndex + 1)));
+    } else {
+        return std::make_pair(str, QString());
+    }
+}
+
+//static
+QString TrackNumbers::joinStrings(
+        const QString& currentText,
+        const QString& totalText,
+        const QString& separator) {
+    if (totalText.isEmpty()) {
+        return currentText;
+    } else {
+        return currentText + separator + totalText;
+    }
+}
+
 QString TrackNumbers::getCurrentText() const {
     if (hasCurrent() && isCurrentValid()) {
         return QString::number(getCurrent());
@@ -60,19 +86,21 @@ QString TrackNumbers::getTotalText() const {
     }
 }
 
+std::pair<QString, QString> TrackNumbers::toSplitString() const {
+    QString first(getCurrentText());
+    const QString second(getTotalText());
+    if (!second.isEmpty()) {
+        // Padding with '0' to match the size of the total track number
+        if (first.size() < second.size()) {
+            const QString padding(second.size() - first.size(), '0');
+            first = padding + first;
+        }
+    }
+    return std::make_pair(first, second);
+}
+
 QString TrackNumbers::toString(
         const QString& separator) const {
-    QString result(getCurrentText());
-    const QString totalText(getTotalText());
-    if (!totalText.isEmpty()) {
-        // Padding with '0' to match the size of the total track number
-        if (result.size() < totalText.size()) {
-            const QString padding(totalText.size() - result.size(), '0');
-            result = padding + result;
-        }
-        DEBUG_ASSERT(!result.isEmpty());
-        result += separator;
-        result += totalText;
-    }
-    return result;
+    const auto splitted(toSplitString());
+    return joinStrings(splitted.first, splitted.second, separator);
 }

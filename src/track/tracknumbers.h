@@ -74,8 +74,19 @@ public:
             const QString& str,
             const QString& separator = kDefaultSeparator);
 
+    std::pair<QString, QString> toSplitString() const;
     QString toString(
             const QString& separator = kDefaultSeparator) const;
+
+    // Splits a string into current and total part
+    static std::pair<QString, QString> splitString(
+            const QString& str,
+            const QString& separator = kDefaultSeparator);
+    // Joins the current and total strings
+    static QString joinStrings(
+            const QString& currentText,
+            const QString& totalText,
+            const QString& separator = kDefaultSeparator);
 
 private:
     int m_current;
