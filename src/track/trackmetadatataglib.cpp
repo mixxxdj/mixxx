@@ -565,9 +565,13 @@ void writeID3v2UserTextIdentificationFrame(
     }
 }
 
-// Bitmask of optional tag fields that should NOT be written into
-// the common part of the tag. For future extension it is safer
-// to explicitly specify the exceptions instead of the common case!
+// Bitmask of optional tag fields that should NOT be written into the
+// common part of the tag through TagLib::Tag. For future extension
+// it is safer to explicitly specify these exceptions!
+// Usage: The write functions for ID3v2, MP4, APE and XiphComment tags
+// have specialized code for some or all of the corresponding tag fields
+// and it is not needed or even dangerous to use the common setters of
+// TagLib::Tag.
 enum WriteTagMask {
     WRITE_TAG_OMIT_NONE         = 0x00,
     WRITE_TAG_OMIT_TRACK_NUMBER = 0x01,
@@ -586,12 +590,18 @@ void writeTrackMetadataIntoTag(
     pTag->setAlbum(toTagLibString(trackMetadata.getAlbum()));
     pTag->setGenre(toTagLibString(trackMetadata.getGenre()));
 
+    // Using setComment() from TagLib::Tag might have undesirable
+    // effects if the tag type supports multiple comment fields for
+    // different purposes, e.g. ID3v2. In this case setting the
+    // comment here should be omitted.
     if (0 == (writeMask & WRITE_TAG_OMIT_COMMENT)) {
         pTag->setComment(toTagLibString(trackMetadata.getComment()));
     }
 
-    // NOTE(uklotzde): Derived tags might be able to write the complete
-    // string from trackMetadata.getYear() into the corresponding field.
+    // Specialized write functions for tags derived from Taglib::Tag might
+    // be able to write the complete string from trackMetadata.getYear()
+    // into the corresponding field. In this case parsing the year string
+    // here should be omitted.
     if (0 == (writeMask & WRITE_TAG_OMIT_YEAR)) {
         // Set the numeric year if available
         const QDate yearDate(
@@ -601,10 +611,12 @@ void writeTrackMetadataIntoTag(
         }
     }
 
-    // NOTE(uklotzde): The numeric track number does not reflect the
-    // total number of tracks! Derived tags might be able to write the
-    // complete string from trackMetadata.getTrackNumber() into the
-    // corresponding field.
+    // The numeric track number in TagLib::Tag does not reflect the total
+    // number of tracks! Specialized write functions for tags derived from
+    // Taglib::Tag might be able to write the complete string from
+    // trackMetadata.getTrackNumber() into some field or might parse the
+    // two values from the string including the total number of tracks.
+    // In this case parsing the track number string here should be omitted.
     if (0 == (writeMask & WRITE_TAG_OMIT_TRACK_NUMBER)) {
         // Set the numeric track number if available
         const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
