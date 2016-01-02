@@ -109,6 +109,19 @@
                       Type="raw" />
     </Property>
     
+    <!-- Look for old mixxx installation <= 2.0 -->
+    <Property Id="OLDERINSTALLEXISTS">
+      <?if $(var.Platform) = x86 ?>
+        <DirectorySearch Id="CheckFileDir" Path="[ProgramFilesFolder]\Mixxx">
+          <FileSearch Id="CheckFile" Name="UninstallMixxx.exe" />
+        </DirectorySearch>
+      <?else?>
+        <DirectorySearch Id="CheckFileDir" Path="[ProgramFiles64Folder]\Mixxx">
+          <FileSearch Id="CheckFile" Name="UninstallMixxx.exe" />
+        </DirectorySearch>
+      <?endif?>
+    </Property>
+
     <!-- This is the main installer sequence run when the product is actually installed -->
     <InstallExecuteSequence>
 
@@ -174,6 +187,8 @@
     </Condition>
     <?endif?>
     -->
+
+    <Condition Message="!(loc.OlderVersionFound)">NOT OLDERINSTALLEXISTS</Condition>
     
     <!-- 
        Launch conditions end

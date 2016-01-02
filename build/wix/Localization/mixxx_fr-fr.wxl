@@ -18,6 +18,7 @@
    <String Id="XPWarning">Vous installez Mixxx sur un système obsolète. Certaines fonctions pourraient ne pas fonctionner. Nous vous recommandons de mettre à jour votre système d'exploitation.</String>
    <String Id="bitWidthMismatch32">Vous installez une version 32 bits de Mixxx, mais il existe déjà une version 64 bits installée. Ceci peut conduire à un comportement imprévisible. SVP, désinstallez d'abord ou téléchargez l'installeur correspondant pour mettre à jour, à moins de savoir exactement ce que vous faites.</String>
    <String Id="bitWidthMismatch64">Vous installez une version 64 bits de Mixxx, mais il existe déjà une version 32 bits installée. Ceci peut conduire à un comportement imprévisible. SVP, désinstallez d'abord ou téléchargez l'installeur correspondant pour mettre à jour, à moins de savoir exactement ce que vous faites.</String>
+   <String Id="OlderVersionFound">Une ancienne version de Mixxx a été détectée. Comme nous avons changé d'installeur, nous ne pouvons pas mettre à jour de manière transparente. Merci de désinstaller l'ancienne version avant d'installer celle-ci.</String>
 
    <!-- Custom Warning Dialog -->
    <String Id="WarningDlgTitle">{\WixUI_Font_Title}Attention</String>

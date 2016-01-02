@@ -24,6 +24,7 @@
        Please un-install the existing Mixxx first, or download the 64-bit installation package to upgrade (unless you know exactly what you are 
        doing.)</String>
    <String Id="bitWidthMismatch64">You are about to install the 64-bit version but a 32-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 32-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
+   <String Id="OlderVersionFound">An older version of Mixxx has been detected. As we changed installer, we can not smoothly upgrade. Please uninstall older version before installing this one.</String>
 
    <!-- Custom Warning Dialog -->
    <String Id="WarningDlgTitle">{\WixUI_Font_Title}Warning</String>
