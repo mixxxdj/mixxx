@@ -866,18 +866,24 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
         const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
                 TrackNumbers::fromString(trackNumberText));
         QString trackTotalText;
-        if ((TrackNumbers::ParseResult::VALID == trackNumbersFromString.second) &&
-                !trackNumbersFromString.first.hasTotal()) {
-            // If parsing of the track number succeeded read the specialized
-            // fields, but only if the total number of tracks is still undefined.
-            if (tag.fieldListMap().contains("TRACKTOTAL")) {
-                // recommended field for total tracks
-                trackTotalText = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
-            } else if (tag.fieldListMap().contains("TOTALTRACKS")) {
-                // legacy field for total tracks
-                trackTotalText = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
-            }
+        if (TrackNumbers::ParseResult::VALID == trackNumbersFromString.second) {
             pTrackMetadata->setTrackNumber(trackNumbersFromString.first.toString());
+            if (!trackNumbersFromString.first.hasTotal()) {
+                // If parsing of the track number succeeded read the specialized
+                // fields for total tracks, but only if the total number of tracks
+                // is still undefined. Some applications might write the ID3v2 style
+                // string "<current>/<total>" into the track number field.
+                // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
+                // the proposed field name, but some applications use "TOTALTRACKS".
+                if (tag.fieldListMap().contains("TRACKTOTAL")) {
+                    // primary/proposed field for total tracks
+                    trackTotalText = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
+                }
+                if (trackTotalText.isEmpty() && tag.fieldListMap().contains("TOTALTRACKS")) {
+                    // secondary/alternative field for total tracks
+                    trackTotalText = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
+                }
+            }
         }
         const int trackCurrentValue = trackNumbersFromString.first.getCurrent();
         int trackTotalValue = TrackNumbers::kValueUndefined;
@@ -1154,6 +1160,8 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
 
     const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
             TrackNumbers::fromString(trackMetadata.getTrackNumber()));
+    // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
+    // the proposed field name, but some applications use "TOTALTRACKS".
     switch (trackNumbersFromString.second) {
     case TrackNumbers::ParseResult::EMPTY:
         pTag->removeField("TRACKNUMBER");
@@ -1165,10 +1173,15 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
                 toTagLibString(trackNumbersFromString.first.getCurrentText()));
         writeXiphCommentField(pTag, "TRACKTOTAL",
                 toTagLibString(trackNumbersFromString.first.getTotalText()));
-        pTag->removeField("TOTALTRACKS"); // legacy field for total tracks
+        // Remove the secondary/alternative field for total tracks to prevent
+        // inconsistencies if the tags are edited again by another external
+        // application that is unaware of "TRACKTOTAL".
+        pTag->removeField("TOTALTRACKS");
         break;
     default:
-        qWarning() << "Malformed track number" << trackMetadata.getTrackNumber();
+        qWarning() << "Invalid track number:"
+            << trackMetadata.getTrackNumber() << "->"
+            << trackNumbersFromString.first.toString();
     }
 
     writeXiphCommentField(pTag, "DATE",
@@ -1222,7 +1235,9 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
                 trackNumbersFromString.first.getTotal());
         break;
     default:
-        qWarning() << "Malformed track number" << trackMetadata.getTrackNumber();
+        qWarning() << "Invalid track number:"
+            << trackMetadata.getTrackNumber() << "->"
+            << trackNumbersFromString.first.toString();
     }
 
     writeMP4Atom(pTag, "\251day", trackMetadata.getYear());
