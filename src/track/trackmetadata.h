@@ -69,6 +69,12 @@ public:
     inline void setTrackNumber(QString trackNumber) {
         m_trackNumber = trackNumber;
     }
+    inline const QString& getTrackTotal() const {
+        return m_trackTotal;
+    }
+    inline void setTrackTotal(QString trackTotal) {
+        m_trackTotal = trackTotal;
+    }
 
     inline const QString& getComposer() const {
         return m_composer;
@@ -179,6 +185,7 @@ private:
     QString m_key;
     QString m_title;
     QString m_trackNumber;
+    QString m_trackTotal;
     QString m_year;
 
     Bpm m_bpm;
