@@ -1323,8 +1323,8 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
             }
         } else {
             // Initialize track total with the value stored in the Mixxx library
-            // and update the track number.
-            pTrack->setTrackTotal(splittedTrackNumber.first);
+            // and also update the track number.
+            pTrack->setTrackNumber(splittedTrackNumber.first);
             pTrack->setTrackTotal(splittedTrackNumber.second);
         }
     }
