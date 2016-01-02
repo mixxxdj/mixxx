@@ -1317,6 +1317,12 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
             Mixxx::TrackMetadata trackMetadata;
             if (OK == readTrackMetadataAndCoverArtFromFile(&trackMetadata, nullptr, location)) {
                 pTrack->setTrackTotal(trackMetadata.getTrackTotal());
+                // Also set the track number if it is still empty due
+                // to insufficient parsing capabilities of Mixxx in
+                // previous versions.
+                if (!trackMetadata.getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
+                    pTrack->setTrackNumber(trackMetadata.getTrackNumber());
+                }
             } else {
                 qWarning() << "Failed to reload track total from file tags:"
                         << location;
