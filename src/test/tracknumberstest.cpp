@@ -82,6 +82,7 @@ TEST_F(TrackNumbersTest, fromStringValid) {
     fromStringValid("1 / 0", TrackNumbers(1, 0));
     fromStringValid(" 1\t/\t2  ", TrackNumbers(1, 2));
     fromStringValid("12/7", TrackNumbers(12, 7));
+    fromStringValid("01234/12345", TrackNumbers(1234, 12345));
 }
 
 TEST_F(TrackNumbersTest, fromStringInvalid) {
@@ -106,6 +107,7 @@ TEST_F(TrackNumbersTest, ToString) {
     toString(TrackNumbers(7, 12), QString("07/12")); // with padding
     toString(TrackNumbers(-7, 12), QString("00/12")); // with padding
     toString(TrackNumbers(-7, 123), QString("000/123")); // with padding
+    toString(TrackNumbers(63, 100), QString("063/100")); // with padding
     toString(TrackNumbers(7, -12), QString("7"));
     toString(TrackNumbers(12, 7), QString("12/7"));
     toString(TrackNumbers(12, 34), QString("12/34"));
