@@ -13,119 +13,119 @@ class TrackMetadata {
 public:
     TrackMetadata();
 
-    inline const QString& getArtist() const {
+    const QString& getArtist() const {
         return m_artist;
     }
-    inline void setArtist(QString artist) {
+    void setArtist(QString artist) {
         m_artist = artist;
     }
 
-    inline const QString& getTitle() const {
+    const QString& getTitle() const {
         return m_title;
     }
-    inline void setTitle(QString title) {
+    void setTitle(QString title) {
         m_title = title;
     }
 
-    inline const QString& getAlbum() const {
+    const QString& getAlbum() const {
         return m_album;
     }
-    inline void setAlbum(QString album) {
+    void setAlbum(QString album) {
         m_album = album;
     }
 
-    inline const QString& getAlbumArtist() const {
+    const QString& getAlbumArtist() const {
         return m_albumArtist;
     }
-    inline void setAlbumArtist(QString albumArtist) {
+    void setAlbumArtist(QString albumArtist) {
         m_albumArtist = albumArtist;
     }
 
-    inline const QString& getGenre() const {
+    const QString& getGenre() const {
         return m_genre;
     }
-    inline void setGenre(QString genre) {
+    void setGenre(QString genre) {
         m_genre = genre;
     }
 
-    inline const QString& getComment() const {
+    const QString& getComment() const {
         return m_comment;
     }
-    inline void setComment(QString comment) {
+    void setComment(QString comment) {
         m_comment = comment;
     }
 
     // year, date or date/time formatted according to ISO 8601
-    inline const QString& getYear() const {
+    const QString& getYear() const {
         return m_year;
     }
-    inline void setYear(QString year) {
+    void setYear(QString year) {
         m_year = year;
     }
 
-    inline const QString& getTrackNumber() const {
+    const QString& getTrackNumber() const {
         return m_trackNumber;
     }
-    inline void setTrackNumber(QString trackNumber) {
+    void setTrackNumber(QString trackNumber) {
         m_trackNumber = trackNumber;
     }
-    inline const QString& getTrackTotal() const {
+    const QString& getTrackTotal() const {
         return m_trackTotal;
     }
-    inline void setTrackTotal(QString trackTotal) {
+    void setTrackTotal(QString trackTotal) {
         m_trackTotal = trackTotal;
     }
 
-    inline const QString& getComposer() const {
+    const QString& getComposer() const {
         return m_composer;
     }
-    inline void setComposer(QString composer) {
+    void setComposer(QString composer) {
         m_composer = composer;
     }
 
-    inline const QString& getGrouping() const {
+    const QString& getGrouping() const {
         return m_grouping;
     }
-    inline void setGrouping(QString grouping) {
+    void setGrouping(QString grouping) {
         m_grouping = grouping;
     }
 
-    inline const QString& getKey() const {
+    const QString& getKey() const {
         return m_key;
     }
-    inline void setKey(QString key) {
+    void setKey(QString key) {
         m_key = key;
     }
 
     // #channels
-    inline int getChannels() const {
+    int getChannels() const {
         return m_channels;
     }
-    inline void setChannels(int channels) {
+    void setChannels(int channels) {
         m_channels = channels;
     }
 
     // Hz
-    inline int getSampleRate() const {
+    int getSampleRate() const {
         return m_sampleRate;
     }
-    inline void setSampleRate(int sampleRate) {
+    void setSampleRate(int sampleRate) {
         m_sampleRate = sampleRate;
     }
 
     // kbit / s
-    inline int getBitrate() const {
+    int getBitrate() const {
         return m_bitrate;
     }
-    inline void setBitrate(int bitrate) {
+    void setBitrate(int bitrate) {
         m_bitrate = bitrate;
     }
 
     // #seconds
-    inline int getDuration() const {
+    int getDuration() const {
         return m_duration;
     }
-    inline void setDuration(int duration) {
+    void setDuration(int duration) {
         m_duration = duration;
     }
     // Returns the duration as a string: H:MM:SS
@@ -153,16 +153,16 @@ public:
     }
 
     // Parse an format date/time values according to ISO 8601
-    inline static QDate parseDate(QString str) {
+    static QDate parseDate(QString str) {
         return QDate::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
-    inline static QDateTime parseDateTime(QString str) {
+    static QDateTime parseDateTime(QString str) {
         return QDateTime::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
-    inline static QString formatDate(QDate date) {
+    static QString formatDate(QDate date) {
         return date.toString(Qt::ISODate);
     }
-    inline static QString formatDateTime(QDateTime dateTime) {
+    static QString formatDateTime(QDateTime dateTime) {
         return dateTime.toString(Qt::ISODate);
     }
 
