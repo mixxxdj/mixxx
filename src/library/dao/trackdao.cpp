@@ -1324,7 +1324,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
                     pTrack->setTrackNumber(trackMetadata.getTrackNumber());
                 }
             } else {
-                qWarning() << "Failed to reload track total from file tags:"
+                qWarning() << "Failed to reload track number/total from file tags:"
                         << location;
             }
         } else {
