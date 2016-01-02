@@ -181,7 +181,7 @@ void BrowseThread::populateModel() {
 
         item = new QStandardItem(tio.getTrackNumber());
         item->setToolTip(item->text());
-        item->setData(item->text(), Qt::UserRole);
+        item->setData(item->text().toInt(), Qt::UserRole);
         row_data.insert(COLUMN_TRACK_NUMBER, item);
 
         const QString year(tio.getYear());

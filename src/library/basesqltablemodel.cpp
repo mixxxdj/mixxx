@@ -586,6 +586,12 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = value.toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
                 value = Mixxx::TrackMetadata::formatCalendarYear(value.toString());
+            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
+                int track_number = value.toInt();
+                if (track_number <= 0) {
+                    // clear invalid values
+                    value = QString();
+                }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
                 int bitrate = value.toInt();
                 if (bitrate <= 0) {
