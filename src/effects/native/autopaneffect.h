@@ -69,7 +69,7 @@ struct PanGroupState {
         m_dPreviousPeriod = -1.0;
     }
     ~PanGroupState() {
-        // todo delete buffer
+        SampleUtil::free(m_pDelayBuf);
     }
     unsigned int time;
     RampedSample frac;
