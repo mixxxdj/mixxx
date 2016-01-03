@@ -545,7 +545,6 @@ class MixxxCore(Feature):
                    "dlgprefcontrols.cpp",
                    "dlgprefwaveform.cpp",
                    "dlgprefautodj.cpp",
-                   "dlgprefkey.cpp",
                    "dlgprefreplaygain.cpp",
                    "dlgprefnovinyl.cpp",
                    "dlgabout.cpp",
@@ -647,7 +646,6 @@ class MixxxCore(Feature):
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
                    "analyserwaveform.cpp",
-                   "analyserkey.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",

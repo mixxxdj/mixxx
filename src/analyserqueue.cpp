@@ -13,12 +13,15 @@
 #include "library/trackcollection.h"
 #include "analyserwaveform.h"
 #include "analyserrg.h"
-#include "analyserbeats.h"
-#include "analyserkey.h"
-#include "vamp/vampanalyser.h"
 #include "util/compatibility.h"
 #include "util/event.h"
 #include "util/trace.h"
+
+#ifdef __VAMP__
+#include "analyserbeats.h"
+#include "analyserkey.h"
+#include "vamp/vampanalyser.h"
+#endif
 
 // Measured in 0.1%,
 // 0 for no progress during finalize
@@ -436,9 +439,11 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
 
     ret->addAnalyser(new AnalyserWaveform(pConfig));
     ret->addAnalyser(new AnalyserGain(pConfig));
+#ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(pConfig));
     ret->addAnalyser(new AnalyserKey(pConfig));
+#endif
 
     ret->start(QThread::LowPriority);
     return ret;
@@ -450,9 +455,11 @@ AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
     ret->addAnalyser(new AnalyserGain(pConfig));
+#ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(pConfig));
     ret->addAnalyser(new AnalyserKey(pConfig));
+#endif
 
     ret->start(QThread::LowPriority);
     return ret;
