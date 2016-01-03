@@ -90,6 +90,13 @@ class SoundSourceProviderFFmpeg: public SoundSourceProvider {
         return "FFmpeg";
     }
 
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override {
+        Q_UNUSED(supportedFileExtension);
+        // FFmpeg will only be used as the last resort
+        return SoundSourceProviderPriority::LOWEST;
+    }
+
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
