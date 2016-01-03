@@ -57,6 +57,7 @@ class TrackNumbersTest : public testing::Test {
     void toString(const TrackNumbers& inputValue, const QString& expectedResult) {
         const QString actualResult(inputValue.toString());
         qDebug() << "toString():" << expectedResult << "->" << actualResult;
+
         EXPECT_EQ(expectedResult, actualResult);
 
         // Re-parse the formatted string if the input is
@@ -69,14 +70,25 @@ class TrackNumbersTest : public testing::Test {
             }
         }
     }
+
+    void splitAndJointStrings(const QString& inputValue, const QString& expectedTrackNumber, const QString& expectedTrackTotal) {
+        QString actualTrackNumber;
+        QString actualTrackTotal;
+        TrackNumbers::splitString(inputValue, &actualTrackNumber, &actualTrackTotal);
+        qDebug() << "splitString():" << inputValue << "->" << actualTrackNumber << actualTrackTotal;
+
+        EXPECT_EQ(expectedTrackNumber, actualTrackNumber);
+        EXPECT_EQ(expectedTrackTotal, actualTrackTotal);
+        EXPECT_EQ(inputValue, TrackNumbers::joinStrings(actualTrackNumber, actualTrackTotal));
+    }
 };
 
-TEST_F(TrackNumbersTest, FromStringEmpty) {
+TEST_F(TrackNumbersTest, ParseFromStringEmpty) {
     parseFromStringEmpty("");
     parseFromStringEmpty(" \t \n   ");
 }
 
-TEST_F(TrackNumbersTest, parseFromStringValid) {
+TEST_F(TrackNumbersTest, ParseFromStringValid) {
     parseFromStringValid("0", TrackNumbers(0));
     parseFromStringValid("0/0", TrackNumbers(0, 0));
     parseFromStringValid("1 / 0", TrackNumbers(1, 0));
@@ -85,7 +97,7 @@ TEST_F(TrackNumbersTest, parseFromStringValid) {
     parseFromStringValid("01234/12345", TrackNumbers(1234, 12345));
 }
 
-TEST_F(TrackNumbersTest, parseFromStringInvalid) {
+TEST_F(TrackNumbersTest, ParseFromStringInvalid) {
     parseFromStringInvalid("-2", TrackNumbers(-2));
     parseFromStringInvalid("1/ -1", TrackNumbers(1, -1));
     parseFromStringInvalid("-2 / 1", TrackNumbers(-2, 1));
@@ -95,22 +107,31 @@ TEST_F(TrackNumbersTest, parseFromStringInvalid) {
 }
 
 TEST_F(TrackNumbersTest, ToString) {
-    toString(TrackNumbers(), QString(""));
-    toString(TrackNumbers(0), QString(""));
-    toString(TrackNumbers(-3), QString(""));
-    toString(TrackNumbers(1), QString("1"));
-    toString(TrackNumbers(12), QString("12"));
-    toString(TrackNumbers(1, 0), QString("1"));
-    toString(TrackNumbers(12, 0), QString("12"));
-    toString(TrackNumbers(0, 1), QString("0/1"));
-    toString(TrackNumbers(0, 12), QString("00/12")); // with padding
-    toString(TrackNumbers(7, 12), QString("07/12")); // with padding
-    toString(TrackNumbers(-7, 12), QString("00/12")); // with padding
-    toString(TrackNumbers(-7, 123), QString("000/123")); // with padding
-    toString(TrackNumbers(63, 100), QString("063/100")); // with padding
-    toString(TrackNumbers(7, -12), QString("7"));
-    toString(TrackNumbers(12, 7), QString("12/7"));
-    toString(TrackNumbers(12, 34), QString("12/34"));
+    toString(TrackNumbers(), "");
+    toString(TrackNumbers(0), "");
+    toString(TrackNumbers(-3), "");
+    toString(TrackNumbers(1), "1");
+    toString(TrackNumbers(12), "12");
+    toString(TrackNumbers(1, 0), "1");
+    toString(TrackNumbers(12, 0), "12");
+    toString(TrackNumbers(0, 1), "0/1");
+    toString(TrackNumbers(0, 12), "00/12"); // with padding
+    toString(TrackNumbers(7, 12), "07/12"); // with padding
+    toString(TrackNumbers(-7, 12), "00/12"); // with padding
+    toString(TrackNumbers(-7, 123), "000/123"); // with padding
+    toString(TrackNumbers(63, 100), "063/100"); // with padding
+    toString(TrackNumbers(7, -12), "7");
+    toString(TrackNumbers(12, 7), "12/7");
+    toString(TrackNumbers(12, 34), "12/34");
+}
+
+TEST_F(TrackNumbersTest, SplitAndJoinStrings) {
+    splitAndJointStrings("", "", "");
+    splitAndJointStrings(" 01 \n", " 01 \n", "");
+    splitAndJointStrings(" 1 \n /\t 10  ", " 1 \n ", "\t 10  ");
+    splitAndJointStrings(" 01 \n /\t 10 // 2 ", " 01 \n ", "\t 10 // 2 ");
+    splitAndJointStrings("\n /\t 10 // 2 ", "\n ", "\t 10 // 2 ");
+    splitAndJointStrings("/\t 10 // 2 ", "", "\t 10 // 2 ");
 }
 
 } // anonymous namespace
