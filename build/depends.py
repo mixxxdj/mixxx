@@ -1128,6 +1128,10 @@ class MixxxCore(Feature):
             if not conf.CheckForPKGConfig('0.15.0'):
                 raise Exception('pkg-config >= 0.15.0 not found.')
 
+            if not conf.CheckLib(['X11', 'libX11']):
+                raise Exception(
+                    "Could not find libX11 or its development headers.")
+
         elif build.platform_is_osx:
             # Stuff you may have compiled by hand
             if os.path.isdir('/usr/local/include'):
