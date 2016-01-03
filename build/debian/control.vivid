@@ -28,8 +28,7 @@ Build-Depends: debhelper (>= 4.0.0),
                protobuf-compiler, 
                libusb-1.0-0-dev, 
                libchromaprint-dev, 
-               librubberband-dev, 
-               libopus-dev, 
+               librubberband-dev,  
                libopusfile-dev, 
                libsqlite3-dev
 Standards-Version: 3.7.3
