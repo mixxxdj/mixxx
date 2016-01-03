@@ -1,56 +1,167 @@
 #include "soundsourceproviderregistry.h"
 
-#include "util/regex.h"
-
 namespace Mixxx {
 
-SoundSourceProviderPointer SoundSourceProviderRegistry::registerProvider(
+void SoundSourceProviderRegistry::registerProvider(
         const SoundSourceProviderPointer& pProvider) {
-    Entry entry;
-    entry.pProvider = pProvider;
-    return registerEntry(entry);
-}
-
-SoundSourceProviderPointer SoundSourceProviderRegistry::registerPluginLibrary(
-        const SoundSourcePluginLibraryPointer& pPluginLibrary) {
-    Entry entry;
-    entry.pProvider = pPluginLibrary->createSoundSourceProvider();
-    entry.pPluginLibrary = pPluginLibrary;
-    return registerEntry(entry);
-}
-
-SoundSourceProviderPointer SoundSourceProviderRegistry::registerEntry(const Entry& entry) {
-    DEBUG_ASSERT(m_supportedFileNameRegex.isEmpty());
-    DEBUG_ASSERT(entry.pProvider);
     const QStringList supportedFileExtensions(
-            entry.pProvider->getSupportedFileExtensions());
-    DEBUG_ASSERT(entry.pPluginLibrary || !supportedFileExtensions.isEmpty());
-    if (entry.pPluginLibrary && supportedFileExtensions.isEmpty()) {
-        qWarning() << "SoundSource plugin does not support any file types"
-                << entry.pPluginLibrary->getFilePath();
+            pProvider->getSupportedFileExtensions());
+    if (supportedFileExtensions.isEmpty()) {
+        qWarning() << "SoundSource provider"
+                << pProvider->getName()
+                << "does not support any file extensions";
+        return; // abort registration
     }
-    foreach (const QString& supportedFileExtension, supportedFileExtensions) {
-        m_entries.insert(supportedFileExtension, entry);
+    for (const auto& fileExt: supportedFileExtensions) {
+        SoundSourceProviderPriority providerPriority(
+                pProvider->getPriorityHint(fileExt));
+        registerProviderForFileExtension(
+                fileExt,
+                pProvider,
+                providerPriority);
     }
-    return entry.pProvider;
 }
 
-void SoundSourceProviderRegistry::finishRegistration() {
-    const QStringList supportedFileExtensions(getSupportedFileExtensions());
-    const QString fileExtensionsRegex(
-            RegexUtils::fileExtensionsRegex(supportedFileExtensions));
-    QRegExp(fileExtensionsRegex, Qt::CaseInsensitive).swap(
-            m_supportedFileNameRegex);
+void SoundSourceProviderRegistry::registerPluginLibrary(
+        const SoundSourcePluginLibraryPointer& pPluginLibrary) {
+    SoundSourceProviderPointer pProvider(
+            pPluginLibrary->createSoundSourceProvider());
+    if (!pProvider) {
+        qWarning() << "Failed to obtain SoundSource provider from plugin library"
+                << pPluginLibrary->getFilePath();
+        return; // abort registration
+    }
+    const QStringList supportedFileExtensions(
+            pProvider->getSupportedFileExtensions());
+    if (supportedFileExtensions.isEmpty()) {
+        qWarning() << "SoundSource provider"
+                << pProvider->getName()
+                << "does not support any file extensions";
+        return; // abort registration
+    }
+    for (const auto& fileExt: supportedFileExtensions) {
+        SoundSourceProviderPriority providerPriority(
+                pProvider->getPriorityHint(fileExt));
+        registerPluginProviderForFileExtension(
+                fileExt,
+                pPluginLibrary,
+                pProvider,
+                providerPriority);
+    }
 }
 
-QStringList SoundSourceProviderRegistry::getSupportedFileNamePatterns() const {
-    const QStringList supportedFileExtensions(getSupportedFileExtensions());
-    // Turn the list into a "*.mp3 *.wav *.etc" style string
-    QStringList supportedFileNamePatterns;
-    foreach (const QString& supportedFileExtension, supportedFileExtensions) {
-        supportedFileNamePatterns += QString("*.%1").arg(supportedFileExtension);
+void SoundSourceProviderRegistry::registerProviderForFileExtension(
+        const QString& fileExtension,
+        const SoundSourceProviderPointer& pProvider,
+        SoundSourceProviderPriority providerPriority) {
+    SoundSourceProviderRegistration registration(
+        SoundSourcePluginLibraryPointer(), pProvider, providerPriority);
+    addRegistrationForFileExtension(fileExtension, std::move(registration));
+}
+
+void SoundSourceProviderRegistry::registerPluginProviderForFileExtension(
+        const QString& fileExtension,
+        const SoundSourcePluginLibraryPointer& pPluginLibrary,
+        const SoundSourceProviderPointer& pProvider,
+        SoundSourceProviderPriority providerPriority) {
+    SoundSourceProviderRegistration registration(
+            pPluginLibrary, pProvider, providerPriority);
+    addRegistrationForFileExtension(fileExtension, std::move(registration));
+}
+
+void SoundSourceProviderRegistry::addRegistrationForFileExtension(
+        const QString& fileExtension,
+        SoundSourceProviderRegistration registration) {
+    DEBUG_ASSERT(registration.getProvider());
+    QList<SoundSourceProviderRegistration>& registrationsForFileExtension =
+            m_registry[fileExtension];
+    insertRegistration(&registrationsForFileExtension, registration);
+}
+
+void SoundSourceProviderRegistry::insertRegistration(
+        QList<SoundSourceProviderRegistration> *pRegistrations,
+        SoundSourceProviderRegistration registration) {
+    QList<SoundSourceProviderRegistration>::iterator listIter(
+            pRegistrations->begin());
+    // Perform a linear search through the list & insert
+    while (pRegistrations->end() != listIter) {
+        // Priority comparison with <=: New registrations will be inserted
+        // before existing registrations with equal priority, but after
+        // existing registrations with higher priority.
+        if (listIter->getProviderPriority() <= registration.getProviderPriority()) {
+            listIter = pRegistrations->insert(listIter, std::move(registration));
+            DEBUG_ASSERT(pRegistrations->end() != listIter);
+            return; // done
+        } else {
+            ++listIter; // continue loop
+        }
     }
-    return supportedFileNamePatterns;
+    if (pRegistrations->end() == listIter) {
+        // List was empty or registration has the lowest priority
+        pRegistrations->append(std::move(registration));
+    }
+}
+
+void SoundSourceProviderRegistry::deregisterProvider(
+        const SoundSourceProviderPointer& pProvider) {
+    const QStringList supportedFileExtensions(
+            pProvider->getSupportedFileExtensions());
+    for (const auto& fileExt: supportedFileExtensions) {
+        deregisterProviderForFileExtension(fileExt, pProvider);
+    }
+}
+
+void SoundSourceProviderRegistry::deregisterProviderForFileExtension(
+        const QString& fileExtension,
+        const SoundSourceProviderPointer& pProvider) {
+    auto registryIter(m_registry.find(fileExtension));
+    if (m_registry.end() != registryIter) {
+        QList<SoundSourceProviderRegistration>& registrationsForFileExtension = registryIter.value();
+        auto listIter = registrationsForFileExtension.begin();
+        while (registrationsForFileExtension.end() != listIter) {
+            if (listIter->getProvider() == pProvider) {
+                listIter = registrationsForFileExtension.erase(listIter);
+            } else {
+                ++listIter;
+            }
+        }
+        if (registrationsForFileExtension.isEmpty()) {
+            m_registry.erase(registryIter);
+        }
+    }
+}
+
+void SoundSourceProviderRegistry::deregisterPluginLibrary(
+        const SoundSourcePluginLibraryPointer& pPluginLibrary) {
+    auto registryIter(m_registry.begin());
+    while (m_registry.end() != registryIter) {
+        QList<SoundSourceProviderRegistration>& registrationsForFileExtension = registryIter.value();
+        auto listIter = registrationsForFileExtension.begin();
+        while (registrationsForFileExtension.end() != listIter) {
+            if (listIter->getPluginLibrary() == pPluginLibrary) {
+                listIter = registrationsForFileExtension.erase(listIter);
+            } else {
+                ++listIter;
+            }
+        }
+        if (registrationsForFileExtension.isEmpty()) {
+            registryIter = m_registry.erase(registryIter);
+        } else {
+            ++registryIter;
+        }
+    }
+}
+
+QList<SoundSourceProviderRegistration>
+SoundSourceProviderRegistry::getRegistrationsForFileExtension(
+        const QString& fileExtension) const {
+    FileExtension2RegistrationList::const_iterator i(
+            m_registry.find(fileExtension));
+    if (m_registry.end() != i) {
+        return i.value();
+    } else {
+        return QList<SoundSourceProviderRegistration>();
+    }
 }
 
 } // Mixxx
