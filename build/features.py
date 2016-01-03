@@ -828,12 +828,6 @@ class Opus(Feature):
 
         # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
-        if not conf.CheckLib(['opus', 'libopus']):
-            if explicit:
-                raise Exception('Could not find libopus.')
-            else:
-                build.flags['opus'] = 0
-            return
         if not conf.CheckLib(['opusfile', 'libopusfile']):
             if explicit:
                 raise Exception('Could not find libopusfile.')
