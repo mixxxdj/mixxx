@@ -3,17 +3,16 @@
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 
-/*static*/ const QString TrackNumbers::kDefaultSeparator("/");
+/*static*/ const QString TrackNumbers::kSeparator("/");
 
 //static
 std::pair<TrackNumbers, TrackNumbers::ParseResult> TrackNumbers::fromString(
-        const QString& str,
-        const QString& separator) {
+        const QString& str) {
     TrackNumbers trackNumbers;
     if (str.trimmed().isEmpty()) {
         return std::make_pair(trackNumbers, ParseResult::EMPTY);
     } else {
-        const QStringList splitted(str.split(separator));
+        const QStringList splitted(str.split(kSeparator));
         DEBUG_ASSERT(splitted.size() > 0);
         ParseResult parseResult;
         if ((splitted.size() == 1) || (splitted.size() == 2)) {
@@ -46,9 +45,8 @@ std::pair<TrackNumbers, TrackNumbers::ParseResult> TrackNumbers::fromString(
 
 //static
 std::pair<QString, QString> TrackNumbers::splitString(
-        const QString& str,
-        const QString& separator) {
-    const int splitIndex = str.indexOf(separator);
+        const QString& str) {
+    const int splitIndex = str.indexOf(kSeparator);
     if (0 <= splitIndex) {
         return std::make_pair(
                 str.left(splitIndex),
@@ -61,12 +59,11 @@ std::pair<QString, QString> TrackNumbers::splitString(
 //static
 QString TrackNumbers::joinStrings(
         const QString& currentText,
-        const QString& totalText,
-        const QString& separator) {
+        const QString& totalText) {
     if (totalText.isEmpty()) {
         return currentText;
     } else {
-        return currentText + separator + totalText;
+        return currentText + kSeparator + totalText;
     }
 }
 
@@ -99,8 +96,7 @@ std::pair<QString, QString> TrackNumbers::toSplitString() const {
     return std::make_pair(first, second);
 }
 
-QString TrackNumbers::toString(
-        const QString& separator) const {
+QString TrackNumbers::toString() const {
     const auto splitted(toSplitString());
-    return joinStrings(splitted.first, splitted.second, separator);
+    return joinStrings(splitted.first, splitted.second);
 }

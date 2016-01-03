@@ -17,7 +17,7 @@ public:
 
     // Separates the total number of tracks from the current
     // track number in the textual format.
-    static const QString kDefaultSeparator;
+    static const QString kSeparator;
 
     static bool isUndefinedValue(int value) {
         return kValueUndefined == value;
@@ -71,22 +71,18 @@ public:
     };
 
     static std::pair<TrackNumbers, ParseResult> fromString(
-            const QString& str,
-            const QString& separator = kDefaultSeparator);
+            const QString& str);
 
     std::pair<QString, QString> toSplitString() const;
-    QString toString(
-            const QString& separator = kDefaultSeparator) const;
+    QString toString() const;
 
     // Splits a string into current and total part
     static std::pair<QString, QString> splitString(
-            const QString& str,
-            const QString& separator = kDefaultSeparator);
+            const QString& str);
     // Joins the current and total strings
     static QString joinStrings(
             const QString& currentText,
-            const QString& totalText,
-            const QString& separator = kDefaultSeparator);
+            const QString& totalText);
 
 private:
     int m_current;
