@@ -14,8 +14,10 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
 
     while ((l_SInputFmt = av_iformat_next(l_SInputFmt))) {
         if (l_SInputFmt->name == NULL) {
-            break;
+            break; // exit loop
         }
+
+        qDebug() << "FFmpeg input format:" << l_SInputFmt->name;
 
         if (!strcmp(l_SInputFmt->name, "flac")) {
             list.append("flac");
