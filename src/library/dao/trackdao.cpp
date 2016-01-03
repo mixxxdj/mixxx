@@ -1308,31 +1308,19 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // default value "//".
     // See also: Schema revision 26 in schema.xml
     if (pTrack->getTrackTotal() == "//") {
-        // Just in case: Use track total from the track number itself if
-        // it can be split into two parts and the second part os not empty.
-        QString currentText;
-        QString totalText;
-        TrackNumbers::splitString(currentText, nullptr, &totalText);
-        if (totalText.isEmpty()) {
-            // Reload track total from file tags
-            Mixxx::TrackMetadata trackMetadata;
-            if (OK == readTrackMetadataAndCoverArtFromFile(&trackMetadata, nullptr, location)) {
-                pTrack->setTrackTotal(trackMetadata.getTrackTotal());
-                // Also set the track number if it is still empty due
-                // to insufficient parsing capabilities of Mixxx in
-                // previous versions.
-                if (!trackMetadata.getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
-                    pTrack->setTrackNumber(trackMetadata.getTrackNumber());
-                }
-            } else {
-                qWarning() << "Failed to reload track number/total from file tags:"
-                        << location;
+        // Reload track total from file tags
+        Mixxx::TrackMetadata trackMetadata;
+        if (OK == readTrackMetadataAndCoverArtFromFile(&trackMetadata, nullptr, location)) {
+            pTrack->setTrackTotal(trackMetadata.getTrackTotal());
+            // Also set the track number if it is still empty due
+            // to insufficient parsing capabilities of Mixxx in
+            // previous versions.
+            if (!trackMetadata.getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
+                pTrack->setTrackNumber(trackMetadata.getTrackNumber());
             }
         } else {
-            // Initialize track total with the value stored in the Mixxx library
-            // and also update the track number.
-            pTrack->setTrackNumber(currentText);
-            pTrack->setTrackTotal(totalText);
+            qWarning() << "Failed to reload track total from file tags:"
+                    << location;
         }
     }
 
