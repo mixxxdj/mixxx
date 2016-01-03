@@ -876,14 +876,12 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
                 toQStringFirstNotEmpty(tag.fieldListMap()["TRACKNUMBER"]),
                 &trackNumber,
                 &trackTotal);
-        if (trackTotal.isEmpty()) {
-            if (tag.fieldListMap().contains("TRACKTOTAL")) {
-                // primary/proposed field for total tracks
-                trackTotal = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
-            } else if (tag.fieldListMap().contains("TOTALTRACKS")) {
-                // secondary/alternative field for total tracks
-                trackTotal = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
-            }
+        if (tag.fieldListMap().contains("TRACKTOTAL")) {
+            // primary/proposed field for total tracks
+            trackTotal = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
+        } else if (tag.fieldListMap().contains("TOTALTRACKS")) {
+            // secondary/alternative field for total tracks
+            trackTotal = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
         }
         pTrackMetadata->setTrackNumber(trackNumber);
         pTrackMetadata->setTrackTotal(trackTotal);
