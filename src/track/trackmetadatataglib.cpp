@@ -619,11 +619,11 @@ void writeTrackMetadataIntoTag(
     // In this case parsing the track number string here should be omitted.
     if (0 == (writeMask & WRITE_TAG_OMIT_TRACK_NUMBER)) {
         // Set the numeric track number if available
-        const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
-                TrackNumbers::fromString(trackMetadata.getTrackNumber()));
-        if ((TrackNumbers::ParseResult::VALID == trackNumbersFromString.second) &&
-                trackNumbersFromString.first.hasCurrent()) {
-            pTag->setTrack(trackNumbersFromString.first.getCurrent());
+        TrackNumbers parsedTrackNumbers;
+        const TrackNumbers::ParseResult parseResult =
+                TrackNumbers::parseFromString(trackMetadata.getTrackNumber(), &parsedTrackNumbers);
+        if (TrackNumbers::ParseResult::VALID == parseResult) {
+            pTag->setTrack(parsedTrackNumbers.getCurrent());
         }
     }
 }
@@ -734,10 +734,14 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
 
     const TagLib::ID3v2::FrameList trackNumberFrame(tag.frameListMap()["TRCK"]);
     if (!trackNumberFrame.isEmpty()) {
-        const std::pair<QString, QString> splitted(
-                TrackNumbers::splitString(toQStringFirstNotEmpty(trackNumberFrame)));
-        pTrackMetadata->setTrackNumber(splitted.first);
-        pTrackMetadata->setTrackTotal(splitted.second);
+        QString trackNumber;
+        QString trackTotal;
+        TrackNumbers::splitString(
+                toQStringFirstNotEmpty(trackNumberFrame),
+                &trackNumber,
+                &trackTotal);
+        pTrackMetadata->setTrackNumber(trackNumber);
+        pTrackMetadata->setTrackTotal(trackTotal);
     }
 
     const TagLib::ID3v2::FrameList bpmFrame(tag.frameListMap()["TBPM"]);
@@ -796,10 +800,14 @@ void readTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::AP
     }
 
     if (tag.itemListMap().contains("Track")) {
-        const std::pair<QString, QString> splitted(
-                TrackNumbers::splitString(toQString(tag.itemListMap()["Track"])));
-        pTrackMetadata->setTrackNumber(splitted.first);
-        pTrackMetadata->setTrackTotal(splitted.second);
+        QString trackNumber;
+        QString trackTotal;
+        TrackNumbers::splitString(
+                toQString(tag.itemListMap()["Track"]),
+                &trackNumber,
+                &trackTotal);
+        pTrackMetadata->setTrackNumber(trackNumber);
+        pTrackMetadata->setTrackTotal(trackTotal);
     }
 
     if (tag.itemListMap().contains("BPM")) {
@@ -863,19 +871,23 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
     }
 
     if (tag.fieldListMap().contains("TRACKNUMBER")) {
-        std::pair<QString, QString> splitted(
-                TrackNumbers::splitString(toQStringFirstNotEmpty(tag.fieldListMap()["TRACKNUMBER"])));
-        if (splitted.second.isEmpty()) {
+        QString trackNumber;
+        QString trackTotal;
+        TrackNumbers::splitString(
+                toQStringFirstNotEmpty(tag.fieldListMap()["TRACKNUMBER"]),
+                &trackNumber,
+                &trackTotal);
+        if (trackTotal.isEmpty()) {
             if (tag.fieldListMap().contains("TRACKTOTAL")) {
                 // primary/proposed field for total tracks
-                splitted.second = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
+                trackTotal = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
             } else if (tag.fieldListMap().contains("TOTALTRACKS")) {
                 // secondary/alternative field for total tracks
-                splitted.second = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
+                trackTotal = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
             }
         }
-        pTrackMetadata->setTrackNumber(splitted.first);
-        pTrackMetadata->setTrackTotal(splitted.second);
+        pTrackMetadata->setTrackNumber(trackNumber);
+        pTrackMetadata->setTrackTotal(trackTotal);
     }
 
     // The release date formatted according to ISO 8601. Might
@@ -957,9 +969,11 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
     if (getItemListMap(tag).contains("trkn")) {
         const TagLib::MP4::Item::IntPair trknPair(getItemListMap(tag)["trkn"].toIntPair());
         const TrackNumbers trackNumbers(trknPair.first, trknPair.second);
-        const std::pair<QString, QString> splitted(trackNumbers.toSplitString());
-        pTrackMetadata->setTrackNumber(splitted.first);
-        pTrackMetadata->setTrackTotal(splitted.second);
+        QString trackNumber;
+        QString trackTotal;
+        trackNumbers.toStrings(&trackNumber, &trackTotal);
+        pTrackMetadata->setTrackNumber(trackNumber);
+        pTrackMetadata->setTrackTotal(trackTotal);
     }
 
     // Get BPM
@@ -1188,24 +1202,26 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
             WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
 
     // Write track number/total pair
-    const std::pair<TrackNumbers, TrackNumbers::ParseResult> trackNumbersFromString(
-            TrackNumbers::fromString(
-                    TrackNumbers::joinStrings(
-                            trackMetadata.getTrackNumber(),
-                            trackMetadata.getTrackTotal())));
-    switch (trackNumbersFromString.second) {
+    QString trackNumberText;
+    QString trackTotalText;
+    TrackNumbers parsedTrackNumbers;
+    const TrackNumbers::ParseResult parseResult =
+            TrackNumbers::parseFromStrings(
+                    trackMetadata.getTrackNumber(),
+                    trackMetadata.getTrackTotal(),
+                    &parsedTrackNumbers);
+    switch (parseResult) {
     case TrackNumbers::ParseResult::EMPTY:
         pTag->itemListMap().erase("trkn");
         break;
     case TrackNumbers::ParseResult::VALID:
         pTag->itemListMap()["trkn"] = TagLib::MP4::Item(
-                trackNumbersFromString.first.getCurrent(),
-                trackNumbersFromString.first.getTotal());
+                parsedTrackNumbers.getCurrent(),
+                parsedTrackNumbers.getTotal());
         break;
     default:
-        qWarning() << "Invalid track number:"
-            << trackMetadata.getTrackNumber() << "->"
-            << trackNumbersFromString.first.toString();
+        qWarning() << "Invalid track numbers:"
+            << TrackNumbers::joinStrings(trackMetadata.getTrackNumber(), trackMetadata.getTrackTotal());
     }
 
     writeMP4Atom(pTag, "\251day", trackMetadata.getYear());

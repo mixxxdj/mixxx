@@ -1310,9 +1310,10 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     if (pTrack->getTrackTotal() == "//") {
         // Just in case: Use track total from the track number itself if
         // it can be split into two parts and the second part os not empty.
-        const std::pair<QString, QString> splittedTrackNumber(
-                TrackNumbers::splitString(pTrack->getTrackNumber()));
-        if (splittedTrackNumber.second.isEmpty()) {
+        QString currentText;
+        QString totalText;
+        TrackNumbers::splitString(currentText, nullptr, &totalText);
+        if (totalText.isEmpty()) {
             // Reload track total from file tags
             Mixxx::TrackMetadata trackMetadata;
             if (OK == readTrackMetadataAndCoverArtFromFile(&trackMetadata, nullptr, location)) {
@@ -1330,8 +1331,8 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         } else {
             // Initialize track total with the value stored in the Mixxx library
             // and also update the track number.
-            pTrack->setTrackNumber(splittedTrackNumber.first);
-            pTrack->setTrackTotal(splittedTrackNumber.second);
+            pTrack->setTrackNumber(currentText);
+            pTrack->setTrackTotal(totalText);
         }
     }
 

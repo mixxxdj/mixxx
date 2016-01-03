@@ -18,40 +18,40 @@ class TrackNumbersTest : public testing::Test {
     virtual void TearDown() {
     }
 
-    void fromStringEmpty(const QString& inputValue) {
-        const std::pair<TrackNumbers, TrackNumbers::ParseResult> actualResult(
-                TrackNumbers::fromString(inputValue));
+    void parseFromStringEmpty(const QString& inputValue) {
+        TrackNumbers actualTrackNumbers;
+        TrackNumbers::ParseResult actualParseResult = TrackNumbers::parseFromString(inputValue, &actualTrackNumbers);
 
-        qDebug() << "fromString():" << inputValue << "->" << actualResult.first.toString();
+        qDebug() << "parseFromString():" << inputValue << "->" << actualTrackNumbers.toString();
 
-        EXPECT_EQ(TrackNumbers::ParseResult::EMPTY, actualResult.second);
-        EXPECT_TRUE(actualResult.first.isValid());
-        EXPECT_EQ(TrackNumbers(), actualResult.first);
+        EXPECT_EQ(TrackNumbers::ParseResult::EMPTY, actualParseResult);
+        EXPECT_TRUE(actualTrackNumbers.isValid());
+        EXPECT_EQ(TrackNumbers(), actualTrackNumbers);
     }
 
-    TrackNumbers fromStringValid(const QString& inputValue, const TrackNumbers& expectedResult) {
-        const std::pair<TrackNumbers, TrackNumbers::ParseResult> actualResult(
-                TrackNumbers::fromString(inputValue));
+    TrackNumbers parseFromStringValid(const QString& inputValue, const TrackNumbers& expectedResult) {
+        TrackNumbers actualTrackNumbers;
+        TrackNumbers::ParseResult actualParseResult = TrackNumbers::parseFromString(inputValue, &actualTrackNumbers);
 
-        qDebug() << "fromString():" << inputValue << "->" << actualResult.first.toString();
+        qDebug() << "parseFromString():" << inputValue << "->" << actualTrackNumbers.toString();
 
-        EXPECT_EQ(TrackNumbers::ParseResult::VALID, actualResult.second);
-        EXPECT_TRUE(actualResult.first.isValid());
-        EXPECT_EQ(expectedResult, actualResult.first);
+        EXPECT_EQ(TrackNumbers::ParseResult::VALID, actualParseResult);
+        EXPECT_TRUE(actualTrackNumbers.isValid());
+        EXPECT_EQ(expectedResult, actualTrackNumbers);
 
-        return actualResult.first;
+        return actualTrackNumbers;
     }
 
-    TrackNumbers fromStringInvalid(const QString& inputValue, const TrackNumbers& expectedResult) {
-        const std::pair<TrackNumbers, TrackNumbers::ParseResult> actualResult(
-                TrackNumbers::fromString(inputValue));
+    TrackNumbers parseFromStringInvalid(const QString& inputValue, const TrackNumbers& expectedResult) {
+        TrackNumbers actualTrackNumbers;
+        TrackNumbers::ParseResult actualParseResult = TrackNumbers::parseFromString(inputValue, &actualTrackNumbers);
 
-        qDebug() << "fromString():" << inputValue << "->" << actualResult.first.toString();
+        qDebug() << "parseFromString():" << inputValue << "->" << actualTrackNumbers.toString();
 
-        EXPECT_EQ(TrackNumbers::ParseResult::INVALID, actualResult.second);
-        EXPECT_EQ(expectedResult, actualResult.first);
+        EXPECT_EQ(TrackNumbers::ParseResult::INVALID, actualParseResult);
+        EXPECT_EQ(expectedResult, actualTrackNumbers);
 
-        return actualResult.first;
+        return actualTrackNumbers;
     }
 
     void toString(const TrackNumbers& inputValue, const QString& expectedResult) {
@@ -63,35 +63,35 @@ class TrackNumbersTest : public testing::Test {
         // a valid TrackNumbers instance
         if (inputValue.isValid()) {
             if (actualResult.isEmpty()) {
-                fromStringEmpty(actualResult);
+                parseFromStringEmpty(actualResult);
             } else {
-                fromStringValid(actualResult, inputValue);
+                parseFromStringValid(actualResult, inputValue);
             }
         }
     }
 };
 
 TEST_F(TrackNumbersTest, FromStringEmpty) {
-    fromStringEmpty("");
-    fromStringEmpty(" \t \n   ");
+    parseFromStringEmpty("");
+    parseFromStringEmpty(" \t \n   ");
 }
 
-TEST_F(TrackNumbersTest, fromStringValid) {
-    fromStringValid("0", TrackNumbers(0));
-    fromStringValid("0/0", TrackNumbers(0, 0));
-    fromStringValid("1 / 0", TrackNumbers(1, 0));
-    fromStringValid(" 1\t/\t2  ", TrackNumbers(1, 2));
-    fromStringValid("12/7", TrackNumbers(12, 7));
-    fromStringValid("01234/12345", TrackNumbers(1234, 12345));
+TEST_F(TrackNumbersTest, parseFromStringValid) {
+    parseFromStringValid("0", TrackNumbers(0));
+    parseFromStringValid("0/0", TrackNumbers(0, 0));
+    parseFromStringValid("1 / 0", TrackNumbers(1, 0));
+    parseFromStringValid(" 1\t/\t2  ", TrackNumbers(1, 2));
+    parseFromStringValid("12/7", TrackNumbers(12, 7));
+    parseFromStringValid("01234/12345", TrackNumbers(1234, 12345));
 }
 
-TEST_F(TrackNumbersTest, fromStringInvalid) {
-    fromStringInvalid("-2", TrackNumbers(-2));
-    fromStringInvalid("1/ -1", TrackNumbers(1, -1));
-    fromStringInvalid("-2 / 1", TrackNumbers(-2, 1));
-    fromStringInvalid("-3/-4", TrackNumbers(-3, -4));
-    fromStringInvalid("1/a", TrackNumbers(1, TrackNumbers::kValueUndefined));
-    fromStringInvalid("a /1", TrackNumbers(TrackNumbers::kValueUndefined, 1));
+TEST_F(TrackNumbersTest, parseFromStringInvalid) {
+    parseFromStringInvalid("-2", TrackNumbers(-2));
+    parseFromStringInvalid("1/ -1", TrackNumbers(1, -1));
+    parseFromStringInvalid("-2 / 1", TrackNumbers(-2, 1));
+    parseFromStringInvalid("-3/-4", TrackNumbers(-3, -4));
+    parseFromStringInvalid("1/a", TrackNumbers(1, TrackNumbers::kValueUndefined));
+    parseFromStringInvalid("a /1", TrackNumbers(TrackNumbers::kValueUndefined, 1));
 }
 
 TEST_F(TrackNumbersTest, ToString) {

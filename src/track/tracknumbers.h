@@ -4,8 +4,6 @@
 #include <QString>
 #include <QMetaType>
 
-#include <utility> // std::pair
-
 
 // DTO for storing the current and total number of tracks for an album.
 // Both numbers are 1-based and 0 indicates an undefined value.
@@ -41,7 +39,6 @@ public:
     int getCurrent() const {
         return m_current;
     }
-    QString getCurrentText() const;
     void setCurrent(int current) {
         m_current = current;
     }
@@ -55,7 +52,6 @@ public:
     int getTotal() const {
         return m_total;
     }
-    QString getTotalText() const;
     void setTotal(int total) {
         m_total = total;
     }
@@ -70,15 +66,24 @@ public:
         INVALID
     };
 
-    static std::pair<TrackNumbers, ParseResult> fromString(
-            const QString& str);
+    static ParseResult parseFromStrings(
+            const QString& currentText,
+            const QString& totalText,
+            TrackNumbers* pParsed);
+    static ParseResult parseFromString(
+            const QString& str,
+            TrackNumbers* pParsed);
 
-    std::pair<QString, QString> toSplitString() const;
+    void toStrings(
+            QString* pCurrentText,
+            QString* pTotalText) const;
     QString toString() const;
 
     // Splits a string into current and total part
-    static std::pair<QString, QString> splitString(
-            const QString& str);
+    static void splitString(
+            const QString& str,
+            QString* pCurrentText,
+            QString* pTotalText);
     // Joins the current and total strings
     static QString joinStrings(
             const QString& currentText,
