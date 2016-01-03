@@ -15,16 +15,16 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "engine/enginedeck.h"
+
 #include "controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginedeck.h"
+#include "engine/enginefilterbessel4.h"
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
-#include "engine/enginefilterbessel4.h"
-
-#include "sampleutil.h"
+#include "util/sample.h"
 
 EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        ConfigObject<ConfigValue>* pConfig,

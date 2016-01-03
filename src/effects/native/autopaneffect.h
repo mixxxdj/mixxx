@@ -3,15 +3,14 @@
 
 #include <QMap>
 
-#include "util.h"
-#include "util/defs.h"
-#include "util/types.h"
+#include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "effects/effectprocessor.h"
-#include "sampleutil.h"
 #include "engine/enginefilterpansingle.h"
-
+#include "util/class.h"
+#include "util/defs.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 // This class provides a float value that cannot be increased or decreased
 // by more than a given value to avoid clicks.
@@ -19,18 +18,18 @@
 // somewhere else (I hear clicks when I change the period of flanger for example).
 class RampedSample {
   public:
-    
+
     inline RampedSample()
         : ramped(false),
           maxDifference(1.0f),
           initialized(false) {}
-    
+
     virtual ~RampedSample(){};
-    
+
     inline void setRampingThreshold(const float newMaxDifference) {
         maxDifference = newMaxDifference;
     }
-    
+
     inline void setWithRampingApplied(const float newValue) {
         if (!initialized) {
             currentValue = newValue;
@@ -46,13 +45,13 @@ class RampedSample {
             }
         }
     }
-    
+
     inline operator float() {
         return currentValue;
     }
-    
+
     bool ramped;
-    
+
   private:
     float maxDifference;
     float currentValue;
@@ -70,7 +69,7 @@ struct PanGroupState {
         m_dPreviousPeriod = -1.0;
     }
     ~PanGroupState() {
-        // todo delete buffer
+        SampleUtil::free(m_pDelayBuf);
     }
     unsigned int time;
     RampedSample frac;
@@ -97,9 +96,9 @@ class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
                       const GroupFeatureState& groupFeatures);
 
     double computeLawCoefficient(double position);
-    
+
   private:
-    
+
     QString debugString() const {
         return getId();
     }
@@ -108,7 +107,7 @@ class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
     EngineEffectParameter* m_pPeriodUnitParameter;
     EngineEffectParameter* m_pPeriodParameter;
     EngineEffectParameter* m_pWidthParameter;
-    
+
     DISALLOW_COPY_AND_ASSIGN(AutoPanEffect);
 };
 

@@ -4,9 +4,9 @@
 #include <QObject>
 
 #include "configobject.h"
-#include "trackinfoobject.h"
 #include "library/dao/dao.h"
-#include "util.h"
+#include "trackinfoobject.h"
+#include "util/class.h"
 
 class QSqlDatabase;
 class TrackDAO;

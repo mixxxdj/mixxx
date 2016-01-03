@@ -15,10 +15,11 @@
 ***************************************************************************/
 
 #include "enginedelay.h"
-#include "controlpotmeter.h"
+
 #include "controlobjectslave.h"
-#include "sampleutil.h"
+#include "controlpotmeter.h"
 #include "util/assert.h"
+#include "util/sample.h"
 
 const int kiMaxDelay = 40000; // 208 ms @ 96 kb/s
 const double kdMaxDelayPot = 200; // 200 ms

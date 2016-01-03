@@ -6,10 +6,10 @@
 #include <QScopedPointer>
 #include <QSharedPointer>
 
+#include "util/class.h"
+#include "util/math.h"
 #include "util/pa_ringbuffer.h"
 #include "util/reference.h"
-#include "util/math.h"
-#include "util.h"
 
 template <class DataType>
 class FIFO {

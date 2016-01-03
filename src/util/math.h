@@ -3,7 +3,12 @@
 
 // Causes MSVC to define M_PI and friends.
 // http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx
+// Our SConscript defines this but check anyway.
+#ifdef __WINDOWS__
+#ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
+#endif
+#endif
 #include <cmath>
 #include <algorithm>
 

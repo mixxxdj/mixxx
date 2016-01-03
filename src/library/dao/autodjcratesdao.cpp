@@ -521,8 +521,8 @@ void AutoDJCratesDAO::slotTrackDirty(TrackId trackId) {
     if (pTrack == NULL) {
         return;
     }
-    int iPlayed = pTrack->getTimesPlayed();
-    if (iPlayed == 0) {
+    const PlayCounter playCounter(pTrack->getPlayCounter());
+    if (playCounter.getTimesPlayed() == 0) {
         return;
     }
 
@@ -534,8 +534,8 @@ void AutoDJCratesDAO::slotTrackDirty(TrackId trackId) {
             AUTODJCRATESTABLE_TRACKID " = :track_id AND "
             AUTODJCRATESTABLE_TIMESPLAYED " = :oldplayed");
     oQuery.bindValue(":track_id", trackId.toVariant());
-    oQuery.bindValue(":oldplayed", iPlayed - 1);
-    oQuery.bindValue(":newplayed", iPlayed);
+    oQuery.bindValue(":oldplayed", playCounter.getTimesPlayed() - 1);
+    oQuery.bindValue(":newplayed", playCounter.getTimesPlayed());
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
         return;

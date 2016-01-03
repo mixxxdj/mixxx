@@ -1,33 +1,33 @@
+#include "engine/enginemaster.h"
 
 #include <QtDebug>
 #include <QList>
 #include <QPair>
 
-#include "controlpushbutton.h"
 #include "configobject.h"
 #include "controlaudiotaperpot.h"
-#include "controlpotmeter.h"
 #include "controlaudiotaperpot.h"
+#include "controlpotmeter.h"
+#include "controlpushbutton.h"
+#include "effects/effectsmanager.h"
+#include "engine/channelmixer.h"
+#include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
-#include "engine/engineworkerscheduler.h"
-#include "engine/enginedeck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
+#include "engine/enginedeck.h"
+#include "engine/enginedelay.h"
 #include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
+#include "engine/engineworkerscheduler.h"
 #include "engine/enginexfader.h"
-#include "engine/enginedelay.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
-#include "sampleutil.h"
-#include "engine/effects/engineeffectsmanager.h"
-#include "effects/effectsmanager.h"
+#include "playermanager.h"
+#include "util/defs.h"
+#include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "util/defs.h"
-#include "playermanager.h"
-#include "engine/channelmixer.h"
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            const char* group,

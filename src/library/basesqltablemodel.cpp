@@ -16,7 +16,7 @@
 #include "playermanager.h"
 #include "playerinfo.h"
 #include "track/keyutils.h"
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "util/time.h"
 #include "util/dnd.h"
 #include "util/assert.h"
@@ -848,9 +848,19 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         // QVariant::toFloat needs >= QT 4.6.x
         pTrack->setBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
-        pTrack->setPlayedAndUpdatePlaycount(value.toBool());
+        // Update both the played flag and the number of times played
+        pTrack->updatePlayCounter(value.toBool());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) == column) {
-        pTrack->setTimesPlayed(value.toInt());
+        const int timesPlayed = value.toInt();
+        if (0 < timesPlayed) {
+            // Preserve the played flag and only set the number of times played
+            PlayCounter playCounter(pTrack->getPlayCounter());
+            playCounter.setTimesPlayed(timesPlayed);
+            pTrack->setPlayCounter(playCounter);
+        } else {
+            // Reset both the played flag and the number of times played
+            pTrack->resetPlayCounter();
+        }
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
         StarRating starRating = qVariantValue<StarRating>(value);
         pTrack->setRating(starRating.starCount());
@@ -858,7 +868,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setKeyText(value.toString(),
                            mixxx::track::io::key::USER);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
-        pTrack->setBpmLock(value.toBool());
+        pTrack->setBpmLocked(value.toBool());
     } else {
         // We never should get up to this point!
         DEBUG_ASSERT_AND_HANDLE(false) {

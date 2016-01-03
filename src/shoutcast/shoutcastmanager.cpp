@@ -4,7 +4,7 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/enginemaster.h"
-#include "soundmanager.h"
+#include "soundio/soundmanager.h"
 
 ShoutcastManager::ShoutcastManager(ConfigObject<ConfigValue>* pConfig,
                                    SoundManager* pSoundManager)

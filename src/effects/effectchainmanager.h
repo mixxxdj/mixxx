@@ -6,10 +6,10 @@
 #include <QHash>
 
 #include "configobject.h"
-#include "util.h"
 #include "effects/effectchain.h"
 #include "effects/effectrack.h"
 #include "engine/channelhandle.h"
+#include "util/class.h"
 
 class EffectsManager;
 

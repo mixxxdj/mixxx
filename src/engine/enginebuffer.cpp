@@ -1,47 +1,45 @@
+#include "engine/enginebuffer.h"
 
 #include <QtDebug>
 
-#include "engine/enginebuffer.h"
 #include "cachingreader.h"
-#include "sampleutil.h"
-
-#include "controlpushbutton.h"
-#include "controlindicator.h"
 #include "configobject.h"
-#include "controlpotmeter.h"
+#include "controlindicator.h"
 #include "controllinpotmeter.h"
-#include "engine/enginechannel.h"
-#include "engine/enginebufferscalest.h"
-#include "engine/enginebufferscalerubberband.h"
-#include "engine/enginebufferscalelinear.h"
-#include "engine/sync/enginesync.h"
-#include "engine/engineworkerscheduler.h"
-#include "engine/readaheadmanager.h"
-#include "engine/enginecontrol.h"
-#include "engine/loopingcontrol.h"
-#include "engine/ratecontrol.h"
+#include "controlobjectslave.h"
+#include "controlpotmeter.h"
+#include "controlpushbutton.h"
 #include "engine/bpmcontrol.h"
-#include "engine/keycontrol.h"
-#include "engine/sync/synccontrol.h"
-#include "engine/quantizecontrol.h"
-#include "visualplayposition.h"
-#include "engine/cuecontrol.h"
 #include "engine/clockcontrol.h"
+#include "engine/cuecontrol.h"
+#include "engine/enginebufferscalelinear.h"
+#include "engine/enginebufferscalerubberband.h"
+#include "engine/enginebufferscalest.h"
+#include "engine/enginechannel.h"
+#include "engine/enginecontrol.h"
 #include "engine/enginemaster.h"
-#include "util/timer.h"
-#include "util/math.h"
-#include "util/defs.h"
+#include "engine/engineworkerscheduler.h"
+#include "engine/keycontrol.h"
+#include "engine/loopingcontrol.h"
+#include "engine/quantizecontrol.h"
+#include "engine/ratecontrol.h"
+#include "engine/readaheadmanager.h"
+#include "engine/sync/enginesync.h"
+#include "engine/sync/synccontrol.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
-#include "controlobjectslave.h"
-#include "util/compatibility.h"
+#include "trackinfoobject.h"
 #include "util/assert.h"
+#include "util/compatibility.h"
+#include "util/defs.h"
+#include "util/math.h"
+#include "util/sample.h"
+#include "util/timer.h"
+#include "visualplayposition.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
 #endif
-
-#include "trackinfoobject.h"
 
 const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 const int kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
@@ -509,8 +507,8 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
     // 10 seconds
     pTrack->setDuration(10);
     if (filebpm > 0) {
-        pTrack->setBpm(filebpm);
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), filebpm, 0.0);
+        double bpm = pTrack->setBpm(filebpm);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0);
         pTrack->setBeats(pBeats);
     }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
@@ -866,7 +864,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // the speedSliderPitchRatio is not reseted when keylock is enabled.
         // This mode allows to enable keylock
         // while the track is already played. You can reset to the tracks
-        // original pitch by reseting the pitch knob to center. When disabling
+        // original pitch by resetting the pitch knob to center. When disabling
         // keylock the pitch is reset to the linear vinyl pitch.
 
         // The Pitch knob turns if the speed slider is moved without keylock.

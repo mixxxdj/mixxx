@@ -1,6 +1,6 @@
 #include "sources/audiosource.h"
 
-#include "sampleutil.h"
+#include "util/sample.h"
 
 namespace Mixxx {
 
