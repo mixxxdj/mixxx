@@ -613,10 +613,9 @@ void writeTrackMetadataIntoTag(
 
     // The numeric track number in TagLib::Tag does not reflect the total
     // number of tracks! Specialized write functions for tags derived from
-    // Taglib::Tag might be able to write the complete string from
-    // trackMetadata.getTrackNumber() into some field or might parse the
-    // two values from the string including the total number of tracks.
-    // In this case parsing the track number string here should be omitted.
+    // Taglib::Tag might be able to handle both trackMetadata.getTrackNumber()
+    // and trackMetadata.getTrackTotal(). In this case parsing the track
+    // number string here is useless and should be omitted.
     if (0 == (writeMask & WRITE_TAG_OMIT_TRACK_NUMBER)) {
         // Set the numeric track number if available
         TrackNumbers parsedTrackNumbers;
