@@ -24,21 +24,21 @@ namespace {
 
 //static
 TrackNumbers::ParseResult TrackNumbers::parseFromStrings(
-        const QString& currentText,
+        const QString& actualText,
         const QString& totalText,
         TrackNumbers* pParsed) {
-    const QString currentTrimmed(currentText.trimmed());
+    const QString actualTrimmed(actualText.trimmed());
     const QString totalTrimmed(totalText.trimmed());
     ParseResult parseResult =
-            (currentTrimmed.isEmpty() && totalTrimmed.isEmpty()) ? ParseResult::EMPTY : ParseResult::VALID;
-    int currentValue = kValueUndefined;
-    if (!currentTrimmed.isEmpty()) {
-        if (!parseValueFromString(currentTrimmed, &currentValue)) {
+            (actualTrimmed.isEmpty() && totalTrimmed.isEmpty()) ? ParseResult::EMPTY : ParseResult::VALID;
+    int actualValue = kValueUndefined;
+    if (!actualTrimmed.isEmpty()) {
+        if (!parseValueFromString(actualTrimmed, &actualValue)) {
             parseResult = ParseResult::INVALID;
         }
     }
     if (nullptr != pParsed) {
-        pParsed->setCurrent(currentValue);
+        pParsed->setActual(actualValue);
     }
     int totalValue = kValueUndefined;
     if (!totalTrimmed.isEmpty()) {
@@ -71,19 +71,19 @@ TrackNumbers::ParseResult TrackNumbers::parseFromString(
 //static
 void TrackNumbers::splitString(
         const QString& str,
-        QString* pCurrentText,
+        QString* pActualText,
         QString* pTotalText) {
     const int splitIndex = str.indexOf(kSeparator);
     if (0 <= splitIndex) {
-        if (nullptr != pCurrentText) {
-            *pCurrentText = str.left(splitIndex);
+        if (nullptr != pActualText) {
+            *pActualText = str.left(splitIndex);
         }
         if (nullptr != pTotalText) {
             *pTotalText = str.right(str.length() - (splitIndex + 1));
         }
     } else {
-        if (nullptr != pCurrentText) {
-            *pCurrentText = str;
+        if (nullptr != pActualText) {
+            *pActualText = str;
         }
         if (nullptr != pTotalText) {
             pTotalText->clear();
@@ -93,38 +93,38 @@ void TrackNumbers::splitString(
 
 //static
 QString TrackNumbers::joinStrings(
-        const QString& currentText,
+        const QString& actualText,
         const QString& totalText) {
     if (totalText.isEmpty()) {
-        return currentText;
+        return actualText;
     } else {
-        return currentText + kSeparator + totalText;
+        return actualText + kSeparator + totalText;
     }
 }
 
 void TrackNumbers::toStrings(
-        QString* pCurrentText,
+        QString* pActualText,
         QString* pTotalText) const {
-    QString currentText;
-    if (hasCurrent() && isCurrentValid()) {
-        currentText = QString::number(getCurrent());
+    QString actualText;
+    if (hasActual() && isActualValid()) {
+        actualText = QString::number(getActual());
     }
     QString totalText;
     if (hasTotal() && isTotalValid()) {
         totalText = QString::number(getTotal());
     }
     if (!totalText.isEmpty()) {
-        // Padding with '0' of the current track number string
+        // Padding with '0' of the actual track number string
         // to match the string length of the total track number,
-        // e.g. current=3 and total=12 becomes currentText="03"
+        // e.g. actual=3 and total=12 becomes actualText="03"
         // and totalText="12".
-        if (currentText.size() < totalText.size()) {
-            const QString padding(totalText.size() - currentText.size(), '0');
-            currentText = padding + currentText;
+        if (actualText.size() < totalText.size()) {
+            const QString padding(totalText.size() - actualText.size(), '0');
+            actualText = padding + actualText;
         }
     }
-    if (nullptr != pCurrentText) {
-        *pCurrentText = currentText;
+    if (nullptr != pActualText) {
+        *pActualText = actualText;
     }
     if (nullptr != pTotalText) {
         *pTotalText = totalText;
@@ -132,8 +132,8 @@ void TrackNumbers::toStrings(
 }
 
 QString TrackNumbers::toString() const {
-    QString currentText;
+    QString actualText;
     QString totalText;
-    toStrings(&currentText, &totalText);
-    return joinStrings(currentText, totalText);
+    toStrings(&actualText, &totalText);
+    return joinStrings(actualText, totalText);
 }

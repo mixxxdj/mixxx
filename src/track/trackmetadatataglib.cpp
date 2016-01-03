@@ -622,7 +622,7 @@ void writeTrackMetadataIntoTag(
         const TrackNumbers::ParseResult parseResult =
                 TrackNumbers::parseFromString(trackMetadata.getTrackNumber(), &parsedTrackNumbers);
         if (TrackNumbers::ParseResult::VALID == parseResult) {
-            pTag->setTrack(parsedTrackNumbers.getCurrent());
+            pTag->setTrack(parsedTrackNumbers.getActual());
         }
     }
 }
@@ -1213,7 +1213,7 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
         break;
     case TrackNumbers::ParseResult::VALID:
         pTag->itemListMap()["trkn"] = TagLib::MP4::Item(
-                parsedTrackNumbers.getCurrent(),
+                parsedTrackNumbers.getActual(),
                 parsedTrackNumbers.getTotal());
         break;
     default:

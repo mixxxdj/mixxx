@@ -5,7 +5,7 @@
 #include <QMetaType>
 
 
-// DTO for storing the current and total number of tracks for an album.
+// DTO for storing the actual and total number of tracks for an album.
 // Both numbers are 1-based and 0 indicates an undefined value.
 class TrackNumbers final {
 public:
@@ -13,7 +13,7 @@ public:
     static const int kValueUndefined = 0;
     static const int kValueMin = 1; // lower bound (inclusive)
 
-    // Separates the total number of tracks from the current
+    // Separates the total number of tracks from the actual
     // track number in the textual format.
     static const QString kSeparator;
 
@@ -25,39 +25,39 @@ public:
         return isUndefinedValue(value) || (kValueMin <= value);
     }
 
-    explicit TrackNumbers(int current = kValueUndefined, int total = kValueUndefined)
-        : m_current(current),
-          m_total(total) {
+    explicit TrackNumbers(int actualValue = kValueUndefined, int totalValue = kValueUndefined)
+        : m_actualValue(actualValue),
+          m_totalValue(totalValue) {
     }
 
-    bool hasCurrent() const {
-        return !isUndefinedValue(m_current);
+    bool hasActual() const {
+        return !isUndefinedValue(m_actualValue);
     }
-    bool isCurrentValid() const {
-        return isValidValue(m_current);
+    bool isActualValid() const {
+        return isValidValue(m_actualValue);
     }
-    int getCurrent() const {
-        return m_current;
+    int getActual() const {
+        return m_actualValue;
     }
-    void setCurrent(int current) {
-        m_current = current;
+    void setActual(int actualValue) {
+        m_actualValue = actualValue;
     }
 
     bool hasTotal() const {
-        return !isUndefinedValue(m_total);
+        return !isUndefinedValue(m_totalValue);
     }
     bool isTotalValid() const {
-        return isValidValue(m_total);
+        return isValidValue(m_totalValue);
     }
     int getTotal() const {
-        return m_total;
+        return m_totalValue;
     }
-    void setTotal(int total) {
-        m_total = total;
+    void setTotal(int totalValue) {
+        m_totalValue = totalValue;
     }
 
     bool isValid() const {
-        return isCurrentValid() && isTotalValid();
+        return isActualValid() && isTotalValid();
     }
 
     enum class ParseResult {
@@ -67,7 +67,7 @@ public:
     };
 
     static ParseResult parseFromStrings(
-            const QString& currentText,
+            const QString& actualText,
             const QString& totalText,
             TrackNumbers* pParsed);
     static ParseResult parseFromString(
@@ -75,28 +75,28 @@ public:
             TrackNumbers* pParsed);
 
     void toStrings(
-            QString* pCurrentText,
+            QString* pActualText,
             QString* pTotalText) const;
     QString toString() const;
 
-    // Splits a string into current and total part
+    // Splits a string into actual and total part
     static void splitString(
             const QString& str,
-            QString* pCurrentText,
+            QString* pActualText,
             QString* pTotalText);
-    // Joins the current and total strings
+    // Joins the actual and total strings
     static QString joinStrings(
-            const QString& currentText,
+            const QString& actualText,
             const QString& totalText);
 
 private:
-    int m_current;
-    int m_total;
+    int m_actualValue;
+    int m_totalValue;
 };
 
 inline
 bool operator==(const TrackNumbers& lhs, const TrackNumbers& rhs) {
-    return (lhs.getCurrent() == rhs.getCurrent()) &&
+    return (lhs.getActual() == rhs.getActual()) &&
             (lhs.getTotal() == rhs.getTotal());
 }
 
