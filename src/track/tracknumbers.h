@@ -74,24 +74,33 @@ public:
         INVALID
     };
 
+    // Creates a new instance from string(s).
+    // If the caller is only interested in the ParseResult
+    // a nullptr can be passed for the corresponding output
+    // parameter pParsed.
     static ParseResult parseFromStrings(
             const QString& actualText,
             const QString& totalText,
-            TrackNumbers* pParsed);
+            TrackNumbers* pParsed = nullptr);
     static ParseResult parseFromString(
             const QString& str,
-            TrackNumbers* pParsed);
+            TrackNumbers* pParsed = nullptr);
 
+    // Formats this instance as string(s).
+    // Both output parameters pActualText and pTotalText
+    // are optional and the caller might pass a nullptr.
     void toStrings(
             QString* pActualText,
             QString* pTotalText) const;
     QString toString() const;
 
-    // Splits a string into actual and total part
+    // Splits a string into actual and total part. Both
+    // output parameters pActualText and pTotalText are
+    // optional and the caller might pass a nullptr.
     static void splitString(
             const QString& str,
-            QString* pActualText,
-            QString* pTotalText);
+            QString* pActualText = nullptr,
+            QString* pTotalText = nullptr);
     // Joins the actual and total strings
     static QString joinStrings(
             const QString& actualText,
