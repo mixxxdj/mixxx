@@ -346,7 +346,7 @@ void readCoverArtFromXiphComment(QImage* pCoverArt, const TagLib::Ogg::XiphComme
         return; // nothing to do
     }
 
-    if (tag.fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
+    if (tag.contains("METADATA_BLOCK_PICTURE")) {
         QByteArray data(
                 QByteArray::fromBase64(
                         tag.fieldListMap()["METADATA_BLOCK_PICTURE"].front().toCString()));
@@ -354,7 +354,7 @@ void readCoverArtFromXiphComment(QImage* pCoverArt, const TagLib::Ogg::XiphComme
         TagLib::FLAC::Picture p(tdata);
         data = QByteArray(p.data().data(), p.data().size());
         *pCoverArt = QImage::fromData(data);
-    } else if (tag.fieldListMap().contains("COVERART")) {
+    } else if (tag.contains("COVERART")) {
         QByteArray data(
                 QByteArray::fromBase64(
                         tag.fieldListMap()["COVERART"].toString().toCString()));
@@ -653,16 +653,30 @@ void writeAPEItem(
     }
 }
 
+bool readXiphCommentField(
+        const TagLib::Ogg::XiphComment& tag,
+        const TagLib::String& key,
+        QString* pValue = nullptr) {
+    if (tag.contains(key)) {
+        if (nullptr != pValue) {
+            *pValue = toQStringFirstNotEmpty(tag.fieldListMap()[key]);
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void writeXiphCommentField(
         TagLib::Ogg::XiphComment* pTag,
         const TagLib::String& key,
-        const TagLib::String& str) {
-    if (str.isEmpty()) {
+        const TagLib::String& value) {
+    if (value.isEmpty()) {
         // Purge empty fields
         pTag->removeField(key);
     } else {
         const bool replace = true;
-        pTag->addField(key, str, replace);
+        pTag->addField(key, value, replace);
     }
 }
 
@@ -832,56 +846,46 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
 
     readTrackMetadataFromTag(pTrackMetadata, tag);
 
-    // Some applications (like puddletag up to version 1.0.5) write COMMENT
-    // instead DESCRIPTION. If the comment field (correctly populated by TagLib
-    // from DESCRIPTION) is still empty we will additionally read this field.
+    // Some applications (like puddletag up to version 1.0.5) write
+    // "COMMENT" instead "DESCRIPTION".
     // Reference: http://www.xiph.org/vorbis/doc/v-comment.html
-    if (pTrackMetadata->getComment().isEmpty()
-            && tag.fieldListMap().contains("COMMENT")) {
-        pTrackMetadata->setComment(
-                toQStringFirstNotEmpty(tag.fieldListMap()["COMMENT"]));
+    if (!readXiphCommentField(tag, "DESCRIPTION")) { // recommended field (already read by TagLib)
+        QString comment;
+        if (readXiphCommentField(tag, "COMMENT", &comment)) { // alternative field
+            pTrackMetadata->setComment(comment);
+        }
     }
 
-    if (tag.fieldListMap().contains("ALBUMARTIST")) {
-        pTrackMetadata->setAlbumArtist(
-                toQStringFirstNotEmpty(tag.fieldListMap()["ALBUMARTIST"]));
-    }
-    if (pTrackMetadata->getAlbumArtist().isEmpty()
-            && tag.fieldListMap().contains("ALBUM_ARTIST")) {
-        // try alternative field name
-        pTrackMetadata->setAlbumArtist(
-                toQStringFirstNotEmpty(tag.fieldListMap()["ALBUM_ARTIST"]));
-    }
-    if (pTrackMetadata->getAlbumArtist().isEmpty()
-            && tag.fieldListMap().contains("ALBUM ARTIST")) {
-        // try alternative field name
-        pTrackMetadata->setAlbumArtist(
-                toQStringFirstNotEmpty(tag.fieldListMap()["ALBUM ARTIST"]));
+    QString albumArtist;
+    if (readXiphCommentField(tag, "ALBUMARTIST", &albumArtist) || // recommended field
+            readXiphCommentField(tag, "ALBUM_ARTIST", &albumArtist) || // alternative field (with underscore character)
+            readXiphCommentField(tag, "ALBUM ARTIST", &albumArtist) || // alternative field (with space character)
+            readXiphCommentField(tag, "ENSEMBLE", &albumArtist)) { // alternative field
+        pTrackMetadata->setAlbumArtist(albumArtist);
     }
 
-    if (tag.fieldListMap().contains("COMPOSER")) {
-        pTrackMetadata->setComposer(
-                toQStringFirstNotEmpty(tag.fieldListMap()["COMPOSER"]));
+    QString composer;
+    if (readXiphCommentField(tag, "COMPOSER", &composer)) {
+        pTrackMetadata->setComposer(composer);
     }
 
-    if (tag.fieldListMap().contains("GROUPING")) {
-        pTrackMetadata->setGrouping(
-                toQStringFirstNotEmpty(tag.fieldListMap()["GROUPING"]));
+    QString grouping;
+    if (readXiphCommentField(tag, "GROUPING", &grouping)) {
+        pTrackMetadata->setGrouping(grouping);
     }
 
-    if (tag.fieldListMap().contains("TRACKNUMBER")) {
-        QString trackNumber;
+    QString trackNumber;
+    if (readXiphCommentField(tag, "TRACKNUMBER", &trackNumber)) {
         QString trackTotal;
+        // Split the string, because some applications might decide
+        // to store "<trackNumber>/<trackTotal>" in "TRACKNUMBER"
+        // even if this is not recommended.
         TrackNumbers::splitString(
-                toQStringFirstNotEmpty(tag.fieldListMap()["TRACKNUMBER"]),
+                trackNumber,
                 &trackNumber,
                 &trackTotal);
-        if (tag.fieldListMap().contains("TRACKTOTAL")) {
-            // primary/proposed field for total tracks
-            trackTotal = toQStringFirstNotEmpty(tag.fieldListMap()["TRACKTOTAL"]);
-        } else if (tag.fieldListMap().contains("TOTALTRACKS")) {
-            // secondary/alternative field for total tracks
-            trackTotal = toQStringFirstNotEmpty(tag.fieldListMap()["TOTALTRACKS"]);
+        if (!readXiphCommentField(tag, "TRACKTOTAL", &trackTotal)) { // recommended field
+            readXiphCommentField(tag, "TOTALTRACKS", &trackTotal); // alternative field
         }
         pTrackMetadata->setTrackNumber(trackNumber);
         pTrackMetadata->setTrackTotal(trackTotal);
@@ -890,45 +894,37 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
     // The release date formatted according to ISO 8601. Might
     // be followed by a space character and arbitrary text.
     // http://age.hobba.nl/audio/mirroredpages/ogg-tagging.html
-    if (tag.fieldListMap().contains("DATE")) {
-        pTrackMetadata->setYear(toQStringFirstNotEmpty(tag.fieldListMap()["DATE"]));
+    QString date;
+    if (readXiphCommentField(tag, "DATE", &date)) {
+        pTrackMetadata->setYear(date);
     }
 
-    // Some tags use "BPM" so check for that.
-    if (tag.fieldListMap().contains("BPM")) {
-        parseBpm(pTrackMetadata, toQStringFirstNotEmpty(tag.fieldListMap()["BPM"]));
-    }
-
-    // Give preference to the "TEMPO" tag which seems to be more standard
-    if (tag.fieldListMap().contains("TEMPO")) {
-        parseBpm(pTrackMetadata, toQStringFirstNotEmpty(tag.fieldListMap()["TEMPO"]));
+    QString bpm;
+    if (readXiphCommentField(tag, "TEMPO", &bpm) || // recommended field
+            readXiphCommentField(tag, "BPM", &bpm)) { // alternative field
+        parseBpm(pTrackMetadata, bpm);
     }
 
     // Only read track gain (not album gain)
-    if (tag.fieldListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
-        parseTrackGain(pTrackMetadata,
-                toQStringFirstNotEmpty(tag.fieldListMap()["REPLAYGAIN_TRACK_GAIN"]));
+    QString trackGain;
+    if (readXiphCommentField(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain)) {
+        parseTrackGain(pTrackMetadata, trackGain);
     }
-    if (tag.fieldListMap().contains("REPLAYGAIN_TRACK_PEAK")) {
-        parseTrackPeak(pTrackMetadata,
-                toQStringFirstNotEmpty(tag.fieldListMap()["REPLAYGAIN_TRACK_PEAK"]));
+    QString trackPeak;
+    if (readXiphCommentField(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak)) {
+        parseTrackPeak(pTrackMetadata, trackPeak);
     }
 
-    /*
-     * Reading key code information
-     * Unlike, ID3 tags, there's no standard or recommendation on how to store 'key' code
-     *
-     * Luckily, there are only a few tools for that, e.g., Rapid Evolution (RE).
-     * Assuming no distinction between start and end key, RE uses a "INITIALKEY"
-     * or a "KEY" vorbis comment.
-     */
-    if (tag.fieldListMap().contains("KEY")) {
-        pTrackMetadata->setKey(toQStringFirstNotEmpty(tag.fieldListMap()["KEY"]));
-    }
-    if (tag.fieldListMap().contains("INITIALKEY")) {
-        // This is the preferred field for storing the musical key.
-        pTrackMetadata->setKey(
-                toQStringFirstNotEmpty(tag.fieldListMap()["INITIALKEY"]));
+    // Reading key code information
+    // Unlike, ID3 tags, there's no standard or recommendation on how to store 'key' code
+    //
+    // Luckily, there are only a few tools for that, e.g., Rapid Evolution (RE).
+    // Assuming no distinction between start and end key, RE uses a "INITIALKEY"
+    // or a "KEY" vorbis comment.
+    QString key;
+    if (readXiphCommentField(tag, "INITIALKEY", &key) || // recommended field
+            readXiphCommentField(tag, "KEY", &key)) { // alternative field
+        pTrackMetadata->setKey(key);
     }
 }
 
