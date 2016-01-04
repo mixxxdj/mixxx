@@ -346,7 +346,7 @@ void readCoverArtFromXiphComment(QImage* pCoverArt, const TagLib::Ogg::XiphComme
         return; // nothing to do
     }
 
-    if (tag.contains("METADATA_BLOCK_PICTURE")) {
+    if (tag.fieldListMap().contains("METADATA_BLOCK_PICTURE")) {
         QByteArray data(
                 QByteArray::fromBase64(
                         tag.fieldListMap()["METADATA_BLOCK_PICTURE"].front().toCString()));
@@ -354,7 +354,7 @@ void readCoverArtFromXiphComment(QImage* pCoverArt, const TagLib::Ogg::XiphComme
         TagLib::FLAC::Picture p(tdata);
         data = QByteArray(p.data().data(), p.data().size());
         *pCoverArt = QImage::fromData(data);
-    } else if (tag.contains("COVERART")) {
+    } else if (tag.fieldListMap().contains("COVERART")) {
         QByteArray data(
                 QByteArray::fromBase64(
                         tag.fieldListMap()["COVERART"].toString().toCString()));
@@ -657,7 +657,7 @@ bool readXiphCommentField(
         const TagLib::Ogg::XiphComment& tag,
         const TagLib::String& key,
         QString* pValue = nullptr) {
-    if (tag.contains(key)) {
+    if (tag.fieldListMap().contains(key)) {
         if (nullptr != pValue) {
             *pValue = toQStringFirstNotEmpty(tag.fieldListMap()[key]);
         }
