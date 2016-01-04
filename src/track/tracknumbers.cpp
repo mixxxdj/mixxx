@@ -3,24 +3,22 @@
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 
-/*static*/ const QString TrackNumbers::kSeparator("/");
+// static
+const QString TrackNumbers::kSeparator("/");
 
-namespace {
-    bool parseValueFromString(
-            const QString& str,
-            int* pValue) {
-        bool valid = false;
-        int value = str.toInt(&valid);
-        if (valid) {
-            if (nullptr != pValue) {
-                *pValue = value;
-            }
-            return TrackNumbers::isValidValue(value);
-        } else {
-            return false;
+//static
+bool TrackNumbers::parseValueFromString(
+        const QString& str,
+        int* pValue) {
+    bool valid = false;
+    int value = str.toInt(&valid);
+    if (valid) {
+        if (nullptr != pValue) {
+            *pValue = value;
         }
     }
-} // anonymous namespace
+    return valid;
+}
 
 //static
 TrackNumbers::ParseResult TrackNumbers::parseFromStrings(
@@ -33,7 +31,8 @@ TrackNumbers::ParseResult TrackNumbers::parseFromStrings(
             (actualTrimmed.isEmpty() && totalTrimmed.isEmpty()) ? ParseResult::EMPTY : ParseResult::VALID;
     int actualValue = kValueUndefined;
     if (!actualTrimmed.isEmpty()) {
-        if (!parseValueFromString(actualTrimmed, &actualValue)) {
+        if (!parseValueFromString(actualTrimmed, &actualValue) ||
+                !isValidValue(actualValue)) {
             parseResult = ParseResult::INVALID;
         }
     }
@@ -42,7 +41,8 @@ TrackNumbers::ParseResult TrackNumbers::parseFromStrings(
     }
     int totalValue = kValueUndefined;
     if (!totalTrimmed.isEmpty()) {
-        if (!parseValueFromString(totalTrimmed, &totalValue)) {
+        if (!parseValueFromString(totalTrimmed, &totalValue) ||
+                !isValidValue(totalValue)) {
             parseResult = ParseResult::INVALID;
         }
     }

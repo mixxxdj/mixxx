@@ -25,6 +25,14 @@ public:
         return isUndefinedValue(value) || (kValueMin <= value);
     }
 
+    // Parses a value from a string. Returns true if the value
+    // has been parsed successfully and (optionally) stores the
+    // result in pValue. The caller is still responsible to check
+    // if the resulting value is valid!
+    static bool parseValueFromString(
+            const QString& str,
+            int* pValue = nullptr);
+
     explicit TrackNumbers(int actualValue = kValueUndefined, int totalValue = kValueUndefined)
         : m_actualValue(actualValue),
           m_totalValue(totalValue) {
