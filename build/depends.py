@@ -966,6 +966,7 @@ class MixxxCore(Feature):
                    "util/statmodel.cpp",
                    "util/time.cpp",
                    "util/timer.cpp",
+                   "util/config-parser.cpp",
                    "util/performancetimer.cpp",
                    "util/threadcputimer.cpp",
                    "util/version.cpp",

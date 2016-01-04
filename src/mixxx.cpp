@@ -67,6 +67,7 @@
 #include "util/statsmanager.h"
 #include "util/timer.h"
 #include "util/time.h"
+#include "util/config-parser.h"
 #include "util/version.h"
 #include "controlpushbutton.h"
 #include "util/compatibility.h"
@@ -124,6 +125,13 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // after an upgrade and make any needed changes.
     m_pUpgrader = new Upgrade;
     m_pConfig = m_pUpgrader->versionUpgrade(args.getSettingsPath());
+
+    registerConfigPath(m_pConfig->getSettingsPath() + "/mixxx_qsettings_temp.cfg");
+    UserSettings user_settings;
+    // I need to explicitely ask for a reference because QSettings doesn't
+    // support move in Qt4
+    auto& qsettings = user_settings.getQSettings();
+
     ControlDoublePrivate::setUserConfig(m_pConfig);
 
     // First load launch image to show a the user a quick responds
