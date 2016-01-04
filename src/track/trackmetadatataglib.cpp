@@ -667,6 +667,7 @@ bool readXiphCommentField(
     }
 }
 
+// Unconditionally write the field
 void writeXiphCommentField(
         TagLib::Ogg::XiphComment* pTag,
         const TagLib::String& key,
@@ -677,6 +678,16 @@ void writeXiphCommentField(
     } else {
         const bool replace = true;
         pTag->addField(key, value, replace);
+    }
+}
+
+// Conditionally write the field if it already exists
+void updateXiphCommentField(
+        TagLib::Ogg::XiphComment* pTag,
+        const TagLib::String& key,
+        const TagLib::String& value) {
+    if (readXiphCommentField(*pTag, key)) {
+        writeXiphCommentField(pTag, key, value);
     }
 }
 
@@ -1145,43 +1156,44 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     writeTrackMetadataIntoTag(pTag, trackMetadata,
             WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
 
-    // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
-    // the proposed field name, but some applications use "TOTALTRACKS".
-    writeXiphCommentField(pTag, "TRACKNUMBER",
-            toTagLibString(trackMetadata.getTrackNumber()));
-    writeXiphCommentField(pTag, "TRACKTOTAL",
-            toTagLibString(trackMetadata.getTrackTotal()));
-    // Remove the secondary/alternative field for total tracks to prevent
-    // inconsistencies if the tags are edited again by another external
-    // application that is unaware of "TRACKTOTAL".
-    pTag->removeField("TOTALTRACKS");
-
+    // Write unambiguous fields
     writeXiphCommentField(pTag, "DATE",
             toTagLibString(trackMetadata.getYear()));
-
-    writeXiphCommentField(pTag, "ALBUMARTIST",
-            toTagLibString(trackMetadata.getAlbumArtist()));
     writeXiphCommentField(pTag, "COMPOSER",
             toTagLibString(trackMetadata.getComposer()));
     writeXiphCommentField(pTag, "GROUPING",
             toTagLibString(trackMetadata.getGrouping()));
-
-    // Write both BPM and TEMPO
-    const TagLib::String bpm(
-            toTagLibString(formatBpm(trackMetadata)));
-    writeXiphCommentField(pTag, "BPM", bpm);
-    writeXiphCommentField(pTag, "TEMPO", bpm);
-
-    // Write both INITIALKEY and KEY
-    const TagLib::String key(
-            toTagLibString(trackMetadata.getKey()));
-    writeXiphCommentField(pTag, "INITIALKEY", key);
-    writeXiphCommentField(pTag, "KEY", key);
-
+    writeXiphCommentField(pTag, "TRACKNUMBER",
+            toTagLibString(trackMetadata.getTrackNumber()));
     writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_GAIN",
             toTagLibString(formatTrackGain(trackMetadata)));
     writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_PEAK",
             toTagLibString(formatTrackPeak(trackMetadata)));
+
+    // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
+    // the proposed field name, but some applications use "TOTALTRACKS".
+    const TagLib::String trackTotal(
+            toTagLibString(trackMetadata.getTrackTotal()));
+    writeXiphCommentField(pTag, "TRACKTOTAL", trackTotal); // recommended field
+    updateXiphCommentField(pTag, "TOTALTRACKS", trackTotal); // alternative field
+
+    const TagLib::String albumArtist(
+            toTagLibString(trackMetadata.getAlbumArtist()));
+    writeXiphCommentField(pTag, "ALBUMARTIST", albumArtist); // recommended field
+    updateXiphCommentField(pTag, "ALBUM_ARTIST", albumArtist); // alternative field
+    updateXiphCommentField(pTag, "ALBUM ARTIST", albumArtist); // alternative field
+    updateXiphCommentField(pTag, "ENSEMBLE", albumArtist); // alternative field
+
+    const TagLib::String bpm(
+            toTagLibString(formatBpm(trackMetadata)));
+    writeXiphCommentField(pTag, "TEMPO", bpm); // recommended field
+    updateXiphCommentField(pTag, "BPM", bpm); // alternative field
+
+    // Write both INITIALKEY and KEY
+    const TagLib::String key(
+            toTagLibString(trackMetadata.getKey()));
+    writeXiphCommentField(pTag, "INITIALKEY", key); // recommended field
+    updateXiphCommentField(pTag, "KEY", key); // alternative field
 
     return true;
 }
