@@ -56,16 +56,10 @@ TrackNumbers::ParseResult TrackNumbers::parseFromStrings(
 TrackNumbers::ParseResult TrackNumbers::parseFromString(
         const QString& str,
         TrackNumbers* pParsed) {
-    const QStringList splitted(str.split(kSeparator));
-    DEBUG_ASSERT(splitted.size() > 0);
-    switch (splitted.size()) {
-    case 1:
-        return parseFromStrings(splitted[0], QString(), pParsed);
-    case 2:
-        return parseFromStrings(splitted[0], splitted[1], pParsed);
-    default:
-        return ParseResult::INVALID;
-    }
+    QString actualText;
+    QString totalText;
+    TrackNumbers::splitString(str, &actualText, &totalText);
+    return parseFromStrings(actualText, totalText, pParsed);
 }
 
 //static
