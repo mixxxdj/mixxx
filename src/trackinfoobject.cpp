@@ -722,20 +722,28 @@ QString TrackInfoObject::getURL() {
 }
 
 ConstWaveformPointer TrackInfoObject::getWaveform() {
+    QMutexLocker lock(&m_qMutex);
     return m_waveform;
 }
 
 void TrackInfoObject::setWaveform(ConstWaveformPointer pWaveform) {
+    QMutexLocker lock(&m_qMutex);
     m_waveform = pWaveform;
+    setDirty(true);
+    lock.unlock();
     emit(waveformUpdated());
 }
 
 ConstWaveformPointer TrackInfoObject::getWaveformSummary() const {
+    QMutexLocker lock(&m_qMutex);
     return m_waveformSummary;
 }
 
 void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
+    QMutexLocker lock(&m_qMutex);
     m_waveformSummary = pWaveform;
+    setDirty(true);
+    lock.unlock();
     emit(waveformSummaryUpdated());
 }
 
