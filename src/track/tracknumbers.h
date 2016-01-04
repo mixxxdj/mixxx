@@ -98,7 +98,7 @@ public:
     // output parameters pActualText and pTotalText are
     // optional and the caller might pass a nullptr.
     static void splitString(
-            const QString& str,
+            QString str,
             QString* pActualText = nullptr,
             QString* pTotalText = nullptr);
     // Joins the actual and total strings

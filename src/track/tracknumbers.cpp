@@ -64,9 +64,19 @@ TrackNumbers::ParseResult TrackNumbers::parseFromString(
 
 //static
 void TrackNumbers::splitString(
-        const QString& str,
+        QString str,
         QString* pActualText,
         QString* pTotalText) {
+    // NOTE(uklotzde): The input string must be passed by value and
+    // not by const-ref! Otherwise pointer aliasing may occur if one
+    // of the output parameters points to the same string!
+    //
+    // QString trackNumber = ...; // contains the string to be split
+    // QString trackTotal;        // initially empty
+    // TrackNumbers::splitString(trackNumber, &trackNumber, &trackTotal);
+    //
+    // It's perfectly legal if a caller passes a string for splitting
+    // that in turn receives the actual track number.
     const int splitIndex = str.indexOf(kSeparator);
     if (0 <= splitIndex) {
         if (nullptr != pActualText) {
