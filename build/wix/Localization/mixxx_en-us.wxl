@@ -20,9 +20,7 @@
    <String Id="x86VersionRequired">You need to install the 32-bit version of this product on 32-bit Windows.</String>
    <String Id="x86VersionWarning">You are about to install the 32-bit version on a 64-bit operating system.&#13;&#10;We recommend using the 64-bit version for better performance.&#13;&#10;You can download the 64-bit installation package from http://mixxx.org/download/</String>
    <String Id="XPWarning">You are installing Mixxx on an outdated operating system. Some functions may not work well or at all. We recommend upgrading your operating system.</String>
-   <String Id="bitWidthMismatch32">You are about to install the 32-bit version but a 64-bit one is already installed. This can lead to undesired behavior.
-       Please un-install the existing Mixxx first, or download the 64-bit installation package to upgrade (unless you know exactly what you are 
-       doing.)</String>
+   <String Id="bitWidthMismatch32">You are about to install the 32-bit version but a 64-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 64-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
    <String Id="bitWidthMismatch64">You are about to install the 64-bit version but a 32-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 32-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
    <String Id="OlderVersionFound">An older version of Mixxx has been detected. As we changed installer, we can not smoothly upgrade. Please uninstall older version before installing this one.</String>
 
