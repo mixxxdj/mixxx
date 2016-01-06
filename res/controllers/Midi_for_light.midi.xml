@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset mixxxVersion="1.12+" schemaVersion="1">
+<MixxxMIDIPreset mixxxVersion="2.0.0+" schemaVersion="1">
 	<info>
 		<name>MIDI for light</name>
 		<author>Michael Stahl / DG3NEC</author>

@@ -76,6 +76,19 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
             m_pLibrary, SLOT(slotSetTrackTableFont(QFont)));
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             m_pLibrary, SLOT(slotSetTrackTableRowHeight(int)));
+
+    // TODO(XXX) this string should be extracted from the soundsources
+    QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVe, AIFF";
+#if defined(__MAD__) || defined(__APPLE__)
+    builtInFormatsStr += ", MP3";
+#endif
+#ifdef __OPUS__
+    builtInFormatsStr += ", Opus";
+#endif
+#ifdef _MODPLUG_
+    builtInFormatsStr += ", ModPlug";
+#endif
+    builtInFormats->setText(builtInFormatsStr);
 }
 
 DlgPrefLibrary::~DlgPrefLibrary() {
