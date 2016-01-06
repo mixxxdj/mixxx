@@ -627,29 +627,72 @@ void writeTrackMetadataIntoTag(
     }
 }
 
+bool readMP4Atom(
+        const TagLib::MP4::Tag& tag,
+        const TagLib::String& key,
+        QString* pValue = nullptr) {
+    const TagLib::MP4::ItemListMap::ConstIterator it(
+            getItemListMap(tag).find(key));
+    if (it != getItemListMap(tag).end()) {
+        if (nullptr != pValue) {
+            *pValue = toQStringFirstNotEmpty((*it).second);
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Unconditionally write the atom
 void writeMP4Atom(
         TagLib::MP4::Tag* pTag,
         const TagLib::String& key,
-        const QString& str) {
-    if (str.isEmpty()) {
+        const TagLib::String& value) {
+    if (value.isEmpty()) {
         // Purge empty atoms
         pTag->itemListMap().erase(key);
     } else {
-        TagLib::StringList strList(toTagLibString(str));
+        TagLib::StringList strList(value);
         pTag->itemListMap()[key] = std::move(strList);
+    }
+}
+
+// Conditionally write the atom if it already exists
+void updateMP4Atom(
+        TagLib::MP4::Tag* pTag,
+        const TagLib::String& key,
+        const TagLib::String& value) {
+    if (readMP4Atom(*pTag, key)) {
+        writeMP4Atom(pTag, key, value);
+    }
+}
+
+bool readAPEItem(
+        const TagLib::APE::Tag& tag,
+        const TagLib::String& key,
+        QString* pValue = nullptr) {
+    const TagLib::APE::ItemListMap::ConstIterator it(
+            tag.itemListMap().find(key));
+    if (it != tag.itemListMap().end() && !(*it).second.values().isEmpty()) {
+        if (nullptr != pValue) {
+            *pValue = toQStringFirstNotEmpty((*it).second.values());
+        }
+        return true;
+    } else {
+        return false;
     }
 }
 
 void writeAPEItem(
         TagLib::APE::Tag* pTag,
         const TagLib::String& key,
-        const TagLib::String& str) {
-    if (str.isEmpty()) {
+        const TagLib::String& value) {
+    if (value.isEmpty()) {
         // Purge empty items
         pTag->removeItem(key);
     } else {
         const bool replace = true;
-        pTag->addValue(key, str, replace);
+        pTag->addValue(key, value, replace);
     }
 }
 
@@ -657,9 +700,11 @@ bool readXiphCommentField(
         const TagLib::Ogg::XiphComment& tag,
         const TagLib::String& key,
         QString* pValue = nullptr) {
-    if (tag.fieldListMap().contains(key)) {
+    const TagLib::Ogg::FieldListMap::ConstIterator it(
+            tag.fieldListMap().find(key));
+    if (it != tag.fieldListMap().end() && !(*it).second.isEmpty()) {
         if (nullptr != pValue) {
-            *pValue = toQStringFirstNotEmpty(tag.fieldListMap()[key]);
+            *pValue = toQStringFirstNotEmpty((*it).second);
         }
         return true;
     } else {
@@ -802,50 +847,54 @@ void readTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::AP
 
     readTrackMetadataFromTag(pTrackMetadata, tag);
 
-    if (tag.itemListMap().contains("Album Artist")) {
-        pTrackMetadata->setAlbumArtist(
-                toQString(tag.itemListMap()["Album Artist"]));
+    QString albumArtist;
+    if (readAPEItem(tag, "Album Artist", &albumArtist)) {
+        pTrackMetadata->setAlbumArtist(albumArtist);
     }
 
-    if (tag.itemListMap().contains("Composer")) {
-        pTrackMetadata->setComposer(toQString(tag.itemListMap()["Composer"]));
+    QString composer;
+    if (readAPEItem(tag, "Composer", &composer)) {
+        pTrackMetadata->setComposer(composer);
     }
 
-    if (tag.itemListMap().contains("Grouping")) {
-        pTrackMetadata->setGrouping(toQString(tag.itemListMap()["Grouping"]));
+    QString grouping;
+    if (readAPEItem(tag, "Grouping", &grouping)) {
+        pTrackMetadata->setGrouping(grouping);
     }
 
     // The release date (ISO 8601 without 'T' separator between date and time)
     // according to the mapping used by MusicBrainz Picard.
     // http://wiki.hydrogenaud.io/index.php?title=APE_date
     // https://picard.musicbrainz.org/docs/mappings
-    if (tag.itemListMap().contains("Year")) {
-        pTrackMetadata->setYear(toQString(tag.itemListMap()["Year"]));
+    QString year;
+    if (readAPEItem(tag, "Year", &year)) {
+        pTrackMetadata->setYear(year);
     }
 
-    if (tag.itemListMap().contains("Track")) {
-        QString trackNumber;
+    QString trackNumber;
+    if (readAPEItem(tag, "Track", &trackNumber)) {
         QString trackTotal;
         TrackNumbers::splitString(
-                toQString(tag.itemListMap()["Track"]),
+                trackNumber,
                 &trackNumber,
                 &trackTotal);
         pTrackMetadata->setTrackNumber(trackNumber);
         pTrackMetadata->setTrackTotal(trackTotal);
     }
 
-    if (tag.itemListMap().contains("BPM")) {
-        parseBpm(pTrackMetadata, toQString(tag.itemListMap()["BPM"]));
+    QString bpm;
+    if (readAPEItem(tag, "BPM", &bpm)) {
+        parseBpm(pTrackMetadata, bpm);
     }
 
     // Only read track gain (not album gain)
-    if (tag.itemListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
-        parseTrackGain(pTrackMetadata,
-                toQString(tag.itemListMap()["REPLAYGAIN_TRACK_GAIN"]));
+    QString trackGain;
+    if (readAPEItem(tag, "REPLAYGAIN_TRACK_GAIN", &trackGain)) {
+        parseTrackGain(pTrackMetadata, trackGain);
     }
-    if (tag.itemListMap().contains("REPLAYGAIN_TRACK_PEAK")) {
-        parseTrackPeak(pTrackMetadata,
-                toQString(tag.itemListMap()["REPLAYGAIN_TRACK_PEAK"]));
+    QString trackPeak;
+    if (readAPEItem(tag, "REPLAYGAIN_TRACK_PEAK", &trackPeak)) {
+        parseTrackPeak(pTrackMetadata, trackPeak);
     }
 }
 
@@ -946,27 +995,24 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
 
     readTrackMetadataFromTag(pTrackMetadata, tag);
 
-    // Get Album Artist
-    if (getItemListMap(tag).contains("aART")) {
-        pTrackMetadata->setAlbumArtist(
-                toQStringFirstNotEmpty(getItemListMap(tag)["aART"]));
+    QString albumArtist;
+    if (readMP4Atom(tag, "aART", &albumArtist)) {
+        pTrackMetadata->setAlbumArtist(albumArtist);
     }
 
-    // Get Composer
-    if (getItemListMap(tag).contains("\251wrt")) {
-        pTrackMetadata->setComposer(
-                toQStringFirstNotEmpty(getItemListMap(tag)["\251wrt"]));
+    QString composer;
+    if (readMP4Atom(tag, "\251wrt", &composer)) {
+        pTrackMetadata->setComposer(composer);
     }
 
-    // Get Grouping
-    if (getItemListMap(tag).contains("\251grp")) {
-        pTrackMetadata->setGrouping(
-                toQStringFirstNotEmpty(getItemListMap(tag)["\251grp"]));
+    QString grouping;
+    if (readMP4Atom(tag, "\251grp", &grouping)) {
+        pTrackMetadata->setGrouping(grouping);
     }
 
-    // Get date/year as string
-    if (getItemListMap(tag).contains("\251day")) {
-        pTrackMetadata->setYear(toQStringFirstNotEmpty(getItemListMap(tag)["\251day"]));
+    QString year;
+    if (readMP4Atom(tag, "\251day", &year)) {
+        pTrackMetadata->setYear(year);
     }
 
     // Read track number/total pair
@@ -980,50 +1026,40 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
         pTrackMetadata->setTrackTotal(trackTotal);
     }
 
-    // Get BPM
-    if (getItemListMap(tag).contains("tmpo")) {
-        // Read the BPM as an integer value.
-        const TagLib::MP4::Item& item = getItemListMap(tag)["tmpo"];
-#if TAGLIB_HAS_MP4_ATOM_TYPES
-        if (item.atomDataType() == TagLib::MP4::TypeInteger) {
-            pTrackMetadata->setBpm(Bpm(item.toInt()));
-        }
-#else
-        pTrackMetadata->setBpm(Bpm(item.toInt()));
-#endif
-    }
-    if (getItemListMap(tag).contains("----:com.apple.iTunes:BPM")) {
+    QString bpm;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:BPM", &bpm)) {
         // This is the preferred field for storing the BPM
         // with fractional digits as a floating-point value.
         // If this field contains a valid value the integer
         // BPM value that might have been read before is
         // overwritten.
-        parseBpm(pTrackMetadata,
-                toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:BPM"]));
+        parseBpm(pTrackMetadata, bpm);
+    } else if (getItemListMap(tag).contains("tmpo")) {
+            // Read the BPM as an integer value.
+            const TagLib::MP4::Item& item = getItemListMap(tag)["tmpo"];
+#if TAGLIB_HAS_MP4_ATOM_TYPES
+            if (item.atomDataType() == TagLib::MP4::TypeInteger) {
+                pTrackMetadata->setBpm(Bpm(item.toInt()));
+            }
+#else
+            pTrackMetadata->setBpm(Bpm(item.toInt()));
+#endif
     }
 
     // Only read track gain (not album gain)
-    if (getItemListMap(tag).contains(
-            "----:com.apple.iTunes:replaygain_track_gain")) {
-        parseTrackGain(pTrackMetadata,
-                toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:replaygain_track_gain"]));
+    QString trackGain;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:replaygain_track_gain", &trackGain)) {
+        parseTrackGain(pTrackMetadata, trackGain);
     }
-    if (getItemListMap(tag).contains(
-            "----:com.apple.iTunes:replaygain_track_peak")) {
-        parseTrackPeak(pTrackMetadata,
-                toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:replaygain_track_peak"]));
+    QString trackPeak;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:replaygain_track_peak", &trackPeak)) {
+        parseTrackPeak(pTrackMetadata, trackPeak);
     }
 
-    // Read musical key (conforms to Rapid Evolution)
-    if (getItemListMap(tag).contains("----:com.apple.iTunes:KEY")) {
-        pTrackMetadata->setKey(
-                toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:KEY"]));
-    }
-    // Read musical key (conforms to MixedInKey, Serato, Traktor)
-    if (getItemListMap(tag).contains("----:com.apple.iTunes:initialkey")) {
-        // This is the preferred field for storing the musical key!
-        pTrackMetadata->setKey(
-                toQStringFirstNotEmpty(getItemListMap(tag)["----:com.apple.iTunes:initialkey"]));
+    QString key;
+    if (readMP4Atom(tag, "----:com.apple.iTunes:initialkey", &key) || // preferred (conforms to MixedInKey, Serato, Traktor)
+            readMP4Atom(tag, "----:com.apple.iTunes:KEY", &key)) { // alternative (conforms to Rapid Evolution)
+        pTrackMetadata->setKey(key);
     }
 }
 
@@ -1229,12 +1265,13 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
             << TrackNumbers::joinStrings(trackMetadata.getTrackNumber(), trackMetadata.getTrackTotal());
     }
 
-    writeMP4Atom(pTag, "\251day", trackMetadata.getYear());
+    writeMP4Atom(pTag, "\251day", toTagLibString(trackMetadata.getYear()));
 
-    writeMP4Atom(pTag, "aART", trackMetadata.getAlbumArtist());
-    writeMP4Atom(pTag, "\251wrt", trackMetadata.getComposer());
-    writeMP4Atom(pTag, "\251grp", trackMetadata.getGrouping());
+    writeMP4Atom(pTag, "aART", toTagLibString(trackMetadata.getAlbumArtist()));
+    writeMP4Atom(pTag, "\251wrt", toTagLibString(trackMetadata.getComposer()));
+    writeMP4Atom(pTag, "\251grp", toTagLibString(trackMetadata.getGrouping()));
 
+    // Write both BPM fields (just in case)
     if (trackMetadata.getBpm().hasValue()) {
         // 16-bit integer value
         const int tmpoValue =
@@ -1244,16 +1281,16 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
         pTag->itemListMap().erase("tmpo");
     }
     writeMP4Atom(pTag, "----:com.apple.iTunes:BPM",
-            formatBpm(trackMetadata));
+            toTagLibString(formatBpm(trackMetadata)));
 
     writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_gain",
-            formatTrackGain(trackMetadata));
+            toTagLibString(formatTrackGain(trackMetadata)));
     writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_peak",
-            formatTrackPeak(trackMetadata));
-    writeMP4Atom(pTag, "----:com.apple.iTunes:initialkey",
-            trackMetadata.getKey());
-    writeMP4Atom(pTag, "----:com.apple.iTunes:KEY",
-            trackMetadata.getKey());
+            toTagLibString(formatTrackPeak(trackMetadata)));
+
+    const TagLib::String key(toTagLibString(trackMetadata.getKey()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:initialkey", key); // preferred
+    updateMP4Atom(pTag, "----:com.apple.iTunes:KEY", key); // alternative
 
     return true;
 }
