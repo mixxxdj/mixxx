@@ -1,10 +1,15 @@
 #ifndef CMDLINEARGS_H
 #define CMDLINEARGS_H
 
+#include <stdio.h>
+
 #include <QList>
 #include <QString>
 #include <QDir>
 #include <QDesktopServices>
+
+#include "util/version.h"
+#include "soundsourceproxy.h"
 
 // A structure to store the parsed command-line arguments
 class CmdlineArgs {
@@ -57,6 +62,58 @@ class CmdlineArgs {
         }
         return true;
     }
+
+    void printUsage() {
+        fputs(Version::applicationName().toLocal8Bit().constData(), stdout);
+        fputs(" v", stdout);
+        fputs(Version::version().toLocal8Bit().constData(), stdout);
+        fputs(" - Command line options", stdout);
+        fputs("\n(These are case-sensitive.)\n\n\
+    [FILE]                  Load the specified music file(s) at start-up.\n\
+                            Each must be one of the following file types:\n\
+                            ", stdout);
+
+        fputs(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")
+              .toLocal8Bit().constData(), stdout);
+        fputs("\n\n", stdout);
+        fputs("\
+                            Each file you specify will be loaded into the\n\
+                            next virtual deck.\n\
+\n\
+    --resourcePath PATH     Top-level directory where Mixxx should look\n\
+                            for its resource files such as MIDI mappings,\n\
+                            overriding the default installation location.\n\
+\n\
+    --pluginPath PATH       Top-level directory where Mixxx should look\n\
+                            for sound source plugins in addition to default\n\
+                            locations.\n\
+\n\
+    --settingsPath PATH     Top-level directory where Mixxx should look\n\
+                            for settings. Default is:\n", stdout);
+        fprintf(stdout, "\
+                            %s\n", getSettingsPath().toLocal8Bit().constData());
+        fputs("\
+\n\
+    --controllerDebug       Causes Mixxx to display/log all of the controller\n\
+                            data it receives and script functions it loads\n\
+\n\
+    --developer             Enables developer-mode. Includes extra log info,\n\
+                            stats on performance, and a Developer tools menu.\n\
+\n\
+    --safeMode              Enables safe-mode. Disables OpenGL waveforms,\n\
+                            and spinning vinyl widgets. Try this option if\n\
+                            Mixxx is crashing on startup.\n\
+\n\
+    --locale LOCALE         Use a custom locale for loading translations\n\
+                            (e.g 'fr')\n\
+\n\
+    -f, --fullScreen        Starts Mixxx in full-screen mode\n\
+\n\
+    -h, --help              Display this help message and exit", stdout);
+
+        fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
+    }
+
     const QList<QString>& getMusicFiles() const { return m_musicFiles; }
     bool getStartInFullscreen() const { return m_startInFullscreen; }
     bool getMidiDebug() const { return m_midiDebug; }
@@ -66,8 +123,8 @@ class CmdlineArgs {
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
-    void setSettingsPath(const QString& newSettingsPath) { 
-        m_settingsPath = newSettingsPath; 
+    void setSettingsPath(const QString& newSettingsPath) {
+        m_settingsPath = newSettingsPath;
     }
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getPluginPath() const { return m_pluginPath; }

@@ -181,64 +181,14 @@ int main(int argc, char * argv[]) {
     // organization name blank.
     //QCoreApplication::setOrganizationName("Mixxx");
 
-    QCoreApplication::setApplicationName("Mixxx");
-    QString mixxxVersion = Version::version();
-    QByteArray mixxxVersionBA = mixxxVersion.toLocal8Bit();
-    QCoreApplication::setApplicationVersion(mixxxVersion);
+    QCoreApplication::setApplicationName(Version::applicationName());
+    QCoreApplication::setApplicationVersion(Version::version());
 
     // Construct a list of strings based on the command line arguments
     CmdlineArgs& args = CmdlineArgs::Instance();
     if (!args.Parse(argc, argv)) {
-        fputs("Mixxx DJ Software v", stdout);
-        fputs(mixxxVersionBA.constData(), stdout);
-        fputs(" - Command line options", stdout);
-        fputs(
-                   "\n(These are case-sensitive.)\n\n\
-    [FILE]                  Load the specified music file(s) at start-up.\n\
-                            Each must be one of the following file types:\n\
-                            ", stdout);
-
-        QString fileExtensions(SoundSourceProxy::getSupportedFileNamePatterns().join(" "));
-        QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
-        fputs(fileExtensionsBA.constData(), stdout);
-        fputs("\n\n", stdout);
-        fputs("\
-                            Each file you specify will be loaded into the\n\
-                            next virtual deck.\n\
-\n\
-    --resourcePath PATH     Top-level directory where Mixxx should look\n\
-                            for its resource files such as MIDI mappings,\n\
-                            overriding the default installation location.\n\
-\n\
-    --pluginPath PATH       Top-level directory where Mixxx should look\n\
-                            for sound source plugins in addition to default\n\
-                            locations.\n\
-\n\
-    --settingsPath PATH     Top-level directory where Mixxx should look\n\
-                            for settings. Default is:\n", stdout);
-        fprintf(stdout, "\
-                            %s\n", args.getSettingsPath().toLocal8Bit().constData());
-        fputs("\
-\n\
-    --controllerDebug       Causes Mixxx to display/log all of the controller\n\
-                            data it receives and script functions it loads\n\
-\n\
-    --developer             Enables developer-mode. Includes extra log info,\n\
-                            stats on performance, and a Developer tools menu.\n\
-\n\
-    --safeMode              Enables safe-mode. Disables OpenGL waveforms,\n\
-                            and spinning vinyl widgets. Try this option if\n\
-                            Mixxx is crashing on startup.\n\
-\n\
-    --locale LOCALE         Use a custom locale for loading translations\n\
-                            (e.g 'fr')\n\
-\n\
-    -f, --fullScreen        Starts Mixxx in full-screen mode\n\
-\n\
-    -h, --help              Display this help message and exit", stdout);
-
-        fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
-        return(0);
+        args.printUsage();
+        return 0;
     }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
