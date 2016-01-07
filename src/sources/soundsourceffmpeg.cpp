@@ -1,5 +1,6 @@
 #include "sources/soundsourceffmpeg.h"
 
+#include <mutex>
 #include <vector>
 
 #define AUDIOSOURCEFFMPEG_CACHESIZE 1000
@@ -9,6 +10,8 @@
 namespace Mixxx {
 
 namespace {
+    std::once_flag initFFmpegLibFlag;
+
     // This function must be called once during startup.
     void initFFmpegLib() {
         av_register_all();
@@ -17,12 +20,7 @@ namespace {
 } // anonymous namespace
 
 SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
-    // NOTE(uklotzde): initFFmpegLib() needs to be called only
-    // once. But since only a single instance of this class will
-    // be created it is sufficient to place the invocation of
-    // initFFmpegLib() in the constructor. This ensures that
-    // it will be called at least once.
-    initFFmpegLib();
+    std::call_once(initFFmpegLibFlag, initFFmpegLib);
 }
 
 QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
