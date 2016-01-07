@@ -31,9 +31,9 @@ src/test/golden_buffers/*.actual
 build/wix/*.wixobj
 build/wix/*.wixpdb
 build/wix/*.msi
+build/wix/*.mst
 build/wix/subdirs/*.wixobj
 build/wix/subdirs/*.wxs
-!/build/wix/uuidgen/uuidgen.obj
 !/build/wix/uuidgen/uuidgen.exe
 
 *.obj
