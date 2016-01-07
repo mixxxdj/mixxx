@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WixLocalization Culture="en-us" Codepage="1252" 
                  xmlns="http://schemas.microsoft.com/wix/2006/localization">
-   <!-- Supported language and codepage codes can be found here: 
+   <!-- This contains the LangID and should be translated to reflect the correct LangID.
+        Supported language and codepage codes can be found here: 
         http://www.science.co.il/Language/Locale-codes.asp -->
    <String Id="Language">1033</String>         
  
