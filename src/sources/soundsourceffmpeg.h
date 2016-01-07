@@ -86,6 +86,8 @@ class SoundSourceFFmpeg : public SoundSource {
 
 class SoundSourceProviderFFmpeg: public SoundSourceProvider {
   public:
+    SoundSourceProviderFFmpeg();
+
     QString getName() const override {
         return "FFmpeg";
     }
@@ -102,6 +104,9 @@ class SoundSourceProviderFFmpeg: public SoundSourceProvider {
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return SoundSourcePointer(new SoundSourceFFmpeg(url));
     }
+
+  private:
+    void static init();
 };
 
 } // namespace Mixxx

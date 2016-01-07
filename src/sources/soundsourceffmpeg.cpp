@@ -8,6 +8,21 @@
 
 namespace Mixxx {
 
+//static
+void SoundSourceProviderFFmpeg::init() {
+    av_register_all();
+    avcodec_register_all();
+}
+
+SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
+    // NOTE(uklotzde): init() needs to be called only once.
+    // But since only a single instance of this class will
+    // be created it is sufficient to place the invocation
+    // of init() in the the constructor. This ensures that
+    // it will be called at least once.
+    init();
+}
+
 QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     QStringList list;
     AVInputFormat *l_SInputFmt  = NULL;

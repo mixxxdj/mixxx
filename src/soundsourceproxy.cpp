@@ -142,8 +142,6 @@ void SoundSourceProxy::loadPlugins() {
     // only matters among providers with equal priority.
 #ifdef __FFMPEGFILE__
     // Use FFmpeg as the last resort.
-    av_register_all();
-    avcodec_register_all();
     s_soundSourceProviders.registerProvider(Mixxx::SoundSourceProviderPointer(
             new Mixxx::SoundSourceProviderFFmpeg));
 #endif
