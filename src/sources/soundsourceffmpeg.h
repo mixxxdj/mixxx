@@ -86,6 +86,8 @@ class SoundSourceFFmpeg : public SoundSource {
 
 class SoundSourceProviderFFmpeg: public SoundSourceProvider {
   public:
+    SoundSourceProviderFFmpeg();
+
     QString getName() const override {
         return "FFmpeg";
     }

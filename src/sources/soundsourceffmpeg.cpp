@@ -1,5 +1,6 @@
 #include "sources/soundsourceffmpeg.h"
 
+#include <mutex>
 #include <vector>
 
 #define AUDIOSOURCEFFMPEG_CACHESIZE 1000
@@ -7,6 +8,20 @@
 #define AUDIOSOURCEFFMPEG_FILL_FROM_CURRENTPOS -1
 
 namespace Mixxx {
+
+namespace {
+    std::once_flag initFFmpegLibFlag;
+
+    // This function must be called once during startup.
+    void initFFmpegLib() {
+        av_register_all();
+        avcodec_register_all();
+    }
+} // anonymous namespace
+
+SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
+    std::call_once(initFFmpegLibFlag, initFFmpegLib);
+}
 
 QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     QStringList list;
