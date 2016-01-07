@@ -89,11 +89,6 @@ void MessageHandler(QtMsgType type,
 
     switch (type) {
     case QtDebugMsg:
-#ifdef __WINDOWS__  //wtf? -kousu 2/2009
-        if (strstr(input, "doneCurrent")) {
-            break;
-        }
-#endif
         fprintf(stderr, "Debug %s", ba.constData());
         if (Logfile.isOpen()) {
             Logfile.write("Debug ");
