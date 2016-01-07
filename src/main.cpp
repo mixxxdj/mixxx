@@ -49,10 +49,6 @@ extern "C" {
 #include <X11/Xlib.h>
 #endif
 
-QStringList plugin_paths; //yes this is global. sometimes global is good.
-
-//void qInitImages_mixxx();
-
 QFile Logfile; // global logfile variable
 QMutex mutexLogfile;
 
@@ -169,16 +165,12 @@ void MessageHandler(QtMsgType type,
     }
 }
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char * argv[]) {
     Console console;
 
 #ifdef Q_OS_LINUX
     XInitThreads();
 #endif
-
-    // Check if an instance of Mixxx is already running
-    // See http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qtsingleapplication
 
     // These need to be set early on (not sure how early) in order to trigger
     // logic in the OS X appstore support patch from QTBUG-16549.
@@ -255,10 +247,10 @@ int main(int argc, char * argv[])
     qInstallMessageHandler(MessageHandler);
 #endif
 
-    // Other things depend on this name to enforce thread exclusivity,
-    //  so if you change it here, change it also in:
-    //      * ErrorDialogHandler::errorDialog()
+    // If you change this here, you also need to change it in
+    // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
     QThread::currentThread()->setObjectName("Main");
+
     MixxxApplication a(argc, argv);
 
     // Support utf-8 for all translation strings. Not supported in Qt 5.
@@ -269,52 +261,48 @@ int main(int argc, char * argv[])
 #endif
 
 #ifdef __FFMPEGFILE__
-     av_register_all();
-     avcodec_register_all();
+    av_register_all();
+    avcodec_register_all();
 #endif
 
-     //Enumerate and load SoundSource plugins
-     SoundSourceProxy::loadPlugins();
-
-    // Check if one of the command line arguments is "--no-visuals"
-//    bool bVisuals = true;
-//    for (int i=0; i<argc; ++i)
-//        if(QString("--no-visuals")==argv[i])
-//            bVisuals = false;
-
+    //Enumerate and load SoundSource plugins
+    SoundSourceProxy::loadPlugins();
 
 #ifdef __APPLE__
-     QDir dir(QApplication::applicationDirPath());
-     // Set the search path for Qt plugins to be in the bundle's PlugIns
-     // directory, but only if we think the mixxx binary is in a bundle.
-     if (dir.path().contains(".app/")) {
-         // If in a bundle, applicationDirPath() returns something formatted
-         // like: .../Mixxx.app/Contents/MacOS
-         dir.cdUp();
-         dir.cd("PlugIns");
-         qDebug() << "Setting Qt plugin search path to:" << dir.absolutePath();
-         // asantoni: For some reason we need to do setLibraryPaths() and not
-         // addLibraryPath(). The latter causes weird problems once the binary
-         // is bundled (happened with 1.7.2 when Brian packaged it up).
-         QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
-     }
+    QDir dir(QApplication::applicationDirPath());
+    // Set the search path for Qt plugins to be in the bundle's PlugIns
+    // directory, but only if we think the mixxx binary is in a bundle.
+    if (dir.path().contains(".app/")) {
+        // If in a bundle, applicationDirPath() returns something formatted
+        // like: .../Mixxx.app/Contents/MacOS
+        dir.cdUp();
+        dir.cd("PlugIns");
+        qDebug() << "Setting Qt plugin search path to:" << dir.absolutePath();
+        // asantoni: For some reason we need to do setLibraryPaths() and not
+        // addLibraryPath(). The latter causes weird problems once the binary
+        // is bundled (happened with 1.7.2 when Brian packaged it up).
+        QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+    }
 #endif
 
     MixxxMainWindow* mixxx = new MixxxMainWindow(&a, args);
 
-    //a.setMainWidget(mixxx);
+
+    // When the last window is closed, terminate the Qt event loop.
     QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
 
     int result = -1;
 
-    if (!(ErrorDialogHandler::instance()->checkError())) {
+    // If startup produced a fatal error, then don't even start the Qt event
+    // loop.
+    if (ErrorDialogHandler::instance()->checkError()) {
+        mixxx->finalize();
+    } else {
         qDebug() << "Displaying mixxx";
         mixxx->show();
 
         qDebug() << "Running Mixxx";
         result = a.exec();
-    } else {
-        mixxx->finalize();
     }
 
     delete mixxx;
@@ -331,11 +319,10 @@ int main(int argc, char * argv[])
     //    or mixxx.log will get clobbered!
     { // scope
         QMutexLocker locker(&mutexLogfile);
-        if(Logfile.isOpen()) {
+        if (Logfile.isOpen()) {
             Logfile.close();
         }
     }
 
-    //delete plugin_paths;
     return result;
 }
