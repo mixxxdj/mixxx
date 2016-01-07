@@ -28,6 +28,9 @@ class Version {
 
     // Returns a list of the version of each depenency:
     static QStringList dependencyVersions();
+
+    // Prints out diagnostic information about this build.
+    static void logBuildDetails();
 };
 
 #endif /* VERSION_H */

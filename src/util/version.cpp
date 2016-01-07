@@ -1,6 +1,9 @@
 #include "util/version.h"
 
+#include <QCoreApplication>
+#include <QDesktopServices>
 #include <QStringList>
+#include <QtDebug>
 #include <QtGlobal>
 
 // Fixes redefinition warnings from SoundTouch.
@@ -123,4 +126,43 @@ QStringList Version::dependencyVersions() {
             << QString("FLAC: %1").arg(FLAC__VERSION_STRING);
 
     return result;
+}
+
+void Version::logBuildDetails() {
+    QString version = Version::version();
+    QString buildBranch = developmentBranch();
+    QString buildRevision = developmentRevision();
+    QString buildFlags = Version::buildFlags();
+
+    QStringList buildInfo;
+    if (!buildBranch.isEmpty() && !buildRevision.isEmpty()) {
+        buildInfo.append(
+            QString("git %1 r%2").arg(buildBranch, buildRevision));
+    } else if (!buildRevision.isEmpty()) {
+        buildInfo.append(
+            QString("git r%2").arg(buildRevision));
+    }
+#ifndef DISABLE_BUILDTIME // buildtime=1, on by default
+    buildInfo.append("built on: " __DATE__ " @ " __TIME__);
+#endif
+    if (!buildFlags.isEmpty()) {
+        buildInfo.append(QString("flags: %1").arg(buildFlags.trimmed()));
+    }
+    QString buildInfoFormatted = QString("(%1)").arg(buildInfo.join("; "));
+
+    // This is the first line in mixxx.log
+    qDebug() << applicationName() << version << buildInfoFormatted << "is starting...";
+
+    QStringList depVersions = dependencyVersions();
+    qDebug() << "Library versions:";
+    foreach (const QString& depVersion, depVersions) {
+        qDebug() << qPrintable(depVersion);
+    }
+
+    qDebug() << "QDesktopServices::storageLocation(HomeLocation):"
+             << QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    qDebug() << "QDesktopServices::storageLocation(DataLocation):"
+             << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    qDebug() << "QCoreApplication::applicationDirPath()"
+             << QCoreApplication::applicationDirPath();
 }

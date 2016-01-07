@@ -54,7 +54,6 @@ class LaunchImage;
 
 class ControlObjectSlave;
 class ControlObject;
-class QTranslator;
 
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
@@ -182,14 +181,9 @@ class MixxxMainWindow : public QMainWindow {
     virtual bool event(QEvent* e);
 
   private:
-    void logBuildDetails();
     void initializeWindow();
     void initializeKeyboard();
-    void initializeTranslations(QApplication* pApp);
     void initializeFonts();
-    bool loadTranslations(const QLocale& systemLocale, QString userLocale,
-                          const QString& translation, const QString& prefix,
-                          const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
     void linkSkinWidget(ControlObjectSlave** pCOS,
