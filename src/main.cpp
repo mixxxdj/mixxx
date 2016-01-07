@@ -32,13 +32,6 @@
 #include "util/logging.h"
 #include "util/version.h"
 
-#ifdef __FFMPEGFILE__
-extern "C" {
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-}
-#endif
-
 #ifdef Q_OS_LINUX
 #include <X11/Xlib.h>
 #endif
@@ -84,12 +77,7 @@ int main(int argc, char * argv[]) {
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 #endif
 
-#ifdef __FFMPEGFILE__
-    av_register_all();
-    avcodec_register_all();
-#endif
-
-    //Enumerate and load SoundSource plugins
+    // Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
 
 #ifdef __APPLE__
