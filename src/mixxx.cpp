@@ -733,7 +733,7 @@ void MixxxMainWindow::logBuildDetails() {
     QString buildInfoFormatted = QString("(%1)").arg(buildInfo.join("; "));
 
     // This is the first line in mixxx.log
-    qDebug() << "Mixxx" << version << buildInfoFormatted << "is starting...";
+    qDebug() << Version::applicationName() << version << buildInfoFormatted << "is starting...";
 
     QStringList depVersions = Version::dependencyVersions();
     qDebug() << "Library versions:";
@@ -1744,7 +1744,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
     QString areYouSure = tr("Are you sure you want to load a new track?");
 
     if (ControlObject::get(ConfigKey(group, "play")) > 0.0) {
-        int ret = QMessageBox::warning(this, tr("Mixxx"),
+        int ret = QMessageBox::warning(this, Version::applicationName(),
             deckWarningMessage + "\n" + areYouSure,
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
@@ -1931,7 +1931,7 @@ void MixxxMainWindow::slotControlVinylControl(int deck) {
         if (toggle) {
             QMessageBox::warning(
                     this,
-                    tr("Mixxx"),
+                    Version::applicationName(),
                     tr("There is no input device selected for this vinyl control.\n"
                        "Please select an input device in the sound hardware preferences first."),
                     QMessageBox::Ok, QMessageBox::Ok);
@@ -1965,7 +1965,7 @@ void MixxxMainWindow::slotControlPassthrough(int index) {
 
         QMessageBox::warning(
                 this,
-                tr("Mixxx"),
+                Version::applicationName(),
                 tr("There is no input device selected for this passthrough control.\n"
                    "Please select an input device in the sound hardware preferences first."),
                 QMessageBox::Ok, QMessageBox::Ok);
@@ -1994,7 +1994,7 @@ void MixxxMainWindow::slotControlAuxiliary(int index) {
 
         QMessageBox::warning(
                 this,
-                tr("Mixxx"),
+                Version::applicationName(),
                 tr("There is no input device selected for this auxiliary input.\n"
                    "Please select an input device in the sound hardware preferences first."),
                 QMessageBox::Ok, QMessageBox::Ok);
@@ -2063,7 +2063,7 @@ void MixxxMainWindow::slotTalkoverChanged(int mic_num) {
     m_micTalkoverControls[mic_num]->set(0.0);
     QMessageBox::warning(
                 this,
-                tr("Mixxx"),
+                Version::applicationName(),
                 tr("There is no input device selected for this microphone.\n"
                    "Please select an input device in the sound hardware preferences first."),
                 QMessageBox::Ok, QMessageBox::Ok);
