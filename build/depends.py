@@ -987,6 +987,7 @@ class MixxxCore(Feature):
                    "util/singularsamplebuffer.cpp",
                    "util/circularsamplebuffer.cpp",
                    "util/rotary.cpp",
+                   "util/logging.cpp",
 
                    '#res/mixxx.qrc'
                    ]
