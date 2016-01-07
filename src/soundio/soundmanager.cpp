@@ -611,7 +611,7 @@ void SoundManager::setJACKName() const {
             reinterpret_cast<SetJackClientName>(
                 portaudio.resolve("PaJack_SetClientName")));
         if (func) {
-            if (!func(Version::applicationName())) qDebug() << "JACK client name set";
+            if (!func(Version::applicationName().toLocal8Bit().constData())) qDebug() << "JACK client name set";
         } else {
             qWarning() << "failed to resolve JACK name method";
         }
