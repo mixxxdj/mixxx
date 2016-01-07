@@ -37,6 +37,11 @@ QString Version::version() {
 }
 
 // static
+QString Version::applicationName() {
+    return "Mixxx";
+}
+
+// static
 QString Version::applicationTitle() {
 #ifdef __APPLE__
     QString base("Mixxx");

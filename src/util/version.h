@@ -8,6 +8,9 @@ class Version {
     // Returns the current Mixxx version (e.g. 1.12.0-alpha)
     static QString version();
 
+    // Returns the application name. (e.g. "Mixxx")
+    static QString applicationName();
+
     // Returns the application title (e.g. "Mixxx x64" on Windows)
     static QString applicationTitle();
 
