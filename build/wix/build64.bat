@@ -3,12 +3,14 @@
 REM set this to the folder where you build the dependencies
 set WINLIB_PATH=D:\mixxx-buildserver64
 
-echo "*** Cleaning"
-del *.wixobj
-del *.wixpdb
-del /Q subdirs\*.*
 
-echo "*** Building intermediate files"
+echo *** Cleaning
+if exist *.wixobj del *.wixobj
+if exist *.wixpdb del *.wixpdb 2>NUL
+if exist subdirs\*.* del /Q subdirs\*.*
+
+echo.
+echo *** Building intermediate files
 
 FOR %%d IN (controllers,fonts,imageformats,keyboard,plugins,skins,translations) DO (
   "%WIX%"\bin\heat.exe dir ..\..\dist64\%%d -nologo -sfrag -suid -ag -srd -cg %%dComp -dr %%dDir -out subdirs\%%d.wxs -sw5150 -var var.%%dVar  
