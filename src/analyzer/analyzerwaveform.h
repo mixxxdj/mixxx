@@ -4,11 +4,13 @@
 #include <QTime>
 #include <QImage>
 #include <QSqlDatabase>
+
 #include <limits>
 
 #include "analyzer/analyzer.h"
 #include "configobject.h"
 #include "util/math.h"
+#include "util/memory.h"
 #include "waveform/waveform.h"
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
@@ -172,7 +174,7 @@ class AnalyzerWaveform : public Analyzer {
 
     QTime m_timer;
     QSqlDatabase m_database;
-    AnalysisDao* m_analysisDao;
+    std::unique_ptr<AnalysisDao> m_pAnalysisDao;
 
 #ifdef TEST_HEAT_MAP
     QImage* test_heatMap;
