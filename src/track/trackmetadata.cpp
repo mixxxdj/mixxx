@@ -1,7 +1,5 @@
 #include "track/trackmetadata.h"
 
-#include "util/time.h"
-
 namespace Mixxx {
 
 /*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
@@ -66,10 +64,6 @@ QString TrackMetadata::reformatYear(QString year) {
     }
     // just trim and simplify whitespaces
     return year.simplified();
-}
-
-QString TrackMetadata::formatDuration(int duration) {
-    return Time::formatSeconds(duration, false);
 }
 
 TrackMetadata::TrackMetadata()

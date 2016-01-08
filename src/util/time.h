@@ -67,32 +67,7 @@ class Time {
     // The standard way of formatting a time in seconds. Used for display of
     // track duration, etc. showCentis indicates whether to include
     // centisecond-precision or to round to the nearest second.
-    static QString formatSeconds(double dSeconds, bool showCentis) {
-        if (dSeconds < 0) {
-            return "?";
-        }
-
-        const int days = static_cast<int>(dSeconds) / kSecondsPerDay;
-        dSeconds -= days * kSecondsPerDay;
-
-        QTime t = QTime().addMSecs(dSeconds * kMillisPerSecond);
-
-        QString formatString =
-                (days > 0 ? (QString::number(days) %
-                             QLatin1String("'d', ")) : QString()) %
-                QLatin1String(days > 0 || t.hour() > 0 ? "hh:mm:ss" : "mm:ss") %
-                QLatin1String(showCentis ? ".zzz" : "");
-
-        QString timeString = t.toString(formatString);
-
-        // The format string gives us milliseconds but we want
-        // centiseconds. Slice one character off.
-        if (showCentis) {
-            timeString = timeString.left(timeString.length() - 1);
-        }
-
-        return timeString;
-    }
+    static QString formatSeconds(double dSeconds, bool showCentis);
 
   private:
     static LLTIMER s_timer;
