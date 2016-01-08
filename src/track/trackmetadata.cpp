@@ -88,6 +88,7 @@ bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
             (lhs.getComment() == rhs.getComment()) &&
             (lhs.getYear() == rhs.getYear()) &&
             (lhs.getTrackNumber() == rhs.getTrackNumber()) &&
+            (lhs.getTrackTotal() == rhs.getTrackTotal()) &&
             (lhs.getComposer() == rhs.getComposer()) &&
             (lhs.getGrouping() == rhs.getGrouping()) &&
             (lhs.getKey() == rhs.getKey()) &&
