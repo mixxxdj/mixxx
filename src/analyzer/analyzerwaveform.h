@@ -170,7 +170,7 @@ class AnalyzerWaveform : public Analyzer {
     EngineFilterIIRBase* m_filter[FilterCount];
     std::vector<float> m_buffers[FilterCount];
 
-    QTime* m_timer;
+    QTime m_timer;
     QSqlDatabase m_database;
     AnalysisDao* m_analysisDao;
 

@@ -1,8 +1,5 @@
 #include "analyzer/analyzerwaveform.h"
 
-#include <QImage>
-#include <QtDebug>
-#include <QTime>
 #include <QtDebug>
 
 #include "engine/engineobject.h"
@@ -41,7 +38,6 @@ AnalyzerWaveform::AnalyzerWaveform(ConfigObject<ConfigValue>* pConfig) :
         }
     }
 
-    m_timer = new QTime();
     m_analysisDao = new AnalysisDao(m_database, pConfig);
 }
 
@@ -49,14 +45,13 @@ AnalyzerWaveform::~AnalyzerWaveform() {
     qDebug() << "AnalyzerWaveform::~AnalyzerWaveform()";
     destroyFilters();
     m_database.close();
-    delete m_timer;
     delete m_analysisDao;
 }
 
 bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     m_skipProcessing = false;
 
-    m_timer->start();
+    m_timer.start();
 
     if (totalSamples == 0) {
         qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
@@ -321,7 +316,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
 #endif
 
     qDebug() << "Waveform generation for track" << tio->getId() << "done"
-             << m_timer->elapsed()/1000.0 << "s";
+             << m_timer.elapsed()/1000.0 << "s";
 }
 
 void AnalyzerWaveform::storeIfGreater(float* pDest, float source) {
