@@ -75,7 +75,9 @@ class Time {
         const int days = static_cast<int>(dSeconds) / kSecondsPerDay;
         dSeconds -= days * kSecondsPerDay;
 
-        QTime t = QTime().addMSecs(dSeconds * kMillisPerSecond);
+        // NOTE(uklotzde): Time() constructs a 'null' object, but
+        // we need 'zero' here.
+        QTime t = QTime(0, 0).addMSecs(dSeconds * kMillisPerSecond);
 
         QString formatString =
                 (days > 0 ? (QString::number(days) %
