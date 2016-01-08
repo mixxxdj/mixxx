@@ -51,7 +51,7 @@ StantonSCS3d.trackDuration = [0,0]; // Duration of the song on each deck (used f
 StantonSCS3d.lastLight = [-1,-1,-1,-1]; // Last circle LED values
 StantonSCS3d.lastLoop = 0;  // Last-used loop LED
 // Loop button controls
-StantonSCS3d.loopButtons = {    0x48: 0.125, 0x4A: 0.25, 0x4C: 0.5, 0x4E: 1,
+StantonSCS3d.loopButtons = {    0x4E: 0.125, 0x4C: 0.25, 0x4A: 0.5, 0x48: 1,
                                 0x4F: 2    , 0x51: 4   , 0x53: 8  , 0x55: 16 };
 // Pitch values for key change mode
 StantonSCS3d.pitchPoints = {    1:{ 0x48:-0.1998, 0x4A:-0.1665, 0x4C:-0.1332, 0x4E:-0.0999, 0x56:-0.0666, 0x58:-0.0333,
@@ -102,18 +102,18 @@ StantonSCS3d.modeSignals = {
                                       ["CurrentChannel", "loop_enabled", "StantonSCS3d.ReLoopLEDs"],
                                       ["CurrentChannel", "loop_halve", "StantonSCS3d.B11LED"],
                                       ["CurrentChannel", "loop_double", "StantonSCS3d.B12LED"],
-                                      ["CurrentChannel", "beatloop_0.125_enabled", "StantonSCS3d.BsALED"],
-                                      ["CurrentChannel", "beatloop_0.25_enabled", "StantonSCS3d.BsBLED"],
-                                      ["CurrentChannel", "beatloop_0.5_enabled", "StantonSCS3d.BsCLED"],
-                                      ["CurrentChannel", "beatloop_1_enabled", "StantonSCS3d.BsDLED"],
+                                      ["CurrentChannel", "beatloop_0.125_enabled", "StantonSCS3d.BsDLED"],
+                                      ["CurrentChannel", "beatloop_0.25_enabled", "StantonSCS3d.BsCLED"],
+                                      ["CurrentChannel", "beatloop_0.5_enabled", "StantonSCS3d.BsBLED"],
+                                      ["CurrentChannel", "beatloop_1_enabled", "StantonSCS3d.BsALED"],
                                       ["CurrentChannel", "beatloop_2_enabled", "StantonSCS3d.BsELED"],
                                       ["CurrentChannel", "beatloop_4_enabled", "StantonSCS3d.BsFLED"],
                                       ["CurrentChannel", "beatloop_8_enabled", "StantonSCS3d.BsGLED"],
                                       ["CurrentChannel", "beatloop_16_enabled", "StantonSCS3d.BsHLED"],
-                                      ["CurrentChannel", "beatloop_0.125_toggle", "StantonSCS3d.BsAaLED"],
-                                      ["CurrentChannel", "beatloop_0.25_toggle", "StantonSCS3d.BsBaLED"],
-                                      ["CurrentChannel", "beatloop_0.5_toggle", "StantonSCS3d.BsCaLED"],
-                                      ["CurrentChannel", "beatloop_1_toggle", "StantonSCS3d.BsDaLED"],
+                                      ["CurrentChannel", "beatloop_0.125_toggle", "StantonSCS3d.BsDaLED"],
+                                      ["CurrentChannel", "beatloop_0.25_toggle", "StantonSCS3d.BsCaLED"],
+                                      ["CurrentChannel", "beatloop_0.5_toggle", "StantonSCS3d.BsBaLED"],
+                                      ["CurrentChannel", "beatloop_1_toggle", "StantonSCS3d.BsAaLED"],
                                       ["CurrentChannel", "beatloop_2_toggle", "StantonSCS3d.BsEaLED"],
                                       ["CurrentChannel", "beatloop_4_toggle", "StantonSCS3d.BsFaLED"],
                                       ["CurrentChannel", "beatloop_8_toggle", "StantonSCS3d.BsGaLED"],
@@ -2158,7 +2158,6 @@ StantonSCS3d.circleLEDs = function (value) {
 
 /* TODO:
  * - Update effects mode
- * - Alter Loop mode buttons so circle swiping results in incremental loop size changes
  * - Alter Trig mode to combine sets of two buttons (top two and bottom two on each row)
  * 
  */
