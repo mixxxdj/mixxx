@@ -64,10 +64,17 @@ class Time {
         s_testElapsed_nsecs = elapsed * 1000000;
     }
 
-    // The standard way of formatting a time in seconds. Used for display of
-    // track duration, etc. showCentis indicates whether to include
-    // centisecond-precision or to round to the nearest second.
-    static QString formatSeconds(double dSeconds, bool showCentis);
+    enum class Precision {
+        SECONDS,
+        CENTISECONDS,
+        MILLISECONDS
+    };
+
+    // The standard way of formatting a time in seconds. Used for display
+    // of track duration, etc.
+    static QString formatSeconds(
+            double dSeconds,
+            Precision precision = Time::Precision::SECONDS);
 
   private:
     static LLTIMER s_timer;
