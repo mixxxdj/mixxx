@@ -104,26 +104,26 @@ void ConfigObject<ValueType>::set(const ConfigKey& k, ValueType v) {
 }
 
 template <class ValueType>
-ValueType ConfigObject<ValueType>::get(const ConfigKey& k) {
+ValueType ConfigObject<ValueType>::get(const ConfigKey& k) const {
     QReadLocker lock(&m_valuesLock);
     return m_values.value(k);
 }
 
 template <class ValueType>
-bool ConfigObject<ValueType>::exists(const ConfigKey& k) {
+bool ConfigObject<ValueType>::exists(const ConfigKey& k) const {
     QReadLocker lock(&m_valuesLock);
     return m_values.contains(k);
 }
 
 template <class ValueType>
-QString ConfigObject<ValueType>::getValueString(const ConfigKey& k) {
+QString ConfigObject<ValueType>::getValueString(const ConfigKey& k) const {
     ValueType v = get(k);
     return v.value;
 }
 
 template <class ValueType>
 QString ConfigObject<ValueType>::getValueString(const ConfigKey& k,
-                                                const QString& default_string) {
+                                                const QString& default_string) const {
     QString ret = getValueString(k);
     if (ret.isEmpty()) {
         return default_string;
@@ -290,7 +290,7 @@ QString ConfigObject<ValueType>::getSettingsPath() const {
 }
 
 template <class ValueType>
-QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() {
+QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() const {
     QReadLocker lock(&m_valuesLock);
 
     QMultiHash<ValueType, ConfigKey> transposedHash;

@@ -118,11 +118,11 @@ template <class ValueType> class ConfigObject {
     ConfigObject(QDomNode node);
     ~ConfigObject();
     void set(const ConfigKey& k, ValueType);
-    ValueType get(const ConfigKey& k);
-    bool exists(const ConfigKey& key);
-    QString getValueString(const ConfigKey& k);
-    QString getValueString(const ConfigKey& k, const QString& default_string);
-    QMultiHash<ValueType, ConfigKey> transpose();
+    ValueType get(const ConfigKey& k) const;
+    bool exists(const ConfigKey& key) const;
+    QString getValueString(const ConfigKey& k) const;
+    QString getValueString(const ConfigKey& k, const QString& default_string) const;
+    QMultiHash<ValueType, ConfigKey> transpose() const;
 
     void reopen(QString file);
     void Save();
@@ -138,7 +138,7 @@ template <class ValueType> class ConfigObject {
   protected:
     // We use QMap because we want a sorted list in mixxx.cfg
     QMap<ConfigKey, ValueType> m_values;
-    QReadWriteLock m_valuesLock;
+    mutable QReadWriteLock m_valuesLock;
     QString m_filename;
 
     // Loads and parses the configuration file. Returns false if the file could
