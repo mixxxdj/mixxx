@@ -1,5 +1,6 @@
 #include "util/timer.h"
 #include "util/experiment.h"
+#include "waveform/guitick.h"
 
 Timer::Timer(const QString& key, Stat::ComputeFlags compute)
         : m_key(key),
@@ -73,4 +74,37 @@ qint64 SuspendableTimer::elapsed(bool report) {
         }
     }
     return m_leapTime;
+}
+
+GuiTickTimer::GuiTickTimer(QObject* pParent)
+        : QObject(pParent),
+          m_pGuiTick50ms(new ControlObjectSlave(
+              "[Master]", "guiTick50ms", this)),
+          m_bActive(false) {
+    m_pGuiTick50ms->connectValueChanged(SLOT(slotGuiTick50ms(double)));
+}
+
+GuiTickTimer::~GuiTickTimer() {
+}
+
+void GuiTickTimer::start(mixxx::Duration duration) {
+    m_interval = duration;
+    m_elapsed = mixxx::Duration::fromSeconds(0);
+    m_bActive = true;
+}
+
+void GuiTickTimer::stop() {
+    m_bActive = false;
+    m_interval = mixxx::Duration::fromSeconds(0);
+    m_elapsed = mixxx::Duration::fromSeconds(0);
+}
+
+void GuiTickTimer::slotGuiTick50ms(double) {
+    if (m_bActive) {
+        m_elapsed += mixxx::Duration::fromMillis(50);
+        if (m_elapsed >= m_interval) {
+            m_elapsed = mixxx::Duration::fromSeconds(0);
+            emit(timeout());
+        }
+    }
 }
