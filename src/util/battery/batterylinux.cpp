@@ -18,6 +18,9 @@ void BatteryLinux::read() {
     m_dPercentage = 0.0;
     m_chargingState = Battery::UNKNOWN;
 
+    // NOTE(rryan): It would be nice if we could create the client
+    // once. However, while testing this up_client_get_devices(client) returned
+    // an empty list when I tried to re-use the UpClient instance.
     UpClient* client = up_client_new();
     if (client == nullptr) {
       return;
