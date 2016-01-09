@@ -49,13 +49,12 @@ ConfigKey ConfigKey::parseCommaSeparated(QString key) {
 ConfigValue::ConfigValue() {
 }
 
-ConfigValue::ConfigValue(QString stValue) {
-    value = stValue;
+ConfigValue::ConfigValue(QString stValue)
+    : value(stValue) {
 }
 
 ConfigValue::ConfigValue(int iValue)
-{
-    value = QString::number(iValue);
+    : value(QString::number(iValue)) {
 }
 
 void ConfigValue::valCopy(const ConfigValue& configValue) {
@@ -107,7 +106,7 @@ void ConfigObject<ValueType>::set(const ConfigKey& k, ValueType v) {
 template <class ValueType>
 ValueType ConfigObject<ValueType>::get(const ConfigKey& k) {
     QMutexLocker lock(&m_valueHashMutex);
-    return m_values.value(k, ValueType(""));
+    return m_values.value(k);
 }
 
 template <class ValueType>
