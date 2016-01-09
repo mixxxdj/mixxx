@@ -7,6 +7,7 @@
 #elif defined(Q_OS_MAC)
 #include "util/battery/batterymac.h"
 #endif
+#include "util/math.h"
 
 // interval (in ms) of the timer which calls update()
 const int kiUpdateInterval = 5000;
@@ -37,11 +38,12 @@ Battery* Battery::getBattery(QObject* parent) {
 }
 
 void Battery::update() {
+    const double kPercentageEpsilon = 0.1;
     double lastPercentage = m_dPercentage;
     int lastMinutesLeft = m_iMinutesLeft;
     ChargingState lastChargingState = m_chargingState;
     read();
-    if (lastPercentage != m_dPercentage ||
+    if (fabs(lastPercentage - m_dPercentage) > kPercentageEpsilon ||
         lastChargingState != m_chargingState ||
         lastMinutesLeft != m_iMinutesLeft) {
         emit(stateChanged());
