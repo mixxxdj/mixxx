@@ -218,9 +218,10 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
         return;
     }
 
-    MidiKey key;
-    key.status = status;
-    key.control = control;
+    // NOTE(rryan): We intend to use MidiKey(status, control) here rather than
+    // setting fields individually since we will use the MidiKey with an input
+    // mapping. See Bug #1532297
+    MidiKey key(status, control);
 
     // Ignore all standard MIDI System Real-Time Messages because they
     // are continuously sent and prevent mapping of the pressed key.
