@@ -1398,10 +1398,7 @@ void MixxxMainWindow::initActions() {
     connect(m_TalkoverMapper, SIGNAL(mapped(int)),
             this, SLOT(slotTalkoverChanged(int)));
     for (int i = 0; i < kMicrophoneCount; ++i) {
-        QString group("[Microphone]");
-        if (i > 0) {
-            group = QString("[Microphone%1]").arg(i + 1);
-        }
+        QString group = PlayerManager::groupForMicrophone(i);
         ControlObjectSlave* talkover_button = new ControlObjectSlave(
                 group, "talkover");
         m_TalkoverMapper->setMapping(talkover_button, i);
