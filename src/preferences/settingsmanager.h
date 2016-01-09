@@ -17,7 +17,7 @@ class SettingsManager : public QObject {
     }
 
     void save() {
-        m_pSettings->Save();
+        m_pSettings->save();
     }
 
     bool shouldRescanLibrary() {

@@ -183,7 +183,6 @@ class MixxxMainWindow : public QMainWindow {
   private:
     void initializeWindow();
     void initializeKeyboard();
-    void initializeFonts();
     void checkDirectRendering();
     bool confirmExit();
     void linkSkinWidget(ControlObjectSlave** pCOS,

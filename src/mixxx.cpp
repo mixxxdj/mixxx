@@ -174,7 +174,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     mixxx::Translations::initializeTranslations(
         pConfig.data(), pApp, args.getLocale());
 
-    initializeFonts(); // takes a long time
+    FontUtils::initializeFonts(resourcePath); // takes a long time
 
     launchProgress(2);
 
@@ -702,30 +702,6 @@ void MixxxMainWindow::initializeWindow() {
 
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     slotUpdateWindowTitle(TrackPointer());
-}
-
-void MixxxMainWindow::initializeFonts() {
-    UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    QDir fontsDir(pConfig->getResourcePath());
-    if (!fontsDir.cd("fonts")) {
-        qWarning("MixxxMainWindow::initializeFonts: cd fonts failed");
-        return;
-    }
-
-    QList<QFileInfo> files = fontsDir.entryInfoList(
-            QDir::NoDotAndDotDot | QDir::Files | QDir::Readable);
-    foreach (const QFileInfo& file, files) {
-        const QString& path = file.filePath();
-
-        // Skip text files (e.g. license files). For all others we let Qt tell
-        // us whether the font format is supported since there is no way to
-        // check other than adding.
-        if (path.endsWith(".txt", Qt::CaseInsensitive)) {
-            continue;
-        }
-
-        FontUtils::addFont(path);
-    }
 }
 
 void MixxxMainWindow::initializeKeyboard() {
