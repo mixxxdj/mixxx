@@ -558,6 +558,7 @@ class MixxxCore(Feature):
 
                    "preferences/dlgpreferencepage.cpp",
                    "preferences/settingsmanager.cpp",
+                   "preferences/upgrade.cpp",
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
@@ -702,7 +703,6 @@ class MixxxCore(Feature):
                    "mixxx.cpp",
                    "mixxxapplication.cpp",
                    "errordialoghandler.cpp",
-                   "upgrade.cpp",
 
                    "sources/soundsourceproviderregistry.cpp",
                    "sources/soundsourceplugin.cpp",

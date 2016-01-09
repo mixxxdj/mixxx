@@ -3,7 +3,7 @@
 #include <QDir>
 
 #include "control/control.h"
-#include "upgrade.h"
+#include "preferences/upgrade.h"
 #include "util/assert.h"
 
 SettingsManager::SettingsManager(QObject* pParent,
