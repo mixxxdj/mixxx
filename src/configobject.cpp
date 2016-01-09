@@ -26,6 +26,75 @@
 #include "util/cmdlineargs.h"
 #include "util/xml.h"
 
+// TODO(rryan): Move to a utility file.
+namespace {
+
+QString computeResourcePath() {
+    // Try to read in the resource directory from the command line
+    QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
+
+    if (qResourcePath.isEmpty()) {
+        QDir mixxxDir(QCoreApplication::applicationDirPath());
+        // We used to support using the mixxx.cfg's [Config],Path setting but
+        // this causes issues if you try and use two different versions of Mixxx
+        // on the same computer. See Bug #1392854. We start by checking if we're
+        // running out of a build root ('res' dir exists or our path ends with
+        // '_build') and if not then we fall back on a platform-specific method
+        // of determining the resource path (see comments below).
+        if (mixxxDir.cd("res")) {
+            // We are running out of the repository root.
+            qResourcePath = mixxxDir.absolutePath();
+        } else if (mixxxDir.absolutePath().endsWith("_build") &&
+                   mixxxDir.cdUp() && mixxxDir.cd("res")) {
+            // We are running out of the (lin|win|osx)XX_build folder.
+            qResourcePath = mixxxDir.absolutePath();
+        }
+#ifdef __UNIX__
+        // On Linux if all of the above fail the /usr/share path is the logical
+        // place to look.
+        else {
+            qResourcePath = UNIX_SHARE_PATH;
+        }
+#endif
+#ifdef __WINDOWS__
+        // On Windows, set the config dir relative to the application dir if all
+        // of the above fail.
+        else {
+            qResourcePath = QCoreApplication::applicationDirPath();
+        }
+#endif
+#ifdef __APPLE__
+        else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
+            // Release configuraton
+            qResourcePath = mixxxDir.absolutePath();
+        } else {
+            // TODO(rryan): What should we do here?
+        }
+#endif
+    } else {
+        //qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
+    }
+
+    if (qResourcePath.isEmpty()) {
+        reportCriticalErrorAndQuit("qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
+    }
+
+    // If the directory does not end with a "/", add one
+    if (!qResourcePath.endsWith("/")) {
+        qResourcePath.append("/");
+    }
+
+    qDebug() << "Loading resources from " << qResourcePath;
+    return qResourcePath;
+}
+
+QString computeSettingsPath(const QString& configFilename) {
+    QFileInfo configFileInfo(configFilename);
+    return configFileInfo.absoluteDir().absolutePath();
+}
+
+}  // namespace
+
 ConfigKey::ConfigKey() {
 }
 
@@ -90,7 +159,9 @@ bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2) {
     return (s1.m_qKey == s2.m_qKey);
 }
 
-template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QString& file) {
+template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QString& file)
+        : m_resourcePath(computeResourcePath()),
+          m_settingsPath(computeSettingsPath(file)) {
     reopen(file);
 }
 
@@ -205,67 +276,6 @@ template <class ValueType> void ConfigObject<ValueType>::save() {
     }
 }
 
-template <class ValueType>
-QString ConfigObject<ValueType>::getResourcePath() const {
-    // Try to read in the resource directory from the command line
-    QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
-
-    if (qResourcePath.isEmpty()) {
-        QDir mixxxDir(QCoreApplication::applicationDirPath());
-        // We used to support using the mixxx.cfg's [Config],Path setting but
-        // this causes issues if you try and use two different versions of Mixxx
-        // on the same computer. See Bug #1392854. We start by checking if we're
-        // running out of a build root ('res' dir exists or our path ends with
-        // '_build') and if not then we fall back on a platform-specific method
-        // of determining the resource path (see comments below).
-        if (mixxxDir.cd("res")) {
-            // We are running out of the repository root.
-            qResourcePath = mixxxDir.absolutePath();
-        } else if (mixxxDir.absolutePath().endsWith("_build") &&
-                   mixxxDir.cdUp() && mixxxDir.cd("res")) {
-            // We are running out of the (lin|win|osx)XX_build folder.
-            qResourcePath = mixxxDir.absolutePath();
-        }
-#ifdef __UNIX__
-        // On Linux if all of the above fail the /usr/share path is the logical
-        // place to look.
-        else {
-            qResourcePath = UNIX_SHARE_PATH;
-        }
-#endif
-#ifdef __WINDOWS__
-        // On Windows, set the config dir relative to the application dir if all
-        // of the above fail.
-        else {
-            qResourcePath = QCoreApplication::applicationDirPath();
-        }
-#endif
-#ifdef __APPLE__
-        else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
-            // Release configuraton
-            qResourcePath = mixxxDir.absolutePath();
-        } else {
-            // TODO(rryan): What should we do here?
-        }
-#endif
-    } else {
-        //qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
-    }
-
-    if (qResourcePath.isEmpty()) {
-        reportCriticalErrorAndQuit("qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
-    }
-
-    // If the directory does not end with a "/", add one
-    if (!qResourcePath.endsWith("/")) {
-        qResourcePath.append("/");
-    }
-
-    qDebug() << "Loading resources from " << qResourcePath;
-
-    return qResourcePath;
-}
-
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode& node) {
     if (!node.isNull() && node.isElement()) {
         QDomNode ctrl = node.firstChild();
@@ -281,12 +291,6 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode&
             ctrl = ctrl.nextSibling();
         }
     }
-}
-
-template <class ValueType>
-QString ConfigObject<ValueType>::getSettingsPath() const {
-    QFileInfo configFileInfo(m_filename);
-    return configFileInfo.absoluteDir().absolutePath();
 }
 
 template <class ValueType>

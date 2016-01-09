@@ -130,17 +130,23 @@ template <class ValueType> class ConfigObject {
 
     // Returns the resource path -- the path where controller presets, skins,
     // library schema, keyboard mappings, and more are stored.
-    QString getResourcePath() const;
+    QString getResourcePath() const {
+        return m_resourcePath;
+    }
 
     // Returns the settings path -- the path where user data (config file,
     // library SQLite database, etc.) is stored.
-    QString getSettingsPath() const;
+    QString getSettingsPath() const {
+        return m_settingsPath;
+    }
 
   protected:
     // We use QMap because we want a sorted list in mixxx.cfg
     QMap<ConfigKey, ValueType> m_values;
     mutable QReadWriteLock m_valuesLock;
     QString m_filename;
+    const QString m_resourcePath;
+    const QString m_settingsPath;
 
     // Loads and parses the configuration file. Returns false if the file could
     // not be opened; otherwise true.
