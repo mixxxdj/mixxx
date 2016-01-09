@@ -65,6 +65,10 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
 
+    m_pExportTrackFilesAction = new QAction(tr("Export Track Files"), this);
+    connect(m_pExportTrackFilesAction, SIGNAL(triggered()),
+            this, SLOT(slotExportTrackFiles()));
+
     m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
     connect(m_pAnalyzePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotAnalyzePlaylist()));
@@ -97,6 +101,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
     delete m_pExportPlaylistAction;
+    delete m_pExportTrackFilesAction;
     delete m_pDuplicatePlaylistAction;
     delete m_pAddToAutoDJAction;
     delete m_pAddToAutoDJTopAction;
@@ -476,6 +481,102 @@ void BasePlaylistFeature::slotExportPlaylist() {
             ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
         }
     }
+}
+
+void BasePlaylistFeature::slotExportTrackFiles() {
+    // TODO: This is a near-exact duplication of the same code in CreateFeature.
+    // Factor it out!
+    qDebug() << "Export files" << m_lastRightClickedIndex.data();
+
+    QString lastExportDirectory = m_pConfig->getValueString(
+            ConfigKey("[Library]", "LastTrackCopyDirectory"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+
+    QString dir_location = QFileDialog::getExistingDirectory(
+        NULL,
+        tr("Export Track Files To"),
+        lastExportDirectory);
+    if (dir_location.isNull() || dir_location.isEmpty()) {
+        return;
+    }
+    m_pConfig->set(ConfigKey("[Library]","LastTrackCopyDirectory"),
+                ConfigValue(dir_location));
+
+    // The user has picked a new directory via a file dialog. This means the
+    // system sandboxer (if we are sandboxed) has granted us permission to this
+    // folder. We don't need access to this file on a regular basis so we do not
+    // register a security bookmark.
+
+    QList<QString> playlist_items;
+    int rows = m_pPlaylistTableModel->rowCount();
+    bool overwrite_all = false;
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = m_pPlaylistTableModel->index(i, 0);
+        const QString source_filename =
+                m_pPlaylistTableModel->getTrackLocation(index);
+        QFileInfo source_fileinfo(source_filename);
+        const QString dest_filename =
+                dir_location + "/" + source_fileinfo.fileName();
+        QFileInfo dest_fileinfo(dest_filename);
+
+        // Give the user the option to overwrite existing files in the destination.
+        if (dest_fileinfo.exists()) {
+            if (!overwrite_all) {
+                int ret = QMessageBox::warning(
+                        NULL, tr("Overwrite Existing File?"),
+                        tr("%1 already exists, overwrite?").arg(dest_filename),
+                        QMessageBox::Yes | QMessageBox::YesToAll | QMessageBox::No,
+                        QMessageBox::No);
+
+                if (ret == QMessageBox::No) {
+                    qDebug() << "Skipping existing file" << dest_filename;
+                    continue;
+                }
+
+                if (ret == QMessageBox::YesToAll) {
+                    overwrite_all = true;
+                }
+            }
+
+            // Remove the existing file.
+            QFile dest_file(dest_filename);
+            qDebug() << "Removing existing file" << dest_filename;
+            if (!dest_file.remove()) {
+                const QString error_message =
+                    tr("Error removing file %1: %2. Stopping.").arg(
+                    dest_filename, dest_file.errorString());
+                qWarning() << error_message;
+                QMessageBox::warning(
+                        NULL,
+                        tr("Error removing file"),
+                        error_message,
+                        QMessageBox::Ok, QMessageBox::Ok);
+                // bail out completely.
+                return;
+            }
+        }
+
+        qDebug() << "Copying" << source_filename << "to" << dest_filename;
+        QFile source_file(source_filename);
+        if (!source_file.copy(dest_filename)) {
+            const QString error_message =
+                    tr("Error exporting track %1 to %2: %3. Stopping.").arg(
+                    source_filename, dest_filename, source_file.errorString());
+            qWarning() << error_message;
+            QMessageBox::warning(
+                    NULL,
+                    tr("Error exporting file"),
+                    error_message,
+                    QMessageBox::Ok, QMessageBox::Ok);
+            // bail out completely.
+            return;
+        }
+    }
+    QMessageBox::information(
+            NULL,
+            tr("Complete"),
+            tr("Track file export complete"),
+            QMessageBox::Ok, QMessageBox::Ok);
 }
 
 void BasePlaylistFeature::slotAddToAutoDJ() {
