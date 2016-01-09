@@ -17,9 +17,9 @@ Battery::Battery(QObject* parent)
           m_chargingState(UNKNOWN),
           m_dPercentage(0.0),
           m_iMinutesLeft(0),
-          timer(this) {
-    connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
-    timer.start(kiUpdateInterval);
+          m_timer(this) {
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+    m_timer.start(mixxx::Duration::fromMillis(kiUpdateInterval));
 }
 
 Battery::~Battery() {

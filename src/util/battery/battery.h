@@ -1,7 +1,7 @@
 #ifndef UTIL_BATTERY_BATTERY_H
 #define UTIL_BATTERY_BATTERY_H
 
-#include <QTimer>
+#include "util/timer.h"
 
 class Battery : public QObject {
     Q_OBJECT
@@ -43,7 +43,7 @@ class Battery : public QObject {
     int m_iMinutesLeft;
 
   private:
-    QTimer timer;
+    GuiTickTimer m_timer;
 };
 
 #endif /* UTIL_BATTERY_BATTERY_H */
