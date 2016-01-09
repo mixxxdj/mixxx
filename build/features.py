@@ -378,6 +378,8 @@ class Vamp(Feature):
         if not self.enabled(build):
             return
 
+        build.env.Append(CPPDEFINES='__VAMP__')
+
         # If there is no system vamp-hostdk installed, then we'll directly link
         # the vamp-hostsdk.
         if not conf.CheckLib(['vamp-hostsdk']):
@@ -387,9 +389,8 @@ class Vamp(Feature):
 
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
-            # Optionally link libdl and libX11. Required for some distros.
+            # Optionally link libdl Required for some distros.
             conf.CheckLib(['dl', 'libdl'])
-            conf.CheckLib(['X11', 'libX11'])
 
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
@@ -403,7 +404,10 @@ class Vamp(Feature):
         sources = ['analyzer/vamp/vampanalyzer.cpp',
                    'analyzer/vamp/vamppluginloader.cpp',
                    'analyzer/analyzerbeats.cpp',
-                   'dlgprefbeats.cpp']
+                   'analyzer/analyzerkey.cpp',
+                   'dlgprefbeats.cpp',
+                   'dlgprefkey.cpp']
+
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
             sources.extend(path % hostsdk_src_path for path in
