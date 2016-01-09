@@ -60,7 +60,7 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
-    // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
+    // Copy all of the tracks in a playlist to a new directory.
     void slotExportTrackFiles();
     void slotAnalyzePlaylist();
 
