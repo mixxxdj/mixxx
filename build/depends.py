@@ -710,7 +710,6 @@ class MixxxCore(Feature):
                    "sources/soundsource.cpp",
                    "sources/audiosource.cpp",
 
-                   "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
                    "widget/wbasewidget.cpp",
                    "widget/wwidget.cpp",
@@ -863,6 +862,7 @@ class MixxxCore(Feature):
 
                    "widget/wwaveformviewer.cpp",
 
+                   "waveform/sharedglcontext.cpp",
                    "waveform/waveform.cpp",
                    "waveform/waveformfactory.cpp",
                    "waveform/waveformwidgetfactory.cpp",

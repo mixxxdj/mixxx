@@ -60,7 +60,7 @@
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 #include "util/debug.h"
 #include "util/statsmanager.h"
 #include "util/timer.h"
