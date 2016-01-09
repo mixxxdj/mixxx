@@ -1,7 +1,7 @@
 #include "controllers/controlpickermenu.h"
 
 #include "vinylcontrol/defs_vinylcontrol.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "engine/cuecontrol.h"
 #include "engine/loopingcontrol.h"
 #include "effects/effectrack.h"

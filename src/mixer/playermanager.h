@@ -1,10 +1,12 @@
 // playermanager.h
 // Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
 
-#ifndef PLAYERMANAGER_H
-#define PLAYERMANAGER_H
+#ifndef MIXER_PLAYERMANAGER_H
+#define MIXER_PLAYERMANAGER_H
 
+#include <QObject>
 #include <QList>
+#include <QMap>
 #include <QMutex>
 
 #include "configobject.h"
@@ -186,4 +188,4 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QMap<QString, BaseTrackPlayer*> m_players;
 };
 
-#endif // PLAYERMANAGER_H
+#endif // MIXER_PLAYERMANAGER_H

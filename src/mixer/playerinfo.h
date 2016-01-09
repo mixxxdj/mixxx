@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef PLAYERINFO_H
-#define PLAYERINFO_H
+#ifndef MIXER_PLAYERINFO_H
+#define MIXER_PLAYERINFO_H
 
 #include <QObject>
 #include <QMutex>
@@ -78,4 +78,4 @@ class PlayerInfo : public QObject {
     static PlayerInfo* m_pPlayerinfo;
 };
 
-#endif /* _PLAYERINFO_H_ */
+#endif /* MIXER_PLAYERINFO_H */

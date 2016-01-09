@@ -1,7 +1,7 @@
 #include <QMessageBox>
 
-#include "basetrackplayer.h"
-#include "playerinfo.h"
+#include "mixer/basetrackplayer.h"
+#include "mixer/playerinfo.h"
 
 #include "controlobject.h"
 #include "controlpotmeter.h"

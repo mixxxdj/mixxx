@@ -1,11 +1,14 @@
-#ifndef BASETRACKPLAYER_H
-#define BASETRACKPLAYER_H
+#ifndef MIXER_BASETRACKPLAYER_H
+#define MIXER_BASETRACKPLAYER_H
+
+#include <QObject>
+#include <QString>
 
 #include "configobject.h"
-#include "trackinfoobject.h"
-#include "baseplayer.h"
 #include "engine/enginechannel.h"
 #include "engine/enginedeck.h"
+#include "mixer/baseplayer.h"
+#include "trackinfoobject.h"
 
 class EngineMaster;
 class ControlObject;
@@ -103,4 +106,4 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     bool m_replaygainPending;
 };
 
-#endif // BASETRACKPLAYER_H
+#endif // MIXER_BASETRACKPLAYER_H

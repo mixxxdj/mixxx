@@ -1,25 +1,25 @@
 // playermanager.cpp
 // Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
+#include "mixer/playermanager.h"
+
 #include <QMutexLocker>
 
-#include "playermanager.h"
-
-#include "controlobject.h"
-#include "trackinfoobject.h"
-#include "deck.h"
-#include "sampler.h"
-#include "previewdeck.h"
 #include "analyzer/analyzerqueue.h"
 #include "controlobject.h"
-#include "samplerbank.h"
+#include "controlobject.h"
+#include "effects/effectsmanager.h"
+#include "engine/enginedeck.h"
+#include "engine/enginemaster.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
-#include "engine/enginemaster.h"
+#include "mixer/deck.h"
+#include "mixer/previewdeck.h"
+#include "mixer/sampler.h"
+#include "mixer/samplerbank.h"
 #include "soundio/soundmanager.h"
-#include "effects/effectsmanager.h"
-#include "util/stat.h"
-#include "engine/enginedeck.h"
+#include "trackinfoobject.h"
 #include "util/assert.h"
+#include "util/stat.h"
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,

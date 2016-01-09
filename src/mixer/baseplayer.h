@@ -1,5 +1,5 @@
-#ifndef BASEPLAYER_H
-#define BASEPLAYER_H
+#ifndef MIXER_BASEPLAYER_H
+#define MIXER_BASEPLAYER_H
 
 #include <QObject>
 #include <QString>
@@ -18,4 +18,4 @@ class BasePlayer : public QObject {
     const QString m_group;
 };
 
-#endif /* BASEPLAYER_H */
+#endif /* MIXER_BASEPLAYER_H */

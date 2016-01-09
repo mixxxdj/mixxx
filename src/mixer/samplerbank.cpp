@@ -1,11 +1,12 @@
+#include "mixer/samplerbank.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include "sampler.h"
-#include "samplerbank.h"
-#include "trackinfoobject.h"
 #include "controlpushbutton.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
+#include "mixer/sampler.h"
+#include "trackinfoobject.h"
 #include "util/assert.h"
 
 SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
