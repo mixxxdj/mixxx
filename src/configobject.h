@@ -25,6 +25,7 @@
 #include <QMap>
 #include <QHash>
 #include <QMetaType>
+#include <QReadWriteLock>
 
 #include "util/debug.h"
 
@@ -137,7 +138,7 @@ template <class ValueType> class ConfigObject {
   protected:
     // We use QMap because we want a sorted list in mixxx.cfg
     QMap<ConfigKey, ValueType> m_values;
-    QMutex m_valueHashMutex;
+    QReadWriteLock m_valuesLock;
     QString m_filename;
 
     // Loads and parses the configuration file. Returns false if the file could

@@ -99,19 +99,19 @@ template <class ValueType> ConfigObject<ValueType>::~ConfigObject() {
 
 template <class ValueType>
 void ConfigObject<ValueType>::set(const ConfigKey& k, ValueType v) {
-    QMutexLocker lock(&m_valueHashMutex);
+    QWriteLocker lock(&m_valuesLock);
     m_values.insert(k, v);
 }
 
 template <class ValueType>
 ValueType ConfigObject<ValueType>::get(const ConfigKey& k) {
-    QMutexLocker lock(&m_valueHashMutex);
+    QReadLocker lock(&m_valuesLock);
     return m_values.value(k);
 }
 
 template <class ValueType>
 bool ConfigObject<ValueType>::exists(const ConfigKey& k) {
-    QMutexLocker lock(&m_valueHashMutex);
+    QReadLocker lock(&m_valuesLock);
     return m_values.contains(k);
 }
 
@@ -175,7 +175,7 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file) {
 }
 
 template <class ValueType> void ConfigObject<ValueType>::Save() {
-    QMutexLocker lock(&m_valueHashMutex);
+    QReadLocker lock(&m_valuesLock); // we only read the m_values here.
     QFile file(m_filename);
     if (!QDir(QFileInfo(file).absolutePath()).exists()) {
         QDir().mkpath(QFileInfo(file).absolutePath());
@@ -189,7 +189,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save() {
 
         QString grp = "";
 
-        typename QMap<ConfigKey, ValueType>::iterator i;
+        typename QMap<ConfigKey, ValueType>::const_iterator i;
         for (i = m_values.begin(); i != m_values.end(); ++i) {
             //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
             if (i.key().group != grp) {
@@ -291,7 +291,7 @@ QString ConfigObject<ValueType>::getSettingsPath() const {
 
 template <class ValueType>
 QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() {
-    QMutexLocker lock(&m_valueHashMutex);
+    QReadLocker lock(&m_valuesLock);
 
     QMultiHash<ValueType, ConfigKey> transposedHash;
     for (typename QMap<ConfigKey, ValueType>::const_iterator it =
