@@ -4,7 +4,6 @@
 #include "util/battery/battery.h"
 
 class BatteryLinux : public Battery {
-    Q_OBJECT
   public:
     BatteryLinux(QObject* pParent=nullptr);
     virtual ~BatteryLinux();
