@@ -34,7 +34,6 @@ build/wix/*.msi
 build/wix/*.mst
 build/wix/subdirs/*.wixobj
 build/wix/subdirs/*.wxs
-!/build/wix/uuidgen/uuidgen.exe
 
 *.obj
 *.pdb
