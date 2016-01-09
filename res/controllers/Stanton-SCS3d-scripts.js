@@ -214,6 +214,7 @@ StantonSCS3d.deckSignals = [    ["CurrentChannel", "volume", "StantonSCS3d.gainL
                                 ["CurrentChannel", "play_indicator", "StantonSCS3d.playLED"],
                                 ["CurrentChannel", "cue_indicator", "StantonSCS3d.cueLED"],
                                 ["CurrentChannel", "sync_enabled", "StantonSCS3d.syncLED"],
+                                ["CurrentChannel", "beat_active", "StantonSCS3d.tapLED"],
                                 ["CurrentChannel", "back", "StantonSCS3d.B13LED"],
                                 ["CurrentChannel", "fwd", "StantonSCS3d.B14LED"]
                             ];
@@ -605,11 +606,18 @@ StantonSCS3d.syncButton = function (channel, control, value, status) {
                 if (StantonSCS3d.debug) print("StantonSCS3d: Switching to single-deck control mode");
                 StantonSCS3d.singleDeck = true;
             }
+        } else if (currentMode != "deck" && StantonSCS3d.modifier[currentMode]==1) {
+            // If the current mode button is held down (and it's not DECK mode)
+            var curval = engine.getValue("[Channel"+StantonSCS3d.deck+"]","quantize");
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]", "quantize",
+                            !curval);
+            StantonSCS3d.syncLED(!curval);
         }
-        else
+        else {
             engine.setValue("[Channel"+StantonSCS3d.deck+"]","sync_enabled",1);
             StantonSCS3d.modifier["masterSync"] = new Date();
-        return;
+            return;
+        }
     }
     // If button up
     // Don't touch sync_enabled if we toggled modes
@@ -629,11 +637,11 @@ StantonSCS3d.tapButton = function (channel, control, value, status) {
     }
     if ((status & 0xF0) == 0x90) {    // If button down
         if (StantonSCS3d.debug) print("StantonSCS3d: TAP");
-        midi.sendShortMsg(byte1,control,0x01);  // TAP button red
+//         midi.sendShortMsg(byte1,control,0x01);  // TAP button red
         bpm.tapButton(StantonSCS3d.deck);
         return;
     }
-    midi.sendShortMsg(byte1,control,0x00);  // TAP button blue
+//     midi.sendShortMsg(byte1,control,0x00);  // TAP button blue
 }
 
 StantonSCS3d.B11 = function (channel, control, value, status) {
@@ -868,6 +876,11 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
             // Set Gain LEDs to pregain value
             var add = StantonSCS3d.BoostCut(9,engine.getValue("[Channel"+StantonSCS3d.deck+"]","pregain"), 0.0, 1.0, 4.0, 5, 4);
             midi.sendShortMsg(0xB0+channel,0x07,0x15+add);
+            // Set SYNC button to value of quantize control
+            if (currentMode != "deck") {
+                StantonSCS3d.syncLED(
+                    engine.getValue("[Channel"+StantonSCS3d.deck+"]","quantize"));
+            }
         }
         else StantonSCS3d.modifier["time"] = 0.0;
         return;
@@ -875,6 +888,7 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
     StantonSCS3d.modifier[currentMode] = StantonSCS3d.modifier[modeName] = 0;   // Clear mode modifier flags
     StantonSCS3d.gainLEDs(engine.getValue("[Channel"+StantonSCS3d.deck+"]","volume"));  // Restore Gain LEDs
     StantonSCS3d.modeButtonsColor(channel,0x02);  // Make all mode buttons blue
+    engine.trigger("[Channel"+StantonSCS3d.deck+"]","sync_enabled"); // U   pdate SYNC LED
     // If trying to switch to the same mode, or the same button was held down for over 1/3 of a second, stay in the current mode
     if (currentMode == modeName || (StantonSCS3d.modifier["time"] != 0.0 && ((new Date() - StantonSCS3d.modifier["time"])>300))) {
         switch (currentMode.charAt(currentMode.length-1)) {   // Return the button to its original color
@@ -1821,6 +1835,10 @@ StantonSCS3d.syncLED = function (value) {
     StantonSCS3d.buttonLED(value, 0x6F, 0x01, 0x00);
 }
 
+StantonSCS3d.tapLED = function (value) {
+    StantonSCS3d.buttonLED(value, 0x70, 0x01, 0x00);
+}
+
 // ---- Soft buttons ----
 
 StantonSCS3d.B11LED = function (value) {
@@ -2263,4 +2281,5 @@ StantonSCS3d.circleLEDs = function (value) {
  * - FX1,2,3 control that effect unit
  * - FX B11 is now reverseroll (censor) instead of regular reverse
  * - FX B12 toggles this effect unit on this deck
+ * - Mode + SYNC = toggle quantize
  */
