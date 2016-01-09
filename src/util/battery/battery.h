@@ -15,10 +15,15 @@ class Battery : public QObject {
     static Battery* getBattery(QObject* parent=nullptr);
     virtual ~Battery();
 
-    // returns time until discharged or time until fully charged
-    // dependent on the current state
+    // The number of minutes the battery has remaining to depletion (when
+    // m_chargingState is DISCHARGING) or to being fully charged (when
+    // m_chargingState is CHARGING).
     int getMinutesLeft() { return m_iMinutesLeft; }
+
+    // The current battery percentage charged (from 0 to 100).
     double getPercentage() { return m_dPercentage; }
+
+    // The charging state of the battery.
     ChargingState getChargingState() { return m_chargingState; }
 
   public slots:
