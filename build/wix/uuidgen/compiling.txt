@@ -1,1 +1,0 @@
-cl uuidgen.c /link ole32.lib
