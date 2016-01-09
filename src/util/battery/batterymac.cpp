@@ -113,7 +113,7 @@ void BatteryMac::read() {
         }
 
         if (max_capacity > 0) {
-            m_dPercentage = static_cast<double>(current_capacity) /
+            m_dPercentage = 100.0 * static_cast<double>(current_capacity) /
                     max_capacity;
         }
 
