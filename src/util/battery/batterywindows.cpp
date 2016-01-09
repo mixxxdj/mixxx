@@ -36,24 +36,24 @@ void BatteryWindows::read() {
             m_chargingState = Battery::CHARGING;
         }
         // I get this directly from the API
-        if (m_dPercentage == 100) {
+        if (m_dPercentage > 99) {
             m_chargingState = Battery::CHARGED;
         }
         // windows tells us the remainging time in seconds
         m_iMinutesLeft = static_cast<int>(spsPwr.BatteryLifeTime) / 60;
     }
 
-    QString bat = "unkown";
-    switch (m_chargingState) {
-    case Battery::CHARGING:
-        bat = "charging";
-        break;
-    case Battery::DISCHARGING:
-        bat = "discharging";
-        break;
-    case Battery::CHARGED:
-        bat = "charged";
-    }
+    // QString bat = "unkown";
+    // switch (m_chargingState) {
+    // case Battery::CHARGING:
+    //     bat = "charging";
+    //     break;
+    // case Battery::DISCHARGING:
+    //     bat = "discharging";
+    //     break;
+    // case Battery::CHARGED:
+    //     bat = "charged";
+    // }
     // qDebug() << "BatteryWindows::read()"
     //          << "capacity " << m_dPercentage
     //          << "minutes_left " << m_iMinutesLeft
