@@ -557,6 +557,7 @@ class MixxxCore(Feature):
                    "controlttrotary.cpp",
 
                    "preferences/dlgpreferencepage.cpp",
+                   "preferences/settingsmanager.cpp",
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",

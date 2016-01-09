@@ -39,12 +39,12 @@ class ShoutcastManager;
 class SkinLoader;
 class EffectsManager;
 class VinylControlManager;
+class SettingsManager;
 class GuiTick;
 class DlgPreferences;
 class SoundManager;
 class ControlPushButton;
 class DlgDeveloperTools;
-class Upgrade;
 class LaunchImage;
 
 #include "configobject.h"
@@ -194,6 +194,8 @@ class MixxxMainWindow : public QMainWindow {
     QWidget* m_pWidgetParent;
     LaunchImage* m_pLaunchImage;
 
+    SettingsManager* m_pSettingsManager;
+
     // The effects processing system
     EffectsManager* m_pEffectsManager;
 
@@ -215,8 +217,6 @@ class MixxxMainWindow : public QMainWindow {
 #endif
     ControllerManager* m_pControllerManager;
 
-    ConfigObject<ConfigValue>* m_pConfig;
-
     GuiTick* m_pGuiTick;
 
     VinylControlManager* m_pVCManager;
@@ -226,8 +226,6 @@ class MixxxMainWindow : public QMainWindow {
     LibraryScanner* m_pLibraryScanner;
     // The library management object
     Library* m_pLibrary;
-
-    Upgrade* m_pUpgrader;
 
     QMenuBar* m_pMenuBar;
     // file_menu contains all items of the menubar entry "File"
