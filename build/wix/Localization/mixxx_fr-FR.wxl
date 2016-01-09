@@ -2,21 +2,26 @@
 <WixLocalization Culture="fr-fr" Codepage="1252"
                  xmlns="http://schemas.microsoft.com/wix/2006/localization">
 
-  <!-- This contains the LangID and should be translated to reflect the correct -->
-  <!-- LangID. -->
-  <!--         Supported language and codepage codes can be found here: -->
-  <!--         http://www.science.co.il/Language/Locale-codes.asp -->
+  <!-- .................................................... -->
+  <!-- This wxl file has been auto generated from a po file -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools       -->
+  <!-- Source File: po/fr-FR.po                             -->
+  <!-- .................................................... -->
+
+  <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
+  <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
   <String Id="Language">1036</String>
+
 
   <!-- Programm informations -->
   <String Id="ApplicationName">Mixxx</String>
   <String Id="ManufacturerName">Mixxx</String>
-  <String Id="ManufacturerFullName">The Mixxx Development Team</String>
+  <String Id="ManufacturerFullName">L'équipe de développement de Mixxx</String>
   <String Id="ProductDescription">Logiciel libre de mixage numérique</String>
   <String Id="Comments">Installe Mixxx</String>
 
   <!-- Error messages -->
-  <!--  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
+  <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
   <String Id="OS2Old">Ce produit nécessite au moins Windows XP.</String>
   <String Id="NewerInstalled">Une version plus récente ou identique de ce produit est déjà installée.</String>
   <String Id="x64VersionRequired">Vous devez installer la version 64-bits de ce produit sur un Windows 64-bits.</String>
