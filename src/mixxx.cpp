@@ -181,9 +181,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt();
 
-    // Store the path in the config database
-    pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
-
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
@@ -272,21 +269,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                                                    SLOT(map()));
     }
 
-    // Do not write meta data back to ID3 when meta data has changed
-    // Because multiple TrackDao objects can exists for a particular track
-    // writing meta data may ruin your MP3 file if done simultaneously.
-    // see Bug #728197
-    // For safety reasons, we deactivate this feature.
-    pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
-
-    // library dies in seemingly unrelated qtsql error about not having a
-    // sqlite driver if this path doesn't exist. Normally config->save()
-    // above would make it but if it doesn't get run for whatever reason
-    // we get hosed -- bkgood
-    if (!QDir(args.getSettingsPath()).exists()) {
-        QDir().mkpath(args.getSettingsPath());
-    }
-
     m_pGuiTick = new GuiTick();
 
 #ifdef __VINYLCONTROL__
@@ -355,22 +337,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Call inits to invoke all other construction parts
-
-    // Intialize default BPM system values
-    if (pConfig->getValueString(ConfigKey("[BPM]", "BPMRangeStart"))
-            .length() < 1) {
-        pConfig->set(ConfigKey("[BPM]", "BPMRangeStart"),ConfigValue(65));
-    }
-
-    if (pConfig->getValueString(ConfigKey("[BPM]", "BPMRangeEnd"))
-            .length() < 1) {
-        pConfig->set(ConfigKey("[BPM]", "BPMRangeEnd"),ConfigValue(135));
-    }
-
-    if (pConfig->getValueString(ConfigKey("[BPM]", "AnalyzeEntireSong"))
-            .length() < 1) {
-        pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
-    }
 
     // Initialize controller sub-system,
     // but do not set up controllers until the end of the application startup

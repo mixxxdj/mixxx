@@ -25,6 +25,8 @@ class SettingsManager : public QObject {
     }
 
   private:
+    void initializeDefaults();
+
     UserSettingsPointer m_pSettings;
     bool m_bShouldRescanLibrary;
 };
