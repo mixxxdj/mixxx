@@ -59,7 +59,7 @@ void Sandbox::shutdown() {
     ConfigObject<ConfigValue>* pSandboxPermissions = s_pSandboxPermissions;
     s_pSandboxPermissions = NULL;
     if (pSandboxPermissions) {
-        pSandboxPermissions->Save();
+        pSandboxPermissions->save();
         delete pSandboxPermissions;
     }
 }

@@ -40,7 +40,7 @@ ConfigKey::ConfigKey(const QString& g, const QString& i)
 }
 
 // static
-ConfigKey ConfigKey::parseCommaSeparated(QString key) {
+ConfigKey ConfigKey::parseCommaSeparated(const QString& key) {
     int comma = key.indexOf(",");
     ConfigKey configKey(key.left(comma), key.mid(comma + 1));
     return configKey;
@@ -49,7 +49,7 @@ ConfigKey ConfigKey::parseCommaSeparated(QString key) {
 ConfigValue::ConfigValue() {
 }
 
-ConfigValue::ConfigValue(QString stValue)
+ConfigValue::ConfigValue(const QString& stValue)
     : value(stValue) {
 }
 
@@ -65,12 +65,12 @@ void ConfigValue::valCopy(const ConfigValue& configValue) {
 ConfigValueKbd::ConfigValueKbd() {
 }
 
-ConfigValueKbd::ConfigValueKbd(QString value)
+ConfigValueKbd::ConfigValueKbd(const QString& value)
         : ConfigValue(value) {
     m_qKey = QKeySequence(value);
 }
 
-ConfigValueKbd::ConfigValueKbd(QKeySequence key) {
+ConfigValueKbd::ConfigValueKbd(const QKeySequence& key) {
     m_qKey = key;
     QTextStream(&value) << m_qKey.toString();
     // qDebug() << "value" << value;
@@ -90,7 +90,7 @@ bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2) {
     return (s1.m_qKey == s2.m_qKey);
 }
 
-template <class ValueType> ConfigObject<ValueType>::ConfigObject(QString file) {
+template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QString& file) {
     reopen(file);
 }
 
@@ -98,7 +98,7 @@ template <class ValueType> ConfigObject<ValueType>::~ConfigObject() {
 }
 
 template <class ValueType>
-void ConfigObject<ValueType>::set(const ConfigKey& k, ValueType v) {
+void ConfigObject<ValueType>::set(const ConfigKey& k, const ValueType& v) {
     QWriteLocker lock(&m_valuesLock);
     m_values.insert(k, v);
 }
@@ -169,12 +169,12 @@ template <class ValueType> bool ConfigObject<ValueType>::parse() {
     return true;
 }
 
-template <class ValueType> void ConfigObject<ValueType>::reopen(QString file) {
+template <class ValueType> void ConfigObject<ValueType>::reopen(const QString& file) {
     m_filename = file;
     parse();
 }
 
-template <class ValueType> void ConfigObject<ValueType>::Save() {
+template <class ValueType> void ConfigObject<ValueType>::save() {
     QReadLocker lock(&m_valuesLock); // we only read the m_values here.
     QFile file(m_filename);
     if (!QDir(QFileInfo(file).absolutePath()).exists()) {
@@ -266,7 +266,7 @@ QString ConfigObject<ValueType>::getResourcePath() const {
     return qResourcePath;
 }
 
-template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) {
+template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode& node) {
     if (!node.isNull() && node.isElement()) {
         QDomNode ctrl = node.firstChild();
 

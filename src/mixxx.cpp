@@ -282,7 +282,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
 
     // library dies in seemingly unrelated qtsql error about not having a
-    // sqlite driver if this path doesn't exist. Normally config->Save()
+    // sqlite driver if this path doesn't exist. Normally config->save()
     // above would make it but if it doesn't get run for whatever reason
     // we get hosed -- bkgood
     if (!QDir(args.getSettingsPath()).exists()) {
@@ -545,7 +545,7 @@ void MixxxMainWindow::finalize() {
     qDebug() << "Destroying MixxxMainWindow";
 
     qDebug() << "save config " << qTime.elapsed();
-    m_pConfig->Save();
+    m_pConfig->save();
 
     // SoundManager depend on Engine and Config
     qDebug() << "delete soundmanager " << qTime.elapsed();
@@ -672,7 +672,7 @@ void MixxxMainWindow::finalize() {
     // stuff. We only really want to save it here, but the first one was just
     // a precaution. The earlier one can be removed when stuff is more stable
     // at exit.
-    m_pConfig->Save();
+    m_pConfig->save();
 
     qDebug() << "delete config " << qTime.elapsed();
     Sandbox::shutdown();
