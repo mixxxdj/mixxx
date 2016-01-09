@@ -109,6 +109,42 @@ TEST(DurationTest, Equals) {
     EXPECT_NE(d, d2);
 }
 
+TEST(DurationTest, LessEquals) {
+    Duration d = Duration::fromSeconds(5);
+    Duration d2 = Duration::fromSeconds(2);
+
+    EXPECT_TRUE(d <= d);
+    EXPECT_FALSE(d <= d2);
+    EXPECT_TRUE(d2 <= d);
+}
+
+TEST(DurationTest, LessThan) {
+    Duration d = Duration::fromSeconds(2);
+    Duration d2 = Duration::fromSeconds(5);
+
+    EXPECT_TRUE(d < d2);
+    EXPECT_FALSE(d < d);
+    EXPECT_FALSE(d2 < d);
+}
+
+TEST(DurationTest, GreaterEquals) {
+    Duration d = Duration::fromSeconds(5);
+    Duration d2 = Duration::fromSeconds(2);
+
+    EXPECT_TRUE(d >= d);
+    EXPECT_FALSE(d2 >= d);
+    EXPECT_TRUE(d >= d2);
+}
+
+TEST(DurationTest, GreaterThan) {
+    Duration d = Duration::fromSeconds(2);
+    Duration d2 = Duration::fromSeconds(5);
+
+    EXPECT_TRUE(d2 > d);
+    EXPECT_FALSE(d > d);
+    EXPECT_FALSE(d > d2);
+}
+
 TEST(DurationTest, Format) {
     Duration d = Duration::fromNanos(255);
     EXPECT_QSTRING_EQ("0x00000000000000ff", d.formatHex());

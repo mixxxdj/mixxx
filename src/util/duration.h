@@ -92,6 +92,22 @@ class Duration {
         return !(*this == other);
     }
 
+    bool operator<(const Duration& other) const {
+        return m_timestamp_nanos < other.m_timestamp_nanos;
+    }
+
+    bool operator<=(const Duration& other) const {
+        return m_timestamp_nanos <= other.m_timestamp_nanos;
+    }
+
+    bool operator>(const Duration& other) const {
+        return m_timestamp_nanos > other.m_timestamp_nanos;
+    }
+
+    bool operator>=(const Duration& other) const {
+        return m_timestamp_nanos >= other.m_timestamp_nanos;
+    }
+
     // Formats the duration as a two's-complement hexadecimal string.
     QString formatHex() const {
         // Format as fixed-width (8 digits).
