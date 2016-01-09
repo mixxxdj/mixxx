@@ -557,6 +557,7 @@ class MixxxCore(Feature):
                    "controlttrotary.cpp",
 
                    "preferences/dlgpreferencepage.cpp",
+                   "preferences/settingsmanager.cpp",
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
@@ -567,7 +568,6 @@ class MixxxCore(Feature):
                    "dlgprefcontrols.cpp",
                    "dlgprefwaveform.cpp",
                    "dlgprefautodj.cpp",
-                   "dlgprefkey.cpp",
                    "dlgprefreplaygain.cpp",
                    "dlgprefnovinyl.cpp",
                    "dlgabout.cpp",
@@ -668,7 +668,6 @@ class MixxxCore(Feature):
                    "cachingreaderchunk.cpp",
                    "cachingreaderworker.cpp",
 
-                   "analyzer/analyzerkey.cpp",
                    "analyzer/analyzerqueue.cpp",
                    "analyzer/analyzerwaveform.cpp",
                    "analyzer/analyzergain.cpp",
@@ -934,6 +933,7 @@ class MixxxCore(Feature):
                    "track/playcounter.cpp",
                    "track/replaygain.cpp",
                    "track/bpm.cpp",
+                   "track/tracknumbers.cpp",
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
                    "track/audiotagger.cpp",
@@ -986,6 +986,8 @@ class MixxxCore(Feature):
                    "util/singularsamplebuffer.cpp",
                    "util/circularsamplebuffer.cpp",
                    "util/rotary.cpp",
+                   "util/logging.cpp",
+                   "util/cmdlineargs.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -1167,6 +1169,10 @@ class MixxxCore(Feature):
             # Check for pkg-config >= 0.15.0
             if not conf.CheckForPKGConfig('0.15.0'):
                 raise Exception('pkg-config >= 0.15.0 not found.')
+
+            if not conf.CheckLib(['X11', 'libX11']):
+                raise Exception(
+                    "Could not find libX11 or its development headers.")
 
         elif build.platform_is_osx:
             # Stuff you may have compiled by hand

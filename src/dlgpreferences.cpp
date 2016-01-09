@@ -109,10 +109,13 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_wcrossfader);
 
+#ifdef __VAMP__
     m_wbeats = new DlgPrefBeats(this, m_pConfig);
     addPageWidget (m_wbeats);
     m_wkey = new DlgPrefKey(this, m_pConfig);
     addPageWidget(m_wkey);
+#endif
+
     m_wreplaygain = new DlgPrefReplayGain(this, m_pConfig);
     addPageWidget(m_wreplaygain);
     m_wrecord = new DlgPrefRecord(this, m_pConfig);
@@ -210,7 +213,7 @@ void DlgPreferences::createIcons() {
     m_pRecordingButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-
+#ifdef __VAMP__
     m_pBeatDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pBeatDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
     m_pBeatDetectionButton->setText(0, tr("Beat Detection"));
@@ -222,6 +225,7 @@ void DlgPreferences::createIcons() {
     m_pKeyDetectionButton->setText(0, tr("Key Detection"));
     m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#endif
 
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));

@@ -1,5 +1,6 @@
 #include <QtDebug>
 #include <QMutexLocker>
+#include <QSharedPointer>
 
 #include "control/control.h"
 
@@ -7,7 +8,7 @@
 #include "util/timer.h"
 
 // Static member variable definition
-ConfigObject<ConfigValue>* ControlDoublePrivate::s_pUserConfig = NULL;
+UserSettingsPointer ControlDoublePrivate::s_pUserConfig;
 QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::s_qCOHash;
 QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash;
 QMutex ControlDoublePrivate::s_qCOHashMutex;
@@ -44,7 +45,7 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
 void ControlDoublePrivate::initialize() {
     double value = 0;
     if (m_bPersistInConfiguration) {
-        ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::s_pUserConfig;
+        UserSettingsPointer pConfig = ControlDoublePrivate::s_pUserConfig;
         if (pConfig != NULL) {
             // Assume toDouble() returns 0 if conversion fails.
             value = pConfig->getValueString(m_key).toDouble();
@@ -70,7 +71,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
     s_qCOHashMutex.unlock();
 
     if (m_bPersistInConfiguration) {
-        ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::s_pUserConfig;
+        UserSettingsPointer pConfig = ControlDoublePrivate::s_pUserConfig;
         if (pConfig != NULL) {
             pConfig->set(m_key, QString::number(get()));
         }

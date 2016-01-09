@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.12.0+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.0.0+">
   <info>
     <name>VestaxTyphoon2-6</name>
     <author>bestdani</author>
-    <description>bestdani's customized Controller Mapping for Vestax Typhoon in Mixxx 1.12 version 2-6 and script. Some Elements are taken from Bill Good's mapping</description>
+    <description>bestdani's customized Controller Mapping for Vestax Typhoon in Mixxx 2.0 version 2-6 and script. Some Elements are taken from Bill Good's mapping</description>
     <forums>http://mixxx.org/forums/viewtopic.php?p=14494#p14494</forums>
   </info>
   <controller id="Vestax Typhoon">

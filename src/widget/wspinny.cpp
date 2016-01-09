@@ -323,7 +323,8 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     // and draw the image at the corner.
     p.translate(width() / 2, height() / 2);
 
-    if (m_bGhostPlayback) {
+    bool paintGhost = m_bGhostPlayback && m_pGhostImage && !m_pGhostImage->isNull();
+    if (paintGhost) {
         p.save();
     }
 
@@ -344,7 +345,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
                     -(m_fgImageScaled.height() / 2), m_fgImageScaled);
     }
 
-    if (m_bGhostPlayback && m_pGhostImage && !m_pGhostImage->isNull()) {
+    if (paintGhost) {
         p.restore();
         p.save();
         p.rotate(m_fGhostAngle);

@@ -36,6 +36,7 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/sleep.h"
+#include "util/version.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 #ifdef __PORTAUDIO__
@@ -610,7 +611,7 @@ void SoundManager::setJACKName() const {
             reinterpret_cast<SetJackClientName>(
                 portaudio.resolve("PaJack_SetClientName")));
         if (func) {
-            if (!func("Mixxx")) qDebug() << "JACK client name set";
+            if (!func(Version::applicationName().toLocal8Bit().constData())) qDebug() << "JACK client name set";
         } else {
             qWarning() << "failed to resolve JACK name method";
         }
