@@ -1,5 +1,7 @@
 #include "util/time.h"
 
+#include "util/assert.h"
+
 // static
 LLTIMER Time::s_timer;
 // static
@@ -8,7 +10,7 @@ bool Time::s_testMode = false;
 qint64 Time::s_testElapsed_nsecs = 0;
 
 // static
-QString Time::formatSeconds(double dSeconds, bool showCentis) {
+QString Time::formatSeconds(double dSeconds, Precision precision) {
     if (dSeconds < 0) {
         return "?";
     }
@@ -24,13 +26,14 @@ QString Time::formatSeconds(double dSeconds, bool showCentis) {
             (days > 0 ? (QString::number(days) %
                          QLatin1String("'d', ")) : QString()) %
             QLatin1String(days > 0 || t.hour() > 0 ? "hh:mm:ss" : "mm:ss") %
-            QLatin1String(showCentis ? ".zzz" : "");
+            QLatin1String(Precision::SECONDS == precision ? "" : ".zzz");
 
     QString timeString = t.toString(formatString);
 
     // The format string gives us milliseconds but we want
     // centiseconds. Slice one character off.
-    if (showCentis) {
+    if (Precision::CENTISECONDS == precision) {
+        DEBUG_ASSERT(1 <= timeString.length());
         timeString = timeString.left(timeString.length() - 1);
     }
 

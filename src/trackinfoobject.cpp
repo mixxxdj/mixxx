@@ -220,7 +220,7 @@ QString TrackInfoObject::getDurationText() const {
     int iDuration = m_iDuration;
     lock.unlock();
 
-    return Time::formatSeconds(iDuration, false);
+    return Time::formatSeconds(iDuration);
 }
 
 QString TrackInfoObject::getLocation() const {
