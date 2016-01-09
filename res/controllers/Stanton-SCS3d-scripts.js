@@ -35,13 +35,15 @@ StantonSCS3d.revtime = 1.8; // Time in seconds for the virtual record to spin on
 StantonSCS3d.buttons = { "fx":0x20, "eq":0x26, "loop":0x22, "trig":0x28, "vinyl":0x24, "deck":0x2A };
 StantonSCS3d.buttonLEDs = { 0x48:0x62, 0x4A:0x61, 0x4C:0x60, 0x4e:0x5f, 0x4f:0x67, 0x51:0x68, 0x53:0x69, 0x55:0x6a,
                             0x56:0x64, 0x58:0x65, 0x5A:0x6C, 0x5C:0x5D }; // Maps surface buttons to corresponding circle LEDs
-StantonSCS3d.mode_store = { "[Channel1]":"vinyl", "[Channel2]":"vinyl", "[Channel3]":"vinyl", "[Channel4]":"vinyl" };   // Set vinyl mode on all decks
+StantonSCS3d.mode_store = { "[Channel1]":"vinyl", "[Channel2]":"vinyl", // Set vinyl mode on all decks
+                            "[Channel3]":"vinyl", "[Channel4]":"vinyl" };
 StantonSCS3d.scratchncue = [ false, false, false, false, false ];  // Scratch + cue mode for each deck (starts at zero)
 StantonSCS3d.deck = 1;  // Currently active virtual deck
 StantonSCS3d.modifier = { "cue":0, "play":0 };  // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 StantonSCS3d.state = { "pitchAbs":0, "jog":0, "changedDeck":false, "deckPrev":"vinyl", "logoLit":true}; // Temporary state variables
 StantonSCS3d.timer = [-1];  // Temporary storage of timer IDs
-StantonSCS3d.modeSurface = { "deck":"S3+S5", "fx":"S3+S5", "eq":"S3+S5", 
+StantonSCS3d.modeSurface = { "deck":"S3+S5", "eq":"S3+S5", 
+                             "fx":"S3+S5", "fx2":"S3+S5", "fx3":"S3+S5",
                              "loop":"Buttons", "loop2":"Buttons", "loop3":"Buttons",
                              "trig":"Buttons", "trig2":"Buttons", "trig3":"Buttons",
                              "vinyl":"C1", "vinyl2":"C1", "vinyl3":"C1"};
@@ -71,25 +73,20 @@ StantonSCS3d.triggerS4 = 0xFF;
 
 // Signals to (dis)connect by mode: Group, Key, Function name
 StantonSCS3d.modeSignals = {
-//                             "fx":[    ["[Flanger]", "lfoDepth", "StantonSCS3d.FXDepthLEDs"],
-//                                       ["[Flanger]", "lfoDelay", "StantonSCS3d.FXDelayLEDs"],
-//                                       ["[Flanger]", "lfoPeriod", "StantonSCS3d.FXPeriodLEDs"],
-//                                       ["CurrentChannel", "reverse", "StantonSCS3d.B11LED"],
-//                                       ["CurrentChannel", "flanger", "StantonSCS3d.B12LED"] ],
                             "fx":[    ["[EffectRack1_EffectUnit1_Effect1]", "parameter1", "StantonSCS3d.FXS3LEDs"],
                                       ["[EffectRack1_EffectUnit1_Effect1]", "parameter2", "StantonSCS3d.FXS4LEDs"],
                                       ["[EffectRack1_EffectUnit1_Effect1]", "parameter3", "StantonSCS3d.FXS5LEDs"],
-                                      ["CurrentChannel", "reverse", "StantonSCS3d.B11LED"],
+                                      ["CurrentChannel", "reverseroll", "StantonSCS3d.B11LED"],
                                       ["[EffectRack1_EffectUnit1]", "group_CurrentChannel_enable", "StantonSCS3d.B12LED"] ],
                             "fx2":[   ["[EffectRack1_EffectUnit2_Effect1]", "parameter1", "StantonSCS3d.FXS3LEDs"],
                                       ["[EffectRack1_EffectUnit2_Effect1]", "parameter2", "StantonSCS3d.FXS4LEDs"],
                                       ["[EffectRack1_EffectUnit2_Effect1]", "parameter3", "StantonSCS3d.FXS5LEDs"],
-                                      ["CurrentChannel", "reverse", "StantonSCS3d.B11LED"],
+                                      ["CurrentChannel", "reverseroll", "StantonSCS3d.B11LED"],
                                       ["[EffectRack1_EffectUnit2]", "group_CurrentChannel_enable", "StantonSCS3d.B12LED"] ],
                             "fx3":[   ["[EffectRack1_EffectUnit3_Effect1]", "parameter1", "StantonSCS3d.FXS3LEDs"],
                                       ["[EffectRack1_EffectUnit3_Effect1]", "parameter2", "StantonSCS3d.FXS4LEDs"],
                                       ["[EffectRack1_EffectUnit3_Effect1]", "parameter3", "StantonSCS3d.FXS5LEDs"],
-                                      ["CurrentChannel", "reverse", "StantonSCS3d.B11LED"],
+                                      ["CurrentChannel", "reverseroll", "StantonSCS3d.B11LED"],
                                       ["[EffectRack1_EffectUnit3]", "group_CurrentChannel_enable", "StantonSCS3d.B12LED"] ],
                             "eq":[    ["CurrentChannelEQ", "parameter1", "StantonSCS3d.EQLowLEDs"],
                                       ["CurrentChannelEQ", "parameter2", "StantonSCS3d.EQMidLEDs"],
@@ -207,7 +204,7 @@ StantonSCS3d.modeSignals = {
                                       ["[Master]","headMix","StantonSCS3d.headMixLEDs"],
                                       ["[Master]","headVolume","StantonSCS3d.headVolLEDs"],
                                       ["[Master]","crossfader","StantonSCS3d.crossFaderLEDs"] ],
-                            "none":[]  // To avoid an error on forced mode changes
+                            "none":[]  // Avoids an error on forced mode changes
                             };
 StantonSCS3d.commonSignals = [  ["CurrentChannel", "rate", "StantonSCS3d.pitchLEDs"],
                                 ["CurrentChannel", "rateRange", "StantonSCS3d.pitchSliderLED"]
@@ -689,7 +686,7 @@ StantonSCS3d.B11 = function (channel, control, value, status) {
     
     switch (currentMode) {  // In either case (for toggling)
         case "fx":
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","reverse",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","reverse"));
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]","reverseroll",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","reverseroll"));
             break;
         case "loop":
             engine.setValue("[Channel"+StantonSCS3d.deck+"]","loop_halve",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","loop_halve"));
@@ -709,17 +706,26 @@ StantonSCS3d.B12 = function (channel, control, value, status, group) {
             engine.setValue("[Channel"+StantonSCS3d.deck+"]","rate",0);
             return;
         }
+        var modeIndex = currentMode.charAt(currentMode.length-1);
+        if (modeIndex != "2" && modeIndex != "3") modeIndex = "1";
+        
         switch (currentMode) {
             case "deck":
                 midi.sendShortMsg(byte1,control,0x01); // Make button red
                 engine.reset("[Master]","balance"); // Reset master balance to center
                 break;
             case "fx":
-                engine.setValue("[Channel"+StantonSCS3d.deck+"]","flanger",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","flanger"));
+            case "fx2":
+            case "fx3":
+                engine.setValue("[EffectRack1_EffectUnit"+modeIndex+"]",
+                                "group_[Channel"+StantonSCS3d.deck+"]_enable",
+                                !engine.getValue("[EffectRack1_EffectUnit"+modeIndex+"]",
+                                                 "group_[Channel"+StantonSCS3d.deck+"]_enable"));
                 break;
             case "vinyl":
             case "vinyl2":
-                engine.setValue("[Channel"+StantonSCS3d.deck+"]","keylock",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","keylock"));
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","keylock",
+                                !engine.getValue("[Channel"+StantonSCS3d.deck+"]","keylock"));
                 break;
             case "vinyl3":
                 midi.sendShortMsg(byte1,control,0x01); // Make button red
@@ -764,6 +770,8 @@ StantonSCS3d.B12 = function (channel, control, value, status, group) {
         }
         switch (currentMode) {
             case "fx":
+            case "fx2":
+            case "fx3":
             case "vinyl":
             case "vinyl2":
             case "loop":
@@ -779,7 +787,8 @@ StantonSCS3d.B12 = function (channel, control, value, status, group) {
     
     switch (currentMode) {  // In either case (for toggling)
         case "loop":
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","loop_double",!engine.getValue("[Channel"+StantonSCS3d.deck+"]","loop_double"));
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]","loop_double",
+                            !engine.getValue("[Channel"+StantonSCS3d.deck+"]","loop_double"));
             break;
     }
 }
@@ -958,7 +967,25 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
 }
 
 StantonSCS3d.FX = function (channel, control, value, status) {
-    StantonSCS3d.modeButton(channel, control, status, "fx");
+    var mode;
+    var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
+    
+    switch (currentMode) {
+        case "fx":
+            if ((status & 0xF0) == 0x80) mode = "fx2";
+            else mode = "fx";
+            break;
+        case "fx2":
+            if ((status & 0xF0) == 0x80) mode = "fx3";
+            else mode = "fx2";
+            break;
+        case "fx3":
+            if ((status & 0xF0) == 0x80) mode = "fx";
+            else mode = "fx3";
+            break;
+        default: mode = "fx";
+    }
+    StantonSCS3d.modeButton(channel, control, status, mode);
 }
 
 StantonSCS3d.EQ = function (channel, control, value, status) {
@@ -1187,23 +1214,50 @@ StantonSCS3d.DeckChangeP2 = function (channel, value) {
     StantonSCS3d.modifier["time"] = 0.0;    // Reset the mode-modifier time
     StantonSCS3d.state["changedDeck"]= true;    // Mark that we just changed decks so the surface LEDs can update correctly for TRIG & LOOP
     switch (newMode) {    // Call the appropriate mode change function to set the control surface & connect signals on the now-current deck
-        case "fx":      StantonSCS3d.FX(channel, StantonSCS3d.buttons["fx"], value, 0x80 + channel); break;
-        case "eq":      StantonSCS3d.EQ(channel, StantonSCS3d.buttons["eq"], value, 0x80 + channel); break;
-        case "loop2":   StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "loop"; // force correct change
+        // Effects
+        case "fx2":   
+            StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "fx"; // force correct change
+        case "fx3":
+            if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] == "none")
+                StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "fx2";    // force correct change
+        case "fx":    
+            StantonSCS3d.FX(channel, StantonSCS3d.buttons["fx"], value, 0x80 + channel);
+            break;
+            
+        // EQ
+        case "eq":      
+            StantonSCS3d.EQ(channel, StantonSCS3d.buttons["eq"], value, 0x80 + channel); 
+            break;
+            
+        // Loop
+        case "loop2":   
+            StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "loop"; // force correct change
         case "loop3":
             if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] == "none")
                 StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "loop2";    // force correct change
-        case "loop":    StantonSCS3d.Loop(channel, StantonSCS3d.buttons["loop"], value, 0x80 + channel); break;
-        case "trig2":   StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "trig"; // force correct change
+        case "loop":    
+            StantonSCS3d.Loop(channel, StantonSCS3d.buttons["loop"], value, 0x80 + channel);
+            break;
+            
+        // Trig
+        case "trig2":   
+            StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "trig"; // force correct change
         case "trig3":
             if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] == "none")
                 StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "trig2";    // force correct change
-        case "trig":    StantonSCS3d.Trig(channel, StantonSCS3d.buttons["trig"], value, 0x80 + channel); break;
-        case "vinyl2":  StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "vinyl";    // force correct change
+        case "trig":    
+            StantonSCS3d.Trig(channel, StantonSCS3d.buttons["trig"], value, 0x80 + channel);
+            break;
+            
+        // Vinyl    
+        case "vinyl2":  
+            StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "vinyl";    // force correct change
         case "vinyl3":
             if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] == "none")
                 StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] = "vinyl2";   // force correct change
-        case "vinyl":   StantonSCS3d.Vinyl(channel, StantonSCS3d.buttons["vinyl"], value, 0x80 + channel); break;
+        case "vinyl":
+            StantonSCS3d.Vinyl(channel, StantonSCS3d.buttons["vinyl"], value, 0x80 + channel); 
+            break;
     }
 }   // End Deck Change function
 
@@ -1224,14 +1278,22 @@ StantonSCS3d.S4relative = function (channel, control, value) {
 
 StantonSCS3d.S3absolute = function (channel, control, value) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
+    var modeIndex = currentMode.charAt(currentMode.length-1);
+    if (modeIndex != "2" && modeIndex != "3") modeIndex = "1";
     switch (currentMode) {
         case "fx": 
-            if (StantonSCS3d.modifier[currentMode]==1) return;  // Ignore if mode button is held down (wanting to reset)
-            script.absoluteSlider("[Flanger]","lfoDepth",value,0,1); 
+        case "fx2":
+        case "fx3":
+            // Ignore if mode button is held down (wanting to reset)
+            if (StantonSCS3d.modifier[currentMode]==1) return;
+            engine.setParameter("[EffectRack1_EffectUnit"+modeIndex+"_Effect1]",
+                                "parameter1",script.absoluteLin(value,0,1));
             break;
         case "eq":
-            if (StantonSCS3d.modifier[currentMode]==1) return;  // Ignore if mode button is held down (wanting to reset)
-            engine.setParameter("[EqualizerRack1_[Channel"+StantonSCS3d.deck+"]_Effect1]","parameter1",script.absoluteLin(value,0,1));
+            // Ignore if mode button is held down (wanting to reset)
+            if (StantonSCS3d.modifier[currentMode]==1) return;
+            engine.setParameter("[EqualizerRack1_[Channel"+StantonSCS3d.deck+"]_Effect1]",
+                                "parameter1",script.absoluteLin(value,0,1));
             break;
         case "deck": engine.setValue("[Master]","headMix",(value-64)/63); break;
     }
@@ -1244,10 +1306,17 @@ StantonSCS3d.S4absolute = function (channel, control, value) {
         return;
     }
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
+    var modeIndex = currentMode.charAt(currentMode.length-1);
+    if (modeIndex != "2" && modeIndex != "3") modeIndex = "1";
     switch (currentMode) {
         case "fx": 
-            if (StantonSCS3d.modifier[currentMode]==1) return;  // Ignore if mode button is held down (wanting to reset)
-            script.absoluteSlider("[Flanger]","lfoDelay",value,50,10000); break;
+        case "fx2":
+        case "fx3":
+            // Ignore if mode button is held down (wanting to reset)
+            if (StantonSCS3d.modifier[currentMode]==1) return;
+            engine.setParameter("[EffectRack1_EffectUnit"+modeIndex+"_Effect1]",
+                                "parameter2",script.absoluteLin(value,0,1));
+            break;
         case "eq": 
             if (StantonSCS3d.modifier[currentMode]==1) return;  // Ignore if mode button is held down (wanting to reset)
             engine.setParameter("[EqualizerRack1_[Channel"+StantonSCS3d.deck+"]_Effect1]","parameter2",script.absoluteLin(value,0,1));
@@ -1332,8 +1401,17 @@ StantonSCS3d.S5absolute = function (channel, control, value) {
     if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]=="deck") return;   // Ignore if in DECK mode
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     if (StantonSCS3d.modifier[currentMode]==1) return;  // Ignore if mode button is held down (wanting to reset)
-    switch (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]) {
-        case "fx": script.absoluteSlider("[Flanger]","lfoPeriod",value,50000,2000000); break;
+    var modeIndex = currentMode.charAt(currentMode.length-1);
+    if (modeIndex != "2" && modeIndex != "3") modeIndex = "1";
+    switch (currentMode) {
+        case "fx": 
+        case "fx2":
+        case "fx3":
+            // Ignore if mode button is held down (wanting to reset)
+            if (StantonSCS3d.modifier[currentMode]==1) return;
+            engine.setParameter("[EffectRack1_EffectUnit"+modeIndex+"_Effect1]",
+                                "parameter3",script.absoluteLin(value,0,1));
+            break;
         case "eq":
             engine.setParameter("[EqualizerRack1_[Channel"+StantonSCS3d.deck+"]_Effect1]","parameter3",script.absoluteLin(value,0,1));
             break;
@@ -1383,8 +1461,15 @@ StantonSCS3d.S3touch = function (channel, control, value, status) {
     // Reset the value to center if the slider is touched while the mode button is held down
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     if (StantonSCS3d.modifier[currentMode]==1) {
+        var modeIndex = currentMode.charAt(currentMode.length-1);
+        if (modeIndex != "2" && modeIndex != "3") modeIndex = "1";
         switch (currentMode) {
-            case "fx": engine.setValue("[Flanger]","lfoDepth",0.5); break;
+            case "fx": 
+            case "fx2":
+            case "fx3":
+                engine.reset("[EffectRack1_EffectUnit"+modeIndex+"_Effect1]",
+                             "parameter1");
+                break;
             case "eq":
                 engine.reset("[EqualizerRack1_[Channel"+StantonSCS3d.deck+"]_Effect1]","parameter1");
                 break;
@@ -1406,8 +1491,15 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     // If the current mode button is held down, reset the control to center
     if (StantonSCS3d.modifier[currentMode]==1) {
+        var modeIndex = currentMode.charAt(currentMode.length-1);
+        if (modeIndex != "2" && modeIndex != "3") modeIndex = "1";
         switch (currentMode) {
-            case "fx": engine.setValue("[Flanger]","lfoDelay",4950); break;
+            case "fx": 
+            case "fx2":
+            case "fx3":
+                engine.reset("[EffectRack1_EffectUnit"+modeIndex+"_Effect1]",
+                             "parameter2");
+                break;
             case "eq": 
                 engine.reset("[EqualizerRack1_[Channel"+StantonSCS3d.deck+"]_Effect1]","parameter2");
                 break;
@@ -1504,8 +1596,15 @@ StantonSCS3d.S5touch = function (channel, control, value, status) {
     // Reset the value to center if the slider is touched while the mode button is held down
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
     if (StantonSCS3d.modifier[currentMode]==1){
+        var modeIndex = currentMode.charAt(currentMode.length-1);
+        if (modeIndex != "2" && modeIndex != "3") modeIndex = "1";
         switch (currentMode) {
-            case "fx": engine.setValue("[Flanger]","lfoPeriod",1025000); break;
+            case "fx": 
+            case "fx2":
+            case "fx3":
+                engine.reset("[EffectRack1_EffectUnit"+modeIndex+"_Effect1]",
+                             "parameter3");
+                break;
             case "eq": 
                 engine.reset("[EqualizerRack1_[Channel"+StantonSCS3d.deck+"]_Effect1]","parameter3");
                 break;
@@ -2157,7 +2256,11 @@ StantonSCS3d.circleLEDs = function (value) {
 }
 
 /* TODO:
- * - Update effects mode
  * - Alter Trig mode to combine sets of two buttons (top two and bottom two on each row)
+ * - Change fine pitch mode to key adjust mode
  * 
+ * Changes:
+ * - FX1,2,3 control that effect unit
+ * - FX B11 is now reverseroll (censor) instead of regular reverse
+ * - FX B12 toggles this effect unit on this deck
  */
