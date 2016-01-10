@@ -758,7 +758,6 @@ void TrackInfoObject::setAnalyzerProgress(int progress) {
     // progress in 0 .. 1000. QAtomicInt so no need for lock.
 	int oldProgress = m_analyzerProgress.fetchAndStoreAcquire(progress);
     if (progress != oldProgress) {
-        m_analyzerProgress = progress;
         emit(analyzerProgress(progress));
     }
 }
