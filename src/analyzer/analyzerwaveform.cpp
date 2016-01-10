@@ -107,7 +107,7 @@ bool AnalyzerWaveform::loadStored(TrackPointer tio) const {
     TrackId trackId = tio->getId();
 
     if (tio->isClearWaveformRequested()) {
-        if (m_analysisDao->deleteAnalysesForTrack(trackId)) {
+        if (m_pAnalysisDao->deleteAnalysesForTrack(trackId)) {
             tio->setClearWaveformRequested(false);
         }
         return false;
