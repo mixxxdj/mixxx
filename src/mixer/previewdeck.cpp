@@ -1,4 +1,4 @@
-#include "previewdeck.h"
+#include "mixer/previewdeck.h"
 
 PreviewDeck::PreviewDeck(QObject* pParent,
                          ConfigObject<ConfigValue> *pConfig,

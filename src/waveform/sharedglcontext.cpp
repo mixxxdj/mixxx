@@ -1,9 +1,9 @@
+#include "waveform/sharedglcontext.h"
+
 #include <QtDebug>
 #include <QGLContext>
 #include <QGLFormat>
 #include <QGLWidget>
-
-#include "sharedglcontext.h"
 
 const QGLWidget* SharedGLContext::s_pSharedGLWidget = NULL;
 

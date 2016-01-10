@@ -1,5 +1,5 @@
-#ifndef SHAREDGLCONTEXT_H_
-#define SHAREDGLCONTEXT_H_
+#ifndef WAVEFORM_SHAREDGLCONTEXT_H
+#define WAVEFORM_SHAREDGLCONTEXT_H
 
 class QGLWidget;
 
@@ -12,8 +12,8 @@ class SharedGLContext {
     static const QGLWidget* getWidget();
     static void setWidget(const QGLWidget* pWidget);
   private:
-    SharedGLContext() { };
+    SharedGLContext() { }
     static const QGLWidget* s_pSharedGLWidget;
 };
 
-#endif //SHAREDGLCONTEXT_H_
+#endif /* WAVEFORM_SHAREDGLCONTEXT_H */

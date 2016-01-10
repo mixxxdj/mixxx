@@ -1,8 +1,8 @@
 #include <QtDebug>
 #include <QtSql>
 
-#include "playerinfo.h"
-#include "playermanager.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/settingsdao.h"
 #include "library/dao/trackdao.h"
@@ -982,4 +982,3 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(const int iPlaylistId) {
     }
     return iTrackId;
 }
-

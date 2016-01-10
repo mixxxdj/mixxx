@@ -1,11 +1,11 @@
-#ifndef SAMPLER_H
-#define SAMPLER_H
+#ifndef MIXER_SAMPLER_H
+#define MIXER_SAMPLER_H
 
-#include "basetrackplayer.h"
+#include "mixer/basetrackplayer.h"
 
 class Sampler : public BaseTrackPlayerImpl {
     Q_OBJECT
-    public:
+  public:
     Sampler(QObject* pParent,
             ConfigObject<ConfigValue> *pConfig,
             EngineMaster* pMixingEngine,
@@ -15,4 +15,4 @@ class Sampler : public BaseTrackPlayerImpl {
     virtual ~Sampler();
 };
 
-#endif
+#endif /* MIXER_SAMPLER_H */

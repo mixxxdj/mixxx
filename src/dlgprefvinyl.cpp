@@ -23,7 +23,7 @@
 
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "defs_urls.h"

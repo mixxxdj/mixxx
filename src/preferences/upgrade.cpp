@@ -15,22 +15,22 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "preferences/upgrade.h"
+
 #include <QPixmap>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QTranslator>
 #include <QScopedPointer>
 
-#include "defs_version.h"
-#include "controllers/defs_controllers.h"
-#include "track/beat_preferences.h"
-#include "library/trackcollection.h"
-#include "library/library_preferences.h"
-#include "util/math.h"
-#include "util/cmdlineargs.h"
 #include "configobject.h"
-#include "upgrade.h"
-
+#include "controllers/defs_controllers.h"
+#include "defs_version.h"
+#include "library/library_preferences.h"
+#include "library/trackcollection.h"
+#include "track/beat_preferences.h"
+#include "util/cmdlineargs.h"
+#include "util/math.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
@@ -193,7 +193,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
             // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
             // to QDir::filePath elsewhere in the code. This is candidate for removal.
-            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/Local Settings/Application Data/Mixxx/")); 
+            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/Local Settings/Application Data/Mixxx/"));
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {

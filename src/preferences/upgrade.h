@@ -15,24 +15,27 @@
 *                                                                         *
 ***************************************************************************/
 
-#ifndef UPGRADE_H
-#define UPGRADE_H
+#ifndef PREFERENCES_UPGRADE_H
+#define PREFERENCES_UPGRADE_H
 
-class Upgrade
-{
-    public:
-        Upgrade();
-        ~Upgrade();
-        ConfigObject<ConfigValue>* versionUpgrade(const QString& settingsPath);
-        bool isFirstRun() { return m_bFirstRun; };
-        bool isUpgraded() { return m_bUpgraded; };
-        bool rescanLibrary() {return m_bRescanLibrary; };
-    private:
-        bool askReanalyzeBeats();
-        bool askReScanLibrary();
-        bool m_bFirstRun;
-        bool m_bUpgraded;
-        bool m_bRescanLibrary;
+#include "preferences/usersettings.h"
+
+class Upgrade {
+  public:
+    Upgrade();
+    ~Upgrade();
+
+    UserSettings* versionUpgrade(const QString& settingsPath);
+    bool isFirstRun() { return m_bFirstRun; };
+    bool isUpgraded() { return m_bUpgraded; };
+    bool rescanLibrary() {return m_bRescanLibrary; };
+
+  private:
+    bool askReanalyzeBeats();
+    bool askReScanLibrary();
+    bool m_bFirstRun;
+    bool m_bUpgraded;
+    bool m_bRescanLibrary;
 };
 
-#endif
+#endif /* PREFERENCES_UPGRADE_H */

@@ -19,7 +19,7 @@
 #include "dlgprefsounditem.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
 #include "soundio/sounddevice.h"
 #include "util/rlimit.h"

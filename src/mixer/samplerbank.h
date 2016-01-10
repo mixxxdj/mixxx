@@ -1,5 +1,5 @@
-#ifndef SAMPLERBANK_H
-#define SAMPLERBANK_H
+#ifndef MIXER_SAMPLERBANK_H
+#define MIXER_SAMPLERBANK_H
 
 #include <QObject>
 
@@ -8,7 +8,6 @@ class PlayerManager;
 
 class SamplerBank : public QObject {
     Q_OBJECT
-
   public:
     SamplerBank(PlayerManager* pPlayerManager);
     virtual ~SamplerBank();
@@ -23,4 +22,4 @@ class SamplerBank : public QObject {
     ControlObject* m_pSaveControl;
 };
 
-#endif /* SAMPLERBANK_H */
+#endif /* MIXER_SAMPLERBANK_H */

@@ -3,7 +3,7 @@
 #include <QDir>
 
 #include "control/control.h"
-#include "upgrade.h"
+#include "preferences/upgrade.h"
 #include "util/assert.h"
 
 SettingsManager::SettingsManager(QObject* pParent,
@@ -44,21 +44,21 @@ void SettingsManager::initializeDefaults() {
     // writing meta data may ruin your MP3 file if done simultaneously.
     // see Bug #728197
     // For safety reasons, we deactivate this feature.
-    pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
+    m_pSettings->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
 
     // Intialize default BPM system values.
     // NOTE(rryan): These should be in a better place but they've always been in
     // MixxxMainWindow.
-    if (!pConfig->exists(ConfigKey("[BPM]", "BPMRangeStart"))) {
-        pConfig->set(ConfigKey("[BPM]", "BPMRangeStart"),ConfigValue(65));
+    if (!m_pSettings->exists(ConfigKey("[BPM]", "BPMRangeStart"))) {
+        m_pSettings->set(ConfigKey("[BPM]", "BPMRangeStart"),ConfigValue(65));
     }
 
-    if (!pConfig->exists(ConfigKey("[BPM]", "BPMRangeEnd"))) {
-        pConfig->set(ConfigKey("[BPM]", "BPMRangeEnd"),ConfigValue(135));
+    if (!m_pSettings->exists(ConfigKey("[BPM]", "BPMRangeEnd"))) {
+        m_pSettings->set(ConfigKey("[BPM]", "BPMRangeEnd"),ConfigValue(135));
     }
 
-    if (!pConfig->exists(ConfigKey("[BPM]", "AnalyzeEntireSong"))) {
-        pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
+    if (!m_pSettings->exists(ConfigKey("[BPM]", "AnalyzeEntireSong"))) {
+        m_pSettings->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
 }

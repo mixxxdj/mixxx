@@ -6,7 +6,7 @@
 #include <QTranslator>
 #include <QDir>
 
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryfeature.h"

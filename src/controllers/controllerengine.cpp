@@ -13,7 +13,7 @@
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "errordialoghandler.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
 #include "util/time.h"

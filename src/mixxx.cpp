@@ -28,7 +28,6 @@
 #include "analyzer/analyzerqueue.h"
 #include "controlpotmeter.h"
 #include "controlobjectslave.h"
-#include "deck.h"
 #include "defs_urls.h"
 #include "dlgabout.h"
 #include "dlgpreferences.h"
@@ -46,21 +45,20 @@
 #include "library/librarytablemodel.h"
 #include "controllers/controllermanager.h"
 #include "mixxxkeyboard.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "recording/defs_recording.h"
 #include "recording/recordingmanager.h"
 #include "shoutcast/shoutcastmanager.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
-#include "soundio/soundmanagerutil.h"
 #include "soundsourceproxy.h"
 #include "trackinfoobject.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 #include "util/debug.h"
 #include "util/statsmanager.h"
 #include "util/timer.h"
@@ -69,7 +67,7 @@
 #include "controlpushbutton.h"
 #include "util/compatibility.h"
 #include "util/sandbox.h"
-#include "playerinfo.h"
+#include "mixer/playerinfo.h"
 #include "waveform/guitick.h"
 #include "util/math.h"
 #include "util/experiment.h"
@@ -213,30 +211,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #endif
 
     launchProgress(11);
-    // TODO(rryan): Fold microphone and aux creation into a manager
-    // (e.g. PlayerManager, though they aren't players).
-
-    ControlObject* pNumMicrophones = new ControlObject(ConfigKey("[Master]", "num_microphones"));
-    pNumMicrophones->setParent(this);
-
-    for (int i = 0; i < kMicrophoneCount; ++i) {
-        QString group("[Microphone]");
-        if (i > 0) {
-            group = QString("[Microphone%1]").arg(i + 1);
-        }
-        ChannelHandleAndGroup channelGroup =
-                m_pEngine->registerChannelGroup(group);
-        EngineMicrophone* pMicrophone =
-                new EngineMicrophone(channelGroup, m_pEffectsManager);
-
-        // What should channelbase be?
-        AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, i);
-        m_pEngine->addChannel(pMicrophone);
-        m_pSoundManager->registerInput(micInput, pMicrophone);
-        pNumMicrophones->set(pNumMicrophones->get() + 1);
-    }
-
-    m_pNumAuxiliaries = new ControlObject(ConfigKey("[Master]", "num_auxiliaries"));
 
     m_PassthroughMapper = new QSignalMapper(this);
     connect(m_PassthroughMapper, SIGNAL(mapped(int)),
@@ -245,29 +219,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_AuxiliaryMapper = new QSignalMapper(this);
     connect(m_AuxiliaryMapper, SIGNAL(mapped(int)),
             this, SLOT(slotControlAuxiliary(int)));
-
-    for (int i = 0; i < kAuxiliaryCount; ++i) {
-        QString group = QString("[Auxiliary%1]").arg(i + 1);
-        ChannelHandleAndGroup channelGroup = m_pEngine->registerChannelGroup(group);
-        EngineAux* pAux = new EngineAux(channelGroup, m_pEffectsManager);
-
-        // What should channelbase be?
-        AudioInput auxInput = AudioInput(AudioPath::AUXILIARY, 0, 0, i);
-        m_pEngine->addChannel(pAux);
-        m_pSoundManager->registerInput(auxInput, pAux);
-        m_pNumAuxiliaries->set(m_pNumAuxiliaries->get() + 1);
-
-        m_pAuxiliaryPassthrough.push_back(
-                new ControlObjectSlave(group, "passthrough"));
-        ControlObjectSlave* auxiliary_passthrough =
-                m_pAuxiliaryPassthrough.back();
-
-        // These non-vinyl passthrough COs have their index offset by the max
-        // number of vinyl inputs.
-        m_AuxiliaryMapper->setMapping(auxiliary_passthrough, i);
-        auxiliary_passthrough->connectValueChanged(m_AuxiliaryMapper,
-                                                   SLOT(map()));
-    }
 
     m_pGuiTick = new GuiTick();
 
@@ -280,6 +231,25 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Create the player manager. (long)
     m_pPlayerManager = new PlayerManager(pConfig.data(), m_pSoundManager,
                                          m_pEffectsManager, m_pEngine);
+    for (int i = 0; i < kMicrophoneCount; ++i) {
+        m_pPlayerManager->addMicrophone();
+    }
+
+    for (int i = 0; i < kAuxiliaryCount; ++i) {
+        m_pPlayerManager->addAuxiliary();
+        QString group = PlayerManager::groupForAuxiliary(i);
+        m_pAuxiliaryPassthrough.push_back(
+                new ControlObjectSlave(group, "passthrough"));
+        ControlObjectSlave* auxiliary_passthrough =
+                m_pAuxiliaryPassthrough.back();
+
+        // These non-vinyl passthrough COs have their index offset by the max
+        // number of vinyl inputs.
+        m_AuxiliaryMapper->setMapping(auxiliary_passthrough, i);
+        auxiliary_passthrough->connectValueChanged(m_AuxiliaryMapper,
+                                                   SLOT(map()));
+    }
+
     m_pPlayerManager->addConfiguredDecks();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
@@ -593,7 +563,6 @@ void MixxxMainWindow::finalize() {
     delete m_pShowPreviewDeck;
     delete m_pShowEffects;
     delete m_pShowCoverArt;
-    delete m_pNumAuxiliaries;
     delete m_pNumDecks;
 
     // Check for leaked ControlObjects and give warnings.
@@ -1179,8 +1148,9 @@ void MixxxMainWindow::initActions() {
             binding = tr("Ctrl+i");
             break;
         default:
-            qCritical() << "Programming error: bindings need to be defined for "
-                        "vinyl control enabling";
+            // More bindings need to be defined if you increment
+            // kMaximumVinylControlInputs.
+            DEBUG_ASSERT(false);
         }
 
         vc_checkbox->setShortcut(
@@ -1429,10 +1399,7 @@ void MixxxMainWindow::initActions() {
     connect(m_TalkoverMapper, SIGNAL(mapped(int)),
             this, SLOT(slotTalkoverChanged(int)));
     for (int i = 0; i < kMicrophoneCount; ++i) {
-        QString group("[Microphone]");
-        if (i > 0) {
-            group = QString("[Microphone%1]").arg(i + 1);
-        }
+        QString group = PlayerManager::groupForMicrophone(i);
         ControlObjectSlave* talkover_button = new ControlObjectSlave(
                 group, "talkover");
         m_TalkoverMapper->setMapping(talkover_button, i);

@@ -23,7 +23,7 @@
 #include <QLocale>
 #include <QDesktopWidget>
 
-#include "basetrackplayer.h"
+#include "mixer/basetrackplayer.h"
 #include "dlgprefcontrols.h"
 #include "configobject.h"
 #include "controlobject.h"
@@ -33,7 +33,7 @@
 #include "engine/ratecontrol.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "controlobject.h"
 #include "mixxx.h"
 #include "defs_urls.h"

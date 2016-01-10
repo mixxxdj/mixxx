@@ -1,4 +1,4 @@
-#include "deck.h"
+#include "mixer/deck.h"
 
 Deck::Deck(QObject* pParent,
            ConfigObject<ConfigValue>* pConfig,

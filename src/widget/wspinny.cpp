@@ -7,7 +7,7 @@
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "library/coverartcache.h"
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 #include "util/dnd.h"
 #include "util/math.h"
 #include "visualplayposition.h"

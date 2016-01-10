@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "basetrackplayer.h"
+#include "mixer/basetrackplayer.h"
 
 class Deck : public BaseTrackPlayerImpl {
     Q_OBJECT
