@@ -811,7 +811,7 @@ QScriptValue ControllerEngine::connectControl(
             return QScriptValue(false);
         } else {
             // Do not allow multiple connections to named functions
-            QHash<ConfigKey, ControllerEngineConnection>::iterator i =
+            QHash<ConfigKey, ControllerEngineConnection>::const_iterator i =
                     m_connectedControls.find(key);
             if (i != m_connectedControls.end()) {
                 // Return a wrapper to the conn
