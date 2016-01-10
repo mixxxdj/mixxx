@@ -356,7 +356,7 @@ class TrackInfoObject : public QObject {
     // Number of channels
     int m_iChannels;
     // Track rating
-    int m_Rating;
+    int m_iRating;
     // Bitrate, number of kilobits per second of audio in the track
     int m_iBitrate;
     // Replay Gain volume

@@ -39,10 +39,10 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iSampleRate = 0;
+    m_iRating = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dateAdded = QDateTime::currentDateTime();
-    m_Rating = 0;
 
     // Parse the metadata from file. This is not a quick operation!
     m_bHeaderParsed = false;
@@ -857,13 +857,13 @@ bool TrackInfoObject::isDirty() {
 
 int TrackInfoObject::getRating() const {
     QMutexLocker lock(&m_qMutex);
-    return m_Rating;
+    return m_iRating;
 }
 
 void TrackInfoObject::setRating (int rating) {
     QMutexLocker lock(&m_qMutex);
-    if (rating != m_Rating) {
-        m_Rating = rating;
+    if (rating != m_iRating) {
+        m_iRating = rating;
         setDirty(true);
     }
 }
