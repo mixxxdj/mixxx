@@ -21,6 +21,20 @@
 #include "util/xml.h"
 
 
+namespace {
+
+template<typename T>
+inline bool modifyFieldValue(T* pField, const T& value) {
+    if (*pField != value) {
+        *pField = value;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+} // anonymous namespace
+
 TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
                                  SecurityTokenPointer pToken,
                                  bool parseHeader, bool parseCoverArt)
@@ -45,7 +59,6 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
     m_dateAdded = QDateTime::currentDateTime();
 
     // Parse the metadata from file. This is not a quick operation!
-    m_bHeaderParsed = false;
     if (parseHeader) {
         parse(parseCoverArt);
     }
@@ -385,7 +398,7 @@ void TrackInfoObject::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats
         }
     }
 
-    setDirtyAndUnlock(pLock, true);
+    markDirtyAndUnlock(pLock);
     emit(bpmUpdated(bpmValue));
     emit(beatsUpdated());
 }
@@ -410,8 +423,7 @@ bool TrackInfoObject::getHeaderParsed()  const {
 
 void TrackInfoObject::setHeaderParsed(bool parsed) {
     QMutexLocker lock(&m_qMutex);
-    if (m_bHeaderParsed != parsed) {
-        m_bHeaderParsed = parsed;
+    if (modifyFieldValue(&m_bHeaderParsed, parsed)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -599,8 +611,7 @@ PlayCounter TrackInfoObject::getPlayCounter() const {
 
 void TrackInfoObject::setPlayCounter(const PlayCounter& playCounter) {
     QMutexLocker lock(&m_qMutex);
-    if (m_playCounter != playCounter) {
-        m_playCounter = playCounter;
+    if (modifyFieldValue(&m_playCounter, playCounter)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -609,8 +620,7 @@ void TrackInfoObject::updatePlayCounter(bool bPlayed) {
     QMutexLocker lock(&m_qMutex);
     PlayCounter playCounter(m_playCounter);
     playCounter.setPlayedAndUpdateTimesPlayed(bPlayed);
-    if (m_playCounter != playCounter) {
-        m_playCounter = playCounter;
+    if (modifyFieldValue(&m_playCounter, playCounter)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -635,16 +645,14 @@ QString TrackInfoObject::getType() const {
 
 void TrackInfoObject::setType(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (s != m_sType) {
-        m_sType = s;
+    if (modifyFieldValue(&m_sType, s)) {
         markDirtyAndUnlock(&lock);
     }
 }
 
 void TrackInfoObject::setSampleRate(int iSampleRate) {
     QMutexLocker lock(&m_qMutex);
-    if (m_iSampleRate != iSampleRate) {
-        m_iSampleRate = iSampleRate;
+    if (modifyFieldValue(&m_iSampleRate, iSampleRate)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -656,8 +664,7 @@ int TrackInfoObject::getSampleRate() const {
 
 void TrackInfoObject::setChannels(int iChannels) {
     QMutexLocker lock(&m_qMutex);
-    if (m_iChannels != iChannels) {
-        m_iChannels = iChannels;
+    if (modifyFieldValue(&m_iChannels, iChannels)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -676,10 +683,9 @@ QString TrackInfoObject::getBitrateText() const {
     return QString("%1").arg(getBitrate());
 }
 
-void TrackInfoObject::setBitrate(int i) {
+void TrackInfoObject::setBitrate(int iBitrate) {
     QMutexLocker lock(&m_qMutex);
-    if (m_iBitrate != i) {
-        m_iBitrate = i;
+    if (modifyFieldValue(&m_iBitrate, iBitrate)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -764,8 +770,7 @@ int TrackInfoObject::getAnalyzerProgress() const {
 
 void TrackInfoObject::setCuePoint(float cue) {
     QMutexLocker lock(&m_qMutex);
-    if (m_fCuePoint != cue) {
-        m_fCuePoint = cue;
+    if (modifyFieldValue(&m_fCuePoint, cue)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -776,8 +781,7 @@ float TrackInfoObject::getCuePoint() {
 }
 
 void TrackInfoObject::slotCueUpdated() {
-    QMutexLocker lock(&m_qMutex);
-    markDirtyAndUnlock(&lock);
+    markDirty();
     emit(cuesUpdated());
 }
 
@@ -841,6 +845,8 @@ bool TrackInfoObject::markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
 void TrackInfoObject::setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
    const bool dirtyChanged = m_bDirty != bDirty;
     m_bDirty = bDirty;
+
+    // Unlock before emitting any signals!
     pLock->unlock();
 
     if (dirtyChanged) {
@@ -868,15 +874,13 @@ int TrackInfoObject::getRating() const {
 
 void TrackInfoObject::setRating (int rating) {
     QMutexLocker lock(&m_qMutex);
-    if (rating != m_iRating) {
-        m_iRating = rating;
+    if (modifyFieldValue(&m_iRating, rating)) {
         markDirtyAndUnlock(&lock);
     }
 }
 
 void TrackInfoObject::setKeys(const Keys& keys) {
     QMutexLocker lock(&m_qMutex);
-    markDirtyAndUnlock(&lock);
     setKeysAndUnlock(&lock, keys);
 }
 
@@ -884,7 +888,7 @@ void TrackInfoObject::setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys) {
     m_keys = keys;
     // New key might be INVALID. We don't care.
     mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
-    setDirtyAndUnlock(pLock, true);
+    markDirtyAndUnlock(pLock);
     emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
     emit(keysUpdated());
 }
@@ -962,10 +966,9 @@ CoverInfo TrackInfoObject::getCoverInfo() const {
     return m_coverArt.info;
 }
 
-void TrackInfoObject::setCoverArt(const CoverArt& cover) {
+void TrackInfoObject::setCoverArt(const CoverArt& coverArt) {
     QMutexLocker lock(&m_qMutex);
-    if (cover != m_coverArt) {
-        m_coverArt = cover;
+    if (modifyFieldValue(&m_coverArt, coverArt)) {
         markDirtyAndUnlock(&lock);
         emit(coverArtUpdated());
     }
