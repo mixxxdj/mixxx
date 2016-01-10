@@ -5,7 +5,7 @@
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
 #include "engine/sync/enginesync.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 EngineControl::EngineControl(QString group,
                              ConfigObject<ConfigValue>* _config)

@@ -13,8 +13,8 @@
 #include "library/bpmdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "library/queryutil.h"
-#include "playermanager.h"
-#include "playerinfo.h"
+#include "mixer/playermanager.h"
+#include "mixer/playerinfo.h"
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
 #include "util/time.h"
@@ -562,7 +562,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = Time::formatSeconds(duration, false);
+                    value = Time::formatSeconds(duration);
                 } else {
                     value = QString();
                 }

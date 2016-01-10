@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.12+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.0.0+">
     <info>
         <name>Novation Launchpad Mini</name>
         <author>marczis</author>

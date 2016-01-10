@@ -17,8 +17,8 @@
 #include "controlobjectslave.h"
 
 #include "mixxxkeyboard.h"
-#include "playermanager.h"
-#include "basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "mixer/basetrackplayer.h"
 #include "library/library.h"
 #include "util/xml.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -2093,5 +2093,3 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget, const QString&
 QString LegacySkinParser::parseLaunchImageStyle(QDomNode node) {
     return m_pContext->selectString(node, "LaunchImageStyle");
 }
-
-

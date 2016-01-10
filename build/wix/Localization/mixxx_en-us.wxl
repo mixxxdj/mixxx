@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" Codepage="1252" 
+                 xmlns="http://schemas.microsoft.com/wix/2006/localization">
+   <!-- This contains the LangID and should be translated to reflect the correct LangID.
+        Supported language and codepage codes can be found here: 
+        http://www.science.co.il/Language/Locale-codes.asp -->
+   <String Id="Language">1033</String>         
+ 
+   <!-- Programm informations -->
+   <String Id="ApplicationName">Mixxx</String>
+   <String Id="ManufacturerName">Mixxx</String>
+   <String Id="ManufacturerFullName">The Mixxx Development Team</String>
+   <String Id="ProductDescription">Open-source Digital DJ software</String>
+   <String Id="Comments">Installs Mixxx</String>
+ 
+   <!-- Error messages -->
+   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
+   <String Id="OS2Old">This product requires Windows XP or above.</String>
+   <String Id="NewerInstalled">The same or a newer version of this product is already installed.</String>
+   <String Id="x64VersionRequired">You need to install the 64-bit version of this product on 64-bit Windows.</String>
+   <String Id="x86VersionRequired">You need to install the 32-bit version of this product on 32-bit Windows.</String>
+   <String Id="x86VersionWarning">You are about to install the 32-bit version on a 64-bit operating system.&#13;&#10;We recommend using the 64-bit version for better performance.&#13;&#10;You can download the 64-bit installation package from http://mixxx.org/download/</String>
+   <String Id="XPWarning">You are installing Mixxx on an outdated operating system. Some functions may not work well or at all. We recommend upgrading your operating system.</String>
+   <String Id="bitWidthMismatch32">You are about to install the 32-bit version but a 64-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 64-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
+   <String Id="bitWidthMismatch64">You are about to install the 64-bit version but a 32-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 32-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
+   <String Id="OlderVersionFound">An older version of Mixxx has been detected. As we changed installer, we can not smoothly upgrade. Please uninstall older version before installing this one.</String>
+
+   <!-- Custom Warning Dialog -->
+   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Warning</String>
+ 
+   <!-- Features translations --> 
+   <String Id="FeatureCompleteDescription">The complete package.</String>
+   <String Id="FeatureMainProgramTitle">Core application</String>
+   <String Id="FeatureMainProgramDescription">The core Mixxx application including controller presets.</String>
+   <String Id="FeatureDesktopShortcutTitle">Desktop Shortcut</String>
+   <String Id="FeatureDesktopShortcutDescription">Add a shortcut to Mixxx on your desktop</String>
+   <String Id="FeatureManualTitle">User Manual</String>
+   <String Id="FeatureManualDescription">The Mixxx user manual in PDF form, also available at http://mixxx.org/manual/</String>
+   <String Id="FeatureTranslationsTitle">Translations</String>
+   <String Id="FeatureTranslationsDescription">Resource files that allow Mixxx to display in alternate languages, other than US english</String>
+ 
+</WixLocalization>

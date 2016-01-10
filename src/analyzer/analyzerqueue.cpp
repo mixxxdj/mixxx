@@ -5,14 +5,15 @@
 #include <QtDebug>
 #include <QMutexLocker>
 
+#ifdef __VAMP__
 #include "analyzer/analyzerbeats.h"
 #include "analyzer/analyzerkey.h"
+#include "analyzer/vamp/vampanalyzer.h"
+#endif
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerwaveform.h"
-#include "analyzer/vamp/vampanalyzer.h"
 #include "library/trackcollection.h"
-#include "playerinfo.h"
-#include "playerinfo.h"
+#include "mixer/playerinfo.h"
 #include "soundsourceproxy.h"
 #include "trackinfoobject.h"
 #include "util/compatibility.h"
@@ -20,7 +21,7 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
-// Measured in 0.1%
+// Measured in 0.1%,
 // 0 for no progress during finalize
 // 1 to display the text "finalizing"
 // 100 for 10% step after finalize
@@ -439,9 +440,11 @@ AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
 
     ret->addAnalyzer(new AnalyzerWaveform(pConfig));
     ret->addAnalyzer(new AnalyzerGain(pConfig));
+#ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));
     ret->addAnalyzer(new AnalyzerKey(pConfig));
+#endif
 
     ret->start(QThread::LowPriority);
     return ret;
@@ -453,9 +456,11 @@ AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
     ret->addAnalyzer(new AnalyzerGain(pConfig));
+#ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));
     ret->addAnalyzer(new AnalyzerKey(pConfig));
+#endif
 
     ret->start(QThread::LowPriority);
     return ret;

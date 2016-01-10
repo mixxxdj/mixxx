@@ -8,7 +8,7 @@
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
 #include "library/previewbuttondelegate.h"
-#include "playerinfo.h"
+#include "mixer/playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
 #include "track/trackmetadatataglib.h"

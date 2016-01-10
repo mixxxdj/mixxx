@@ -9,8 +9,8 @@
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "controllinpotmeter.h"
-#include "playermanager.h"
-#include "basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "mixer/basetrackplayer.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -1149,4 +1149,3 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     // Signal that the request to load pTrack succeeded.
     deck1.fakeTrackLoadedEvent(pTrack);
  }
-

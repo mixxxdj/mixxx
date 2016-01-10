@@ -107,6 +107,7 @@ void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
     setGrouping(trackMetadata.getGrouping());
     setComment(trackMetadata.getComment());
     setTrackNumber(trackMetadata.getTrackNumber());
+    setTrackTotal(trackMetadata.getTrackTotal());
     setChannels(trackMetadata.getChannels());
     setSampleRate(trackMetadata.getSampleRate());
     setDuration(trackMetadata.getDuration());
@@ -143,6 +144,7 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
     pTrackMetadata->setGrouping(getGrouping());
     pTrackMetadata->setComment(getComment());
     pTrackMetadata->setTrackNumber(getTrackNumber());
+    pTrackMetadata->setTrackTotal(getTrackTotal());
     pTrackMetadata->setChannels(getChannels());
     pTrackMetadata->setSampleRate(getSampleRate());
     pTrackMetadata->setDuration(getDuration());
@@ -219,7 +221,7 @@ QString TrackInfoObject::getDurationText() const {
     int iDuration = m_iDuration;
     lock.unlock();
 
-    return Time::formatSeconds(iDuration, false);
+    return Time::formatSeconds(iDuration);
 }
 
 QString TrackInfoObject::getLocation() const {
@@ -574,11 +576,25 @@ QString TrackInfoObject::getTrackNumber()  const {
     return m_sTrackNumber;
 }
 
+QString TrackInfoObject::getTrackTotal()  const {
+    QMutexLocker lock(&m_qMutex);
+    return m_sTrackTotal;
+}
+
 void TrackInfoObject::setTrackNumber(const QString& s) {
     QMutexLocker lock(&m_qMutex);
     QString tn = s.trimmed();
     if (m_sTrackNumber != tn) {
         m_sTrackNumber = tn;
+        setDirty(true);
+    }
+}
+
+void TrackInfoObject::setTrackTotal(const QString& s) {
+    QMutexLocker lock(&m_qMutex);
+    QString tn = s.trimmed();
+    if (m_sTrackTotal != tn) {
+        m_sTrackTotal = tn;
         setDirty(true);
     }
 }

@@ -219,7 +219,7 @@ void DlgAutoDJ::updateSelectionInfo() {
     QString label;
 
     if (!indices.isEmpty()) {
-        label.append(Time::formatSeconds(duration, false));
+        label.append(Time::formatSeconds(duration));
         label.append(QString(" (%1)").arg(indices.size()));           
     }
 

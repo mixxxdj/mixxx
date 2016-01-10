@@ -23,7 +23,7 @@
 #include "engine/enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/timer.h"
