@@ -1613,8 +1613,7 @@ void WTrackTableView::slotClearWaveform() {
     foreach (QModelIndex index, selectedIndices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->setWaveform(WaveformPointer());
-            pTrack->setWaveformSummary(WaveformPointer());
+            pTrack->clearWaveform();
         }
     }
 }

@@ -325,17 +325,21 @@ void AnalysisDao::saveTrackAnalyses(TrackInfoObject* pTrack) {
 
     TrackId trackId(pTrack->getId());
 
-    // Empty waveform signalize that waveforms for the track should be deleted.
-    if (!pWaveform || pWaveform->getDataSize() == 0 ||
-        !pWaveSummary || pWaveSummary->getDataSize() == 0) {
+    // Delete waveform analysis if track was requested to have its waveform cleared.
+    if (pTrack->isClearWaveformRequested()) {
         bool success = deleteAnalysesForTrack(trackId);
         qDebug() << (success ? "Successfully deleted" : "Failed to delete")
                  << "waveform analysis for trackId" << trackId;
+        if (success) {
+            // Clear flag
+            pTrack->setClearWaveformRequested(false);
+        }
         return;
     }
 
-    // Don't try to save non-dirty waveforms.
-    if (!pWaveform->isDirty() || !pWaveSummary->isDirty()) {
+    // Don't try to save invalid or non-dirty waveforms.
+    if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||
+        !pWaveSummary || pWaveSummary->getDataSize() == 0 || !pWaveSummary->isDirty()) {
         return;
     }
 

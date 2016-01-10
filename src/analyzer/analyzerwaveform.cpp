@@ -110,12 +110,20 @@ bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSam
 }
 
 bool AnalyzerWaveform::loadStored(TrackPointer tio) const {
+    TrackId trackId = tio->getId();
+
+    if (tio->isClearWaveformRequested()) {
+        if (m_analysisDao->deleteAnalysesForTrack(trackId)) {
+            tio->setClearWaveformRequested(false);
+        }
+        return false;
+    }
+
     ConstWaveformPointer pTrackWaveform = tio->getWaveform();
     ConstWaveformPointer pTrackWaveformSummary = tio->getWaveformSummary();
     ConstWaveformPointer pLoadedTrackWaveform;
     ConstWaveformPointer pLoadedTrackWaveformSummary;
 
-    TrackId trackId = tio->getId();
     bool missingWaveform = pTrackWaveform.isNull();
     bool missingWavesummary = pTrackWaveformSummary.isNull();
 

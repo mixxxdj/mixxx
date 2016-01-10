@@ -35,6 +35,7 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
     m_bDirty = false;
     m_bBpmLocked = false;
     m_bHeaderParsed = false;
+    m_bClearWaveformRequested = false;
 
     m_iDuration = 0;
     m_iBitrate = 0;
@@ -745,6 +746,20 @@ void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
     setDirty(true);
     lock.unlock();
     emit(waveformSummaryUpdated());
+}
+
+bool TrackInfoObject::isClearWaveformRequested() const {
+    return m_bClearWaveformRequested;
+}
+
+void TrackInfoObject::setClearWaveformRequested(bool requested) {
+    m_bClearWaveformRequested = requested;
+}
+
+void TrackInfoObject::clearWaveform() {
+    setClearWaveformRequested(true);
+    setWaveform(WaveformPointer());
+    setWaveformSummary(WaveformPointer());
 }
 
 void TrackInfoObject::setAnalyzerProgress(int progress) {
