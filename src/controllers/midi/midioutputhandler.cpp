@@ -19,8 +19,7 @@ MidiOutputHandler::MidiOutputHandler(MidiController* controller,
           m_mapping(mapping),
           m_cot(mapping.control),
           m_lastVal(-1) { // -1 = virgin
-    connect(&m_cot, SIGNAL(valueChanged(double)),
-            this, SLOT(controlChanged(double)));
+    m_cos.connectValueChanged(SLOT(controlChanged(double)));
 }
 
 MidiOutputHandler::~MidiOutputHandler() {
@@ -30,16 +29,16 @@ MidiOutputHandler::~MidiOutputHandler() {
 }
 
 bool MidiOutputHandler::validate() {
-    return m_cot.valid();
+    return m_cos.valid();
 }
 
 void MidiOutputHandler::update() {
-    controlChanged(m_cot.get());
+    controlChanged(m_cos.get());
 }
 
 void MidiOutputHandler::controlChanged(double value) {
     // Don't update with out of date messages.
-    value = m_cot.get();
+    value = m_cos.get();
 
     unsigned char byte3 = m_mapping.output.off;
     if (value >= m_mapping.output.min && value <= m_mapping.output.max) {
