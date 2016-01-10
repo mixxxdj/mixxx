@@ -1179,8 +1179,9 @@ void MixxxMainWindow::initActions() {
             binding = tr("Ctrl+i");
             break;
         default:
-            qCritical() << "Programming error: bindings need to be defined for "
-                        "vinyl control enabling";
+            // More bindings need to be defined if you increment
+            // kMaximumVinylControlInputs.
+            DEBUG_ASSERT(false);
         }
 
         vc_checkbox->setShortcut(
