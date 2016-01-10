@@ -19,7 +19,7 @@ class ControlObjectScript : public ControlObjectSlave {
             const ControllerEngineConnection& conn);
 
     // Called from update();
-    virtual void emitValueChanged() {
+    void emitValueChanged() override {
         emit(trigger(get(), this));
     }
 
