@@ -757,7 +757,7 @@ void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
 
 void TrackInfoObject::setAnalyzerProgress(int progress) {
     // progress in 0 .. 1000. QAtomicInt so no need for lock.
-	int oldProgress = m_analyzerProgress.fetchAndStoreAcquire(progress);
+    int oldProgress = m_analyzerProgress.fetchAndStoreAcquire(progress);
     if (progress != oldProgress) {
         emit(analyzerProgress(progress));
     }
