@@ -241,21 +241,27 @@ class TrackInfoObject : public QObject {
     // Set the track's Beats
     void setBeats(BeatsPointer beats);
 
-    void setKeys(Keys keys);
-    const Keys& getKeys() const;
-    double getNumericKey() const;
+    void resetKeys() {
+        setKeys(Keys());
+    }
+    void setKeys(const Keys& keys);
+    Keys getKeys() const;
+    void setKey(mixxx::track::io::key::ChromaticKey key,
+                mixxx::track::io::key::Source keySource);
+    void setKeyText(const QString& keyText,
+                    mixxx::track::io::key::Source keySource = mixxx::track::io::key::USER);
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
-    void setKey(mixxx::track::io::key::ChromaticKey key,
-                mixxx::track::io::key::Source source);
-    void setKeyText(QString key,
-                    mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
     void setCoverInfo(const CoverInfo& cover);
     CoverInfo getCoverInfo() const;
 
     void setCoverArt(const CoverArt& cover);
     CoverArt getCoverArt() const;
+
+    // markDirty(false) = current value of dirty flag (unchanged)
+    // markDirty(true) = true = new value of dirty flag
+    bool markDirty(bool bDirty = true);
 
     // Called when the shared pointer reference count for a library TrackPointer
     // drops to zero.
@@ -292,11 +298,16 @@ class TrackInfoObject : public QObject {
     void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
     void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
 
-    // Set whether the TIO is dirty not. This should never be called except by
-    // TIO local methods or the TrackDAO.
-    void setDirty(bool bDirty);
+    void resetDirty();
+
+    // Set whether the TIO is dirty or not and unlock before emitting
+    // any signals. This must only be called from member functions
+    // while the TIO is locked.
+    bool markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
+    void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
+    void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
 
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
