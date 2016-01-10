@@ -3,7 +3,7 @@
     <info>
         <name>Reloop Jockey 3 ME</name>
         <author>Chris2000SP</author>
-        <description>v1.0.0 Mapping for 2.0.x</description>
+        <description>v1.0.1 Mapping for 2.0.x</description>
     </info>
     <controller id="Reloop">
         <scriptfiles>
@@ -777,47 +777,61 @@
             <!-- Mixer Section -->
             <control>
                 <group>[Channel1]</group>
-                <key>pregain</key>
-                <status>0xB0</status>
-                <midino>0x2D</midino>
+                <key>Jockey3ME.DeckSwitch</key>
+                <status>0x90</status>
+                <midino>0x3C</midino>
                 <options>
-                    <normal/>
-                </options>
-            </control>
-            <control><!-- EQ Low -->
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter1</key>
-                <status>0xB0</status>
-                <midino>0x30</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control><!-- EQ Mid -->
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter2</key>
-                <status>0xB0</status>
-                <midino>0x2F</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control><!-- EQ High -->
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter3</key>
-                <status>0xB0</status>
-                <midino>0x2E</midino>
-                <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>volume</key>
+                <key>Jockey3ME.MixerVol</key>
+                <description>Pregain</description>
+                <status>0xB0</status>
+                <midino>0x2D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>Jockey3ME.EQ</key>
+                <description>High EQ</description>
+                <status>0xB0</status>
+                <midino>0x2E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>Jockey3ME.EQ</key>
+                <description>Mid EQ</description>
+                <status>0xB0</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>Jockey3ME.EQ</key>
+                <description>Low EQ</description>
+                <status>0xB0</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Jockey3ME.MixerVol</key>
+                <description>Volume Fader</description>
                 <status>0xB0</status>
                 <midino>0x31</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1129,47 +1143,59 @@
             <!-- Mixer Section -->
             <control>
                 <group>[Channel2]</group>
-                <key>pregain</key>
-                <status>0xB1</status>
-                <midino>0x6C</midino>
+                <key>Jockey3ME.DeckSwitch</key>
+                <status>0x90</status>
+                <midino>0x3F</midino>
                 <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter1</key>
-                <status>0xB1</status>
-                <midino>0x6F</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter2</key>
-                <status>0xB1</status>
-                <midino>0x6E</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter3</key>
-                <status>0xB1</status>
-                <midino>0x6D</midino>
-                <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>volume</key>
-                <status>0xB1</status>
+                <key>Jockey3ME.MixerVol</key>
+                <status>0xB0</status>
+                <midino>0x6C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>Jockey3ME.EQ</key>
+                <description>EQ High</description>
+                <status>0xB0</status>
+                <midino>0x6D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>Jockey3ME.EQ</key>
+                <description>EQ Mid</description>
+                <status>0xB0</status>
+                <midino>0x6E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>Jockey3ME.EQ</key>
+                <description>EQ Low</description>
+                <status>0xB0</status>
+                <midino>0x6F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Jockey3ME.MixerVol</key>
+                <status>0xB0</status>
                 <midino>0x70</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1481,51 +1507,6 @@
             <!-- Mixer Section -->
             <control>
                 <group>[Channel3]</group>
-                <key>pregain</key>
-                <status>0xB2</status>
-                <midino>0x6C</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter1</key>
-                <status>0xB2</status>
-                <midino>0x6F</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter2</key>
-                <status>0xB2</status>
-                <midino>0x6E</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter3</key>
-                <status>0xB2</status>
-                <midino>0x6D</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
-                <key>volume</key>
-                <status>0xB2</status>
-                <midino>0x70</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
                 <key>pfl</key>
                 <status>0x92</status>
                 <midino>0x1C</midino>
@@ -1831,51 +1812,6 @@
                 </options>
             </control>
             <!-- Mixer Section -->
-            <control>
-                <group>[Channel4]</group>
-                <key>pregain</key>
-                <status>0xB3</status>
-                <midino>0x6C</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter1</key>
-                <status>0xB3</status>
-                <midino>0x6F</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter2</key>
-                <status>0xB3</status>
-                <midino>0x6E</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter3</key>
-                <status>0xB3</status>
-                <midino>0x6D</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
-                <key>volume</key>
-                <status>0xB3</status>
-                <midino>0x70</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
             <control>
                 <group>[Channel4]</group>
                 <key>pfl</key>
