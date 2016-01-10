@@ -1,7 +1,8 @@
 #include "movinginterquartilemean.h"
 
 MovingInterquartileMean::MovingInterquartileMean(const unsigned int listMaxSize)
-        : m_iListMaxSize(listMaxSize),
+        : m_dMean(0.0),
+          m_iListMaxSize(listMaxSize),
           m_bChanged(true) {
 }
 

@@ -43,6 +43,7 @@ available_features = [features.Mad,
                       features.Shoutcast,
                       features.Opus,
                       features.Profiling,
+                      features.BuildTime,
                       features.QDebug,
                       features.Verbose,
                       features.Optimize,
@@ -61,6 +62,9 @@ available_features = [features.Mad,
                       features.AsmLib,
                       features.IPod,
                       features.FFMPEG,
+
+		     # Experimental features
+		     features.OpenGLES
                       ]
 
 build = mixxx.MixxxBuild(target, machine, build_type,

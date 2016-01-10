@@ -195,6 +195,9 @@ Section "Mixxx (required)" SecMixxx
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  ; If PDB files are present bundle them. For release builds we will not copy
+  ; PDBs into the distXX folder so they won't get bundled.
+  File /nonfatal "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.pdb"
 
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
@@ -206,22 +209,27 @@ Section "Mixxx (required)" SecMixxx
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\promo\${PRODUCT_VERSION}\*"
 
   SetOutPath $INSTDIR\sqldrivers
+  ; Copies both DLLs and PDBs.
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
 
   SetOutPath $INSTDIR\imageformats
+  ; Copies both DLLs and PDBs.
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\imageformats\*"
 
   SetOutPath $INSTDIR\fonts
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\fonts\*"
 
   SetOutPath $INSTDIR\plugins
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\*.dll"
+  ; Copies both DLLs and PDBs.
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\*"
 
   SetOutPath $INSTDIR\plugins\soundsource
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*.dll"
+  ; Copies both DLLs and PDBs.
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*"
 
   SetOutPath $INSTDIR\plugins\vamp
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*.dll"
+  ; Copies both DLLs and PDBs.
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*"
 
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\*.kbd.cfg"
@@ -294,12 +302,12 @@ SectionEnd
 
 Function un.onUninstSuccess
   HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer."
+  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) was successfully removed from your computer." /SD IDOK
 FunctionEnd
 
 Function un.onInit
     !insertmacro MUI_UNGETLANGUAGE
-    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
     Abort
     !insertmacro MULTIUSER_UNINIT
 FunctionEnd
@@ -310,15 +318,16 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
+  Delete $INSTDIR\*.pdb
   Delete $INSTDIR\*.manifest
   Delete $INSTDIR\UninstallMixxx.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
   Delete $INSTDIR\COPYING
-  Delete $INSTDIR\sqldrivers\*.dll
+  Delete $INSTDIR\sqldrivers\*
   RMDir "$INSTDIR\sqldrivers"
-  Delete $INSTDIR\imageformats\*.dll
+  Delete $INSTDIR\imageformats\*
   RMDir "$INSTDIR\imageformats"
   Delete $INSTDIR\fonts\*
   RMDir "$INSTDIR\fonts"
@@ -361,6 +370,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\common-controller-scripts.js"
   Delete "$INSTDIR\controllers\common-hid-devices.js"
   Delete "$INSTDIR\controllers\common-hid-packet-parser.js"
+  Delete "$INSTDIR\controllers\Denon DN HS5500.midi.xml"
   Delete "$INSTDIR\controllers\Denon DN SC2000.midi.xml"
   Delete "$INSTDIR\controllers\Denon MC3000.midi.xml"
   Delete "$INSTDIR\controllers\Denon-DN-HS5500-scripts.js"
@@ -381,11 +391,15 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\DJ-Tech-Mixer-One-scripts.js"
   Delete "$INSTDIR\controllers\DJTechTools MIDI Fighter.midi.xml"
   Delete "$INSTDIR\controllers\DJTechTools-MIDIFighter-scripts.js"
-  Delete "$INSTDIR\controllers\DN-HS5500_MIDI_1.midi.xml"
   Delete "$INSTDIR\controllers\EKS Otus.hid.xml"
   Delete "$INSTDIR\controllers\EKS-Otus.js"
+  Delete "$INSTDIR\controllers\Electrix Tweaker.midi.xml"
+  Delete "$INSTDIR\controllers\Electrix-Tweaker-scripts.js"
   Delete "$INSTDIR\controllers\Evolution_Xsession.midi.xml"
   Delete "$INSTDIR\controllers\FaderFoxDJ2.midi.xml"
+  Delete "$INSTDIR\controllers\Gemini CDMP-7000 L audio.midi.xml"
+  Delete "$INSTDIR\controllers\Gemini CDMP-7000 R audio.midi.xml"
+  Delete "$INSTDIR\controllers\Gemini-CDMP-7000-scripts.js"
   Delete "$INSTDIR\controllers\Gemini FirstMix.midi.xml"
   Delete "$INSTDIR\controllers\Gemini-FirstMix-scripts.js"
   Delete "$INSTDIR\controllers\Hercules DJ Console 4-Mx.midi.xml"
@@ -406,6 +420,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Hercules DJ Control MP3.hid.xml"
   Delete "$INSTDIR\controllers\Hercules DJ Control MP3.midi.xml"
   Delete "$INSTDIR\controllers\Hercules DJ Control Steel.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules-DJ-Console-4-Mx-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk1-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk2-hid-scripts.js"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk2-scripts.js"
@@ -436,6 +451,8 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\M-Audio_Xponent.midi.xml"
   Delete "$INSTDIR\controllers\M-Audio_Xsession_pro.midi.xml"
   Delete "$INSTDIR\controllers\Midi-Keyboard.midi.xml"
+  Delete "$INSTDIR\controllers\Midi_for_light.midi.xml"
+  Delete "$INSTDIR\controllers\Midi_for_light-scripts.js"
   Delete "$INSTDIR\controllers\MidiTech-MidiControl.midi.xml"
   Delete "$INSTDIR\controllers\Mixman DM2 (Linux).js"
   Delete "$INSTDIR\controllers\Mixman DM2 (Linux).midi.xml"
@@ -480,6 +497,10 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Pioneer-CDJ-HID.js"
   Delete "$INSTDIR\controllers\Pioneer-DDJ-SB.midi.xml"
   Delete "$INSTDIR\controllers\Pioneer-DDJ-SB-scripts.js"
+  Delete "$INSTDIR\controllers\Pioneer-DDJ-SB2.midi.xml"
+  Delete "$INSTDIR\controllers\Pioneer-DDJ-SB2-scripts.js"
+  Delete "$INSTDIR\controllers\Reloop Beatpad.midi.xml"
+  Delete "$INSTDIR\controllers\Reloop-Beatpad-scripts.js"
   Delete "$INSTDIR\controllers\Reloop Digital Jockey 2 Controller Edition.midi.xml"
   Delete "$INSTDIR\controllers\Reloop Terminal Mix 2-4.js"
   Delete "$INSTDIR\controllers\Reloop Terminal Mix 2-4.midi.xml"
@@ -489,10 +510,12 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Stanton SCS.1d.midi.xml"
   Delete "$INSTDIR\controllers\Stanton SCS.1m.midi.xml"
   Delete "$INSTDIR\controllers\Stanton SCS.3d.midi.xml"
+  Delete "$INSTDIR\controllers\Stanton SCS.3d Alternate.midi.xml"
   Delete "$INSTDIR\controllers\Stanton SCS.3m.midi.xml"
   Delete "$INSTDIR\controllers\Stanton-SCS1d-scripts.js"
   Delete "$INSTDIR\controllers\Stanton-SCS1m-scripts.js"
   Delete "$INSTDIR\controllers\Stanton-SCS3d-scripts.js"
+  Delete "$INSTDIR\controllers\Stanton-SCS3d-alternate-scripts.js"
   Delete "$INSTDIR\controllers\Stanton-SCS3m-scripts.js"
   Delete "$INSTDIR\controllers\TrakProDJ iPad.midi.xml"
   Delete "$INSTDIR\controllers\TrakProDJ-iPad-scripts.js"
@@ -500,12 +523,16 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Traktor Kontrol X1.midi.xml"
   Delete "$INSTDIR\controllers\Traktor-Kontrol-F1-scripts.js"
   Delete "$INSTDIR\controllers\Traktor-Kontrol-X1.js"
+  Delete "$INSTDIR\controllers\Traktor Kontrol S4 MK2.hid.xml"
+  Delete "$INSTDIR\controllers\Traktor-Kontrol-S4-MK2-hid-scripts.js"
   Delete "$INSTDIR\controllers\us428.midi.xml"
   Delete "$INSTDIR\controllers\Vestax Spin.midi.xml"
   Delete "$INSTDIR\controllers\Vestax Typhoon.midi.xml"
   Delete "$INSTDIR\controllers\Vestax VCI-100-3DEX.midi.xml"
   Delete "$INSTDIR\controllers\Vestax VCI-100-hile.midi.xml"
   Delete "$INSTDIR\controllers\Vestax VCI-100.midi.xml"
+  Delete "$INSTDIR\controllers\Vestax VCI-100MKII.midi.xml"
+  Delete "$INSTDIR\controllers\Vestax-VCI-100MKII-scripts.js"
   Delete "$INSTDIR\controllers\Vestax VCI-300.midi.xml"
   Delete "$INSTDIR\controllers\Vestax VCI-400.midi.xml"
   Delete "$INSTDIR\controllers\Vestax-Spin-scripts.js"

@@ -23,7 +23,7 @@
 #include <QLocale>
 #include <QDesktopWidget>
 
-#include "basetrackplayer.h"
+#include "mixer/basetrackplayer.h"
 #include "dlgprefcontrols.h"
 #include "configobject.h"
 #include "controlobject.h"
@@ -33,7 +33,7 @@
 #include "engine/ratecontrol.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "controlobject.h"
 #include "mixxx.h"
 #include "defs_urls.h"
@@ -89,24 +89,37 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxRateDir, SIGNAL(activated(int)),
             this, SLOT(slotSetRateDir(int)));
 
-    // Set default range as stored in config file
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]", "RateRange"),ConfigValue(2));
-
     ComboBoxRateRange->clear();
-    ComboBoxRateRange->addItem(tr("6%"));
-    ComboBoxRateRange->addItem(tr("8% (Technics SL-1210)"));
-    ComboBoxRateRange->addItem(tr("10%"));
-    ComboBoxRateRange->addItem(tr("20%"));
-    ComboBoxRateRange->addItem(tr("30%"));
-    ComboBoxRateRange->addItem(tr("40%"));
-    ComboBoxRateRange->addItem(tr("50%"));
-    ComboBoxRateRange->addItem(tr("60%"));
-    ComboBoxRateRange->addItem(tr("70%"));
-    ComboBoxRateRange->addItem(tr("80%"));
-    ComboBoxRateRange->addItem(tr("90%"));
+    ComboBoxRateRange->addItem(tr("4%"), 4);
+    ComboBoxRateRange->addItem(tr("6% (semitone)"), 6);
+    ComboBoxRateRange->addItem(tr("8% (Technics SL-1210)"), 8);
+    ComboBoxRateRange->addItem(tr("10%"), 10);
+    ComboBoxRateRange->addItem(tr("16%"), 16);
+    ComboBoxRateRange->addItem(tr("24%"), 24);
+    ComboBoxRateRange->addItem(tr("50%"), 50);
+    ComboBoxRateRange->addItem(tr("90%"), 90);
     connect(ComboBoxRateRange, SIGNAL(activated(int)),
             this, SLOT(slotSetRateRange(int)));
+
+    // Set default range as stored in config file
+    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).length() == 0) {
+        // Fall back to old [Controls]RateRange
+        if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0) {
+            m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"), ConfigValue(8));
+        } else {
+            int oldIdx = m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
+            double oldRange = static_cast<double>(oldIdx-1) / 10.0;
+            if (oldIdx == 0) {
+                oldRange = 0.06;
+            }
+            if (oldIdx == 1) {
+                oldRange = 0.08;
+            }
+            m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),
+                           ConfigValue(static_cast<int>(oldRange * 100.)));
+            slotSetRateRangePercent(oldRange * 100.);
+        }
+    }
 
     ComboBoxKeylockMode->clear();
     ComboBoxKeylockMode->addItem(tr("Lock original key"));
@@ -224,14 +237,17 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     int cueDefaultValue = cueDefault.toInt();
 
     // Update combo box
-    ComboBoxCueDefault->addItem(tr("Mixxx mode"));
-    ComboBoxCueDefault->addItem(tr("Pioneer mode"));
-    ComboBoxCueDefault->addItem(tr("Denon mode"));
-    ComboBoxCueDefault->addItem(tr("Numark mode"));
-    ComboBoxCueDefault->setCurrentIndex(cueDefaultValue);
-
-    slotSetCueDefault(cueDefaultValue);
-    connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
+    // The itemData values are out of order to avoid breaking configurations
+    // when Mixxx mode (no blinking) was introduced.
+    ComboBoxCueDefault->addItem(tr("Mixxx mode"), 0);
+    ComboBoxCueDefault->addItem(tr("Mixxx mode (no blinking)"), 4);
+    ComboBoxCueDefault->addItem(tr("Pioneer mode"), 1);
+    ComboBoxCueDefault->addItem(tr("Denon mode"), 2);
+    ComboBoxCueDefault->addItem(tr("Numark mode"), 3);
+    const int cueDefaultIndex = cueDefaultIndexByData(cueDefaultValue);
+    ComboBoxCueDefault->setCurrentIndex(cueDefaultIndex);
+    slotSetCueDefault(cueDefaultIndex);
+    connect(ComboBoxCueDefault, SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
 
     // Cue recall
     ComboBoxSeekToCue->addItem(tr("On track load"));
@@ -378,18 +394,19 @@ void DlgPrefControls::slotUpdate() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    double idx = (10. * deck1RateRange) + 1;
-    if (deck1RateRange <= 0.07)
-        idx = 0.;
-    else if (deck1RateRange <= 0.09)
-        idx = 1.;
+    int idx = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
+    if (idx == -1) {
+        ComboBoxRateRange->addItem(QString::number(deck1RateRange * 100.).append("%"),
+                                   deck1RateRange * 100.);
+    }
 
-    ComboBoxRateRange->setCurrentIndex((int)idx);
+    ComboBoxRateRange->setCurrentIndex(idx);
 
-    if (deck1RateDir == 1)
+    if (deck1RateDir == 1) {
         ComboBoxRateDir->setCurrentIndex(0);
-    else
+    } else {
         ComboBoxRateDir->setCurrentIndex(1);
+    }
 
     ComboBoxKeylockMode->setCurrentIndex(m_keylockMode);
 
@@ -403,8 +420,8 @@ void DlgPrefControls::slotResetToDefaults() {
     // Up increases speed.
     ComboBoxRateDir->setCurrentIndex(0);
 
-    // 10% Rate Range
-    ComboBoxRateRange->setCurrentIndex(2);
+    // 8% Rate Range
+    ComboBoxRateRange->setCurrentIndex(ComboBoxRateRange->findData(8));
 
     // Don't load tracks into playing decks.
     ComboBoxAllowTrackLoadToPlayingDeck->setCurrentIndex(0);
@@ -451,17 +468,18 @@ void DlgPrefControls::slotSetLocale(int pos) {
 }
 
 void DlgPrefControls::slotSetRateRange(int pos) {
-    double range = static_cast<double>(pos-1) / 10.0;
-    if (pos == 0)
-        range = 0.06;
-    if (pos == 1)
-        range = 0.08;
+    slotSetRateRangePercent(ComboBoxRateRange->itemData(pos).toInt());
+}
 
-    qDebug() << "slotSetRateRange" << pos << range;
+
+void DlgPrefControls::slotSetRateRangePercent (int rateRangePercent) {
+    double rateRange = rateRangePercent / 100.;
+
+    qDebug() << "slotSetRateRangePercent" << rateRange;
 
     // Set rate range for every group
     foreach (ControlObjectThread* pControl, m_rateRangeControls) {
-        pControl->slotSet(range);
+        pControl->slotSet(rateRange);
     }
 
     // Reset rate for every group
@@ -500,14 +518,14 @@ void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
                    ConfigValue(ComboBoxAllowTrackLoadToPlayingDeck->currentIndex()));
 }
 
-void DlgPrefControls::slotSetCueDefault(int)
+void DlgPrefControls::slotSetCueDefault(int index)
 {
-    int cueIndex = ComboBoxCueDefault->currentIndex();
-    m_pConfig->set(ConfigKey("[Controls]", "CueDefault"), ConfigValue(cueIndex));
+    int cueMode = ComboBoxCueDefault->itemData(index).toInt();
+    m_pConfig->set(ConfigKey("[Controls]", "CueDefault"), ConfigValue(cueMode));
 
     // Set cue behavior for every group
     foreach (ControlObjectThread* pControl, m_cueControls) {
-        pControl->slotSet(cueIndex);
+        pControl->slotSet(cueMode);
     }
 }
 
@@ -609,14 +627,8 @@ void DlgPrefControls::slotApply() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    // Write rate range to config file
-    double idx = (10. * deck1RateRange) + 1;
-    if (deck1RateRange <= 0.07)
-        idx = 0.;
-    else if (deck1RateRange <= 0.09)
-        idx = 1.;
-
-    m_pConfig->set(ConfigKey("[Controls]", "RateRange"), ConfigValue((int)idx));
+    m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),
+                   ConfigValue(static_cast<int>(deck1RateRange * 100)));
 
     // Write rate direction to config file
     if (deck1RateDir == 1) {
@@ -692,7 +704,7 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
 
     m_iNumConfiguredDecks = numdecks;
     slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
-    slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt());
+    slotSetRateRangePercent(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).toInt());
 }
 
 void DlgPrefControls::slotNumSamplersChanged(double new_count) {
@@ -718,9 +730,20 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
 
     m_iNumConfiguredSamplers = numsamplers;
     slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
-    slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt());
+    slotSetRateRangePercent(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).toInt());
 }
 
 void DlgPrefControls::slotUpdateSpeedAutoReset(int i) {
     m_speedAutoReset = i;
+}
+
+int DlgPrefControls::cueDefaultIndexByData(int userData) const {
+    for (int i = 0; i < ComboBoxCueDefault->count(); ++i) {
+        if (ComboBoxCueDefault->itemData(i).toInt() == userData) {
+            return i;
+        }
+    }
+    qWarning() << "No default cue behavior found for value" << userData
+               << "returning default";
+    return 0;
 }

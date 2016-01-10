@@ -7,7 +7,7 @@
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "library/coverartcache.h"
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 #include "util/dnd.h"
 #include "util/math.h"
 #include "visualplayposition.h"
@@ -260,7 +260,7 @@ void WSpinny::slotTrackCoverArtUpdated() {
         CoverArtCache* pCache = CoverArtCache::instance();
         if (pCache != NULL) {
             // TODO(rryan): Don't use track id.
-            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId());
+            pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId().toInt());
         }
     }
 }
@@ -272,7 +272,7 @@ void WSpinny::slotCoverFound(const QObject* pRequestor, int requestReference,
     Q_UNUSED(fromCache);
 
     if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getId() == requestReference) {
+            m_loadedTrack->getId().toInt() == requestReference) {
         qDebug() << "WSpinny::slotCoverFound" << pRequestor << info
                  << pixmap.size();
         m_loadedCover = pixmap;
@@ -323,7 +323,8 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     // and draw the image at the corner.
     p.translate(width() / 2, height() / 2);
 
-    if (m_bGhostPlayback) {
+    bool paintGhost = m_bGhostPlayback && m_pGhostImage && !m_pGhostImage->isNull();
+    if (paintGhost) {
         p.save();
     }
 
@@ -344,7 +345,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
                     -(m_fgImageScaled.height() / 2), m_fgImageScaled);
     }
 
-    if (m_bGhostPlayback && m_pGhostImage && !m_pGhostImage->isNull()) {
+    if (paintGhost) {
         p.restore();
         p.save();
         p.rotate(m_fGhostAngle);

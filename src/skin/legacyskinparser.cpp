@@ -17,8 +17,8 @@
 #include "controlobjectslave.h"
 
 #include "mixxxkeyboard.h"
-#include "playermanager.h"
-#include "basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "mixer/basetrackplayer.h"
 #include "library/library.h"
 #include "util/xml.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -272,7 +272,7 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     QDomNode attributes_node = manifest_node.namedItem("attributes");
     if (!attributes_node.isNull() && attributes_node.isElement()) {
         QDomNodeList attribute_nodes = attributes_node.toElement().elementsByTagName("attribute");
-        for (unsigned int i = 0; i < attribute_nodes.length(); ++i) {
+        for (int i = 0; i < attribute_nodes.count(); ++i) {
             QDomNode attribute_node = attribute_nodes.item(i);
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
@@ -408,7 +408,7 @@ LaunchImage* LegacySkinParser::parseLaunchImage(QString skinPath, QWidget* pPare
     }
 
     // This allows image urls like
-    // url(skin:/style/mixxx-icon-logo-symbolic.png);
+    // url(skin:/style/mixxx-icon-logo-symbolic.svg);
     QStringList skinPaths(skinPath);
     QDir::setSearchPaths("skin", skinPaths);
 
@@ -2093,5 +2093,3 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget, const QString&
 QString LegacySkinParser::parseLaunchImageStyle(QDomNode node) {
     return m_pContext->selectString(node, "LaunchImageStyle");
 }
-
-

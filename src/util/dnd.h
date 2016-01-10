@@ -18,7 +18,7 @@
 #include "library/parserpls.h"
 #include "library/parsercsv.h"
 #include "util/sandbox.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 class DragAndDropHelper {
   public:
@@ -174,7 +174,7 @@ class DragAndDropHelper {
 
         // Filter out invalid URLs (eg. files that aren't supported audio
         // filetypes, etc.)
-        if (!SoundSourceProxy::isFilenameSupported(fileInfo.fileName())) {
+        if (!SoundSourceProxy::isFileSupported(fileInfo)) {
             return false;
         }
 

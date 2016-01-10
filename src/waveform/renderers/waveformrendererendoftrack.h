@@ -5,9 +5,9 @@
 #include <QTime>
 //#include <QLinearGradient>
 
-#include "util.h"
-#include "waveformrendererabstract.h"
 #include "skin/skincontext.h"
+#include "util/class.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/waveformwidgetfactory.h"
 
 class ControlObject;

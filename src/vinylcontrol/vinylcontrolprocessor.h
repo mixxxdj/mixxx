@@ -10,7 +10,7 @@
 #include "configobject.h"
 #include "util/fifo.h"
 #include "vinylcontrol/vinylsignalquality.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class VinylControl;
 class ControlPushButton;

@@ -59,7 +59,7 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
 
     // plugins are loaded in src/main.cpp way early in boot so this is safe
     // here, doesn't need done at every slotUpdate
-    QStringList plugins(SoundSourceProxy::supportedFileExtensionsByPlugins());
+    QStringList plugins(SoundSourceProxy::getSupportedFileExtensionsByPlugins());
     if (plugins.length() > 0) {
         pluginsLabel->setText(plugins.join(", "));
     }
@@ -76,6 +76,19 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
             m_pLibrary, SLOT(slotSetTrackTableFont(QFont)));
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             m_pLibrary, SLOT(slotSetTrackTableRowHeight(int)));
+
+    // TODO(XXX) this string should be extracted from the soundsources
+    QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVe, AIFF";
+#if defined(__MAD__) || defined(__APPLE__)
+    builtInFormatsStr += ", MP3";
+#endif
+#ifdef __OPUS__
+    builtInFormatsStr += ", Opus";
+#endif
+#ifdef _MODPLUG_
+    builtInFormatsStr += ", ModPlug";
+#endif
+    builtInFormats->setText(builtInFormatsStr);
 }
 
 DlgPrefLibrary::~DlgPrefLibrary() {
@@ -108,7 +121,7 @@ void DlgPrefLibrary::slotHide() {
     }
 }
 
-void DlgPrefLibrary::initialiseDirList() {
+void DlgPrefLibrary::initializeDirList() {
     // save which index was selected
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
@@ -149,7 +162,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
 }
 
 void DlgPrefLibrary::slotUpdate() {
-    initialiseDirList();
+    initializeDirList();
     checkBox_library_scan->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","RescanOnStartup")).toInt());
     checkbox_ID3_sync->setChecked((bool)m_pconfig->getValueString(
@@ -321,7 +334,7 @@ void DlgPrefLibrary::slotApply() {
     }
 
     // TODO(rryan): Don't save here.
-    m_pconfig->Save();
+    m_pconfig->save();
 }
 
 void DlgPrefLibrary::slotRowHeightValueChanged(int height) {

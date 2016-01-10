@@ -20,7 +20,7 @@ class PortAudio(Dependence):
             conf.CheckLib('advapi32')
 
     def sources(self, build):
-        return ['sounddeviceportaudio.cpp']
+        return ['soundio/sounddeviceportaudio.cpp']
 
 
 class PortMIDI(Dependence):
@@ -126,7 +126,7 @@ class OggVorbis(Dependence):
                     'Did not find libvorbisenc.a, libvorbisenc.lib, or the libvorbisenc development headers.')
 
     def sources(self, build):
-        return ['soundsourceoggvorbis.cpp']
+        return ['sources/soundsourceoggvorbis.cpp']
 
 class SndFile(Dependence):
 
@@ -139,7 +139,7 @@ class SndFile(Dependence):
         build.env.Append(CPPDEFINES='__SNDFILE__')
 
     def sources(self, build):
-        return ['soundsourcesndfile.cpp']
+        return ['sources/soundsourcesndfile.cpp']
 
 
 class FLAC(Dependence):
@@ -154,7 +154,7 @@ class FLAC(Dependence):
             build.env.Append(CPPDEFINES='FLAC__NO_DLL')
 
     def sources(self, build):
-        return ['soundsourceflac.cpp', ]
+        return ['sources/soundsourceflac.cpp',]
 
 
 class Qt(Dependence):
@@ -181,7 +181,21 @@ class Qt(Dependence):
         return build.env.Uic5 if qt5 else build.env.Uic4
 
     @staticmethod
-    def find_framework_path(qtdir):
+    def find_framework_libdir(qtdir, qt5):
+        # Try pkg-config on Linux
+        import sys
+        if sys.platform.startswith('linux'):
+            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
+                import subprocess
+                try:
+                    if qt5:
+                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                    else:
+                        core = subprocess.Popen(["pkg-config", "--variable=libdir", "QtCore"], stdout = subprocess.PIPE).communicate()[0].rstrip()
+                finally:
+                    if os.path.isdir(core):
+                        return core
+
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d, 'QtCore.framework')
             if os.path.isdir(core):
@@ -244,7 +258,7 @@ class Qt(Dependence):
             if qt5:
                 # Note that -reduce-relocations is enabled by default in Qt5.
                 # So we must build the code with position independent code
-                build.env.Append(CCFLAGS='-fPIE')
+                build.env.Append(CCFLAGS='-fPIC')
 
         elif build.platform_is_bsd:
             build.env.Append(LIBS=qt_modules)
@@ -256,7 +270,7 @@ class Qt(Dependence):
             build.env.Append(
                 LINKFLAGS=' '.join('-framework %s' % m for m in qt_modules)
             )
-            framework_path = Qt.find_framework_path(qtdir)
+            framework_path = Qt.find_framework_libdir(qtdir, qt5)
             if not framework_path:
                 raise Exception(
                     'Could not find frameworks in Qt directory: %s' % qtdir)
@@ -343,12 +357,15 @@ class Qt(Dependence):
                 os.popen('sw_vers').readlines()[1].find('10.4') >= 0)
         if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
             qtdir = build.env['QTDIR']
-            # TODO(XXX) should we use find_framework_path here or keep lib
-            # hardcoded?
-            framework_path = os.path.join(qtdir, 'lib')
+            framework_path = Qt.find_framework_libdir(qtdir, qt5)
             if os.path.isdir(framework_path):
                 build.env.Append(LINKFLAGS="-Wl,-rpath," + framework_path)
                 build.env.Append(LINKFLAGS="-L" + framework_path)
+
+        # Mixxx requires C++11 support. Windows enables C++11 features by
+        # default but Clang/GCC require a flag.
+        if not build.platform_is_windows:
+            build.env.Append(CXXFLAGS='-std=c++11')
 
 
 class TestHeaders(Dependence):
@@ -421,7 +438,7 @@ class SoundTouch(Dependence):
 
         # If we do not want optimizations then disable them.
         optimize = (build.flags['optimize'] if 'optimize' in build.flags
-                    else Optimize.get_optimization_level())
+                    else Optimize.get_optimization_level(build))
         if optimize == Optimize.LEVEL_OFF:
             env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
 
@@ -480,6 +497,37 @@ class ProtoBuf(Dependence):
             raise Exception(
                 "Could not find libprotobuf or its development headers.")
 
+class FpClassify(Dependence):
+
+    def enabled(self, build):
+        return build.toolchain_is_gnu
+
+    # This is a wrapper arround the fpclassify function that pevents inlining
+    # It is compiled without optimization and allows to use these function
+    # from -ffast-math optimized objects
+    def sources(self, build):
+        # add this file without fast-math flag
+        env = build.env.Clone()
+        if '-ffast-math' in env['CCFLAGS']:
+                env['CCFLAGS'].remove('-ffast-math')
+        return env.Object('util/fpclassify.cpp')
+
+class QtScriptByteArray(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/qtscript-bytearray')
+
+    def sources(self, build):
+        return ['#lib/qtscript-bytearray/bytearrayclass.cpp',
+                '#lib/qtscript-bytearray/bytearrayprototype.cpp']
+
+
+class Reverb(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/reverb')
+
+    def sources(self, build):
+        return ['#lib/reverb/Reverb.cc']
+
 
 class MixxxCore(Feature):
 
@@ -509,6 +557,8 @@ class MixxxCore(Feature):
                    "controlttrotary.cpp",
 
                    "preferences/dlgpreferencepage.cpp",
+                   "preferences/settingsmanager.cpp",
+                   "preferences/upgrade.cpp",
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
@@ -519,7 +569,6 @@ class MixxxCore(Feature):
                    "dlgprefcontrols.cpp",
                    "dlgprefwaveform.cpp",
                    "dlgprefautodj.cpp",
-                   "dlgprefkey.cpp",
                    "dlgprefreplaygain.cpp",
                    "dlgprefnovinyl.cpp",
                    "dlgabout.cpp",
@@ -564,7 +613,8 @@ class MixxxCore(Feature):
                    "effects/native/moogladder4filtereffect.cpp",
                    "effects/native/reverbeffect.cpp",
                    "effects/native/echoeffect.cpp",
-                   "effects/native/reverb/Reverb.cc",
+                   "effects/native/autopaneffect.cpp",
+                   "effects/native/phasereffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",
@@ -616,12 +666,12 @@ class MixxxCore(Feature):
                    "engine/readaheadmanager.cpp",
                    "engine/enginetalkoverducking.cpp",
                    "cachingreader.cpp",
+                   "cachingreaderchunk.cpp",
                    "cachingreaderworker.cpp",
 
-                   "analyserrg.cpp",
-                   "analyserqueue.cpp",
-                   "analyserwaveform.cpp",
-                   "analyserkey.cpp",
+                   "analyzer/analyzerqueue.cpp",
+                   "analyzer/analyzerwaveform.cpp",
+                   "analyzer/analyzergain.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -647,20 +697,19 @@ class MixxxCore(Feature):
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midienumerator.cpp",
                    "controllers/midi/midioutputhandler.cpp",
-                   "controllers/qtscript-bytearray/bytearrayclass.cpp",
-                   "controllers/qtscript-bytearray/bytearrayprototype.cpp",
                    "controllers/softtakeover.cpp",
 
                    "main.cpp",
                    "mixxx.cpp",
                    "mixxxapplication.cpp",
                    "errordialoghandler.cpp",
-                   "upgrade.cpp",
 
-                   "soundsource.cpp",
-                   "soundsourcetaglib.cpp",
+                   "sources/soundsourceproviderregistry.cpp",
+                   "sources/soundsourceplugin.cpp",
+                   "sources/soundsourcepluginlibrary.cpp",
+                   "sources/soundsource.cpp",
+                   "sources/audiosource.cpp",
 
-                   "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
                    "widget/wbasewidget.cpp",
                    "widget/wwidget.cpp",
@@ -707,7 +756,7 @@ class MixxxCore(Feature):
                    "widget/wcoverartmenu.cpp",
                    "widget/wsingletoncontainer.cpp",
 
-                   "network.cpp",
+                   "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",
                    "musicbrainz/gzip.cpp",
                    "musicbrainz/crc.c",
@@ -715,7 +764,6 @@ class MixxxCore(Feature):
                    "musicbrainz/chromaprinter.cpp",
                    "musicbrainz/musicbrainzclient.cpp",
 
-                   "rotary.cpp",
                    "widget/wtracktableview.cpp",
                    "widget/wtracktableviewheader.cpp",
                    "widget/wlibrarysidebar.cpp",
@@ -736,6 +784,7 @@ class MixxxCore(Feature):
                    "library/proxytrackmodel.cpp",
                    "library/coverart.cpp",
                    "library/coverartcache.cpp",
+                   "library/coverartutils.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
@@ -773,7 +822,6 @@ class MixxxCore(Feature):
 
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
-                   "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
 
                    "library/scanner/libraryscanner.cpp",
@@ -801,7 +849,6 @@ class MixxxCore(Feature):
                    "library/bpmdelegate.cpp",
                    "library/previewbuttondelegate.cpp",
                    "library/coverartdelegate.cpp",
-                   "audiotagger.cpp",
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
@@ -815,6 +862,7 @@ class MixxxCore(Feature):
 
                    "widget/wwaveformviewer.cpp",
 
+                   "waveform/sharedglcontext.cpp",
                    "waveform/waveform.cpp",
                    "waveform/waveformfactory.cpp",
                    "waveform/waveformwidgetfactory.cpp",
@@ -834,11 +882,6 @@ class MixxxCore(Feature):
                    "waveform/renderers/waveformrendererrgb.cpp",
                    "waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
                    "waveform/renderers/qtwaveformrenderersimplesignal.cpp",
-                   "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
-                   "waveform/renderers/glwaveformrenderersimplesignal.cpp",
-                   "waveform/renderers/glslwaveformrenderersignal.cpp",
-                   "waveform/renderers/glvsynctestrenderer.cpp",
-                   "waveform/renderers/glwaveformrendererrgb.cpp",
 
                    "waveform/renderers/waveformsignalcolors.cpp",
 
@@ -846,6 +889,11 @@ class MixxxCore(Feature):
                    "waveform/renderers/waveformmark.cpp",
                    "waveform/renderers/waveformmarkset.cpp",
                    "waveform/renderers/waveformmarkrange.cpp",
+		   "waveform/renderers/glwaveformrenderersimplesignal.cpp",
+		   "waveform/renderers/glwaveformrendererrgb.cpp",
+		   "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
+		   "waveform/renderers/glslwaveformrenderersignal.cpp",
+		   "waveform/renderers/glvsynctestrenderer.cpp",
 
                    "waveform/widgets/waveformwidgetabstract.cpp",
                    "waveform/widgets/emptywaveformwidget.cpp",
@@ -874,7 +922,6 @@ class MixxxCore(Feature):
                    "skin/pixmapsource.cpp",
                    "skin/launchimage.cpp",
 
-                   "sampleutil.cpp",
                    "trackinfoobject.cpp",
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
@@ -883,20 +930,30 @@ class MixxxCore(Feature):
                    "track/keys.cpp",
                    "track/keyfactory.cpp",
                    "track/keyutils.cpp",
+                   "track/playcounter.cpp",
+                   "track/replaygain.cpp",
+                   "track/bpm.cpp",
+                   "track/tracknumbers.cpp",
+                   "track/trackmetadata.cpp",
+                   "track/trackmetadatataglib.cpp",
+                   "track/audiotagger.cpp",
 
-                   "baseplayer.cpp",
-                   "basetrackplayer.cpp",
-                   "deck.cpp",
-                   "sampler.cpp",
-                   "previewdeck.cpp",
-                   "playermanager.cpp",
-                   "samplerbank.cpp",
-                   "sounddevice.cpp",
-                   "soundmanager.cpp",
-                   "soundmanagerconfig.cpp",
-                   "soundmanagerutil.cpp",
+                   "mixer/baseplayer.cpp",
+                   "mixer/basetrackplayer.cpp",
+                   "mixer/deck.cpp",
+                   "mixer/playerinfo.cpp",
+                   "mixer/playermanager.cpp",
+                   "mixer/previewdeck.cpp",
+                   "mixer/sampler.cpp",
+                   "mixer/samplerbank.cpp",
+
+                   "soundio/sounddevice.cpp",
+                   "soundio/sounddevicenetwork.cpp",
+                   "engine/sidechain/enginenetworkstream.cpp",
+                   "soundio/soundmanager.cpp",
+                   "soundio/soundmanagerconfig.cpp",
+                   "soundio/soundmanagerutil.cpp",
                    "dlgprefrecord.cpp",
-                   "playerinfo.cpp",
                    "visualplayposition.cpp",
 
                    "encoder/encoder.cpp",
@@ -924,6 +981,14 @@ class MixxxCore(Feature):
                    "util/tapfilter.cpp",
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
+                   "util/dbid.cpp",
+                   "util/sample.cpp",
+                   "util/samplebuffer.cpp",
+                   "util/singularsamplebuffer.cpp",
+                   "util/circularsamplebuffer.cpp",
+                   "util/rotary.cpp",
+                   "util/logging.cpp",
+                   "util/cmdlineargs.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -1054,11 +1119,6 @@ class MixxxCore(Feature):
             else:
                 raise Exception('Invalid machine type for Windows build.')
 
-            # Ugh, MSVC-only hack :( see
-            # http://www.qtforum.org/article/17883/problem-using-qstring-
-            # fromstdwstring.html
-            build.env.Append(CXXFLAGS='/Zc:wchar_t-')
-
             # Build with multiple processes. TODO(XXX) make this configurable.
             # http://msdn.microsoft.com/en-us/library/bb385193.aspx
             build.env.Append(CCFLAGS='/MP')
@@ -1098,12 +1158,22 @@ class MixxxCore(Feature):
             # to quickly test if a folder has subfolders
             build.env.Append(LIBS='shell32')
 
+            # Causes the cmath headers to declare M_PI and friends.
+            # http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx
+            # We could define this in our headers but then include order
+            # matters since headers we don't control may include cmath first.
+            build.env.Append(CPPDEFINES='_USE_MATH_DEFINES')
+
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
 
             # Check for pkg-config >= 0.15.0
             if not conf.CheckForPKGConfig('0.15.0'):
                 raise Exception('pkg-config >= 0.15.0 not found.')
+
+            if not conf.CheckLib(['X11', 'libX11']):
+                raise Exception(
+                    "Could not find libX11 or its development headers.")
 
         elif build.platform_is_osx:
             # Stuff you may have compiled by hand
@@ -1178,7 +1248,8 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand, SecurityFramework, CoreServices]
+                Chromaprint, RubberBand, SecurityFramework, CoreServices,
+                QtScriptByteArray, Reverb, FpClassify]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

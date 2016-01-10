@@ -14,7 +14,7 @@
 #include "util/assert.h"
 
 // static
-const int TrackCollection::kRequiredSchemaVersion = 24;
+const int TrackCollection::kRequiredSchemaVersion = 26;
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),

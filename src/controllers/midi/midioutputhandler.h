@@ -33,7 +33,7 @@ class MidiOutputHandler : QObject {
     MidiController* m_pController;
     const MidiOutputMapping m_mapping;
     ControlObjectThread m_cot;
-    double m_lastVal;
+    int m_lastVal;
 };
 
 #endif

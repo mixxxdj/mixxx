@@ -27,7 +27,6 @@
 #include "controlobjectthread.h"
 #include "controlobjectslave.h"
 #include "controlobject.h"
-#include "sampleutil.h"
 #include "util/math.h"
 #include "util/defs.h"
 

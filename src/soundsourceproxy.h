@@ -1,78 +1,104 @@
-/***************************************************************************
-                          soundsourceproxy.h  -  description
-                             -------------------
-    begin                : Wed Oct 13 2004
-    copyright            : (C) 2004 by Tue Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef SOUNDSOURCEPROXY_H
 #define SOUNDSOURCEPROXY_H
 
-#include <QMap>
-#include <QMutex>
-#include <QString>
-#include <QLibrary>
-#include <QRegExp>
-
-#include "soundsource.h"
 #include "trackinfoobject.h"
+
+#include "sources/soundsourceproviderregistry.h"
+
 #include "util/sandbox.h"
 
-/**
-  *@author Tue Haste Andersen
-  */
-
-
-/**
- * Creates sound sources for filenames or tracks.
- */
-class SoundSourceProxy
-{
+// Creates sound sources for plain files or tracks. Only intended to be used
+// in a narrow scope and not shareable between multiple threads!
+class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
+    // Initially registers all built-in SoundSource providers and
+    // loads all SoundSource plugins with additional providers. This
+    // function is not thread-safe and must be called only once
+    // upon startup of the application.
     static void loadPlugins();
 
-    static QStringList supportedFileExtensions();
-    static QStringList supportedFileExtensionsByPlugins();
-    static QString supportedFileExtensionsString();
-    static QString supportedFileExtensionsRegex();
-    static bool isFilenameSupported(QString filename);
-
-    SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken);
-    explicit SoundSourceProxy(TrackPointer pTrack);
-
-    const Mixxx::SoundSourcePointer& getSoundSource() const {
-        return m_pSoundSource;
+    static QStringList getSupportedFileExtensions() {
+        return s_soundSourceProviders.getRegisteredFileExtensions();
+    }
+    static QStringList getSupportedFileExtensionsByPlugins();
+    static const QStringList& getSupportedFileNamePatterns() {
+        return s_supportedFileNamePatterns;
+    }
+    static const QRegExp& getSupportedFileNamesRegex() {
+        return s_supportedFileNamesRegex;
     }
 
-    // Opens the audio data through the proxy will
+    static bool isUrlSupported(const QUrl& url);
+    static bool isFileSupported(const QFileInfo& fileInfo);
+    static bool isFileNameSupported(const QString& fileName);
+    static bool isFileExtensionSupported(const QString& fileExtension);
+
+    explicit SoundSourceProxy(
+            const QString& filePath,
+            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
+    explicit SoundSourceProxy(
+            const TrackPointer& pTrack);
+
+    const QString& getFilePath() const {
+        return m_filePath;
+    }
+
+    const QUrl& getUrl() const {
+        return m_url;
+    }
+
+    QString getType() const {
+        if (m_pSoundSource) {
+            return m_pSoundSource->getType();
+        } else {
+            return QString();
+        }
+    }
+
+    Result parseTrackMetadataAndCoverArt(
+            Mixxx::TrackMetadata* pTrackMetadata,
+            QImage* pCoverArt) const override {
+        if (m_pSoundSource) {
+            return m_pSoundSource->parseTrackMetadataAndCoverArt(
+                    pTrackMetadata, pCoverArt);
+        } else {
+            return ERR;
+        }
+    }
+
+    // Opening the audio data through the proxy will
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
-    Mixxx::SoundSourcePointer open() const;
+    Mixxx::AudioSourcePointer openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg = Mixxx::AudioSourceConfig());
+
+    void closeAudioSource();
 
 private:
-    static QRegExp m_supportedFileRegex;
-    static QMap<QString, QLibrary*> m_plugins;
-    static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
-    static QMutex m_extensionsMutex;
+    static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
+    static QStringList s_supportedFileNamePatterns;
+    static QRegExp s_supportedFileNamesRegex;
 
-    static QLibrary* getPlugin(QString lib_filename);
-
-    static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
+    const QString m_filePath;
+    const QUrl m_url;
 
     const TrackPointer m_pTrack;
     const SecurityTokenPointer m_pSecurityToken;
 
-    const Mixxx::SoundSourcePointer m_pSoundSource;
+    static QList<Mixxx::SoundSourceProviderRegistration> findSoundSourceProviderRegistrations(const QUrl& url);
+
+    const QList<Mixxx::SoundSourceProviderRegistration> m_soundSourceProviderRegistrations;
+    int m_soundSourceProviderRegistrationIndex;
+
+    Mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;
+    void nextSoundSourceProvider();
+
+    void initSoundSource();
+
+    Mixxx::SoundSourcePointer m_pSoundSource;
+
+    // Just an alias that keeps track of opening and closing
+    // the corresponding SoundSource.
+    Mixxx::AudioSourcePointer m_pAudioSource;
 };
 
-#endif
+#endif // SOUNDSOURCEPROXY_H

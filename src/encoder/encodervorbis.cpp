@@ -115,7 +115,7 @@ void EncoderVorbis::writePage() {
          */
 
 
-    //Write header only once after stream has been initalized
+    // Write header only once after stream has been initialized
     int result;
     if (m_header_write) {
         while (true) {

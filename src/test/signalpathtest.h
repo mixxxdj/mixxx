@@ -7,24 +7,23 @@
 #include <QtDebug>
 #include <QTest>
 
-#include "util/types.h"
-#include "util/defs.h"
 #include "configobject.h"
 #include "controlobject.h"
-#include "deck.h"
+#include "mixer/deck.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginebufferscale.h"
 #include "engine/enginechannel.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
-#include "engine/sync/enginesync.h"
 #include "engine/ratecontrol.h"
-#include "previewdeck.h"
-#include "sampler.h"
-#include "sampleutil.h"
-
-#include "mixxxtest.h"
+#include "engine/sync/enginesync.h"
+#include "mixer/previewdeck.h"
+#include "mixer/sampler.h"
+#include "test/mixxxtest.h"
+#include "util/defs.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 using ::testing::Return;
 using ::testing::_;

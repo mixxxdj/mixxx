@@ -8,8 +8,8 @@
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
-#include "playerinfo.h"
-#include "playermanager.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 
 SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
@@ -26,7 +26,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_pGetNewPlaylist = new QAction(tr("Create new history playlist"), this);
     connect(m_pGetNewPlaylist, SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
 
-    // initialised in a new generic slot(get new history playlist purpose)
+    // initialized in a new generic slot(get new history playlist purpose)
     emit(slotGetNewPlaylist());
 
     //construct child model
@@ -208,9 +208,10 @@ void SetlogFeature::slotJoinWithPrevious() {
                         QModelIndex index = m_pPlaylistTableModel->index(i,0);
                         if (index.isValid()) {
                             TrackPointer track = m_pPlaylistTableModel->getTrack(index);
-                            // Do not update the playcount, just set played
-                            // status.
-                            track->setPlayed(true);
+                            // Do not update the play count, just set played status.
+                            PlayCounter playCounter(track->getPlayCounter());
+                            playCounter.setPlayed();
+                            track->setPlayCounter(playCounter);
                         }
                     }
 
@@ -233,9 +234,9 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         return;
     }
 
-    int currentPlayingTrackId = currentPlayingTrack->getId();
+    TrackId currentPlayingTrackId(currentPlayingTrack->getId());
     bool track_played_recently = false;
-    if (currentPlayingTrackId >= 0) {
+    if (currentPlayingTrackId.isValid()) {
         // Remove the track from the recent tracks list if it's present and put
         // at the front of the list.
         track_played_recently = m_recentTracks.removeOne(currentPlayingTrackId);
@@ -256,11 +257,11 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 
     // If the track is not present in the recent tracks list, mark it
     // played and update its playcount.
-    currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
+    currentPlayingTrack->updatePlayCounter();
 
     // We can only add tracks that are Mixxx library tracks, not external
     // sources.
-    if (currentPlayingTrackId < 0) {
+    if (!currentPlayingTrackId.isValid()) {
         return;
     }
 
@@ -285,6 +286,19 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
+    }
+}
+
+void SetlogFeature::slotPlaylistContentChanged(int playlistId) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistContentChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_SET_LOG ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        updateChildModel(playlistId);
     }
 }
 

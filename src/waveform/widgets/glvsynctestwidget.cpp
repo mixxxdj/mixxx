@@ -2,7 +2,7 @@
 
 #include <QPainter>
 
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/glwaveformrenderersimplesignal.h"

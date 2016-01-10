@@ -41,6 +41,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
+    void updateSelectionInfo();
 
   signals:
     void addRandomButton(bool buttonChecked);

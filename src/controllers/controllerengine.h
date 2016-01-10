@@ -17,11 +17,11 @@
 #include "util/alphabetafilter.h"
 #include "controllers/softtakeover.h"
 #include "controllers/controllerpreset.h"
-#include "qtscript-bytearray/bytearrayclass.h"
+#include "bytearrayclass.h"
 
 // Forward declaration(s)
 class Controller;
-class ControlObjectThread;
+class ControlObjectSlave;
 class ControllerEngine;
 
 // ControllerEngineConnection class for closure-compatible engine.connectControl
@@ -44,13 +44,13 @@ class ControllerEngineConnectionScriptValue : public QObject {
     //Q_PROPERTY(QScriptValue function READ function)
   public:
     ControllerEngineConnectionScriptValue(ControllerEngineConnection conn) {
-        this->conn = conn;
+        m_conn = conn;
     }
-    QString readId() const { return this->conn.id; }
+    QString readId() const { return m_conn.id; }
     Q_INVOKABLE void disconnect();
 
   private:
-   ControllerEngineConnection conn;
+    ControllerEngineConnection m_conn;
 };
 
 /* comparison function for ControllerEngineConnection */
@@ -70,16 +70,12 @@ class ControllerEngine : public QObject {
     // Get the errors for a source file that was evaluated()'d
     const QStringList getErrors(QString filename);
 
-    void setDebug(bool bDebug) {
-        m_bDebug = bDebug;
-    }
-
     void setPopups(bool bPopups) {
         m_bPopups = bPopups;
     }
 
     /** Resolve a function name to a QScriptValue. */
-    QScriptValue resolveFunction(QString function, bool useCache) const;
+    QScriptValue resolveFunction(QString function) const;
     /** Look up registered script function prefixes */
     QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
     /** Disconnect a ControllerEngineConnection */
@@ -107,6 +103,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
+    Q_INVOKABLE void softTakeoverIgnoreNextValue(QString group, QString name);
     Q_INVOKABLE void brake(int deck, bool activate, double factor=0.9, double rate=1.0);
     Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
 
@@ -131,7 +128,10 @@ class ControllerEngine : public QObject {
     // Execute a particular function with a data buffer
     //TODO: redo this one
     //bool execute(QString function, const QByteArray data);
-    void loadScriptFiles(QList<QString> scriptPaths,
+
+    // Evaluates all provided script files and returns true if no script errors
+    // occurred while evaluating them.
+    bool loadScriptFiles(const QList<QString>& scriptPaths,
                          const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
@@ -160,7 +160,7 @@ class ControllerEngine : public QObject {
     bool checkException();
     QScriptEngine *m_pEngine;
 
-    ControlObjectThread* getControlObjectThread(QString group, QString name);
+    ControlObjectSlave* getControlObjectSlave(QString group, QString name);
 
     // Scratching functions & variables
     void scratchProcess(int timerId);
@@ -169,12 +169,11 @@ class ControllerEngine : public QObject {
     double getDeckRate(const QString& group);
 
     Controller* m_pController;
-    bool m_bDebug;
     bool m_bPopups;
     QMultiHash<ConfigKey, ControllerEngineConnection> m_connectedControls;
     QList<QString> m_scriptFunctionPrefixes;
     QMap<QString,QStringList> m_scriptErrors;
-    QHash<ConfigKey, ControlObjectThread*> m_controlCache;
+    QHash<ConfigKey, ControlObjectSlave*> m_controlCache;
     struct TimerInfo {
         QScriptValue callback;
         QScriptValue context;
@@ -186,7 +185,7 @@ class ControllerEngine : public QObject {
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
-    QVarLengthArray<uint> m_lastMovement;
+    QVarLengthArray<qint64> m_lastMovement;
     QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
     QVarLengthArray<bool> m_ramp, m_brakeActive;
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;

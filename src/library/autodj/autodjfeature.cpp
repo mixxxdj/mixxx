@@ -12,7 +12,7 @@
 
 #include "library/library.h"
 #include "library/parser.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"
 #include "dlgautodj.h"
@@ -128,7 +128,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
-    
+
 #endif // __AUTODJCRATES__
 }
 
@@ -150,7 +150,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     // library, then add the track to the library before adding it to the
     // playlist.
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     if (pSource) {
         trackIds = trackDao.getTrackIds(files);
         trackDao.unhideTracks(trackIds);
@@ -159,9 +159,9 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     }
 
     // remove tracks that could not be added
-    for (int trackId = 0; trackId < trackIds.size(); trackId++) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
+    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); trackIdIndex++) {
+        if (!trackIds.at(trackIdIndex).isValid()) {
+            trackIds.removeAt(trackIdIndex--);
         }
     }
 
@@ -170,9 +170,8 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
-    QFileInfo file(url.toLocalFile());
-    return SoundSourceProxy::isFilenameSupported(file.fileName()) ||
-            Parser::isPlaylistFilenameSupported(file.fileName());
+    return SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
 // Add a crate to the auto-DJ queue.
@@ -273,7 +272,7 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
     }
 #endif // __AUTODJCRATES__
 }
-// Adds a random track : this will be faster when there are sufficiently large 
+// Adds a random track : this will be faster when there are sufficiently large
 // tracks in the crates
 
 void AutoDJFeature::slotAddRandomTrack(bool) {
@@ -281,21 +280,21 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
     int failedRetrieveAttempts = 0;
     // Get access to the auto-DJ playlist
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-    int iTrackId = -1;
     if (m_iAutoDJPlaylistId >= 0) {
         while (failedRetrieveAttempts < kMaxRetrieveAttempts) {
             // Get the ID of a randomly-selected track.
-            iTrackId = m_autoDjCratesDao.getRandomTrackId();
-            if (iTrackId != -1) {
+            TrackId trackId(m_autoDjCratesDao.getRandomTrackId());
+            if (trackId.isValid()) {
                 // Get Track Information
-                TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
+                TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(trackId);
                 if(addedTrack->exists()) {
-                    playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
+                    playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
                     m_pAutoDJView->onShow();
                     return;
                 } else {
-                    qDebug() << "Track does not exist: "<< addedTrack->getInfo()
-                             << " " << addedTrack->getDirectory();
+                    qDebug() << "Track does not exist:"
+                            << addedTrack->getInfo()
+                            << addedTrack->getLocation();
                 }
             }
             failedRetrieveAttempts += 1;
@@ -304,18 +303,19 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
         qDebug () << "Could not load tracks from crates, attempting to load from library.";
         failedRetrieveAttempts = 0;
         while ( failedRetrieveAttempts < kMaxRetrieveAttempts ) {
-            iTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId);
-            if (iTrackId != -1) {
-                TrackPointer addedTrack = m_pTrackCollection->getTrackDAO().getTrack(iTrackId);
+            TrackId trackId(m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId));
+            if (trackId.isValid()) {
+                TrackPointer addedTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
                 if(addedTrack->exists()) {
-                    if(!addedTrack->getPlayed()) {
-                        playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
+                    if(!addedTrack->getPlayCounter().isPlayed()) {
+                        playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
                         m_pAutoDJView->onShow();
                         return;
                     }
                 } else {
-                    qDebug() << "Track does not exist:"<< addedTrack->getInfo()
-                             << addedTrack->getDirectory();
+                    qDebug() << "Track does not exist:"
+                            << addedTrack->getInfo()
+                            << addedTrack->getLocation();
                 }
             }
             failedRetrieveAttempts += 1;

@@ -43,7 +43,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
                                     double* pPitchRatio);
 
   private:
-    CSAMPLE* do_scale(CSAMPLE* buf, unsigned long buf_size,
+    CSAMPLE* do_scale(CSAMPLE* buf, int buf_size,
                       int *samples_read);
 
     /** Holds playback direction */

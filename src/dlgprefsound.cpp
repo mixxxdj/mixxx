@@ -19,10 +19,11 @@
 #include "dlgprefsounditem.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "playermanager.h"
-#include "soundmanager.h"
-#include "sounddevice.h"
+#include "mixer/playermanager.h"
+#include "soundio/soundmanager.h"
+#include "soundio/sounddevice.h"
 #include "util/rlimit.h"
+#include "util/scopedoverridecursor.h"
 #include "controlobjectslave.h"
 
 /**
@@ -191,14 +192,18 @@ void DlgPrefSound::slotApply() {
         return;
     }
 
-    m_pKeylockEngine->set(keylockComboBox->currentIndex());
-    m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
-                   ConfigValue(keylockComboBox->currentIndex()));
+    int err = OK;
+    {
+        ScopedWaitCursor cursor;
+        m_pKeylockEngine->set(keylockComboBox->currentIndex());
+        m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
+                       ConfigValue(keylockComboBox->currentIndex()));
 
-    m_config.clearInputs();
-    m_config.clearOutputs();
-    emit(writePaths(&m_config));
-    int err = m_pSoundManager->setConfig(m_config);
+        m_config.clearInputs();
+        m_config.clearOutputs();
+        emit(writePaths(&m_config));
+        err = m_pSoundManager->setConfig(m_config);
+    }
     if (err != OK) {
         QString error;
         QString deviceName(tr("a device"));
@@ -231,7 +236,9 @@ void DlgPrefSound::slotApply() {
  */
 void DlgPrefSound::initializePaths() {
     foreach (AudioOutput out, m_pSoundManager->registeredOutputs()) {
-        addPath(out);
+        if (!out.isHidden()) {
+            addPath(out);
+        }
     }
     foreach (AudioInput in, m_pSoundManager->registeredInputs()) {
         addPath(in);
@@ -520,7 +527,8 @@ void DlgPrefSound::settingChanged() {
  * Slot called when the "Query Devices" button is clicked.
  */
 void DlgPrefSound::queryClicked() {
-    m_pSoundManager->queryDevices();
+    ScopedWaitCursor cursor;
+    m_pSoundManager->clearAndQueryDevices();
     updateAPIs();
 }
 

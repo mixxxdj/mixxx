@@ -809,6 +809,11 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         loop_out = samples;
     }
 
+    if (keepStartPoint) {
+        seekInsideAdjustedLoop(m_iLoopStartSample, m_iLoopEndSample,
+                               loop_in, loop_out);
+    }
+
     m_iLoopStartSample = loop_in;
     m_pCOLoopStartPosition->set(loop_in);
     m_iLoopEndSample = loop_out;

@@ -1,9 +1,9 @@
-#include "qtsimplewaveformwidget.h"
+#include "waveform/widgets/qtsimplewaveformwidget.h"
 
 #include <QPainter>
 #include <QtDebug>
 
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/qtwaveformrenderersimplesignal.h"
