@@ -253,7 +253,9 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
     TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
             .getOrAddTrack(location, true, NULL);
-    emit(loadTrackToPlayer(pTrack, group));
+    if (!pTrack.isNull()) {
+        emit(loadTrackToPlayer(pTrack, group));
+    }
 }
 
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
