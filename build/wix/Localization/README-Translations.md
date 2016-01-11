@@ -17,5 +17,11 @@ First, pull new translations from transifex
 Then, rebuils wxl files from po files
 ```
 $ cd build/wix/Localization
-build/wix/Localization$ for i in po/*.po; do destfile=${i#po/}; /path/to/po2wxl.py -l Language $i mixxx_${destfile%.po}.wxl; done
+build/wix/Localization$ for i in po/*.po; do destfile=${i#po/}; /path/to/po2wxl.py -l Language -f -p 60 $i mixxx_${destfile%.po}.wxl; done
 ```
+
+explainations for the above line :
+For earch po file in the po subdirectory, call po2wxl to transform it to wxl file with the following options :  
+`-l Language` add a string with Id Language containing the auto-determined LCID  
+`-f` Overwrite the wxl file if it already exists
+`-p 60` don't transform po files if less than 60% of strings are translated
