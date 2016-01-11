@@ -396,8 +396,8 @@ class TrackInfoObject : public QObject {
     BeatsPointer m_pBeats;
 
     // Visual waveform data
-    ConstWaveformPointer m_waveform;
-    ConstWaveformPointer m_waveformSummary;
+    ConstWaveformPointer m_pWaveform;
+    ConstWaveformPointer m_pWaveformSummary;
 
     bool m_bClearWaveformRequested;
 

@@ -739,31 +739,31 @@ QString TrackInfoObject::getURL() {
 }
 
 ConstWaveformPointer TrackInfoObject::getWaveform() {
-    return m_waveform;
+    return m_pWaveform;
 }
 
 void TrackInfoObject::setWaveform(ConstWaveformPointer pWaveform) {
-    if (m_waveform == pWaveform) {
+    if (m_pWaveform == pWaveform) {
         return;
     }
 
     QMutexLocker lock(&m_qMutex);
-    m_waveform = pWaveform;
+    m_pWaveform = pWaveform;
     markDirtyAndUnlock(&lock);
     emit(waveformUpdated());
 }
 
 ConstWaveformPointer TrackInfoObject::getWaveformSummary() const {
-    return m_waveformSummary;
+    return m_pWaveformSummary;
 }
 
 void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
-    if (m_waveformSummary == pWaveform) {
+    if (m_pWaveformSummary == pWaveform) {
         return;
     }
 
     QMutexLocker lock(&m_qMutex);
-    m_waveformSummary = pWaveform;
+    m_pWaveformSummary = pWaveform;
     markDirtyAndUnlock(&lock);
     emit(waveformSummaryUpdated());
 }
