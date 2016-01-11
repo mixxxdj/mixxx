@@ -938,9 +938,11 @@ class MixxxCore(Feature):
                    "track/trackmetadatataglib.cpp",
                    "track/audiotagger.cpp",
 
+                   "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",
                    "mixer/basetrackplayer.cpp",
                    "mixer/deck.cpp",
+                   "mixer/microphone.cpp",
                    "mixer/playerinfo.cpp",
                    "mixer/playermanager.cpp",
                    "mixer/previewdeck.cpp",
