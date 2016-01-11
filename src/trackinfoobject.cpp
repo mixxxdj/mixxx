@@ -739,7 +739,6 @@ QString TrackInfoObject::getURL() {
 }
 
 ConstWaveformPointer TrackInfoObject::getWaveform() {
-    QMutexLocker lock(&m_qMutex);
     return m_waveform;
 }
 
@@ -755,7 +754,6 @@ void TrackInfoObject::setWaveform(ConstWaveformPointer pWaveform) {
 }
 
 ConstWaveformPointer TrackInfoObject::getWaveformSummary() const {
-    QMutexLocker lock(&m_qMutex);
     return m_waveformSummary;
 }
 
@@ -771,10 +769,12 @@ void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
 }
 
 bool TrackInfoObject::isClearWaveformRequested() const {
+    QMutexLocker lock(&m_qMutex);
     return m_bClearWaveformRequested;
 }
 
 void TrackInfoObject::setClearWaveformRequested(bool requested) {
+    QMutexLocker lock(&m_qMutex);
     m_bClearWaveformRequested = requested;
 }
 

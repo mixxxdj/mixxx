@@ -1605,7 +1605,7 @@ void WTrackTableView::slotClearBeats() {
 
 void WTrackTableView::slotClearWaveform() {
     TrackModel* trackModel = getTrackModel();
-    if (trackModel == NULL) {
+    if (trackModel == nullptr) {
         return;
     }
 
