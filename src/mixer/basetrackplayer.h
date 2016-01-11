@@ -22,11 +22,11 @@ class EffectsManager;
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
-    // The ordering here corresponds to the ordering of the preferences combo box.
     enum TrackLoadReset {
         RESET_NONE,
         RESET_PITCH,
         RESET_PITCH_AND_SPEED,
+        RESET_SPEED
     };
 
     BaseTrackPlayer(QObject* pParent, const QString& group);

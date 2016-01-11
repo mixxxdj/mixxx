@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>521</width>
-    <height>527</height>
+    <height>553</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,12 +17,40 @@
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBoxSpeedPitchOptions">
      <property name="title">
-      <string>Speed/Pitch options</string>
+      <string>Speed (Tempo) and Key (Pitch) options</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_7">
       <item row="0" column="0">
        <layout class="QGridLayout" name="GridLayoutSpeedOptions">
-        <item row="1" column="1">
+        <item row="6" column="1">
+         <widget class="QDoubleSpinBox" name="spinBoxPermRateLeft">
+          <property name="toolTip">
+           <string>Permanent rate change when left-clicking</string>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
+          </property>
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.500000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
          <widget class="QComboBox" name="ComboBoxRateRange">
           <property name="font">
            <font/>
@@ -32,14 +60,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="labelKeylockMode">
-          <property name="text">
-           <string>Key lock mode</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
+        <item row="7" column="1">
          <widget class="QDoubleSpinBox" name="spinBoxPermRateRight">
           <property name="toolTip">
            <string>Permanent rate change when right-clicking</string>
@@ -67,27 +88,27 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="2">
-         <widget class="QCheckBox" name="checkBoxInvertSpeedSlider">
-          <property name="toolTip">
-           <string>Make the speed sliders work like those on DJ turntables and CDJs where moving downward increases the speed</string>
-          </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelSpeedPitchReset">
           <property name="text">
-           <string>Down increases speed</string>
+           <string>Reset on track load</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QRadioButton" name="radioButtonOriginalKey">
+        <item row="3" column="2">
+         <widget class="QRadioButton" name="radioButtonSpeedBendRamping">
+          <property name="toolTip">
+           <string>Smoothly adjusts deck speed when temporary change buttons are held down</string>
+          </property>
           <property name="text">
-           <string>Original key</string>
+           <string>Smooth ramping</string>
           </property>
           <attribute name="buttonGroup">
-           <string notr="true">buttonGroupKeyLockMode</string>
+           <string notr="true">buttonGroupSpeedBendBehavior</string>
           </attribute>
          </widget>
         </item>
-        <item row="6" column="2">
+        <item row="7" column="2">
          <widget class="QDoubleSpinBox" name="spinBoxTempRateRight">
           <property name="enabled">
            <bool>false</bool>
@@ -118,71 +139,7 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="lableSpeedSliderrange">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="font">
-           <font/>
-          </property>
-          <property name="text">
-           <string>Slider range</string>
-          </property>
-          <property name="wordWrap">
-           <bool>false</bool>
-          </property>
-          <property name="buddy">
-           <cstring>ComboBoxRateRange</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLabel" name="labelSpeedTemporary">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Temporary</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="labelSpeedAdjustment">
-          <property name="text">
-           <string>Adjustment buttons:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="labelSpeedCoarse">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="font">
-           <font/>
-          </property>
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="text">
-           <string>Coarse</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="wordWrap">
-           <bool>false</bool>
-          </property>
-          <property name="buddy">
-           <cstring>spinBoxPermRateLeft</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
+        <item row="5" column="1">
          <widget class="QLabel" name="labelSpeedPermanent">
           <property name="text">
            <string>Permanent</string>
@@ -192,144 +149,7 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="labelSpeedRampSensitivity">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Ramping sensitivity</string>
-          </property>
-          <property name="buddy">
-           <cstring>SliderRateRampSensitivity</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="labelSpeedBendBehavior">
-          <property name="text">
-           <string>Bend behavior</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="labelSpeedFine">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="font">
-           <font/>
-          </property>
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="text">
-           <string>Fine</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="wordWrap">
-           <bool>false</bool>
-          </property>
-          <property name="buddy">
-           <cstring>spinBoxPermRateRight</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QDoubleSpinBox" name="spinBoxPermRateLeft">
-          <property name="toolTip">
-           <string>Permanent rate change when left-clicking</string>
-          </property>
-          <property name="accelerated">
-           <bool>true</bool>
-          </property>
-          <property name="suffix">
-           <string>%</string>
-          </property>
-          <property name="decimals">
-           <number>2</number>
-          </property>
-          <property name="minimum">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>10.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="value">
-           <double>0.500000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QRadioButton" name="radioButtonSpeedBendStatic">
-          <property name="text">
-           <string>Abrupt jump</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedBendBehavior</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QRadioButton" name="radioButtonCurrentKey">
-          <property name="text">
-           <string>Current key</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupKeyLockMode</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="5" column="2">
-         <widget class="QDoubleSpinBox" name="spinBoxTempRateLeft">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>Temporary rate change when left-clicking</string>
-          </property>
-          <property name="accelerated">
-           <bool>true</bool>
-          </property>
-          <property name="suffix">
-           <string>%</string>
-          </property>
-          <property name="decimals">
-           <number>2</number>
-          </property>
-          <property name="minimum">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>10.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="value">
-           <double>4.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QRadioButton" name="radioButtonSpeedBendRamping">
-          <property name="toolTip">
-           <string>Smoothly adjusts deck speed when temporary change buttons are held down</string>
-          </property>
-          <property name="text">
-           <string>Smooth ramping</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedBendBehavior</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="3" column="1" colspan="2">
+        <item row="4" column="1" colspan="2">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QSlider" name="SliderRateRampSensitivity">
@@ -377,6 +197,213 @@
           </item>
          </layout>
         </item>
+        <item row="5" column="2">
+         <widget class="QLabel" name="labelSpeedTemporary">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Temporary</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QRadioButton" name="radioButtonSpeedBendStatic">
+          <property name="text">
+           <string>Abrupt jump</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedBendBehavior</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="labelKeylockMode">
+          <property name="text">
+           <string>Key lock mode</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="labelSpeedRampSensitivity">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Ramping sensitivity</string>
+          </property>
+          <property name="buddy">
+           <cstring>SliderRateRampSensitivity</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="labelSpeedBendBehavior">
+          <property name="text">
+           <string>Bend behavior</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QRadioButton" name="radioButtonOriginalKey">
+          <property name="text">
+           <string>Original key</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyLockMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="6" column="2">
+         <widget class="QDoubleSpinBox" name="spinBoxTempRateLeft">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Temporary rate change when left-clicking</string>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
+          </property>
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>4.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QCheckBox" name="checkBoxResetSpeed">
+          <property name="text">
+           <string>Speed/Tempo</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedPitchReset</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QRadioButton" name="radioButtonCurrentKey">
+          <property name="text">
+           <string>Current key</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyLockMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="checkBoxResetPitch">
+          <property name="text">
+           <string>Key/Pitch</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedPitchReset</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="lableSpeedSliderrange">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font/>
+          </property>
+          <property name="text">
+           <string>Slider range</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+          <property name="buddy">
+           <cstring>ComboBoxRateRange</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="labelSpeedAdjustment">
+          <property name="text">
+           <string>Adjustment buttons:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="labelSpeedCoarse">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font/>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="text">
+           <string>Coarse</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+          <property name="buddy">
+           <cstring>spinBoxPermRateLeft</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QCheckBox" name="checkBoxInvertSpeedSlider">
+          <property name="toolTip">
+           <string>Make the speed sliders work like those on DJ turntables and CDJs where moving downward increases the speed</string>
+          </property>
+          <property name="text">
+           <string>Down increases speed</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="labelSpeedFine">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font/>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="text">
+           <string>Fine</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+          <property name="buddy">
+           <cstring>spinBoxPermRateRight</cstring>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
@@ -384,6 +411,25 @@
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="GridLayout1">
+     <item row="2" column="0" rowspan="2">
+      <widget class="QLabel" name="lableColorScheme">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+       <property name="text">
+        <string>Color scheme</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxSchemeconf</cstring>
+       </property>
+      </widget>
+     </item>
      <item row="9" column="2">
       <widget class="QRadioButton" name="radioButtonRemaining">
        <property name="text">
@@ -421,17 +467,6 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
-      <widget class="QCheckBox" name="checkBoxSeekToCue">
-       <property name="text">
-        <string>Jump to main cue point</string>
-       </property>
-       <property name="toolTip">
-        <string>Automatically seeks to the first saved cue point on track load.
-            If none exists, seeks to the beginning of the track.</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxSkinconf">
        <property name="sizePolicy">
@@ -458,13 +493,6 @@
        </property>
        <property name="wordWrap">
         <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="2">
-      <widget class="QCheckBox" name="checkBoxResetSpeedAndPitch">
-       <property name="text">
-        <string>Reset speed and pitch</string>
        </property>
       </widget>
      </item>
@@ -531,25 +559,6 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0" rowspan="2">
-      <widget class="QLabel" name="lableColorScheme">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="text">
-        <string>Color scheme</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxSchemeconf</cstring>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="1" rowspan="2" colspan="2">
       <widget class="QComboBox" name="ComboBoxSchemeconf">
        <property name="sizePolicy">
@@ -573,13 +582,6 @@
        </property>
        <property name="buddy">
         <cstring>checkBoxDisallowLoadToPlayingDeck</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="labelTrackLoadOptions">
-       <property name="text">
-        <string>Track load options</string>
        </property>
       </widget>
      </item>
@@ -650,6 +652,24 @@ Numark mode:
        </property>
       </widget>
      </item>
+     <item row="10" column="1" colspan="2">
+      <widget class="QCheckBox" name="checkBoxSeekToCue">
+       <property name="toolTip">
+        <string>Automatically seeks to the first saved cue point on track load.
+            If none exists, seeks to the beginning of the track.</string>
+       </property>
+       <property name="text">
+        <string>Jump to main cue point on track load</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="labelAutoCue">
+       <property name="text">
+        <string>Auto cue</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item row="2" column="0">
@@ -679,7 +699,6 @@ Numark mode:
   <tabstop>radioButtonElapsed</tabstop>
   <tabstop>radioButtonRemaining</tabstop>
   <tabstop>checkBoxSeekToCue</tabstop>
-  <tabstop>checkBoxResetSpeedAndPitch</tabstop>
   <tabstop>checkBoxDisallowLoadToPlayingDeck</tabstop>
   <tabstop>radioButtonOriginalKey</tabstop>
   <tabstop>radioButtonCurrentKey</tabstop>
@@ -828,6 +847,11 @@ Numark mode:
  <buttongroups>
   <buttongroup name="buttonGroupKeyLockMode"/>
   <buttongroup name="buttonGroupTooltips">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroupSpeedPitchReset">
    <property name="exclusive">
     <bool>false</bool>
    </property>

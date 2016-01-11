@@ -349,14 +349,25 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
 
     
-    // Update "reset speed and pitch" check box
+    // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
-    m_speedAutoReset = m_pConfig->getValueString(
+    int configSPAutoReset = m_pConfig->getValueString(
                     ConfigKey("[Controls]", "SpeedAutoReset"),
                     QString("%1").arg(BaseTrackPlayer::RESET_PITCH)).toInt();
-    checkBoxResetSpeedAndPitch->setChecked(m_speedAutoReset==1);
-    connect(checkBoxResetSpeedAndPitch, SIGNAL(toggled(bool)),
+    
+    m_speedAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_SPEED || 
+                        configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);    
+    m_pitchAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_PITCH || 
+                        configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
+    
+    // Do these need to be here when slotUpdate() has them as well?
+    checkBoxResetSpeed->setChecked(m_speedAutoReset);
+    checkBoxResetPitch->setChecked(m_pitchAutoReset);
+    
+    connect(checkBoxResetSpeed, SIGNAL(toggled(bool)),
             this, SLOT(slotUpdateSpeedAutoReset(bool)));
+    connect(checkBoxResetPitch, SIGNAL(toggled(bool)),
+            this, SLOT(slotUpdatePitchAutoReset(bool)));
 
     slotUpdate();
 }
@@ -417,7 +428,8 @@ void DlgPrefControls::slotUpdate() {
     else
         radioButtonOriginalKey->setChecked(true);
     
-    checkBoxResetSpeedAndPitch->setChecked(m_speedAutoReset==1);
+    checkBoxResetSpeed->setChecked(m_speedAutoReset);
+    checkBoxResetPitch->setChecked(m_pitchAutoReset);
 }
 
 void DlgPrefControls::slotResetToDefaults() {
@@ -462,8 +474,11 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxPermRateRight->setValue(0.05);
 
     // Don't automatically reset the pitch & speed on track load
-    m_speedAutoReset = BaseTrackPlayer::RESET_PITCH;
-    checkBoxResetSpeedAndPitch->setChecked(m_speedAutoReset==1);
+    m_speedAutoReset = false;
+    m_pitchAutoReset = true;
+    
+    checkBoxResetSpeed->setChecked(m_speedAutoReset);
+    checkBoxResetPitch->setChecked(m_pitchAutoReset);
 
     // Lock to original key
     m_keylockMode = 0;
@@ -672,9 +687,17 @@ void DlgPrefControls::slotApply() {
     } else {
         m_pConfig->set(ConfigKey("[Controls]", "RateDir"), ConfigValue(1));
     }
+    
+    int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
+    
+    if (m_speedAutoReset && m_pitchAutoReset) {
+        configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
+    } 
+    else if (m_speedAutoReset) configSPAutoReset = BaseTrackPlayer::RESET_SPEED;
+    else if (m_pitchAutoReset) configSPAutoReset = BaseTrackPlayer::RESET_PITCH;
 
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(m_speedAutoReset));
+                   ConfigValue(configSPAutoReset));
 
     m_pConfig->set(ConfigKey("[Controls]", "PitchAndKeylockMode"),
             ConfigValue(m_keylockMode));
@@ -770,8 +793,11 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
 }
 
 void DlgPrefControls::slotUpdateSpeedAutoReset(bool b) {
-    if (b) m_speedAutoReset = 1;
-    else m_speedAutoReset = 0;
+    m_speedAutoReset = b;
+}
+
+void DlgPrefControls::slotUpdatePitchAutoReset(bool b) {
+    m_pitchAutoReset = b;
 }
 
 int DlgPrefControls::cueDefaultIndexByData(int userData) const {

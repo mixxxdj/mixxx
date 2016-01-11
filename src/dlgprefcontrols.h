@@ -76,6 +76,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotNumSamplersChanged(double);
 
     void slotUpdateSpeedAutoReset(bool);
+    void slotUpdatePitchAutoReset(bool);
 
   private:
     void notifyRebootNecessary();
@@ -103,7 +104,8 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
 
-    int m_speedAutoReset;
+    bool m_speedAutoReset;
+    bool m_pitchAutoReset;
     int m_keylockMode;
 };
 
