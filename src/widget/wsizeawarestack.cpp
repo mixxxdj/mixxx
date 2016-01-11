@@ -2,6 +2,8 @@
 #include <QStackedLayout>
 #include <QResizeEvent>
 
+#include "controlobject.h"
+#include "controlobjectslave.h"
 #include "widget/wsizeawarestack.h"
 
 class SizeAwareLayout : public QStackedLayout
@@ -70,9 +72,14 @@ class SizeAwareLayout : public QStackedLayout
     }
 };
 
-WSizeAwareStack::WSizeAwareStack(QWidget* parent)
+WSizeAwareStack::WSizeAwareStack(QWidget* parent,
+                                 ControlObject* pCurrentPageControl)
         : QWidget(parent),
           WBaseWidget(this) {
+    if (pCurrentPageControl != NULL) {
+        m_pCurrentPageControl.reset(
+                new ControlObjectSlave(pCurrentPageControl->getKey()));
+    }
     m_layout = new SizeAwareLayout();
     setLayout(m_layout);
 }
@@ -93,5 +100,8 @@ bool WSizeAwareStack::event(QEvent* pEvent) {
 }
 
 void WSizeAwareStack::resizeEvent(QResizeEvent* event) {
-    m_layout->setCurrentIndexForSize(event->size());
+    int page = m_layout->setCurrentIndexForSize(event->size());
+    if (m_pCurrentPageControl && m_pCurrentPageControl->valid()) {
+        m_pCurrentPageControl->set(page);
+    }
 }
