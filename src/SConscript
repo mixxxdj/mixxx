@@ -74,6 +74,12 @@ elif build.platform_is_osx:
 else:
         mixxx_bin = env.Program('mixxx', sources)
 
+# For convenience, copy the Mixxx binary out of the build directory to the
+# root. Don't do it on windows because the binary can't run on its own and needs
+# the DLLs present with it.
+if not build.platform_is_windows:
+    Command("../mixxx", mixxx_bin, Copy("$TARGET", "$SOURCE"))
+
 test_bin = None
 def build_tests():
         global test_bin
