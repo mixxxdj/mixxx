@@ -744,10 +744,13 @@ ConstWaveformPointer TrackInfoObject::getWaveform() {
 }
 
 void TrackInfoObject::setWaveform(ConstWaveformPointer pWaveform) {
+    if (m_waveform == pWaveform) {
+        return;
+    }
+
     QMutexLocker lock(&m_qMutex);
     m_waveform = pWaveform;
-    setDirty(true);
-    lock.unlock();
+    markDirtyAndUnlock(&lock);
     emit(waveformUpdated());
 }
 
@@ -757,10 +760,13 @@ ConstWaveformPointer TrackInfoObject::getWaveformSummary() const {
 }
 
 void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
+    if (m_waveformSummary == pWaveform) {
+        return;
+    }
+
     QMutexLocker lock(&m_qMutex);
     m_waveformSummary = pWaveform;
-    setDirty(true);
-    lock.unlock();
+    markDirtyAndUnlock(&lock);
     emit(waveformSummaryUpdated());
 }
 
