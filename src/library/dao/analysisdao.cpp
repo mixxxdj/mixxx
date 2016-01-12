@@ -330,10 +330,8 @@ void AnalysisDao::saveTrackAnalyses(TrackInfoObject* pTrack) {
         bool success = deleteAnalysesForTrack(trackId);
         qDebug() << (success ? "Successfully deleted" : "Failed to delete")
                  << "waveform analysis for trackId" << trackId;
-        if (success) {
-            // Clear flag
-            pTrack->setClearWaveformRequested(false);
-        }
+        // Clear flag
+        pTrack->setClearWaveformRequested(false);
         return;
     }
 

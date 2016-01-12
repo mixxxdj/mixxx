@@ -107,9 +107,10 @@ bool AnalyzerWaveform::loadStored(TrackPointer tio) const {
     TrackId trackId = tio->getId();
 
     if (tio->isClearWaveformRequested()) {
-        if (m_pAnalysisDao->deleteAnalysesForTrack(trackId)) {
-            tio->setClearWaveformRequested(false);
-        }
+        bool success = m_pAnalysisDao->deleteAnalysesForTrack(trackId);
+        qDebug() << (success ? "Successfully deleted" : "Failed to delete")
+                 << "waveform analysis for trackId" << trackId;
+        tio->setClearWaveformRequested(false);
         return false;
     }
 
