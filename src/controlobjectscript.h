@@ -32,7 +32,7 @@ class ControlObjectScript : public ControlObjectSlave {
     void slotValueChanged(double v, QObject*);
 
   private:
-    QList<ControllerEngineConnection> m_connectedScriptFunction;
+    QList<ControllerEngineConnection> m_connectedScriptFunctions;
 };
 
 #endif // CONTROLOBJECTSLAVE_H

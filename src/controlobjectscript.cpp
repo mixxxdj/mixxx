@@ -13,7 +13,7 @@ ControlObjectScript::~ControlObjectScript() {
 
 bool ControlObjectScript::connectScriptFunction(
         const ControllerEngineConnection& conn) {
-    m_connectedScriptFunction.append(conn);
+    m_connectedScriptFunctions.append(conn);
     connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(slotValueChanged(double,QObject*)),
             static_cast<Qt::ConnectionType>(Qt::QueuedConnection |
@@ -27,11 +27,11 @@ bool ControlObjectScript::connectScriptFunction(
 
 bool ControlObjectScript::disconnectScriptFunction(
         const ControllerEngineConnection& conn) {
-    return m_connectedScriptFunction.removeAll(conn) > 0;
+    return m_connectedScriptFunctions.removeAll(conn) > 0;
 }
 
 void ControlObjectScript::slotValueChanged(double value, QObject*) {
-    for(auto conn: m_connectedScriptFunction) {
+    for(auto conn: m_connectedScriptFunctions) {
         QScriptValueList args;
         args << QScriptValue(value);
         args << QScriptValue(getKey().group);
