@@ -17,7 +17,7 @@ MidiOutputHandler::MidiOutputHandler(MidiController* controller,
                                      const MidiOutputMapping& mapping)
         : m_pController(controller),
           m_mapping(mapping),
-          m_cos(mapping.controlKey),
+          m_cos(mapping.controlKey, this),
           m_lastVal(-1) { // -1 = virgin
     m_cos.connectValueChanged(SLOT(controlChanged(double)));
 }
