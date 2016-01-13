@@ -5,7 +5,6 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
 #include "track/beats.h"
 #include "trackinfoobject.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"

@@ -52,7 +52,6 @@ class ControlObject;
 class ControlObjectSlave;
 class ControlPushButton;
 class ControlIndicator;
-class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;

@@ -17,13 +17,13 @@ MidiOutputHandler::MidiOutputHandler(MidiController* controller,
                                      const MidiOutputMapping& mapping)
         : m_pController(controller),
           m_mapping(mapping),
-          m_cot(mapping.control),
+          m_cos(mapping.controlKey),
           m_lastVal(-1) { // -1 = virgin
     m_cos.connectValueChanged(SLOT(controlChanged(double)));
 }
 
 MidiOutputHandler::~MidiOutputHandler() {
-    ConfigKey cKey = m_cot.getKey();
+    ConfigKey cKey = m_cos.getKey();
     controllerDebug(QString("Destroying static MIDI output handler on %1 for %2,%3")
                 .arg(m_pController->getName(), cKey.group, cKey.item));
 }

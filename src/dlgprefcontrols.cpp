@@ -479,7 +479,7 @@ void DlgPrefControls::slotSetRateRangePercent (int rateRangePercent) {
 
     // Set rate range for every group
     foreach (ControlObjectSlave* pControl, m_rateRangeControls) {
-        pControl->set(rangeRange);
+        pControl->set(rateRange);
     }
 
     // Reset rate for every group

@@ -6,7 +6,6 @@
 
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "controlobjectthread.h"
 #include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
 #include "util/timer.h"
