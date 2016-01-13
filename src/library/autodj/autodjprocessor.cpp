@@ -4,8 +4,8 @@
 #include "controlpushbutton.h"
 #include "controlobjectslave.h"
 #include "util/math.h"
-#include "playermanager.h"
-#include "basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "mixer/basetrackplayer.h"
 
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";

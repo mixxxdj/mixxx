@@ -3,7 +3,7 @@
 
 #include <QApplication>
 
-class ControlObjectThread;
+class ControlObjectSlave;
 
 class MixxxApplication : public QApplication {
     Q_OBJECT
@@ -21,7 +21,7 @@ class MixxxApplication : public QApplication {
     int m_fakeMouseSourcePointId;
     QWidget* m_fakeMouseWidget;
     enum Qt::MouseButton m_activeTouchButton;
-    ControlObjectThread* m_pTouchShift;
+    ControlObjectSlave* m_pTouchShift;
 
 };
 

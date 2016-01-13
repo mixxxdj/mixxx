@@ -43,29 +43,28 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
   public:
     BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection, RecordingManager* pRec);
     virtual ~BrowseTableModel();
-    void setPath(const MDir& path);
-    //reimplemented from TrackModel class
-    virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual TrackModel::CapabilitiesFlags getCapabilities() const;
 
-    QString getTrackLocation(const QModelIndex& index) const;
-    TrackId getTrackId(const QModelIndex& index) const;
-    const QLinkedList<int> getTrackRows(TrackId trackId) const;
-    void search(const QString& searchText,const QString& extraFilter=QString());
-    void removeTrack(const QModelIndex& index);
-    void removeTracks(const QModelIndexList& indices);
-    bool addTrack(const QModelIndex& index, QString location);
-    QMimeData* mimeData(const QModelIndexList &indexes) const;
-    const QString currentSearch() const;
-    bool isColumnInternal(int);
-    void moveTrack(const QModelIndex&, const QModelIndex&);
-    bool isLocked() { return false;}
-    bool isColumnHiddenByDefault(int column);
-    const QList<int>& searchColumns() const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
-    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
-    virtual bool isColumnSortable(int column);
+    void setPath(const MDir& path);
+
+    TrackPointer getTrack(const QModelIndex& index) const override;
+    TrackModel::CapabilitiesFlags getCapabilities() const override;
+
+    QString getTrackLocation(const QModelIndex& index) const override;
+    TrackId getTrackId(const QModelIndex& index) const override;
+    const QLinkedList<int> getTrackRows(TrackId trackId) const override;
+    void search(const QString& searchText,const QString& extraFilter = QString()) override;
+    void removeTracks(const QModelIndexList& indices) override;
+    QMimeData* mimeData(const QModelIndexList &indexes) const override;
+    const QString currentSearch() const override;
+    bool isColumnInternal(int) override;
+    void moveTrack(const QModelIndex&, const QModelIndex&) override;
+    bool isLocked() override { return false; }
+    bool isColumnHiddenByDefault(int column) override;
+    const QList<int>& searchColumns() const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole) override;
+    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
+    bool isColumnSortable(int column) override;
 
   public slots:
     void slotClear(BrowseTableModel*);
@@ -73,8 +72,6 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     void trackLoaded(QString group, TrackPointer pTrack);
 
   private:
-    void removeTracks(QStringList trackLocations);
-
     void addSearchColumn(int index);
     bool isTrackInUse(const QString& file) const;
     QList<int> m_searchColumns;

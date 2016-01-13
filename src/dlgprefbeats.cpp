@@ -214,7 +214,7 @@ void DlgPrefBeats::slotApply() {
 
     m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START), ConfigValue(m_minBpm));
     m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END), ConfigValue(m_maxBpm));
-    m_pconfig->Save();
+    m_pconfig->save();
 }
 
 void DlgPrefBeats::populate() {

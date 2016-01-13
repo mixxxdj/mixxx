@@ -14,7 +14,7 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "effects/effectsmanager.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "util/debug.h"
 #include "skin/launchimage.h"
 

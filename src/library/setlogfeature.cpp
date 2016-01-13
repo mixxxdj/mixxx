@@ -8,8 +8,8 @@
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
-#include "playerinfo.h"
-#include "playermanager.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 
 SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,

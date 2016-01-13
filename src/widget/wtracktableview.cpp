@@ -17,7 +17,7 @@
 #include "widget/wtracktableview.h"
 #include "dlgtrackinfo.h"
 #include "soundsourceproxy.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "util/dnd.h"
 #include "util/time.h"
 #include "dlgpreflibrary.h"
@@ -1125,7 +1125,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
                if (destRow > maxRow) {
                    // If we're moving the tracks _down_,
                    // adjust the first row to reselect
-                   selectionRestoreStartRow = 
+                   selectionRestoreStartRow =
                         selectionRestoreStartRow - selectedRowCount;
                 }
             }
@@ -1645,4 +1645,3 @@ void WTrackTableView::slotReloadCoverArt() {
         pCache->requestGuessCovers(selectedTracks);
     }
 }
-

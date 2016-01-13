@@ -426,16 +426,15 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 return;
             } else if (m_bTrackSelectMode) {
                 //qDebug() << "discontinuing select mode, selecting track";
-                if (m_pControlTrackLoader == NULL)
-                    m_pControlTrackLoader = new ControlObjectThread(m_group,"LoadSelectedTrack");
-
-                if (!m_pControlTrackLoader) {
-                    qDebug() << "ERROR: couldn't get track loading object?";
-                } else {
-                    m_pControlTrackLoader->slotSet(1.0);
-                    m_pControlTrackLoader->slotSet(0.0); //I think I have to do this...
+                if (m_pControlTrackLoader == NULL) {
+                    m_pControlTrackLoader = new ControlObjectSlave(
+                            m_group, "LoadSelectedTrack", this);
                 }
-                //if position is known and safe then no track select mode
+
+                m_pControlTrackLoader->slotSet(1.0);
+                m_pControlTrackLoader->slotSet(0.0); // I think I have to do this...
+
+                // if position is known and safe then no track select mode
                 m_bTrackSelectMode = false;
             }
         }
@@ -712,13 +711,10 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
     const double NOPOS_SPEED = 0.50;
 
     if (m_pControlTrackSelector == NULL) {
-        //this isn't done in the constructor because this object
-        //doesn't seem to be created yet
-        m_pControlTrackSelector = new ControlObjectThread("[Playlist]","SelectTrackKnob");
-        if (m_pControlTrackSelector == NULL) {
-            qDebug() << "Warning: Track Selector control object NULL";
-            return;
-        }
+        // this isn't done in the constructor because this object
+        // doesn't seem to be created yet
+        m_pControlTrackSelector = new ControlObjectSlave(
+                "[Playlist]","SelectTrackKnob", this);
     }
 
     if (!valid_pos) {
@@ -745,7 +741,7 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
         m_dLastTrackSelectPos = m_dCurTrackSelectPos;
     } else if (fabs(m_dCurTrackSelectPos - m_dLastTrackSelectPos) > SELECT_INTERVAL) {
         //only adjust by one at a time.  It's no help jumping around
-        m_pControlTrackSelector->slotSet((int)(m_dCurTrackSelectPos - m_dLastTrackSelectPos) / fabs(m_dCurTrackSelectPos - m_dLastTrackSelectPos));
+        m_pControlTrackSelector->set((int)(m_dCurTrackSelectPos - m_dLastTrackSelectPos) / fabs(m_dCurTrackSelectPos - m_dLastTrackSelectPos));
         m_dLastTrackSelectPos = m_dCurTrackSelectPos;
     }
 }

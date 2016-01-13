@@ -23,9 +23,10 @@
 
 #include "errordialoghandler.h"
 #include "util/assert.h"
+#include "util/version.h"
 
 ErrorDialogProperties::ErrorDialogProperties()
-        : m_title("Mixxx"),
+        : m_title(Version::applicationName()),
           m_modal(true),
           m_shouldQuit(false),
           m_type(DLG_NONE),

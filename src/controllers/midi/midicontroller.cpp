@@ -13,7 +13,7 @@
 #include "controllers/controllerdebug.h"
 #include "controlobject.h"
 #include "errordialoghandler.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "util/math.h"
 
 MidiController::MidiController()
@@ -294,8 +294,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         args << QScriptValue(value);
         args << QScriptValue(status);
         args << QScriptValue(mapping.control.group);
-        QScriptValue function = pEngine->resolveFunction(
-            mapping.control.item, true);
+        QScriptValue function = pEngine->resolveFunction(mapping.control.item);
         pEngine->execute(function, args);
         return;
     }
@@ -550,9 +549,10 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         if (pEngine == NULL) {
             return;
         }
-        QScriptValue function = pEngine->resolveFunction(mapping.control.item, true);
+        QScriptValue function = pEngine->resolveFunction(mapping.control.item);
         if (!pEngine->execute(function, data)) {
-            qDebug() << "MidiController: Invalid script function" << mapping.control.item;
+            qDebug() << "MidiController: Invalid script function"
+                     << mapping.control.item;
         }
         return;
     }

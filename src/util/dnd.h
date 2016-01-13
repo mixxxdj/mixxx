@@ -18,7 +18,7 @@
 #include "library/parserpls.h"
 #include "library/parsercsv.h"
 #include "util/sandbox.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 class DragAndDropHelper {
   public:

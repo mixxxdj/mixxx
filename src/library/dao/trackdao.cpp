@@ -17,6 +17,8 @@
 #include "track/beats.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
+#include "track/tracknumbers.h"
+#include "track/trackmetadatataglib.h"
 #include "trackinfoobject.h"
 #include "library/coverart.h"
 #include "library/coverartutils.h"
@@ -392,6 +394,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":composer", pTrack->getComposer());
     m_pQueryLibraryInsert->bindValue(":grouping", pTrack->getGrouping());
     m_pQueryLibraryInsert->bindValue(":tracknumber", pTrack->getTrackNumber());
+    m_pQueryLibraryInsert->bindValue(":tracktotal", pTrack->getTrackTotal());
     m_pQueryLibraryInsert->bindValue(":filetype", pTrack->getType());
     m_pQueryLibraryInsert->bindValue(":location", trackLocationId);
     m_pQueryLibraryInsert->bindValue(":comment", pTrack->getComment());
@@ -489,7 +492,7 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryTrackLocationSelect->prepare("SELECT id FROM track_locations WHERE location=:location");
 
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
-            "(artist, title, album, album_artist, year, genre, tracknumber, composer, "
+            "(artist, title, album, album_artist, year, genre, tracknumber, tracktotal, composer, "
             "grouping, filetype, location, comment, url, duration, rating, key, key_id, "
             "bitrate, samplerate, cuepoint, bpm, replaygain, replaygain_peak, wavesummaryhex, "
             "timesplayed, channels, mixxx_deleted, header_parsed, "
@@ -497,7 +500,7 @@ void TrackDAO::addTracksPrepare() {
             "keys_version, keys_sub_version, keys, "
             "coverart_source, coverart_type, coverart_location, coverart_hash ) "
             "VALUES ("
-            ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
+            ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :tracktotal, :composer, :grouping, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :replaygain_peak, :wavesummaryhex, "
             ":timesplayed, :channels, :mixxx_deleted, :header_parsed, "
@@ -638,7 +641,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         pTrack->setId(trackId);
         m_analysisDao.saveTrackAnalyses(pTrack);
         m_cueDao.saveTrackCues(trackId, pTrack);
-        pTrack->setDirty(false);
+        pTrack->resetDirty();
     }
     m_tracksAddedSet.insert(trackId);
     return true;
@@ -1021,6 +1024,12 @@ bool setTrackNumber(const QSqlRecord& record, const int column,
     return false;
 }
 
+bool setTrackTotal(const QSqlRecord& record, const int column,
+                    TrackPointer pTrack) {
+    pTrack->setTrackTotal(record.value(column).toString());
+    return false;
+}
+
 bool setTrackComment(const QSqlRecord& record, const int column,
                      TrackPointer pTrack) {
     pTrack->setComment(record.value(column).toString());
@@ -1186,6 +1195,10 @@ struct ColumnPopulator {
 #define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
 
 TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
+    if (!trackId.isValid()) {
+        return TrackPointer();
+    }
+
     ScopedTimer t("TrackDAO::getTrackFromDB");
     QSqlQuery query(m_database);
 
@@ -1201,6 +1214,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         { "composer", setTrackComposer },
         { "grouping", setTrackGrouping },
         { "tracknumber", setTrackNumber },
+        { "tracktotal", setTrackTotal },
         { "filetype", setTrackFiletype },
         { "rating", setTrackRating },
         { "comment", setTrackComment },
@@ -1293,13 +1307,34 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         }
     }
 
+    // Data migration: Reload track total from file tags if not initialized
+    // yet. The added column "tracktotal" has been initialized with the
+    // default value "//".
+    // See also: Schema revision 26 in schema.xml
+    if (pTrack->getTrackTotal() == "//") {
+        // Reload track total from file tags
+        Mixxx::TrackMetadata trackMetadata;
+        if (OK == readTrackMetadataAndCoverArtFromFile(&trackMetadata, nullptr, location)) {
+            pTrack->setTrackTotal(trackMetadata.getTrackTotal());
+            // Also set the track number if it is still empty due
+            // to insufficient parsing capabilities of Mixxx in
+            // previous versions.
+            if (!trackMetadata.getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
+                pTrack->setTrackNumber(trackMetadata.getTrackNumber());
+            }
+        } else {
+            qWarning() << "Failed to reload track total from file tags:"
+                    << location;
+        }
+    }
+
     // Populate track cues from the cues table.
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
 
     // Normally we will set the track as clean but sometimes when loading from
     // the database we need to perform upkeep that ought to be written back to
     // the database when the track is deleted.
-    pTrack->setDirty(shouldDirty);
+    pTrack->markDirty(shouldDirty);
 
     // Listen to dirty and changed signals
     connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
@@ -1440,7 +1475,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "album_artist=:album_artist, "
                   "year=:year, genre=:genre, composer=:composer, "
                   "grouping=:grouping, filetype=:filetype, "
-                  "tracknumber=:tracknumber, comment=:comment, url=:url, "
+                  "tracknumber=:tracknumber, tracktotal=:tracktotal, "
+                  "comment=:comment, url=:url, "
                   "duration=:duration, rating=:rating, "
                   "key=:key, key_id=:key_id, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
@@ -1463,6 +1499,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":grouping", pTrack->getGrouping());
     query.bindValue(":filetype", pTrack->getType());
     query.bindValue(":tracknumber", pTrack->getTrackNumber());
+    query.bindValue(":tracktotal", pTrack->getTrackTotal());
     query.bindValue(":comment", pTrack->getComment());
     query.bindValue(":url", pTrack->getURL());
     query.bindValue(":duration", pTrack->getDuration());
@@ -1547,7 +1584,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
 
     //qDebug() << "Update track in database took: " << time.elapsed() << "ms";
     //time.start();
-    pTrack->setDirty(false);
+    pTrack->resetDirty();
     //qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
 }
 

@@ -21,8 +21,6 @@
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
-class Cue;
-
 class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
@@ -54,6 +52,7 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping)
     Q_PROPERTY(QString year READ getYear WRITE setYear)
     Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
+    Q_PROPERTY(QString track_total READ getTrackTotal WRITE setTrackTotal)
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
@@ -181,10 +180,12 @@ class TrackInfoObject : public QObject {
     QString getGrouping() const;
     // Set grouping
     void setGrouping(const QString&);
-    // Return Track Number
+    // Return track number/total
     QString getTrackNumber() const;
-    // Set Track Number
+    QString getTrackTotal() const;
+    // Set track number/total
     void setTrackNumber(const QString&);
+    void setTrackTotal(const QString&);
 
     PlayCounter getPlayCounter() const;
     void setPlayCounter(const PlayCounter& playCounter);
@@ -227,10 +228,10 @@ class TrackInfoObject : public QObject {
     float getCuePoint();
 
     // Calls for managing the track's cue points
-    Cue* addCue();
-    void removeCue(Cue* cue);
-    const QList<Cue*>& getCuePoints();
-    void setCuePoints(QList<Cue*> cuePoints);
+    CuePointer addCue();
+    void removeCue(const CuePointer& pCue);
+    QList<CuePointer> getCuePoints() const;
+    void setCuePoints(const QList<CuePointer>& cuePoints);
 
     bool isDirty();
 
@@ -240,21 +241,27 @@ class TrackInfoObject : public QObject {
     // Set the track's Beats
     void setBeats(BeatsPointer beats);
 
-    void setKeys(Keys keys);
-    const Keys& getKeys() const;
-    double getNumericKey() const;
+    void resetKeys() {
+        setKeys(Keys());
+    }
+    void setKeys(const Keys& keys);
+    Keys getKeys() const;
+    void setKey(mixxx::track::io::key::ChromaticKey key,
+                mixxx::track::io::key::Source keySource);
+    void setKeyText(const QString& keyText,
+                    mixxx::track::io::key::Source keySource = mixxx::track::io::key::USER);
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
-    void setKey(mixxx::track::io::key::ChromaticKey key,
-                mixxx::track::io::key::Source source);
-    void setKeyText(QString key,
-                    mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
     void setCoverInfo(const CoverInfo& cover);
     CoverInfo getCoverInfo() const;
 
     void setCoverArt(const CoverArt& cover);
     CoverArt getCoverArt() const;
+
+    // markDirty(false) = current value of dirty flag (unchanged)
+    // markDirty(true) = true = new value of dirty flag
+    bool markDirty(bool bDirty = true);
 
     // Called when the shared pointer reference count for a library TrackPointer
     // drops to zero.
@@ -291,11 +298,16 @@ class TrackInfoObject : public QObject {
     void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
     void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
 
-    // Set whether the TIO is dirty not. This should never be called except by
-    // TIO local methods or the TrackDAO.
-    void setDirty(bool bDirty);
+    void resetDirty();
+
+    // Set whether the TIO is dirty or not and unlock before emitting
+    // any signals. This must only be called from member functions
+    // while the TIO is locked.
+    bool markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
+    void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
+    void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
 
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
@@ -338,8 +350,9 @@ class TrackInfoObject : public QObject {
     QString m_sGrouping;
     // Year
     QString m_sYear;
-    // Track Number
+    // Track number/total
     QString m_sTrackNumber;
+    QString m_sTrackTotal;
 
     // File type
     QString m_sType;
@@ -354,7 +367,7 @@ class TrackInfoObject : public QObject {
     // Number of channels
     int m_iChannels;
     // Track rating
-    int m_Rating;
+    int m_iRating;
     // Bitrate, number of kilobits per second of audio in the track
     int m_iBitrate;
     // Replay Gain volume
@@ -373,7 +386,7 @@ class TrackInfoObject : public QObject {
     bool m_bBpmLocked;
 
     // The list of cue points for the track
-    QList<Cue*> m_cuePoints;
+    QList<CuePointer> m_cuePoints;
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;

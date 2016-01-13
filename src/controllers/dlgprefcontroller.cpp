@@ -19,6 +19,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "configobject.h"
+#include "util/version.h"
 
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
@@ -720,7 +721,7 @@ void DlgPrefController::openScript() {
     if (selectedIndices.isEmpty()) {
          QMessageBox::information(
                     this,
-                    tr("Mixxx"),
+                    Version::applicationName(),
                     tr("Please select a script from the list to open."),
                     QMessageBox::Ok, QMessageBox::Ok);
         return;
