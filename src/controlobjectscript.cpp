@@ -9,20 +9,30 @@ ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
 
 void ControlObjectScript::connectScriptFunction(
         const ControllerEngineConnection& conn) {
+    if (m_connectedScriptFunctions.isEmpty()) {
+        // we connect the slots only, if there will be actually a script
+        // connected
+        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
+                this, SLOT(slotValueChanged(double,QObject*)),
+                Qt::QueuedConnection);
+        connect(this, SIGNAL(trigger(double, QObject*)),
+                this, SLOT(slotValueChanged(double,QObject*)),
+                Qt::QueuedConnection);
+    }
     m_connectedScriptFunctions.append(conn);
-    connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-            this, SLOT(slotValueChanged(double,QObject*)),
-            static_cast<Qt::ConnectionType>(Qt::QueuedConnection |
-                                            Qt::UniqueConnection));
-    connect(this, SIGNAL(trigger(double, QObject*)),
-            this, SLOT(slotValueChanged(double,QObject*)),
-            static_cast<Qt::ConnectionType>(Qt::QueuedConnection |
-                                            Qt::UniqueConnection));
 }
 
 bool ControlObjectScript::disconnectScriptFunction(
         const ControllerEngineConnection& conn) {
-    return m_connectedScriptFunctions.removeAll(conn) > 0;
+    bool ret = m_connectedScriptFunctions.removeAll(conn) > 0;
+    if (m_connectedScriptFunctions.isEmpty()) {
+            // no script left, we can disconnected
+            disconnect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
+                    this, SLOT(slotValueChanged(double,QObject*)));
+            disconnect(this, SIGNAL(trigger(double, QObject*)),
+                    this, SLOT(slotValueChanged(double,QObject*)));
+    }
+    return ret;
 }
 
 void ControlObjectScript::slotValueChanged(double value, QObject*) {
