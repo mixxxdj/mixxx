@@ -312,15 +312,13 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     //0=OFF, 1=ON, 2=ON (only in Library)
     switch (configTooltips) {
         case 0: // Off
-            checkBoxTooltipsEnabled->setChecked(false);
+            radioButtonTooltipsOff->setChecked(true);
             break;
-        case 1: // On
-            checkBoxTooltipsEnabled->setChecked(true);
-            checkBoxTooltipsOnlyLibrary->setChecked(false);
+        case 1: // On (Library and Skin)
+            radioButtonTooltipsLibraryAndSkin->setChecked(true);
             break;
         case 2: // Only in library
-            checkBoxTooltipsEnabled->setChecked(true);
-            checkBoxTooltipsOnlyLibrary->setChecked(true);
+            radioButtonTooltipsLibrary->setChecked(true);
             break;
     }
 
@@ -457,9 +455,8 @@ void DlgPrefControls::slotResetToDefaults() {
     // Don't start in full screen.
     checkBoxStartFullScreen->setChecked(false);
 
-    // Tooltips on.
-    checkBoxTooltipsEnabled->setChecked(true);
-    checkBoxTooltipsOnlyLibrary->setChecked(false);
+    // Tooltips on everywhere.
+    radioButtonTooltipsLibraryAndSkin->setChecked(true);
 
     // Rate-ramping default off.
     radioButtonSpeedBendStatic->setChecked(true);
@@ -575,16 +572,9 @@ void DlgPrefControls::slotSetStartInFullScreen(bool b) {
 void DlgPrefControls::slotSetTooltips() {
     //0=OFF, 1=ON, 2=ON (only in Library)
     int valueToSet = 1;
-    if (checkBoxTooltipsEnabled->isChecked()) {
-        checkBoxTooltipsOnlyLibrary->setDisabled(false);
-        if (checkBoxTooltipsOnlyLibrary->isChecked()) {
-            valueToSet = 2;
-        }
-    }
-    else {
-        checkBoxTooltipsOnlyLibrary->setDisabled(true);
-        valueToSet = 0;
-    }
+    if (radioButtonTooltipsOff->isChecked()) valueToSet = 0;
+    else if (radioButtonTooltipsLibrary->isChecked()) valueToSet = 2;
+
     m_mixxx->setToolTipsCfg(valueToSet);
 }
 

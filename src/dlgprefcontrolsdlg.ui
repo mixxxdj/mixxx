@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
-    <height>553</height>
+    <width>485</width>
+    <height>554</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,18 +83,18 @@
           <property name="text">
            <string>Reset on track load</string>
           </property>
+          <property name="buddy">
+           <cstring>checkBoxResetPitch</cstring>
+          </property>
          </widget>
         </item>
-        <item row="3" column="2">
-         <widget class="QRadioButton" name="radioButtonSpeedBendRamping">
-          <property name="toolTip">
-           <string>Smoothly adjusts deck speed when temporary change buttons are held down</string>
-          </property>
+        <item row="2" column="2">
+         <widget class="QRadioButton" name="radioButtonCurrentKey">
           <property name="text">
-           <string>Smooth ramping</string>
+           <string>Current key</string>
           </property>
           <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedBendBehavior</string>
+           <string notr="true">buttonGroupKeyLockMode</string>
           </attribute>
          </widget>
         </item>
@@ -200,20 +200,13 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QRadioButton" name="radioButtonSpeedBendStatic">
-          <property name="text">
-           <string>Abrupt jump</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedBendBehavior</string>
-          </attribute>
-         </widget>
-        </item>
         <item row="2" column="0">
          <widget class="QLabel" name="labelKeylockMode">
           <property name="text">
            <string>Key lock mode</string>
+          </property>
+          <property name="buddy">
+           <cstring>radioButtonOriginalKey</cstring>
           </property>
          </widget>
         </item>
@@ -233,7 +226,10 @@
         <item row="3" column="0">
          <widget class="QLabel" name="labelSpeedBendBehavior">
           <property name="text">
-           <string>Bend behavior</string>
+           <string>Pitch bend behavior</string>
+          </property>
+          <property name="buddy">
+           <cstring>radioButtonSpeedBendStatic</cstring>
           </property>
          </widget>
         </item>
@@ -285,16 +281,6 @@
           </property>
           <attribute name="buttonGroup">
            <string notr="true">buttonGroupSpeedPitchReset</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QRadioButton" name="radioButtonCurrentKey">
-          <property name="text">
-           <string>Current key</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupKeyLockMode</string>
           </attribute>
          </widget>
         </item>
@@ -404,6 +390,29 @@
           </property>
          </widget>
         </item>
+        <item row="3" column="2">
+         <widget class="QRadioButton" name="radioButtonSpeedBendStatic">
+          <property name="text">
+           <string>Abrupt jump</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedBendBehavior</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QRadioButton" name="radioButtonSpeedBendRamping">
+          <property name="toolTip">
+           <string>Smoothly adjusts deck speed when temporary change buttons are held down</string>
+          </property>
+          <property name="text">
+           <string>Smooth ramping</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedBendBehavior</string>
+          </attribute>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
@@ -411,6 +420,29 @@
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="GridLayout1">
+     <item row="0" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxSkinconf">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="textLabelLocale">
+       <property name="text">
+        <string>Locale</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxLocale</cstring>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="0" rowspan="2">
       <widget class="QLabel" name="lableColorScheme">
        <property name="enabled">
@@ -450,33 +482,10 @@
        </attribute>
       </widget>
      </item>
-     <item row="6" column="1">
-      <widget class="QCheckBox" name="checkBoxTooltipsEnabled">
-       <property name="text">
-        <string>Enabled</string>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroupTooltips</string>
-       </attribute>
-      </widget>
-     </item>
      <item row="5" column="1" colspan="2">
       <widget class="QCheckBox" name="checkBoxStartFullScreen">
        <property name="text">
         <string>Start in full-screen mode</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxSkinconf">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
        </property>
       </widget>
      </item>
@@ -493,6 +502,9 @@
        </property>
        <property name="wordWrap">
         <bool>false</bool>
+       </property>
+       <property name="buddy">
+        <cstring>radioButtonElapsed</cstring>
        </property>
       </widget>
      </item>
@@ -542,16 +554,6 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="textLabelLocale">
-       <property name="text">
-        <string>Locale</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxLocale</cstring>
-       </property>
-      </widget>
-     </item>
      <item row="4" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxLocale">
        <property name="toolTip">
@@ -583,32 +585,6 @@
        <property name="buddy">
         <cstring>checkBoxDisallowLoadToPlayingDeck</cstring>
        </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="labelTooltips">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="text">
-        <string>Tool tips</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="2">
-      <widget class="QCheckBox" name="checkBoxTooltipsOnlyLibrary">
-       <property name="text">
-        <string>Only in Library</string>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroupTooltips</string>
-       </attribute>
       </widget>
      </item>
      <item row="11" column="1" colspan="2">
@@ -668,6 +644,62 @@ Numark mode:
        <property name="text">
         <string>Auto cue</string>
        </property>
+       <property name="buddy">
+        <cstring>checkBoxSeekToCue</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QRadioButton" name="radioButtonTooltipsOff">
+         <property name="text">
+          <string>Off</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroupTooltips</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButtonTooltipsLibrary">
+         <property name="text">
+          <string>Library only</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroupTooltips</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButtonTooltipsLibraryAndSkin">
+         <property name="text">
+          <string>Library and Skin</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroupTooltips</string>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="labelTooltips">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+       <property name="text">
+        <string>Tool tips</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="buddy">
+        <cstring>radioButtonTooltipsOff</cstring>
+       </property>
       </widget>
      </item>
     </layout>
@@ -693,17 +725,22 @@ Numark mode:
   <tabstop>ComboBoxSchemeconf</tabstop>
   <tabstop>ComboBoxLocale</tabstop>
   <tabstop>checkBoxStartFullScreen</tabstop>
-  <tabstop>checkBoxTooltipsEnabled</tabstop>
-  <tabstop>checkBoxTooltipsOnlyLibrary</tabstop>
+  <tabstop>radioButtonTooltipsOff</tabstop>
+  <tabstop>radioButtonTooltipsLibrary</tabstop>
+  <tabstop>radioButtonTooltipsLibraryAndSkin</tabstop>
   <tabstop>ComboBoxCueDefault</tabstop>
   <tabstop>radioButtonElapsed</tabstop>
   <tabstop>radioButtonRemaining</tabstop>
   <tabstop>checkBoxSeekToCue</tabstop>
   <tabstop>checkBoxDisallowLoadToPlayingDeck</tabstop>
+  <tabstop>ComboBoxRateRange</tabstop>
+  <tabstop>checkBoxInvertSpeedSlider</tabstop>
+  <tabstop>checkBoxResetPitch</tabstop>
+  <tabstop>checkBoxResetSpeed</tabstop>
   <tabstop>radioButtonOriginalKey</tabstop>
   <tabstop>radioButtonCurrentKey</tabstop>
-  <tabstop>radioButtonSpeedBendStatic</tabstop>
   <tabstop>radioButtonSpeedBendRamping</tabstop>
+  <tabstop>radioButtonSpeedBendStatic</tabstop>
   <tabstop>SliderRateRampSensitivity</tabstop>
   <tabstop>SpinBoxRateRampSensitivity</tabstop>
   <tabstop>spinBoxPermRateLeft</tabstop>
@@ -720,12 +757,12 @@ Numark mode:
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>433</x>
-     <y>415</y>
+     <x>372</x>
+     <y>442</y>
     </hint>
     <hint type="destinationlabel">
-     <x>498</x>
-     <y>418</y>
+     <x>437</x>
+     <y>445</y>
     </hint>
    </hints>
   </connection>
@@ -736,12 +773,12 @@ Numark mode:
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>498</x>
-     <y>418</y>
+     <x>437</x>
+     <y>445</y>
     </hint>
     <hint type="destinationlabel">
-     <x>433</x>
-     <y>415</y>
+     <x>372</x>
+     <y>442</y>
     </hint>
    </hints>
   </connection>
@@ -752,12 +789,12 @@ Numark mode:
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>354</x>
-     <y>388</y>
+     <x>438</x>
+     <y>417</y>
     </hint>
     <hint type="destinationlabel">
-     <x>96</x>
-     <y>407</y>
+     <x>117</x>
+     <y>446</y>
     </hint>
    </hints>
   </connection>
@@ -768,12 +805,12 @@ Numark mode:
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>387</x>
-     <y>376</y>
+     <x>438</x>
+     <y>417</y>
     </hint>
     <hint type="destinationlabel">
-     <x>266</x>
-     <y>414</y>
+     <x>372</x>
+     <y>442</y>
     </hint>
    </hints>
   </connection>
@@ -784,12 +821,12 @@ Numark mode:
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>472</x>
-     <y>378</y>
+     <x>438</x>
+     <y>417</y>
     </hint>
     <hint type="destinationlabel">
-     <x>466</x>
-     <y>404</y>
+     <x>437</x>
+     <y>445</y>
     </hint>
    </hints>
   </connection>
@@ -800,12 +837,12 @@ Numark mode:
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>215</x>
-     <y>371</y>
+     <x>263</x>
+     <y>417</y>
     </hint>
     <hint type="destinationlabel">
-     <x>378</x>
-     <y>432</y>
+     <x>438</x>
+     <y>467</y>
     </hint>
    </hints>
   </connection>
@@ -816,12 +853,12 @@ Numark mode:
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>237</x>
-     <y>379</y>
+     <x>263</x>
+     <y>417</y>
     </hint>
     <hint type="destinationlabel">
-     <x>349</x>
-     <y>456</y>
+     <x>438</x>
+     <y>493</y>
     </hint>
    </hints>
   </connection>
@@ -832,23 +869,19 @@ Numark mode:
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>283</x>
-     <y>382</y>
+     <x>263</x>
+     <y>417</y>
     </hint>
     <hint type="destinationlabel">
-     <x>341</x>
-     <y>480</y>
+     <x>438</x>
+     <y>521</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <buttongroups>
   <buttongroup name="buttonGroupKeyLockMode"/>
-  <buttongroup name="buttonGroupTooltips">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
+  <buttongroup name="buttonGroupTooltips"/>
   <buttongroup name="buttonGroupSpeedPitchReset">
    <property name="exclusive">
     <bool>false</bool>
