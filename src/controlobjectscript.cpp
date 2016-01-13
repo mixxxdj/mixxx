@@ -31,7 +31,7 @@ bool ControlObjectScript::disconnectScriptFunction(
 }
 
 void ControlObjectScript::slotValueChanged(double value, QObject*) {
-    foreach(ControllerEngineConnection conn, m_connectedScriptFunction) {
+    for(auto conn: m_connectedScriptFunction) {
         QScriptValueList args;
         args << QScriptValue(value);
         args << QScriptValue(getKey().group);

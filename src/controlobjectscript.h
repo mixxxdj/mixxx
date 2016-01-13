@@ -9,7 +9,7 @@
 class ControlObjectScript : public ControlObjectSlave {
     Q_OBJECT
   public:
-    ControlObjectScript(const ConfigKey& key, QObject* pParent = NULL);
+    ControlObjectScript(const ConfigKey& key, QObject* pParent = nullptr);
     virtual ~ControlObjectScript();
 
     bool connectScriptFunction(
