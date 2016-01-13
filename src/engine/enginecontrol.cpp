@@ -12,8 +12,7 @@ EngineControl::EngineControl(QString group,
         : m_group(group),
           m_pConfig(_config),
           m_pEngineMaster(NULL),
-          m_pEngineBuffer(NULL),
-          m_numDecks(ConfigKey("[Master]", "num_decks")) {
+          m_pEngineBuffer(NULL) {
     setCurrentSample(0.0, 0.0);
 }
 

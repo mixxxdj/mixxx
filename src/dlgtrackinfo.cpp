@@ -5,7 +5,6 @@
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "library/dao/cue.h"
 
 const int kFilterLength = 80;
 const int kMinBPM = 30;
@@ -264,21 +263,21 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     int sampleRate = pTrack->getSampleRate();
 
-    QList<Cue*> listPoints;
-    const QList<Cue*>& cuePoints = pTrack->getCuePoints();
-    QListIterator<Cue*> it(cuePoints);
+    QList<CuePointer> listPoints;
+    const QList<CuePointer> cuePoints = pTrack->getCuePoints();
+    QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
-        Cue* pCue = it.next();
+        CuePointer pCue = it.next();
         if (pCue->getType() == Cue::CUE || pCue->getType() == Cue::LOAD) {
             listPoints.push_back(pCue);
         }
     }
-    it = QListIterator<Cue*>(listPoints);
+    it = QListIterator<CuePointer>(listPoints);
     cueTable->setSortingEnabled(false);
     int row = 0;
 
     while (it.hasNext()) {
-        Cue* pCue = it.next();
+        CuePointer pCue(it.next());
 
         QString rowStr = QString("%1").arg(row);
 
@@ -359,8 +358,8 @@ void DlgTrackInfo::saveTrack() {
             continue;
 
         int oldRow = rowItem->data(Qt::DisplayRole).toInt();
-        Cue* pCue = m_cueMap.value(oldRow, NULL);
-        if (pCue == NULL) {
+        CuePointer pCue(m_cueMap.value(oldRow, CuePointer()));
+        if (!pCue) {
             continue;
         }
 
@@ -380,7 +379,7 @@ void DlgTrackInfo::saveTrack() {
         pCue->setLabel(label);
     }
 
-    QMutableHashIterator<int,Cue*> it(m_cueMap);
+    QMutableHashIterator<int,CuePointer> it(m_cueMap);
     // Everything that was not processed above was removed.
     while (it.hasNext()) {
         it.next();
@@ -391,7 +390,7 @@ void DlgTrackInfo::saveTrack() {
         if (updatedRows.contains(oldRow)) {
             continue;
         }
-        Cue* pCue = it.value();
+        CuePointer pCue(it.value());
         it.remove();
         qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
         m_pLoadedTrack->removeCue(pCue);
