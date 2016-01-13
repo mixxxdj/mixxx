@@ -34,8 +34,8 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
         args << QScriptValue(getKey().item);
         QScriptValue result = conn.function.call(conn.context, args);
         if (result.isError()) {
-            qWarning()<< "ControllerEngine: Call to callback" << conn.id
-                      << "resulted in an error:" << result.toString();
+            qWarning() << "ControllerEngine: Invocation of callback" << conn.id
+                       << "failed:" << result.toString();
         }
     }
 }
