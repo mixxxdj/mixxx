@@ -887,9 +887,9 @@ void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) 
         return;
     }
 
-    if (m_connectedControls.contains(conn.key, conn)) {
-        m_connectedControls.remove(conn.key, conn);
-        cos->disconnectScriptFunction(conn);
+    if (m_connectedControls.remove(conn.key, conn) > 0) {
+        bool ret = cos->disconnectScriptFunction(conn);
+        DEBUG_ASSERT(ret);
     } else {
         qWarning() << "Could not Disconnect connection" << conn.id;
     }
