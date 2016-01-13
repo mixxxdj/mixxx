@@ -3,7 +3,7 @@
     <info>
         <name>Reloop Jockey 3 ME</name>
         <author>Chris2000SP</author>
-        <description>v1.0.1 Mapping for 2.0.x</description>
+        <description>v1.0.2 Mapping for 2.0.x</description>
     </info>
     <controller id="Reloop">
         <scriptfiles>
@@ -843,6 +843,16 @@
                     <normal/>
                 </options>
             </control>
+            <!-- <control>
+                <group>[Channel1]</group>
+                <key>Jockey3ME.faderHop</key>
+                <description>XF D Sets Vol Fader Sticking</description>
+                <status>0x90</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control> -->
             <!-- [Channel2] Deck B -->
             <!-- Transport Section -->
             <control>

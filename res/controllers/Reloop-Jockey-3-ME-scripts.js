@@ -16,6 +16,7 @@ Jockey3ME.move_beat_value = 4; // Sets how many Beats Jumping when "MOVE" is Tur
 Jockey3ME.CUP_value = 0;
 Jockey3ME.MixerDeck1 = 0;
 Jockey3ME.MixerDeck2 = 0;
+Jockey3ME.noVolHopValue = false;
 
 // Functions
 Jockey3ME.EffectLedMeterShow = function () {
@@ -119,10 +120,13 @@ Jockey3ME.wheelTouch = function (channel, control, value, status, group) {
 
 // The wheel that actually controls the scratching
 Jockey3ME.wheelTurn = function (channel, control, value, status, group) {
-    var newValue=(value-64);
+  var newValue=(value-64);
   var currentDeck = parseInt(group.substring(8,9));
     // See if we're scratching. If not, skip this.
     if (!engine.isScratching(currentDeck)) {
+      if (newValue > 1 || newValue < -1) {
+        newValue /= 2;  // If Jogwheel Resolution is High
+      }
       engine.setValue(group, "jog", newValue);
       return;
    }
@@ -389,7 +393,13 @@ Jockey3ME.MixerVol = function (channel, control, value, status, group) {
   if (control == 0x2D || control == 0x6C) {
     engine.setParameter("[Channel" + currentDeck + "]","pregain",(value / 127));
   } else {
-    engine.setParameter("[Channel" + currentDeck + "]","volume",(value / 127));
+    var noVolHop = engine.getParameter("[Channel" + currentDeck + "]","volume");
+    if (!(!((noVolHop - (value / 127)) < 0.04) || !((noVolHop - (value / 127)) > -0.04))) {
+      Jockey3ME.noVolHopValue = false;
+    }
+    if (!Jockey3ME.noVolHopValue) {
+      engine.setParameter("[Channel" + currentDeck + "]","volume",(value / 127));
+    }
   }
 }
 
@@ -403,6 +413,7 @@ Jockey3ME.DeckSwitch = function (channel, control, value, status, group) {
   } else if (control == 0x3F && value == 0x00) {
     Jockey3ME.MixerDeck2 = 0;
   }
+  Jockey3ME.noVolHopValue = true;
 }
 
 Jockey3ME.EQ = function (channel, control, value, status, group) {
