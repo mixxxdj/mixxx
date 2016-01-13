@@ -7,10 +7,6 @@ ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
         : ControlObjectSlave(key, pParent) {
 }
 
-ControlObjectScript::~ControlObjectScript() {
-    //qDebug() << "ControlObjectScript::~ControlObjectSlave()";
-}
-
 bool ControlObjectScript::connectScriptFunction(
         const ControllerEngineConnection& conn) {
     m_connectedScriptFunctions.append(conn);
