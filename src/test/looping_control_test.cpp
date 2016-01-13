@@ -56,7 +56,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
                 ConfigKey(m_sGroup1, "loop_move_1_forward")));
         m_pButtonBeatMoveBackward.reset(getControlObjectThread(
                 ConfigKey(m_sGroup1, "loop_move_1_backward")));
-        m_pButtonBeatLoop2Activate.reset(getControlObjectThread(
+        m_pButtonBeatLoop2Activate.reset(getControlObjectSlave(
                 ConfigKey(m_sGroup1, "beatloop_2_activate")));
     }
 

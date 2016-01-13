@@ -1422,14 +1422,14 @@ TEST_F(EngineSyncTest, MasterBpmNeverZero) {
 TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
     // If a track has a zero bpm and a bad beatgrid, make sure the rate
     // doesn't end up something crazy when sync is enabled..
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pFileBpm1(getControlObjectSlave(
         ConfigKey(m_sGroup1, "file_bpm")));
     pFileBpm1->set(0.0);
     // Maybe the beatgrid ended up at zero also.
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 0.0, 0.0);
     m_pTrack1->setBeats(pBeats1);
 
-    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pButtonSyncEnabled1(getControlObjectSlave(
             ConfigKey(m_sGroup1, "sync_enabled")));
     pButtonSyncEnabled1->set(1.0);
 

@@ -44,8 +44,8 @@ class MixxxTest : public testing::Test {
         return m_pConfig.data();
     }
 
-    ControlObjectThread* getControlObjectThread(const ConfigKey& key) {
-        return new ControlObjectThread(key);
+    ControlObjectSlave* getControlObjectSlave(const ConfigKey& key) {
+        return new ControlObjectSlave(key);
     }
 
     QTemporaryFile* makeTemporaryFile(const QString contents) {
