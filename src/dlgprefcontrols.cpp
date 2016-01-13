@@ -67,7 +67,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     // If not present in the config, set the default value
     if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay")))
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(1));
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
 
     if (m_pConfig->getValueString(ConfigKey("[Controls]", "PositionDisplay")).toInt() == 1) {
         radioButtonRemaining->setChecked(true);
@@ -125,7 +125,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotKeyLockMode(QAbstractButton *)));
             
     m_keylockMode = m_pConfig->getValueString(
-        ConfigKey("[Controls]", "PitchAndKeylockMode"), "0").toInt();
+        ConfigKey("[Controls]", "keylockMode"), "0").toInt();
     foreach (ControlObjectSlave* pControl, m_keylockModeControls) {
         pControl->set(m_keylockMode);
     }
@@ -470,7 +470,7 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxPermRateLeft->setValue(0.50);
     spinBoxPermRateRight->setValue(0.05);
 
-    // Don't automatically reset the pitch & speed on track load
+    // Automatically reset the pitch/key but not speed/tempo slider on track load
     m_speedAutoReset = false;
     m_pitchAutoReset = true;
     
@@ -689,7 +689,7 @@ void DlgPrefControls::slotApply() {
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
                    ConfigValue(configSPAutoReset));
 
-    m_pConfig->set(ConfigKey("[Controls]", "PitchAndKeylockMode"),
+    m_pConfig->set(ConfigKey("[Controls]", "keylockMode"),
             ConfigValue(m_keylockMode));
     // Set key lock behavior for every group
     foreach (ControlObjectSlave* pControl, m_keylockModeControls) {
