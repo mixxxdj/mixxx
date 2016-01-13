@@ -41,7 +41,7 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // itself. Otherwise the this may crash since the disconnect call
     // happens during conn.function.call() in the middle of the loop below.
     QList<ControllerEngineConnection> connections = m_connectedScriptFunctions;
-    for(auto&& conn: connections) {
+    for(auto& conn: connections) {
         QScriptValueList args;
         args << QScriptValue(value);
         args << QScriptValue(getKey().group);
