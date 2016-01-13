@@ -8,6 +8,7 @@
 #include "track/beats.h"
 
 class ControlObjectSlave;
+class ControlObject;
 
 class ClockControl: public EngineControl {
     Q_OBJECT

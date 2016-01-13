@@ -13,7 +13,6 @@
 class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
-class ControlObjectThread;
 class ControlObjectSlave;
 class EffectsManager;
 
@@ -87,8 +86,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    ControlObjectThread* m_pBPM;
-    ControlObjectThread* m_pKey;
+    ControlObjectSlave* m_pBPM;
+    ControlObjectSlave* m_pKey;
 
     ControlObjectSlave* m_pReplayGain;
     ControlObjectSlave* m_pPlay;
