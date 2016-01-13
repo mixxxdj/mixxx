@@ -7,7 +7,7 @@ ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
         : ControlObjectSlave(key, pParent) {
 }
 
-bool ControlObjectScript::connectScriptFunction(
+void ControlObjectScript::connectScriptFunction(
         const ControllerEngineConnection& conn) {
     m_connectedScriptFunctions.append(conn);
     connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
@@ -18,7 +18,6 @@ bool ControlObjectScript::connectScriptFunction(
             this, SLOT(slotValueChanged(double,QObject*)),
             static_cast<Qt::ConnectionType>(Qt::QueuedConnection |
                                             Qt::UniqueConnection));
-    return true;
 }
 
 bool ControlObjectScript::disconnectScriptFunction(

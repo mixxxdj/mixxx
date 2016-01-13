@@ -11,7 +11,7 @@ class ControlObjectScript : public ControlObjectSlave {
   public:
     explicit ControlObjectScript(const ConfigKey& key, QObject* pParent = nullptr);
 
-    bool connectScriptFunction(
+    void connectScriptFunction(
             const ControllerEngineConnection& conn);
 
     bool disconnectScriptFunction(
