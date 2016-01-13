@@ -94,8 +94,8 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
-        if (mark.m_pointControl) {
-            mark.m_pointControl->connectValueChanged(
+        if (mark.m_pPointCos) {
+            mark.m_pPointCos->connectValueChanged(this,
                     SLOT(onMarkChanged(double)));
         }
     }
@@ -409,10 +409,10 @@ void WOverview::paintEvent(QPaintEvent *) {
 
         for (int i = 0; i < m_marks.size(); ++i) {
             WaveformMark& currentMark = m_marks[i];
-            if (currentMark.m_pointControl && currentMark.m_pointControl->get() >= 0.0) {
+            if (currentMark.m_pPointCos && currentMark.m_pPointCos->get() >= 0.0) {
                 //const float markPosition = 1.0 +
                 //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-                const float markPosition = offset + currentMark.m_pointControl->get() * gain;
+                const float markPosition = offset + currentMark.m_pPointCos->get() * gain;
 
                 const QLineF line(markPosition, 0.0, markPosition, (float)height());
                 painter.setPen(shadowPen);

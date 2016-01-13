@@ -3,7 +3,6 @@
 
 #include "cachingreader.h"
 #include "controlobject.h"
-#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 #include "util/assert.h"
 #include "util/counter.h"
