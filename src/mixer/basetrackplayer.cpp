@@ -288,6 +288,13 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
         if (m_pPitchAdjust != NULL) {
             m_pPitchAdjust->set(0.0);
         }
+        break;
+      case RESET_SPEED:
+        // Note: speed may affect pitch
+        if (m_pSpeed != NULL) {
+            m_pSpeed->set(0.0);
+        }
+        break;
     }
     emit(newTrackLoaded(m_pLoadedTrack));
 }
