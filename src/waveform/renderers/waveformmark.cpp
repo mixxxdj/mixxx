@@ -8,11 +8,11 @@
 #include "widget/wskincolor.h"
 
 WaveformMark::WaveformMark()
-    : m_pointControl(NULL) {
+    : m_pPointCos(nullptr) {
 }
 
 WaveformMark::~WaveformMark() {
-    delete m_pointControl;
+    delete m_pPointCos;
 }
 
 void WaveformMark::setup(const QString& group, const QDomNode& node,
@@ -20,7 +20,7 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
                          const WaveformSignalColors& signalColors) {
     QString item = context.selectString(node, "Control");
     if (!item.isEmpty()) {
-        m_pointControl = new ControlObjectSlave(group, item);
+        m_pPointCos = new ControlObjectSlave(group, item);
     }
 
     m_color = context.selectString(node, "Color");
@@ -56,7 +56,7 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
 // called from WaveformMarkSet::setup() for hot cues
 // TODO(XXX): subclass and override WaveformMark::setup
 void WaveformMark::setKeyAndIndex(const ConfigKey& key, int i) {
-    DEBUG_ASSERT(m_pointControl == NULL);
-    m_pointControl = new ControlObjectSlave(key);
+    DEBUG_ASSERT(m_pPointCos == NULL);
+    m_pPointCos = new ControlObjectSlave(key);
     m_text = m_text.arg(i);
 }
