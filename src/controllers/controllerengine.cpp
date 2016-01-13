@@ -167,8 +167,8 @@ void ControllerEngine::gracefulShutdown() {
     QList<ConfigKey>::iterator end = keys.end();
     while (it != end) {
         ConfigKey key = *it;
-        ControlObjectScript* cos = m_controlCache.take(key);
-        delete cos;
+        ControlObjectScript* coScript = m_controlCache.take(key);
+        delete coScript;
         ++it;
     }
 
@@ -600,18 +600,18 @@ void ControllerEngine::errorDialogButton(QString key, QMessageBox::StandardButto
 
 ControlObjectScript* ControllerEngine::getControlObjectScript(QString group, QString name) {
     ConfigKey key = ConfigKey(group, name);
-    ControlObjectScript* cos = m_controlCache.value(key, NULL);
-    if (cos == NULL) {
+    ControlObjectScript* coScript = m_controlCache.value(key, NULL);
+    if (coScript == NULL) {
         // create COT
-        cos = new ControlObjectScript(key, this);
-        if (cos->valid()) {
-            m_controlCache.insert(key, cos);
+        coScript = new ControlObjectScript(key, this);
+        if (coScript->valid()) {
+            m_controlCache.insert(key, coScript);
         } else {
-            delete cos;
-            cos = NULL;
+            delete coScript;
+            coScript = NULL;
         }
     }
-    return cos;
+    return coScript;
 }
 
 /* -------- ------------------------------------------------------
@@ -620,12 +620,12 @@ ControlObjectScript* ControllerEngine::getControlObjectScript(QString group, QSt
    Output:  The value
    -------- ------------------------------------------------------ */
 double ControllerEngine::getValue(QString group, QString name) {
-    ControlObjectScript* cos = getControlObjectScript(group, name);
-    if (cos == NULL) {
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
+    if (coScript == NULL) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
         return 0.0;
     }
-    return cos->get();
+    return coScript->get();
 }
 
 /* -------- ------------------------------------------------------
@@ -640,12 +640,12 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
         return;
     }
 
-    ControlObjectScript* cos = getControlObjectScript(group, name);
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    if (cos != NULL) {
-        ControlObject* pControl = ControlObject::getControl(cos->getKey());
-        if (pControl && !m_st.ignore(pControl, cos->getParameterForValue(newValue))) {
-            cos->slotSet(newValue);
+    if (coScript != NULL) {
+        ControlObject* pControl = ControlObject::getControl(coScript->getKey());
+        if (pControl && !m_st.ignore(pControl, coScript->getParameterForValue(newValue))) {
+            coScript->slotSet(newValue);
         }
     }
 }
@@ -657,12 +657,12 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
    Output:  The value
    -------- ------------------------------------------------------ */
 double ControllerEngine::getParameter(QString group, QString name) {
-    ControlObjectScript* cos = getControlObjectScript(group, name);
-    if (cos == NULL) {
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
+    if (coScript == NULL) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
         return 0.0;
     }
-    return cos->getParameter();
+    return coScript->getParameter();
 }
 
 /* -------- ------------------------------------------------------
@@ -677,11 +677,11 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
         return;
     }
 
-    ControlObjectScript* cos = getControlObjectScript(group, name);
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     // TODO(XXX): support soft takeover.
-    if (cos != NULL) {
-        cos->setParameter(newParameter);
+    if (coScript != NULL) {
+        coScript->setParameter(newParameter);
     }
 }
 
@@ -697,14 +697,14 @@ double ControllerEngine::getParameterForValue(QString group, QString name, doubl
         return 0.0;
     }
 
-    ControlObjectScript* cos = getControlObjectScript(group, name);
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    if (cos == NULL) {
+    if (coScript == NULL) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
         return 0.0;
     }
 
-    return cos->getParameterForValue(value);
+    return coScript->getParameterForValue(value);
 }
 
 /* -------- ------------------------------------------------------
@@ -713,9 +713,9 @@ double ControllerEngine::getParameterForValue(QString group, QString name, doubl
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::reset(QString group, QString name) {
-    ControlObjectScript* cos = getControlObjectScript(group, name);
-    if (cos != NULL) {
-        cos->reset();
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
+    if (coScript != NULL) {
+        coScript->reset();
     }
 }
 
@@ -725,14 +725,14 @@ void ControllerEngine::reset(QString group, QString name) {
    Output:  -
    -------- ------------------------------------------------------ */
 double ControllerEngine::getDefaultValue(QString group, QString name) {
-    ControlObjectScript* cos = getControlObjectScript(group, name);
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    if (cos == NULL) {
+    if (coScript == NULL) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
         return 0.0;
     }
 
-    return cos->getDefault();
+    return coScript->getDefault();
 }
 
 /* -------- ------------------------------------------------------
@@ -741,14 +741,14 @@ double ControllerEngine::getDefaultValue(QString group, QString name) {
    Output:  -
    -------- ------------------------------------------------------ */
 double ControllerEngine::getDefaultParameter(QString group, QString name) {
-    ControlObjectScript* cos = getControlObjectScript(group, name);
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    if (cos == NULL) {
+    if (coScript == NULL) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
         return 0.0;
     }
 
-    return cos->getParameterForValue(cos->getDefault());
+    return coScript->getParameterForValue(coScript->getDefault());
 }
 
 /* -------- ------------------------------------------------------
@@ -766,9 +766,9 @@ void ControllerEngine::log(QString message) {
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::trigger(QString group, QString name) {
-    ControlObjectScript* cos = getControlObjectScript(group, name);
-    if (cos != NULL) {
-        cos->emitValueChanged();
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
+    if (coScript != NULL) {
+        coScript->emitValueChanged();
     }
 }
 
@@ -780,10 +780,10 @@ void ControllerEngine::trigger(QString group, QString name) {
 QScriptValue ControllerEngine::connectControl(
         QString group, QString name, QScriptValue callback, bool disconnect) {
     ConfigKey key(group, name);
-    ControlObjectScript* cos = getControlObjectScript(group, name);
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
     QScriptValue function;
 
-    if (cos == NULL) {
+    if (coScript == NULL) {
         qWarning() << "ControllerEngine: script connecting [" << group << "," << name
                    << "], which is non-existent. ignoring.";
         return QScriptValue();
@@ -863,7 +863,7 @@ QScriptValue ControllerEngine::connectControl(
             conn.id = uuid.toString();
         }
 
-        cos->connectScriptFunction(conn);
+        coScript->connectScriptFunction(conn);
 
         m_connectedControls.insert(key, conn);
         return m_pEngine->newQObject(
@@ -881,14 +881,14 @@ QScriptValue ControllerEngine::connectControl(
    Output:  true if successful
    -------- ------------------------------------------------------ */
 void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
-    ControlObjectScript* cos = getControlObjectScript(conn.key.group, conn.key.item);
+    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
 
     if (m_pEngine == NULL) {
         return;
     }
 
     if (m_connectedControls.remove(conn.key, conn) > 0) {
-        bool ret = cos->disconnectScriptFunction(conn);
+        bool ret = coScript->disconnectScriptFunction(conn);
         DEBUG_ASSERT(ret);
     } else {
         qWarning() << "Could not Disconnect connection" << conn.id;
