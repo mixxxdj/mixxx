@@ -1,7 +1,8 @@
 /***********************************************************************
  * ==============             User Options             =================
- * TrackEndWarning
- * ---------------
+ *******************
+ * TrackEndWarning *
+ *******************
  * By default, when you reach the end of the track, the jog wheel are flashing.
  * set this variable just below to "false" instead of "true"
  * in order to disable this behaviour by default.
@@ -9,15 +10,35 @@
  * (idea by be.ing, member of the Mixxx team)
  **************************/
 var TrackEndWarning = true;
-/**************************
- *  scriptpause
- * ---------------
+/****************
+ *  scriptpause *
+ ****************
  * period (in ms) while the script will be paused when sending messages
  * to the controller in order to avoid too much data flow at once in the same time.
  *  - default value : 5 ms
  *  - To disable : 0;
  **************************/
 var scriptpause = 5;
+
+/****************************
+ * Constants for scratching *
+ ****************************
+ * Beatpad jog wheel is 800 intervals per revolution.
+ * but the value has to be multiplied by 2 because
+ * the scratch takes into account the track_samples in background
+ * wich is multiplied by 2 when the track is stereo
+ ***************************/
+var intervalsPerRev = 1600,
+    rpm = 33 + 1 / 3,  //Like a real vinyl !!! :)
+    alpha = 1.0 / 8,   //Adjust to suit.
+    beta = alpha / 32; //Adjust to suit.
+
+/*****************************
+ * Constants for Jog Bending *
+ *****************************
+ * benConst is the acceleration parameter
+ ************************ ***/
+var bendConst = 1/4; // Adjust to suit.
 
 
 /************************  GPL v2 licence  *****************************
@@ -53,13 +74,21 @@ var scriptpause = 5;
  *            - More comment in code
  *            - Moved scratching constants with the global constants
  *            - Fixed Jog Bending and fast search
+ *            - Sysex identification of the conttroller (nice print out in midiDebug). 
+ *              
  * 2016-01-12 - Fixed FX effect selection on deck 2 (was selecting the entire chain instead (SHIFT+FX Select)
  *            - Fixed SHIFT+PFL on the right deck
- * 
+ * 2016-01-13 - removed a few unused variables,a useless retun statement, correced typos,
+ *            - modified "Jogger" object
+ *                  --> Autocut feature (made it more "reusable")
+ *                  --> model "A" and model "B" controller parameter
+ *            - move scratching and jog bending constant in user parameters section
+ *            - comments formatting
+ *
  * This is a neverending story...
  ***********************************************************************
  *                           GPL v2 licence
- *                           -------------- 
+ *                           --------------
  * Reloop Beatpad controller script script 1.3 for Mixxx 2.0+
  * Copyright (C) 2015-2016 Chloé AVRILLON
  *
@@ -67,12 +96,12 @@ var scriptpause = 5;
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -88,7 +117,7 @@ var scriptpause = 5;
 
 function ReloopBeatpad() {}
 
-ReloopBeatpad(); // Very important ! Initializes the declared function, yep
+ReloopBeatpad(); // Very important ! Initializes rusable objects.
 
 // Array of Objects can be created
 ReloopBeatpad.decks = [];
@@ -119,31 +148,18 @@ var ON = 0x7F,
     HardwareLight = false,
     // Constant for special handling of some buttons
     QUICK_PRESS = 1, DOUBLE_PRESS = 2, LONG_PRESS = 3,
-    
-    // Constants for scratching :
-    // Beatpad jog wheel is 800 intervals per revolution.
-    // but the value has to be multiplied by 2 because
-    // the scratch takes into account the track_samples in background
-    // wich is multiplied by 2 when the track is stereo 
-    intervalsPerRev = 1600,
-    rpm = 33 + 1 / 3,  //Like a real vinyl !!! :)
-    alpha = 1.0 / 8,   //Adjust to suit.
-    beta = alpha / 32, //Adjust to suit.
-    
-    // Constant for Jog Bending :
-    // This is the acceleration parameter
-    bendConst = 1/4, // Adjust to suit.
+
     // Sysex messages :
-    // This Sysex message permits to ask the Reloop Beatpad for a complete 
+    // This Sysex message permits to ask the Reloop Beatpad for a complete
     // status of it's buttons, knobs and faders.
     // It is not used in the script anymore, Mixxx does it automatically.
     // just after the call to the init() function.
     // I leave it as a reference, commented.
     // ControllerStatusSysex = [0xF0, 0x26, 0x2D, 0x65, 0x22, 0xF7],
-    
+
     // This Sysex message asks the controller (it's very generic and works
     // for a lot of MIDI controllers). Sending this to te controller will
-    // be followed by a Sysex sent by the controllers giving some 
+    // be followed by a Sysex sent by the controllers giving some
     // values that permits to identify it (have a look far at the end
     // of this mapping script
     SysexIDRequest = [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
@@ -176,21 +192,21 @@ function intpart(n) {
     }
 }
 
-function toggleValue(group,key) { 
+function toggleValue(group,key) {
     engine.setValue(group,key,!engine.getValue(group,key));
 }
 
 function IsStereo(group) {
     // this is an integer
     var d1 = engine.getValue(group, "duration");
-    //this is a real value
+    // this is a real value
     var d2 = engine.getValue(group, "track_samples") / engine.getValue(group, "track_samplerate");
     if (d1==d2) {
         return false;
     } else {
         if  ( (d1 < Math.floor(d2)) && (d1 < Math.ceil(d2)) ) {
             return false;
-        } else { 
+        } else {
             return true;
         }
     }
@@ -207,18 +223,18 @@ function RealDuration(group) {
     } else {
         // this is an integer :
         var d1 = engine.getValue(group, "duration");
-        //this is a real value :
+        // this is a real value :
         var d2 = engine.getValue(group, "track_samples") / engine.getValue(group, "track_samplerate");
 
-        if (d1==d2) { 
-            //it is mono
+        if (d1==d2) {
+            // it is mono
             return d2;
         } else {
             if  ( (d1 > Math.floor(d2)) && (d1 < Math.ceil(d2)) ) {
-                //It is mono
+                // It is mono
                 return d2;
-            } else { 
-                //It is stereo
+            } else {
+                // It is stereo
                 return d2/2;
             }
         }
@@ -243,7 +259,7 @@ function TurnLEDsOff() {
 }
 
 // Constants
-//======================================================================
+// ======================================================================
 ReloopBeatpad.MIDI = {
     rec: 0x41,
     Trackpush: 0x46,
@@ -276,7 +292,7 @@ ReloopBeatpad.MIDI = {
     // Vinyl RIM Leds
     RIM_Red: 0x67,    // 1st behaviour 0x01-0x18 ; 2nd Behavior = 1st +24 ;3d behavior ON/OFF
     RIM_Blue: 0x68,   // 1st behaviour 0x05-0x08 ; 2nd Behavior = 1st -4;3d behavior ON/OFF
-    RIM_RGB: 0x69     // 4 RGB Leds 0x69~0x6C (+0--+4) : for values, see ReloopBeatpad.RGB just below 
+    RIM_RGB: 0x69     // 4 RGB Leds 0x69~0x6C (+0--+4) : for values, see ReloopBeatpad.RGB just below
 };
 
 // Colors used by the jogwheels
@@ -291,7 +307,7 @@ ReloopBeatpad.RGB = {
     white: 0x07
 };
 
-//Colors used b the PADs (in Sampler mode)
+// Colors used by the PADs (in Sampler mode)
 ReloopBeatpad.PadColor = {
     black: 0x00,
     blue: 0x01,
@@ -308,7 +324,7 @@ ReloopBeatpad.PadColor = {
 // Reusable Objects (special buttons handling, LEDs, iCUT and Jog wheels)
 // =====================================================================
 
-//LED class object
+// LED class object
 var LED = function(control, midino) {
     this.control = control;
     this.midino = midino;
@@ -318,12 +334,12 @@ var LED = function(control, midino) {
     this.flashOnceTimer = 0;
     this.flashDuration = 0;
     this.flashOnceDuration = 0;
-    
+
     this.num_ms_on = 0;
-    this.valueon = 0; 
-    this.num_ms_off = 0; 
-    this.flashCount = 0; 
-    this.relight = 0; 
+    this.valueon = 0;
+    this.num_ms_off = 0;
+    this.flashCount = 0;
+    this.relight = 0;
     this.valueoff = 0;
 };
 
@@ -366,19 +382,19 @@ LED.prototype.onOff = function(value) {
 // valueoff : like "value". That permits for instance with two colors (once red(on), once blue(off), once red(on), etc...)
 LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relight, valueoff) {
     var myself = this;
-    
-    //stop pending timers
+
+    // stop pending timers
     this.flashOff();
 
-    // init     
+    // init
     this.flashDuration = num_ms_on;
     this.num_ms_on = num_ms_on;
-    this.valueon = value; 
-    this.num_ms_off = num_ms_off; 
-    this.flashCount = flashCount; 
-    this.relight = relight; 
+    this.valueon = value;
+    this.num_ms_off = num_ms_off;
+    this.flashCount = flashCount;
+    this.relight = relight;
     this.valueoff = valueoff;
-    
+
     // 1st flash
     // This is because the permanent timer below takes
     // num_ms_on milisecs before first flash.
@@ -389,39 +405,39 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // flashcount>0 , means temporary flash, first flash already done,
         // so we don't need this part  if flashcount=1
         // permanent timer
-        
+
         this.flashTimer = engine.beginTimer( num_ms_on + num_ms_off, function(){ myself.flashOnceOn(false); } );
     }
     if (flashCount > 1) {
-        //flashcount>0 , means temporary flash, first flash already done,
-        //so we don't need this part  if flashcount=1
-        //temporary timer. The end of this timer stops the permanent flashing
-        
+        // flashcount>0 , means temporary flash, first flash already done,
+        // so we don't need this part  if flashcount=1
+        // temporary timer. The end of this timer stops the permanent flashing
+
         this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, function(){ myself.Stopflash(relight); }, true);
     }
 };
 
 // public
 LED.prototype.getFlashDuration = function() {
-    return this.flashDuration;        
+    return this.flashDuration;
 };
 
 LED.prototype.checkOn = function() {
-        return this.lit;        
+        return this.lit;
 };
 
 // private : relight=true : restore light state before it was flashing
 // this is a call back function (called in flashon() )
 LED.prototype.flashOff = function(relight) {
-    //stop permanent timer if any
+    // stop permanent timer if any
     if (this.flashTimer !== 0) {
         engine.stopTimer(this.flashTimer);
-        //reset flash variables to 0
+        // reset flash variables to 0
         this.flashTimer = 0;
     }
     if (this.flashTimer2 !== 0) {
         engine.stopTimer(this.flashTimer2);
-        //reset flash variables to 0
+        // reset flash variables to 0
         this.flashTimer2 = 0;
     }
     this.flashDuration = 0;
@@ -451,7 +467,7 @@ LED.prototype.flashOnceOn = function(relight) {
     var myself = this;
     midi.sendShortMsg(this.control, this.midino, this.valueon);
     pauseScript(scriptpause);
-    this.flashOnceDuration = this.num_ms_on;        
+    this.flashOnceDuration = this.num_ms_on;
     this.flashOnceTimer = engine.beginTimer(this.num_ms_on - scriptpause, function(){ myself.flashOnceOff(relight); }, true);
 };
 
@@ -469,8 +485,8 @@ LED.prototype.flashOnceOff = function(relight) {
         this.lit = OFF;
     }
 };
-    
-//********* special buttons handlers (SHIFT ,LOAD and SYNC buttons)
+
+// ********* special buttons handlers (SHIFT ,LOAD and SYNC buttons)
 // =======================  SingleDoubleBtn
 // Callback           : Callback function you have to provide (see end of
 //                      the code), that will return the original event
@@ -485,10 +501,10 @@ LED.prototype.flashOnceOff = function(relight) {
 //                      the button only once before it becomes a long press).
 // DoublePressTimeOut : delay in ms above wich a second press on the
 //                      button will not be considered as a potential double
-//                      but as a new press cycle event (default = 400ms).   
+//                      but as a new press cycle event (default = 400ms).
 var SingleDoubleBtn = function(Callback, DoublePressTimeOut) {
     this.channel = 0;
-    this.control = 0; 
+    this.control = 0;
     this.value = 0;
     this.status = 0;
     this.group = "";
@@ -496,7 +512,7 @@ var SingleDoubleBtn = function(Callback, DoublePressTimeOut) {
     if (DoublePressTimeOut) {
         this.DoublePressTimeOut = DoublePressTimeOut;
     } else {
-        //Sets a default value of 400 ms
+        // Sets a default value of 400 ms
         this.DoublePressTimeOut = 400;
     }
     this.ButtonCount = 0;
@@ -507,12 +523,12 @@ var SingleDoubleBtn = function(Callback, DoublePressTimeOut) {
 SingleDoubleBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
     var myself = this;
     this.channel = channel;
-    this.control = control; 
+    this.control = control;
     this.value = value;
     this.status = status;
     this.group = group;
     if (this.ButtonTimer === 0) { // first press
-    
+
         this.ButtonTimer =
             engine.beginTimer(this.DoublePressTimeOut,
                               function(){ myself.ButtonDecide(); }, true);
@@ -532,7 +548,7 @@ SingleDoubleBtn.prototype.ButtonDecide = function() {
     this.ButtonCount = 0;
 };
 
-// =======================  LongShortBtn    
+// =======================  LongShortBtn
 // Callback           : Callback function you have to provide (see end of the code), that will return
 //                      the original event parameters (channel, control, value, status, group)
 //                      and the kind of press event affecting your button (eventkind)
@@ -551,7 +567,7 @@ SingleDoubleBtn.prototype.ButtonDecide = function() {
 var LongShortBtn = function(Callback, LongPressThreshold, CallBackOKLongPress) {
     this.Callback = Callback;
     this.channel = 0;
-    this.control = 0; 
+    this.control = 0;
     this.value = 0;
     this.status = 0;
     this.group = "";
@@ -559,7 +575,7 @@ var LongShortBtn = function(Callback, LongPressThreshold, CallBackOKLongPress) {
     if (LongPressThreshold) {
         this.LongPressThreshold = LongPressThreshold;
     } else {
-        //Sets a default value of 500 ms
+        // Sets a default value of 500 ms
         this.LongPressThreshold = 500;
     }
 
@@ -570,7 +586,7 @@ var LongShortBtn = function(Callback, LongPressThreshold, CallBackOKLongPress) {
 // Timer's call back for long press
 LongShortBtn.prototype.ButtonAssertLongPress = function() {
     this.ButtonLongPress = true;
-    //the timer was stopped, we set it to zero
+    // the timer was stopped, we set it to zero
     this.ButtonLongPressTimer = 0;
     // let's take action of the long press
     // Make sure the callback is a function​ and exist
@@ -583,7 +599,7 @@ LongShortBtn.prototype.ButtonAssertLongPress = function() {
 LongShortBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
     var myself = this;
     this.channel = channel;
-    this.control = control; 
+    this.control = control;
     this.value = value;
     this.status = status;
     this.group = group;
@@ -604,39 +620,39 @@ LongShortBtn.prototype.ButtonUp = function() {
 };
 
 // =======================  LongShortDoubleBtn
-//Callback           : Callback function you have to provide (see end of
-//                     the code), that will return the original event
-//                     parameters (channel, control, value, status, group)
-//                     and the kind of press event affecting your button
-//                     (eventkind).
-//                     This callback will be triggered as soon as you
-//                     press the button a second time (Value will be
-//                     equal to DOWN), or the Long press is asserted
-//                     (value = DOWN because you are still holding down
-//                     the button or value=UP because you have realeased
-//                     the button only once before it becomes a long press).
-//LongPressThreshold : delay in ms above which a firts press on the
-//                     button will be considered as a Long press (default = 500ms).
-//DoublePressTimeOut : delay in ms above wich a second press on the
-//                     button will not be considered as a potential double
-//                     but as a new press cycle event (default = 400ms).
+// Callback           : Callback function you have to provide (see end of
+//                      the code), that will return the original event
+//                      parameters (channel, control, value, status, group)
+//                      and the kind of press event affecting your button
+//                      (eventkind).
+//                      This callback will be triggered as soon as you
+//                      press the button a second time (Value will be
+//                      equal to DOWN), or the Long press is asserted
+//                      (value = DOWN because you are still holding down
+//                      the button or value=UP because you have realeased
+//                      the button only once before it becomes a long press).
+// LongPressThreshold : delay in ms above which a firts press on the
+//                      button will be considered as a Long press (default = 500ms).
+// DoublePressTimeOut : delay in ms above wich a second press on the
+//                      button will not be considered as a potential double
+//                      but as a new press cycle event (default = 400ms).
 var LongShortDoubleBtn = function(Callback, LongPressThreshold, DoublePressTimeOut) {
     this.Callback = Callback;
     this.channel = 0;
-    this.control = 0; 
+    this.control = 0;
     this.value = 0;
     this.status = 0;
     this.group = "";
     if (LongPressThreshold) {
         this.LongPressThreshold = LongPressThreshold;
     } else {
-        //Sets a default value of 500 ms
+        // Sets a default value of 500 ms
         this.LongPressThreshold = 500;
     }
     if (DoublePressTimeOut) {
         this.DoublePressTimeOut = DoublePressTimeOut;
     } else {
-        //Sets a default value of 400 ms
+        // Sets a default value of 400 ms
         this.DoublePressTimeOut = 400;
     }
     this.ButtonTimer = 0;
@@ -648,7 +664,7 @@ var LongShortDoubleBtn = function(Callback, LongPressThreshold, DoublePressTimeO
 // Timer's call back for long press
 LongShortDoubleBtn.prototype.ButtonAssertLongPress = function() {
     this.ButtonLongPress = true;
-    //the timer was stopped, we set it to zero
+    // the timer was stopped, we set it to zero
     this.ButtonLongPressTimer = 0;
     // let's take action of the long press
     this.ButtonDecide();
@@ -661,12 +677,12 @@ LongShortDoubleBtn.prototype.ButtonAssert1Press = function() {
     // for sure it is a single click (short or long), we will know
     // when button will be released or when longtimer will stop by itself
 
-    //the timer was stopped, we set it to zero
+    // the timer was stopped, we set it to zero
     this.ButtonTimer = 0;
     this.ButtonCount = 1;
     if (this.ButtonLongPressTimer === 0) {
         // long press timer was stopped (short press)
-        //take action
+        // take action
         this.ButtonDecide();
     }
 };
@@ -675,15 +691,15 @@ LongShortDoubleBtn.prototype.ButtonAssert1Press = function() {
 LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value, status, group) {
     var myself = this;
     this.channel = channel;
-    this.control = control; 
+    this.control = control;
     this.value = value;
     this.status = status;
     this.group = group;
-    
-    if (this.ButtonCount === 0) { //first press (inits)
+
+    if (this.ButtonCount === 0) { // first press (inits)
         // 1st press
         this.ButtonCount = 1;
-        //and short press
+        // and short press
         this.ButtonLongPress = false;
         this.ButtonLongPressTimer =
             engine.beginTimer(this.LongPressThreshold,
@@ -694,28 +710,28 @@ LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value, stat
                               function(){ myself.ButtonAssert1Press(); },
                               true);
     } else if (this.ButtonCount == 1) { // 2nd press (before short timer's out)
-        // stop timers...           
+        // stop timers...
         if (this.ButtonLongPressTimer !== 0) {
             engine.stopTimer(this.ButtonLongPressTimer);
             this.ButtonLongPressTimer = 0;
         }
-        //we stopped the timer, we have to set it to zero.
-        //You must have this reflex : "stopTimer(timer)/timer=0" in mind
-        //so that you can test later on if it is active or not. Other else
-        //it's value stays with the one given by engine.beginTimer
+        // we stopped the timer, we have to set it to zero.
+        // You must have this reflex : "stopTimer(timer)/timer=0" in mind
+        // so that you can test later on if it is active or not. Other else
+        // it's value stays with the one given by engine.beginTimer
 
-        //"stopTimer(timer)/timer=0"
+        // "stopTimer(timer)/timer=0"
         if (this.ButtonTimer !== 0) {
             engine.stopTimer(this.ButtonTimer);
             this.ButtonTimer = 0 ;
         }
 
-        //2nd press
+        // 2nd press
         this.ButtonCount = 2;
 
         // ...and take action immediatly
         this.ButtonDecide();
-    } //else :
+    } // else :
         // 2nd press after short timer's out, this cannot happen,
         // do nothing
 };
@@ -755,7 +771,7 @@ LongShortDoubleBtn.prototype.ButtonDecide = function() {
             this.Callback(this.channel, this.control, this.value, this.status, this.group, QUICK_PRESS);
         }
     }
-    //re-init
+    // re-init
     this.ButtonCount = 0;
     this.ButtonLongPress = false;
 };
@@ -774,9 +790,9 @@ LongShortDoubleBtn.prototype.ButtonDecide = function() {
 //      "this mode simulates a scratch routine. When the jog wheel is turned back
 //      the crossfader closes, when the jog wheel is turned forward the crossfader
 //      will open."
-// In Practice : DJAY software is closing/opening the crossfader 
+// In Practice : DJAY software is closing/opening the crossfader
 //      quicly without taking into account the direction of the whheel.
-//      Here I am trying to stick with the reloop explanation : 
+//      Here I am trying to stick with the reloop explanation :
 //      it is the "as it is supposed to be done"
 var AutoCut = function (deckNum) {
     this.deckNum = deckNum;
@@ -799,7 +815,7 @@ AutoCut.prototype.FaderCut = function(jogValue) {
         // Backward=-1 (close), forward =0 (open)
         if (direction > 0) {
             direction = 0;
-        } 
+        }
         //  Left Deck ? direction = 0 (open : crossfader to zéro) or 1 (close : crossfader to the right)
         // Right Deck ? direction = 0 (open : crossfader to zéro) or -1 (close : crossfader to the left)
         if (this.deckNum == 1) {
@@ -821,13 +837,20 @@ AutoCut.prototype.Off = function() {
 // Jog wheel management (scratching, bending, ...)
 // ******
 // Thank you to the authors of the Vestax VCI 400 mapping script
-var Jogger = function (group, deckNum) {
+// model : model of your controller, should be "A" or "B".
+// Your controller is a "Model A" controller for scratching,
+// if it centers on 0.
+// Your controller is a "Model B" controller for scratching,
+// if it centers on 0x40 (64)
+// See http://www.mixxx.org/wiki/doku.php/midi_scripting#scratching
+var Jogger = function (group, deckNum, model) {
     this.deckNum = deckNum;
     this.group = group;
     this.wheelTouchInertiaTimer = 0;
     this.iCUT = new AutoCut(deckNum);
+    this.model = model;
 };
-    
+
 Jogger.prototype.finishWheelTouch = function() {
     var myself = this;
     this.wheelTouchInertiaTimer = 0;
@@ -842,32 +865,28 @@ Jogger.prototype.finishWheelTouch = function() {
         // Instead, keep scratch on until the platter is not moving.
         var scratchRate = Math.abs(engine.getValue(this.group, "scratch2"));
         if (scratchRate < 0.01) {
-            // The platter is basically stopped, now we can disable 
+            // The platter is basically stopped, now we can disable
             // scratch and hand off to jogging.
             this.iCUT.Off();
             engine.scratchDisable(this.deckNum, false);
         } else {
             // Check again soon.
-            this.wheelTouchInertiaTimer = 
-                engine.beginTimer(100, 
+            this.wheelTouchInertiaTimer =
+                engine.beginTimer(100,
                                 function(){ myself.finishWheelTouch(); },
                                 true);
         }
     }
 };
 
-Jogger.prototype.onWheelTouch = function(control, value) {
+Jogger.prototype.onWheelTouch = function(value,Do_iCut) {
     var myself = this;
-    // if "control"<0x40, then the DJ is doing a SHIFT+JogWheel (iCut with Dejay from Algorriddim)
-    // if "Jog Scratch" mode is activated on the Beatpad, we have for the "control" value
-    // Left JogWheel --> 0x63, +SHIFT --> 0x23
-    // Right JogWheel --> 0x65, +SHIFT --> 0x25
-    if (control < 0x40) {
+    if (Do_iCut) {
         this.iCUT.On();
     } else {
         this.iCUT.Off();
     }
-    
+
     if (this.wheelTouchInertiaTimer !== 0) {
         // The wheel was touched again, reset the timer.
         engine.stopTimer(this.wheelTouchInertiaTimer);
@@ -886,16 +905,23 @@ Jogger.prototype.onWheelTouch = function(control, value) {
             // Just do it now.
             this.finishWheelTouch();
         } else { // If button up
-            this.wheelTouchInertiaTimer = 
-                engine.beginTimer(inertiaTime, 
+            this.wheelTouchInertiaTimer =
+                engine.beginTimer(inertiaTime,
                                 function(){ myself.finishWheelTouch(); },
                                 true);
         }
     }
 };
 
-Jogger.prototype.onWheelMove = function(control, value) {
-    var jogValue = value - 0x40;
+Jogger.prototype.onWheelMove = function(value, Do_iCut) {
+    var jogValue;
+    if (this.model=="A") {
+        if (value-64 > 0) jogValue = value - 128;
+        else jogValue = value;
+    } else { // Model B controller
+      jogValue = value - 0x40;
+    }
+
     // Note that we always set the jog value even if scratching is active.  This seems
     // to create a better handoff between scratching and not-scratching.
     if (engine.getValue(this.group, "play")) {
@@ -908,7 +934,7 @@ Jogger.prototype.onWheelMove = function(control, value) {
         // if "Jog Scratch" mode is activated on the Beatpad, we have for the "control" value
         // Left JogWheel  --> 0x63, +SHIFT --> 0x23
         // Right JogWheel --> 0x65, +SHIFT --> 0x25
-        if (control < 0x40) {
+        if (Do_iCut) {
             this.iCUT.On();
         } else {
             this.iCUT.Off();
@@ -1002,7 +1028,7 @@ ReloopBeatpad.rgbLEDs.prototype.setshow = function(showname, color1, color2, col
 };
 
 ReloopBeatpad.rgbLEDs.prototype.updatecontroller = function() {
-    //null="transparent"
+    // null="transparent"
     var tosend = [null, null, null, null];
     var showname, i, j, k;
     var pausecount = 0;
@@ -1085,7 +1111,7 @@ ReloopBeatpad.rgbLEDs.prototype.flashOn = function(num_ms_on, RGBColor, num_ms_o
         // so we don't need this part  if flashcount=1
         // permanent timer
         this.flashTimer = engine.beginTimer( num_ms_on + num_ms_off,
-                                    function(){ myself.flashOnceOn(true); } ); 
+                                    function(){ myself.flashOnceOn(true); } );
     }
     if (flashCount > 1) {
         // flashcount>0 , means temporary flash, first flash already done,
@@ -1231,7 +1257,7 @@ ReloopBeatpad.rgbLEDs.prototype.notloaded = function(value) {
     this.setshow("show4", RGBColor);
     this.activateshow("show4", value);
 };
-    
+
 // ******************************************************************
 // Sampler bank management
 // *********
@@ -1395,12 +1421,14 @@ ReloopBeatpad.control.prototype.checkOn = function() {
     return checkOn;
 };
 
-// ******************************************************************
-// Decks
-// *********
 ReloopBeatpad.control.prototype.toggle = function(value) {
     toggleValue(this.group, this.key);
 };
+
+// ******************************************************************
+// Decks
+// *********
+
 
 ReloopBeatpad.deck = function(deckNum) {
     this.deckNum = deckNum;
@@ -1411,17 +1439,12 @@ ReloopBeatpad.deck = function(deckNum) {
     this.CurrentEffectRack = 1;
     this.loaded = false;
     this.timers = [];
-    this.state = [];
-    this.lastFader = []; // Last value of each channel/cross fader
-    this.lastEQs = [[]];
     this.JogScratchStatus = false;
     this.JogSeekStatus = false;
     this.FX_ONStatus = false;
     this.LoopStatus = false;
     this.PadMode = CUEMODE;
-    this.scratching = [];
-    this.seekingfast = [];
-    this.jogbending = [];
+    this.seekingfast = true;
     this.filterligthshowstatus = 0;
     this.looplightshowstatus = 0;
 
@@ -1430,8 +1453,9 @@ ReloopBeatpad.deck = function(deckNum) {
     this.looppadstatus = 0;
     this.InstantFXBtnDown = false;
 
-    this.Jog = new Jogger(this.group, this.deckNum);
-    
+    //The reloop Beatpad is a model "B" controller (see the Jogger declaration/constructor
+    this.Jog = new Jogger(this.group, this.deckNum,"B");
+
     // for the deck--buttons, sliders, etc--are associated with
     // the deck using this array.
     this.controls = [];
@@ -1463,11 +1487,11 @@ ReloopBeatpad.deck.prototype.TrackIsLoaded = function() {
     return TrackIsLoaded(this.group);
 };
 
-// trigger some controls if shift is pressed in order to update 
+// trigger some controls if shift is pressed in order to update
 // some LEDs in SHIFT mode/non SHIFT mode.
 // some LEDs of the Beatpad buttons can have two states, one in SHIFT
 // mode, one in Regular mode and can be updated only once SHIFT is
-// pressed or not.   
+// pressed or not.
 ReloopBeatpad.deck.prototype.triggershift = function() {
     var i;
     if (this.Shifted) {
@@ -1494,12 +1518,12 @@ ReloopBeatpad.deck.prototype.triggershift = function() {
 ReloopBeatpad.deck.prototype.addControl = function(arrID, ID, controlObj, addLED) {
     var arrAdd = this[arrID];
     if (addLED) {
-        //If the button can illuminate, a led object is created for it (see above).
-         
+        // If the button can illuminate, a led object is created for it (see above).
+
         controlObj.led = new LED(controlObj.control, controlObj.midino);
-        this.leds[ID] = controlObj.led;       
+        this.leds[ID] = controlObj.led;
     }
-    arrAdd[ID] = controlObj;    
+    arrAdd[ID] = controlObj;
 };
 
 
@@ -1512,7 +1536,7 @@ ReloopBeatpad.add2LEDs = function(ID, midiname, complement, addLight) {
     ReloopBeatpad.decks.D1.leds[ID] = new LED(LBtn, midino);
     ReloopBeatpad.decks.D2.leds[ID] = new LED(RBtn, midino);
 };
-    
+
 // Creating the two deck objects.
 ReloopBeatpad.decks.D1 = new ReloopBeatpad.deck("1");
 ReloopBeatpad.decks.D2 = new ReloopBeatpad.deck("2");
@@ -1521,7 +1545,7 @@ ReloopBeatpad.recordingled = new LED(MBtn, ReloopBeatpad.MIDI.rec);
 
 // ----------   Other global variables    ----------
 ReloopBeatpad.initobjects = function() {
-    var i;    
+    var i;
     // control creators
     this.cc1 = function(arrID, ID, key, midiname, complement, group, addLight) {
         var midino = ReloopBeatpad.MIDI[midiname]+complement;
@@ -1536,11 +1560,11 @@ ReloopBeatpad.initobjects = function() {
         var deck = ReloopBeatpad.decks.D2;
         deck.addControl(arrID, ID, NewControl, addLight);
     };
-    
-    this.cc = function(arrID, ID, key, midiname, complement, addLight) {         
+
+    this.cc = function(arrID, ID, key, midiname, complement, addLight) {
         this.cc1(arrID, ID, key, midiname, complement, "[Channel1]", addLight);
         this.cc2(arrID, ID, key, midiname, complement, "[Channel2]", addLight);
-    };    
+    };
 
     // All controls below associated with left or right deck.
     this.cc("controls", "load", "LoadSelectedTrack", "Load", 0, true);
@@ -1577,7 +1601,7 @@ ReloopBeatpad.initobjects = function() {
         this.cc1("controls", "sSamplerPad" + i, "sampler_bank_" + i, "SamplerPad", i - 1 + SHIFT, "[Deere]", false);
         this.cc2("controls", "sSamplerPad" + i, "sampler_bank_" + i, "SamplerPad", i - 1 + SHIFT, "[Deere]", false);
     }
-    
+
     // LEDs
 
 
@@ -1586,7 +1610,7 @@ ReloopBeatpad.initobjects = function() {
     ReloopBeatpad.add2LEDs("RimBlue", "RIM_Blue", 0, true);
 
 
-    ReloopBeatpad.add2LEDs("Loop", "Loop", 0, true); 
+    ReloopBeatpad.add2LEDs("Loop", "Loop", 0, true);
     ReloopBeatpad.add2LEDs("FX_ON", "FX_ON", 0, true);
 
     for (i = 1; i <= 4; i++) {
@@ -1625,7 +1649,7 @@ ReloopBeatpad.init = function(id, debug) {
     print("********* Initialisation process engaged *****************");
     print("1/3 : Mapping initialization");
     print("============================");
-    TurnLEDsOff();   
+    TurnLEDsOff();
 
     ReloopBeatpad.initButtonsObjects();
     ReloopBeatpad.initobjects();
@@ -1732,7 +1756,7 @@ ReloopBeatpad.init = function(id, debug) {
     // After midi controller receive this Outbound Message request SysEx Message,
     // midi controller will send the status of every item on the
     // control surface. (Mixxx will be initialized with current values)
-    
+
 
     // check if there is already something loaded on each deck (when script reinitialize)
     engine.trigger("[Channel1]", "track_samples");
@@ -1771,13 +1795,13 @@ ReloopBeatpad.init = function(id, debug) {
     for (i = 1; i <= 4; i++) {
         engine.trigger("[Deere]", "sampler_bank_" + i);
     }
-    
+
     print("Mapping script initialized.");
     print();
     print("2/3 : Checking controller");
     print("=========================");
     print("Sysex ID request... :");
-    //has to be send twice to the controller in order to work. (???)
+    // has to be send twice to the controller in order to work. (???)
     midi.sendSysexMsg(SysexIDRequest, SysexIDRequest.length);
     pauseScript(20);
 };
@@ -1795,7 +1819,7 @@ ReloopBeatpad.shutdown = function() {
 };
 
 // =====================================================================
-// Buttons, Jogs mappings 
+// Buttons, Jogs mappings
 // (All functions declared in the xml part of the mapping)
 // =====================================================================
 
@@ -1804,8 +1828,11 @@ ReloopBeatpad.shutdown = function() {
 ReloopBeatpad.WheelScratchTouch = function(channel, control, value, status, group) {
     var decknum = script.deckFromGroup(group);
     var deck = ReloopBeatpad.decks["D" + decknum]; // works out which deck we are using
-    
-    deck.Jog.onWheelTouch(control, value);
+    // if "control"<0x40, then the DJ is doing a SHIFT+JogWheel and we enable the iCut
+    // if "Jog Scratch" mode is activated on the Beatpad, we have for the "control" value
+    // Left JogWheel --> 0x63, +SHIFT --> 0x23
+    // Right JogWheel --> 0x65, +SHIFT --> 0x25
+    deck.Jog.onWheelTouch(value, (control<0x40));
 };
 
 
@@ -1813,8 +1840,7 @@ ReloopBeatpad.WheelScratchTouch = function(channel, control, value, status, grou
 ReloopBeatpad.WheelScratch = function(channel, control, value, status, group) {
     var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
-    
-    deck.Jog.onWheelMove(control, value);
+    deck.Jog.onWheelMove(value, (control<0x40));
 };
 
 ReloopBeatpad.WheelSeekTouch = function(channel, control, value, status, group) {
@@ -1834,11 +1860,10 @@ ReloopBeatpad.WheelSeek = function(channel, control, value, status, group) {
     var deck = ReloopBeatpad.decks["D" + decknum];
     // Test if we are "seeking fast". If not, it means that the DJ
     // is using the border ring, we then navigate into the track
-    // slowly (beatjump function id working way better than "fwd"or "back" 
+    // slowly (beatjump function id working way better than "fwd"or "back"
     // functions with the jogwheels for seeking the track)
     if (!deck.seekingfast) {
         engine.setValue(group, "beatjump", (value - 0x40) / 4);
-        return;
     } else {
         engine.setValue(group, "beatjump", (value - 0x40));
     }
@@ -1876,7 +1901,7 @@ ReloopBeatpad.Brake = function(channel, control, value, status, group) {
     }
 };
 
-//Censor
+// Censor
 ReloopBeatpad.ReverseRoll = function(channel, control, value, status, group) {
 
     var decknum = parseInt(group.substring(8,9));
@@ -1932,7 +1957,7 @@ ReloopBeatpad.spflBtn = function(channel, control, value, status, group) {
     }
 };
 
-//Callback for the PFL Button
+// Callback for the PFL Button
 ReloopBeatpad.OnShiftedPFLButton = function(channel, control, value, status, group, eventkind) {
     var decknum = script.deckFromGroup(group);
     var deck = ReloopBeatpad.decks["D" + decknum];
@@ -1959,7 +1984,7 @@ ReloopBeatpad.LoadBtn = function(channel, control, value, status, group) {
 ReloopBeatpad.OnLoadButton = function(channel, control, value, status, group, eventkind) {
     var decknum = script.deckFromGroup(group);
     var deck = ReloopBeatpad.decks["D" + decknum];
-    
+
     if (eventkind == LONG_PRESS) {
         engine.setValue(group, 'eject', true);
         deck.leds.load.onOff(OFF);
@@ -1976,7 +2001,7 @@ ReloopBeatpad.SyncBtn = function(channel, control, value, status, group) {
     if (value == DOWN) {
         deck.SyncButtonControl.ButtonDown(channel, control, value, status, group);
     } else {
-        deck.SyncButtonControl.ButtonUp();        
+        deck.SyncButtonControl.ButtonUp();
     }
 };
 
@@ -1995,7 +2020,7 @@ ReloopBeatpad.OnSyncButton = function(channel, control, value, status, group, ev
                 engine.setValue(group, 'play', true);
                 engine.setValue(group, 'beatsync', true);
 
-            } else { 
+            } else {
                 // We pressed sync only once, we sync the track
                 // with the other track (eventkind == QUICK_PRESS
                 engine.setValue(group, 'beatsync', true);
@@ -2066,11 +2091,11 @@ ReloopBeatpad.FX_ONBtn = function(channel, control, value, status, group) {
     }
 };
 
-//Pads Performance mode
+// Pads Performance mode
 ReloopBeatpad.ShowSamplersAndEffects = function() {
     var PadMode1 = ReloopBeatpad.decks.D1.PadMode;
     var PadMode2 = ReloopBeatpad.decks.D2.PadMode;
-    //SAMPLERMODE/ SAMPLERBANKSTATUSMODE / FXRACKSELECTMODE
+    // SAMPLERMODE/ SAMPLERBANKSTATUSMODE / FXRACKSELECTMODE
     var OpenFX = ((PadMode1 == FXMODE) || (PadMode2 == FXMODE) || (PadMode1 == FXRACKSELECTMODE) || (PadMode2 == FXRACKSELECTMODE));
     var OpenSampler = ((PadMode1 == SAMPLERMODE) || (PadMode2 == SAMPLERMODE) || (PadMode1 == SAMPLERBANKSTATUSMODE) || (PadMode2 == SAMPLERBANKSTATUSMODE));
     engine.setValue("[Samplers]", "show_samplers", OpenSampler);
@@ -2089,13 +2114,13 @@ ReloopBeatpad.InstantFXBtn = function(channel, control, value, status, group) {
     var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
 
-    if (control <= 0x30) { //(SHIFT+Btn)<=0x30
+    if (control <= 0x30) { // (SHIFT+Btn)<=0x30
         if (value == DOWN) {
             // enable spinback effect
-            engine.spinback(decknum, true); 
+            engine.spinback(decknum, true);
         } else {
             // disable spinback effect
-            engine.spinback(decknum, false); 
+            engine.spinback(decknum, false);
         }
     } else {
         deck.InstantFXBtnDown = (value == DOWN);
@@ -2135,11 +2160,11 @@ ReloopBeatpad.FXSelectPush = function(channel, control, value, status, group) {
 ReloopBeatpad.sFXSelectPush = function(channel, control, value, status, group) {
     // quick button for Instant fx : ENABLE/DISABLE
 
-    //desactivate previous pending effect
+    // desactivate previous pending effect
     if (value == DOWN) {
         toggleValue("[QuickEffectRack1_" + group + "_Effect1]", "enabled");
     }
-};  
+};
 
 ReloopBeatpad.InstantFXPad = function(channel, control, value, status, group) {
     var deck = ReloopBeatpad.decks["D" + group.substring(8, 9)];
@@ -2430,12 +2455,12 @@ ReloopBeatpad.FXSelectKnob = function(channel, control, value, status, group) {
 ReloopBeatpad.sFXSelectKnob = function(channel, control, value, status, group) {
     value = value - 0x40;
     if (value > 0) {
-        //engine.setValue("[QuickEffectRack1]", "effect_selector", value);
+        // engine.setValue("[QuickEffectRack1]", "effect_selector", value);
     }
 };
 
 ReloopBeatpad.FXParam = function(channel, control, value, status, group) {
-    //Super for EffectRack
+    // Super for EffectRack
     var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     engine.setValue("[EffectRack1_EffectUnit" + deck.CurrentEffectRack + "]", "super1", value / 128);
@@ -2457,7 +2482,7 @@ ReloopBeatpad.FilterMid = function(channel, control, value, status, group) {
 };
 
 ReloopBeatpad.FilterKnob = function(channel, control, value, status, group) {
-    //Super for QuickEffectRack1_[Channel1]
+    // Super for QuickEffectRack1_[Channel1]
     var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     var newstatus = (value > 0x40) ? 2 : 4;
@@ -2501,7 +2526,7 @@ ReloopBeatpad.OnTrackLoaded = function(value, group, control) {
     deck.leds.load.onOff((value) ? ON : OFF);
     var oldloaded = deck.loaded;
     deck.loaded = (value !== 0);
-    if (oldloaded != deck.loaded) { //if this value changed we update the jog lights
+    if (oldloaded != deck.loaded) { // if this value changed we update the jog lights
         engine.trigger(group, "playposition");
     }
 };
@@ -2551,13 +2576,13 @@ ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
                     ledindex = Math.round(23.0 * loop_position) + 1;
                     deck.leds.RimRed.onOff(ledindex);
                 } else {
-                    if (deck.JogScratchStatus) { //Spinny
+                    if (deck.JogScratchStatus) { // Spinny
                         var revolutions = value * RealDuration(group) / 1.8; //33+1/3 rev/mn=1.8 s/rev
                         var needle = intpart( (revolutions - intpart(revolutions)) * 24);
                         ledindex = Math.floor(needle) + 1;
                         deck.leds.RimRed.onOff(ledindex);
-                    } else if (deck.JogSeekStatus) { //Track position
-                        //Track position/ellapsed time
+                    } else if (deck.JogSeekStatus) { // Track position
+                        // Track position/ellapsed time
                         ledindex = Math.round(24.0 * value);
                         if (ledindex !== 0) {
                             ledindex += 24;
@@ -2591,13 +2616,13 @@ ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
 };
 
 ReloopBeatpad.OnBeatActive = function(value, group, control) {
-    //OnPlayPosition n°2 !!!
+    // OnPlayPosition n°2 !!!
     var decknum = parseInt(group.substring(8,9));
     var deck = ReloopBeatpad.decks["D" + decknum];
     if (!(deck.JogScratchStatus || deck.JogSeekStatus)) {
         if (value == 1) {
             var timeremaining = RealDuration(group) * (1 - engine.getValue(group, "playposition"));
-            if ((timeremaining <= 30) && (TrackEndWarning)) { //flashing end of track
+            if ((timeremaining <= 30) && (TrackEndWarning)) { // flashing end of track
                 engine.trigger(group, "playposition");
             } else {
                 deck.leds.RimRed.onOff(deck.beatpos * 3 + 1);
@@ -2683,12 +2708,12 @@ ReloopBeatpad.InboundSysex = function(data, length) {
     }
     /******************************************************************
      * Reloop Beatpad gives : F0 7E 00 06 02 00 20 6E 26 2D 65 22 00 00 00 21 F7
-     * The SysEx answer for an Identity Request should start with 
-     * " F07E??0602 " (0xF0, 0x7E, <channel>, 0x06, 0x02), 
-     * then the Manufacturer's ID (on 3 bytes, see some examples here), 
-     * followed by the Device Family Code, the Device Family Member Code, 
+     * The SysEx answer for an Identity Request should start with
+     * " F07E??0602 " (0xF0, 0x7E, <channel>, 0x06, 0x02),
+     * then the Manufacturer's ID (on 3 bytes, see some examples here),
+     * followed by the Device Family Code, the Device Family Member Code,
      * the Software Revision Level, ..
-     * 
+     *
      * Manufacturer's ID : 00 20 6E (Ya Horng Electronic Co LTD)
      * Device Family Code : 26 2D (USB VID = family code; 26 2D =Reloop )
      * Device Family Member Code :  65 22 (USB PID = model number; 6522 = Beatpad)
@@ -2707,8 +2732,8 @@ ReloopBeatpad.InboundSysex = function(data, length) {
          print("Model....... : Beatpad");
          print("firmware ... : v0.18");
          print("Please update the firmware of your controller");
-         print("to the latest version (0.21)"); 
-    } else { 
+         print("to the latest version (0.21)");
+    } else {
         print("Your controller won't work with this mapping, designed");
         print("for the Reloop Beatpad.");
     }
@@ -2718,6 +2743,6 @@ ReloopBeatpad.InboundSysex = function(data, length) {
     print("3/3 : Mixxx initialization");
     print("==========================");
     print("Request Beatpad Status by Mixxx.. (controller is ready) :");
-    //Automatically done by Mixxx :
-    //midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+    // Automatically done by Mixxx :
+    // midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 };
