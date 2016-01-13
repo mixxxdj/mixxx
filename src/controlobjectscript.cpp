@@ -26,17 +26,22 @@ bool ControlObjectScript::disconnectScriptFunction(
         const ControllerEngineConnection& conn) {
     bool ret = m_connectedScriptFunctions.removeAll(conn) > 0;
     if (m_connectedScriptFunctions.isEmpty()) {
-            // no script left, we can disconnected
-            disconnect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                    this, SLOT(slotValueChanged(double,QObject*)));
-            disconnect(this, SIGNAL(trigger(double, QObject*)),
-                    this, SLOT(slotValueChanged(double,QObject*)));
+        // no script left, we can disconnected
+        disconnect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
+                this, SLOT(slotValueChanged(double,QObject*)));
+        disconnect(this, SIGNAL(trigger(double, QObject*)),
+                this, SLOT(slotValueChanged(double,QObject*)));
     }
     return ret;
 }
 
 void ControlObjectScript::slotValueChanged(double value, QObject*) {
-    for(auto&& conn: m_connectedScriptFunctions) {
+    // Make a local copy of m_connectedScriptFunctions fist.
+    // This allows a script to disconnect a callback from the callback
+    // itself. Otherwise the this may crash since the disconnect call
+    // happens during conn.function.call() in the middle of the loop below.
+    QList<ControllerEngineConnection> connections = m_connectedScriptFunctions;
+    for(auto&& conn: connections) {
         QScriptValueList args;
         args << QScriptValue(value);
         args << QScriptValue(getKey().group);
