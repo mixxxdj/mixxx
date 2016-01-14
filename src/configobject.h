@@ -45,15 +45,15 @@ class ConfigKey {
     }
 
     // comparison function for ConfigKeys. Used by a QHash in ControlObject
-    inline bool operator==(const ConfigKey& other) const {
-        return group == other.group && item == other.item;
+    friend inline bool operator==(const ConfigKey& lhs, const ConfigKey& rhs) {
+        return lhs.group == rhs.group && lhs.item == rhs.item;
     }
 
     // comparison function for ConfigKeys. Used by a QMap in ControlObject
-    inline bool operator<(const ConfigKey& other) const {
-        int groupResult = group.compare(other.group);
+    friend inline bool operator<(const ConfigKey& lhs, const ConfigKey& rhs) {
+        int groupResult = lhs.group.compare(rhs.group);
         if (groupResult == 0) {
-            return item < other.item;
+            return lhs.item < rhs.item;
         }
         return (groupResult < 0);
     }
