@@ -451,7 +451,7 @@ void WTrackTableView::createActions() {
     connect(m_pClearBeatsAction, SIGNAL(triggered()),
             this, SLOT(slotClearBeats()));
 
-    m_pReplayGainResetAction = new QAction(tr("Reset Replay Gain"), this);
+    m_pReplayGainResetAction = new QAction(tr("Reset ReplayGain"), this);
     connect(m_pReplayGainResetAction, SIGNAL(triggered()),
             this, SLOT(slotReplayGainReset()));
 }

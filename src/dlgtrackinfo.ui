@@ -535,7 +535,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Replay Gain:</string>
+            <string>ReplayGain:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
