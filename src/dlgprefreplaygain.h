@@ -1,5 +1,5 @@
-#ifndef DLGPREFREPLAYGAIN_H_
-#define DLGPREFREPLAYGAIN_H_
+#ifndef DLGPREFREPLAYGAIN_H
+#define DLGPREFREPLAYGAIN_H
 
 #include <QWidget>
 
@@ -20,7 +20,7 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     void slotUpdateReplayGainBoost();
     void slotUpdateDefaultBoost();
     void slotSetRGEnabled();
-    void slotSetRGAnalyserEnabled();
+    void slotSetRGAnalyzerEnabled();
 
     void slotApply();
     void slotUpdate();
@@ -42,4 +42,4 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     ControlObjectSlave m_enabled;
 };
 
-#endif /* DLGPREFREPLAYGAIN_H_ */
+#endif /* DLGPREFREPLAYGAIN_H */

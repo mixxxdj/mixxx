@@ -1,14 +1,14 @@
+#include "engine/enginepregain.h"
 
 #include <QtDebug>
 
-#include "engine/enginepregain.h"
+#include "configobject.h"
 #include "controlaudiotaperpot.h"
+#include "controlobject.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
-#include "configobject.h"
-#include "controlobject.h"
 #include "util/math.h"
-#include "sampleutil.h"
+#include "util/sample.h"
 
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
 ControlPotmeter* EnginePregain::s_pDefaultBoost = NULL;
@@ -72,7 +72,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         m_bSmoothFade = true;
         m_timer.restart();
     } else {
-        // Here is the point, when ReplayGain Analyser takes its action,
+        // Here is the point, when ReplayGain Analyzer takes its action,
         // suggested gain changes from 0 to a nonzero value
         // We want to smoothly fade to this last.
         // Anyway we have some the problem that code cannot block the

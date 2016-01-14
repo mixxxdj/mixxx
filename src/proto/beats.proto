@@ -3,7 +3,7 @@ package mixxx.track.io;
 option optimize_for = LITE_RUNTIME;
 
 enum Source {
-  ANALYSER = 0;
+  ANALYZER = 0;
   FILE_METADATA = 1;
   USER = 2;
 }
@@ -11,12 +11,12 @@ enum Source {
 message Beat {
   optional int32 frame_position = 1;
   optional bool enabled = 2 [ default = true ];
-  optional Source source = 3 [ default = ANALYSER ];
+  optional Source source = 3 [ default = ANALYZER ];
 }
 
 message Bpm {
   optional double bpm = 1;
-  optional Source source = 2 [ default = ANALYSER ];
+  optional Source source = 2 [ default = ANALYZER ];
 }
 
 message BeatMap {

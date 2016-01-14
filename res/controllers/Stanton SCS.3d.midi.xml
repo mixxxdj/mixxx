@@ -3,10 +3,10 @@
     <info>
         <name>Stanton SCS.3d</name>
         <author>Sean M. Pappalardo</author>
-        <description>This is a complete mapping for a single Stanton SCS.3d touch controller controlling two virtual decks. Requires scripting.</description>
+        <description>This is a preset for a single Stanton SCS.3d touch controller controlling four virtual decks.</description>
         <wiki>http://mixxx.org/wiki/doku.php/stanton_scs.3d</wiki>
     </info>
-    <controller id="Stanton SCS.3d" port="">
+    <controller id="Stanton SCS.3d">
         <scriptfiles>
             <file filename="Stanton-SCS3d-scripts.js" functionprefix="StantonSCS3d"/>
         </scriptfiles>

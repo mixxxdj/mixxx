@@ -97,7 +97,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
         } else if (!l_STag.compare("ALBUM")) {
             pTrackMetadata->setAlbum(l_SPayload);
         } else if (!l_STag.compare("BPM")) {
-            pTrackMetadata->setBpm(l_SPayload.toFloat());
+            pTrackMetadata->setBpm(Bpm(l_SPayload.toDouble()));
         } else if (!l_STag.compare("DATE")) {
             // Prefer "DATE" over "YEAR"
             pTrackMetadata->setYear(l_SPayload.trimmed());
@@ -117,7 +117,7 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
             pTrackMetadata->setTitle(l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
             bool trackGainRatioValid = false;
-            double trackGainRatio = ReplayGain::parseGain2Ratio(l_SPayload, &trackGainRatioValid);
+            double trackGainRatio = ReplayGain::ratioFromString(l_SPayload, &trackGainRatioValid);
             if (trackGainRatioValid) {
                 ReplayGain trackGain(pTrackMetadata->getReplayGain());
                 trackGain.setRatio(trackGainRatio);

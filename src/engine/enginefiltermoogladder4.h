@@ -11,15 +11,15 @@
 // Based on C Source from R. Lindner published at public domain
 // http://musicdsp.org/showArchiveComment.php?ArchiveID=196
 
-#include "engine/engineobject.h"
-
 #include <memory.h>
 #include <stdio.h>
-#include "util/math.h"
-#include "util/timer.h"
-#include "sampleutil.h"
 
 #include <QDebug>
+
+#include "engine/engineobject.h"
+#include "util/math.h"
+#include "util/sample.h"
+#include "util/timer.h"
 
 // 'thermal voltage of a transistor'
 // defines the strange of the non linearity

@@ -9,7 +9,7 @@
 
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "util/time.h"
 #include "util/trace.h"
 
@@ -211,14 +211,13 @@ void BrowseThread::populateModel() {
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_COMMENT, item);
 
-        QString duration = Time::formatSeconds(qVariantValue<int>(
-                tio.getDuration()), false);
+        QString duration = Time::formatSeconds(tio.getDuration());
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_DURATION, item);
 
-        item = new QStandardItem(tio.getBpmStr());
+        item = new QStandardItem(tio.getBpmText());
         item->setToolTip(item->text());
         item->setData(tio.getBpm(), Qt::UserRole);
         row_data.insert(COLUMN_BPM, item);
@@ -233,12 +232,12 @@ void BrowseThread::populateModel() {
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_TYPE, item);
 
-        item = new QStandardItem(tio.getBitrateStr());
+        item = new QStandardItem(tio.getBitrateText());
         item->setToolTip(item->text());
         item->setData(tio.getBitrate(), Qt::UserRole);
         row_data.insert(COLUMN_BITRATE, item);
 
-        item = new QStandardItem(filepath);
+        item = new QStandardItem(tio.getLocation());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_LOCATION, item);
@@ -254,6 +253,13 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         item->setData(creationTime, Qt::UserRole);
         row_data.insert(COLUMN_FILE_CREATION_TIME, item);
+
+        const Mixxx::ReplayGain replayGain(tio.getReplayGain());
+        item = new QStandardItem(
+                Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
+        item->setToolTip(item->text());
+        item->setData(item->text(), Qt::UserRole);
+        row_data.insert(COLUMN_REPLAYGAIN, item);
 
         rows.append(row_data);
         ++row;

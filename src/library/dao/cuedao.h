@@ -23,7 +23,7 @@ class CueDAO : public DAO {
     void initialize();
     int cueCount();
     int numCuesForTrack(TrackId trackId);
-    QList<Cue*> getCuesForTrack(TrackId trackId) const;
+    QList<CuePointer> getCuesForTrack(TrackId trackId) const;
     bool deleteCuesForTrack(TrackId trackId);
     bool deleteCuesForTracks(const QList<TrackId>& trackIds);
     bool saveCue(Cue* cue);
@@ -32,10 +32,10 @@ class CueDAO : public DAO {
     // method the first parameter here won't be necessary.
     void saveTrackCues(TrackId trackId, TrackInfoObject*);
   private:
-    Cue* cueFromRow(const QSqlQuery& query) const;
+    CuePointer cueFromRow(const QSqlQuery& query) const;
 
     QSqlDatabase& m_database;
-    mutable QMap<int, Cue*> m_cues;
+    mutable QMap<int, CuePointer> m_cues;
 };
 
 #endif /* CUEDAO_H */

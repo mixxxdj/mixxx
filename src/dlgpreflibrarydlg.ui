@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>546</width>
+    <width>593</width>
     <height>791</height>
    </rect>
   </property>
@@ -117,9 +117,9 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="builtInFormats">
         <property name="text">
-         <string>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</string>
+         <string></string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>

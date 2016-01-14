@@ -13,6 +13,7 @@
 #include "controllers/controller.h"
 #include "controllers/hid/hidcontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "util/duration.h"
 
 struct libusb_device_handle;
 struct libusb_context;
@@ -27,7 +28,7 @@ class BulkReader : public QThread {
     void stop();
 
   signals:
-    void incomingData(QByteArray data);
+    void incomingData(QByteArray data, mixxx::Duration timestamp);
 
   protected:
     void run();

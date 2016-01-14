@@ -1,6 +1,6 @@
 #include "sources/soundsource.h"
 
-#include "metadata/trackmetadatataglib.h"
+#include "track/trackmetadatataglib.h"
 
 namespace Mixxx {
 

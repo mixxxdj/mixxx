@@ -15,7 +15,7 @@
 
 class PresetInfoEnumerator {
   public:
-    PresetInfoEnumerator(ConfigObject<ConfigValue> *pConfig);
+    PresetInfoEnumerator(const QStringList& searchPaths);
     virtual ~PresetInfoEnumerator();
 
     bool isValidExtension(const QString extension);

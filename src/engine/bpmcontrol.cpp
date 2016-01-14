@@ -154,8 +154,14 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
     // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
     if (m_pBeats) {
-        m_pLocalBpm->set(m_pBeats->getBpmAroundPosition(getCurrentSample(),
-                                                        kLocalBpmSpan));
+        const double beats_bpm =
+                m_pBeats->getBpmAroundPosition(getCurrentSample(),
+                                               kLocalBpmSpan);
+        if (beats_bpm != -1) {
+            m_pLocalBpm->set(beats_bpm);
+        } else {
+            m_pLocalBpm->set(bpm);
+        }
     } else {
         m_pLocalBpm->set(bpm);
     }
@@ -809,6 +815,9 @@ double BpmControl::updateLocalBpm() {
     if (m_pBeats) {
         local_bpm = m_pBeats->getBpmAroundPosition(getCurrentSample(),
                                                    kLocalBpmSpan);
+        if (local_bpm == -1) {
+            local_bpm = m_pFileBpm->get();
+        }
     } else {
         local_bpm = m_pFileBpm->get();
     }

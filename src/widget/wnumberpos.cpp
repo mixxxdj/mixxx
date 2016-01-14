@@ -92,10 +92,10 @@ void WNumberPos::slotSetValue(double dValue) {
     QString valueString;
     if (valueMillis >= 0) {
         valueString = m_skinText % Time::formatSeconds(
-                valueMillis / Time::kMillisPerSecond, true);
+                valueMillis / Time::kMillisPerSecond, Time::Precision::CENTISECONDS);
     } else {
         valueString = m_skinText % QLatin1String("-") % Time::formatSeconds(
-                -valueMillis / Time::kMillisPerSecond, true);
+                -valueMillis / Time::kMillisPerSecond, Time::Precision::CENTISECONDS);
     }
     setText(valueString);
 }

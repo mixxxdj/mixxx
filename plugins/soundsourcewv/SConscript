@@ -15,9 +15,14 @@ wv_sources = [
     "sources/soundsource.cpp",
     "sources/soundsourceplugin.cpp",
     "sources/audiosource.cpp",
-    "metadata/trackmetadata.cpp",
-    "metadata/trackmetadatataglib.cpp",
-    "util/replaygain.cpp"
+    "util/samplebuffer.cpp",
+    "util/singularsamplebuffer.cpp",
+    "util/sample.cpp",
+    "track/trackmetadata.cpp",
+    "track/trackmetadatataglib.cpp",
+    "track/tracknumbers.cpp",
+    "track/replaygain.cpp",
+    "track/bpm.cpp"
 ]
 
 
@@ -46,6 +51,3 @@ if int(build.flags['wv']):
     Return("sswv_bin")
 else:
     Return("")
-
-
-

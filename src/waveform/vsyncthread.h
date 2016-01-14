@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QSemaphore>
 #include <QPair>
+#include <QGLWidget>
 
 #if defined(__APPLE__)
 
@@ -12,26 +13,20 @@
 
 #else
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#ifndef QT_OPENGL_ES_2
     #include <qx11info_x11.h>
+    #include <GL/glx.h>
+    //#include "GL/glxext.h"
+    // clean up after Xlib.h, which #defines values that conflict with QT.
+    #undef Bool
+    #undef Unsorted
+    #undef None
+#endif // QT_OPENGL_ES_2
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
 
 #include "util/performancetimer.h"
 
-
-#if defined(__APPLE__)
-
-#elif defined(__WINDOWS__)
-
-#else
-    #include <GL/glx.h>
-    #include "GL/glxext.h"
-    // clean up after Xlib.h, which #defines values that conflict with QT.
-    #undef Bool
-    #undef Unsorted
-#endif
-
-class QGLWidget;
 class GuiTick;
 class MixxxMainWindow;
 
@@ -74,7 +69,7 @@ class VSyncThread : public QThread {
 
   private:
     bool m_bDoRendering;
-    QGLWidget *m_glw;
+    //QGLWidget *m_glw;
 
 #if defined(__APPLE__)
 
@@ -82,8 +77,9 @@ class VSyncThread : public QThread {
 
 #else
     void initGlxext(QGLWidget* glw);
-    bool glXExtensionSupported(Display *dpy, int screen, const char *extension);
+    //bool glXExtensionSupported(Display *dpy, int screen, const char *extension);
 
+    /* Currently unused, but probably part of later a hardware sync solution
     PFNGLXGETVIDEOSYNCSGIPROC glXGetVideoSyncSGI;
     PFNGLXWAITVIDEOSYNCSGIPROC glXWaitVideoSyncSGI;
 
@@ -98,12 +94,11 @@ class VSyncThread : public QThread {
     PFNGLXWAITFORSBCOMLPROC  glXWaitForSbcOML;
 
     PFNGLXSWAPINTERVALSGIPROC glXSwapIntervalMESA;
+    */
 
-    uint m_counter;
-
-    int64_t m_target_msc;
-    Display* m_dpy;
-    GLXDrawable m_drawable;
+    //int64_t m_target_msc;
+    //Display* m_dpy;
+    //GLXDrawable m_drawable;
 
 #endif
 

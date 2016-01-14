@@ -1,8 +1,8 @@
-#include <QtDebug>
-
 #include "effects/native/echoeffect.h"
 
-#include "sampleutil.h"
+#include <QtDebug>
+
+#include "util/sample.h"
 
 #define INCREMENT_RING(index, increment, length) index = (index + increment) % length
 #define RAMP_LENGTH 500

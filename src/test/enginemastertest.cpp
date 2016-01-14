@@ -3,14 +3,13 @@
 
 #include <QtDebug>
 
-#include "util/types.h"
-#include "util/defs.h"
-#include "engine/enginemaster.h"
-#include "engine/enginechannel.h"
-#include "sampleutil.h"
 #include "controlobjectslave.h"
-
+#include "engine/enginechannel.h"
+#include "engine/enginemaster.h"
 #include "test/mixxxtest.h"
+#include "util/defs.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 using ::testing::Return;
 using ::testing::_;
