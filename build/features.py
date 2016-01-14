@@ -64,6 +64,7 @@ class HSS1394(Feature):
 
 
 class HID(Feature):
+    INTERNAL_LINK = False
     HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-rc1'
 
     def description(self):
@@ -83,10 +84,17 @@ class HID(Feature):
             return
  
         if build.platform_is_linux:
+            # Try using system lib
             if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
-	        raise Exception('Could not find libhidapi-libusb.')
-	        return
-        
+                # No System Lib found
+                self.INTERNAL_LINK = True
+                build.env.ParseConfig(
+                    'pkg-config libusb-1.0 --silence-errors --cflags --libs')
+                if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
+                        not conf.CheckHeader('libusb-1.0/libusb.h')):
+                    raise Exception(
+                        'Did not find the libusb 1.0 development library or its header file')
+
             # Optionally add libpthread and librt. Some distros need this.
             conf.CheckLib(['pthread', 'libpthread'])
             conf.CheckLib(['rt', 'librt'])
@@ -96,6 +104,7 @@ class HID(Feature):
             build.env.Append(LINKFLAGS='-pthread')
 
         else:
+            self.INTERNAL_LINK = True
             build.env.Append(
                 CPPPATH=[self.HIDAPI_INTERNAL_PATH])
             if build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
@@ -110,14 +119,20 @@ class HID(Feature):
                    'controllers/hid/hidenumerator.cpp',
                    'controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
-        if build.platform_is_windows:
-            # Requires setupapi.lib which is included by the above check for
-            # setupapi.
-            sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
-        elif build.platform_is_osx:
-            sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
+        if self.INTERNAL_LINK:
+            if build.platform_is_windows:
+                # Requires setupapi.lib which is included by the above check for
+                # setupapi.
+                sources.append(
+                    os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
+            elif build.platform_is_linux:
+                # hidapi compiles the libusb implementation by default on Linux
+                sources.append(
+                    os.path.join(self.HIDAPI_INTERNAL_PATH, 'libusb/hid.c'))
+            elif build.platform_is_osx:
+                sources.append(
+                    os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
+
         return sources
 
 
