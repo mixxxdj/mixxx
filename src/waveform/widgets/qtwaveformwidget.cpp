@@ -2,7 +2,7 @@
 #include <QGLContext>
 #include <QtDebug>
 
-#include "qtwaveformwidget.h"
+#include "waveform/widgets/qtwaveformwidget.h"
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
@@ -12,7 +12,7 @@
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 
 #include "util/performancetimer.h"
 

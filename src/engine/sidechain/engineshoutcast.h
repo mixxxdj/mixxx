@@ -28,7 +28,6 @@
 
 #include "configobject.h"
 #include "controlobject.h"
-#include "controlobjectthread.h"
 #include "controlobjectslave.h"
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/networkstreamworker.h"

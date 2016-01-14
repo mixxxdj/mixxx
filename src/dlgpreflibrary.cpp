@@ -334,7 +334,7 @@ void DlgPrefLibrary::slotApply() {
     }
 
     // TODO(rryan): Don't save here.
-    m_pconfig->Save();
+    m_pconfig->save();
 }
 
 void DlgPrefLibrary::slotRowHeightValueChanged(int height) {

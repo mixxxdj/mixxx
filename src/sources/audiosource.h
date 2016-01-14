@@ -184,6 +184,7 @@ class AudioSource: public UrlResource, public AudioSignal {
 
   protected:
     explicit AudioSource(const QUrl& url);
+    explicit AudioSource(const AudioSource& other) = default;
 
     inline static bool isValidFrameCount(SINT frameCount) {
         return kFrameCountZero <= frameCount;

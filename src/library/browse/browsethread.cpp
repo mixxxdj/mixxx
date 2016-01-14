@@ -211,8 +211,7 @@ void BrowseThread::populateModel() {
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_COMMENT, item);
 
-        QString duration = Time::formatSeconds(qVariantValue<int>(
-                tio.getDuration()), false);
+        QString duration = Time::formatSeconds(tio.getDuration());
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);

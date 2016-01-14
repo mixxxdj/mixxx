@@ -254,7 +254,7 @@ void DlgPrefKey::slotApply() {
     }
 
     KeyUtils::setNotation(notation);
-    m_pConfig->Save();
+    m_pConfig->save();
 }
 
 void DlgPrefKey::slotUpdate() {

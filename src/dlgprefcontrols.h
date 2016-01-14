@@ -25,7 +25,6 @@
 #include "preferences/dlgpreferencepage.h"
 
 class ControlObjectSlave;
-class ControlObjectThread;
 class ControlPotmeter;
 class SkinLoader;
 class PlayerManager;
@@ -51,30 +50,32 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     void slotSetRateRange(int pos);
     void slotSetRateRangePercent(int rateRangePercent);
+    void slotSetRateDir(bool invert);
     void slotSetRateDir(int pos);
-    void slotKeylockMode(int pos);
+    void slotKeyLockMode(QAbstractButton*);
     void slotSetRateTempLeft(double);
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
     void slotSetRatePermRight(double);
-    void slotSetTooltips(int pos);
+    void slotSetTooltips();
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();
-    void slotSetPositionDisplay(int);
-    void slotSetPositionDisplay(double);
-    void slotSetAllowTrackLoadToPlayingDeck(int);
+    void slotSetTrackTimeDisplay(QAbstractButton*);
+    void slotSetTrackTimeDisplay(double);
+    void slotSetAllowTrackLoadToPlayingDeck(bool);
     void slotSetCueDefault(int);
-    void slotSetCueRecall(int);
+    void slotSetCueRecall(bool);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);
-    void slotSetStartInFullscreen(int index);
+    void slotSetStartInFullScreen(bool b);
 
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);
 
-    void slotUpdateSpeedAutoReset(int);
+    void slotUpdateSpeedAutoReset(bool);
+    void slotUpdatePitchAutoReset(bool);
 
   private:
     void notifyRebootNecessary();
@@ -87,14 +88,14 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     int cueDefaultIndexByData(int userData) const;
 
     ConfigObject<ConfigValue>* m_pConfig;
-    ControlObject* m_pControlPositionDisplay;
+    ControlObject* m_pControlTrackTimeDisplay;
     ControlObjectSlave* m_pNumDecks;
     ControlObjectSlave* m_pNumSamplers;
-    QList<ControlObjectThread*> m_cueControls;
-    QList<ControlObjectThread*> m_rateControls;
-    QList<ControlObjectThread*> m_rateDirControls;
-    QList<ControlObjectThread*> m_rateRangeControls;
-    QList<ControlObjectThread*> m_keylockModeControls;
+    QList<ControlObjectSlave*> m_cueControls;
+    QList<ControlObjectSlave*> m_rateControls;
+    QList<ControlObjectSlave*> m_rateDirControls;
+    QList<ControlObjectSlave*> m_rateRangeControls;
+    QList<ControlObjectSlave*> m_keylockModeControls;
     MixxxMainWindow *m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
@@ -102,7 +103,8 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
 
-    int m_speedAutoReset;
+    bool m_speedAutoReset;
+    bool m_pitchAutoReset;
     int m_keylockMode;
 };
 
