@@ -113,6 +113,9 @@ class HID(Feature):
                 build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
 
         build.env.Append(CPPDEFINES='__HID__')
+        if self.INTERNAL_LINK:
+            build.env.Append(
+                 CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
 
     def sources(self, build):
         sources = ['controllers/hid/hidcontroller.cpp',
