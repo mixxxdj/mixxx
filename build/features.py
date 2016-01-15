@@ -88,6 +88,7 @@ class HID(Feature):
             if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
                 # No System Lib found
                 self.INTERNAL_LINK = True
+                build.env.Append(CPPPATH=[self.HIDAPI_INTERNAL_PATH])
                 build.env.ParseConfig(
                     'pkg-config libusb-1.0 --silence-errors --cflags --libs')
                 if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
@@ -105,8 +106,7 @@ class HID(Feature):
 
         else:
             self.INTERNAL_LINK = True
-            build.env.Append(
-                CPPPATH=[self.HIDAPI_INTERNAL_PATH])
+            build.env.Append(CPPPATH=[self.HIDAPI_INTERNAL_PATH])
             if build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
                 raise Exception('Did not find the setupapi library, exiting.')
             elif build.platform_is_osx:
