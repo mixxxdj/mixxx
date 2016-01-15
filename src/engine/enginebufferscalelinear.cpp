@@ -150,7 +150,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     }
 
     // Special case -- no scaling needed!
-    if (rate_old == rate_new && (rate_new == 1.0 || rate_new == -1.0)) {
+    if (rate_diff == 0 && (rate_new == 1.0 || rate_new == -1.0)) {
         int samples_needed = buf_size;
         CSAMPLE* write_buf = buf;
 
@@ -206,14 +206,20 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         m_floorSampleOld[0] = buf[read_samples-2];
         m_floorSampleOld[1] = buf[read_samples-1];
         return samples_read;
-    }
+    } // end of no scaling case.
 
     // Simulate the loop to estimate how many frames we need
     double frames = 0;
     // We're calculating frames = 2 samples, so divide remaining buffer by 2;
-    for (int j = 0; j < buf_size / 2; ++j) {
-        frames += (j * 2 * rate_diff / buf_size) + rate_old;
-    }
+    const int bufferSizeFrames = buf_size / 2;
+    const double rate_delta = rate_diff / bufferSizeFrames;
+    // use Gaussian sum formula (n(n+1))/2 for
+    //for (int j = 0; j < bufferSizeFrames; ++j) {
+    //    frames += (j * rate_delta) + rate_old;
+    //}
+    frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2;
+    frames *= rate_delta;
+    frames += rate_old * bufferSizeFrames;
     frames = abs(frames);
 
     int unscaled_frames_needed = floor(frames);
@@ -333,7 +339,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // Smooth any changes in the playback rate over one buf_size
         // samples. This prevents the change from being discontinuous and helps
         // improve sound quality.
-        const double rate_add = fabs((i * rate_diff / buf_size) + rate_old);
+        const double rate_add = fabs((i / 2 * rate_delta) + rate_old);
 
         // increment the index for the next loop
         m_dNextFrame = m_dCurrentFrame + rate_add;
