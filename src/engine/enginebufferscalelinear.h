@@ -45,8 +45,6 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
   private:
     int do_scale(CSAMPLE* buf, const int buf_size);
 
-    /** Holds playback direction */
-    bool m_bBackwards;
     bool m_bClear;
     double m_dRate;
     double m_dOldRate;

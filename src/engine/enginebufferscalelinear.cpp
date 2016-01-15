@@ -9,7 +9,6 @@
 
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
-      m_bBackwards(false),
       m_bClear(false),
       m_dRate(1.0),
       m_dOldRate(1.0),
@@ -43,9 +42,6 @@ void EngineBufferScaleLinear::setScaleParameters(double base_rate,
 
     m_dOldRate = m_dRate;
     m_dRate = base_rate * *pTempoRatio;
-
-    // Determine playback direction
-    m_bBackwards = m_dRate < 0.0;
 }
 
 void EngineBufferScaleLinear::clear() {
