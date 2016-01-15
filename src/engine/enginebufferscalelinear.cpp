@@ -150,7 +150,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     }
 
     // Special case -- no scaling needed!
-    if (rate_old == 1.0 && rate_new == 1.0) {
+    if (rate_old == rate_new && (rate_new == 1.0 || rate_new == -1.0)) {
         int samples_needed = buf_size;
         CSAMPLE* write_buf = buf;
 
@@ -173,7 +173,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // wanted.
         while (samples_needed > 0) {
             int read_size = m_pReadAheadManager->getNextSamples(
-                    1.0, write_buf, samples_needed);
+                    rate_new, write_buf, samples_needed);
             samples_needed -= read_size;
             write_buf += read_size;
 
