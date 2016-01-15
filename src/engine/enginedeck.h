@@ -18,6 +18,8 @@
 #ifndef ENGINEDECK_H
 #define ENGINEDECK_H
 
+#include <QScopedPointer>
+
 #include "configobject.h"
 #include "controlobjectslave.h"
 #include "controlpushbutton.h"
@@ -83,6 +85,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     ControlObjectSlave* m_pSampleRate;
 
     // Begin vinyl passthrough fields
+    QScopedPointer<ControlObject> m_pInputConfigured;
     ControlPushButton* m_pPassing;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_bPassthroughIsActive;

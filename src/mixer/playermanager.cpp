@@ -337,6 +337,11 @@ void PlayerManager::addDeckInner() {
 
     Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
                            orientation, group);
+    connect(pDeck, SIGNAL(noPassthroughInputConfigured()),
+            this, SIGNAL(noDeckPassthroughInputConfigured()));
+    connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
+            this, SIGNAL(noVinylControlInputConfigured()));
+
     if (m_pAnalyzerQueue) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
@@ -440,6 +445,8 @@ void PlayerManager::addMicrophoneInner() {
     QString group = groupForMicrophone(index);
     Microphone* pMicrophone = new Microphone(this, group, index, m_pSoundManager,
                                              m_pEngine, m_pEffectsManager);
+    connect(pMicrophone, SIGNAL(noMicrophoneInputConfigured()),
+            this, SIGNAL(noMicrophoneInputConfigured()));
     m_microphones.append(pMicrophone);
 }
 

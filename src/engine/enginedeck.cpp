@@ -34,6 +34,7 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
         : EngineChannel(handle_group, defaultOrientation),
           m_pConfig(pConfig),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+          m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_enabled"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
@@ -152,6 +153,7 @@ void EngineDeck::onInputConfigured(AudioInput input) {
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
+    m_pInputConfigured->set(1.0);
     m_sampleBuffer =  NULL;
 }
 
@@ -161,6 +163,7 @@ void EngineDeck::onInputUnconfigured(AudioInput input) {
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
+    m_pInputConfigured->set(0.0);
     m_sampleBuffer = NULL;
 }
 
