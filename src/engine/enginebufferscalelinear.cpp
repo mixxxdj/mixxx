@@ -203,8 +203,8 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // blow away the fractional sample position here
         m_bufferIntSize = 0; // force buffer read
         m_dNextFrame = 0;
-        m_floorSampleOld[0] = buf[read_samples-2];
-        m_floorSampleOld[1] = buf[read_samples-1];
+        m_floorSampleOld[0] = buf[read_samples - 2];
+        m_floorSampleOld[1] = buf[read_samples - 1];
         return samples_read;
     } // end of no scaling case.
 
@@ -235,7 +235,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     // 0 is never the right answer
     int unscaled_samples_needed = math_max<int>(2, unscaled_frames_needed * 2);
 
-    bool last_read_failed = false;
+    int read_failed_count = 0;
     CSAMPLE floor_sample[2];
     CSAMPLE ceil_sample[2];
 
@@ -289,21 +289,24 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             m_bufferIntSize = m_pReadAheadManager->getNextSamples(
                     rate_new == 0 ? rate_old : rate_new,
                     m_bufferInt, samples_to_read);
-            samples_read += m_bufferIntSize;
 
-            if (m_bufferIntSize == 0 && last_read_failed) {
-                break;
+            if (m_bufferIntSize == 0) {
+                if(++read_failed_count > 1) {
+                    break;
+                } else {
+                    continue;
+                }
             }
-            last_read_failed = m_bufferIntSize == 0;
 
+            samples_read += m_bufferIntSize;
             unscaled_samples_needed -= m_bufferIntSize;
 
             // adapt the m_dCurrentFrame the index of the new buffer
-            m_dCurrentFrame -= old_bufsize / 2.;
+            m_dCurrentFrame -= old_bufsize / 2;
         }
 
         // I guess?
-        if (last_read_failed) {
+        if (read_failed_count > 1) {
             break;
         }
 
