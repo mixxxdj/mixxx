@@ -4,6 +4,19 @@
 #include <QMessageBox>
 #include <QDebug>
 
+bool TrackExport::exportTrackList(QList<QString> filenames) {
+    int i = 0;
+    for (const auto& sourceFilename : filenames) {
+        if (!exportTrack(sourceFilename)) {
+            // bail on error
+            return false;
+        }
+        ++i;
+        emit(progress(i, filenames.size()));
+    }
+    return true;
+}
+
 bool TrackExport::exportTrack(QString sourceFilename) {
     QFileInfo source_fileinfo(sourceFilename);
     const QString dest_filename =
@@ -13,30 +26,14 @@ bool TrackExport::exportTrack(QString sourceFilename) {
     // Give the user the option to overwrite existing files in the destination.
     if (dest_fileinfo.exists()) {
         if (m_overwriteMode == OverwriteMode::ASK) {
-            // QT's QFuture is not quite what we want here, so we use the STL's
-            // future class.
-            QScopedPointer<std::promise<OverwriteAnswer>> mode_promise;
-            std::future<OverwriteAnswer> mode_future = mode_promise->get_future();
-            emit(askOverwriteMode(dest_filename, mode_promise.data()));
-
-            // Block until the user tells us the answer.
-            mode_future.wait();
-
-            switch (mode_future.get()) {
+            switch (makeOverwriteRequest(dest_filename)) {
             case OverwriteAnswer::SKIP:
-                // success even though nothing happened.
-                return true;
             case OverwriteAnswer::SKIP_ALL:
-                m_overwriteMode = OverwriteMode::SKIP_ALL;
+            case OverwriteAnswer::CANCEL:
                 return true;
             case OverwriteAnswer::OVERWRITE:
-                break;
             case OverwriteAnswer::OVERWRITE_ALL:
-                m_overwriteMode = OverwriteMode::OVERWRITE_ALL;
                 break;
-            case OverwriteAnswer::CANCEL:
-                m_bStop = true;
-                return true;
             }
         }
 
@@ -69,15 +66,32 @@ bool TrackExport::exportTrack(QString sourceFilename) {
     return true;
 }
 
-bool TrackExport::exportTrackList(QList<QString> filenames) {
-    int i = 0;
-    for (const auto& sourceFilename : filenames) {
-        if (!exportTrack(sourceFilename)) {
-            // bail on error
-            return false;
-        }
-        ++i;
-        emit(progress(i, filenames.size()));
+TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(QString filename) {
+    QScopedPointer<std::promise<OverwriteAnswer>> mode_promise;
+    std::future<OverwriteAnswer> mode_future = mode_promise->get_future();
+    emit(askOverwriteMode(filename, mode_promise.data()));
+
+    // Block until the user tells us the answer.
+    mode_future.wait();
+
+    if (!mode_future.valid()) {
+        qWarning() << "TrackExport::makeOverwriteRequest invalid answer from future";
+        return OverwriteAnswer::CANCEL;
     }
-    return true;
+
+    OverwriteAnswer answer = mode_future.get();
+    switch (answer) {
+    case OverwriteAnswer::SKIP_ALL:
+        m_overwriteMode = OverwriteMode::SKIP_ALL;
+        break;
+    case OverwriteAnswer::OVERWRITE_ALL:
+        m_overwriteMode = OverwriteMode::OVERWRITE_ALL;
+        break;
+    case OverwriteAnswer::CANCEL:
+        m_bStop = true;
+        break;
+    default:;
+    }
+
+    return answer;
 }
