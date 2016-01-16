@@ -21,13 +21,12 @@ void TrackExport::run() {
 
 void TrackExport::exportTrack(QString sourceFilename) {
     QFileInfo source_fileinfo(sourceFilename);
-    const QString dest_filename =
-            m_destDir + "/" + source_fileinfo.fileName();
+    const QString dest_filename = m_destDir + "/" + source_fileinfo.fileName();
     QFileInfo dest_fileinfo(dest_filename);
 
-    // Give the user the option to overwrite existing files in the destination.
     if (dest_fileinfo.exists()) {
         switch (m_overwriteMode) {
+        // Give the user the option to overwrite existing files in the destination.
         case OverwriteMode::ASK:
             switch (makeOverwriteRequest(dest_filename)) {
             case OverwriteAnswer::SKIP:
@@ -49,7 +48,7 @@ void TrackExport::exportTrack(QString sourceFilename) {
         case OverwriteMode::OVERWRITE_ALL:;
         }
 
-        // Remove the existing file.
+        // Remove the existing file in preparation for overwriting.
         QFile dest_file(dest_filename);
         qDebug() << "Removing existing file" << dest_filename;
         if (!dest_file.remove()) {
@@ -57,7 +56,6 @@ void TrackExport::exportTrack(QString sourceFilename) {
                 tr("Error removing file %1: %2. Stopping.").arg(
                 dest_filename, dest_file.errorString());
             qWarning() << error_message;
-            // set some error message
             m_errorMessage = error_message;
             m_bStop = true;
             return;
@@ -78,13 +76,16 @@ void TrackExport::exportTrack(QString sourceFilename) {
 }
 
 TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(QString filename) {
+    // QT's QFuture is not quite right for this type of threaded question-and-answer.
+    // std::future works fine, even with signals and slots.
     QScopedPointer<std::promise<OverwriteAnswer>>
             mode_promise(new std::promise<OverwriteAnswer>());
     std::future<OverwriteAnswer> mode_future = mode_promise->get_future();
 
     emit(askOverwriteMode(filename, mode_promise.data()));
 
-    // Block until the user tells us the answer.
+    // Block until the user tells us the answer, but check for cancelation
+    // as well.
     std::future_status status(std::future_status::timeout);
     while (status != std::future_status::ready && !m_bStop) {
         status = mode_future.wait_for(std::chrono::milliseconds(500));
@@ -123,5 +124,6 @@ TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(QString filename)
 }
 
 void TrackExport::stop() {
+    // We'll wait for the current file to finish copying, then stop.
     m_bStop = true;
 }

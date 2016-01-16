@@ -47,7 +47,8 @@ class TrackExport : public QThread {
         return m_errorMessage;
     }
 
-    // Cancel the copy operation.  May be called from another thread.
+    // Cancels the export after the current copy operation.
+    //May be called from another thread.
     void stop();
 
   signals:

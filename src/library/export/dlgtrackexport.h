@@ -37,10 +37,10 @@ class DlgTrackExport : public QDialog,
     bool selectDestinationDirectory();
 
   public slots:
+    void slotProgress(QString filename, int progress, int count);
     void slotAskOverwriteMode(
             QString filename,
             std::promise<TrackExport::OverwriteAnswer>* promise);
-    void slotProgress(QString filename, int progress, int count);
     void cancelButtonClicked();
 
   protected:
@@ -49,8 +49,9 @@ class DlgTrackExport : public QDialog,
     void showEvent(QShowEvent* event) override;
 
   private:
-    // if quiet is true, no message box will be shown indicating the result
-    // of the operation.
+    // Called when progress is complete or the procedure has been canceled.
+    // Displays a final message box indicating success or failure.
+    // Makes sure the exporter thread has exited.
     void finish();
 
     ConfigObject<ConfigValue>* m_pConfig;

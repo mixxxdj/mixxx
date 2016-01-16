@@ -34,13 +34,12 @@ bool DlgTrackExport::selectDestinationDirectory() {
         tr("Export Track Files To"),
         lastExportDirectory);
     if (destDir.isNull() || destDir.isEmpty()) {
-        // just return, the caller shouldn't be doing any error handling anyway.
-        done(QDialog::Accepted);
         return false;
     }
     m_pConfig->set(ConfigKey("[Library]","LastTrackCopyDirectory"),
                 ConfigValue(destDir));
 
+    // Now that we have all the inputs, we can construct the exporter thread.
     m_exporter.reset(new TrackExport(destDir, m_filenames));
     connect(m_exporter.data(), SIGNAL(progress(QString, int, int)),
             this, SLOT(slotProgress(QString, int, int)));
@@ -58,10 +57,25 @@ bool DlgTrackExport::selectDestinationDirectory() {
 void DlgTrackExport::showEvent(QShowEvent* event) {
     QDialog::showEvent(event);
     DEBUG_ASSERT_AND_HANDLE(m_exporter) {
+        // It's not worth checking for m_exporter != nullptr elsewhere in this
+        // class... it'll be clear very quickly that someone screwed up and
+        // forgot to call selectDestinationDirectory().
         qDebug() << "Programming error: did not initialize m_exporter, about to crash";
         return;
     }
     m_exporter->start();
+}
+
+void DlgTrackExport::slotProgress(QString filename, int progress, int count) {
+    if (progress == count) {
+        statusLabel->setText(tr("Export finished"));
+        finish();
+    } else {
+        statusLabel->setText(tr("Exporting %1").arg(filename));
+    }
+    exportProgress->setMinimum(0);
+    exportProgress->setMaximum(count);
+    exportProgress->setValue(progress);
 }
 
 void DlgTrackExport::slotAskOverwriteMode(
@@ -98,16 +112,8 @@ void DlgTrackExport::slotAskOverwriteMode(
     }
 }
 
-void DlgTrackExport::slotProgress(QString filename, int progress, int count) {
-    if (progress == count) {
-        statusLabel->setText(tr("Export finished"));
-        finish();
-    } else {
-        statusLabel->setText(tr("Exporting %1").arg(filename));
-    }
-    exportProgress->setMinimum(0);
-    exportProgress->setMaximum(count);
-    exportProgress->setValue(progress);
+void DlgTrackExport::cancelButtonClicked() {
+    finish();
 }
 
 void DlgTrackExport::finish() {
@@ -130,6 +136,3 @@ void DlgTrackExport::finish() {
     accept();
 }
 
-void DlgTrackExport::cancelButtonClicked() {
-    finish();
-}

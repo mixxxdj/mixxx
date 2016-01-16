@@ -485,11 +485,6 @@ void BasePlaylistFeature::slotExportPlaylist() {
 }
 
 void BasePlaylistFeature::slotExportTrackFiles() {
-    // The user has picked a new directory via a file dialog. This means the
-    // system sandboxer (if we are sandboxed) has granted us permission to this
-    // folder. We don't need access to this file on a regular basis so we do not
-    // register a security bookmark.
-
     QList<QString> playlist_items;
     int rows = m_pPlaylistTableModel->rowCount();
     QList<QString> filenames;
