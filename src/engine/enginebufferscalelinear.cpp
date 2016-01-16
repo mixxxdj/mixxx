@@ -246,6 +246,8 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     int i = 0;
     int screwups = 0;
+
+    // Hot frame loop
     while (i < buf_size) {
         // shift indicies
         m_dCurrentFrame = m_dNextFrame;
@@ -257,14 +259,13 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
         // The first bounds check (< m_bufferIntSize) is probably not needed.
 
+        int currentFrameFloor = static_cast<int>(floor(m_dCurrentFrame));
         if (m_dCurrentFrame >= 0.0
-                && static_cast<int>(floor(m_dCurrentFrame)) * 2 + 1
+                && currentFrameFloor * 2 + 1
                         < m_bufferIntSize) {
             // take floor_sample form the buffer of the previous run
-            floor_sample[0] = m_bufferInt[static_cast<int>(
-                    floor(m_dCurrentFrame)) * 2];
-            floor_sample[1] = m_bufferInt[static_cast<int>(
-                    floor(m_dCurrentFrame)) * 2 + 1];
+            floor_sample[0] = m_bufferInt[currentFrameFloor * 2];
+            floor_sample[1] = m_bufferInt[currentFrameFloor * 2 + 1];
         } else {
             // we have advanced to a new buffer in the previous run,
             // bud the floor still points to the old buffer
@@ -308,18 +309,16 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
         // Now that the buffer is up to date, we can get the value of the sample
         // at the floor of our position.
-        if (static_cast<int>(floor(m_dCurrentFrame)) * 2 >= 0.0) {
+        currentFrameFloor = static_cast<int>(floor(m_dCurrentFrame));
+        if (currentFrameFloor * 2 >= 0.0) {
             // the previous position is in the new buffer
-            floor_sample[0] = m_bufferInt[static_cast<int>(
-                    floor(m_dCurrentFrame)) * 2];
-            floor_sample[1] = m_bufferInt[static_cast<int>(
-                    floor(m_dCurrentFrame)) * 2 + 1];
+            floor_sample[0] = m_bufferInt[currentFrameFloor * 2];
+            floor_sample[1] = m_bufferInt[currentFrameFloor * 2 + 1];
         }
 
-        ceil_sample[0] = m_bufferInt[static_cast<int>(
-                ceil(m_dCurrentFrame)) * 2];
-        ceil_sample[1] = m_bufferInt[static_cast<int>(
-                ceil(m_dCurrentFrame)) * 2 + 1];
+        int currentFrameCeil = static_cast<int>(ceil(m_dCurrentFrame));
+        ceil_sample[0] = m_bufferInt[currentFrameCeil * 2];
+        ceil_sample[1] = m_bufferInt[currentFrameCeil * 2 + 1];
 
         // For the current index, what percentage is it
         // between the previous and the next?
