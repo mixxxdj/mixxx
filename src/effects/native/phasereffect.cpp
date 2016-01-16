@@ -20,7 +20,7 @@ EffectManifest PhaserEffect::getManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
                 "A more complex sound effect obtained by mixing the input signal"
-                "with a copy passed through a series of all-pass filters."));
+                " with a copy passed through a series of all-pass filters."));
 
     EffectManifestParameter* stereo = manifest.addParameter();
     stereo->setId("stereo");

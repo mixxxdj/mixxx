@@ -63,7 +63,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     m_pControlTrackTimeDisplay = new ControlObject(
             ConfigKey("[Controls]", "ShowDurationRemaining"));
     connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetPositionDisplay(double)));
+            this, SLOT(slotSetTrackTimeDisplay(double)));
 
     // If not present in the config, set the default value
     if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay")))
