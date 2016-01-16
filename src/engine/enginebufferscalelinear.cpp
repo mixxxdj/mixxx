@@ -14,10 +14,10 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
       m_dOldRate(1.0),
       m_pReadAheadManager(pReadAheadManager),
       m_dCurrentFrame(0.0),
-      m_dNextFrame(0.0)
-{
-    for (int i=0; i<2; i++)
+      m_dNextFrame(0.0) {
+    for (int i = 0; i < 2; i++) {
         m_floorSampleOld[i] = 0.0f;
+    }
 
     m_bufferInt = new CSAMPLE[kiLinearScaleReadAheadLength];
     m_bufferIntSize = 0;
@@ -226,8 +226,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // If the current position fraction plus the future position fraction
     // loops over 1.0, we need to round up
-    if (m_dNextFrame - floor(m_dNextFrame) +
-            frames - floor(frames) > 1.0) {
+    if (fmod(m_dNextFrame, 1.0) + fmod(frames, 1.0) > 1.0) {
         unscaled_frames_needed++;
     }
 
@@ -258,8 +257,9 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
         // The first bounds check (< m_bufferIntSize) is probably not needed.
 
-        if (static_cast<int>(floor(m_dCurrentFrame)) * 2 + 1 < m_bufferIntSize
-                && m_dCurrentFrame >= 0.0) {
+        if (m_dCurrentFrame >= 0.0
+                && static_cast<int>(floor(m_dCurrentFrame)) * 2 + 1
+                        < m_bufferIntSize) {
             // take floor_sample form the buffer of the previous run
             floor_sample[0] = m_bufferInt[static_cast<int>(
                     floor(m_dCurrentFrame)) * 2];
