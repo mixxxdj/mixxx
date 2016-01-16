@@ -232,8 +232,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // Multiply by 2 because it is predicting mono rates, while we want a
     // number of samples.
-    // 0 is never the right answer
-    int unscaled_samples_needed = math_max<int>(2, unscaled_frames_needed * 2);
+    int unscaled_samples_needed = unscaled_frames_needed * 2;
 
     int read_failed_count = 0;
     CSAMPLE floor_sample[2];
@@ -279,6 +278,8 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
                m_bufferIntSize) {
             int old_bufsize = m_bufferIntSize;
             if (unscaled_samples_needed == 0) {
+                // protection against infinite loop
+                // This may happen due to double precision issues
                 unscaled_samples_needed = 2;
                 //screwups_debug++;
             }
