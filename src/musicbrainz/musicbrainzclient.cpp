@@ -16,6 +16,8 @@
 #include <QUrl>
 
 #include "musicbrainz/musicbrainzclient.h"
+#include "util/version.h"
+#include "defs_urls.h"
 
 const QString MusicBrainzClient::m_TrackUrl = "http://musicbrainz.org/ws/2/recording/";
 const QString MusicBrainzClient::m_DateRegex = "^[12]\\d{3}";
@@ -37,6 +39,9 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
     url.setQueryItems(parameters);
     qDebug() << "MusicBrainzClient GET request:" << url.toString();
     QNetworkRequest req(url);
+    // http://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings
+    QString mixxxMusicBrainzId(Version::applicationName() + "/" + Version::version() + " ( " + MIXXX_WEBSITE_URL + " )");
+    req.setRawHeader("User-Agent", mixxxMusicBrainzId.toAscii());
     QNetworkReply* reply = m_network.get(req);
     connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
     m_requests[reply] = id;
