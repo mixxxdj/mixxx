@@ -4,14 +4,15 @@
 #include <QObject>
 #include <QScopedPointer>
 #include <QString>
+#include <QThread>
 #include <future>
 
 #include "library/export/ui_dlgtrackexport.h"
 
-// A class for copying a list of files to a single destination directory.
+// A QThread class for copying a list of files to a single destination directory.
 // Currently does not preserve subdirectory relationships.  This class performs
-// all copies in a block style, so it should be spawned in a separate thread.
-class TrackExport : public QObject{
+// all copies in a blocking style within its own thread.
+class TrackExport : public QThread {
     Q_OBJECT
   public:
     enum class OverwriteMode {
@@ -32,11 +33,13 @@ class TrackExport : public QObject{
 
     // Constructor does not validate the destination directory.  Calling classes
     // should do that.
-    TrackExport(QString destDir) : m_destDir(destDir) { }
+    TrackExport(QString destDir, QList<QString> filenames)
+            : m_destDir(destDir),
+              m_filenames(filenames) { }
     virtual ~TrackExport() { };
 
-    // exports ALL the tracks.
-    bool exportTrackList(QList<QString> filenames);
+    // exports ALL the tracks.  Thread joins on success or failure.
+    void run() override;
 
     // Calling classes can call errorMessage after a failure for a user-friendly
     // message about what happened.
@@ -44,16 +47,22 @@ class TrackExport : public QObject{
         return m_errorMessage;
     }
 
+    // Cancel the copy operation.  May be called from another thread.
+    void stop();
+
   signals:
     // Signals and slots necessarily make a copy of the items being passed,
     // so we have to use a bare pointer instead of a smart one. And QT's QFuture
     // is not quite what we want here, so we use the STL's future class.
+    // Note that fully qualifying the Answer class name is required for the
+    // signal to connect.
     void askOverwriteMode(QString filename,
-                          std::promise<OverwriteAnswer>* promise);
-    void progress(int progress, int count);
+                          std::promise<TrackExport::OverwriteAnswer>* promise);
+    void progress(QString filename, int progress, int count);
+    void canceled();
 
   private:
-    bool exportTrack(QString sourceFilename);
+    void exportTrack(QString sourceFilename);
 
     // Emit a signal requesting overwrite mode, and block until we get an
     // answer.  Updates m_overwriteMode appropriately.
@@ -64,6 +73,7 @@ class TrackExport : public QObject{
 
     OverwriteMode m_overwriteMode = OverwriteMode::ASK;
     const QString m_destDir;
+    const QList<QString> m_filenames;
 };
 
 #endif  // TRACKEXPORT_H

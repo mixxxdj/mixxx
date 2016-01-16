@@ -6,12 +6,14 @@
 #include <QDialog>
 #include <QString>
 #include <QScopedPointer>
-#include <QThread>
+#include <QTime>
 
 #include "configobject.h"
 #include "library/export/trackexport.h"
 #include "library/export/ui_dlgtrackexport.h"
 
+// A dialog for interacting with the track exporter in an interactive manner.
+// Handles errors and user interactions.
 class DlgTrackExport : public QDialog,
                        public Ui::DlgTrackExport {
     Q_OBJECT
@@ -22,28 +24,38 @@ class DlgTrackExport : public QDialog,
         SKIP_ALL,
     };
 
+    // The dialog is prepared, but not shown on construction.
     DlgTrackExport(QWidget *parent,
                    ConfigObject<ConfigValue>* pConfig,
                    QList<QString> filenames);
     virtual ~DlgTrackExport() { }
 
+    // Displays a folder selection box to select the destination
+    // folder.  If the user cancels the folder selection, returns false and
+    // the dialog should not be shown.
+    // MUST be called before .exec()ing the dialog.
+    bool selectDestinationDirectory();
+
   public slots:
     void slotAskOverwriteMode(
             QString filename,
             std::promise<TrackExport::OverwriteAnswer>* promise);
-    void slotProgress(int progress, int count);
-
-    void skipButtonClicked();
-    void skipAllButtonClicked();
-    void overwriteButtonClicked();
-    void overwriteAllButtonClicked();
+    void slotProgress(QString filename, int progress, int count);
     void cancelButtonClicked();
 
-  private:
-    void setQuestionShown(bool show);
+  protected:
+    // First pops up a directory selector on show(), then does the actual
+    // copying.
+    void showEvent(QShowEvent* event) override;
 
+  private:
+    // if quiet is true, no message box will be shown indicating the result
+    // of the operation.
+    void finish();
+
+    ConfigObject<ConfigValue>* m_pConfig;
+    QList<QString> m_filenames;
     QScopedPointer<TrackExport> m_exporter;
-    QThread m_exporterThread;
 };
 
 #endif  // DLGTRACKEXPORT_H

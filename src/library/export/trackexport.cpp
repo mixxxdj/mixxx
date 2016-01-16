@@ -4,20 +4,22 @@
 #include <QMessageBox>
 #include <QDebug>
 
-bool TrackExport::exportTrackList(QList<QString> filenames) {
+void TrackExport::run() {
     int i = 0;
-    for (const auto& sourceFilename : filenames) {
-        if (!exportTrack(sourceFilename)) {
-            // bail on error
-            return false;
+    for (const auto& sourceFilename : m_filenames) {
+        QFileInfo fileinfo(sourceFilename);
+        emit(progress(fileinfo.fileName(), i, m_filenames.size()));
+        exportTrack(sourceFilename);
+        if (m_bStop) {
+            emit(canceled());
+            return;
         }
         ++i;
-        emit(progress(i, filenames.size()));
+        emit(progress(fileinfo.fileName(), i, m_filenames.size()));
     }
-    return true;
 }
 
-bool TrackExport::exportTrack(QString sourceFilename) {
+void TrackExport::exportTrack(QString sourceFilename) {
     QFileInfo source_fileinfo(sourceFilename);
     const QString dest_filename =
             m_destDir + "/" + source_fileinfo.fileName();
@@ -25,16 +27,26 @@ bool TrackExport::exportTrack(QString sourceFilename) {
 
     // Give the user the option to overwrite existing files in the destination.
     if (dest_fileinfo.exists()) {
-        if (m_overwriteMode == OverwriteMode::ASK) {
+        switch (m_overwriteMode) {
+        case OverwriteMode::ASK:
             switch (makeOverwriteRequest(dest_filename)) {
             case OverwriteAnswer::SKIP:
             case OverwriteAnswer::SKIP_ALL:
-            case OverwriteAnswer::CANCEL:
-                return true;
+                qDebug() << "skipping" << sourceFilename;
+                return;
             case OverwriteAnswer::OVERWRITE:
             case OverwriteAnswer::OVERWRITE_ALL:
                 break;
+            case OverwriteAnswer::CANCEL:
+                m_errorMessage = tr("Export process was canceled");
+                stop();
+                return;
             }
+            break;
+        case OverwriteMode::SKIP_ALL:
+            qDebug() << "skipping" << sourceFilename;
+            return;
+        case OverwriteMode::OVERWRITE_ALL:;
         }
 
         // Remove the existing file.
@@ -48,7 +60,7 @@ bool TrackExport::exportTrack(QString sourceFilename) {
             // set some error message
             m_errorMessage = error_message;
             m_bStop = true;
-            return false;
+            return;
         }
     }
 
@@ -61,21 +73,33 @@ bool TrackExport::exportTrack(QString sourceFilename) {
         qWarning() << error_message;
         m_errorMessage = error_message;
         m_bStop = true;
-        return false;
+        return;
     }
-    return true;
 }
 
 TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(QString filename) {
-    QScopedPointer<std::promise<OverwriteAnswer>> mode_promise;
+    QScopedPointer<std::promise<OverwriteAnswer>>
+            mode_promise(new std::promise<OverwriteAnswer>());
     std::future<OverwriteAnswer> mode_future = mode_promise->get_future();
+
     emit(askOverwriteMode(filename, mode_promise.data()));
 
     // Block until the user tells us the answer.
-    mode_future.wait();
+    std::future_status status(std::future_status::timeout);
+    while (status != std::future_status::ready && !m_bStop) {
+        status = mode_future.wait_for(std::chrono::milliseconds(500));
+    }
+
+    // We can be either canceled from the other thread, or as a return value
+    // from this call.  First check for a call from the other thread.
+    if (m_bStop) {
+        return OverwriteAnswer::CANCEL;
+    }
 
     if (!mode_future.valid()) {
         qWarning() << "TrackExport::makeOverwriteRequest invalid answer from future";
+        m_errorMessage = tr("Error exporting tracks");
+        m_bStop = true;
         return OverwriteAnswer::CANCEL;
     }
 
@@ -88,10 +112,16 @@ TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(QString filename)
         m_overwriteMode = OverwriteMode::OVERWRITE_ALL;
         break;
     case OverwriteAnswer::CANCEL:
-        m_bStop = true;
+        // Handle cancelation as a result of the question.
+        m_errorMessage = tr("Export process was canceled");
+        stop();
         break;
     default:;
     }
 
     return answer;
+}
+
+void TrackExport::stop() {
+    m_bStop = true;
 }
