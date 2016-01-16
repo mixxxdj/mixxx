@@ -245,7 +245,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     ceil_sample[1] = 0;
 
     int i = 0;
-    int screwups = 0;
+    //int screwups_debug = 0;
 
     // Hot frame loop
     while (i < buf_size) {
@@ -280,7 +280,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             int old_bufsize = m_bufferIntSize;
             if (unscaled_samples_needed == 0) {
                 unscaled_samples_needed = 2;
-                screwups++;
+                //screwups_debug++;
             }
 
             int samples_to_read = math_min<int>(kiLinearScaleReadAheadLength,
@@ -325,12 +325,8 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         CSAMPLE frac = m_dCurrentFrame - floor(m_dCurrentFrame);
 
         // Perform linear interpolation
-        buf[i] = static_cast<float>(floor_sample[0]) +
-                 frac * (static_cast<float>(ceil_sample[0]) -
-                 static_cast<float>(floor_sample[0]));
-        buf[i + 1] = static_cast<float>(floor_sample[1]) +
-                     frac * (static_cast<float>(ceil_sample[1]) -
-                     static_cast<float>(floor_sample[1]));
+        buf[i] = floor_sample[0] + frac * (ceil_sample[0] - floor_sample[0]);
+        buf[i + 1] = floor_sample[1] + frac * (ceil_sample[1] - floor_sample[1]);
 
         m_floorSampleOld[0] = floor_sample[0];
         m_floorSampleOld[1] = floor_sample[1];
