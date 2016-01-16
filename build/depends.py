@@ -801,6 +801,9 @@ class MixxxCore(Feature):
                    "library/browse/browsefeature.cpp",
                    "library/browse/foldertreemodel.cpp",
 
+                   "library/export/dlgtrackexport.cpp",
+                   "library/export/trackexport.cpp",
+
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
@@ -1038,6 +1041,7 @@ class MixxxCore(Feature):
             'dlgrecording.ui',
             'dlgtagfetcher.ui',
             'dlgtrackinfo.ui',
+            'library/export/dlgtrackexport.ui',
         ]
         map(Qt.uic(build), ui_files)
 

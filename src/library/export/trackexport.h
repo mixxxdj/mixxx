@@ -1,15 +1,17 @@
 #ifndef TRACKEXPORT_H
 #define TRACKEXPORT_H
 
-#include <QDialog>
+#include <QObject>
+#include <QScopedPointer>
 #include <QString>
+#include <future>
 
 #include "library/export/ui_dlgtrackexport.h"
 
 // A class for copying a list of files to a single destination directory.
 // Currently does not preserve subdirectory relationships.  This class performs
 // all copies in a block style, so it should be spawned in a separate thread.
-class TrackExport {
+class TrackExport : public QObject{
     Q_OBJECT
   public:
     enum class OverwriteMode {
@@ -43,8 +45,11 @@ class TrackExport {
     }
 
   signals:
-    void askOverwriteMode(std::unique_ptr<std::promise<OverwriteAnswer>> promise);
-    void progress(double progress);
+    // Signals and slots necessarily make a copy of the items being passed,
+    // so we have to use a bare pointer instead of a smart one.
+    void askOverwriteMode(QString filename,
+                          std::promise<OverwriteAnswer>* promise);
+    void progress(int progress, int count);
 
   private:
     bool exportTrack(QString sourceFilename);
@@ -59,4 +64,4 @@ class TrackExport {
     const QString m_destDir;
 };
 
-#endif TRACKEXPORT_H
+#endif  // TRACKEXPORT_H

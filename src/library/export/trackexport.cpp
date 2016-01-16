@@ -1,8 +1,8 @@
 #include "library/export/trackexport.h"
 
-#include <future>
-#include <promise>
+#include <QFileInfo>
 #include <QMessageBox>
+#include <QDebug>
 
 bool TrackExport::exportTrack(QString sourceFilename) {
     QFileInfo source_fileinfo(sourceFilename);
@@ -15,9 +15,9 @@ bool TrackExport::exportTrack(QString sourceFilename) {
         if (m_overwriteMode == OverwriteMode::ASK) {
             // QT's QFuture is not quite what we want here, so we use the STL's
             // future class.
-            std::unique_ptr<std::promise<OverwriteAnswer>> mode_promise;
+            QScopedPointer<std::promise<OverwriteAnswer>> mode_promise;
             std::future<OverwriteAnswer> mode_future = mode_promise->get_future();
-            emit(askOverwriteMode(std::move(mode_promise));
+            emit(askOverwriteMode(dest_filename, mode_promise.data()));
 
             // Block until the user tells us the answer.
             mode_future.wait();
@@ -77,7 +77,7 @@ bool TrackExport::exportTrackList(QList<QString> filenames) {
             return false;
         }
         ++i;
-        emit(progress(static_cast<double>(i) / filenames.size()));
+        emit(progress(i, filenames.size()));
     }
     return true;
 }

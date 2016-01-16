@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgControllerLearning</class>
- <widget class="QDialog" name="DlgControllerLearning">
+ <class>DlgTrackExport</class>
+ <widget class="QDialog" name="DlgTrackExport">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Controller Learning Wizard</string>
+   <string>Export Tracks</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -37,7 +37,7 @@
      <property name="title">
       <string>Exporting Tracks</string>
      </property>
-     <widget class="QWidget" name="page2Learn">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -67,7 +67,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QProgressBar" name="progressBarWiggleFeedback">
+        <widget class="QProgressBar" name="exportProgress">
          <property name="maximum">
           <number>10</number>
          </property>
@@ -93,7 +93,7 @@
         </spacer>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="questionLayout">
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
