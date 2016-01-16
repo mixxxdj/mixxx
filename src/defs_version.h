@@ -49,5 +49,5 @@
 //
 #ifndef VERSION
     // In that case, this value is used
-    #define VERSION "2.1-alpha-pre"
+    #define VERSION "2.1.0-alpha-pre"
 #endif
