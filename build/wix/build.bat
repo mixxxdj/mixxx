@@ -16,7 +16,7 @@ if "%1" == "64" (
   echo *** Building 64 bits package
   set BITWIDTH=64
   set ARCH=x64
-  set WINLIB_PATH=%WINLIB_PATH64%  
+  set WINLIB_PATH=%WINLIB_PATH64%
 ) else (
   echo *** Building 32 bits package
   set WINLIB_PATH=%WINLIB_PATH32%
@@ -43,7 +43,7 @@ echo.
 echo *** Building intermediate files
 
 FOR %%d IN (controllers,fonts,imageformats,keyboard,plugins,skins,translations) DO (
-  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH%\%%d -nologo -sfrag -suid -ag -srd -cg %%dComp -dr %%dDir -out subdirs\%%d.wxs -sw5150 -var var.%%dVar  
+  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH%\%%d -nologo -sfrag -suid -ag -srd -cg %%dComp -dr %%dDir -out subdirs\%%d.wxs -sw5150 -var var.%%dVar
   "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -d%%dVar=..\..\dist%BITWIDTH%\%%d -arch %ARCH% -out subdirs\%%d.wixobj subdirs\%%d.wxs
 )
 
@@ -51,7 +51,7 @@ SET promo=no
 
 IF EXIST ..\..\dist%BITWIDTH%\promo (
   SET promo=yes
-  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH%\promo -nologo -sfrag -suid -ag -srd -cg promoComp -dr promoDir -out subdirs\promo.wxs -sw5150 -var var.promoVar  
+  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH%\promo -nologo -sfrag -suid -ag -srd -cg promoComp -dr promoDir -out subdirs\promo.wxs -sw5150 -var var.promoVar
   "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dpromoVar=..\..\dist%BITWIDTH%\promo -arch %ARCH% -out subdirs\promo.wixobj subdirs\promo.wxs
 )
 
