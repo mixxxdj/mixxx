@@ -810,23 +810,24 @@ def BuildRelease(target, source, env):
                 {'culture': culture,
                  'LCID': LCID}
 
-            command = '"%(wix)s\\light.exe" -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%(deflang)s -loc %(wxl_file)s -out %(deflang)s.msi build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
+            command = '"%(wix)s\\light.exe" -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%(lang)s,%(deflang)s -loc %(wxl_file)s -out %(lang)s.msi build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
                 {'wix': wix_path,
-                 'deflang': culture,
+                 'lang': culture,
+                 'deflang': defaultLanguage,
                  'wxl_file': file}
             print "Using Command: " + command
             subprocess.check_call(command)
 
-            command = '"%(wix)s\\torch.exe" -nologo -p -t language %(package_name)s %(deflang)s.msi -o %(deflang)s.mst' % \
+            command = '"%(wix)s\\torch.exe" -nologo -p -t language %(package_name)s %(lang)s.msi -o %(lang)s.mst' % \
                 {'wix': wix_path,
-                 'deflang': culture,
+                 'lang': culture,
                  'package_name': exe_name}
             print "Using Command: " + command
             subprocess.check_call(command)
 
-            command = 'cscript "%(winsdk)s\wisubstg.vbs" %(package_name)s %(deflang)s.mst %(langid)s' % \
+            command = 'cscript "%(winsdk)s\wisubstg.vbs" %(package_name)s %(lang)s.mst %(langid)s' % \
                 {'winsdk': WinSDK_path,
-                 'deflang': culture,
+                 'lang': culture,
                  'package_name': exe_name,
                  'langid': LCID}
             print "Using Command: " + command
