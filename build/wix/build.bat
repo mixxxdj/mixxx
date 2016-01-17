@@ -64,7 +64,7 @@ REM Harvest main DLL from install dir
 
 echo.
 echo *** Building package for default language %DefaultLanguage%
-"%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:%DefaultLanguage% -loc Localization\mixxx_%DefaultLanguage%.wxl -out mixxx-%BITWIDTH%-multilingual.msi *.wixobj subdirs\*.wixobj
+"%WIX%"\bin\light.exe -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%DefaultLanguage% -loc Localization\mixxx_%DefaultLanguage%.wxl -out mixxx-%BITWIDTH%-multilingual.msi *.wixobj subdirs\*.wixobj
 
 FOR %%G IN (Localization\*.wxl) DO (
   REM skip 19 chars (Localization\mixxx_), keep until end -4 char (.wxl)
@@ -75,7 +75,7 @@ FOR %%G IN (Localization\*.wxl) DO (
     for /f "delims=<> tokens=3" %%i in ('findstr "^[space]*<<String Id=.Language" Localization\mixxx_!_locale!.wxl') do set _LangID=%%i
     echo.
     echo *** Building package transform for locale !_locale! LangID !_LangID!
-    "%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:!_locale! -loc %%G -out mixxx-%BITWIDTH%-!_locale!.msi *.wixobj subdirs\*.wixobj
+    "%WIX%"\bin\light.exe -nologo -sw1076 -spdb -ext WixUIExtension -cultures:!_locale! -loc %%G -out mixxx-%BITWIDTH%-!_locale!.msi *.wixobj subdirs\*.wixobj
     "%WIX%"\bin\torch.exe -nologo -p -t language mixxx-%BITWIDTH%-multilingual.msi mixxx-%BITWIDTH%-!_locale!.msi -o !_locale!.mst
     cscript "%ProgramFiles%\Microsoft SDKs\Windows\%WinSDKVersion%\Samples\sysmgmt\msi\scripts\wisubstg.vbs" mixxx-%BITWIDTH%-multilingual.msi !_locale!.mst !_LangID!
     SET LangIDs=!LangIDs!,!_LangID!

@@ -782,7 +782,7 @@ def BuildRelease(target, source, env):
 
         # Build package for default language
         print "*** Building package for default language " + defaultLanguage
-        command = '"%(wix)s\\light.exe" -nologo -sw1076 -ext WixUIExtension -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
+        command = '"%(wix)s\\light.exe" -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
             {'wix': wix_path,
              'deflang': defaultLanguage,
              'package_name': exe_name}
@@ -810,7 +810,7 @@ def BuildRelease(target, source, env):
                 {'culture': culture,
                  'LCID': LCID}
 
-            command = '"%(wix)s\\light.exe" -nologo -sw1076 -ext WixUIExtension -cultures:%(deflang)s -loc %(wxl_file)s -out %(deflang)s.msi build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
+            command = '"%(wix)s\\light.exe" -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%(deflang)s -loc %(wxl_file)s -out %(deflang)s.msi build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
                 {'wix': wix_path,
                  'deflang': culture,
                  'wxl_file': file}
@@ -833,7 +833,6 @@ def BuildRelease(target, source, env):
             subprocess.check_call(command)
 
             langIds = langIds + "," + LCID
-            os.remove(culture + ".wixpdb")
             os.remove(culture + ".msi")
             os.remove(culture + ".mst")
 
@@ -846,8 +845,6 @@ def BuildRelease(target, source, env):
         subprocess.check_call(command)
 
         # Some cleaning before leaving
-        for file in glob.glob('*.wixpdb'):
-            os.remove(file)
         for file in glob.glob('build\wix\*.wixobj'):
             os.remove(file)
         for file in glob.glob('build\wix\subdirs\*.wixobj'):
