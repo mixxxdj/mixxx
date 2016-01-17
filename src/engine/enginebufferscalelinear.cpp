@@ -247,7 +247,6 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // The first bounds check (< m_bufferIntSize) is probably not needed.
 
         int currentFrameFloor = static_cast<int>(floor(m_dCurrentFrame));
-        int currentFrameCeil = static_cast<int>(ceil(m_dCurrentFrame));
 
         if (currentFrameFloor < 0) {
             // we have advanced to a new buffer in the previous run,
@@ -255,14 +254,23 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             // so take the cached sample, this happens on slow rates
             floor_sample[0] = m_floorSampleOld[0];
             floor_sample[1] = m_floorSampleOld[1];
-        } else if (currentFrameFloor * 2 + 1 < m_bufferIntSize) {
+            ceil_sample[0] = m_bufferInt[0];
+            ceil_sample[1] = m_bufferInt[1];
+        } else if (currentFrameFloor * 2 + 3 < m_bufferIntSize) {
             // take floor_sample form the buffer of the previous run
             floor_sample[0] = m_bufferInt[currentFrameFloor * 2];
             floor_sample[1] = m_bufferInt[currentFrameFloor * 2 + 1];
-        }
-
-        if (currentFrameCeil * 2 + 1 >= m_bufferIntSize) {
+            ceil_sample[0] = m_bufferInt[currentFrameFloor * 2 + 2];
+            ceil_sample[1] = m_bufferInt[currentFrameFloor * 2 + 3];
+        } else {
             // if we don't have the ceil_sample in buffer, load some more
+
+            if (currentFrameFloor * 2 + 1 < m_bufferIntSize) {
+                // take floor_sample form the buffer of the previous run
+                floor_sample[0] = m_bufferInt[currentFrameFloor * 2];
+                floor_sample[1] = m_bufferInt[currentFrameFloor * 2 + 1];
+            }
+
             do {
                 int old_bufsize = m_bufferIntSize;
                 if (unscaled_samples_needed == 0) {
@@ -292,8 +300,8 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
                 // adapt the m_dCurrentFrame the index of the new buffer
                 m_dCurrentFrame -= old_bufsize / 2;
-                currentFrameCeil = static_cast<int>(ceil(m_dCurrentFrame));
-            } while (currentFrameCeil * 2 + 1 >= m_bufferIntSize);
+                currentFrameFloor = static_cast<int>(floor(m_dCurrentFrame));
+            } while (currentFrameFloor * 2 + 3 >= m_bufferIntSize);
 
             // I guess?
             if (read_failed_count > 1) {
@@ -302,16 +310,14 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
             // Now that the buffer is up to date, we can get the value of the sample
             // at the floor of our position.
-            currentFrameFloor = static_cast<int>(floor(m_dCurrentFrame));
             if (currentFrameFloor >= 0) {
                 // the previous position is in the new buffer
                 floor_sample[0] = m_bufferInt[currentFrameFloor * 2];
                 floor_sample[1] = m_bufferInt[currentFrameFloor * 2 + 1];
             }
+            ceil_sample[0] = m_bufferInt[currentFrameFloor * 2 + 2];
+            ceil_sample[1] = m_bufferInt[currentFrameFloor * 2 + 3];
         }
-
-        ceil_sample[0] = m_bufferInt[currentFrameCeil * 2];
-        ceil_sample[1] = m_bufferInt[currentFrameCeil * 2 + 1];
 
         // For the current index, what percentage is it
         // between the previous and the next?
