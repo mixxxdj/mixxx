@@ -259,74 +259,75 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // The first bounds check (< m_bufferIntSize) is probably not needed.
 
         int currentFrameFloor = static_cast<int>(floor(m_dCurrentFrame));
-        if (m_dCurrentFrame >= 0.0
-                && currentFrameFloor * 2 + 1
-                        < m_bufferIntSize) {
+        int currentFrameCeil = static_cast<int>(ceil(m_dCurrentFrame));
+
+        if (currentFrameFloor < 0) {
+            // we have advanced to a new buffer in the previous run,
+            // but the floor still points to the old buffer
+            // so take the cached sample, this happens on slow rates
+            floor_sample[0] = m_floorSampleOld[0];
+            floor_sample[1] = m_floorSampleOld[1];
+        } else if (currentFrameFloor * 2 + 1 < m_bufferIntSize) {
             // take floor_sample form the buffer of the previous run
             floor_sample[0] = m_bufferInt[currentFrameFloor * 2];
             floor_sample[1] = m_bufferInt[currentFrameFloor * 2 + 1];
-        } else {
-            // we have advanced to a new buffer in the previous run,
-            // bud the floor still points to the old buffer
-            // so take the cached sample, happens on slow rates
-            floor_sample[0] = m_floorSampleOld[0];
-            floor_sample[1] = m_floorSampleOld[1];
         }
 
-        // if we don't have the ceil_sample in buffer, load some more
-        while (static_cast<int>(ceil(m_dCurrentFrame)) * 2 + 1 >=
-               m_bufferIntSize) {
-            int old_bufsize = m_bufferIntSize;
-            if (unscaled_samples_needed == 0) {
-                // protection against infinite loop
-                // This may happen due to double precision issues
-                unscaled_samples_needed = 2;
-                //screwups_debug++;
-            }
-
-            int samples_to_read = math_min<int>(kiLinearScaleReadAheadLength,
-                                                unscaled_samples_needed);
-
-            m_bufferIntSize = m_pReadAheadManager->getNextSamples(
-                    rate_new == 0 ? rate_old : rate_new,
-                    m_bufferInt, samples_to_read);
-
-            if (m_bufferIntSize == 0) {
-                if(++read_failed_count > 1) {
-                    break;
-                } else {
-                    continue;
+        if (currentFrameCeil * 2 + 1 >= m_bufferIntSize) {
+            // if we don't have the ceil_sample in buffer, load some more
+            do {
+                int old_bufsize = m_bufferIntSize;
+                if (unscaled_samples_needed == 0) {
+                    // protection against infinite loop
+                    // This may happen due to double precision issues
+                    unscaled_samples_needed = 2;
+                    //screwups_debug++;
                 }
+
+                int samples_to_read = math_min<int>(kiLinearScaleReadAheadLength,
+                                                    unscaled_samples_needed);
+
+                m_bufferIntSize = m_pReadAheadManager->getNextSamples(
+                        rate_new == 0 ? rate_old : rate_new,
+                        m_bufferInt, samples_to_read);
+
+                if (m_bufferIntSize == 0) {
+                    if(++read_failed_count > 1) {
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+
+                samples_read += m_bufferIntSize;
+                unscaled_samples_needed -= m_bufferIntSize;
+
+                // adapt the m_dCurrentFrame the index of the new buffer
+                m_dCurrentFrame -= old_bufsize / 2;
+                currentFrameCeil = static_cast<int>(ceil(m_dCurrentFrame));
+            } while (currentFrameCeil * 2 + 1 >= m_bufferIntSize);
+
+            // I guess?
+            if (read_failed_count > 1) {
+                break;
             }
 
-            samples_read += m_bufferIntSize;
-            unscaled_samples_needed -= m_bufferIntSize;
-
-            // adapt the m_dCurrentFrame the index of the new buffer
-            m_dCurrentFrame -= old_bufsize / 2;
+            // Now that the buffer is up to date, we can get the value of the sample
+            // at the floor of our position.
+            currentFrameFloor = static_cast<int>(floor(m_dCurrentFrame));
+            if (currentFrameFloor >= 0) {
+                // the previous position is in the new buffer
+                floor_sample[0] = m_bufferInt[currentFrameFloor * 2];
+                floor_sample[1] = m_bufferInt[currentFrameFloor * 2 + 1];
+            }
         }
 
-        // I guess?
-        if (read_failed_count > 1) {
-            break;
-        }
-
-        // Now that the buffer is up to date, we can get the value of the sample
-        // at the floor of our position.
-        currentFrameFloor = static_cast<int>(floor(m_dCurrentFrame));
-        if (currentFrameFloor * 2 >= 0.0) {
-            // the previous position is in the new buffer
-            floor_sample[0] = m_bufferInt[currentFrameFloor * 2];
-            floor_sample[1] = m_bufferInt[currentFrameFloor * 2 + 1];
-        }
-
-        int currentFrameCeil = static_cast<int>(ceil(m_dCurrentFrame));
         ceil_sample[0] = m_bufferInt[currentFrameCeil * 2];
         ceil_sample[1] = m_bufferInt[currentFrameCeil * 2 + 1];
 
         // For the current index, what percentage is it
         // between the previous and the next?
-        CSAMPLE frac = m_dCurrentFrame - floor(m_dCurrentFrame);
+        CSAMPLE frac = static_cast<CSAMPLE>(m_dCurrentFrame) - currentFrameFloor;
 
         // Perform linear interpolation
         buf[i] = floor_sample[0] + frac * (ceil_sample[0] - floor_sample[0]);
