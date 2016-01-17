@@ -36,7 +36,8 @@ echo *** Cleaning
 if exist *.wixobj del *.wixobj
 if exist *.wixpdb del *.wixpdb 2>NUL
 if exist *.mst del *.mst 2>NUL
-if exist subdirs\*.* del /Q subdirs\*.*
+if exist subdirs\*.wxs del /Q subdirs\*.wxs
+if exist subdirs\*.wixobj del /Q subdirs\*.wixobj
 
 echo.
 echo *** Building intermediate files
@@ -75,7 +76,7 @@ FOR %%G IN (Localization\*.wxl) DO (
     echo.
     echo *** Building package transform for locale !_locale! LangID !_LangID!
     "%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:!_locale! -loc %%G -out mixxx-%BITWIDTH%-!_locale!.msi *.wixobj subdirs\*.wixobj
-    "%WIX%"\bin\torch.exe -nologo mixxx-%BITWIDTH%-multilingual.msi mixxx-%BITWIDTH%-!_locale!.msi -o !_locale!.mst
+    "%WIX%"\bin\torch.exe -nologo -p -t language mixxx-%BITWIDTH%-multilingual.msi mixxx-%BITWIDTH%-!_locale!.msi -o !_locale!.mst
     cscript "%ProgramFiles%\Microsoft SDKs\Windows\%WinSDKVersion%\Samples\sysmgmt\msi\scripts\wisubstg.vbs" mixxx-%BITWIDTH%-multilingual.msi !_locale!.mst !_LangID!
     SET LangIDs=!LangIDs!,!_LangID!
     del /Q mixxx-%BITWIDTH%-!_locale!.msi
