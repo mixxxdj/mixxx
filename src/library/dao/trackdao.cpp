@@ -10,7 +10,6 @@
 
 #include "library/dao/trackdao.h"
 
-#include "track/audiotagger.h"
 #include "library/queryutil.h"
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"
@@ -277,9 +276,6 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
             //qDebug() << "TrackDAO::saveTrack. Dirty. Calling update";
             updateTrack(pTrack);
 
-            // Write audio meta data, if enabled in the preferences
-            // TODO(DSC) Only wite tag if file Metatdata is dirty
-            writeMetadataToFile(pTrack);
 
             //qDebug() << this << "Dirty tracks remaining after clean save:" << m_dirtyTracks.size();
         } else {
@@ -648,15 +644,11 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
 }
 
 TrackId TrackDAO::addTrack(const QFileInfo& fileInfo, bool unremove) {
-    TrackId trackId;
-    TrackInfoObject * pTrack = new TrackInfoObject(fileInfo);
-    if (pTrack) {
-        // Add the song to the database.
-        addTrack(pTrack, unremove);
-        trackId = pTrack->getId();
-        delete pTrack;
-    }
-    return trackId;
+    TrackPointer pTrack(new TrackInfoObject(fileInfo));
+    SoundSourceProxy(pTrack).loadTrackMetadata();
+    // Add the song to the database.
+    addTrack(pTrack.data(), unremove);
+    return pTrack->getId();
 }
 
 void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
@@ -749,13 +741,13 @@ QList<TrackId> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
         int addIndex = query.value(addIndexColumn).toInt();
         QString filePath = query.value(locationColumn).toString();
         const QFileInfo& fileInfo = fileInfoList.at(addIndex);
-        TrackInfoObject* pTrack = new TrackInfoObject(fileInfo);
-        addTracksAdd(pTrack, unremove);
+        TrackPointer pTrack(new TrackInfoObject(fileInfo));
+        SoundSourceProxy(pTrack).loadTrackMetadata();
+        addTracksAdd(pTrack.data(), unremove);
         TrackId trackId = pTrack->getId();
         if (trackId.isValid()) {
             trackIds.append(trackId);
         }
-        delete pTrack;
     }
 
     // Now that we have imported any tracks that were not already in the
@@ -1288,9 +1280,8 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // Location is the first column.
     QString location = queryRecord.value(0).toString();
 
-    TrackPointer pTrack = TrackPointer(
-            new TrackInfoObject(location, SecurityTokenPointer(),
-                                false),
+    TrackPointer pTrack(
+            new TrackInfoObject(location),
             TrackInfoObject::onTrackReferenceExpired);
     pTrack->setId(trackId);
 
@@ -1382,9 +1373,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // If the header hasn't been parsed, parse it but only after we set the
     // track clean and hooked it up to the track cache, because this will
     // dirty it.
-    if (!pTrack->getHeaderParsed()) {
-         pTrack->parse(false);
-    }
+    SoundSourceProxy(pTrack).loadTrackMetadata();
 
     return pTrack;
 }
@@ -1865,19 +1854,6 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
     }
 }
 
-void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
-    if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-
-        Mixxx::TrackMetadata trackMetadata;
-        pTrack->getMetadata(&trackMetadata);
-
-        AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
-        if (OK != tagger.save(trackMetadata)) {
-            qWarning() << "Failed to write track metadata:" << pTrack->getLocation();
-        }
-    }
-}
-
 bool TrackDAO::verifyRemainingTracks(
         const QStringList& libraryRootDirs,
         volatile const bool* pCancel) {
@@ -2101,8 +2077,8 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
     // TrackPointer. We explicitly do not process cover art while creating the
     // TrackInfoObject since we want to do it asynchronously (see below).
     if (pTrack.isNull()) {
-        pTrack = TrackPointer(new TrackInfoObject(
-                trackLocation, SecurityTokenPointer(), true, false));
+        pTrack = TrackPointer(new TrackInfoObject(trackLocation));
+        SoundSourceProxy(pTrack).loadTrackMetadata();
     }
 
     // If the track wasn't in the library already then it has not yet been
