@@ -128,13 +128,57 @@ double EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput,
     return samples_read;
 }
 
+int EngineBufferScaleLinear::do_copy(CSAMPLE* buf, const int buf_size) {
+    int samples_needed = buf_size;
+    CSAMPLE* write_buf = buf;
+    // Use up what's left of the internal buffer.
+    int iNextSample = static_cast<int>(ceil(m_dNextFrame)) * 2;
+    int readSize = math_min<int>(m_bufferIntSize - iNextSample, samples_needed);
+    if (readSize > 0) {
+        SampleUtil::copy(write_buf, &m_bufferInt[iNextSample], readSize);
+        samples_needed -= readSize;
+        write_buf += readSize;
+    }
+    // Protection against infinite read loops when (for example) we are
+    // reading from a broken file.
+    bool last_read_failed = false;
+    // We need to repeatedly call the RAMAN because the RAMAN does not bend
+    // over backwards to satisfy our request. It assumes you will continue
+    // to call getNextSamples until you receive the number of samples you
+    // wanted.
+    while (samples_needed > 0) {
+        int read_size = m_pReadAheadManager->getNextSamples(m_dRate, write_buf,
+                samples_needed);
+        samples_needed -= read_size;
+        write_buf += read_size;
+        if (read_size == 0) {
+            if (last_read_failed) {
+                break;
+            }
+            last_read_failed = true;
+        }
+    }
+    // Instead of counting how many samples we got from the internal buffer
+    // and the RAMAN calls, just measure the difference between what we
+    // requested and what we still need.
+    int read_samples = buf_size - samples_needed;
+    // Zero the remaining samples if we didn't fill them.
+    SampleUtil::clear(write_buf, samples_needed);
+    // update our class members so next time we need to scale it's ok. we do
+    // blow away the fractional sample position here
+    m_bufferIntSize = 0; // force buffer read
+    m_dNextFrame = 0;
+    m_floorSampleOld[0] = buf[read_samples - 2];
+    m_floorSampleOld[1] = buf[read_samples - 1];
+    return read_samples;
+}
+
 // Stretch a specified buffer worth of audio using linear interpolation
 int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
                                       const int buf_size) {
     const float rate_old = m_dOldRate;
     const float rate_new = m_dRate;
     const float rate_diff = rate_new - rate_old;
-    int samples_read = 0;
 
     // Update the old base rate because we only need to
     // interpolate/ramp up the pitch changes once.
@@ -151,62 +195,8 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // Special case -- no scaling needed!
     if (rate_diff == 0 && (rate_new == 1.0 || rate_new == -1.0)) {
-        int samples_needed = buf_size;
-        CSAMPLE* write_buf = buf;
-
-        // Use up what's left of the internal buffer.
-        int iNextSample = static_cast<int>(ceil(m_dNextFrame)) * 2;
-        int readSize = math_min<int>(m_bufferIntSize - iNextSample, samples_needed);
-        if (readSize > 0) {
-            SampleUtil::copy(write_buf, &m_bufferInt[iNextSample], readSize);
-            samples_needed -= readSize;
-            write_buf += readSize;
-        }
-
-        // Protection against infinite read loops when (for example) we are
-        // reading from a broken file.
-        bool last_read_failed = false;
-
-        // We need to repeatedly call the RAMAN because the RAMAN does not bend
-        // over backwards to satisfy our request. It assumes you will continue
-        // to call getNextSamples until you receive the number of samples you
-        // wanted.
-        while (samples_needed > 0) {
-            int read_size = m_pReadAheadManager->getNextSamples(
-                    rate_new, write_buf, samples_needed);
-            samples_needed -= read_size;
-            write_buf += read_size;
-
-            if (read_size == 0) {
-                if (last_read_failed) {
-                    break;
-                }
-                last_read_failed = true;
-            }
-        }
-
-        // Instead of counting how many samples we got from the internal buffer
-        // and the RAMAN calls, just measure the difference between what we
-        // requested and what we still need.
-        int read_samples = buf_size - samples_needed;
-
-        // Even though this code should not trigger for the special case in
-        // getScaled for when the rate changes directions, the convention in the
-        // rest of this method is that we increment samples_read rather than
-        // assign it.
-        samples_read += read_samples;
-
-        // Zero the remaining samples if we didn't fill them.
-        SampleUtil::clear(write_buf, samples_needed);
-
-        // update our class members so next time we need to scale it's ok. we do
-        // blow away the fractional sample position here
-        m_bufferIntSize = 0; // force buffer read
-        m_dNextFrame = 0;
-        m_floorSampleOld[0] = buf[read_samples - 2];
-        m_floorSampleOld[1] = buf[read_samples - 1];
-        return samples_read;
-    } // end of no scaling case.
+        return do_copy(buf, buf_size);
+    }
 
     // Simulate the loop to estimate how many frames we need
     double frames = 0;
@@ -240,6 +230,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     ceil_sample[0] = 0;
     ceil_sample[1] = 0;
 
+    int samples_read = 0;
     int i = 0;
     //int screwups_debug = 0;
 

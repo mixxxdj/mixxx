@@ -44,6 +44,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
 
   private:
     int do_scale(CSAMPLE* buf, const int buf_size);
+    int do_copy(CSAMPLE* buf, const int buf_size);
 
     bool m_bClear;
     double m_dRate;
