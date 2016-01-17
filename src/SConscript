@@ -7,6 +7,8 @@ import shutil
 import subprocess
 import time
 import datetime
+import glob
+from xml.dom import minidom
 import SCons.Script as SCons
 
 from build import util, depends
@@ -619,7 +621,13 @@ def win32_find_program_via_registry(program_name):
             program_location_tuple = _winreg.QueryValueEx(program_location_handle, "Path")
             program_location = program_location_tuple[0]
         except WindowsError:
-            program_location_handle = None
+            program_location = None
+    if not program_location:
+        try:
+            program_location_tuple = _winreg.QueryValueEx(program_location_handle, "CurrentInstallFolder")
+            program_location = program_location_tuple[0]
+        except WindowsError:
+            program_location = None
 
     _winreg.CloseKey(hklm)
     return program_location
@@ -645,7 +653,7 @@ def BuildRelease(target, source, env):
     package_version = construct_version(build, mixxx_version, branch_name,
                                         vcs_revision)
     arch = "x64" if build.machine_is_64bit else "x86"
-    exe_name = '%s-%s-%s.exe' % (package_name, package_version, arch)
+    exe_name = '%s-%s-%s.msi' % (package_name, package_version, arch)
     print exe_name
     print
     print "Top line of README, check version:"
@@ -673,32 +681,189 @@ def BuildRelease(target, source, env):
                 raise Exception('Could not find the MSVC++ runtime installer.')
 
         print "Now building installation package..."
-        command_flag = None
-        nsis_path = None
-        if not build.crosscompile and build.platform_is_windows:
-            nsis_directory = win32_find_program_via_registry("NSIS")
-            nsis_path = '"%s"' % os.path.join(nsis_directory, "makensis.exe")
-            command_flag = '/'
-        elif build.crosscompile and build.platform_is_windows:
-            nsis_path = 'makensis'
-            command_flag = '-'
 
-        if not nsis_path:
-            print "Cannot find NSIS. Do you have it installed?"
+        print "Looking for WIX Toolset..."
+        wix_path = None
+        if not build.crosscompile and build.platform_is_windows:
+            wix_directory = os.getenv('WIX')
+            wix_path = '%s' % os.path.join(wix_directory, "bin")
+        elif build.crosscompile and build.platform_is_windows:
+            # TODO(XXX) How to handle that ? what does this exactly means ?
+            raise Exception('Unimplemented...')
+            #nsis_path = 'makensis'
+
+        if not wix_directory:
+            raise Exception ('Cannot find WIX Toolkit. Do you have it installed?')
         else:
-            # Call the NSIS build
-            buildwin64 = "/Dx64=1" if build.machine_is_64bit else ''
-            staticdeps = "/DSTATICDEPS=1" if build.static_dependencies else ''
-            command = '%(path)s /DPACKAGE_NAME=\"%(package_name)s\" /DPRODUCT_VERSION=%(version)s /DQTDIR=%(qtpath)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s %(staticdeps)s build\\nsis\\Mixxx.nsi' % \
-                {'path': nsis_path,
-                 'package_name': exe_name,
-                 'version': mixxx_version,
-                 'qtpath': build.env['QTDIR'],
-                 'winlibpath': mixxx_winlib_path,
-                 '64bit': buildwin64,
-                 'staticdeps': staticdeps}
-            print "Using command: " + command
+            print "    Found Wix Toolset in " + wix_path
+
+        print "Looking for Windows SDKs..."
+        WinSDK_path = None
+        if not build.crosscompile and build.platform_is_windows:
+            WinSDK_directory = win32_find_program_via_registry("Microsoft\\Microsoft SDKs\\Windows")
+            WinSDK_path = '%s' % os.path.join(WinSDK_directory, "Samples\sysmgmt\msi\scripts")
+        elif build.crosscompile and build.platform_is_windows:
+            # TODO(XXX) How to handle that ? what does this exactly means ?
+            raise Exception('Unimplemented...')
+
+        if not WinSDK_path:
+            raise Exception ('Cannot find WinSDK. Do you have it installed?')
+        else:
+            print "    Found Windows SDK in " + WinSDK_path
+
+        # The default language
+        defaultLanguage="en-us"
+        # The langIds contained in the installer. starting with LangId of the default language
+        langIds="1033"
+
+        # Auto-create wxs file for each subdir and compile them
+        print "*** Building intermediate files"
+        for subdir in next(os.walk(dist_dir))[1]:
+            print "    " + dist_dir + "\\" + subdir
+            if subdir in ["doc", "promo"]:
+                continue
+            command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
+                {'wix': wix_path,
+                 'distdir': dist_dir,
+                 'sub': subdir}
+            print "Using Command: " + command
             subprocess.check_call(command)
+            winArch = "x64" if build.machine_is_64bit else "x86"
+            command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
+                {'wix': wix_path,
+                 'winlibpath': mixxx_winlib_path,
+                 'arch': winArch,
+                 'distdir': dist_dir,
+                 'sub': subdir}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+        # Handle promo tracks if any
+        promo="no"
+        winArch = "x64" if build.machine_is_64bit else "x86"
+        if os.path.exists(os.path.join(dist_dir,"promo")):
+            promo="yes"
+            command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
+                {'wix': wix_path,
+                 'distdir': dist_dir,
+                 'sub': "promo"}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+            command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -d%(sub)sVar=%(distdir)s\%(sub)s -arch %(arch)s -out build\wix\subdirs\%(sub)s.wixobj build\wix\subdirs\%(sub)s.wxs' % \
+                {'wix': wix_path,
+                 'winlibpath': mixxx_winlib_path,
+                 'arch': winArch,
+                 'distdir': dist_dir,
+                 'sub': "promo"}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+        # Harvest main DLL from install dir
+        command = '"%(wix)s\\heat.exe" dir %(distdir)s -nologo -sfrag -suid -ag -srd -cg mainDLLCompGroup -dr INSTALLDIR -out build\wix\subdirs\mainDLL.wxs -sw5150 -var var.SourceDir -t build\wix\only-dll.xslt' % \
+            {'wix': wix_path,
+             'distdir': dist_dir}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
+        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dSourceDir=%(distdir)s -arch %(arch)s -out build\wix\subdirs\mainDLL.wixobj build\wix\subdirs\mainDLL.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': mixxx_winlib_path,
+             'arch': winArch,
+             'distdir': dist_dir}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
+        # Compile main wix files
+        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -arch %(arch)s -out build\wix\warningDlg.wixobj build\wix\warningDlg.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': mixxx_winlib_path,
+             'arch': winArch}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dPromo=%(ispromo)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': mixxx_winlib_path,
+             'ispromo': promo,
+             'arch': winArch}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
+        # Build package for default language
+        print "*** Building package for default language " + defaultLanguage
+        command = '"%(wix)s\\light.exe" -nologo -sw1076 -ext WixUIExtension -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
+            {'wix': wix_path,
+             'deflang': defaultLanguage,
+             'package_name': exe_name}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
+        for file in glob.glob('build\wix\Localization\mixxx_*.wxl'):
+            doc = minidom.parse(file)
+            wixloc = doc.getElementsByTagName("WixLocalization")[0]
+            culture = wixloc.getAttribute("Culture")
+            if culture == defaultLanguage:
+                continue
+            strings = doc.getElementsByTagName("String")
+            LCID = None
+            for string in strings:
+                if string.getAttribute('Id') == "Language":
+                    LCID = string.firstChild.data
+                    break
+
+            if not LCID:
+                print "LCID not found, skipping file " + file
+                continue
+
+            print "*** Building package transform for locale %(culture)s LangID %(LCID)s" % \
+                {'culture': culture,
+                 'LCID': LCID}
+
+            command = '"%(wix)s\\light.exe" -nologo -sw1076 -ext WixUIExtension -cultures:%(deflang)s -loc %(wxl_file)s -out %(deflang)s.msi build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
+                {'wix': wix_path,
+                 'deflang': culture,
+                 'wxl_file': file}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+            command = '"%(wix)s\\torch.exe" -nologo -p -t language %(package_name)s %(deflang)s.msi -o %(deflang)s.mst' % \
+                {'wix': wix_path,
+                 'deflang': culture,
+                 'package_name': exe_name}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+            command = 'cscript "%(winsdk)s\wisubstg.vbs" %(package_name)s %(deflang)s.mst %(langid)s' % \
+                {'winsdk': WinSDK_path,
+                 'deflang': culture,
+                 'package_name': exe_name,
+                 'langid': LCID}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+
+            langIds = langIds + "," + LCID
+            os.remove(culture + ".wixpdb")
+            os.remove(culture + ".msi")
+            os.remove(culture + ".mst")
+
+        print "*** Add all supported languages to MSI Package attribute"
+        command = 'cscript "%(winsdk)s\WiLangId.vbs" %(package_name)s Package %(langid)s' % \
+            {'winsdk': WinSDK_path,
+             'package_name': exe_name,
+             'langid': langIds}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+
+        # Some cleaning before leaving
+        for file in glob.glob('*.wixpdb'):
+            os.remove(file)
+        for file in glob.glob('build\wix\*.wixobj'):
+            os.remove(file)
+        for file in glob.glob('build\wix\subdirs\*.wixobj'):
+            os.remove(file)
+        for file in glob.glob('build\wix\subdirs\*.wxs'):
+            os.remove(file)
+
     else:
         print "Aborted building installer"
 

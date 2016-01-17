@@ -16,7 +16,7 @@ if "%1" == "64" (
   echo *** Building 64 bits package
   set BITWIDTH=64
   set ARCH=x64
-  set WINLIB_PATH=%WINLIB_PATH64%  
+  set WINLIB_PATH=%WINLIB_PATH64%
 ) else (
   echo *** Building 32 bits package
   set WINLIB_PATH=%WINLIB_PATH32%
@@ -36,7 +36,8 @@ echo *** Cleaning
 if exist *.wixobj del *.wixobj
 if exist *.wixpdb del *.wixpdb 2>NUL
 if exist *.mst del *.mst 2>NUL
-if exist subdirs\*.* del /Q subdirs\*.*
+if exist subdirs\*.wxs del /Q subdirs\*.wxs
+if exist subdirs\*.wixobj del /Q subdirs\*.wixobj
 
 echo.
 echo *** Building intermediate files
@@ -58,7 +59,7 @@ SET promo=no
 
 IF EXIST ..\..\dist%BITWIDTH%\promo (
   SET promo=yes
-  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH%\promo -nologo -sfrag -suid -ag -srd -cg promoComp -dr promoDir -out subdirs\promo.wxs -sw5150 -var var.promoVar  
+  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH%\promo -nologo -sfrag -suid -ag -srd -cg promoComp -dr promoDir -out subdirs\promo.wxs -sw5150 -var var.promoVar
   "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dpromoVar=..\..\dist%BITWIDTH%\promo -arch %ARCH% -out subdirs\promo.wixobj subdirs\promo.wxs
 )
 
@@ -85,7 +86,7 @@ FOR %%G IN (Localization\*.wxl) DO (
     echo.
     echo *** Building package transform for locale !_locale! LangID !_LangID!
     "%WIX%"\bin\light.exe -nologo -sw1076 -ext WixUIExtension -cultures:!_locale! -loc %%G -out mixxx-%BITWIDTH%-!_locale!.msi *.wixobj subdirs\*.wixobj
-    "%WIX%"\bin\torch.exe -nologo -t language mixxx-%BITWIDTH%-multilingual.msi mixxx-%BITWIDTH%-!_locale!.msi -o !_locale!.mst
+    "%WIX%"\bin\torch.exe -nologo -p -t language mixxx-%BITWIDTH%-multilingual.msi mixxx-%BITWIDTH%-!_locale!.msi -o !_locale!.mst
     cscript "%ProgramFiles%\Microsoft SDKs\Windows\%WinSDKVersion%\Samples\sysmgmt\msi\scripts\wisubstg.vbs" mixxx-%BITWIDTH%-multilingual.msi !_locale!.mst !_LangID!
     SET LangIDs=!LangIDs!,!_LangID!
     del /Q mixxx-%BITWIDTH%-!_locale!.msi
