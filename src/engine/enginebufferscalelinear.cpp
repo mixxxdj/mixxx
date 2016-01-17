@@ -234,6 +234,9 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     int i = 0;
     //int screwups_debug = 0;
 
+    double rate_add = fabs(rate_old);
+    const double rate_delta_abs = rate_old > 0 ? rate_delta : -rate_delta;
+
     // Hot frame loop
     while (i < buf_size) {
         // shift indicies
@@ -330,13 +333,13 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         m_floorSampleOld[0] = floor_sample[0];
         m_floorSampleOld[1] = floor_sample[1];
 
+        // increment the index for the next loop
+        m_dNextFrame = m_dCurrentFrame + rate_add;
+
         // Smooth any changes in the playback rate over one buf_size
         // samples. This prevents the change from being discontinuous and helps
         // improve sound quality.
-        const double rate_add = fabs((i / 2 * rate_delta) + rate_old);
-
-        // increment the index for the next loop
-        m_dNextFrame = m_dCurrentFrame + rate_add;
+        rate_add += rate_delta_abs;
         i += 2 ;
     }
 
