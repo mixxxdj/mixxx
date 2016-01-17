@@ -87,12 +87,8 @@ TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(
 
     emit(askOverwriteMode(filename, mode_promise.data()));
 
-    // Block until the user tells us the answer, but check for cancelation
-    // as well.
-    std::future_status status(std::future_status::timeout);
-    while (status != std::future_status::ready && !m_bStop) {
-        status = mode_future.wait_for(std::chrono::milliseconds(500));
-    }
+    // Block until the user tells us the answer.
+    mode_future.wait();
 
     // We can be either canceled from the other thread, or as a return value
     // from this call.  First check for a call from the other thread.
