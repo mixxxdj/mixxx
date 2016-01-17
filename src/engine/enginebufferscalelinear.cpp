@@ -141,7 +141,7 @@ int EngineBufferScaleLinear::do_copy(CSAMPLE* buf, const int buf_size) {
     }
     // Protection against infinite read loops when (for example) we are
     // reading from a broken file.
-    bool last_read_failed = false;
+    int read_failed_count = 0;
     // We need to repeatedly call the RAMAN because the RAMAN does not bend
     // over backwards to satisfy our request. It assumes you will continue
     // to call getNextSamples until you receive the number of samples you
@@ -149,15 +149,17 @@ int EngineBufferScaleLinear::do_copy(CSAMPLE* buf, const int buf_size) {
     while (samples_needed > 0) {
         int read_size = m_pReadAheadManager->getNextSamples(m_dRate, write_buf,
                 samples_needed);
+        if (read_size == 0) {
+            if(++read_failed_count > 1) {
+                break;
+            } else {
+                continue;
+            }
+        }
         samples_needed -= read_size;
         write_buf += read_size;
-        if (read_size == 0) {
-            if (last_read_failed) {
-                break;
-            }
-            last_read_failed = true;
-        }
     }
+
     // Instead of counting how many samples we got from the internal buffer
     // and the RAMAN calls, just measure the difference between what we
     // requested and what we still need.
