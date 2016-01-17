@@ -222,13 +222,10 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     frames += rate_old * bufferSizeFrames;
     frames = abs(frames);
 
-    int unscaled_frames_needed = floor(frames);
-
     // If the current position fraction plus the future position fraction
     // loops over 1.0, we need to round up
-    if (fmod(m_dNextFrame, 1.0) + fmod(frames, 1.0) > 1.0) {
-        unscaled_frames_needed++;
-    }
+    int unscaled_frames_needed = static_cast<int>(frames +
+            m_dNextFrame - floor(m_dNextFrame));
 
     // Multiply by 2 because it is predicting mono rates, while we want a
     // number of samples.
