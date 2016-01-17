@@ -5,8 +5,6 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
-#include "util/sandbox.h"
-
 // Creates sound sources for tracks. Only intended to be used
 // in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy: public Mixxx::MetadataSource {
@@ -94,11 +92,10 @@ private:
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
 
+    const TrackPointer m_pTrack;
+
     const QString m_filePath;
     const QUrl m_url;
-
-    const TrackPointer m_pTrack;
-    const SecurityTokenPointer m_pSecurityToken;
 
     static QList<Mixxx::SoundSourceProviderRegistration> findSoundSourceProviderRegistrations(const QUrl& url);
 
