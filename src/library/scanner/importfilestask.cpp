@@ -51,7 +51,7 @@ void ImportFilesTask::run() {
             // not USER_SELECTED first.
             TrackPointer pTrack(
                 new TrackInfoObject(filePath, m_pToken));
-            SoundSourceProxy(pTrack).parseTrackMetadataAndCoverArt();
+            SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
 
             // If cover art is not found in the track metadata, populate from
             // possibleCovers.
