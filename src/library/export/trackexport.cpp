@@ -6,20 +6,22 @@
 
 void TrackExport::run() {
     int i = 0;
-    for (const auto& sourceFilename : m_filenames) {
-        QFileInfo fileinfo(sourceFilename);
-        emit(progress(fileinfo.fileName(), i, m_filenames.size()));
-        exportTrack(sourceFilename);
+    for (const auto& track : m_tracks) {
+        QString path = track->getLocation();
+        QFileInfo fileinfo(path);
+        emit(progress(fileinfo.fileName(), i, m_tracks.size()));
+        exportTrack(track);
         if (m_bStop) {
             emit(canceled());
             return;
         }
         ++i;
-        emit(progress(fileinfo.fileName(), i, m_filenames.size()));
+        emit(progress(fileinfo.fileName(), i, m_tracks.size()));
     }
 }
 
-void TrackExport::exportTrack(QString sourceFilename) {
+void TrackExport::exportTrack(TrackPointer track) {
+    QString sourceFilename = track->getLocation();
     QFileInfo source_fileinfo(sourceFilename);
     const QString dest_filename = m_destDir + "/" + source_fileinfo.fileName();
     QFileInfo dest_fileinfo(dest_filename);
@@ -52,9 +54,9 @@ void TrackExport::exportTrack(QString sourceFilename) {
         QFile dest_file(dest_filename);
         qDebug() << "Removing existing file" << dest_filename;
         if (!dest_file.remove()) {
-            const QString error_message =
-                tr("Error removing file %1: %2. Stopping.").arg(
-                dest_filename, dest_file.errorString());
+            const QString error_message = tr(
+                    "Error removing file %1: %2. Stopping.").arg(
+                    dest_filename, dest_file.errorString());
             qWarning() << error_message;
             m_errorMessage = error_message;
             m_bStop = true;
@@ -65,8 +67,8 @@ void TrackExport::exportTrack(QString sourceFilename) {
     qDebug() << "Copying" << sourceFilename << "to" << dest_filename;
     QFile source_file(sourceFilename);
     if (!source_file.copy(dest_filename)) {
-        const QString error_message =
-                tr("Error exporting track %1 to %2: %3. Stopping.").arg(
+        const QString error_message = tr(
+                "Error exporting track %1 to %2: %3. Stopping.").arg(
                 sourceFilename, dest_filename, source_file.errorString());
         qWarning() << error_message;
         m_errorMessage = error_message;
@@ -75,11 +77,12 @@ void TrackExport::exportTrack(QString sourceFilename) {
     }
 }
 
-TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(QString filename) {
+TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(
+        QString filename) {
     // QT's QFuture is not quite right for this type of threaded question-and-answer.
     // std::future works fine, even with signals and slots.
-    QScopedPointer<std::promise<OverwriteAnswer>>
-            mode_promise(new std::promise<OverwriteAnswer>());
+    QScopedPointer<std::promise<OverwriteAnswer>> mode_promise(
+            new std::promise<OverwriteAnswer>());
     std::future<OverwriteAnswer> mode_future = mode_promise->get_future();
 
     emit(askOverwriteMode(filename, mode_promise.data()));
@@ -98,7 +101,8 @@ TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(QString filename)
     }
 
     if (!mode_future.valid()) {
-        qWarning() << "TrackExport::makeOverwriteRequest invalid answer from future";
+        qWarning()
+                << "TrackExport::makeOverwriteRequest invalid answer from future";
         m_errorMessage = tr("Error exporting tracks");
         m_bStop = true;
         return OverwriteAnswer::CANCEL;

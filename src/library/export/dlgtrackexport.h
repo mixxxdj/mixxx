@@ -11,11 +11,11 @@
 #include "configobject.h"
 #include "library/export/trackexport.h"
 #include "library/export/ui_dlgtrackexport.h"
+#include "trackinfoobject.h"
 
 // A dialog for interacting with the track exporter in an interactive manner.
 // Handles errors and user interactions.
-class DlgTrackExport : public QDialog,
-                       public Ui::DlgTrackExport {
+class DlgTrackExport: public QDialog, public Ui::DlgTrackExport {
     Q_OBJECT
   public:
     enum class OverwriteMode {
@@ -25,9 +25,8 @@ class DlgTrackExport : public QDialog,
     };
 
     // The dialog is prepared, but not shown on construction.
-    DlgTrackExport(QWidget *parent,
-                   ConfigObject<ConfigValue>* pConfig,
-                   QList<QString> filenames);
+    DlgTrackExport(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
+                   QList<TrackPointer> tracks);
     virtual ~DlgTrackExport() { }
 
     // Displays a folder selection box to select the destination
@@ -55,7 +54,7 @@ class DlgTrackExport : public QDialog,
     void finish();
 
     ConfigObject<ConfigValue>* m_pConfig;
-    QList<QString> m_filenames;
+    QList<TrackPointer> m_tracks;
     QScopedPointer<TrackExport> m_exporter;
 };
 

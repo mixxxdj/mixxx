@@ -8,11 +8,12 @@
 #include <future>
 
 #include "library/export/ui_dlgtrackexport.h"
+#include "trackinfoobject.h"
 
 // A QThread class for copying a list of files to a single destination directory.
 // Currently does not preserve subdirectory relationships.  This class performs
 // all copies in a blocking style within its own thread.
-class TrackExport : public QThread {
+class TrackExport: public QThread {
     Q_OBJECT
   public:
     enum class OverwriteMode {
@@ -33,9 +34,8 @@ class TrackExport : public QThread {
 
     // Constructor does not validate the destination directory.  Calling classes
     // should do that.
-    TrackExport(QString destDir, QList<QString> filenames)
-            : m_destDir(destDir),
-              m_filenames(filenames) { }
+    TrackExport(QString destDir, QList<TrackPointer> tracks)
+            : m_destDir(destDir), m_tracks(tracks) { }
     virtual ~TrackExport() { };
 
     // exports ALL the tracks.  Thread joins on success or failure.
@@ -63,18 +63,18 @@ class TrackExport : public QThread {
     void canceled();
 
   private:
-    void exportTrack(QString sourceFilename);
+    void exportTrack(TrackPointer track);
 
     // Emit a signal requesting overwrite mode, and block until we get an
     // answer.  Updates m_overwriteMode appropriately.
     OverwriteAnswer makeOverwriteRequest(QString filename);
 
-    bool m_bStop = false;
+    QAtomicInt m_bStop = false;
     QString m_errorMessage;
 
     OverwriteMode m_overwriteMode = OverwriteMode::ASK;
     const QString m_destDir;
-    const QList<QString> m_filenames;
+    const QList<TrackPointer> m_tracks;
 };
 
 #endif  // TRACKEXPORT_H

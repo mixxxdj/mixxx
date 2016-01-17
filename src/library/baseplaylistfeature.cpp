@@ -485,15 +485,14 @@ void BasePlaylistFeature::slotExportPlaylist() {
 }
 
 void BasePlaylistFeature::slotExportTrackFiles() {
-    QList<QString> playlist_items;
     int rows = m_pPlaylistTableModel->rowCount();
-    QList<QString> filenames;
+    QList<TrackPointer> tracks;
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = m_pPlaylistTableModel->index(i, 0);
-        filenames.push_back(m_pPlaylistTableModel->getTrackLocation(index));
+        tracks.push_back(m_pPlaylistTableModel->getTrack(index));
     }
 
-    DlgTrackExport track_export_dlg(nullptr, m_pConfig, filenames);
+    DlgTrackExport track_export_dlg(nullptr, m_pConfig, tracks);
     if (track_export_dlg.selectDestinationDirectory()) {
         track_export_dlg.exec();
     }

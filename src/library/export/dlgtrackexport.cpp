@@ -7,18 +7,17 @@
 
 #include "util/assert.h"
 
-
 DlgTrackExport::DlgTrackExport(QWidget *parent,
                                ConfigObject<ConfigValue>* pConfig,
-                               QList<QString> filenames)
+                               QList<TrackPointer> tracks)
         : QDialog(parent),
           Ui::DlgTrackExport(),
           m_pConfig(pConfig),
-          m_filenames(filenames) {
+          m_tracks(tracks) {
     setupUi(this);
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(cancelButtonClicked()));
     exportProgress->setMinimum(0);
-    exportProgress->setMaximum(filenames.size());
+    exportProgress->setMaximum(tracks.size());
     exportProgress->setValue(0);
     statusLabel->setText("");
     setModal(true);
@@ -30,27 +29,23 @@ bool DlgTrackExport::selectDestinationDirectory() {
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
     QString destDir = QFileDialog::getExistingDirectory(
-        NULL,
-        tr("Export Track Files To"),
-        lastExportDirectory);
+            NULL, tr("Export Track Files To"), lastExportDirectory);
     if (destDir.isNull() || destDir.isEmpty()) {
         return false;
     }
-    m_pConfig->set(ConfigKey("[Library]","LastTrackCopyDirectory"),
-                ConfigValue(destDir));
+    m_pConfig->set(ConfigKey("[Library]", "LastTrackCopyDirectory"),
+                   ConfigValue(destDir));
 
     // Now that we have all the inputs, we can construct the exporter thread.
-    m_exporter.reset(new TrackExport(destDir, m_filenames));
-    connect(m_exporter.data(), SIGNAL(progress(QString, int, int)),
-            this, SLOT(slotProgress(QString, int, int)));
+    m_exporter.reset(new TrackExport(destDir, m_tracks));
+    connect(m_exporter.data(), SIGNAL(progress(QString, int, int)), this,
+            SLOT(slotProgress(QString, int, int)));
     connect(m_exporter.data(),
-            SIGNAL(askOverwriteMode(QString,
-                          std::promise<TrackExport::OverwriteAnswer>*)),
+            SIGNAL(askOverwriteMode(QString, std::promise<TrackExport::OverwriteAnswer>*)),
             this,
-            SLOT(slotAskOverwriteMode(QString,
-                                      std::promise<TrackExport::OverwriteAnswer>*)));
-    connect(m_exporter.data(), SIGNAL(canceled()),
-            this, SLOT(cancelButtonClicked()));
+            SLOT(slotAskOverwriteMode(QString, std::promise<TrackExport::OverwriteAnswer>*)));
+    connect(m_exporter.data(), SIGNAL(canceled()), this,
+            SLOT(cancelButtonClicked()));
     return true;
 }
 
@@ -79,14 +74,13 @@ void DlgTrackExport::slotProgress(QString filename, int progress, int count) {
 }
 
 void DlgTrackExport::slotAskOverwriteMode(
-        QString filename,
-        std::promise<TrackExport::OverwriteAnswer>* promise) {
+        QString filename, std::promise<TrackExport::OverwriteAnswer>* promise) {
     QMessageBox question_box(
             QMessageBox::Warning,
             tr("Overwrite Existing File?"),
             tr("%1 already exists, overwrite?").arg(filename),
-            QMessageBox::Cancel | QMessageBox::No | QMessageBox::NoToAll |
-                    QMessageBox::Yes | QMessageBox::YesToAll);
+            QMessageBox::Cancel | QMessageBox::No | QMessageBox::NoToAll
+            | QMessageBox::Yes | QMessageBox::YesToAll);
     question_box.setDefaultButton(QMessageBox::No);
     question_box.setButtonText(QMessageBox::Yes, tr("&Overwrite"));
     question_box.setButtonText(QMessageBox::YesToAll, tr("Over&write All"));
@@ -123,8 +117,7 @@ void DlgTrackExport::finish() {
     if (m_exporter->errorMessage().length()) {
         QMessageBox::warning(
                 NULL,
-                tr("Export Error"),
-                m_exporter->errorMessage(),
+                tr("Export Error"), m_exporter->errorMessage(),
                 QMessageBox::Ok, QMessageBox::Ok);
     } else {
         QMessageBox::information(

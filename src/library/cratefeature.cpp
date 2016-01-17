@@ -708,7 +708,6 @@ void CrateFeature::slotExportPlaylist() {
 }
 
 void CrateFeature::slotExportTrackFiles() {
-    QList<QString> playlist_items;
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
@@ -716,13 +715,13 @@ void CrateFeature::slotExportTrackFiles() {
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();
-    QList<QString> filenames;
+    QList<TrackPointer> trackpointers;
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = m_crateTableModel.index(i, 0);
-        filenames.push_back(m_crateTableModel.getTrackLocation(index));
+        trackpointers.push_back(m_crateTableModel.getTrack(index));
     }
 
-    DlgTrackExport track_export_dlg(nullptr, m_pConfig, filenames);
+    DlgTrackExport track_export_dlg(nullptr, m_pConfig, trackpointers);
     if (track_export_dlg.selectDestinationDirectory()) {
         track_export_dlg.exec();
     }
