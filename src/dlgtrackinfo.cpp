@@ -3,6 +3,7 @@
 
 #include "dlgtrackinfo.h"
 #include "trackinfoobject.h"
+#include "soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 
@@ -478,6 +479,7 @@ void DlgTrackInfo::reloadTrackMetadata() {
     if (m_pLoadedTrack) {
         TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
                                                 m_pLoadedTrack->getSecurityToken()));
+        SoundSourceProxy(pTrack).parseTrackMetadata();
         populateFields(pTrack);
     }
 }
