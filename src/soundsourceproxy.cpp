@@ -292,31 +292,36 @@ void SoundSourceProxy::nextSoundSourceProvider() {
 }
 
 void SoundSourceProxy::initSoundSource() {
-    DEBUG_ASSERT(!m_pSoundSource);
-    DEBUG_ASSERT(!m_pAudioSource);
+    DEBUG_ASSERT(m_pSoundSource.isNull());
+    DEBUG_ASSERT(m_pAudioSource.isNull());
+    QString trackType(m_pTrack->getType());
     while (!m_pSoundSource) {
         Mixxx::SoundSourceProviderPointer pProvider(getSoundSourceProvider());
         if (!pProvider) {
-            qWarning() << "Failed to obtain SoundSource for file"
-                    << getFilePath();
-            return; // failure -> exit loop
+            qWarning() << "No SoundSourceProvider for file"
+                    << getUrl();
+            break; // failure -> exit loop
         }
         m_pSoundSource = pProvider->newSoundSource(m_url);
         if (m_pSoundSource) {
-            qDebug() << "Obtained SoundSource for"
-                    << getFilePath()
-                    << "from provider"
-                    << pProvider->getName();
-            return; // success -> exit loop
+            qDebug() << "SoundSourceProvider"
+                    << pProvider->getName()
+                    << "created a SoundSource for file"
+                    << getUrl();
+            trackType = m_pSoundSource->getType();
+            DEBUG_ASSERT(!trackType.isEmpty());
+            break; // success -> exit loop
         } else {
-            qWarning() << "Failed to obtain SoundSource for file"
-                    << getFilePath()
-                    << "from provider"
-                    << pProvider->getName();
+            qWarning() << "SoundSourceProvider"
+                    << pProvider->getName()
+                    << "failed to create a SoundSource for file"
+                    << getUrl();
         }
         // Continue with next SoundSource provider
         nextSoundSourceProvider();
     }
+    // Update the track's type
+    m_pTrack->setType(std::move(trackType));
 }
 
 Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {

@@ -167,39 +167,13 @@ void TrackInfoObject::parseTrackMetadata(
         bool reloadFromFile) {
     DEBUG_ASSERT(this == proxy.getTrack().data());
 
-    if (proxy.getFilePath().isEmpty()) {
-        qWarning() << "Failed to parse track metadata from file"
-                << getLocation()
-                << ": File is inaccessible or missing";
-        setHeaderParsed(false);
-        return;
-    }
-
-    const QString canonicalLocation(getCanonicalLocation());
-    DEBUG_ASSERT_AND_HANDLE(proxy.getFilePath() == canonicalLocation) {
-            qWarning() << "Failed to parse track metadata from file"
-                    << getLocation()
-                    << ": Mismatching file paths"
-                    << proxy.getFilePath()
-                    << "<>"
-                    << canonicalLocation;
-        setHeaderParsed(false);
-        return;
-    }
-
-    if (proxy.getType().isEmpty()) {
-        qWarning() << "Failed to parse track metadata from file"
-                << getLocation()
-                << ": Unsupported file type";
-        setHeaderParsed(false);
-        return;
-    }
-    setType(proxy.getType());
-
     bool parsedFromFile = getHeaderParsed();
     if (parsedFromFile && !reloadFromFile) {
+        qDebug() << "Skip parsing of track metadata from file"
+                << getLocation();
         return; // do not reload from file
     }
+
     Mixxx::TrackMetadata trackMetadata;
     // Use the existing trackMetadata as default values. Otherwise
     // existing values in the library will be overwritten with
@@ -217,7 +191,7 @@ void TrackInfoObject::parseTrackMetadata(
         parsedFromFile = true;
     } else {
         qWarning() << "Failed to parse tags from audio file"
-                 << canonicalLocation;
+                 << getLocation();
     }
 
     // If Artist or title fields are blank try to parse them

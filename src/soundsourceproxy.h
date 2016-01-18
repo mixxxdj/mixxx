@@ -46,14 +46,6 @@ public:
         return m_url;
     }
 
-    QString getType() const {
-        if (m_pSoundSource) {
-            return m_pSoundSource->getType();
-        } else {
-            return QString();
-        }
-    }
-
     // Load track metadata and (optionally) cover art from the file
     // if it has not already been parsed. With reloadFromFile = true
     // metadata and cover art will be reloaded from the file regardless
