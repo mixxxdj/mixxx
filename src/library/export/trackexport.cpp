@@ -97,8 +97,7 @@ TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(
     }
 
     if (!mode_future.valid()) {
-        qWarning()
-                << "TrackExport::makeOverwriteRequest invalid answer from future";
+        qWarning() << "TrackExport::makeOverwriteRequest invalid answer from future";
         m_errorMessage = tr("Error exporting tracks");
         m_bStop = true;
         return OverwriteAnswer::CANCEL;
