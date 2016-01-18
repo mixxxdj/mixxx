@@ -131,7 +131,7 @@ QList<QDir> getSoundSourcePluginDirectories() {
     return pluginDirs;
 }
 
-}
+} // anonymous namespace
 
 // static
 void SoundSourceProxy::loadPlugins() {
