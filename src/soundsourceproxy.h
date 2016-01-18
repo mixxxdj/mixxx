@@ -38,10 +38,6 @@ public:
         return m_pTrack;
     }
 
-    const QString& getFilePath() const {
-        return m_filePath;
-    }
-
     const QUrl& getUrl() const {
         return m_url;
     }
@@ -86,7 +82,6 @@ private:
 
     const TrackPointer m_pTrack;
 
-    const QString m_filePath;
     const QUrl m_url;
 
     static QList<Mixxx::SoundSourceProviderRegistration> findSoundSourceProviderRegistrations(const QUrl& url);
