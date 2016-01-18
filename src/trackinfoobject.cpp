@@ -167,39 +167,27 @@ void TrackInfoObject::parseTrackMetadata(
         bool reloadFromFile) {
     DEBUG_ASSERT(this == proxy.getTrack().data());
 
-    if (proxy.getFilePath().isEmpty()) {
-        qWarning() << "Failed to parse track metadata from file"
-                << getLocation()
-                << ": File is inaccessible or missing";
-        setHeaderParsed(false);
-        return;
-    }
-
-    const QString canonicalLocation(getCanonicalLocation());
-    DEBUG_ASSERT_AND_HANDLE(proxy.getFilePath() == canonicalLocation) {
-            qWarning() << "Failed to parse track metadata from file"
-                    << getLocation()
-                    << ": Mismatching file paths"
-                    << proxy.getFilePath()
-                    << "<>"
-                    << canonicalLocation;
-        setHeaderParsed(false);
-        return;
-    }
-
-    if (proxy.getType().isEmpty()) {
+    // NOTE(uklotzde): The type must not be set before parsing
+    // the metadata from the file! Otherwise the TIO is marked
+    // as dirty and incomplete metadata might be written back
+    // into the file.
+    const QString trackType(proxy.getType());
+    if (trackType.isEmpty()) {
         qWarning() << "Failed to parse track metadata from file"
                 << getLocation()
                 << ": Unsupported file type";
         setHeaderParsed(false);
         return;
     }
-    setType(proxy.getType());
+    setType(trackType);
 
     bool parsedFromFile = getHeaderParsed();
     if (parsedFromFile && !reloadFromFile) {
+        qDebug() << "Skip parsing of track metadata from file"
+                << getLocation();
         return; // do not reload from file
     }
+
     Mixxx::TrackMetadata trackMetadata;
     // Use the existing trackMetadata as default values. Otherwise
     // existing values in the library will be overwritten with
