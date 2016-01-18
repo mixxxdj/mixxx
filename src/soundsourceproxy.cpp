@@ -283,19 +283,6 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
     return registrationsForFileExtension;
 }
 
-//Constructor
-SoundSourceProxy::SoundSourceProxy(
-        const QString& filePath,
-        SecurityTokenPointer pSecurityToken)
-        : m_filePath(filePath),
-          m_url(QUrl::fromLocalFile(m_filePath)),
-          m_pSecurityToken(openSecurityToken(m_filePath, pSecurityToken)),
-          m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
-          m_soundSourceProviderRegistrationIndex(0) {
-    initSoundSource();
-}
-
-//Other constructor
 SoundSourceProxy::SoundSourceProxy(
         const TrackPointer& pTrack)
         : m_filePath(pTrack->getCanonicalLocation()),

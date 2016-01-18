@@ -52,7 +52,8 @@ class SoundSourceProxyTest: public MixxxTest {
     }
 
     static Mixxx::AudioSourcePointer openAudioSource(const QString& filePath) {
-        return SoundSourceProxy(filePath).openAudioSource();
+        TrackPointer pTrack(new TrackInfoObject(filePath));
+        return SoundSourceProxy(pTrack).openAudioSource();
     }
 };
 
@@ -70,16 +71,18 @@ TEST_F(SoundSourceProxyTest, open) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    SoundSourceProxy proxy(
-            QDir::currentPath().append("/src/test/id3-test-data/artist.mp3"));
+    TrackPointer pTrack(new TrackInfoObject(
+            QDir::currentPath().append("/src/test/id3-test-data/artist.mp3")));
+    SoundSourceProxy proxy(pTrack);
     Mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(OK, proxy.parseTrackMetadataAndCoverArt(&trackMetadata, NULL));
     EXPECT_EQ("Test Artist", trackMetadata.getArtist());
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    SoundSourceProxy proxy(
-        QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3"));
+    TrackPointer pTrack(new TrackInfoObject(
+            QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3")));
+    SoundSourceProxy proxy(pTrack);
     Mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(OK, proxy.parseTrackMetadataAndCoverArt(&trackMetadata, NULL));
     EXPECT_EQ("TITLE2", trackMetadata.getArtist());
