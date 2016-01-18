@@ -8,7 +8,6 @@
 #include <QMutex>
 #include <QObject>
 #include <QSharedPointer>
-#include <QWeakPointer>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
@@ -20,6 +19,8 @@
 #include "track/playcounter.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
+
+class SoundSourceProxy;
 
 class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
@@ -34,14 +35,9 @@ class TrackInfoObject : public QObject {
 
   public:
     // Initialize track with a QFileInfo class
-    explicit TrackInfoObject(const QFileInfo& fileInfo = QFileInfo(),
-                    SecurityTokenPointer pToken = SecurityTokenPointer(),
-                    bool parseHeader = true,
-                    bool parseCoverArt = false);
-
-    // Parse file metadata. If no file metadata is present, attempts to extract
-    // artist and title information from the filename.
-    void parse(bool parseCoverArt);
+    explicit TrackInfoObject(
+            const QFileInfo& fileInfo = QFileInfo(),
+            SecurityTokenPointer pToken = SecurityTokenPointer());
 
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
@@ -305,6 +301,12 @@ class TrackInfoObject : public QObject {
     // while the TIO is locked.
     bool markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
+
+    friend class SoundSourceProxy;
+    void parseTrackMetadata(
+            const SoundSourceProxy& proxy,
+            bool parseCoverArt,
+            bool reloadFromFile);
 
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
     void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
