@@ -174,6 +174,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
         qDebug() << "TrackInfoObject::parse()" << canonicalLocation;
     }
 
+    // TODO(uklotzde): Move parsing of metadata to SoundSourceProxy
     SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
     if (!proxy.getType().isEmpty()) {
         setType(proxy.getType());
