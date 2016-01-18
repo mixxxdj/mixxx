@@ -5,9 +5,7 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
-#include "util/sandbox.h"
-
-// Creates sound sources for plain files or tracks. Only intended to be used
+// Creates sound sources for tracks. Only intended to be used
 // in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
@@ -34,27 +32,31 @@ public:
     static bool isFileExtensionSupported(const QString& fileExtension);
 
     explicit SoundSourceProxy(
-            const QString& filePath,
-            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
-    explicit SoundSourceProxy(
             const TrackPointer& pTrack);
 
-    const QString& getFilePath() const {
-        return m_filePath;
+    const TrackPointer& getTrack() const {
+        return m_pTrack;
     }
 
     const QUrl& getUrl() const {
         return m_url;
     }
 
-    QString getType() const {
-        if (m_pSoundSource) {
-            return m_pSoundSource->getType();
-        } else {
-            return QString();
-        }
+    // Load track metadata and (optionally) cover art from the file
+    // if it has not already been parsed. With reloadFromFile = true
+    // metadata and cover art will be reloaded from the file regardless
+    // if it has already been parsed before or not.
+    void loadTrackMetadata(bool reloadFromFile = false) const {
+        return m_pTrack->parseTrackMetadata(*this, false, reloadFromFile);
+    }
+    void loadTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
+        return m_pTrack->parseTrackMetadata(*this, true, reloadFromFile);
     }
 
+    // Low-level function for parsing track metadata and cover art
+    // embedded in the audio file into the corresponding objects.
+    // The track referenced by this proxy is not modified! Both
+    // parameters are optional and can be set to nullptr/NULL.
     Result parseTrackMetadataAndCoverArt(
             Mixxx::TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override {
@@ -78,11 +80,9 @@ private:
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
 
-    const QString m_filePath;
-    const QUrl m_url;
-
     const TrackPointer m_pTrack;
-    const SecurityTokenPointer m_pSecurityToken;
+
+    const QUrl m_url;
 
     static QList<Mixxx::SoundSourceProviderRegistration> findSoundSourceProviderRegistrations(const QUrl& url);
 
