@@ -9,7 +9,6 @@
 #include "util/counter.h"
 #include "util/math.h"
 #include "util/sample.h"
-#include "util/timer.h"
 
 namespace {
 
@@ -328,15 +327,11 @@ int CachingReader::read(int sample, bool reverse, int numSamples, CSAMPLE* buffe
                 const SINT chunkSampleOffset = CachingReaderChunk::frames2samples(chunkFrameOffset);
                 const SINT samplesToCopy = CachingReaderChunk::frames2samples(framesToCopy);
                 
-                {
-                    ScopedTimer t("Hallo");
                 if (reverse) {
                     pChunk->copySamplesReverse(&buffer[numSamples - samplesRead - samplesToCopy], chunkSampleOffset, samplesToCopy);
                 } else {
-                    pChunk->copySamplesReverse(&buffer[numSamples - samplesRead - samplesToCopy], chunkSampleOffset, samplesToCopy);
                     pChunk->copySamples(buffer, chunkSampleOffset, samplesToCopy);
                     buffer += samplesToCopy;
-                }
                 }
                 samplesRead += samplesToCopy;
                 frameIndex += framesToCopy;
