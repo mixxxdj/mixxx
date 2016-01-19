@@ -33,14 +33,14 @@ const int kiLinearScaleReadAheadLength = 10240;
 class EngineBufferScaleLinear : public EngineBufferScale  {
   public:
     EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager);
-    virtual ~EngineBufferScaleLinear();
+    ~EngineBufferScaleLinear() override;
 
-    double getScaled(CSAMPLE* pOutput, const int iBufferSize);
-    void clear();
+    double getScaled(CSAMPLE* pOutput, const int iBufferSize) override;
+    void clear() override;
 
-    virtual void setScaleParameters(double base_rate,
-                                    double* pTempoRatio,
-                                    double* pPitchRatio);
+    void setScaleParameters(double base_rate,
+                            double* pTempoRatio,
+                             double* pPitchRatio) override;
 
   private:
     int do_scale(CSAMPLE* buf, const int buf_size);
