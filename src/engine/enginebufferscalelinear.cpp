@@ -170,8 +170,10 @@ int EngineBufferScaleLinear::do_copy(CSAMPLE* buf, const int buf_size) {
     // blow away the fractional sample position here
     m_bufferIntSize = 0; // force buffer read
     m_dNextFrame = 0;
-    m_floorSampleOld[0] = buf[read_samples - 2];
-    m_floorSampleOld[1] = buf[read_samples - 1];
+    if (read_samples > 1) {
+        m_floorSampleOld[0] = buf[read_samples - 2];
+        m_floorSampleOld[1] = buf[read_samples - 1];
+    }
     return read_samples;
 }
 
