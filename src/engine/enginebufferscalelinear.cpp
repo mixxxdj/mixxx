@@ -90,9 +90,8 @@ double EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput,
         m_dRate = 0.0;
         samples_read += do_scale(pOutput, buf_size / 2);
 
-        // reset prev sample so we can now read in the other direction (may not
-        // be necessary?)
-        int iCurSample = static_cast<int>(ceil(m_dCurrentFrame)) * 2;
+        // reset m_floorSampleOld in a way as we were coming from
+        // the other direction
         int iNextSample = static_cast<int>(ceil(m_dNextFrame)) * 2;
         if (iNextSample + 1 < m_bufferIntSize) {
             m_floorSampleOld[0] = m_bufferInt[iNextSample];
@@ -101,6 +100,7 @@ double EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput,
 
         // if the buffer has extra samples, do a read so RAMAN ends up back where
         // it should be
+        int iCurSample = static_cast<int>(ceil(m_dCurrentFrame)) * 2;
         int extra_samples = m_bufferIntSize - iCurSample - 2;
         if (extra_samples > 0) {
             if (extra_samples % 2 != 0) {
@@ -114,6 +114,7 @@ double EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput,
         // force a buffer read:
         m_bufferIntSize = 0;
         // make sure the indexes stay correct for interpolation
+        // TODO() Why we do not swap current and Next?
         m_dCurrentFrame = 0 - m_dCurrentFrame + floor(m_dCurrentFrame);
         m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
 
@@ -133,7 +134,7 @@ int EngineBufferScaleLinear::do_copy(CSAMPLE* buf, const int buf_size) {
     int samples_needed = buf_size;
     CSAMPLE* write_buf = buf;
     // Use up what's left of the internal buffer.
-    int iNextSample = static_cast<int>(ceil(m_dNextFrame)) * 2;
+    int iNextSample = math_max<int>(static_cast<int>(ceil(m_dNextFrame)) * 2, 0);
     int readSize = math_min<int>(m_bufferIntSize - iNextSample, samples_needed);
     if (readSize > 0) {
         SampleUtil::copy(write_buf, &m_bufferInt[iNextSample], readSize);
