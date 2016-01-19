@@ -1025,6 +1025,7 @@ QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
         return NULL;
 
     WStarRating* p = new WStarRating(pSafeChannelStr, m_pParent);
+    commonWidgetSetup(node, p, false);
     p->setup(node, *m_pContext);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
