@@ -35,7 +35,9 @@
 //
 // Here's how we should format our versions:
 //
-// MAJOR.MINOR.PATCH~(betaX|rcX)
+//  ===================================
+//  |  MAJOR.MINOR.PATCH~(betaX|rcX)  |
+//  ===================================
 //
 // The build server will append an Ubuntu version to this package name such as
 // "-0ubuntu1~trusty1". So the final Debian package version will be something
@@ -49,5 +51,8 @@
 //
 #ifndef VERSION
     // In that case, this value is used
+    
+    // READ ABOVE CAREFULLY BEFORE CHANGING!
+    // USE 3 DIGITS VERSION ONLY /!\
     #define VERSION "2.1.0-alpha-pre"
 #endif
