@@ -1,13 +1,12 @@
 #ifndef WIDGET_WMAINMENUBAR
 #define WIDGET_WMAINMENUBAR
 
-#include <QObject>
 #include <QAction>
-#include <QMenuBar>
-#include <QSignalMapper>
-#include <QUrl>
-#include <QMap>
 #include <QList>
+#include <QMenuBar>
+#include <QObject>
+#include <QScopedPointer>
+#include <QSignalMapper>
 
 #include "configobject.h"
 #include "controlobjectslave.h"
@@ -21,11 +20,13 @@ class VisibilityControlConnection : public QObject {
     virtual ~VisibilityControlConnection();
 
   private slots:
+    void slotReconnectControl();
     void slotControlChanged();
     void slotActionToggled(bool toggle);
 
   private:
-    ControlObjectSlave m_control;
+    ConfigKey m_key;
+    QScopedPointer<ControlObjectSlave> m_pControl;
     QAction* m_pAction;
 };
 
@@ -69,6 +70,7 @@ class WMainMenuBar : public QMenuBar {
     void internalFullScreenStateChange(bool fullscreen);
     void internalLibraryScanActive(bool active);
     void internalDeveloperToolsStateChange(bool visible);
+    void internalOnNewSkinLoaded();
 
   private slots:
     void slotDeveloperStatsExperiment(bool enable);
@@ -78,6 +80,7 @@ class WMainMenuBar : public QMenuBar {
 
   private:
     void initialize();
+    void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     UserSettingsPointer m_pConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
@@ -85,8 +88,6 @@ class WMainMenuBar : public QMenuBar {
     QSignalMapper m_visitUrlMapper;
     QSignalMapper m_vinylControlEnabledMapper;
     QList<QAction*> m_vinylControlEnabledActions;
-    QMap<ConfigKey, QAction*> m_viewActions;
-    QList<VisibilityControlConnection*> m_viewActionConnections;
 };
 
 #endif /* WIDGET_WMAINMENUBAR */

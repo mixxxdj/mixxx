@@ -1,6 +1,7 @@
 #include "widget/wmainmenubar.h"
 
 #include <QDesktopServices>
+#include <QUrl>
 
 #include "controlobjectslave.h"
 #include "defs_urls.h"
@@ -181,7 +182,7 @@ void WMainMenuBar::initialize() {
                                                   tr("Ctrl+1", "Menubar|View|Show Samplers"))));
     pViewShowSamplers->setStatusTip(showSamplersText);
     pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
-    m_viewActions[ConfigKey("[Samplers]", "show_samplers")] = pViewShowSamplers;
+    createVisibilityControl(pViewShowSamplers, ConfigKey("[Samplers]", "show_samplers"));
     pViewMenu->addAction(pViewShowSamplers);
 
     QString showMicrophoneTitle = tr("Show Microphone Section");
@@ -195,7 +196,7 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+2", "Menubar|View|Show Microphone Section"))));
     pViewShowMicrophone->setStatusTip(showMicrophoneText);
     pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
-    m_viewActions[ConfigKey("[Microphone]", "show_microphone")] = pViewShowMicrophone;
+    createVisibilityControl(pViewShowMicrophone, ConfigKey("[Microphone]", "show_microphone"));
     pViewMenu->addAction(pViewShowMicrophone);
 
 #ifdef __VINYLCONTROL__
@@ -210,7 +211,7 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"))));
     pViewVinylControl->setStatusTip(showVinylControlText);
     pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
-    m_viewActions[ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol")] = pViewVinylControl;
+    createVisibilityControl(pViewVinylControl, ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
     pViewMenu->addAction(pViewVinylControl);
 #endif
 
@@ -225,7 +226,7 @@ void WMainMenuBar::initialize() {
                                                   tr("Ctrl+4", "Menubar|View|Show Preview Deck"))));
     pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
-    m_viewActions[ConfigKey("[PreviewDeck]", "show_previewdeck")] = pViewShowPreviewDeck;
+    createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
     pViewMenu->addAction(pViewShowPreviewDeck);
 
     QString showEffectsTitle = tr("Show Effect Rack");
@@ -239,7 +240,7 @@ void WMainMenuBar::initialize() {
                                                   tr("Ctrl+5", "Menubar|View|Show Effect Rack"))));
     pViewShowEffects->setStatusTip(showEffectsText);
     pViewShowEffects->setWhatsThis(buildWhatsThis(showEffectsTitle, showEffectsText));
-    m_viewActions[ConfigKey("[EffectRack1]", "show")] = pViewShowEffects;
+    createVisibilityControl(pViewShowEffects, ConfigKey("[EffectRack1]", "show"));
     pViewMenu->addAction(pViewShowEffects);
 
 
@@ -254,7 +255,7 @@ void WMainMenuBar::initialize() {
                                                   tr("Ctrl+6", "Menubar|View|Show Cover Art"))));
     pViewShowCoverArt->setStatusTip(showCoverArtText);
     pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
-    m_viewActions[ConfigKey("[Library]", "show_coverart")] = pViewShowCoverArt;
+    createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
     pViewMenu->addAction(pViewShowCoverArt);
 
 
@@ -269,7 +270,7 @@ void WMainMenuBar::initialize() {
                                                   tr("Space", "Menubar|View|Maximize Library"))));
     pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
     pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
-    m_viewActions[ConfigKey("[Master]", "maximize_library")] = pViewMaximizeLibrary;
+    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
 
@@ -606,13 +607,7 @@ void WMainMenuBar::onLibraryScanFinished() {
 }
 
 void WMainMenuBar::onNewSkinLoaded() {
-    // Delete all the old VisibilityControlConnections.
-    qDeleteAll(m_viewActionConnections);
-
-    for (auto it = m_viewActions.constBegin(); it != m_viewActions.constEnd(); ++it) {
-        m_viewActionConnections.push_back(
-            new VisibilityControlConnection(this, it.value(), it.key()));
-    }
+    emit(internalOnNewSkinLoaded());
 }
 
 void WMainMenuBar::onRecordingStateChange(bool recording) {
@@ -668,14 +663,20 @@ void WMainMenuBar::slotVisitUrl(const QString& url) {
     QDesktopServices::openUrl(QUrl(url));
 }
 
+void WMainMenuBar::createVisibilityControl(QAction* pAction,
+                                           const ConfigKey& key) {
+    VisibilityControlConnection* pConnection =
+            new VisibilityControlConnection(this, pAction, key);
+    connect(this, SIGNAL(internalOnNewSkinLoaded()),
+            pConnection, SLOT(slotReconnectControl()));
+}
+
 VisibilityControlConnection::VisibilityControlConnection(
     QObject* pParent, QAction* pAction, const ConfigKey& key)
         : QObject(pParent),
-          m_control(key, this),
+          m_key(key),
           m_pAction(pAction) {
-    m_control.connectValueChanged(SLOT(slotControlChanged()));
-    m_pAction->setEnabled(m_control.valid());
-    m_pAction->setChecked(m_control.toBool());
+    slotReconnectControl();
     connect(m_pAction, SIGNAL(toggled(bool)),
             this, SLOT(slotActionToggled(bool)));
 }
@@ -683,10 +684,17 @@ VisibilityControlConnection::VisibilityControlConnection(
 VisibilityControlConnection::~VisibilityControlConnection() {
 }
 
+void VisibilityControlConnection::slotReconnectControl() {
+    m_pControl.reset(new ControlObjectSlave(m_key, this));
+    m_pControl->connectValueChanged(SLOT(slotControlChanged()));
+    m_pAction->setEnabled(m_pControl->valid());
+    slotControlChanged();
+}
+
 void VisibilityControlConnection::slotControlChanged() {
-    m_pAction->setChecked(m_control.toBool());
+    m_pAction->setChecked(m_pControl->toBool());
 }
 
 void VisibilityControlConnection::slotActionToggled(bool toggle) {
-    m_control.set(toggle ? 1.0 : 0.0);
+    m_pControl->set(toggle ? 1.0 : 0.0);
 }
