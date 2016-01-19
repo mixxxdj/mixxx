@@ -93,8 +93,8 @@ double EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput,
         // reset prev sample so we can now read in the other direction (may not
         // be necessary?)
         int iCurSample = static_cast<int>(ceil(m_dCurrentFrame)) * 2;
-        if (iCurSample + 1 < m_bufferIntSize) {
-            int iNextSample = static_cast<int>(ceil(m_dNextFrame)) * 2;
+        int iNextSample = static_cast<int>(ceil(m_dNextFrame)) * 2;
+        if (iNextSample + 1 < m_bufferIntSize) {
             m_floorSampleOld[0] = m_bufferInt[iNextSample];
             m_floorSampleOld[1] = m_bufferInt[iNextSample + 1];
         }
@@ -103,8 +103,9 @@ double EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput,
         // it should be
         int extra_samples = m_bufferIntSize - iCurSample - 2;
         if (extra_samples > 0) {
-            if (extra_samples % 2 != 0)
+            if (extra_samples % 2 != 0) {
                 extra_samples++;
+            }
             //qDebug() << "extra samples" << extra_samples;
 
             samples_read += m_pReadAheadManager->getNextSamples(
