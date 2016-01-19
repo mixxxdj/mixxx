@@ -123,10 +123,9 @@ double EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput,
         m_dRate = rate_add_new;
         // pass the address of the sample at the halfway point
         samples_read += do_scale(&pOutput[buf_size / 2], buf_size / 2);
-        return samples_read;
+    } else {
+        samples_read += do_scale(pOutput, buf_size);
     }
-
-    samples_read += do_scale(pOutput, buf_size);
     return samples_read;
 }
 
