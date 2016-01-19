@@ -53,6 +53,6 @@
     // In that case, this value is used
     
     // READ ABOVE CAREFULLY BEFORE CHANGING!
-    // USE 3 DIGITS VERSION ONLY /!\
+    // USE 3 DIGITS VERSION ONLY /!\ _
     #define VERSION "2.1.0-alpha-pre"
 #endif
