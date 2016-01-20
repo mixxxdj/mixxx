@@ -1933,7 +1933,7 @@ bool TrackDAO::verifyRemainingTracks(
 namespace {
     QImage parseCoverArt(const QFileInfo& fileInfo) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
-        return CoverArtUtils::extractEmbeddedCover(fileInfo.filePath(), pToken);
+        return CoverArtUtils::extractEmbeddedCover(fileInfo, pToken);
     }
 }
 
