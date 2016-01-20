@@ -34,6 +34,7 @@ addons:
       - libsndfile1-dev
       - libflac-dev
       - libid3tag0-dev
+      - libhidapi-dev
 before_install:
   # Virtual X, needed for analyzer waveform tests
   - "export DISPLAY=:99.0"
