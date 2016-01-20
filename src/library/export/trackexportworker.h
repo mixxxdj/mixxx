@@ -56,8 +56,9 @@ class TrackExportWorker : public QThread {
     // is not quite what we want here, so we use the STL's future class.
     // Note that fully qualifying the Answer class name is required for the
     // signal to connect.
-    void askOverwriteMode(QString filename,
-                          std::promise<TrackExportWorker::OverwriteAnswer>* promise);
+    void askOverwriteMode(
+            QString filename,
+            std::promise<TrackExportWorker::OverwriteAnswer>* promise);
     void progress(QString filename, int progress, int count);
     void canceled();
 

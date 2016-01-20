@@ -27,8 +27,7 @@ TrackExportDlg::TrackExportDlg(QWidget *parent,
             SIGNAL(askOverwriteMode(QString, std::promise<TrackExportWorker::OverwriteAnswer>*)),
             this,
             SLOT(slotAskOverwriteMode(QString, std::promise<TrackExportWorker::OverwriteAnswer>*)));
-    connect(m_worker, SIGNAL(canceled()), this,
-            SLOT(cancelButtonClicked()));
+    connect(m_worker, SIGNAL(canceled()), this, SLOT(cancelButtonClicked()));
 }
 
 void TrackExportDlg::showEvent(QShowEvent* event) {

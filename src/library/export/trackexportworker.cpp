@@ -23,8 +23,8 @@ void TrackExportWorker::run() {
 void TrackExportWorker::exportTrack(TrackPointer track) {
     QString sourceFilename = track->getLocation();
     auto source_fileinfo = track->getFileInfo();
-    const QString dest_filename =
-            QDir(m_destDir).filePath(source_fileinfo.fileName());
+    const QString dest_filename = QDir(m_destDir).filePath(
+            source_fileinfo.fileName());
     QFileInfo dest_fileinfo(dest_filename);
 
     if (dest_fileinfo.exists()) {
