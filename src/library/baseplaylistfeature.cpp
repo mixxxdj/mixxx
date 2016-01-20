@@ -485,15 +485,20 @@ void BasePlaylistFeature::slotExportPlaylist() {
 }
 
 void BasePlaylistFeature::slotExportTrackFiles() {
-    // TODO: The table model might have an active search, so make a new one
-    // and use that instead.  How do I get at the settingsNamespace in order
-    // to construct?
+    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
+        new PlaylistTableModel(this, m_pTrackCollection,
+                               "mixxx.db.model.playlist_export"));
 
-    int rows = m_pPlaylistTableModel->rowCount();
+    pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
+            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    pPlaylistTableModel->select();
+
+    int rows = pPlaylistTableModel->rowCount();
     QList<TrackPointer> tracks;
     for (int i = 0; i < rows; ++i) {
-        QModelIndex index = m_pPlaylistTableModel->index(i, 0);
-        tracks.push_back(m_pPlaylistTableModel->getTrack(index));
+        QModelIndex index = pPlaylistTableModel->index(i, 0);
+        tracks.push_back(pPlaylistTableModel->getTrack(index));
     }
 
     TrackExportWizard track_export(nullptr, m_pConfig, tracks);
