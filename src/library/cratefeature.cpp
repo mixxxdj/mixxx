@@ -8,7 +8,7 @@
 #include <QDesktopServices>
 
 #include "library/cratefeature.h"
-#include "library/export/dlgtrackexport.h"
+#include "library/export/trackexportwizard.h"
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
@@ -721,10 +721,8 @@ void CrateFeature::slotExportTrackFiles() {
         trackpointers.push_back(m_crateTableModel.getTrack(index));
     }
 
-    DlgTrackExport track_export_dlg(nullptr, m_pConfig, trackpointers);
-    if (track_export_dlg.selectDestinationDirectory()) {
-        track_export_dlg.exec();
-    }
+    TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
+    track_export.exportTracks();
 }
 
 void CrateFeature::slotCrateTableChanged(int crateId) {

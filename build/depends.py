@@ -801,8 +801,9 @@ class MixxxCore(Feature):
                    "library/browse/browsefeature.cpp",
                    "library/browse/foldertreemodel.cpp",
 
-                   "library/export/dlgtrackexport.cpp",
-                   "library/export/trackexport.cpp",
+                   "library/export/trackexportdlg.cpp",
+                   "library/export/trackexportwizard.cpp",
+                   "library/export/trackexportworker.cpp",
 
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",

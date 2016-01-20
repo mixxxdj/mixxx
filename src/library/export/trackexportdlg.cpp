@@ -1,67 +1,49 @@
-#include "library/export/dlgtrackexport.h"
+#include "library/export/trackexportdlg.h"
 
-#include <QFileDialog>
 #include <QFileInfo>
 #include <QDesktopServices>
 #include <QMessageBox>
 
 #include "util/assert.h"
 
-DlgTrackExport::DlgTrackExport(QWidget *parent,
+TrackExportDlg::TrackExportDlg(QWidget *parent,
                                ConfigObject<ConfigValue>* pConfig,
-                               QList<TrackPointer> tracks)
+                               TrackExportWorker* worker)
         : QDialog(parent),
           Ui::DlgTrackExport(),
           m_pConfig(pConfig),
-          m_tracks(tracks) {
+          m_worker(worker) {
     setupUi(this);
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(cancelButtonClicked()));
     exportProgress->setMinimum(0);
-    exportProgress->setMaximum(tracks.size());
+    exportProgress->setMaximum(1);
     exportProgress->setValue(0);
     statusLabel->setText("");
     setModal(true);
-}
 
-bool DlgTrackExport::selectDestinationDirectory() {
-    QString lastExportDirectory = m_pConfig->getValueString(
-            ConfigKey("[Library]", "LastTrackCopyDirectory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-
-    QString destDir = QFileDialog::getExistingDirectory(
-            NULL, tr("Export Track Files To"), lastExportDirectory);
-    if (destDir.isNull() || destDir.isEmpty()) {
-        return false;
-    }
-    m_pConfig->set(ConfigKey("[Library]", "LastTrackCopyDirectory"),
-                   ConfigValue(destDir));
-
-    // Now that we have all the inputs, we can construct the exporter thread.
-    m_exporter.reset(new TrackExport(destDir, m_tracks));
-    connect(m_exporter.data(), SIGNAL(progress(QString, int, int)), this,
+    connect(m_worker, SIGNAL(progress(QString, int, int)), this,
             SLOT(slotProgress(QString, int, int)));
-    connect(m_exporter.data(),
-            SIGNAL(askOverwriteMode(QString, std::promise<TrackExport::OverwriteAnswer>*)),
+    connect(m_worker,
+            SIGNAL(askOverwriteMode(QString, std::promise<TrackExportWorker::OverwriteAnswer>*)),
             this,
-            SLOT(slotAskOverwriteMode(QString, std::promise<TrackExport::OverwriteAnswer>*)));
-    connect(m_exporter.data(), SIGNAL(canceled()), this,
+            SLOT(slotAskOverwriteMode(QString, std::promise<TrackExportWorker::OverwriteAnswer>*)));
+    connect(m_worker, SIGNAL(canceled()), this,
             SLOT(cancelButtonClicked()));
-    return true;
 }
 
-void DlgTrackExport::showEvent(QShowEvent* event) {
+void TrackExportDlg::showEvent(QShowEvent* event) {
     QDialog::showEvent(event);
-    DEBUG_ASSERT_AND_HANDLE(m_exporter) {
+    DEBUG_ASSERT_AND_HANDLE(m_worker) {
         // It's not worth checking for m_exporter != nullptr elsewhere in this
         // class... it'll be clear very quickly that someone screwed up and
         // forgot to call selectDestinationDirectory().
         qDebug() << "Programming error: did not initialize m_exporter, about to crash";
         return;
     }
-    m_exporter->start();
+    m_worker->start();
 }
 
-void DlgTrackExport::slotProgress(QString filename, int progress, int count) {
+void TrackExportDlg::slotProgress(QString filename, int progress, int count) {
     if (progress == count) {
         statusLabel->setText(tr("Export finished"));
         finish();
@@ -73,12 +55,13 @@ void DlgTrackExport::slotProgress(QString filename, int progress, int count) {
     exportProgress->setValue(progress);
 }
 
-void DlgTrackExport::slotAskOverwriteMode(
-        QString filename, std::promise<TrackExport::OverwriteAnswer>* promise) {
+void TrackExportDlg::slotAskOverwriteMode(
+        QString filename,
+        std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
     QMessageBox question_box(
             QMessageBox::Warning,
             tr("Overwrite Existing File?"),
-            tr("%1 already exists, overwrite?").arg(filename),
+            tr("\"%1\" already exists, overwrite?").arg(filename),
             QMessageBox::Cancel | QMessageBox::No | QMessageBox::NoToAll
             | QMessageBox::Yes | QMessageBox::YesToAll);
     question_box.setDefaultButton(QMessageBox::No);
@@ -89,35 +72,35 @@ void DlgTrackExport::slotAskOverwriteMode(
 
     switch (question_box.exec()) {
     case QMessageBox::No:
-        promise->set_value(TrackExport::OverwriteAnswer::SKIP);
+        promise->set_value(TrackExportWorker::OverwriteAnswer::SKIP);
         return;
     case QMessageBox::NoToAll:
-        promise->set_value(TrackExport::OverwriteAnswer::SKIP_ALL);
+        promise->set_value(TrackExportWorker::OverwriteAnswer::SKIP_ALL);
         return;
     case QMessageBox::Yes:
-        promise->set_value(TrackExport::OverwriteAnswer::OVERWRITE);
+        promise->set_value(TrackExportWorker::OverwriteAnswer::OVERWRITE);
         return;
     case QMessageBox::YesToAll:
-        promise->set_value(TrackExport::OverwriteAnswer::OVERWRITE_ALL);
+        promise->set_value(TrackExportWorker::OverwriteAnswer::OVERWRITE_ALL);
         return;
     case QMessageBox::Cancel:
     default:
-        promise->set_value(TrackExport::OverwriteAnswer::CANCEL);
+        promise->set_value(TrackExportWorker::OverwriteAnswer::CANCEL);
     }
 }
 
-void DlgTrackExport::cancelButtonClicked() {
+void TrackExportDlg::cancelButtonClicked() {
     finish();
 }
 
-void DlgTrackExport::finish() {
-    m_exporter->stop();
-    m_exporter->wait();
+void TrackExportDlg::finish() {
+    m_worker->stop();
+    m_worker->wait();
     hide();
-    if (m_exporter->errorMessage().length()) {
+    if (m_worker->errorMessage().length()) {
         QMessageBox::warning(
                 NULL,
-                tr("Export Error"), m_exporter->errorMessage(),
+                tr("Export Error"), m_worker->errorMessage(),
                 QMessageBox::Ok, QMessageBox::Ok);
     } else {
         QMessageBox::information(

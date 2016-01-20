@@ -1,17 +1,17 @@
-#include "library/export/trackexport.h"
+#include "library/export/trackexportworker.h"
+#include "util/compatibility.h"
 
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QDebug>
 
-void TrackExport::run() {
+void TrackExportWorker::run() {
     int i = 0;
     for (const auto& track : m_tracks) {
-        QString path = track->getLocation();
-        QFileInfo fileinfo(path);
+        auto fileinfo = track->getFileInfo();
         emit(progress(fileinfo.fileName(), i, m_tracks.size()));
         exportTrack(track);
-        if (m_bStop) {
+        if (load_atomic(m_bStop)) {
             emit(canceled());
             return;
         }
@@ -20,10 +20,11 @@ void TrackExport::run() {
     }
 }
 
-void TrackExport::exportTrack(TrackPointer track) {
+void TrackExportWorker::exportTrack(TrackPointer track) {
     QString sourceFilename = track->getLocation();
-    QFileInfo source_fileinfo(sourceFilename);
-    const QString dest_filename = m_destDir + "/" + source_fileinfo.fileName();
+    auto source_fileinfo = track->getFileInfo();
+    const QString dest_filename =
+            QDir(m_destDir).filePath(source_fileinfo.fileName());
     QFileInfo dest_fileinfo(dest_filename);
 
     if (dest_fileinfo.exists()) {
@@ -59,7 +60,7 @@ void TrackExport::exportTrack(TrackPointer track) {
                     dest_filename, dest_file.errorString());
             qWarning() << error_message;
             m_errorMessage = error_message;
-            m_bStop = true;
+            stop();
             return;
         }
     }
@@ -72,12 +73,12 @@ void TrackExport::exportTrack(TrackPointer track) {
                 sourceFilename, dest_filename, source_file.errorString());
         qWarning() << error_message;
         m_errorMessage = error_message;
-        m_bStop = true;
+        stop();
         return;
     }
 }
 
-TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(
+TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
         QString filename) {
     // QT's QFuture is not quite right for this type of threaded question-and-answer.
     // std::future works fine, even with signals and slots.
@@ -92,14 +93,14 @@ TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(
 
     // We can be either canceled from the other thread, or as a return value
     // from this call.  First check for a call from the other thread.
-    if (m_bStop) {
+    if (load_atomic(m_bStop)) {
         return OverwriteAnswer::CANCEL;
     }
 
     if (!mode_future.valid()) {
-        qWarning() << "TrackExport::makeOverwriteRequest invalid answer from future";
+        qWarning() << "TrackExportWorker::makeOverwriteRequest invalid answer from future";
         m_errorMessage = tr("Error exporting tracks");
-        m_bStop = true;
+        stop();
         return OverwriteAnswer::CANCEL;
     }
 
@@ -122,7 +123,7 @@ TrackExport::OverwriteAnswer TrackExport::makeOverwriteRequest(
     return answer;
 }
 
-void TrackExport::stop() {
+void TrackExportWorker::stop() {
     // We'll wait for the current file to finish copying, then stop.
     m_bStop = true;
 }

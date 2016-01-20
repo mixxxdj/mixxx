@@ -9,13 +9,13 @@
 #include <QTime>
 
 #include "configobject.h"
-#include "library/export/trackexport.h"
+#include "library/export/trackexportworker.h"
 #include "library/export/ui_dlgtrackexport.h"
 #include "trackinfoobject.h"
 
 // A dialog for interacting with the track exporter in an interactive manner.
 // Handles errors and user interactions.
-class DlgTrackExport: public QDialog, public Ui::DlgTrackExport {
+class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     Q_OBJECT
   public:
     enum class OverwriteMode {
@@ -24,22 +24,17 @@ class DlgTrackExport: public QDialog, public Ui::DlgTrackExport {
         SKIP_ALL,
     };
 
-    // The dialog is prepared, but not shown on construction.
-    DlgTrackExport(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
-                   QList<TrackPointer> tracks);
-    virtual ~DlgTrackExport() { }
-
-    // Displays a folder selection box to select the destination
-    // folder.  If the user cancels the folder selection, returns false and
-    // the dialog should not be shown.
-    // MUST be called before .exec()ing the dialog.
-    bool selectDestinationDirectory();
+    // The dialog is prepared, but not shown on construction.  Does not
+    // take ownership of the export worker.
+    TrackExportDlg(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
+                   TrackExportWorker* worker);
+    virtual ~TrackExportDlg() { }
 
   public slots:
     void slotProgress(QString filename, int progress, int count);
     void slotAskOverwriteMode(
             QString filename,
-            std::promise<TrackExport::OverwriteAnswer>* promise);
+            std::promise<TrackExportWorker::OverwriteAnswer>* promise);
     void cancelButtonClicked();
 
   protected:
@@ -55,7 +50,7 @@ class DlgTrackExport: public QDialog, public Ui::DlgTrackExport {
 
     ConfigObject<ConfigValue>* m_pConfig;
     QList<TrackPointer> m_tracks;
-    QScopedPointer<TrackExport> m_exporter;
+    TrackExportWorker* m_worker;
 };
 
 #endif  // DLGTRACKEXPORT_H
