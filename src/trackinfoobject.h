@@ -254,7 +254,7 @@ class TrackInfoObject : public QObject {
     CoverArt getCoverArt() const;
 
     void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
-    void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
+    void getMetadata(Mixxx::TrackMetadata* pTrackMetadata) const;
 
     // markDirty(false) = current value of dirty flag (unchanged)
     // markDirty(true) = true = new value of dirty flag

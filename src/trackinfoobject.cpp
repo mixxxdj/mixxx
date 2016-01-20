@@ -113,7 +113,7 @@ void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
     }
 }
 
-void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
+void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) const {
     // TODO(XXX): This involves locking the mutex for every setXXX
     // method. We should figure out an optimization where there are private
     // getters that don't lock the mutex.

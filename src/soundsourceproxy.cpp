@@ -265,9 +265,48 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
     return registrationsForFileExtension;
 }
 
+//static
+SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
+        const TrackInfoObject* pTrack,
+        bool evenIfNeverParsedFromFileBefore) {
+    DEBUG_ASSERT(nullptr != pTrack);
+    SoundSourceProxy proxy(pTrack);
+    if (!proxy.m_pSoundSource.isNull()) {
+        Mixxx::TrackMetadata trackMetadata;
+        bool parsedFromFile = pTrack->getHeaderParsed();
+        pTrack->getMetadata(&trackMetadata);
+        if (parsedFromFile || evenIfNeverParsedFromFileBefore) {
+            switch (proxy.m_pSoundSource->writeTrackMetadata(trackMetadata)) {
+            case OK:
+                qDebug() << "Track metadata has been written into file"
+                        << pTrack->getLocation();
+                return SaveTrackMetadataResult::SUCCEEDED;
+            case ERR:
+                break;
+            default:
+                DEBUG_ASSERT(!"unreachable code");
+            }
+        } else {
+            qDebug() << "Skip writing of track metadata into file"
+                    << pTrack->getLocation();
+            return SaveTrackMetadataResult::SKIPPED;
+        }
+    }
+    qDebug() << "Failed to write track metadata into file"
+            << pTrack->getLocation();
+    return SaveTrackMetadataResult::FAILED;
+}
+
 SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
     : m_pTrack(pTrack),
       m_url(QUrl::fromLocalFile(pTrack->getCanonicalLocation())),
+      m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
+      m_soundSourceProviderRegistrationIndex(0) {
+    initSoundSource();
+}
+
+SoundSourceProxy::SoundSourceProxy(const TrackInfoObject* pTrack)
+    : m_url(QUrl::fromLocalFile(pTrack->getCanonicalLocation())),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
