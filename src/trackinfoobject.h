@@ -87,10 +87,10 @@ class TrackInfoObject : public QObject {
     // Returns whether the file exists on disk or not.
     bool exists() const;
 
-    // Sets the type of the string
-    void setType(const QString&);
     // Returns the file type
     QString getType() const;
+    // Sets the file type. Only used by TrackDAO and SoundSourceProxy!
+    void setType(const QString&);
 
     void setChannels(int iChannels);
     // Get number of channels

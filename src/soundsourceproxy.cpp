@@ -293,28 +293,42 @@ void SoundSourceProxy::nextSoundSourceProvider() {
 void SoundSourceProxy::initSoundSource() {
     DEBUG_ASSERT(m_pSoundSource.isNull());
     DEBUG_ASSERT(m_pAudioSource.isNull());
-    while (!m_pSoundSource) {
+    QString trackType;
+    if (!m_pTrack.isNull()) {
+        trackType = m_pTrack->getType();
+    }
+    while (m_pSoundSource.isNull()) {
         Mixxx::SoundSourceProviderPointer pProvider(getSoundSourceProvider());
-        if (!pProvider) {
+        if (pProvider.isNull()) {
             qWarning() << "No SoundSourceProvider for file"
                     << getUrl();
-            break; // failure -> exit loop
+            // Failure -> exit loop
+            break;
         }
         m_pSoundSource = pProvider->newSoundSource(m_url);
-        if (m_pSoundSource) {
-            qDebug() << "SoundSourceProvider"
-                    << pProvider->getName()
-                    << "created a SoundSource for file"
-                    << getUrl();
-            break; // success -> exit loop
-        } else {
+        if (m_pSoundSource.isNull()) {
             qWarning() << "SoundSourceProvider"
                     << pProvider->getName()
                     << "failed to create a SoundSource for file"
                     << getUrl();
+            // Switch to next provider...
+            nextSoundSourceProvider();
+            // ...and continue loop
+            DEBUG_ASSERT(m_pSoundSource.isNull());
+        } else {
+            trackType = m_pSoundSource->getType();
+            qDebug() << "SoundSourceProvider"
+                    << pProvider->getName()
+                    << "created a SoundSource for file"
+                    << getUrl()
+                    << "of type"
+                    << trackType;
+            // Success -> exit loop
+            break;
         }
-        // Continue with next SoundSource provider
-        nextSoundSourceProvider();
+    }
+    if (!m_pTrack.isNull()) {
+        m_pTrack->setType(trackType);
     }
 }
 

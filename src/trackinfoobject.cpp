@@ -167,20 +167,6 @@ void TrackInfoObject::parseTrackMetadata(
         bool reloadFromFile) {
     DEBUG_ASSERT(this == proxy.getTrack().data());
 
-    // NOTE(uklotzde): The type must not be set before parsing
-    // the metadata from the file! Otherwise the TIO is marked
-    // as dirty and incomplete metadata might be written back
-    // into the file.
-    const QString trackType(proxy.getType());
-    if (trackType.isEmpty()) {
-        qWarning() << "Failed to parse track metadata from file"
-                << getLocation()
-                << ": Unsupported file type";
-        setHeaderParsed(false);
-        return;
-    }
-    setType(trackType);
-
     bool parsedFromFile = getHeaderParsed();
     if (parsedFromFile && !reloadFromFile) {
         qDebug() << "Skip parsing of track metadata from file"
