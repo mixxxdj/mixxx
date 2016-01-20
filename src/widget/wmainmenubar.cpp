@@ -14,7 +14,7 @@ namespace {
 
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;
-    return QString("%1\n\n%2").arg(preparedTitle.replace("&", ""), text);
+    return QString("%1\n\n%2").arg(preparedTitle.remove("&"), text);
 }
 
 QString vinylControlDefaultKeyBinding(int deck) {
