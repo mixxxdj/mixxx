@@ -8,7 +8,6 @@
 #include <QMutex>
 #include <QObject>
 #include <QSharedPointer>
-#include <QWeakPointer>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
@@ -34,14 +33,9 @@ class TrackInfoObject : public QObject {
 
   public:
     // Initialize track with a QFileInfo class
-    explicit TrackInfoObject(const QFileInfo& fileInfo = QFileInfo(),
-                    SecurityTokenPointer pToken = SecurityTokenPointer(),
-                    bool parseHeader = true,
-                    bool parseCoverArt = false);
-
-    // Parse file metadata. If no file metadata is present, attempts to extract
-    // artist and title information from the filename.
-    void parse(bool parseCoverArt);
+    explicit TrackInfoObject(
+            const QFileInfo& fileInfo = QFileInfo(),
+            SecurityTokenPointer pToken = SecurityTokenPointer());
 
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
@@ -91,10 +85,10 @@ class TrackInfoObject : public QObject {
     // Returns whether the file exists on disk or not.
     bool exists() const;
 
-    // Sets the type of the string
-    void setType(const QString&);
     // Returns the file type
     QString getType() const;
+    // Sets the file type. Only used by TrackDAO and SoundSourceProxy!
+    void setType(const QString&);
 
     void setChannels(int iChannels);
     // Get number of channels
@@ -259,6 +253,9 @@ class TrackInfoObject : public QObject {
     void setCoverArt(const CoverArt& cover);
     CoverArt getCoverArt() const;
 
+    void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
+    void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
+
     // markDirty(false) = current value of dirty flag (unchanged)
     // markDirty(true) = true = new value of dirty flag
     bool markDirty(bool bDirty = true);
@@ -295,9 +292,6 @@ class TrackInfoObject : public QObject {
     void slotBeatsUpdated();
 
   private:
-    void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
-    void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
-
     void resetDirty();
 
     // Set whether the TIO is dirty or not and unlock before emitting
