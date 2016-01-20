@@ -30,13 +30,7 @@ QImage CoverArtUtils::extractEmbeddedCover(
         const QString& trackLocation,
         SecurityTokenPointer pToken) {
     TrackPointer pTrack(new TrackInfoObject(trackLocation, pToken));
-    SoundSourceProxy proxy(pTrack);
-    QImage coverArt;
-    if (OK == proxy.parseTrackMetadataAndCoverArt(nullptr, &coverArt)) {
-        return coverArt;
-    } else {
-        return QImage();
-    }
+    return SoundSourceProxy(pTrack).parseCoverImage();
 }
 
 //static

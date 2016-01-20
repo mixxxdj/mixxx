@@ -24,6 +24,7 @@
 #endif
 #include "sources/soundsourceflac.h"
 
+#include "library/coverartutils.h"
 #include "util/cmdlineargs.h"
 #include "util/regex.h"
 
@@ -330,6 +331,112 @@ void SoundSourceProxy::initSoundSource() {
     if (!m_pTrack.isNull()) {
         m_pTrack->setType(trackType);
     }
+}
+
+namespace {
+    // Parses artist/title from the file name and returns the file type.
+    // Assumes that the file name is written like: "artist - title.xxx"
+    // or "artist_-_title.xxx".
+    // This function does not overwrite any existing (non-empty) artist
+    // and title fields!
+    void parseMetadataFromFileName(Mixxx::TrackMetadata* pTrackMetadata, QString fileName) {
+        fileName.replace("_", " ");
+        QString titleWithFileType;
+        if (fileName.count('-') == 1) {
+            if (pTrackMetadata->getArtist().isEmpty()) {
+                const QString artist(fileName.section('-', 0, 0).trimmed());
+                if (!artist.isEmpty()) {
+                    pTrackMetadata->setArtist(artist);
+                }
+            }
+            titleWithFileType = fileName.section('-', 1, 1).trimmed();
+        } else {
+            titleWithFileType = fileName.trimmed();
+        }
+        if (pTrackMetadata->getTitle().isEmpty()) {
+            const QString title(titleWithFileType.section('.', 0, -2).trimmed());
+            if (!title.isEmpty()) {
+                pTrackMetadata->setTitle(title);
+            }
+        }
+    }
+} // anonymous namespace
+
+void SoundSourceProxy::loadTrackMetadataAndCoverArt(
+        bool withCoverArt,
+        bool reloadFromFile) const {
+    DEBUG_ASSERT(!m_pTrack.isNull());
+
+    bool parsedFromFile = m_pTrack->getHeaderParsed();
+    if (parsedFromFile && !reloadFromFile) {
+        qDebug() << "Skip parsing of track metadata from file"
+                << getUrl();
+        return; // do not reload from file
+    }
+
+    // Use the existing trackMetadata as default values. Otherwise
+    // existing values in the library will be overwritten with
+    // empty values if the corresponding file tags are missing.
+    // Depending on the file type some kind of tags might even
+    // not be supported at all and those would get lost!
+    Mixxx::TrackMetadata trackMetadata;
+    m_pTrack->getMetadata(&trackMetadata);
+    CoverArt coverArt(m_pTrack->getCoverArt());
+
+    // If parsing of the cover art image should be omitted the
+    // 2nd output parameter must be set to nullptr. Cover art
+    // is not reloaded from file once the metadata has been parsed!
+    QImage* pCoverImg = (withCoverArt && !parsedFromFile) ? &coverArt.image : nullptr;
+
+    // Parse the tags stored in the audio file.
+    if (m_pSoundSource->parseTrackMetadataAndCoverArt(&trackMetadata, pCoverImg) == OK) {
+        parsedFromFile = true;
+    } else {
+        qWarning() << "Failed to parse metadata from file"
+                 << getUrl();
+        if (parsedFromFile) {
+            // Don't overwrite any existing metadata that once has
+            // been parsed successfully from file.
+            return;
+        }
+    }
+
+    // If Artist or title fields are blank try to parse them
+    // from the file name.
+    // TODO(rryan): Should we re-visit this decision?
+    if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
+        parseMetadataFromFileName(&trackMetadata, m_pTrack->getFileInfo().fileName());
+    }
+
+    // Dump the trackMetadata extracted from the file back into the track.
+    m_pTrack->setMetadata(trackMetadata);
+    m_pTrack->setHeaderParsed(parsedFromFile);
+    if (parsedFromFile && (nullptr != pCoverImg) && !pCoverImg->isNull()) {
+        CoverArt coverArt;
+        coverArt.image = *pCoverImg;
+        coverArt.info.hash = CoverArtUtils::calculateHash(
+                coverArt.image);
+        coverArt.info.coverLocation = QString();
+        coverArt.info.type = CoverInfo::METADATA;
+        coverArt.info.source = CoverInfo::GUESSED;
+        m_pTrack->setCoverArt(coverArt);
+    }
+}
+
+Result SoundSourceProxy::parseTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata) const {
+    if (!m_pSoundSource.isNull()) {
+        return m_pSoundSource->parseTrackMetadataAndCoverArt(pTrackMetadata, nullptr);
+    } else {
+        return ERR;
+    }
+}
+
+QImage SoundSourceProxy::parseCoverImage() const {
+    QImage coverImg;
+    if (!m_pSoundSource.isNull()) {
+        m_pSoundSource->parseTrackMetadataAndCoverArt(nullptr, &coverImg);
+    }
+    return coverImg;
 }
 
 Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {

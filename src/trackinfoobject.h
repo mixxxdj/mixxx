@@ -20,8 +20,6 @@
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
-class SoundSourceProxy;
-
 class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
@@ -255,6 +253,9 @@ class TrackInfoObject : public QObject {
     void setCoverArt(const CoverArt& cover);
     CoverArt getCoverArt() const;
 
+    void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
+    void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
+
     // markDirty(false) = current value of dirty flag (unchanged)
     // markDirty(true) = true = new value of dirty flag
     bool markDirty(bool bDirty = true);
@@ -291,9 +292,6 @@ class TrackInfoObject : public QObject {
     void slotBeatsUpdated();
 
   private:
-    void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
-    void getMetadata(Mixxx::TrackMetadata* pTrackMetadata);
-
     void resetDirty();
 
     // Set whether the TIO is dirty or not and unlock before emitting
@@ -301,12 +299,6 @@ class TrackInfoObject : public QObject {
     // while the TIO is locked.
     bool markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
-
-    friend class SoundSourceProxy;
-    void parseTrackMetadata(
-            const SoundSourceProxy& proxy,
-            bool parseCoverArt,
-            bool reloadFromFile);
 
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
     void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);

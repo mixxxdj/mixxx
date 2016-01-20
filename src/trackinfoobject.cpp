@@ -7,7 +7,6 @@
 #include "trackinfoobject.h"
 
 #include "controlobject.h"
-#include "soundsourceproxy.h"
 #include "library/coverartutils.h"
 #include "track/trackmetadata.h"
 #include "track/beatfactory.h"
@@ -77,29 +76,6 @@ void TrackInfoObject::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpir
     m_bDeleteOnReferenceExpiration = deleteOnReferenceExpiration;
 }
 
-namespace {
-    // Parses artist/title from the file name and returns the file type.
-    // Assumes that the file name is written like: "artist - title.xxx"
-    // or "artist_-_title.xxx",
-    void parseMetadataFromFileName(Mixxx::TrackMetadata& trackMetadata, QString fileName) {
-        fileName.replace("_", " ");
-        QString titleWithFileType;
-        if (fileName.count('-') == 1) {
-            const QString artist(fileName.section('-', 0, 0).trimmed());
-            if (!artist.isEmpty()) {
-                trackMetadata.setArtist(artist);
-            }
-            titleWithFileType = fileName.section('-', 1, 1).trimmed();
-        } else {
-            titleWithFileType = fileName.trimmed();
-        }
-        const QString title(titleWithFileType.section('.', 0, -2).trimmed());
-        if (!title.isEmpty()) {
-            trackMetadata.setTitle(title);
-        }
-    }
-}
-
 void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
     // TODO(XXX): This involves locking the mutex for every setXXX
     // method. We should figure out an optimization where there are private
@@ -159,61 +135,6 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
     pTrackMetadata->setReplayGain(getReplayGain());
     pTrackMetadata->setBpm(Mixxx::Bpm(getBpm()));
     pTrackMetadata->setKey(getKeyText());
-}
-
-void TrackInfoObject::parseTrackMetadata(
-        const SoundSourceProxy& proxy,
-        bool parseCoverArt,
-        bool reloadFromFile) {
-    DEBUG_ASSERT(this == proxy.getTrack().data());
-
-    bool parsedFromFile = getHeaderParsed();
-    if (parsedFromFile && !reloadFromFile) {
-        qDebug() << "Skip parsing of track metadata from file"
-                << getLocation();
-        return; // do not reload from file
-    }
-
-    Mixxx::TrackMetadata trackMetadata;
-    // Use the existing trackMetadata as default values. Otherwise
-    // existing values in the library will be overwritten with
-    // empty values if the corresponding file tags are missing.
-    // Depending on the file type some kind of tags might even
-    // not be supported at all and those would get lost!
-    getMetadata(&trackMetadata);
-    QImage coverArt;
-    // If parsing of the cover art image should be omitted the
-    // 2nd output parameter must be set to nullptr. Cover art
-    // is not reloaded from file once the metadata has been parsed!
-    QImage* pCoverArt = (parseCoverArt && !parsedFromFile) ? &coverArt : nullptr;
-    // Parse the tags stored in the audio file.
-    if (proxy.parseTrackMetadataAndCoverArt(&trackMetadata, pCoverArt) == OK) {
-        parsedFromFile = true;
-    } else {
-        qWarning() << "Failed to parse tags from file"
-                 << getLocation();
-    }
-
-    // If Artist or title fields are blank try to parse them
-    // from the file name.
-    // TODO(rryan): Should we re-visit this decision?
-    if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
-        parseMetadataFromFileName(trackMetadata, m_fileInfo.fileName());
-    }
-
-    // Dump the trackMetadata extracted from the file back into the track.
-    setMetadata(trackMetadata);
-    if (pCoverArt && !pCoverArt->isNull()) {
-        CoverArt coverArt;
-        coverArt.image = *pCoverArt;
-        coverArt.info.hash = CoverArtUtils::calculateHash(
-                coverArt.image);
-        coverArt.info.coverLocation = QString();
-        coverArt.info.type = CoverInfo::METADATA;
-        coverArt.info.source = CoverInfo::GUESSED;
-        setCoverArt(coverArt);
-    }
-    setHeaderParsed(parsedFromFile);
 }
 
 QString TrackInfoObject::getLocation() const {

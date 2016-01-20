@@ -6,8 +6,8 @@
 #include "sources/soundsourceproviderregistry.h"
 
 // Creates sound sources for tracks. Only intended to be used
-// in a narrow scope and not shareable between multiple threads!
-class SoundSourceProxy: public Mixxx::MetadataSource {
+// in a narrow scope and not sharable between multiple threads!
+class SoundSourceProxy {
 public:
     // Initially registers all built-in SoundSource providers and
     // loads all SoundSource plugins with additional providers. This
@@ -47,31 +47,25 @@ public:
     // metadata and cover art will be reloaded from the file regardless
     // if it has already been parsed before or not.
     void loadTrackMetadata(bool reloadFromFile = false) const {
-        return m_pTrack->parseTrackMetadata(*this, false, reloadFromFile);
+        return loadTrackMetadataAndCoverArt(false, reloadFromFile);
     }
     void loadTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
-        return m_pTrack->parseTrackMetadata(*this, true, reloadFromFile);
+        return loadTrackMetadataAndCoverArt(true, reloadFromFile);
     }
 
-    // Low-level function for parsing track metadata and cover art
-    // embedded in the audio file into the corresponding objects.
-    // The track referenced by this proxy is not modified! Both
-    // parameters are optional and can be set to nullptr/NULL.
-    Result parseTrackMetadataAndCoverArt(
-            Mixxx::TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override {
-        if (m_pSoundSource) {
-            return m_pSoundSource->parseTrackMetadataAndCoverArt(
-                    pTrackMetadata, pCoverArt);
-        } else {
-            return ERR;
-        }
-    }
+    // Parse only the metadata from the file without modifying
+    // the referenced track.
+    Result parseTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata) const;
+
+    // Parse only the cover image from the file without modifying
+    // the referenced track.
+    QImage parseCoverImage() const;
 
     // Opening the audio data through the proxy will
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
-    Mixxx::AudioSourcePointer openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg = Mixxx::AudioSourceConfig());
+    Mixxx::AudioSourcePointer openAudioSource(
+            const Mixxx::AudioSourceConfig& audioSrcCfg = Mixxx::AudioSourceConfig());
 
     void closeAudioSource();
 
@@ -93,6 +87,8 @@ private:
     void nextSoundSourceProvider();
 
     void initSoundSource();
+
+    void loadTrackMetadataAndCoverArt(bool withCoverArt, bool reloadFromFile) const;
 
     Mixxx::SoundSourcePointer m_pSoundSource;
 
