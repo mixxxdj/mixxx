@@ -433,6 +433,65 @@ QImage SoundSourceProxy::parseCoverImage() const {
     return coverImg;
 }
 
+namespace {
+
+// Keeps the TIO alive while accessing the audio data
+// of the track. The TIO must not be deleted while
+// accessing the corresponding file to avoid file
+// corruption when writing metadata while the file
+// is still in use.
+class AudioSourceProxy: public Mixxx::AudioSource {
+public:
+    AudioSourceProxy(const AudioSourceProxy&) = delete;
+    AudioSourceProxy(AudioSourceProxy&&) = delete;
+
+    static Mixxx::AudioSourcePointer create(
+            const TrackPointer& pTrack,
+            const Mixxx::AudioSourcePointer& pAudioSource) {
+        DEBUG_ASSERT(!pTrack.isNull());
+        DEBUG_ASSERT(!pAudioSource.isNull());
+        return Mixxx::AudioSourcePointer(
+                new AudioSourceProxy(pTrack, pAudioSource));
+    }
+
+    AudioSourceProxy(
+            const TrackPointer& pTrack,
+            const Mixxx::AudioSourcePointer& pAudioSource)
+        : Mixxx::AudioSource(*pAudioSource),
+          m_pTrack(std::move(pTrack)),
+          m_pAudioSource(std::move(pAudioSource)) {
+    }
+
+    SINT seekSampleFrame(SINT frameIndex) override {
+        return m_pAudioSource->seekSampleFrame(
+                frameIndex);
+    }
+
+    SINT readSampleFrames(
+            SINT numberOfFrames,
+            CSAMPLE* sampleBuffer) override {
+        return m_pAudioSource->readSampleFrames(
+                numberOfFrames,
+                sampleBuffer);
+    }
+
+    SINT readSampleFramesStereo(
+            SINT numberOfFrames,
+            CSAMPLE* sampleBuffer,
+            SINT sampleBufferSize) override {
+        return m_pAudioSource->readSampleFramesStereo(
+                numberOfFrames,
+                sampleBuffer,
+                sampleBufferSize);
+    }
+
+private:
+    const TrackPointer m_pTrack;
+    const Mixxx::AudioSourcePointer m_pAudioSource;
+};
+
+} // anonymous namespace
+
 Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(!m_pTrack.isNull());
     while (m_pAudioSource.isNull()) {
@@ -447,7 +506,8 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSo
                     << "with provider"
                     << getSoundSourceProvider()->getName();
             if (m_pSoundSource->isValid()) {
-                m_pAudioSource = m_pSoundSource;
+                m_pAudioSource =
+                        AudioSourceProxy::create(m_pTrack, m_pSoundSource);
                 if (m_pAudioSource->isEmpty()) {
                     qWarning() << "Empty audio data in file"
                             << getUrl();
