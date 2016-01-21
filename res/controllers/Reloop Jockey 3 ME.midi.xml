@@ -3,7 +3,7 @@
     <info>
         <name>Reloop Jockey 3 ME</name>
         <author>Chris2000SP</author>
-        <description>v1.0.2 Mapping for 2.0.x</description>
+        <description>v1.0.3 Mapping for 2.0.x</description>
     </info>
     <controller id="Reloop">
         <scriptfiles>
@@ -578,11 +578,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>Jockey3ME.CUP</key>
+                <key>cue_gotoandplay</key>
                 <status>0x90</status>
                 <midino>0x18</midino>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -805,7 +805,7 @@
                 <status>0xB0</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <!-- Pitch and Jog -->
@@ -814,7 +814,7 @@
                 <key>rate</key>
                 <status>0xE0</status>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <control>
@@ -944,11 +944,11 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>Jockey3ME.CUP</key>
+                <key>cue_gotoandplay</key>
                 <status>0x91</status>
                 <midino>0x18</midino>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -1171,7 +1171,7 @@
                 <status>0xB1</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <!-- Pitch and Jog -->
@@ -1180,7 +1180,7 @@
                 <key>rate</key>
                 <status>0xE1</status>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1308,11 +1308,11 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>Jockey3ME.CUP</key>
+                <key>cue_gotoandplay</key>
                 <status>0x92</status>
                 <midino>0x18</midino>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -1535,7 +1535,7 @@
                 <status>0xB2</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <!-- Pitch and Jog -->
@@ -1544,7 +1544,7 @@
                 <key>rate</key>
                 <status>0xE2</status>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1615,11 +1615,11 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>Jockey3ME.CUP</key>
+                <key>cue_gotoandplay</key>
                 <status>0x93</status>
                 <midino>0x18</midino>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -1842,7 +1842,7 @@
                 <status>0xB3</status>
                 <midino>0x32</midino>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <!-- Pitch and Jog -->
@@ -1851,7 +1851,7 @@
                 <key>rate</key>
                 <status>0xE3</status>
                 <options>
-                    <normal/>
+                    <Soft-takeover/>
                 </options>
             </control>
             <control>
@@ -1931,6 +1931,442 @@
 				<status>0x93</status>
 				<midino>0x08</midino>
 				<minimum>0.1</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x00</on>
+				<off>0x00</off>
+				<maximum>0.09</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.1</minimum>
+				<maximum>0.19</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x02</on>
+				<off>0x01</off>
+				<minimum>0.2</minimum>
+				<maximum>0.29</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x03</on>
+				<off>0x02</off>
+				<minimum>0.3</minimum>
+				<maximum>0.39</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x04</on>
+				<off>0x03</off>
+				<minimum>0.4</minimum>
+				<maximum>0.49</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x05</on>
+				<off>0x04</off>
+				<minimum>0.5</minimum>
+				<maximum>0.59</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x06</on>
+				<off>0x05</off>
+				<minimum>0.6</minimum>
+				<maximum>0.69</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x07</on>
+				<off>0x06</off>
+				<minimum>0.7</minimum>
+				<maximum>0.79</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x08</on>
+				<off>0x07</off>
+				<minimum>0.8</minimum>
+				<maximum>0.89</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x09</on>
+				<off>0x08</off>
+				<minimum>0.9</minimum>
+				<maximum>0.99</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>PeakIndicator</key>
+				<status>0x90</status>
+				<midino>0x21</midino>
+				<on>0x0A</on>
+				<off>0x09</off>
+				<minimum>0.1</minimum>
+				<maximum>1.0</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x00</on>
+				<off>0x00</off>
+				<maximum>0.09</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.1</minimum>
+				<maximum>0.19</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x02</on>
+				<off>0x01</off>
+				<minimum>0.2</minimum>
+				<maximum>0.29</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x03</on>
+				<off>0x02</off>
+				<minimum>0.3</minimum>
+				<maximum>0.39</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x04</on>
+				<off>0x03</off>
+				<minimum>0.4</minimum>
+				<maximum>0.49</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x05</on>
+				<off>0x04</off>
+				<minimum>0.5</minimum>
+				<maximum>0.59</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x06</on>
+				<off>0x05</off>
+				<minimum>0.6</minimum>
+				<maximum>0.69</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x07</on>
+				<off>0x06</off>
+				<minimum>0.7</minimum>
+				<maximum>0.79</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x08</on>
+				<off>0x07</off>
+				<minimum>0.8</minimum>
+				<maximum>0.89</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x09</on>
+				<off>0x08</off>
+				<minimum>0.9</minimum>
+				<maximum>0.99</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>PeakIndicator</key>
+				<status>0x91</status>
+				<midino>0x21</midino>
+				<on>0x0A</on>
+				<off>0x09</off>
+				<minimum>0.1</minimum>
+				<maximum>1.0</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x00</on>
+				<off>0x00</off>
+				<maximum>0.09</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.1</minimum>
+				<maximum>0.19</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x02</on>
+				<off>0x01</off>
+				<minimum>0.2</minimum>
+				<maximum>0.29</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x03</on>
+				<off>0x02</off>
+				<minimum>0.3</minimum>
+				<maximum>0.39</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x04</on>
+				<off>0x03</off>
+				<minimum>0.4</minimum>
+				<maximum>0.49</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x05</on>
+				<off>0x04</off>
+				<minimum>0.5</minimum>
+				<maximum>0.59</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x06</on>
+				<off>0x05</off>
+				<minimum>0.6</minimum>
+				<maximum>0.69</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x07</on>
+				<off>0x06</off>
+				<minimum>0.7</minimum>
+				<maximum>0.79</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x08</on>
+				<off>0x07</off>
+				<minimum>0.8</minimum>
+				<maximum>0.89</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>VuMeter</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x09</on>
+				<off>0x08</off>
+				<minimum>0.9</minimum>
+				<maximum>0.99</maximum>
+			</output>
+			<output>
+				<group>[Channel3]</group>
+				<key>PeakIndicator</key>
+				<status>0x92</status>
+				<midino>0x21</midino>
+				<on>0x0A</on>
+				<off>0x09</off>
+				<minimum>0.1</minimum>
+				<maximum>1.0</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x00</on>
+				<off>0x00</off>
+				<maximum>0.09</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x01</on>
+				<off>0x00</off>
+				<minimum>0.1</minimum>
+				<maximum>0.19</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x02</on>
+				<off>0x01</off>
+				<minimum>0.2</minimum>
+				<maximum>0.29</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x03</on>
+				<off>0x02</off>
+				<minimum>0.3</minimum>
+				<maximum>0.39</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x04</on>
+				<off>0x03</off>
+				<minimum>0.4</minimum>
+				<maximum>0.49</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x05</on>
+				<off>0x04</off>
+				<minimum>0.5</minimum>
+				<maximum>0.59</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x06</on>
+				<off>0x05</off>
+				<minimum>0.6</minimum>
+				<maximum>0.69</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x07</on>
+				<off>0x06</off>
+				<minimum>0.7</minimum>
+				<maximum>0.79</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x08</on>
+				<off>0x07</off>
+				<minimum>0.8</minimum>
+				<maximum>0.89</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>VuMeter</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x09</on>
+				<off>0x08</off>
+				<minimum>0.9</minimum>
+				<maximum>0.99</maximum>
+			</output>
+			<output>
+				<group>[Channel4]</group>
+				<key>PeakIndicator</key>
+				<status>0x93</status>
+				<midino>0x21</midino>
+				<on>0x0A</on>
+				<off>0x09</off>
+				<minimum>0.1</minimum>
+				<maximum>1.0</maximum>
 			</output>
             <output>
                 <group>[EffectRack1_EffectUnit1]</group>
