@@ -434,8 +434,9 @@ QImage SoundSourceProxy::parseCoverImage() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {
-    while (!m_pAudioSource) {
-        if (!m_pSoundSource) {
+    DEBUG_ASSERT(!m_pTrack.isNull());
+    while (m_pAudioSource.isNull()) {
+        if (m_pSoundSource.isNull()) {
             qWarning() << "Failed to open AudioSource for file"
                     << getUrl();
             return m_pAudioSource; // failure -> exit loop
@@ -452,7 +453,7 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSo
                             << getUrl();
                 }
                 // Overwrite metadata with actual audio properties
-                if (m_pTrack) {
+                if (!m_pTrack.isNull()) {
                     m_pTrack->setChannels(m_pAudioSource->getChannelCount());
                     m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
                     if (m_pAudioSource->hasDuration()) {
@@ -487,8 +488,8 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSo
 }
 
 void SoundSourceProxy::closeAudioSource() {
-    if (m_pAudioSource) {
-        DEBUG_ASSERT(m_pSoundSource);
+    if (!m_pAudioSource.isNull()) {
+        DEBUG_ASSERT(!m_pSoundSource.isNull());
         m_pSoundSource->close();
         m_pAudioSource.clear();
         qDebug() << "Closed AudioSource for file"
