@@ -45,7 +45,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
 
-    m_pInputEnabled.reset(new ControlObjectSlave(group, "input_enabled", this));
+    m_pInputConfigured.reset(new ControlObjectSlave(group, "input_configured", this));
     m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughEnabled(double)));
 #ifdef __VINYLCONTROL__
@@ -347,7 +347,7 @@ void BaseTrackPlayerImpl::setupEqControls() {
 }
 
 void BaseTrackPlayerImpl::slotPassthroughEnabled(double v) {
-    bool configured = m_pInputEnabled->toBool();
+    bool configured = m_pInputConfigured->toBool();
     bool passthrough = v > 0.0;
 
     // Warn the user if they try to enable passthrough on a player with no
@@ -360,7 +360,7 @@ void BaseTrackPlayerImpl::slotPassthroughEnabled(double v) {
 
 void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
 #ifdef __VINYLCONTROL__
-    bool configured = m_pInputEnabled->toBool();
+    bool configured = m_pInputConfigured->toBool();
     bool vinylcontrol_enabled = v > 0.0;
 
     // Warn the user if they try to enable vinyl control on a player with no

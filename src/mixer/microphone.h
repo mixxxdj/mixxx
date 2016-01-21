@@ -30,7 +30,7 @@ class Microphone : public BasePlayer {
     void slotTalkoverEnabled(double v);
 
   private:
-    QScopedPointer<ControlObjectSlave> m_pInputEnabled;
+    QScopedPointer<ControlObjectSlave> m_pInputConfigured;
     QScopedPointer<ControlObjectSlave> m_pTalkoverEnabled;
 };
 
