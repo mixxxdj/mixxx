@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>560</width>
+    <width>647</width>
     <height>399</height>
    </rect>
   </property>
@@ -106,15 +106,18 @@
        <property name="minimum">
         <number>-9</number>
        </property>
+       <property name="maximum">
+        <number>999</number>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
-       <property name="toolTip">
-        <string comment="&quot;sec.&quot; as in seconds">Seconds</string>
-       </property>
+      <widget class="QPushButton" name="pushButtonFadeUnit">
        <property name="text">
-        <string>sec.</string>
+        <string>Secs.</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

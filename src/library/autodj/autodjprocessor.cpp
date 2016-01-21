@@ -9,7 +9,11 @@
 
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
+const char* kTransitionBeatsPreferenceName = "TransitionBeats";
+const char* kTransitionUnitPreferenceName = "TransitionUnit";
 const int kTransitionPreferenceDefault = 10;
+const int kTransitionBeatsPreferenceDefault = 128;
+const int kTransitionUnitPreferenceDefault = AutoDJProcessor::SECONDS;
 
 static const bool sDebug = false;
 
@@ -72,7 +76,9 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
           m_pPlayerManager(pPlayerManager),
           m_pAutoDJTableModel(NULL),
           m_eState(ADJ_DISABLED),
+          m_eTransitionUnit(SECONDS),
           m_iTransitionTime(kTransitionPreferenceDefault),
+          m_iTransitionBeats(kTransitionBeatsPreferenceDefault),
           m_nextTransitionTime(kTransitionPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                  "mixxx.db.model.autodj");
@@ -92,6 +98,11 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
             ConfigKey("[AutoDJ]", "fade_now"));
     connect(m_pFadeNow, SIGNAL(valueChanged(double)),
             this, SLOT(controlFadeNow(double)));
+
+    m_pFadeUnit = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "fade_unit"));
+    connect(m_pFadeUnit, SIGNAL(valueChanged(double)),
+            this, SLOT(controlFadeUnit(double)));
 
     m_pEnabledAutoDJ = new ControlPushButton(
             ConfigKey("[AutoDJ]", "enabled"));
@@ -125,6 +136,19 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
         m_iTransitionTime = str_autoDjTransition.toInt();
         m_nextTransitionTime =  m_iTransitionTime;
     }
+    
+    QString str_autoDjTransitionBeats = m_pConfig->getValueString(
+            ConfigKey(kConfigKey, kTransitionBeatsPreferenceName));
+    if (!str_autoDjTransitionBeats.isEmpty()) {
+        m_iTransitionBeats = str_autoDjTransitionBeats.toInt();
+    }
+    
+    QString str_autoDjTransitionUnit = m_pConfig->getValueString(
+            ConfigKey(kConfigKey, kTransitionUnitPreferenceName));
+    if (!str_autoDjTransitionUnit.isEmpty()) {
+        m_eTransitionUnit = static_cast<TransitionUnit>(str_autoDjTransitionUnit.toInt());
+    }
+    
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -363,6 +387,16 @@ void AutoDJProcessor::controlEnable(double value) {
 void AutoDJProcessor::controlFadeNow(double value) {
     if (value > 0.0) {
         fadeNow();
+    }
+}
+
+void AutoDJProcessor::controlFadeUnit(double value) {
+    if (value > 0.0) {
+        if (m_eTransitionUnit == SECONDS) {
+            m_eTransitionUnit = BEATS;
+        } else {
+            m_eTransitionUnit = SECONDS;
+        }
     }
 }
 
@@ -705,13 +739,30 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         if (fromTrack) {
             // TODO(rryan): Duration is super inaccurate! We should be using
             // track_samples / track_samplerate instead.
-            int fromTrackDuration = fromTrack->getDuration();
+            double fromTrackDuration = fromTrack->getDuration();
             qDebug() << fromTrack->getLocation()
                     << "fromTrackDuration =" << fromTrackDuration;
 
+            
+            double transitionDuration = 0;
+            if (m_eTransitionUnit == SECONDS) {
+                transitionDuration = m_iTransitionTime;
+            } else if (m_eTransitionUnit == BEATS) {
+                // find the beginning of last couple of measure before
+                // the duration of the transition (in beats)
+                double beatDuration = 60 / fromTrack->getBpm();
+                double lastMeasureBeginning = floor(fromTrack->getDuration()
+                        / beatDuration / 8) * 8;
+                double beatsBeforeTransition = lastMeasureBeginning
+                    - m_iTransitionBeats - 1;
+                
+                transitionDuration = fromTrack->getDuration()
+                        - beatsBeforeTransition * beatDuration;
+            }
+            
             // The track might be shorter than the transition period. Use a
             // sensible cap.
-            m_nextTransitionTime = math_min(m_iTransitionTime,
+            m_nextTransitionTime = math_min(transitionDuration,
                                             fromTrackDuration / 2);
 
             if (pToDeck) {
@@ -809,11 +860,17 @@ void AutoDJProcessor::setTransitionTime(int time) {
         return;
     }
 
-    // Update the transition time first.
-    m_pConfig->set(ConfigKey(kConfigKey, kTransitionPreferenceName),
-                   ConfigValue(time));
-    m_iTransitionTime = time;
-
+    if (m_eTransitionUnit == SECONDS) {
+        // Update the transition time first.
+        m_pConfig->set(ConfigKey(kConfigKey, kTransitionPreferenceName),
+                       ConfigValue(time));
+        m_iTransitionTime = time;
+    } else if (m_eTransitionUnit == BEATS) {
+        m_pConfig->set(ConfigKey(kConfigKey, kTransitionBeatsPreferenceName),
+                       ConfigValue(time));
+        m_iTransitionBeats = time;
+    }
+    
     // Then re-calculate fade thresholds for the decks.
     if (m_eState == ADJ_IDLE) {
         DeckAttributes& leftDeck = *m_decks[0];
@@ -852,4 +909,14 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
         }
     }
     return pOtherDeck;
+}
+
+void AutoDJProcessor::setTransitionUnit(TransitionUnit unit) {
+    m_eTransitionUnit = unit;
+    m_pConfig->set(ConfigKey(kConfigKey, kTransitionUnitPreferenceName),
+                   ConfigValue(unit));
+}
+
+AutoDJProcessor::TransitionUnit AutoDJProcessor::getTransitionUnit() {
+    return m_eTransitionUnit;
 }

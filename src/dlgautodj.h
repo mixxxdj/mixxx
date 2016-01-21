@@ -30,11 +30,13 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void loadSelectedTrack();
     void loadSelectedTrackToGroup(QString group, bool play);
     void moveSelection(int delta);
+    void setFadeUnit(AutoDJProcessor::TransitionUnit unit);
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);
     void skipNextButton(bool buttonChecked);
     void fadeNowButton(bool buttonChecked);
+    void toggleFadeUnit(bool buttonChecked);
     void toggleAutoDJButton(bool enable);
     void transitionTimeChanged(int time);
     void transitionSliderChanged(int value);

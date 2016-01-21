@@ -112,6 +112,11 @@ class AutoDJProcessor : public QObject {
         ADJ_NOT_TWO_DECKS
     };
 
+    enum TransitionUnit {
+        SECONDS,
+        BEATS
+    };
+    
     AutoDJProcessor(QObject* pParent,
                     ConfigObject<ConfigValue>* pConfig,
                     PlayerManagerInterface* pPlayerManager,
@@ -127,9 +132,16 @@ class AutoDJProcessor : public QObject {
         return m_iTransitionTime;
     }
 
+    int getTransitionBeats() const {
+        return m_iTransitionBeats;
+    }
+
     PlaylistTableModel* getTableModel() const {
         return m_pAutoDJTableModel;
     }
+    
+    void setTransitionUnit(TransitionUnit unit);
+    TransitionUnit getTransitionUnit();
 
   public slots:
     void setTransitionTime(int seconds);
@@ -164,6 +176,7 @@ class AutoDJProcessor : public QObject {
 
     void controlEnable(double value);
     void controlFadeNow(double value);
+    void controlFadeUnit(double value);
     void controlShuffle(double value);
     void controlSkipNext(double value);
 
@@ -195,7 +208,9 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
+    enum TransitionUnit m_eTransitionUnit;
     int m_iTransitionTime; // the desired value set by the user
+    int m_iTransitionBeats;
     int m_nextTransitionTime; // the tweaked value actually used
 
     QList<DeckAttributes*> m_decks;
@@ -205,6 +220,7 @@ class AutoDJProcessor : public QObject {
 
     ControlPushButton* m_pSkipNext;
     ControlPushButton* m_pFadeNow;
+    ControlPushButton* m_pFadeUnit;
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;
 
