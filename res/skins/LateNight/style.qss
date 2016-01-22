@@ -920,7 +920,7 @@
 
 #RateContainerSmall3 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  background-color: #000000;
+  background-color: #0e0e0e;
   border: 1px solid #585858;
   border-top: 0px;
   padding: 3px;
@@ -929,7 +929,7 @@
 
 #RateContainerSmall4 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  background-color: #000000;
+  background-color: #0e0e0e;
   border: 1px solid #585858;
   border-top: 0px;
   padding: 3px;
@@ -938,7 +938,7 @@
 
 #RateContainerSmall1 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  background-color: #000000;
+  background-color: #0e0e0e;
   border: 1px solid #585858;
   padding: 3px;
   /*padding-top: 20px;*/
@@ -946,7 +946,7 @@
 
 #RateContainerSmall2 {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  background-color: #000000;
+  background-color: #0e0e0e;
   border: 1px solid #585858;
   padding: 3px;
   /*padding-top: 20px;*/
