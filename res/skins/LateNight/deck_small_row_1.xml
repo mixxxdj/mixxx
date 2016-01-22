@@ -81,6 +81,7 @@
 								</Channel>
 							</TrackProperty>
 							<Label>
+								<ObjectName>TextColor<Variable name="channum" /></ObjectName>
 								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans
 									Unicode, Arial, Verdana, sans-serif; text-align: left;}</Style>
 								<Text> - </Text>
