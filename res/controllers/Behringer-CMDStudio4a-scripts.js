@@ -1,10 +1,10 @@
-// ********************************************************************************************************************
+// ****************************************************************************
 // * Mixxx mapping script file for the Behringer CMD Studio 4a.
 // * Author: Craig Easton
 // * Version 1.2 (Jan 2016)
 // * Forum: http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=7868
 // * Wiki: http://www.mixxx.org/wiki/doku.php/behringer_cmd_studio_4a
-// ********************************************************************************************************************
+// ****************************************************************************
 
 ////////////////////////////////////////////////////////////////////////
 // JSHint configuration                                               //
@@ -19,9 +19,9 @@
 function BehringerCMDStudio4a() {}
 
 
-// *************************************************** Global Vars ****************************************************
+// ***************************** Global Vars **********************************
 
-// "Shift" mode state variables.
+// Shift/mode state variables.
 BehringerCMDStudio4a.delState = {0:false,1:false,2:false,3:false};
 BehringerCMDStudio4a.scratchState = {0:false,1:false,2:false,3:false};
 
@@ -30,7 +30,7 @@ BehringerCMDStudio4a.pitchDec = {0:false,1:false,2:false,3:false};
 BehringerCMDStudio4a.pitchInc = {0:false,1:false,2:false,3:false};
 
 
-// *********************************************** Initialisation stuff. **********************************************
+// ************************ Initialisation stuff. *****************************
 
 BehringerCMDStudio4a.vuMeterUpdate = function (value, group, control){
     value=(value*15)+48;
@@ -46,12 +46,12 @@ BehringerCMDStudio4a.vuMeterUpdate = function (value, group, control){
 
 BehringerCMDStudio4a.initLEDs = function () {
     // Initialise any LEDs that are direcctly controlled by this script.
-    // Del buttons.
+    // Del buttons (one for each virtual deck).
     midi.sendShortMsg(0x90, 0x2A, 0x00);
     midi.sendShortMsg(0x91, 0x4A, 0x00);
     midi.sendShortMsg(0x92, 0x2A, 0x00);
     midi.sendShortMsg(0x93, 0x4A, 0x00);
-    // Scratch buttons.
+    // Scratch buttons (one for each virtual deck).
     midi.sendShortMsg(0x90, 0x16, 0x00);
     midi.sendShortMsg(0x91, 0x36, 0x00);
     midi.sendShortMsg(0x92, 0x16, 0x00);
@@ -77,12 +77,14 @@ BehringerCMDStudio4a.shutdown = function() {
 }
 
 
-// ******************************************** Control Stuff. ********************************************************
-// NB: All the crap below is only requied because there is no "shift/mode" key functionality in Mixxx.
-//     I suspect that the vast majority of controller mappings could be completed without any scripting at all if
-//     Mixxx supported shift/mode buttons in the XML and standard deck (scratching) code.
+// *************************** Control Stuff. *********************************
+// The code below is primarily "shift/mode" key functionality as there is no
+// native support for this in Mixxx at the moment.
+// I suspect that the vast majority of controller mappings could be completed
+// with little or no scripting if Mixxx supported shift/mode buttons in the
+// XML (together with standard wheel/scratching functionality).
 
-// Function to deal with the del "shift" buttons.
+// Function to deal with the DEL "shift" buttons.
 BehringerCMDStudio4a.del = function (channel, control, value, status, group) {
     BehringerCMDStudio4a.delState[channel]=!BehringerCMDStudio4a.delState[channel];
     midi.sendShortMsg(status, control, BehringerCMDStudio4a.delState[channel] ? 0x01 : 0x00);
@@ -91,8 +93,8 @@ BehringerCMDStudio4a.del = function (channel, control, value, status, group) {
 // Functions to deal with the play button.
 BehringerCMDStudio4a.playPush = function (channel, control, value, status, group) {
     if (BehringerCMDStudio4a.delState[channel]) {
-        // DEL is active, reverse play!
-        engine.setValue(group, "reverse", 1);
+        // DEL is active, reverse-roll (slip)!
+        engine.setValue(group, "reverseroll", 1);
     } else {
         // No DEL, just play.
         if (engine.getValue(group, "play")==0) {
@@ -104,30 +106,48 @@ BehringerCMDStudio4a.playPush = function (channel, control, value, status, group
 }
 BehringerCMDStudio4a.playRelease = function (channel, control, value, status, group) {
     if (BehringerCMDStudio4a.delState[channel]) {
-        // DEL is active, reverse play release!
-        engine.setValue(group, "reverse", 0);
+        // DEL is active, reverse-roll (slip) release!
+        engine.setValue(group, "reverseroll", 0);
     }
 }
 
+// Functions to deal with the cue button.
+BehringerCMDStudio4a.cuePush = function (channel, control, value, status, group) {
+    if (BehringerCMDStudio4a.delState[channel]) {
+        // DEL is active, reverse play!
+        engine.setValue(group, "reverse", 1);
+    } else {
+        // No DEL so just cue.
+        engine.setValue(group, "cue_default", 1);
+    }
+}
+BehringerCMDStudio4a.cueRelease = function (channel, control, value, status, group) {
+    if (BehringerCMDStudio4a.delState[channel]) {
+        // DEL is active, reverse-roll release!
+        engine.setValue(group, "reverse", 0);
+    } else {
+        engine.setValue(group, "cue_default", 0);
+	}
+}
 
-// Function to deal with the scratch "shift" buttons.
+
+// Function to deal with the scratch mode buttons.
 BehringerCMDStudio4a.scratch = function (channel, control, value, status, group) {
     if (BehringerCMDStudio4a.scratchState[channel]) {
         BehringerCMDStudio4a.scratchState[channel] = false;
         midi.sendShortMsg(status, control, 0x00);
-    } else
-    {
+    } else {
         BehringerCMDStudio4a.scratchState[channel] = true;
         midi.sendShortMsg(status, control, 0x01);
     }
 }
 
-// Functions to deal with the hot-queues.
+// Functions to deal with the hot-que buttons.
 BehringerCMDStudio4a.hotcuePush = function (channel, control, value, status, group) {
     // Translate the button to the actual hotcue.
     var hotcue = control-0x21;  // Hotcue buttons on left ddeck go from 0x22 to 0x29
     if (hotcue>8) {
-        // We are dealing with the right deck, buttons are 0x20 higher so we need to compensate.
+        // Right deck, buttons are 0x20 higher so we need to compensate.
         hotcue = hotcue-0x20;
     }
     print(hotcue)
@@ -143,7 +163,7 @@ BehringerCMDStudio4a.hotcueRelease = function (channel, control, value, status, 
     // Translate the button to the actual hotcue.
     var hotcue = control-0x21;  // Hotcue buttons on left ddeck go from 0x22 to 0x29
     if (hotcue>8) {
-        // We are dealing with the right deck, buttons are 0x20 higher so we need to compensate.
+        // Right deck, buttons are 0x20 higher so we need to compensate.
         hotcue = hotcue-0x20;
     }
     if (BehringerCMDStudio4a.delState[channel]) {
@@ -166,15 +186,16 @@ BehringerCMDStudio4a.pitchDecPush = function (channel, control, value, status, g
             engine.setValue(group, "pitch_down", 1);
         }
     } else {
-        // Del "shift" is not active, just do "rate" changes.
+        // DEL mode is not active, just do "rate" changes.
         engine.setValue(group, "rate_perm_down", 1);
         // Check if the other button is pressed too, if so we reset the pitch.
         if (BehringerCMDStudio4a.pitchInc[channel]) {
             engine.setValue(group, "rate", 0);
         }
     }
-    // NB: We do the reset check for pitch before triggering the pitch down as Mixxx does not seem to like rapid rate switches.
-    //     We trigger rate down regardless so as to preserve the GUI button press indicators.
+    // NB: We do the reset check for pitch before triggering the pitch down as
+    //     Mixxx does not seem to like rapid rate switches. We trigger rate
+    //     down regardless so as to preserve the GUI button press indicators.
 }
 BehringerCMDStudio4a.pitchDecRelease = function (channel, control, value, status, group) {
     BehringerCMDStudio4a.pitchDec[channel] = false;
@@ -198,8 +219,9 @@ BehringerCMDStudio4a.pitchIncPush = function (channel, control, value, status, g
             engine.setValue(group, "rate", 0);
         }
     }
-    // NB: We do the reset check for pitch before triggering the pitch up as Mixxx does not seem to like rapid rate switches.
-    //     We trigger rate up regardless so as to preserve the GUI button press indicators.
+    // NB: We do the reset check for pitch before triggering the pitch up as
+    //     Mixxx does not seem to like rapid rate switches. We trigger rate
+    //     up regardless so as to preserve the GUI button press indicators.
 }
 BehringerCMDStudio4a.pitchIncRelease = function (channel, control, value, status, group) {
     BehringerCMDStudio4a.pitchInc[channel] = false;
@@ -207,9 +229,9 @@ BehringerCMDStudio4a.pitchIncRelease = function (channel, control, value, status
 }
 
 // Functions to deal with the wheel (i.e. scratcing and jog).
-// NB: Why is there no standard support in Mixxx for this most basic of functions?
-//     The vast majority of controller mappings use the same code (provided in the Wiki!) so why is this
-//     most basic function not provided via an XML definition??
+// Why is there no standard support in Mixxx for this most basic of functions?
+// I suspect the vast majority of controller mappings use the same code
+// (provided in the Wiki).
 BehringerCMDStudio4a.wheelTouch = function (channel, control, value, status, group) {
     channel=channel+1;
     if (value > 0) {
