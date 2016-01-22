@@ -166,6 +166,76 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB0</status>
+				<midino>0x5D</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB0</status>
+				<midino>0x5E</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB0</status>
+				<midino>0x5F</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x90</status>
+				<midino>0x5D</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x90</status>
+				<midino>0x5E</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x90</status>
+				<midino>0x5F</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>Jockey3ME.effectSuperKnop</key>
+				<description>FX SuperKnop on Jogwheel Mode Pitchbend</description>
+				<status>0xB0</status>
+				<midino>0x25</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>Jockey3ME.effectParam</key>
@@ -266,6 +336,76 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB1</status>
+				<midino>0x5D</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB1</status>
+				<midino>0x5E</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB1</status>
+				<midino>0x5F</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x91</status>
+				<midino>0x5D</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x91</status>
+				<midino>0x5E</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x91</status>
+				<midino>0x5F</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>Jockey3ME.effectSuperKnop</key>
+				<description>FX SuperKnop on Jogwheel Mode Pitchbend</description>
+				<status>0xB1</status>
+				<midino>0x25</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>Jockey3ME.effectParam</key>
@@ -366,6 +506,76 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB2</status>
+				<midino>0x5D</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB2</status>
+				<midino>0x5E</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB2</status>
+				<midino>0x5F</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x92</status>
+				<midino>0x5D</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x92</status>
+				<midino>0x5E</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x92</status>
+				<midino>0x5F</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>Jockey3ME.effectSuperKnop</key>
+				<description>FX SuperKnop on Jogwheel Mode Pitchbend</description>
+				<status>0xB2</status>
+				<midino>0x25</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <control>
                 <group>[EffectRack1_EffectUnit3]</group>
                 <key>Jockey3ME.effectParam</key>
@@ -466,6 +676,76 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB3</status>
+				<midino>0x5D</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB3</status>
+				<midino>0x5E</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>Jockey3ME.effectSelect</key>
+				<description>FX Selection in Chain and Linking</description>
+				<status>0xB3</status>
+				<midino>0x5F</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x93</status>
+				<midino>0x5D</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x93</status>
+				<midino>0x5E</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>Jockey3ME.effectSelectPush</key>
+				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<status>0x93</status>
+				<midino>0x5F</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>Jockey3ME.effectSuperKnop</key>
+				<description>FX SuperKnop on Jogwheel Mode Pitchbend</description>
+				<status>0xB3</status>
+				<midino>0x25</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <control>
                 <group>[EffectRack1_EffectUnit4]</group>
                 <key>Jockey3ME.effectParam</key>
