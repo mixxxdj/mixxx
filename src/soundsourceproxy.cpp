@@ -454,14 +454,6 @@ public:
                 new AudioSourceProxy(pTrack, pAudioSource));
     }
 
-    AudioSourceProxy(
-            const TrackPointer& pTrack,
-            const Mixxx::AudioSourcePointer& pAudioSource)
-        : Mixxx::AudioSource(*pAudioSource),
-          m_pTrack(std::move(pTrack)),
-          m_pAudioSource(std::move(pAudioSource)) {
-    }
-
     SINT seekSampleFrame(SINT frameIndex) override {
         return m_pAudioSource->seekSampleFrame(
                 frameIndex);
@@ -486,6 +478,14 @@ public:
     }
 
 private:
+    AudioSourceProxy(
+            const TrackPointer& pTrack,
+            const Mixxx::AudioSourcePointer& pAudioSource)
+        : Mixxx::AudioSource(*pAudioSource),
+          m_pTrack(std::move(pTrack)),
+          m_pAudioSource(std::move(pAudioSource)) {
+    }
+
     const TrackPointer m_pTrack;
     const Mixxx::AudioSourcePointer m_pAudioSource;
 };
