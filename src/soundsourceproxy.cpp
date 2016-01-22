@@ -482,8 +482,8 @@ private:
             const TrackPointer& pTrack,
             const Mixxx::AudioSourcePointer& pAudioSource)
         : Mixxx::AudioSource(*pAudioSource),
-          m_pTrack(std::move(pTrack)),
-          m_pAudioSource(std::move(pAudioSource)) {
+          m_pTrack(pTrack),
+          m_pAudioSource(pAudioSource) {
     }
 
     const TrackPointer m_pTrack;
