@@ -48,7 +48,7 @@
                           <BindProperty>visible</BindProperty>
                       </Connection>
                     </WidgetGroup>
-                    <WidgetGroup>
+                    <!--<WidgetGroup>
                       <Layout>horizontal</Layout>
                       <SizePolicy>me,me</SizePolicy>
                       <MinimumSize>0,0</MinimumSize>
@@ -60,7 +60,7 @@
                           <Not/>
                         </Transform>
                       </Connection>
-                    </WidgetGroup>
+                    </WidgetGroup>-->
                 </Children>
             </WidgetGroup>
         </Children>
