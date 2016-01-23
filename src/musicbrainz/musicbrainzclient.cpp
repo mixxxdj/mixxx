@@ -12,7 +12,6 @@
 #include <QtNetwork>
 #include <QSet>
 #include <QXmlStreamReader>
-#include <QTextStream>
 #include <QUrl>
 
 #include "musicbrainz/musicbrainzclient.h"
@@ -73,24 +72,19 @@ void MusicBrainzClient::requestFinished() {
     ResultList ret;
 
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    qDebug() << "MusicBrainzClient GET reply status:" << status;
 
     // MusicBrainz returns 404 when the MBID is not in their database. We treat
     // a status of 404 the same as a 200 but it will produce an empty list of
     // results.
     if (status != 200 && status != 404) {
-        QTextStream body(reply);
-        qDebug() << "MusicBrainzClient GET reply status:" << status << "body:" << body.readAll();
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "Musicbrainz"));
+             "MusicBrainz"));
         return;
     }
 
-    QTextStream textReader(reply);
-    QString body = textReader.readAll();
-    qDebug() << "MusicBrainzClient GET reply status:" << status << "body:" << body;
-
-    QXmlStreamReader reader(body);
+    QXmlStreamReader reader(reply->readAll());
     while (!reader.atEnd()) {
         if (reader.readNext() == QXmlStreamReader::StartElement
             && reader.name() == "recording") {
