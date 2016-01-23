@@ -70,7 +70,7 @@
                                 <ObjectName>TextColor<Variable name="channum" /></ObjectName>
 								<Alignment>Left</Alignment>
 								<TooltipId>track_artist</TooltipId>
-								<Style>QLabel { font: bold 10px/12px Lucida Grande, Lucida Sans
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans
 									Unicode, Arial, Verdana, sans-serif; text-align: left;}
 								</Style>
 								<Property>artist</Property>
@@ -82,7 +82,7 @@
 							</TrackProperty>
 							<Label>
 								<ObjectName>TextColor<Variable name="channum" /></ObjectName>
-								<Style>QLabel { font: bold 10px/12px Lucida Grande, Lucida Sans
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans
 									Unicode, Arial, Verdana, sans-serif; text-align: left;}</Style>
 								<Text> - </Text>
 							</Label>
@@ -90,7 +90,7 @@
 								<ObjectName>TextColor<Variable name="channum" /></ObjectName>
 								<Alignment>Left</Alignment>
 								<TooltipId>track_title</TooltipId>
-								<Style>QLabel { font: bold 10px/12px Lucida Grande, Lucida Sans
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans
 									Unicode, Arial, Verdana, sans-serif; text-align: left;}
 								</Style>
 								<Property>title</Property>
@@ -111,7 +111,7 @@
                                 <ObjectName>TextColor<Variable name="channum" /></ObjectName>
                                 <TooltipId>track_time</TooltipId>
                                 <Alignment>right</Alignment>
-                                <Style>QLabel { font: bold 10px/12px Lucida Grande, Lucida Sans
+                                <Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans
                                     Unicode, Arial, Verdana, sans-serif;}
                                 </Style>
                                 <Channel>
