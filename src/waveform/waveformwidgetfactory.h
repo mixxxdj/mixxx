@@ -10,6 +10,7 @@
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/waveform.h"
 #include "skin/skincontext.h"
+#include "util/performancetimer.h"
 
 class WWaveformViewer;
 class WaveformWidgetAbstract;
@@ -151,7 +152,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     VSyncThread* m_vsyncThread;
 
     //Debug
-    QTime m_time;
+    PerformanceTimer m_time;
     float m_frameCnt;
     double m_actualFrameRate;
     int m_vSyncType;

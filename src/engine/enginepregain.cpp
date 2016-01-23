@@ -87,7 +87,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         const double kFadeSeconds = 1.0;
 
         if (m_bSmoothFade) {
-            double seconds = static_cast<double>(m_timer.elapsed()) / 1e9;
+            double seconds = m_timer.elapsed().toDoubleSeconds();
             if (seconds < kFadeSeconds) {
                 // Fade smoothly
                 double fadeFrac = seconds / kFadeSeconds;

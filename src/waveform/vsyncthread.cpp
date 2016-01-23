@@ -82,7 +82,8 @@ void VSyncThread::run() {
             Event::end("VsyncThread vsync render");
 
             // qDebug() << "ST_TIMER                      " << usLast << usRest;
-            int usRemainingForSwap = m_usWaitToSwap - (int)m_timer.elapsed() / 1000;
+            int usRemainingForSwap = m_usWaitToSwap - static_cast<int>(
+                m_timer.elapsed().toIntegerMicros());
             // waiting for interval by sleep
             if (usRemainingForSwap > 100) {
                 Event::start("VsyncThread usleep for VSync");
@@ -100,7 +101,7 @@ void VSyncThread::run() {
             Event::end("VsyncThread vsync swap");
 
             // <- Assume we are VSynced here ->
-            int usLastSwapTime = (int)m_timer.restart() / 1000;
+            int usLastSwapTime = static_cast<int>(m_timer.restart().toIntegerMicros());
             if (usRemainingForSwap < 0) {
                 // Our swapping call was already delayed
                 // The real swap might happens on the following VSync, depending on driver settings
@@ -123,7 +124,7 @@ void VSyncThread::run() {
 void VSyncThread::swapGl(QGLWidget* glw, int index) {
     Q_UNUSED(index);
     // No need for glw->makeCurrent() here.
-    //qDebug() << "swapGl" << m_timer.elapsed();
+    //qDebug() << "swapGl" << m_timer.elapsed().formatNanosWithUnit();
 #if defined(__APPLE__)
     glw->swapBuffers();
 #elif defined(__WINDOWS__)
@@ -143,7 +144,7 @@ void VSyncThread::swapGl(QGLWidget* glw, int index) {
 }
 
 int VSyncThread::elapsed() {
-    return (int)m_timer.elapsed() / 1000;
+    return static_cast<int>(m_timer.elapsed().toIntegerMicros());
 }
 
 void VSyncThread::setUsSyncIntervalTime(int syncTime) {
@@ -161,7 +162,7 @@ void VSyncThread::setVSyncType(int type) {
 }
 
 int VSyncThread::usToNextSync() {
-    int usRest = m_usWaitToSwap - ((int)m_timer.elapsed() / 1000);
+    int usRest = m_usWaitToSwap - static_cast<int>(m_timer.elapsed().toIntegerMicros());
     // int math is fine here, because we do not expect times > 4.2 s
     if (usRest < 0) {
         usRest %= m_usSyncIntervalTime;
@@ -171,7 +172,7 @@ int VSyncThread::usToNextSync() {
 }
 
 int VSyncThread::usFromTimerToNextSync(PerformanceTimer* timer) {
-    int usDifference = (int)m_timer.difference(timer) / 1000;
+    int usDifference = static_cast<int>(m_timer.difference(timer).toIntegerMicros());
     // int math is fine here, because we do not expect times > 4.2 s
     return usDifference + m_usWaitToSwap;
 }

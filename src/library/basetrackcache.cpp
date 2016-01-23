@@ -8,6 +8,7 @@
 #include "library/trackcollection.h"
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
+#include "util/performancetimer.h"
 
 namespace {
 
@@ -174,7 +175,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
 }
 
 bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
-    QTime timer;
+    PerformanceTimer timer;
     timer.start();
 
     if (sDebug) {
@@ -208,7 +209,7 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         }
     }
 
-    qDebug() << this << "updateIndexWithQuery took" << timer.elapsed() << "ms";
+    qDebug() << this << "updateIndexWithQuery took" << timer.elapsed().formatMillisWithUnit();
     return true;
 }
 

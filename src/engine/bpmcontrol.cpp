@@ -12,10 +12,13 @@
 #include "controlobjectslave.h"
 #include "util/assert.h"
 #include "util/math.h"
+#include "util/duration.h"
 
-const int minBpm = 30;
-const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBpm));
-const int filterLength = 5;
+const int kMinBpm = 30;
+// Maximum allowed interval between beats (calculated from kMinBpm).
+const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
+    static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
+const int kFilterLength = 5;
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.
 const int kLocalBpmSpan = 4;
@@ -29,7 +32,7 @@ BpmControl::BpmControl(QString group,
         m_dLastSyncAdjustment(1.0),
         m_resetSyncAdjustment(false),
         m_dUserOffset(0.0),
-        m_tapFilter(this, filterLength, maxInterval),
+        m_tapFilter(this, kFilterLength, kMaxInterval),
         m_sGroup(group) {
     m_pPlayButton = new ControlObjectSlave(group, "play", this);
     m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)),
