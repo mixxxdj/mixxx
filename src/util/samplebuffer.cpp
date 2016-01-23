@@ -4,7 +4,7 @@
 
 SampleBuffer::SampleBuffer(SINT size)
         : m_data(SampleUtil::alloc(size)),
-          m_size(m_data ? size : 0) {
+          m_size((nullptr != m_data) ? size : 0) {
 }
 
 SampleBuffer::~SampleBuffer() {
