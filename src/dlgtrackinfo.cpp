@@ -27,7 +27,6 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent,
 
 DlgTrackInfo::~DlgTrackInfo() {
     unloadTrack(false);
-    qDebug() << "~DlgTrackInfo()";
 }
 
 void DlgTrackInfo::init() {

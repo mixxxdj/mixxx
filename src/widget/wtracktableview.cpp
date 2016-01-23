@@ -119,7 +119,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 }
 
 WTrackTableView::~WTrackTableView() {
-    qDebug() << "~WTrackTableView()";
     WTrackTableViewHeader* pHeader =
             dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {

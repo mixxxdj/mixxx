@@ -32,7 +32,6 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* 
 }
 
 EngineAux::~EngineAux() {
-    qDebug() << "~EngineAux()";
     delete m_pEnabled;
     delete m_pPregain;
     delete m_pSampleRate;

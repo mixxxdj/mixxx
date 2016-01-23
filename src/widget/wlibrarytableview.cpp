@@ -51,7 +51,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 }
 
 WLibraryTableView::~WLibraryTableView() {
-    qDebug() << "~WLibraryTableView";
     saveVScrollBarPosState();
 }
 
@@ -122,4 +121,3 @@ void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
     verticalHeader()->setDefaultSectionSize(math_max(
             rowHeight, fontHeightPx));
 }
-
