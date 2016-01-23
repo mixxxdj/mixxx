@@ -330,14 +330,14 @@
 	</control>
       <control>
         <group>[Channel1]</group>
-        <key>LoadSelectedTrack </key>
+        <key>LoadSelectedTrack</key>
         <status>0x92</status>
         <midino>0x60</midino>
         <options/>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>LoadSelectedTrack </key>
+        <key>LoadSelectedTrack</key>
         <status>0x92</status>
         <midino>0x61</midino>
         <options/>
