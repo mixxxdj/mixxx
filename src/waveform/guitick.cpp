@@ -4,9 +4,7 @@
 #include "controlobject.h"
 
 GuiTick::GuiTick(QObject* pParent)
-        : QObject(pParent),
-          m_lastUpdateTimeSeconds(0.0),
-          m_cpuTimeLastTickSeconds(0.0) {
+        : QObject(pParent) {
      m_pCOGuiTickTime = new ControlObject(ConfigKey("[Master]", "guiTickTime"));
      m_pCOGuiTick50ms = new ControlObject(ConfigKey("[Master]", "guiTick50ms"));
      m_cpuTimer.start();
@@ -20,12 +18,12 @@ GuiTick::~GuiTick() {
 // this is called from the VSyncThread
 // with the configured waveform frame rate
 void GuiTick::process() {
-    mixxx::Duration elapsed = m_cpuTimer.restart();
-    m_cpuTimeLastTickSeconds += elapsed.toDoubleSeconds();
-    m_pCOGuiTickTime->set(m_cpuTimeLastTickSeconds);
+    m_cpuTimeLastTick += m_cpuTimer.restart();
+    double cpuTimeLastTickSeconds = m_cpuTimeLastTick.toDoubleSeconds();
+    m_pCOGuiTickTime->set(cpuTimeLastTickSeconds);
 
-    if (m_lastUpdateTimeSeconds + 0.05 < m_cpuTimeLastTickSeconds) {
-        m_lastUpdateTimeSeconds = m_cpuTimeLastTickSeconds;
-        m_pCOGuiTick50ms->set(m_cpuTimeLastTickSeconds);
+    if (m_cpuTimeLastTick - m_lastUpdateTime >= mixxx::Duration::fromMillis(50)) {
+        m_lastUpdateTime = m_cpuTimeLastTick;
+        m_pCOGuiTick50ms->set(cpuTimeLastTickSeconds);
     }
 }

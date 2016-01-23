@@ -3,10 +3,10 @@
 
 #include <QObject>
 
+#include "util/duration.h"
 #include "util/performancetimer.h"
 
 class ControlObject;
-class QTimer;
 
 class GuiTick : public QObject {
     Q_OBJECT
@@ -19,8 +19,8 @@ class GuiTick : public QObject {
     ControlObject* m_pCOGuiTickTime;
     ControlObject* m_pCOGuiTick50ms;
     PerformanceTimer m_cpuTimer;
-    double m_lastUpdateTimeSeconds;
-    double m_cpuTimeLastTickSeconds;
+    mixxx::Duration m_lastUpdateTime;
+    mixxx::Duration m_cpuTimeLastTick;
 };
 
 #endif // GUITICK_H

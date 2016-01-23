@@ -49,11 +49,9 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     m_lastFrameTime = 0;
     for (int i = 0; i < 100; ++i) {
         m_lastFramesTime[i] = 0;
-        m_lastFramesTime[i] = 0;
     }
     m_lastSystemFrameTime = 0;
     for (int i = 0; i < 100; ++i) {
-        m_lastSystemFramesTime[i] = 0;
         m_lastSystemFramesTime[i] = 0;
     }
 #endif
