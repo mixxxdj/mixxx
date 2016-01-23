@@ -1,9 +1,10 @@
 #ifndef UTIL_DURATION_H
 #define UTIL_DURATION_H
 
-#include <QtGlobal>
 #include <QMetaType>
 #include <QString>
+#include <QtDebug>
+#include <QtGlobal>
 
 namespace mixxx {
 namespace {
@@ -84,12 +85,47 @@ class Duration {
         return *this;
     }
 
-    bool operator==(const Duration& other) const {
-        return m_timestamp_nanos == other.m_timestamp_nanos;
+    friend const Duration operator*(const Duration& duration, int scalar) {
+        Duration result = duration;
+        result.m_timestamp_nanos *= scalar;
+        return result;
     }
 
-    bool operator!=(const Duration& other) const {
-        return !(*this == other);
+    friend const Duration operator*(int scalar, const Duration& duration) {
+        return duration * scalar;
+    }
+
+    Duration& operator*=(int scalar) {
+        m_timestamp_nanos *= scalar;
+        return *this;
+    }
+
+    friend bool operator==(const Duration& lhs, const Duration& rhs) {
+        return lhs.m_timestamp_nanos == rhs.m_timestamp_nanos;
+    }
+
+    friend bool operator!=(const Duration& lhs, const Duration& rhs) {
+        return !(lhs == rhs);
+    }
+
+    friend bool operator<(const Duration& lhs, const Duration& rhs) {
+        return lhs.m_timestamp_nanos < rhs.m_timestamp_nanos;
+    }
+
+    friend bool operator>(const Duration& lhs, const Duration& rhs) {
+        return lhs.m_timestamp_nanos > rhs.m_timestamp_nanos;
+    }
+
+    friend bool operator<=(const Duration& lhs, const Duration& rhs) {
+        return lhs.m_timestamp_nanos <= rhs.m_timestamp_nanos;
+    }
+
+    friend bool operator>=(const Duration& lhs, const Duration& rhs) {
+        return lhs.m_timestamp_nanos >= rhs.m_timestamp_nanos;
+    }
+
+    friend QDebug operator<<(QDebug debug, const Duration& duration) {
+        return debug << duration.formatNanosWithUnit();
     }
 
     // Formats the duration as a two's-complement hexadecimal string.
