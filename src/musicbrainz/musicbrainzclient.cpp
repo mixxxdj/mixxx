@@ -11,6 +11,7 @@
 #include <QNetworkReply>
 #include <QtNetwork>
 #include <QSet>
+#include <QTextStream>
 #include <QXmlStreamReader>
 #include <QUrl>
 
@@ -59,6 +60,16 @@ void MusicBrainzClient::cancelAll() {
     m_requests.clear();
 }
 
+namespace {
+    QString decodeText(const QByteArray& data, const char* codecName) {
+        QTextStream textStream(data);
+        if ((nullptr != codecName) && (0 < strlen(codecName))) {
+            textStream.setCodec(codecName);
+        }
+        return textStream.readAll();
+    }
+} // anonymous namespace
+
 void MusicBrainzClient::requestFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply)
@@ -84,17 +95,47 @@ void MusicBrainzClient::requestFinished() {
         return;
     }
 
-    QXmlStreamReader reader(reply->readAll());
-    while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement
-            && reader.name() == "recording") {
+    const QByteArray body(reply->readAll());
 
-            ResultList tracks = parseTrack(reader);
-            foreach (const Result& track, tracks) {
-                if (!track.m_title.isEmpty()) {
-                    ret << track;
+    QXmlStreamReader reader(body);
+    QByteArray codecName;
+    while (!reader.atEnd()) {
+        switch (reader.readNext()) {
+        case QXmlStreamReader::Invalid:
+        {
+            qWarning() << "MusicBrainzClient GET reply body:"
+                    << decodeText(body, codecName.constData());
+            qWarning()
+                << "MusicBrainzClient GET decoding error:"
+                << reader.errorString();
+            break;
+        }
+        case QXmlStreamReader::StartDocument:
+        {
+            // The character encoding is always an ASCII string
+            codecName = reader.documentEncoding().toAscii();
+            qDebug() << "MusicBrainzClient GET reply codec:"
+                    << codecName.constData();
+            qDebug() << "MusicBrainzClient GET reply body:"
+                    << decodeText(body, codecName.constData());
+            break;
+        }
+        case QXmlStreamReader::StartElement:
+        {
+            if (reader.name() == "recording") {
+                ResultList tracks = parseTrack(reader);
+                for (const Result& track: tracks) {
+                    if (!track.m_title.isEmpty()) {
+                        ret << track;
+                    }
                 }
             }
+            break;
+        }
+        default:
+        {
+            // ignore any other token type
+        }
         }
     }
     emit(finished(id, uniqueResults(ret)));
