@@ -348,16 +348,15 @@ Result SoundManager::setupDevices() {
     SoundDevice* pNewMasterClockRef = NULL;
 
     // pair is isInput, isOutput
-    QHash<SoundDevice*, QPair<bool, bool> > toOpen;
+    QHash<SoundDevice*, DeviceMode> toOpen;
     foreach (SoundDevice *device, m_devices) {
-        bool isInput = false;
-        bool isOutput = false;
+        DeviceMode mode = {false, false};
         device->clearInputs();
         device->clearOutputs();
         m_pErrorDevice = device;
         foreach (AudioInput in,
                  m_config.getInputs().values(device->getInternalName())) {
-            isInput = true;
+            mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
             AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
@@ -387,7 +386,7 @@ Result SoundManager::setupDevices() {
         }
 
         foreach (AudioOutput out, outputs) {
-            isOutput = true;
+            mode.isOutput = true;
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
             const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
@@ -416,17 +415,15 @@ Result SoundManager::setupDevices() {
             }
         }
 
-        if (isInput || isOutput) {
+        if (mode.isInput || mode.isOutput) {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
-            toOpen[device] = QPair<bool, bool>(isInput, isOutput);
+            toOpen.insert(device, mode);
         }
     }
 
     foreach (SoundDevice *device, toOpen.keys()) {
-        QPair<bool, bool> mode(toOpen[device]);
-        bool isInput = mode.first;
-        bool isOutput = mode.second;
+        const DeviceMode mode(toOpen.value(device));
         ++devicesAttempted;
         m_pErrorDevice = device;
         // If we have not yet set a clock source then we use the first
@@ -448,10 +445,10 @@ Result SoundManager::setupDevices() {
             goto closeAndError;
         } else {
             ++devicesOpened;
-            if (isOutput) {
+            if (mode.isOutput) {
                 ++outputDevicesOpened;
             }
-            if (isInput) {
+            if (mode.isInput) {
                 ++inputDevicesOpened;
             }
         }

@@ -113,6 +113,12 @@ class SoundManager : public QObject {
     void inputRegistered(AudioInput input, AudioDestination *dest);
 
   private:
+
+    struct DeviceMode {
+        bool isInput;
+        bool isOutput;
+    };
+
     // Closes all the devices and empties the list of devices we have.
     void clearDeviceList(bool sleepAfterClosing);
 
