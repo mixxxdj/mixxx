@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset mixxxVersion="1.11.0+" schemaVersion="1">
+<MixxxControllerPreset mixxxVersion="2.0.0+" schemaVersion="1">
     <info>
         <name>Behringer CMD STUDIO 4a</name>
         <author>Craig Easton</author>
@@ -828,7 +828,7 @@
             <!-- Pitch stuff.-->
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.pitchDecPush</key>
+                <key>BehringerCMDStudio4a.pitchDec</key>
                 <description>Deck A pitch- push.</description>
                 <status>0x90</status>
                 <midino>0x20</midino>
@@ -848,7 +848,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.pitchIncPush</key>
+                <key>BehringerCMDStudio4a.pitchInc</key>
                 <description>Deck A pitch+ push.</description>
                 <status>0x90</status>
                 <midino>0x21</midino>
@@ -868,7 +868,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.pitchDecPush</key>
+                <key>BehringerCMDStudio4a.pitchDec</key>
                 <description>Deck B pitch- push.</description>
                 <status>0x91</status>
                 <midino>0x40</midino>
@@ -888,7 +888,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.pitchIncPush</key>
+                <key>BehringerCMDStudio4a.pitchInc</key>
                 <description>Deck B pitch+ push.</description>
                 <status>0x91</status>
                 <midino>0x41</midino>
@@ -908,7 +908,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.pitchDecPush</key>
+                <key>BehringerCMDStudio4a.pitchDec</key>
                 <description>Deck C pitch- push.</description>
                 <status>0x92</status>
                 <midino>0x20</midino>
@@ -928,7 +928,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.pitchIncPush</key>
+                <key>BehringerCMDStudio4a.pitchInc</key>
                 <description>Deck C pitch+ push.</description>
                 <status>0x92</status>
                 <midino>0x21</midino>
@@ -948,7 +948,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.pitchDecPush</key>
+                <key>BehringerCMDStudio4a.pitchDec</key>
                 <description>Deck D pitch- push.</description>
                 <status>0x93</status>
                 <midino>0x40</midino>
@@ -968,7 +968,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.pitchIncPush</key>
+                <key>BehringerCMDStudio4a.pitchInc</key>
                 <description>Deck D pitch+ push.</description>
                 <status>0x93</status>
                 <midino>0x41</midino>
@@ -989,7 +989,7 @@
             <!-- Hotcue stuff. -->
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 1 push.</description>
                 <status>0x90</status>
                 <midino>0x22</midino>
@@ -999,7 +999,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 1 release.</description>
                 <status>0x80</status>
                 <midino>0x22</midino>
@@ -1009,7 +1009,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 2 push.</description>
                 <status>0x90</status>
                 <midino>0x23</midino>
@@ -1019,7 +1019,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 2 release.</description>
                 <status>0x80</status>
                 <midino>0x23</midino>
@@ -1029,7 +1029,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 3 push.</description>
                 <status>0x90</status>
                 <midino>0x24</midino>
@@ -1039,7 +1039,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 3 release.</description>
                 <status>0x80</status>
                 <midino>0x24</midino>
@@ -1049,7 +1049,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 4 push.</description>
                 <status>0x90</status>
                 <midino>0x25</midino>
@@ -1059,7 +1059,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 4 release.</description>
                 <status>0x80</status>
                 <midino>0x25</midino>
@@ -1069,7 +1069,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 5 push.</description>
                 <status>0x90</status>
                 <midino>0x26</midino>
@@ -1079,7 +1079,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 5 release.</description>
                 <status>0x80</status>
                 <midino>0x26</midino>
@@ -1089,7 +1089,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 6 push.</description>
                 <status>0x90</status>
                 <midino>0x27</midino>
@@ -1099,7 +1099,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 6 release.</description>
                 <status>0x80</status>
                 <midino>0x27</midino>
@@ -1109,7 +1109,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 7 push.</description>
                 <status>0x90</status>
                 <midino>0x28</midino>
@@ -1119,7 +1119,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 7 release.</description>
                 <status>0x80</status>
                 <midino>0x28</midino>
@@ -1129,7 +1129,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 8 push.</description>
                 <status>0x90</status>
                 <midino>0x29</midino>
@@ -1139,7 +1139,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck A hotcue 8 release.</description>
                 <status>0x80</status>
                 <midino>0x29</midino>
@@ -1149,7 +1149,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 1 push.</description>
                 <status>0x91</status>
                 <midino>0x42</midino>
@@ -1159,7 +1159,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 1 release.</description>
                 <status>0x81</status>
                 <midino>0x42</midino>
@@ -1169,7 +1169,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 2 push.</description>
                 <status>0x91</status>
                 <midino>0x43</midino>
@@ -1179,7 +1179,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 2 release.</description>
                 <status>0x81</status>
                 <midino>0x43</midino>
@@ -1189,7 +1189,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 3 push.</description>
                 <status>0x91</status>
                 <midino>0x44</midino>
@@ -1199,7 +1199,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 3 release.</description>
                 <status>0x81</status>
                 <midino>0x44</midino>
@@ -1209,7 +1209,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 4 push.</description>
                 <status>0x91</status>
                 <midino>0x45</midino>
@@ -1219,7 +1219,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 4 release.</description>
                 <status>0x81</status>
                 <midino>0x45</midino>
@@ -1229,7 +1229,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 5 push.</description>
                 <status>0x91</status>
                 <midino>0x46</midino>
@@ -1239,7 +1239,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 5 release.</description>
                 <status>0x81</status>
                 <midino>0x46</midino>
@@ -1249,7 +1249,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 6 push.</description>
                 <status>0x91</status>
                 <midino>0x47</midino>
@@ -1259,7 +1259,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 6 release.</description>
                 <status>0x81</status>
                 <midino>0x47</midino>
@@ -1269,7 +1269,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 7 push.</description>
                 <status>0x91</status>
                 <midino>0x48</midino>
@@ -1279,7 +1279,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 7 release.</description>
                 <status>0x81</status>
                 <midino>0x48</midino>
@@ -1289,7 +1289,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 8 push.</description>
                 <status>0x91</status>
                 <midino>0x49</midino>
@@ -1299,7 +1299,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck B hotcue 8 release.</description>
                 <status>0x81</status>
                 <midino>0x49</midino>
@@ -1309,7 +1309,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 1 push.</description>
                 <status>0x92</status>
                 <midino>0x22</midino>
@@ -1319,7 +1319,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 1 release.</description>
                 <status>0x82</status>
                 <midino>0x22</midino>
@@ -1329,7 +1329,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 2 push.</description>
                 <status>0x92</status>
                 <midino>0x23</midino>
@@ -1339,7 +1339,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 2 release.</description>
                 <status>0x82</status>
                 <midino>0x23</midino>
@@ -1349,7 +1349,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 3 push.</description>
                 <status>0x92</status>
                 <midino>0x24</midino>
@@ -1359,7 +1359,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 3 release.</description>
                 <status>0x82</status>
                 <midino>0x24</midino>
@@ -1369,7 +1369,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 4 push.</description>
                 <status>0x92</status>
                 <midino>0x25</midino>
@@ -1379,7 +1379,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 4 release.</description>
                 <status>0x82</status>
                 <midino>0x25</midino>
@@ -1389,7 +1389,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 5 push.</description>
                 <status>0x92</status>
                 <midino>0x26</midino>
@@ -1399,7 +1399,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 5 release.</description>
                 <status>0x82</status>
                 <midino>0x26</midino>
@@ -1409,7 +1409,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 6 push.</description>
                 <status>0x92</status>
                 <midino>0x27</midino>
@@ -1419,7 +1419,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 6 release.</description>
                 <status>0x82</status>
                 <midino>0x27</midino>
@@ -1429,7 +1429,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 7 push.</description>
                 <status>0x92</status>
                 <midino>0x28</midino>
@@ -1439,7 +1439,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 7 release.</description>
                 <status>0x82</status>
                 <midino>0x28</midino>
@@ -1449,7 +1449,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 8 push.</description>
                 <status>0x92</status>
                 <midino>0x29</midino>
@@ -1459,7 +1459,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck C hotcue 8 release.</description>
                 <status>0x82</status>
                 <midino>0x29</midino>
@@ -1469,7 +1469,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 1 push.</description>
                 <status>0x93</status>
                 <midino>0x42</midino>
@@ -1479,7 +1479,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 1 release.</description>
                 <status>0x83</status>
                 <midino>0x42</midino>
@@ -1489,7 +1489,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 2 push.</description>
                 <status>0x93</status>
                 <midino>0x43</midino>
@@ -1499,7 +1499,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 2 release.</description>
                 <status>0x83</status>
                 <midino>0x43</midino>
@@ -1509,7 +1509,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 3 push.</description>
                 <status>0x93</status>
                 <midino>0x44</midino>
@@ -1519,7 +1519,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 3 release.</description>
                 <status>0x83</status>
                 <midino>0x44</midino>
@@ -1529,7 +1529,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 4 push.</description>
                 <status>0x93</status>
                 <midino>0x45</midino>
@@ -1539,7 +1539,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 4 release.</description>
                 <status>0x83</status>
                 <midino>0x45</midino>
@@ -1549,7 +1549,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 5 push.</description>
                 <status>0x93</status>
                 <midino>0x46</midino>
@@ -1559,7 +1559,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 5 release.</description>
                 <status>0x83</status>
                 <midino>0x46</midino>
@@ -1569,7 +1569,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 6 push.</description>
                 <status>0x93</status>
                 <midino>0x47</midino>
@@ -1579,7 +1579,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 6 release.</description>
                 <status>0x83</status>
                 <midino>0x47</midino>
@@ -1589,7 +1589,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 7 push.</description>
                 <status>0x93</status>
                 <midino>0x48</midino>
@@ -1599,7 +1599,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 7 release.</description>
                 <status>0x83</status>
                 <midino>0x48</midino>
@@ -1609,7 +1609,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcuePush</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 8 push.</description>
                 <status>0x93</status>
                 <midino>0x49</midino>
@@ -1619,7 +1619,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.hotcueRelease</key>
+                <key>BehringerCMDStudio4a.hotcue</key>
                 <description>Deck D hotcue 8 release.</description>
                 <status>0x83</status>
                 <midino>0x49</midino>
@@ -1671,7 +1671,7 @@
             <!-- Cue. -->
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.cuePush</key>
+                <key>BehringerCMDStudio4a.cue</key>
                 <description>Deck A CUE push.</description>
                 <status>0x90</status>
                 <midino>0x2B</midino>
@@ -1681,7 +1681,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.cueRelease</key>
+                <key>BehringerCMDStudio4a.cue</key>
                 <description>Deck A CUE release.</description>
                 <status>0x80</status>
                 <midino>0x2B</midino>
@@ -1691,7 +1691,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.cuePush</key>
+                <key>BehringerCMDStudio4a.cue</key>
                 <description>Deck B CUE push.</description>
                 <status>0x91</status>
                 <midino>0x4B</midino>
@@ -1701,7 +1701,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.cueRelease</key>
+                <key>BehringerCMDStudio4a.cue</key>
                 <description>Deck B CUE release.</description>
                 <status>0x81</status>
                 <midino>0x4B</midino>
@@ -1711,7 +1711,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.cuePush</key>
+                <key>BehringerCMDStudio4a.cue</key>
                 <description>Deck C CUE push.</description>
                 <status>0x92</status>
                 <midino>0x2B</midino>
@@ -1721,7 +1721,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.cueRelease</key>
+                <key>BehringerCMDStudio4a.cue</key>
                 <description>Deck C CUE release.</description>
                 <status>0x82</status>
                 <midino>0x2B</midino>
@@ -1731,28 +1731,28 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.cuePush</key>
+                <key>BehringerCMDStudio4a.cue</key>
                 <description>Deck D CUE push.</description>
                 <status>0x93</status>
                 <midino>0x4B</midino>
                 <options>
                     <script-binding/>
-				</options>
+                </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.cueRelease</key>
+                <key>BehringerCMDStudio4a.cue</key>
                 <description>Deck D CUE release.</description>
                 <status>0x83</status>
                 <midino>0x4B</midino>
                 <options>
                     <script-binding/>
-				</options>
+                </options>
             </control>
             <!-- Play. -->
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.playPush</key>
+                <key>BehringerCMDStudio4a.play</key>
                 <description>Deck A PLAY push.</description>
                 <status>0x90</status>
                 <midino>0x2C</midino>
@@ -1762,7 +1762,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.playRelease</key>
+                <key>BehringerCMDStudio4a.play</key>
                 <description>Deck A PLAY release.</description>
                 <status>0x80</status>
                 <midino>0x2C</midino>
@@ -1772,7 +1772,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.playPush</key>
+                <key>BehringerCMDStudio4a.play</key>
                 <description>Deck B PLAY push.</description>
                 <status>0x91</status>
                 <midino>0x4C</midino>
@@ -1782,7 +1782,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.playRelease</key>
+                <key>BehringerCMDStudio4a.play</key>
                 <description>Deck B PLAY release.</description>
                 <status>0x81</status>
                 <midino>0x4C</midino>
@@ -1792,7 +1792,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.playPush</key>
+                <key>BehringerCMDStudio4a.play</key>
                 <description>Deck C PLAY push.</description>
                 <status>0x92</status>
                 <midino>0x2C</midino>
@@ -1802,7 +1802,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.playRelease</key>
+                <key>BehringerCMDStudio4a.play</key>
                 <description>Deck C PLAY release.</description>
                 <status>0x82</status>
                 <midino>0x2C</midino>
@@ -1812,7 +1812,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.playPush</key>
+                <key>BehringerCMDStudio4a.play</key>
                 <description>Deck D PLAY push.</description>
                 <status>0x93</status>
                 <midino>0x4C</midino>
@@ -1822,7 +1822,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.playRelease</key>
+                <key>BehringerCMDStudio4a.play</key>
                 <description>Deck D PLAY release.</description>
                 <status>0x83</status>
                 <midino>0x4C</midino>

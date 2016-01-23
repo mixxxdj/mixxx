@@ -26,8 +26,8 @@ BehringerCMDStudio4a.delButtonState = [false,false,false,false];
 BehringerCMDStudio4a.scratchButtonState = [false,false,false,false];
 
 // Button push/release state variables.
-BehringerCMDStudio4a.pitchDec = [false,false,false,false];
-BehringerCMDStudio4a.pitchInc = [false,false,false,false];
+BehringerCMDStudio4a.pitchDecPushed = [false,false,false,false];
+BehringerCMDStudio4a.pitchIncPushed = [false,false,false,false];
 
 
 // ************************ Initialisation stuff. *****************************
@@ -91,43 +91,29 @@ BehringerCMDStudio4a.del = function (channel, control, value, status, group) {
     midi.sendShortMsg(status, control, BehringerCMDStudio4a.delButtonState[channel] ? 0x01 : 0x00);
 }
 
-// Functions to deal with the play buttons, (because they have a DEL-mode behaviour).
-BehringerCMDStudio4a.playPush = function (channel, control, value, status, group) {
+// Function to deal with the play buttons, (because they have a DEL-mode behaviour).
+BehringerCMDStudio4a.play = function (channel, control, value, status, group) {
     if (BehringerCMDStudio4a.delButtonState[channel]) {
         // DEL-mode is active, do reverse-roll (slip).
-        engine.setValue(group, "reverseroll", 1);
+        engine.setValue(group, "reverseroll", (value == 127) ? 1 : 0);
     } else {
-        // DEL-mode is not active, just play.
-		script.toggleControl(group,"play")
-    }
-}
-BehringerCMDStudio4a.playRelease = function (channel, control, value, status, group) {
-    if (BehringerCMDStudio4a.delButtonState[channel]) {
-        // DEL-mode is active, do reverse-roll (slip) release.
-        engine.setValue(group, "reverseroll", 0);
+        // DEL-mode is not active, just toggle play (on push only).
+        if (value == 127) {
+            script.toggleControl(group,"play");
+        }
     }
 }
 
-// Functions to deal with the cue buttons, (because they have a DEL-mode behaviour).
-BehringerCMDStudio4a.cuePush = function (channel, control, value, status, group) {
+// Function to deal with the cue buttons, (because they have a DEL-mode behaviour).
+BehringerCMDStudio4a.cue = function (channel, control, value, status, group) {
     if (BehringerCMDStudio4a.delButtonState[channel]) {
         // DEL-mode is active, do reverse play.
-        engine.setValue(group, "reverse", 1);
+        engine.setValue(group, "reverse", (value == 127) ? 1 : 0);
     } else {
         // DEL-mode is not active so just cue.
-        engine.setValue(group, "cue_default", 1);
+        engine.setValue(group, "cue_default", (value == 127) ? 1 : 0);
     }
 }
-BehringerCMDStudio4a.cueRelease = function (channel, control, value, status, group) {
-    if (BehringerCMDStudio4a.delButtonState[channel]) {
-        // DEL-modde is active, do reverse-roll release.
-        engine.setValue(group, "reverse", 0);
-    } else {
-        // DEL-mode is not active so just release the cue.
-        engine.setValue(group, "cue_default", 0);
-	}
-}
-
 
 // Function to deal with the scratch mode buttons.
 BehringerCMDStudio4a.scratch = function (channel, control, value, status, group) {
@@ -136,86 +122,76 @@ BehringerCMDStudio4a.scratch = function (channel, control, value, status, group)
 }
 
 // Functions to deal with the hot-cue buttons, (because they have a DEL-mode behaviour).
-BehringerCMDStudio4a.hotcuePush = function (channel, control, value, status, group) {
-    // Translate the button to the actual hotcue.
-    var hotcue = control-0x21;  // Hotcue buttons on left ddeck go from 0x22 to 0x29
-    if (hotcue>8) {
-        // Right deck, buttons are 0x20 higher so we need to compensate.
-        hotcue = hotcue-0x20;
-    }
-    if (BehringerCMDStudio4a.delButtonState[channel]) {
-        // DEL-mode is active, so delete the hotcue.
-        engine.setValue(group, "hotcue_"+hotcue+"_clear", 1);
-    } else {
-        // DEL-mode is not active, do the set/jup-top hotcue function as normal.
-        engine.setValue(group, "hotcue_"+hotcue+"_activate", 1);
-    }
-}
-BehringerCMDStudio4a.hotcueRelease = function (channel, control, value, status, group) {
+BehringerCMDStudio4a.hotcue = function (channel, control, value, status, group) {
     // Translate the button to the actual hotcue.
     var hotcue = control-0x21;  // Hotcue buttons on left deck go from 0x22 to 0x29
     if (hotcue>8) {
         // Right deck, buttons are 0x20 higher so we need to compensate.
         hotcue = hotcue-0x20;
     }
-    if (!BehringerCMDStudio4a.delButtonState[channel]) {
-        // DEL-mode is not active, do the release hotcue function as normal.
-        engine.setValue(group, "hotcue_"+hotcue+"_activate", 0);
+    if (BehringerCMDStudio4a.delButtonState[channel]) {
+        // DEL-mode is active, so delete the hotcue (on push only).
+        if (value == 127) {
+            engine.setValue(group, "hotcue_"+hotcue+"_clear", 1);
+        }
+    } else {
+        // DEL-mode is not active, do the set/jump-to hotcue function as normal.
+        engine.setValue(group, "hotcue_"+hotcue+"_activate", (value == 127) ? 1 : 0);
     }
 }
 
 // Functions to deal with the pitch inc/dec buttons, (because they have a DEL-mode behaviour).
-BehringerCMDStudio4a.pitchDecPush = function (channel, control, value, status, group) {
-    BehringerCMDStudio4a.pitchDec[channel] = true;
-    if (BehringerCMDStudio4a.delButtonState[channel]) {
-        // DEL mode is active, do "key" changes instead.
-        // Check if the other button is pressed too, if so we reset the pitch.
-        if (BehringerCMDStudio4a.pitchInc[channel]) {
-            engine.setValue(group, "pitch", 0);
+BehringerCMDStudio4a.pitchDec = function (channel, control, value, status, group) {
+    if (vaule == 127) {
+        // Button pushed.
+        BehringerCMDStudio4a.pitchDecPushed[channel] = true;
+        if (BehringerCMDStudio4a.delButtonState[channel]) {
+            // DEL mode is active, do "key" changes instead.
+            // Check if the other button is pressed too, if so we reset the pitch.
+            if (BehringerCMDStudio4a.pitchIncPushed[channel]) {
+                engine.setValue(group, "pitch", 0);
+            } else {
+                engine.setValue(group, "pitch_down", 1);
+            }
         } else {
-            engine.setValue(group, "pitch_down", 1);
+            // DEL-mode is not active, just do "rate" changes.
+            engine.setValue(group, "rate_perm_down", 1);
+            // Check if the other button is pressed too, if so we reset the rate.
+            if (BehringerCMDStudio4a.pitchIncPushed[channel]) {
+                engine.setValue(group, "rate", 0);
+            }
         }
     } else {
-        // DEL-mode is not active, just do "rate" changes.
-        engine.setValue(group, "rate_perm_down", 1);
-        // Check if the other button is pressed too, if so we reset the pitch.
-        if (BehringerCMDStudio4a.pitchInc[channel]) {
-            engine.setValue(group, "rate", 0);
-        }
+        // Button released.
+        BehringerCMDStudio4a.pitchDecPushed[channel] = false;
+        engine.setValue(group, "rate_perm_down", 0); // Keeps the UI in sync with the button state.
     }
-    // NB: We do the reset check for pitch before triggering the pitch down as
-    //     Mixxx does not seem to like rapid rate switches. We trigger rate
-    //     down regardless so as to preserve the GUI button press indicators.
 }
-BehringerCMDStudio4a.pitchDecRelease = function (channel, control, value, status, group) {
-    BehringerCMDStudio4a.pitchDec[channel] = false;
-    engine.setValue(group, "rate_perm_down", 0);
-}
-BehringerCMDStudio4a.pitchIncPush = function (channel, control, value, status, group) {
-    BehringerCMDStudio4a.pitchInc[channel] = true;
-    if (BehringerCMDStudio4a.delButtonState[channel]) {
-        // DEL-mode is active, do "key" changes instead.
-        // Check if the other button is pressed too, if so we reset the pitch.
-        if (BehringerCMDStudio4a.pitchDec[channel]) {
-            engine.setValue(group, "pitch", 0);
+BehringerCMDStudio4a.pitchInc = function (channel, control, value, status, group) {
+    if (vaule == 127) {
+        // Button pushed.
+        BehringerCMDStudio4a.pitchIncPushed[channel] = true;
+        if (BehringerCMDStudio4a.delButtonState[channel]) {
+            // DEL-mode is active, do "key" changes instead.
+            // Check if the other button is pressed too, if so we reset the pitch.
+            if (BehringerCMDStudio4a.pitchDecPushed[channel]) {
+                engine.setValue(group, "pitch", 0);
+            } else {
+                engine.setValue(group, "pitch_up", 1);          
+            }
         } else {
-            engine.setValue(group, "pitch_up", 1);          
+            // DEL-mode is not active, just do "rate" changes.
+            engine.setValue(group, "rate_perm_up", 1);
+            // Check if the other button is pressed too, if so we reset the rate.
+            if (BehringerCMDStudio4a.pitchDecPushed[channel]) {
+                engine.setValue(group, "rate", 0);
+            }
         }
     } else {
-        // DEL-mode is not active, just do "rate" changes.
-        engine.setValue(group, "rate_perm_up", 1);
-        // Check if the other button is pressed too, if so we reset the pitch.
-        if (BehringerCMDStudio4a.pitchDec[channel]) {
-            engine.setValue(group, "rate", 0);
-        }
+        // Button released.
+        BehringerCMDStudio4a.pitchIncPushed[channel] = false;
+        engine.setValue(group, "rate_perm_up", 0); // Keeps the UI in sync with the button state.
     }
-    // NB: We do the reset check for pitch before triggering the pitch up as
-    //     Mixxx does not seem to like rapid rate switches. We trigger rate
-    //     up regardless so as to preserve the GUI button press indicators.
-}
-BehringerCMDStudio4a.pitchIncRelease = function (channel, control, value, status, group) {
-    BehringerCMDStudio4a.pitchInc[channel] = false;
-    engine.setValue(group, "rate_perm_up", 0);
 }
 
 // Functions to deal with the wheel (i.e. scratcing and jog).
