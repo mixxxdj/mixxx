@@ -79,13 +79,14 @@ class LibraryHashDAO;
 // TrackPointers themselves within the QCache by holding a strong reference to
 // TrackPointer (and thereby serving it out of the weak pointer track cache) up
 // until the track has been saved to the database.
-class TrackCacheItem : public QObject {
+class RecentTrackCacheItem final : public QObject {
     Q_OBJECT
   public:
-    TrackCacheItem(TrackPointer pTrack);
-    virtual ~TrackCacheItem();
+    explicit RecentTrackCacheItem(
+            const TrackPointer& pTrack);
+    virtual ~RecentTrackCacheItem();
 
-    TrackPointer getTrack() {
+    const TrackPointer& getTrack() const {
         return m_pTrack;
     }
 
@@ -221,7 +222,7 @@ class TrackDAO : public QObject, public virtual DAO {
     // getTrack calls made by BaseSqlTableModel return null and serve stale
     // results from BaseTrackCache before the newly expired TrackPointer has
     // been saved to the database.
-    mutable QCache<TrackId, TrackCacheItem> m_recentTracksCache;
+    mutable QCache<TrackId, RecentTrackCacheItem> m_recentTracksCache;
 
     QSqlQuery* m_pQueryTrackLocationInsert;
     QSqlQuery* m_pQueryTrackLocationSelect;

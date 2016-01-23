@@ -37,16 +37,14 @@ QMutex TrackDAO::m_sTracksMutex;
 
 enum { UndefinedRecordIndex = -2 };
 
-TrackCacheItem::TrackCacheItem(TrackPointer pTrack)
+RecentTrackCacheItem::RecentTrackCacheItem(
+        const TrackPointer& pTrack)
         : m_pTrack(pTrack) {
-    DEBUG_ASSERT(m_pTrack);
+    DEBUG_ASSERT(!m_pTrack.isNull());
 }
 
-TrackCacheItem::~TrackCacheItem() {
-    DEBUG_ASSERT_AND_HANDLE(!m_pTrack.isNull()) {
-        return;
-    }
-    // qDebug() << "~TrackCacheItem" << m_pTrack << "ID"
+RecentTrackCacheItem::~RecentTrackCacheItem() {
+    // qDebug() << "~RecentTrackCacheItem" << m_pTrack << "ID"
     //          << m_pTrack->getId() << m_pTrack->getInfo();
 
     // Signal to TrackDAO::saveTrack(TrackPointer) to save the track if it is
@@ -59,7 +57,7 @@ TrackCacheItem::~TrackCacheItem() {
 
 // The number of recently used tracks to cache strong references to at
 // once. Once the n+1'th track is created, the TrackDAO's QCache deletes its
-// TrackCacheItem which signals to TrackDAO::saveTrack(TrackPointer) to save the
+// RecentTrackCacheItem which signals to TrackDAO::saveTrack(TrackPointer) to save the
 // track and drop the strong reference. The recent tracks cache basically
 // functions to prevent repeated getTrack() calls for the same track from
 // repeatedly deserializing / serializing a track to the database since this is
@@ -121,7 +119,7 @@ void TrackDAO::finish() {
     locker.unlock();
 
     // Clear cache, so all cached tracks without other references are deleted.
-    // Will queue a bunch of saveTrack calls for every TrackCacheItem in
+    // Will queue a bunch of saveTrack calls for every RecentTrackCacheItem in
     // m_recentTracksCache. The event loop is already stopped at this point so
     // the queued signals won't be processed.
     clearCache();
@@ -1354,7 +1352,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     m_sTracksMutex.unlock();
     //qDebug() << "TrackDAO::m_sTracks.count() =" << trackCount;
 
-    TrackCacheItem* pCacheItem = new TrackCacheItem(pTrack);
+    RecentTrackCacheItem* pCacheItem = new RecentTrackCacheItem(pTrack);
 
     // Queued connection. We are not in a rush to process cache
     // expirations and it can produce dangerous signal loops.
@@ -1388,9 +1386,9 @@ TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
     // If the track cache contains the track ID, use it to get a strong
     // reference to the track. We do this first so that the QCache keeps track
     // of the least-recently-used track so that it expires them intelligently.
-    TrackCacheItem* pTrackCacheItem = m_recentTracksCache.object(trackId);
-    if (pTrackCacheItem != NULL) {
-        pTrack = pTrackCacheItem->getTrack();
+    RecentTrackCacheItem* pRecentTrackCacheItem = m_recentTracksCache.object(trackId);
+    if (pRecentTrackCacheItem != NULL) {
+        pTrack = pRecentTrackCacheItem->getTrack();
         // If the strong reference is still valid (it should be), then return
         // it.
         DEBUG_ASSERT(pTrack);
@@ -1419,7 +1417,7 @@ TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
     if (pTrack) {
         // NOTE: Never call QCache::insert() while holding the weak-reference
         // hash mutex. It may trigger a cache delete and trigger a deadlock.
-        TrackCacheItem* pCacheItem = new TrackCacheItem(pTrack);
+        RecentTrackCacheItem* pCacheItem = new RecentTrackCacheItem(pTrack);
 
         // Queued connection. We are not in a rush to process cache
         // expirations and it can produce dangerous signal loops.
@@ -1820,7 +1818,7 @@ bool TrackDAO::detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
 }
 
 void TrackDAO::clearCache() {
-    // Triggers a deletion of all the TrackCacheItems which in turn calls
+    // Triggers a deletion of all the RecentTrackCacheItems which in turn calls
     // saveTrack(TrackPointer) for all of the tracks in the recent tracks cache.
     m_recentTracksCache.clear();
 }
