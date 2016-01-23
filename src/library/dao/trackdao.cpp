@@ -10,7 +10,6 @@
 
 #include "library/dao/trackdao.h"
 
-#include "track/audiotagger.h"
 #include "library/queryutil.h"
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"
@@ -265,32 +264,26 @@ void TrackDAO::saveTrack(TrackPointer track) {
 }
 
 void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
-    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
-        return;
-    }
-    //qDebug() << "TrackDAO::saveTrack" << pTrack->getId() << pTrack->getInfo();
-    TrackId trackId(pTrack->getId());
-    if (trackId.isValid()) {
-        // Track has already been stored in database
-        if (pTrack->isDirty()) {
-            //qDebug() << this << "Dirty tracks before clean save:" << m_dirtyTracks.size();
-            //qDebug() << "TrackDAO::saveTrack. Dirty. Calling update";
+    DEBUG_ASSERT(nullptr != pTrack);
+
+    if (pTrack->isDirty()) {
+        // Only update the database if the track has already been added!
+        if (pTrack->getId().isValid()) {
             updateTrack(pTrack);
-
-            // Write audio meta data, if enabled in the preferences
-            // TODO(DSC) Only wite tag if file Metatdata is dirty
-            writeMetadataToFile(pTrack);
-
-            //qDebug() << this << "Dirty tracks remaining after clean save:" << m_dirtyTracks.size();
-        } else {
-            //qDebug() << "TrackDAO::saveTrack. Not Dirty";
-            //qDebug() << this << "Dirty tracks remaining:" << m_dirtyTracks.size();
-            //qDebug() << "Skipping track update for track" << pTrack->getId();
         }
-    } else {
-        // Track has not been added to database
-        //qDebug() << "TrackDAO::saveTrack. Adding track";
-        addTrack(pTrack, false);
+
+        // Write audio meta data, if enabled in the preferences.
+        //
+        // TODO(DSC) Only write tag if file metadata is dirty.
+        // Currently metadata will also be saved if for example
+        // cue points have been modified, even if this information
+        // is only stored in the database.
+        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+            SoundSourceProxy::saveTrackMetadata(pTrack);
+        }
+
+        pTrack->resetDirty();
+        emit(trackClean(pTrack->getId()));
     }
 }
 
@@ -1855,19 +1848,6 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
                           "WHERE id in (%1)").arg(trackIds.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-    }
-}
-
-void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
-    if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-
-        Mixxx::TrackMetadata trackMetadata;
-        pTrack->getMetadata(&trackMetadata);
-
-        AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
-        if (OK != tagger.save(trackMetadata)) {
-            qWarning() << "Failed to write track metadata:" << pTrack->getLocation();
-        }
     }
 }
 

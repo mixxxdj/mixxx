@@ -61,6 +61,15 @@ public:
     // the referenced track.
     QImage parseCoverImage() const;
 
+    enum class SaveTrackMetadataResult {
+        SUCCEEDED,
+        FAILED,
+        SKIPPED
+    };
+    static SaveTrackMetadataResult saveTrackMetadata(
+            const TrackInfoObject* pTrack,
+            bool evenIfNeverParsedFromFileBefore = false);
+
     // Opening the audio data through the proxy will
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
@@ -73,6 +82,11 @@ private:
     static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
+
+    // Special case: Construction from a plain TIO pointer is needed
+    // for writing metadata immediately before the TIO is destroyed.
+    explicit SoundSourceProxy(
+            const TrackInfoObject* pTrack);
 
     const TrackPointer m_pTrack;
 
