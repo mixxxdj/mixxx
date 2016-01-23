@@ -466,7 +466,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>loop_in</key>
-                <description>Deck A loop start.</description>
+                <description>Deck A loop start push.</description>
                 <status>0x90</status>
                 <midino>0x17</midino>
                 <options>
@@ -475,9 +475,29 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>loop_in</key>
+                <description>Deck A loop start release.</description>
+                <status>0x80</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>loop_out</key>
-                <description>Deck A loop stop.</description>
+                <description>Deck A loop end push.</description>
                 <status>0x90</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_out</key>
+                <description>Deck A loop end release.</description>
+                <status>0x80</status>
                 <midino>0x18</midino>
                 <options>
                     <normal/>
@@ -496,7 +516,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>loop_in</key>
-                <description>Deck B loop start.</description>
+                <description>Deck B loop start push.</description>
                 <status>0x91</status>
                 <midino>0x38</midino>
                 <options>
@@ -505,9 +525,29 @@
             </control>
             <control>
                 <group>[Channel2]</group>
+                <key>loop_in</key>
+                <description>Deck B loop start release.</description>
+                <status>0x81</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
                 <key>loop_out</key>
-                <description>Deck B loop stop.</description>
+                <description>Deck B loop end push.</description>
                 <status>0x91</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_out</key>
+                <description>Deck B loop end release.</description>
+                <status>0x81</status>
                 <midino>0x37</midino>
                 <options>
                     <normal/>
@@ -526,7 +566,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>loop_in</key>
-                <description>Deck C loop start.</description>
+                <description>Deck C loop start push.</description>
                 <status>0x92</status>
                 <midino>0x17</midino>
                 <options>
@@ -535,9 +575,29 @@
             </control>
             <control>
                 <group>[Channel3]</group>
+                <key>loop_in</key>
+                <description>Deck C loop start release.</description>
+                <status>0x82</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
                 <key>loop_out</key>
-                <description>Deck C loop stop.</description>
+                <description>Deck C loop end push.</description>
                 <status>0x92</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>loop_out</key>
+                <description>Deck C loop end release.</description>
+                <status>0x82</status>
                 <midino>0x18</midino>
                 <options>
                     <normal/>
@@ -556,7 +616,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>loop_in</key>
-                <description>Deck D loop start.</description>
+                <description>Deck D loop start push.</description>
                 <status>0x93</status>
                 <midino>0x38</midino>
                 <options>
@@ -565,9 +625,29 @@
             </control>
             <control>
                 <group>[Channel4]</group>
+                <key>loop_in</key>
+                <description>Deck D loop start release.</description>
+                <status>0x83</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
                 <key>loop_out</key>
-                <description>Deck D loop stop.</description>
+                <description>Deck D loop end push.</description>
                 <status>0x93</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>loop_out</key>
+                <description>Deck D loop end release.</description>
+                <status>0x83</status>
                 <midino>0x37</midino>
                 <options>
                     <normal/>
