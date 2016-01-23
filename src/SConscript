@@ -730,10 +730,10 @@ def BuildRelease(target, source, env):
             subprocess.check_call(command)
 
         # Handle promo tracks if any
-        promo="no"
+        promo = "no"
         winArch = "x64" if build.machine_is_64bit else "x86"
         if os.path.exists(os.path.join(dist_dir,"promo")):
-            promo="yes"
+            promo = "yes"
             command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
                 {'wix': wix_path,
                  'distdir': dist_dir,
@@ -765,6 +765,24 @@ def BuildRelease(target, source, env):
         print "Using Command: " + command
         subprocess.check_call(command)
 
+        # Harvest main PDB from install dir if they exist
+        isPdb = "no"
+        if len(glob.glob(dist_dir + "\*.pdb")) > 0:
+            isPdb = "yes"
+            command = '"%(wix)s\\heat.exe" dir %(distdir)s -nologo -sfrag -suid -ag -srd -cg mainPDBCompGroup -dr INSTALLDIR -out build\wix\subdirs\mainPDB.wxs -sw5150 -var var.SourceDir -t build\wix\only-pdb.xslt' % \
+            {'wix': wix_path,
+             'distdir': dist_dir}
+            print "Using Command: " + command
+            subprocess.check_call(command)
+            
+            command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dSourceDir=%(distdir)s -arch %(arch)s -out build\wix\subdirs\mainPDB.wixobj build\wix\subdirs\mainPDB.wxs' % \
+            {'wix': wix_path,
+             'winlibpath': mixxx_winlib_path,
+             'arch': winArch,
+             'distdir': dist_dir}
+        print "Using Command: " + command
+        subprocess.check_call(command)
+        
         # Compile main wix files
         command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -arch %(arch)s -out build\wix\warningDlg.wixobj build\wix\warningDlg.wxs' % \
             {'wix': wix_path,
@@ -772,10 +790,11 @@ def BuildRelease(target, source, env):
              'arch': winArch}
         print "Using Command: " + command
         subprocess.check_call(command)
-        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dPromo=%(ispromo)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
+        command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -dPromo=%(ispromo)s -dPDB=%(isPDB)s -arch %(arch)s -out build\wix\mixxx.wixobj build\wix\mixxx.wxs' % \
             {'wix': wix_path,
              'winlibpath': mixxx_winlib_path,
              'ispromo': promo,
+             'isPDB': isPdb,
              'arch': winArch}
         print "Using Command: " + command
         subprocess.check_call(command)

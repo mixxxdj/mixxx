@@ -59,8 +59,16 @@ REM Harvest main DLL from install dir
 "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH% -nologo -sfrag -suid -ag -srd -cg mainDLLCompGroup -dr INSTALLDIR -out subdirs\mainDLL.wxs -sw5150 -var var.SourceDir -t only-dll.xslt
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dSourceDir=..\..\dist%BITWIDTH% -arch %ARCH% -out subdirs\mainDLL.wixobj subdirs\mainDLL.wxs
 
+SET PDB=no
+REM Harvest main PDB from install dir
+IF EXIST ..\..\dist%BITWIDTH%\*.pdb (
+  SET PDB=yes
+  "%WIX%"\bin\heat.exe dir ..\..\dist%BITWIDTH% -nologo -sfrag -suid -ag -srd -cg mainPDBCompGroup -dr INSTALLDIR -out subdirs\mainPDB.wxs -sw5150 -var var.SourceDir -t only-pdb.xslt
+  "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dSourceDir=..\..\dist%BITWIDTH% -arch %ARCH% -out subdirs\mainPDB.wixobj subdirs\mainPDB.wxs
+)
+
 "%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -arch %ARCH% warningDlg.wxs
-"%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dPromo=%promo% -arch %ARCH% mixxx.wxs
+"%WIX%"\bin\candle.exe -nologo -dWINLIBPATH=%WINLIB_PATH% -dPlatform=%ARCH% -dPromo=%promo% -dPDB=%PDB% -arch %ARCH% mixxx.wxs
 
 echo.
 echo *** Building package for default language %DefaultLanguage%

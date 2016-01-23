@@ -392,6 +392,9 @@
       <?if $(var.Promo) = "yes" ?>
         <ComponentGroupRef Id='promoComp' />
       <?endif?>
+      <?if $(var.PDB) = "yes" ?>
+        <ComponentGroupRef Id='mainPDBCompGroup' />
+      <?endif?>
       <Feature Id="DesktopShortcutFeature"
                Title="!(loc.FeatureDesktopShortcutTitle)"
                Description="!(loc.FeatureDesktopShortcutDescription)"
