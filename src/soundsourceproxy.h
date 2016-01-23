@@ -90,10 +90,14 @@ private:
 
     void loadTrackMetadataAndCoverArt(bool withCoverArt, bool reloadFromFile) const;
 
+    // This pointer must stay in this class together with
+    // the corresponding track pointer. Don't pass it around!!
     Mixxx::SoundSourcePointer m_pSoundSource;
 
-    // Just an alias that keeps track of opening and closing
-    // the corresponding SoundSource.
+    // Keeps track of opening and closing the corresponding
+    // SoundSource. This pointer can safely be passed around,
+    // because internally it contains a reference to the TIO
+    // that keeps it alive.
     Mixxx::AudioSourcePointer m_pAudioSource;
 };
 
