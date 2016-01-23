@@ -41,31 +41,31 @@ class Trace {
 
     virtual ~Trace() {
         // Proxy for whether initialize was called.
-        if (!m_tag.isEmpty()) {
-            Event::end(m_tag);
+        if (m_tag.isEmpty()) {
+            return;
+        }
 
-            mixxx::Duration elapsed = m_time ? m_timer.elapsed() :
-                    mixxx::Duration::fromSeconds(0);
+        Event::end(m_tag);
+
+        if (m_time) {
+            mixxx::Duration elapsed = m_timer.elapsed();
             if (m_writeToStdout) {
-                if (m_time) {
-                    qDebug() << "END [" << m_tag << "] elapsed: "
-                             << elapsed.formatNanosWithUnit();
-                } else {
-                    qDebug() << "END [" << m_tag << "]";
-                }
+                qDebug() << "END [" << m_tag << "] elapsed: "
+                         << elapsed.formatNanosWithUnit();
             }
-            if (m_time) {
-                // NOTE(rryan) do we need to do this string append? We could add
-                // a check in StatsManager to infer that a DURATION_NANOSEC
-                // event for the same tag that has an EVENT_START/EVENT_END is a
-                // duration instead of changing the tag.
-                Stat::track(
-                        m_tag + "_duration",
-                        Stat::DURATION_NANOSEC,
-                        Stat::COUNT | Stat::AVERAGE | Stat::SAMPLE_VARIANCE |
-                        Stat::MAX | Stat::MIN,
-                        elapsed.toIntegerNanos());
-            }
+
+            // NOTE(rryan) do we need to do this string append? We could add
+            // a check in StatsManager to infer that a DURATION_NANOSEC
+            // event for the same tag that has an EVENT_START/EVENT_END is a
+            // duration instead of changing the tag.
+            Stat::track(
+                m_tag + "_duration",
+                Stat::DURATION_NANOSEC,
+                Stat::COUNT | Stat::AVERAGE | Stat::SAMPLE_VARIANCE |
+                Stat::MAX | Stat::MIN,
+                elapsed.toIntegerNanos());
+        } else if (m_writeToStdout) {
+            qDebug() << "END [" << m_tag << "]";
         }
     }
 
