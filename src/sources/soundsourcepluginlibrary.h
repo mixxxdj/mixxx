@@ -13,6 +13,8 @@ class SoundSourcePluginLibrary;
 
 typedef QSharedPointer<SoundSourcePluginLibrary> SoundSourcePluginLibraryPointer;
 
+typedef QSharedPointer<SoundSourceProvider> SoundSourceProviderPointer;
+
 // Wrapper class for a dynamic library that implements the SoundSource plugin API
 class SoundSourcePluginLibrary {
 public:
@@ -28,10 +30,7 @@ public:
         return m_apiVersion;
     }
 
-    SoundSourceProviderPointer getSoundSourceProvider() {
-        DEBUG_ASSERT(m_getSoundSourceProviderFunc);
-        return (*m_getSoundSourceProviderFunc)();
-    }
+    SoundSourceProviderPointer createSoundSourceProvider() const;
 
 protected:
     explicit SoundSourcePluginLibrary(const QString& libFilePath);
@@ -47,7 +46,8 @@ private:
     int m_apiVersion;
     QStringList m_supportedFileExtensions;
 
-    SoundSourcePluginAPI_getSoundSourceProviderFunc m_getSoundSourceProviderFunc;
+    SoundSourcePluginAPI_createSoundSourceProviderFunc m_createSoundSourceProviderFunc;
+    SoundSourcePluginAPI_destroySoundSourceProviderFunc m_destroySoundSourceProviderFunc;
 };
 
 } // namespace Mixxx

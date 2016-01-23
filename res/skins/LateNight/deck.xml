@@ -23,21 +23,19 @@
                                    <PushButton>
                                       <Size>16f,16f</Size>
                                       <ObjectName>PitchTweakButton</ObjectName>
-                                      <NumberStates>2</NumberStates>
+                                      <NumberStates>1</NumberStates>
                                       <State>
                                         <Number>0</Number>
-                                        <Text>&#9664;</Text>
-                                      </State>
-                                      <State>
-                                        <Number>1</Number>
-                                        <Text>&#9664;</Text>
+                                        <Unpressed>btn_prev.png</Unpressed>
+                                        <Pressed>btn_prev_down.png</Pressed>
                                       </State>
                                       <Connection>
-                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_down_small</ConfigKey>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_down</ConfigKey>
                                         <ButtonState>LeftButton</ButtonState>
                                       </Connection>
                                       <Connection>
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_down_small</ConfigKey>
+                                        <ButtonState>RightButton</ButtonState>
                                       </Connection>
                                    </PushButton>
                                    <PushButton>
@@ -67,21 +65,19 @@
                                    <PushButton>
                                       <Size>16f,16f</Size>
                                       <ObjectName>PitchTweakButton</ObjectName>
-                                      <NumberStates>2</NumberStates>
+                                      <NumberStates>1</NumberStates>
                                       <State>
                                         <Number>0</Number>
-                                        <Text>&#9654;</Text>
-                                      </State>
-                                      <State>
-                                        <Number>1</Number>
-                                        <Text>&#9654;</Text>
+                                        <Unpressed>btn_next.png</Unpressed>
+                                        <Pressed>btn_next_down.png</Pressed>
                                       </State>
                                       <Connection>
-                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up</ConfigKey>
                                         <ButtonState>LeftButton</ButtonState>
                                       </Connection>
                                       <Connection>
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>
+                                        <ButtonState>RightButton</ButtonState>
                                       </Connection>
                                   </PushButton>
                                </Children>
@@ -94,7 +90,7 @@
                               <ObjectName>TextColor<Variable name="channum" /></ObjectName>
                               <Style>QLabel { qproperty-alignment: 'AlignCenter';
                                   font: bold 13px/16px Lucida Grande, Lucida Sans
-                                  Unicode, Arial, Verdana, sans-serif;
+                                  Unicode, Segoe UI, Arial, Verdana, sans-serif;
                                   background-color: transparent; padding: 0px; margin: 0px;}
                               </Style>
                               <Group>[Channel<Variable name="channum"/>]</Group>
@@ -108,13 +104,13 @@
                            widget group and put the bpm pushbutton on top of the display. -->
                            <WidgetGroup>
                                <ObjectName>BpmContainer</ObjectName>
-                               <Size>60,16</Size>
+                               <Size>60,22</Size>
                                <Children>
                                    <NumberBpm>
                                       <ObjectName>BpmTextColor<Variable name="channum" /></ObjectName>
                                       <TooltipId>visual_bpm</TooltipId>
                                       <Pos>0,0</Pos>
-                                      <Size>60,16</Size>
+                                      <Size>60,22</Size>
                                       <Channel>
                                           <Variable name="channum" />
                                       </Channel>
@@ -135,7 +131,7 @@
                                         <Text></Text>
                                       </State>
                                       <Pos>0,0</Pos>
-                                      <Size>60,16</Size>
+                                      <Size>60,22</Size>
                                       <Connection>
                                           <ConfigKey>[Channel<Variable name="channum" />],bpm_tap</ConfigKey>
                                           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>

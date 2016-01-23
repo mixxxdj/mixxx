@@ -107,6 +107,33 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         int minorVersion = 0;
         if (version == QGLFormat::OpenGL_Version_None) {
             m_openGLVersion = "None";
+// Flags introduced in Qt 5.2.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+        } else if (version & QGLFormat::OpenGL_Version_4_3) {
+            majorVersion = 4;
+            minorVersion = 3;
+        } else if (version & QGLFormat::OpenGL_Version_4_2) {
+            majorVersion = 4;
+            minorVersion = 2;
+        } else if (version & QGLFormat::OpenGL_Version_4_1) {
+            majorVersion = 4;
+            minorVersion = 1;
+#endif
+// Flags introduced in Qt 4.7.
+#if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
+        } else if (version & QGLFormat::OpenGL_Version_4_0) {
+            majorVersion = 4;
+            minorVersion = 0;
+        } else if (version & QGLFormat::OpenGL_Version_3_3) {
+            majorVersion = 3;
+            minorVersion = 3;
+        } else if (version & QGLFormat::OpenGL_Version_3_2) {
+            majorVersion = 3;
+            minorVersion = 2;
+        } else if (version & QGLFormat::OpenGL_Version_3_1) {
+            majorVersion = 3;
+            minorVersion = 1;
+#endif
         } else if (version & QGLFormat::OpenGL_Version_3_0) {
             majorVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_2_1) {
@@ -494,8 +521,12 @@ void WaveformWidgetFactory::swap() {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 if (pWaveformWidget->getWidth() > 0) {
                     QGLWidget* glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
-                    if (glw) {
-                        m_vsyncThread->swapGl(glw, i);
+                    // Don't swap invalid or invisible widgets. Prevents
+                    // continuous log spew of "QOpenGLContext::swapBuffers()
+                    // called with non-exposed window, behavior is undefined" on
+                    // Qt5.
+                    if (glw && glw->isValid() && glw->isVisible()) {
+                        VSyncThread::swapGl(glw, i);
                     }
                 }
 

@@ -27,15 +27,12 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
-        const QString& trackLocation,
+        const QFileInfo& fileInfo,
         SecurityTokenPointer pToken) {
-    SoundSourceProxy proxy(trackLocation, pToken);
-    QImage coverArt;
-    if (OK == proxy.parseTrackMetadataAndCoverArt(nullptr, &coverArt)) {
-        return coverArt;
-    } else {
-        return QImage();
-    }
+    // TODO(uklotzde): Resolve the TrackPointer from the track cache
+    // to avoid accessing reading the file while it is written.
+    TrackPointer pTrack(new TrackInfoObject(fileInfo, pToken));
+    return SoundSourceProxy(pTrack).parseCoverImage();
 }
 
 //static
@@ -70,8 +67,11 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(
             cover, true);
         return QImage(coverPath);
+    } else if (info.type == CoverInfo::NONE) {
+        return QImage();
     } else {
-        qDebug() << "CoverArtUtils::loadCover bad type";
+        qDebug() << "CoverArtUtils::loadCover unhandled type";
+        DEBUG_ASSERT(false);
         return QImage();
     }
 }

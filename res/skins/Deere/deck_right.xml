@@ -27,7 +27,20 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:deck_text_row.xml"/>
-          <Template src="skin:deck_visual_row.xml"/>
+          <!--Hides if the stacked waveforms option is activated in the skin settings -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:deck_visual_row.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
           <Template src="skin:deck_overview_row.xml"/>
           <Template src="skin:deck_controls_row.xml"/>
         </Children>

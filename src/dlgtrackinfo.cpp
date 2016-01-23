@@ -3,9 +3,9 @@
 
 #include "dlgtrackinfo.h"
 #include "trackinfoobject.h"
+#include "soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "library/dao/cue.h"
 
 const int kFilterLength = 80;
 const int kMinBPM = 30;
@@ -153,15 +153,17 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtComment->setPlainText(pTrack->getComment());
     spinBpm->setValue(pTrack->getBpm());
     // Non-editable fields
-    txtDuration->setText(pTrack->getDurationStr());
+    txtDuration->setText(pTrack->getDurationText());
     txtLocation->setPlainText(pTrack->getLocation());
     txtType->setText(pTrack->getType());
-    txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
-    txtBpm->setText(pTrack->getBpmStr());
+    txtBitrate->setText(QString(pTrack->getBitrateText()) + (" ") + tr("kbps"));
+    txtBpm->setText(pTrack->getBpmText());
     txtKey->setText(pTrack->getKeyText());
+    const Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+    txtReplayGain->setText(Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
     BeatsPointer pBeats = pTrack->getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
-    bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
+    bool enableBpmEditing = !pTrack->isBpmLocked() && beatsSupportsSet;
     spinBpm->setEnabled(enableBpmEditing);
     bpmTap->setEnabled(enableBpmEditing);
     bpmDouble->setEnabled(enableBpmEditing);
@@ -170,9 +172,9 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmThreeFourth->setEnabled(enableBpmEditing);
 
     m_loadedCoverInfo = pTrack->getCoverInfo();
-    int reference = pTrack->getId();
+    int reference = pTrack->getId().toInt();
     m_loadedCoverInfo.trackLocation = pTrack->getLocation();
-    m_pWCoverArtLabel->setCoverArt(pTrack, m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo.trackLocation, m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         pCache->requestCover(m_loadedCoverInfo, this, reference);
@@ -203,10 +205,10 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
                                   QPixmap pixmap, bool fromCache) {
     Q_UNUSED(fromCache);
     if (pRequestor == this && m_pLoadedTrack &&
-            m_pLoadedTrack->getId() == requestReference) {
+            m_pLoadedTrack->getId().toInt() == requestReference) {
         qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
                  << pixmap.size();
-        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCoverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack->getLocation(), m_loadedCoverInfo, pixmap);
     }
 }
 
@@ -227,7 +229,7 @@ void DlgTrackInfo::slotCoverArtSelected(const CoverArt& art) {
     // TODO(rryan) don't use track ID as a reference
     int reference = 0;
     if (m_pLoadedTrack) {
-        reference = m_pLoadedTrack->getId();
+        reference = m_pLoadedTrack->getId().toInt();
         m_loadedCoverInfo.trackLocation = m_pLoadedTrack->getLocation();
     }
     CoverArtCache* pCache = CoverArtCache::instance();
@@ -262,21 +264,21 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     int sampleRate = pTrack->getSampleRate();
 
-    QList<Cue*> listPoints;
-    const QList<Cue*>& cuePoints = pTrack->getCuePoints();
-    QListIterator<Cue*> it(cuePoints);
+    QList<CuePointer> listPoints;
+    const QList<CuePointer> cuePoints = pTrack->getCuePoints();
+    QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
-        Cue* pCue = it.next();
+        CuePointer pCue = it.next();
         if (pCue->getType() == Cue::CUE || pCue->getType() == Cue::LOAD) {
             listPoints.push_back(pCue);
         }
     }
-    it = QListIterator<Cue*>(listPoints);
+    it = QListIterator<CuePointer>(listPoints);
     cueTable->setSortingEnabled(false);
     int row = 0;
 
     while (it.hasNext()) {
-        Cue* pCue = it.next();
+        CuePointer pCue(it.next());
 
         QString rowStr = QString("%1").arg(row);
 
@@ -343,7 +345,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
     m_pLoadedTrack->setComment(txtComment->toPlainText());
 
-    if (!m_pLoadedTrack->hasBpmLock()) {
+    if (!m_pLoadedTrack->isBpmLocked()) {
         m_pLoadedTrack->setBpm(spinBpm->value());
     }
 
@@ -357,8 +359,8 @@ void DlgTrackInfo::saveTrack() {
             continue;
 
         int oldRow = rowItem->data(Qt::DisplayRole).toInt();
-        Cue* pCue = m_cueMap.value(oldRow, NULL);
-        if (pCue == NULL) {
+        CuePointer pCue(m_cueMap.value(oldRow, CuePointer()));
+        if (!pCue) {
             continue;
         }
 
@@ -378,7 +380,7 @@ void DlgTrackInfo::saveTrack() {
         pCue->setLabel(label);
     }
 
-    QMutableHashIterator<int,Cue*> it(m_cueMap);
+    QMutableHashIterator<int,CuePointer> it(m_cueMap);
     // Everything that was not processed above was removed.
     while (it.hasNext()) {
         it.next();
@@ -389,7 +391,7 @@ void DlgTrackInfo::saveTrack() {
         if (updatedRows.contains(oldRow)) {
             continue;
         }
-        Cue* pCue = it.value();
+        CuePointer pCue(it.value());
         it.remove();
         qDebug() << "Deleting cue" << pCue->getId() << pCue->getHotCue();
         m_pLoadedTrack->removeCue(pCue);
@@ -434,13 +436,14 @@ void DlgTrackInfo::clear() {
     txtLocation->setPlainText("");
     txtBitrate->setText("");
     txtBpm->setText("");
+    txtReplayGain->setText("");
 
     m_cueMap.clear();
     cueTable->clearContents();
     cueTable->setRowCount(0);
 
     m_loadedCoverInfo = CoverInfo();
-    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(QString(), m_loadedCoverInfo, QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {
@@ -474,8 +477,13 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
 
 void DlgTrackInfo::reloadTrackMetadata() {
     if (m_pLoadedTrack) {
+        // Allocate a temporary track object for reading the metadata.
+        // We cannot reuse m_pLoadedTrack, because it might already been
+        // modified and we want to read fresh metadata directly from the
+        // file. Otherwise the changes in m_pLoadedTrack would be lost.
         TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
                                                 m_pLoadedTrack->getSecurityToken()));
+        SoundSourceProxy(pTrack).loadTrackMetadata();
         populateFields(pTrack);
     }
 }

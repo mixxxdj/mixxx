@@ -143,6 +143,17 @@ QString KeyUtils::keyToString(ChromaticKey key,
 }
 
 // static
+QString KeyUtils::getGlobalKeyText(const Keys& keys, KeyNotation notation) {
+    const mixxx::track::io::key::ChromaticKey globalKey(keys.getGlobalKey());
+    if (globalKey != mixxx::track::io::key::INVALID) {
+        return keyToString(globalKey, notation);
+    } else {
+        // Fall back on text global name
+        return keys.getGlobalKeyText();
+    }
+}
+
+// static
 ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
     QString trimmed = text.trimmed();
 

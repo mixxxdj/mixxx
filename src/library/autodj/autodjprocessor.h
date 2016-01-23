@@ -5,12 +5,12 @@
 #include <QString>
 #include <QModelIndexList>
 
-#include "util.h"
-#include "trackinfoobject.h"
 #include "configobject.h"
-#include "library/playlisttablemodel.h"
-#include "engine/enginechannel.h"
 #include "controlobjectslave.h"
+#include "engine/enginechannel.h"
+#include "library/playlisttablemodel.h"
+#include "trackinfoobject.h"
+#include "util/class.h"
 
 class ControlPushButton;
 class TrackCollection;

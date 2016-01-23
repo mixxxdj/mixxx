@@ -2,7 +2,6 @@
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
-#include "transposeproxymodel.h"
 #include "widget/wanalysislibrarytableview.h"
 #include "library/trackcollection.h"
 #include "dlganalysis.h"
@@ -113,15 +112,14 @@ void DlgAnalysis::analyze() {
     if (m_bAnalysisActive) {
         emit(stopAnalysis());
     } else {
-        QList<int> trackIds;
+        QList<TrackId> trackIds;
 
         QModelIndexList selectedIndexes = m_pAnalysisLibraryTableView->selectionModel()->selectedRows();
         foreach(QModelIndex selectedIndex, selectedIndexes) {
-            bool ok;
-            int trackId = selectedIndex.sibling(
+            TrackId trackId(selectedIndex.sibling(
                 selectedIndex.row(),
-                m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data().toInt(&ok);
-            if (ok) {
+                m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data());
+            if (trackId.isValid()) {
                 trackIds.append(trackId);
             }
         }

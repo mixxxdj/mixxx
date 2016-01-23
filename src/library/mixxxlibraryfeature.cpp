@@ -53,6 +53,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_BPM_LOCK
             << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_BITRATE
+            << "library." + LIBRARYTABLE_REPLAYGAIN
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_DATETIMEADDED
             << "track_locations.location"
@@ -88,16 +89,16 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
             pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
-    connect(&m_trackDao, SIGNAL(trackDirty(int)),
-            pBaseTrackCache, SLOT(slotTrackDirty(int)));
-    connect(&m_trackDao, SIGNAL(trackClean(int)),
-            pBaseTrackCache, SLOT(slotTrackClean(int)));
-    connect(&m_trackDao, SIGNAL(trackChanged(int)),
-            pBaseTrackCache, SLOT(slotTrackChanged(int)));
-    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<int>)),
-            pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)));
-    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<int>)),
-            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)));
+    connect(&m_trackDao, SIGNAL(trackDirty(TrackId)),
+            pBaseTrackCache, SLOT(slotTrackDirty(TrackId)));
+    connect(&m_trackDao, SIGNAL(trackClean(TrackId)),
+            pBaseTrackCache, SLOT(slotTrackClean(TrackId)));
+    connect(&m_trackDao, SIGNAL(trackChanged(TrackId)),
+            pBaseTrackCache, SLOT(slotTrackChanged(TrackId)));
+    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
+            pBaseTrackCache, SLOT(slotTracksAdded(QSet<TrackId>)));
+    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<TrackId>)),
+            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<TrackId>)));
     connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
             pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
 
@@ -180,7 +181,7 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
         QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
         // Adds track, does not insert duplicates, handles unremoving logic.
-        QList<int> trackIds = m_trackDao.addTracks(files, true);
+        QList<TrackId> trackIds = m_trackDao.addTracks(files, true);
         return trackIds.size() > 0;
     }
 }

@@ -1,5 +1,6 @@
 #include "library/scanner/importfilestask.h"
 
+#include "soundsourceproxy.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/coverartutils.h"
 #include "util/timer.h"
@@ -12,8 +13,10 @@ ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
                                  const QLinkedList<QFileInfo>& filesToImport,
                                  const QLinkedList<QFileInfo>& possibleCovers,
                                  SecurityTokenPointer pToken)
-        : ScannerTask(pScanner, scannerGlobal), m_dirPath(dirPath),
-          m_prevHashExists(prevHashExists), m_newHash(newHash),
+        : ScannerTask(pScanner, scannerGlobal),
+          m_dirPath(dirPath),
+          m_prevHashExists(prevHashExists),
+          m_newHash(newHash),
           m_filesToImport(filesToImport),
           m_possibleCovers(possibleCovers),
           m_pToken(pToken) {
@@ -46,11 +49,16 @@ void ImportFilesTask::run() {
             // without checking if we have cover art that is USER_SELECTED. If
             // this changes in the future you MUST check that the cover art is
             // not USER_SELECTED first.
-            TrackPointer pTrack = TrackPointer(
-                new TrackInfoObject(filePath, m_pToken, true, true));
+            TrackPointer pTrack(
+                new TrackInfoObject(filePath, m_pToken));
+            SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
 
             // If cover art is not found in the track metadata, populate from
             // possibleCovers.
+            // This is a new (never before seen) track so it is safe
+            // to parse cover art without checking if we have cover art
+            // that is USER_SELECTED. If this changes in the future you
+            // MUST check that the cover art is not USER_SELECTED first.
             if (pTrack->getCoverArt().image.isNull()) {
                 CoverArt art = CoverArtUtils::selectCoverArtForTrack(
                     pTrack.data(), m_possibleCovers);

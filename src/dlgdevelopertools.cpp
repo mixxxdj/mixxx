@@ -128,13 +128,17 @@ void DlgDeveloperTools::slotControlDump() {
     QString dumpFileName = CmdlineArgs::Instance().getSettingsPath() +
             "/co_dump_" + timestamp + ".csv";
     QFile dumpFile;
+    // Note: QFile is closed if it falls out of scope
     dumpFile.setFileName(dumpFileName);
-    dumpFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    if (!dumpFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "open" << dumpFileName << "failed";
+        return;
+    }
 
     QList<QSharedPointer<ControlDoublePrivate> > controlsList;
     ControlDoublePrivate::getControls(&controlsList);
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
-            it != controlsList.end(); ++it) {
+    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it =
+            controlsList.begin(); it != controlsList.end(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             QString line = pControl->getKey().group + "," +

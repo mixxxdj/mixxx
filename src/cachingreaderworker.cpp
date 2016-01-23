@@ -3,7 +3,6 @@
 #include <QMutexLocker>
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
 
 #include "cachingreaderworker.h"
 #include "soundsourceproxy.h"
@@ -131,7 +130,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     }
 
     Mixxx::AudioSourceConfig audioSrcCfg;
-    audioSrcCfg.channelCountHint = CachingReaderChunk::kChannels;
+    audioSrcCfg.setChannelCount(CachingReaderChunk::kChannels);
     m_pAudioSource = openAudioSourceForReading(pTrack, audioSrcCfg);
     if (m_pAudioSource.isNull()) {
         m_maxReadableFrameIndex = Mixxx::AudioSource::getMinFrameIndex();
@@ -166,7 +165,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     const SINT sampleCount =
             CachingReaderChunk::frames2samples(
                     m_pAudioSource->getFrameCount());
-    emit(trackLoaded(pTrack, m_pAudioSource->getFrameRate(), sampleCount));
+    emit(trackLoaded(pTrack, m_pAudioSource->getSamplingRate(), sampleCount));
 }
 
 void CachingReaderWorker::quitWait() {

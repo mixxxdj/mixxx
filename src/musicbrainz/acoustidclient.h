@@ -6,7 +6,7 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #ifndef ACOUSTIDCLIENT_H
 #define ACOUSTIDCLIENT_H
 
@@ -14,7 +14,7 @@
 #include <QObject>
 #include <QtNetwork>
 
-#include "network.h"
+#include "musicbrainz/network.h"
 #include "trackinfoobject.h"
 
 class QXmlStreamReader;

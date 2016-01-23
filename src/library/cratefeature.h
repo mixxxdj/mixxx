@@ -42,11 +42,12 @@ class CrateFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
 
   signals:
-    void analyzeTracks(QList<int>);
+    void analyzeTracks(QList<TrackId>);
 
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
+    void activateCrate(int crateId);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
@@ -58,9 +59,12 @@ class CrateFeature : public LibraryFeature {
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
+    // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
+    void slotExportTrackFiles();
     void slotAnalyzeCrate();
-    void slotCrateTableChanged(int playlistId);
-    void slotCrateTableRenamed(int playlistId, QString a_strName);
+    void slotCrateTableChanged(int crateId);
+    void slotCrateContentChanged(int crateId);
+    void slotCrateTableRenamed(int crateId, QString a_strName);
     void htmlLinkClicked(const QUrl& link);
 
   private slots:
@@ -70,9 +74,13 @@ class CrateFeature : public LibraryFeature {
   private:
     QString getRootViewHtml() const;
     QModelIndex constructChildModel(int selected_id);
+    void updateChildModel(int selected_id);
     void clearChildModel();
     void buildCrateList();
     int crateIdFromIndex(QModelIndex index);
+    // Get the QModelIndex of a crate based on its id.  Returns QModelIndex()
+    // on failure.
+    QModelIndex indexFromCrateId(int crateId);
 
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
@@ -86,6 +94,7 @@ class CrateFeature : public LibraryFeature {
 #endif // __AUTODJCRATES__
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
+    QAction *m_pExportTrackFilesAction;
     QAction *m_pAnalyzeCrateAction;
     QList<QPair<int, QString> > m_crateList;
     CrateTableModel m_crateTableModel;

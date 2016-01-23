@@ -50,10 +50,10 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
     QStringList thisReleaseDevelopers;
     thisReleaseDevelopers
             << "RJ Ryan"
-            << "Sean Pappalardo"
-            << "S. Brandt"
             << "Owen Williams"
+            << "Sean Pappalardo"
             << "Daniel Sch&uuml;rmann"
+            << "S. Brandt"
             << "Ilkka Tuohela"
             << "Max Linke"
             << "Marcos Cardinot"
@@ -112,11 +112,19 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
             << "Thorsten Munsch"
             << "Emile Vrijdags"
             << "Be"
-            << "Neale Pickett";
+            << "Neale Pickett"
+            << "St&eacute;phane Guillou"
+            << "Russ Mannex"
+            << "Brendan Austin"
+            << "Lorenz Drescher"
+            << "David Guglielmi"
+            << "JAmes Atwill"
+            << "Chlo&eacute; Avrillon";
 
     QStringList specialThanks;
     specialThanks
             << "Mark Hills"
+            << "Oscillicious"
             << "Vestax"
             << "Stanton"
             << "Hercules"
@@ -240,6 +248,7 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
             << "Florian Mahlknecht"
             << "Ben Clark"
             << "Tom Gascoigne"
+            << "Neale Pickett"
             << "Aaron Mavrinac"
             << "Markus H&auml;rer"
             << "Scott Stewart"

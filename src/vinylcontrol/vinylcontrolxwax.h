@@ -3,7 +3,7 @@
 
 #include <QTime>
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/steadypitch.h"
 #include "util/types.h"
@@ -116,8 +116,8 @@ class VinylControlXwax : public VinylControl {
     bool m_bTrackSelectMode;
 
     // Controls for manipulating the library.
-    ControlObjectThread* m_pControlTrackSelector;
-    ControlObjectThread* m_pControlTrackLoader;
+    ControlObjectSlave* m_pControlTrackSelector;
+    ControlObjectSlave* m_pControlTrackLoader;
 
     // The previous and current track select position. Used for track selection
     // using the control region.

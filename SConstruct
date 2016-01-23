@@ -43,6 +43,7 @@ available_features = [features.Mad,
                       features.Shoutcast,
                       features.Opus,
                       features.Profiling,
+                      features.BuildTime,
                       features.QDebug,
                       features.Verbose,
                       features.Optimize,
@@ -61,6 +62,9 @@ available_features = [features.Mad,
                       features.AsmLib,
                       features.IPod,
                       features.FFMPEG,
+
+		     # Experimental features
+		     features.OpenGLES
                       ]
 
 build = mixxx.MixxxBuild(target, machine, build_type,
@@ -98,16 +102,6 @@ mixxxminimal_plugins = SConscript(
 # targets for each platform.
 SConscript(File('src/SConscript'), variant_dir=Dir(build.build_dir), duplicate=0,
            exports=['build', 'sources', 'soundsource_plugins', 'mixxxminimal_plugins'])
-
-# For convenience, copy the Mixxx binary out of the build directory to the
-# root. Don't do it on windows because the binary can't run on its own and needs
-# the DLLs present with it.
-if build.platform_is_osx:
-    Command("mixxx", os.path.join(build.build_dir, "Mixxx"), Copy("$TARGET", "$SOURCE"))
-elif not build.platform_is_windows:
-    Command("mixxx", os.path.join(build.build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
-
-
 
 #On OS X, if the bundle has been built, copy it up:
 #Command("Mixxx.app", os.path.join(build.build_dir, "Mixxx.app"), Copy("$TARGET", "$SOURCE"))

@@ -79,6 +79,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
+    menu.addAction(m_pExportTrackFilesAction);
     menu.exec(globalPos);
 }
 
@@ -89,7 +90,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
 
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
         m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
@@ -102,9 +103,9 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     }
 
     // remove tracks that could not be added
-    for (int trackId = 0; trackId < trackIds.size(); ++trackId) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
+    for (int trackIdIndex = 0; trackIdIndex < trackIds.size(); ++trackIdIndex) {
+        if (!trackIds.at(trackIdIndex).isValid()) {
+            trackIds.removeAt(trackIdIndex--);
         }
     }
 
@@ -167,7 +168,7 @@ void PlaylistFeature::buildPlaylistList() {
             playlistTableModel.index(row, durationColumn)).toInt();
         m_playlistList.append(qMakePair(id, QString("%1 (%2) %3")
                                         .arg(name, QString::number(count),
-                                             Time::formatSeconds(duration, false))));
+                                             Time::formatSeconds(duration))));
     }
 }
 
@@ -192,6 +193,21 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         m_lastRightClickedIndex = constructChildModel(playlistId);
     }
 }
+
+void PlaylistFeature::slotPlaylistContentChanged(int playlistId) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistContentChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        updateChildModel(playlistId);
+    }
+}
+
+
 
 void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
                                                QString /* a_strName */) {

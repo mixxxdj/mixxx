@@ -17,8 +17,8 @@
 #include "controlobjectslave.h"
 
 #include "mixxxkeyboard.h"
-#include "playermanager.h"
-#include "basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "mixer/basetrackplayer.h"
 #include "library/library.h"
 #include "util/xml.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -26,6 +26,7 @@
 
 #include "skin/colorschemeparser.h"
 #include "skin/skincontext.h"
+#include "skin/launchimage.h"
 
 #include "effects/effectsmanager.h"
 
@@ -122,6 +123,18 @@ ControlObject* LegacySkinParser::controlFromConfigNode(QDomElement element,
     bool bPersist = m_pContext->selectAttributeBool(keyElement, "persist", false);
 
     return controlFromConfigKey(key, bPersist, created);
+}
+
+LegacySkinParser::LegacySkinParser()
+        : m_pConfig(NULL),
+          m_pKeyboard(NULL),
+          m_pPlayerManager(NULL),
+          m_pControllerManager(NULL),
+          m_pLibrary(NULL),
+          m_pVCManager(NULL),
+          m_pEffectsManager(NULL),
+          m_pParent(NULL),
+          m_pContext(NULL) {
 }
 
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
@@ -382,6 +395,30 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     }
     return widgets[0];
 }
+
+LaunchImage* LegacySkinParser::parseLaunchImage(QString skinPath, QWidget* pParent) {
+    QDomElement skinDocument = openSkin(skinPath);
+    if (skinDocument.isNull()) {
+        return NULL;
+    }
+
+    QString nodeName = skinDocument.nodeName();
+    if (nodeName != "skin") {
+        return NULL;
+    }
+
+    // This allows image urls like
+    // url(skin:/style/mixxx-icon-logo-symbolic.svg);
+    QStringList skinPaths(skinPath);
+    QDir::setSearchPaths("skin", skinPaths);
+
+    QString styleSheet = parseLaunchImageStyle(skinDocument);
+    LaunchImage* pLaunchImage = new LaunchImage(pParent, styleSheet);
+    setupSize(skinDocument, pLaunchImage);
+    return pLaunchImage;
+}
+
+
 
 QList<QWidget*> wrapWidget(QWidget* pWidget) {
     QList<QWidget*> result;
@@ -988,6 +1025,7 @@ QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
         return NULL;
 
     WStarRating* p = new WStarRating(pSafeChannelStr, m_pParent);
+    commonWidgetSetup(node, p, false);
     p->setup(node, *m_pContext);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -1834,12 +1872,8 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             QString property = m_pContext->selectString(con, "BindProperty");
             //qDebug() << "Making property connection for" << property;
 
-            ControlObjectSlave* pControlWidget =
-                    new ControlObjectSlave(control->getKey(),
-                                           pWidget->toQWidget());
-
             ControlWidgetPropertyConnection* pConnection =
-                    new ControlWidgetPropertyConnection(pWidget, pControlWidget,
+                    new ControlWidgetPropertyConnection(pWidget, control->getKey(),
                                                         pTransformer, property);
             pWidget->addPropertyConnection(pConnection);
 
@@ -1906,12 +1940,8 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 emitOption |= ControlParameterWidgetConnection::EMIT_DEFAULT;
             }
 
-            // Connect control proxy to widget. Parented to pWidget so it is not
-            // leaked.
-            ControlObjectSlave* pControlWidget = new ControlObjectSlave(
-                    control->getKey(), pWidget->toQWidget());
             ControlParameterWidgetConnection* pConnection = new ControlParameterWidgetConnection(
-                    pWidget, pControlWidget, pTransformer,
+                    pWidget, control->getKey(), pTransformer,
                     static_cast<ControlParameterWidgetConnection::DirectionOption>(directionOption),
                     static_cast<ControlParameterWidgetConnection::EmitOption>(emitOption));
 
@@ -1939,6 +1969,8 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 pWidget->addRightConnection(pConnection);
                 break;
             default:
+                // can't happen. Nothing else is returned by parseButtonState();
+                DEBUG_ASSERT(false);
                 break;
             }
 
@@ -2057,4 +2089,8 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget, const QString&
     tooltip += ": ";
     tooltip += nativeShortcut;
     pWidget->appendBaseTooltip(tooltip);
+}
+
+QString LegacySkinParser::parseLaunchImageStyle(QDomNode node) {
+    return m_pContext->selectString(node, "LaunchImageStyle");
 }

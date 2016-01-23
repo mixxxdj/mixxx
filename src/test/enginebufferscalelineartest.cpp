@@ -4,13 +4,12 @@
 #include <QtDebug>
 #include <QVector>
 
-#include "util/types.h"
-#include "util/math.h"
-#include "engine/readaheadmanager.h"
 #include "engine/enginebufferscalelinear.h"
-#include "sampleutil.h"
-
+#include "engine/readaheadmanager.h"
 #include "test/mixxxtest.h"
+#include "util/math.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 using ::testing::StrictMock;
 using ::testing::Return;

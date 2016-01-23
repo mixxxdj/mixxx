@@ -39,12 +39,13 @@ public:
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
     void slotPlaylistTableChanged(int playlistId);
+    void slotPlaylistContentChanged(int playlistId);
     void slotPlaylistTableRenamed(int playlistId, QString a_strName);
 
   private:
     QString getRootViewHtml() const;
 
-    QLinkedList<int> m_recentTracks;
+    QLinkedList<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pGetNewPlaylist;
     int m_playlistId;

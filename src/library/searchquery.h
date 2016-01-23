@@ -2,6 +2,7 @@
 #define SEARCHQUERY_H
 
 #include <vector>
+#include <utility>
 
 #include <QList>
 #include <QSqlDatabase>

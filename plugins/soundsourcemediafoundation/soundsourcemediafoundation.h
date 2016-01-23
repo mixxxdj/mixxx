@@ -28,6 +28,8 @@ class IMFSourceReader;
 class IMFMediaType;
 class IMFMediaSource;
 
+namespace Mixxx {
+
 class SoundSourceMediaFoundation : public Mixxx::SoundSourcePlugin {
 public:
     explicit SoundSourceMediaFoundation(QUrl url);
@@ -43,6 +45,7 @@ private:
     Result tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) override;
 
     bool configureAudioStream(const Mixxx::AudioSourceConfig& audioSrcCfg);
+    bool readProperties();
 
     void copyFrames(CSAMPLE *dest, SINT *destFrames, const CSAMPLE *src,
             SINT srcFrames);
@@ -50,8 +53,6 @@ private:
     HRESULT m_hrCoInitialize;
     HRESULT m_hrMFStartup;
     IMFSourceReader *m_pReader;
-    IMFMediaType *m_pAudioType;
-    wchar_t *m_wcFilename;
     SINT m_nextFrame;
     CSAMPLE *m_leftoverBuffer;
     SINT m_leftoverBufferSize;
@@ -63,16 +64,21 @@ private:
     bool m_seeking;
 };
 
-class SoundSourceProviderMediaFoundation: public Mixxx::SoundSourceProvider {
+class SoundSourceProviderMediaFoundation: public SoundSourceProvider {
 public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;
 
-    Mixxx::SoundSourcePointer newSoundSource(const QUrl& url) override;
+    SoundSourcePointer newSoundSource(const QUrl& url) override;
 };
 
+} // namespace Mixxx
+
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider();
+Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*);
 
 #endif // SOUNDSOURCEMEDIAFOUNDATION_H

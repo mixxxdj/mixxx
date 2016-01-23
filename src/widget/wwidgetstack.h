@@ -8,7 +8,7 @@
 #include <QEvent>
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "widget/wbasewidget.h"
 
 class WidgetStackControlListener : public QObject {
@@ -32,7 +32,7 @@ class WidgetStackControlListener : public QObject {
     void slotValueChanged(double v);
 
   private:
-    ControlObjectThread m_control;
+    ControlObjectSlave m_control;
     const int m_index;
 };
 
@@ -79,9 +79,9 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
   private:
     QSignalMapper m_showMapper;
     QSignalMapper m_hideMapper;
-    ControlObjectThread m_nextControl;
-    ControlObjectThread m_prevControl;
-    ControlObjectThread m_currentPageControl;
+    ControlObjectSlave m_nextControl;
+    ControlObjectSlave m_prevControl;
+    ControlObjectSlave m_currentPageControl;
 
     // Optional map that defines which page to select if a page gets a hide
     // signal.

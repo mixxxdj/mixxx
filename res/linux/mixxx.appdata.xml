@@ -33,14 +33,15 @@
       <li>ReplayGain volume normalization.</li>
       <li>Automatic crossfading with Auto DJ.</li>
       <li>Skinnable interface with several skins bundled.</li>
-     </ul>
-     <p>For a full list of features go to:
-     <a href="http://mixxx.org/features/" target="_top">http://mixxx.org/features/</a>
+    </ul>
+    <p>For a full list of features go to:
+      <a href="http://mixxx.org/features/" target="_top">http://mixxx.org/features/</a>
+    </p>
   </description>
   <screenshots>
     <screenshot type="default">http://www.mixxx.org/images/press_art/mixxx_1110_default_deere_skin.png</screenshot>
     <caption>Mixxx 1.11.0 with the default Deere skin.</caption>
   </screenshots>
   <url type="homepage">http://mixxx.org</url>
-  <updatecontact>Mixxx Devel <mixxx-devel@lists.sourceforge.net></updatecontact>
+  <updatecontact>mixxx-devel@lists.sourceforge.net</updatecontact>
 </component>

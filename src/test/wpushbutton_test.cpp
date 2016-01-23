@@ -38,7 +38,7 @@ TEST_F(WPushButtonTest, QuickPressNoLatchTest) {
     m_pButton->addLeftConnection(
         new ControlParameterWidgetConnection(
             m_pButton.data(),
-            new ControlObjectSlave(pPushControl->getKey()), NULL,
+            pPushControl->getKey(), NULL,
             ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET,
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
 
@@ -63,7 +63,7 @@ TEST_F(WPushButtonTest, LongPressLatchTest) {
     m_pButton->addLeftConnection(
         new ControlParameterWidgetConnection(
             m_pButton.data(),
-            new ControlObjectSlave(pPushControl->getKey()), NULL,
+            pPushControl->getKey(), NULL,
             ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET,
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
 

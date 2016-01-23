@@ -1,5 +1,6 @@
 #include "sources/soundsourceffmpeg.h"
 
+#include <mutex>
 #include <vector>
 
 #define AUDIOSOURCEFFMPEG_CACHESIZE 1000
@@ -8,14 +9,30 @@
 
 namespace Mixxx {
 
+namespace {
+    std::once_flag initFFmpegLibFlag;
+
+    // This function must be called once during startup.
+    void initFFmpegLib() {
+        av_register_all();
+        avcodec_register_all();
+    }
+} // anonymous namespace
+
+SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
+    std::call_once(initFFmpegLibFlag, initFFmpegLib);
+}
+
 QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     QStringList list;
     AVInputFormat *l_SInputFmt  = NULL;
 
     while ((l_SInputFmt = av_iformat_next(l_SInputFmt))) {
         if (l_SInputFmt->name == NULL) {
-            break;
+            break; // exit loop
         }
+
+        qDebug() << "FFmpeg input format:" << l_SInputFmt->name;
 
         if (!strcmp(l_SInputFmt->name, "flac")) {
             list.append("flac");
@@ -69,8 +86,8 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    const QByteArray qBAFilename(getLocalFileNameBytes());
-    qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
+    const QString localFileName(getLocalFileName());
+    qDebug() << "New SoundSourceFFmpeg :" << localFileName;
 
     DEBUG_ASSERT(!m_pFormatCtx);
     m_pFormatCtx = avformat_alloc_context();
@@ -80,24 +97,39 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         return ERR;
     }
 
-#if LIBAVCODEC_VERSION_INT < 3622144
+    // TODO() why is this required, should't it be a runtime check
+#if LIBAVCODEC_VERSION_INT < 3622144 // 55.69.0
     m_pFormatCtx->max_analyze_duration = 999999999;
+#endif
+
+    // libav replaces open() with ff_win32_open() which accepts a
+    // Utf8 path
+    // see: avformat/os_support.h
+    // The old method defining an URL_PROTOCOL is deprecated
+#if defined(_WIN32) && !defined(__MINGW32CE__)
+    const QByteArray qBAFilename(
+            avformat_version() >= ((52<<16)+(0<<8)+0) ?
+            getLocalFileName().toUtf8() :
+            getLocalFileName().toLocal8Bit());
+#else
+    const QByteArray qBAFilename(getLocalFileName().toLocal8Bit());
 #endif
 
     // Open file and make m_pFormatCtx
     if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), NULL,
                             &l_iFormatOpts) != 0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
         return ERR;
     }
 
-#if LIBAVCODEC_VERSION_INT > 3544932
+    // TODO() why is this required, should't it be a runtime check
+#if LIBAVCODEC_VERSION_INT > 3544932 // 54.23.100
     av_dict_free(&l_iFormatOpts);
 #endif
 
     // Retrieve stream information
     if (avformat_find_stream_info(m_pFormatCtx, NULL) < 0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
         return ERR;
     }
 
@@ -116,7 +148,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (m_iAudioStream == -1) {
         qDebug() <<
                  "SoundSourceFFmpeg::tryOpen: cannot find an audio stream: cannot open"
-                 << qBAFilename;
+                 << localFileName;
         return ERR;
     }
 
@@ -126,12 +158,12 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     // Find the decoder for the audio stream
     if (!(m_pCodec = avcodec_find_decoder(m_pCodecCtx->codec_id))) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find a decoder for" <<
-                 qBAFilename;
+                localFileName;
         return ERR;
     }
 
     if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL)<0) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
         return ERR;
     }
 
@@ -139,11 +171,11 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     m_pResample->openMixxx(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_FLT);
 
     setChannelCount(m_pCodecCtx->channels);
-    setFrameRate(m_pCodecCtx->sample_rate);
+    setSamplingRate(m_pCodecCtx->sample_rate);
     setFrameCount((qint64)round((double)((double)m_pFormatCtx->duration *
                                          (double)m_pCodecCtx->sample_rate) / (double)AV_TIME_BASE));
 
-    qDebug() << "SoundSourceFFmpeg::tryOpen: Samplerate: " << getFrameRate() <<
+    qDebug() << "SoundSourceFFmpeg::tryOpen: Sampling rate: " << getSamplingRate() <<
              ", Channels: " <<
              getChannelCount() << "\n";
     if (getChannelCount() > 2) {
@@ -468,6 +500,11 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
         // Use this Cache object as starting point
         l_SObj = m_SCache[l_lPos];
+        
+        if (l_SObj == NULL) {
+            qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Cache object NULL";
+            return false;
+        }
 
         if (l_pBuffer == NULL) {
             qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Out buffer NULL";
@@ -476,8 +513,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
         while (l_lLeft > 0) {
             // If Cache is running low read more
-            if ((l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) &&
-                    l_bEndOfFile == false) {
+            if ((l_lPos + 5) > m_SCache.size() && l_bEndOfFile == false) {
                 offset = l_SObj->startFrame;
                 // Read 50 frames from current pos. If we hit file end before that
                 // exit

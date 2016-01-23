@@ -3,7 +3,7 @@
 
 #include "sources/soundsourceplugin.h"
 
-#include "singularsamplebuffer.h"
+#include "util/singularsamplebuffer.h"
 
 #ifdef __MP4V2__
 #include <mp4v2/mp4v2.h>
@@ -67,6 +67,9 @@ public:
 } // namespace Mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider();
+Mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(Mixxx::SoundSourceProvider*);
 
 #endif // MIXXX_SOUNDSOURCEM4A_H

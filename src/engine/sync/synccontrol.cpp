@@ -28,11 +28,19 @@ SyncControl::SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfi
           m_masterBpmAdjustFactor(kBpmUnity),
           m_unmultipliedTargetBeatDistance(0.0),
           m_beatDistance(0.0),
-          m_prevLocalBpm(0.0) {
+          m_prevLocalBpm(0.0),
+          m_pBpm(NULL),
+          m_pLocalBpm(NULL),
+          m_pFileBpm(NULL),
+          m_pRateSlider(NULL),
+          m_pRateDirection(NULL),
+          m_pRateRange(NULL),
+          m_pVCEnabled(NULL),
+          m_pSyncPhaseButton(NULL) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
-    m_pPlayButton.reset(new ControlObjectSlave(group, "play", this));
-    m_pPlayButton->connectValueChanged(this, SLOT(slotControlPlay(double)),
+    m_pPlayButton = new ControlObjectSlave(group, "play", this);
+    m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)),
                                        Qt::DirectConnection);
 
     m_pSyncMode.reset(new ControlPushButton(ConfigKey(group, "sync_mode")));
@@ -56,13 +64,13 @@ SyncControl::SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfi
     m_pSyncBeatDistance.reset(
             new ControlObject(ConfigKey(group, "beat_distance")));
 
-    m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
-    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
-                                               Qt::DirectConnection);
+    m_pPassthroughEnabled = new ControlObjectSlave(group, "passthrough", this);
+    m_pPassthroughEnabled->connectValueChanged(
+            SLOT(slotPassthroughChanged(double)), Qt::DirectConnection);
 
-    m_pEjectButton.reset(new ControlObjectSlave(group, "eject", this));
-    m_pEjectButton->connectValueChanged(this, SLOT(slotEjectPushed(double)),
-                                        Qt::DirectConnection);
+    m_pEjectButton = new ControlObjectSlave(group, "eject", this);
+    m_pEjectButton->connectValueChanged(
+            SLOT(slotEjectPushed(double)), Qt::DirectConnection);
 
     // BPMControl and RateControl will be initialized later.
 }
@@ -78,37 +86,37 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     // We set this to change the effective BPM in BpmControl. We do not listen
     // to changes from this control because changes in rate, rate_dir, rateRange
     // and file_bpm result in changes to this control.
-    m_pBpm.reset(new ControlObjectSlave(getGroup(), "bpm", this));
+    m_pBpm = new ControlObjectSlave(getGroup(), "bpm", this);
 
-    m_pLocalBpm.reset(new ControlObjectSlave(getGroup(), "local_bpm", this));
+    m_pLocalBpm = new ControlObjectSlave(getGroup(), "local_bpm", this);
 
-    m_pFileBpm.reset(new ControlObjectSlave(getGroup(), "file_bpm", this));
-    m_pFileBpm->connectValueChanged(this, SLOT(slotFileBpmChanged()),
+    m_pFileBpm = new ControlObjectSlave(getGroup(), "file_bpm", this);
+    m_pFileBpm->connectValueChanged(SLOT(slotFileBpmChanged()),
                                     Qt::DirectConnection);
 
-    m_pRateSlider.reset(new ControlObjectSlave(getGroup(), "rate", this));
-    m_pRateSlider->connectValueChanged(this, SLOT(slotRateChanged()),
+    m_pRateSlider = new ControlObjectSlave(getGroup(), "rate", this);
+    m_pRateSlider->connectValueChanged(SLOT(slotRateChanged()),
                                        Qt::DirectConnection);
 
-    m_pRateDirection.reset(new ControlObjectSlave(getGroup(), "rate_dir", this));
-    m_pRateDirection->connectValueChanged(this, SLOT(slotRateChanged()),
+    m_pRateDirection = new ControlObjectSlave(getGroup(), "rate_dir", this);
+    m_pRateDirection->connectValueChanged(SLOT(slotRateChanged()),
                                           Qt::DirectConnection);
 
-    m_pRateRange.reset(new ControlObjectSlave(getGroup(), "rateRange", this));
-    m_pRateRange->connectValueChanged(this, SLOT(slotRateChanged()),
+    m_pRateRange = new ControlObjectSlave(getGroup(), "rateRange", this);
+    m_pRateRange->connectValueChanged(SLOT(slotRateChanged()),
                                       Qt::DirectConnection);
 
-    m_pSyncPhaseButton.reset(new ControlObjectSlave(getGroup(), "beatsync_phase", this));
+    m_pSyncPhaseButton = new ControlObjectSlave(getGroup(), "beatsync_phase", this);
 
 #ifdef __VINYLCONTROL__
-    m_pVCEnabled.reset(new ControlObjectSlave(
-        getGroup(), "vinylcontrol_enabled", this));
+    m_pVCEnabled = new ControlObjectSlave(
+            getGroup(), "vinylcontrol_enabled", this);
 
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
     DEBUG_ASSERT(m_pVCEnabled->valid());
 
-    m_pVCEnabled->connectValueChanged(this, SLOT(slotVinylControlChanged(double)),
+    m_pVCEnabled->connectValueChanged(SLOT(slotVinylControlChanged(double)),
                                       Qt::DirectConnection);
 #endif
 }

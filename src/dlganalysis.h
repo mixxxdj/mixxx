@@ -47,7 +47,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString player);
-    void analyzeTracks(QList<int> trackIds);
+    void analyzeTracks(QList<TrackId> trackIds);
     void stopAnalysis();
     void trackSelected(TrackPointer pTrack);
 

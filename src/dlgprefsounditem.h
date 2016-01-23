@@ -17,7 +17,7 @@
 #define DLGPREFSOUNDITEM_H
 
 #include "ui_dlgprefsounditem.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class SoundDevice;
 class SoundManagerConfig;

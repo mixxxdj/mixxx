@@ -6,7 +6,6 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
-#include "controlobjectthread.h"
 #include "util/math.h"
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
@@ -62,6 +61,8 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const float kHeightScaleFactor = 255.0 / sqrtf(255 * 255 * 3);
+
+#ifndef __OPENGLES__
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);
@@ -191,5 +192,8 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
+
+#endif
+
     painter->endNativePainting();
 }

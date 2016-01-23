@@ -5,8 +5,8 @@
  *      Author: asantoni
  */
 
-#ifndef CONTROLGROUPDELEGATE_H_
-#define CONTROLGROUPDELEGATE_H_
+#ifndef CONTROLGROUPDELEGATE_H
+#define CONTROLGROUPDELEGATE_H
 
 #include <QAbstractItemModel>
 #include <QItemDelegate>
@@ -53,4 +53,4 @@ private:
 
 };
 
-#endif /* CONTROLGROUPDELEGATE_H_ */
+#endif /* CONTROLGROUPDELEGATE_H */

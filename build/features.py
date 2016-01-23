@@ -6,6 +6,25 @@ from mixxx import Feature
 import SCons.Script as SCons
 import depends
 
+class OpenGLES(Feature):
+	def description(self):
+		return "OpenGL-ES >= 2.0 support [Experimental]"
+
+	def enabled(self, build):
+		build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
+		return int(build.flags['opengles'])
+
+	def add_options(self, build, vars):
+		vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
+
+	def configure(self, build, conf):
+		if not self.enabled(build):
+          		return
+		if build.flags['opengles']:
+			build.env.Append(CPPDEFINES='__OPENGLES__')
+
+	def sources(self, build):
+		return []
 
 class HSS1394(Feature):
     def description(self):
@@ -45,7 +64,7 @@ class HSS1394(Feature):
 
 
 class HID(Feature):
-    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-pre'
+    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-rc1'
 
     def description(self):
         return "HID controller support"
@@ -101,8 +120,9 @@ class HID(Feature):
             sources.append(
                 os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
         elif build.platform_is_linux:
+            # hidapi compiles the libusb implementation by default on Linux
             sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
+                os.path.join(self.HIDAPI_INTERNAL_PATH, 'libusb/hid.c'))
         elif build.platform_is_osx:
             sources.append(
                 os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
@@ -343,7 +363,7 @@ class Vamp(Feature):
     INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
 
     def description(self):
-        return "Vamp Analysers support"
+        return "Vamp Analyzer support"
 
     def enabled(self, build):
         build.flags['vamp'] = util.get_flags(build.env, 'vamp', 1)
@@ -358,6 +378,8 @@ class Vamp(Feature):
         if not self.enabled(build):
             return
 
+        build.env.Append(CPPDEFINES='__VAMP__')
+
         # If there is no system vamp-hostdk installed, then we'll directly link
         # the vamp-hostsdk.
         if not conf.CheckLib(['vamp-hostsdk']):
@@ -367,9 +389,8 @@ class Vamp(Feature):
 
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
-            # Optionally link libdl and libX11. Required for some distros.
+            # Optionally link libdl Required for some distros.
             conf.CheckLib(['dl', 'libdl'])
-            conf.CheckLib(['X11', 'libX11'])
 
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
@@ -380,10 +401,13 @@ class Vamp(Feature):
                 'pkg-config fftw3 --silence-errors --cflags --libs')
 
     def sources(self, build):
-        sources = ['vamp/vampanalyser.cpp',
-                   'vamp/vamppluginloader.cpp',
-                   'analyserbeats.cpp',
-                   'dlgprefbeats.cpp']
+        sources = ['analyzer/vamp/vampanalyzer.cpp',
+                   'analyzer/vamp/vamppluginloader.cpp',
+                   'analyzer/analyzerbeats.cpp',
+                   'analyzer/analyzerkey.cpp',
+                   'dlgprefbeats.cpp',
+                   'dlgprefkey.cpp']
+
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
             sources.extend(path % hostsdk_src_path for path in
@@ -486,7 +510,7 @@ class WavPack(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=False)
+        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=True)
         if not have_wv:
             raise Exception(
                 'Could not find libwavpack, libwv or its development headers.')
@@ -599,6 +623,32 @@ class AsmLib(Feature):
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='/Oi-')
             build.env.Prepend(LIBS='libacof%so' % build.bitwidth)
+
+
+class BuildTime(Feature):
+    def description(self):
+        return "Use __DATE__ and __TIME__"
+
+    def enabled(self, build):
+        build.flags['buildtime'] = util.get_flags(build.env, 'buildtime', 1)
+        if int(build.flags['buildtime']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add(
+            'buildtime', 'Set to 0 to disable build time (__DATE__ and __TIME__) usage.', 1)
+
+    def configure(self, build, conf):
+        # Distributions like openSUSE use tools (e. g. build-compare) to detect
+        # whether a built binary differs from a former build to avoid unneeded
+        # publishing of packages.
+        # If __DATE__ and __TIME__ are used the built binary differs always but
+        # the tools cannot detect the root and publish a new package although
+        # the only change is caused by __DATE__ and __TIME__.
+        # So let distributions disable __DATE__ and __TIME__ via buildtime=0.
+        if not self.enabled(build):
+            build.env.Append(CPPDEFINES='DISABLE_BUILDTIME')
 
 
 class QDebug(Feature):
@@ -727,6 +777,7 @@ class TestSuite(Feature):
 
         env = test_env
         SCons.Export('env')
+        SCons.Export('build')
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
@@ -736,6 +787,12 @@ class TestSuite(Feature):
         test_env['LIB_OUTPUT'] = '#/lib/gmock-1.7.0/lib'
 
         env.SConscript(env.File('SConscript', gmock_dir))
+
+        # Build the benchmark library
+        test_env.Append(CPPPATH="#lib/benchmark/include")
+        benchmark_dir = test_env.Dir("#lib/benchmark")
+        test_env['LIB_OUTPUT'] = '#/lib/benchmark/lib'
+        env.SConscript(env.File('SConscript', benchmark_dir))
 
         return []
 
@@ -801,12 +858,6 @@ class Opus(Feature):
 
         # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
-        if not conf.CheckLib(['opus', 'libopus']):
-            if explicit:
-                raise Exception('Could not find libopus.')
-            else:
-                build.flags['opus'] = 0
-            return
         if not conf.CheckLib(['opusfile', 'libopusfile']):
             if explicit:
                 raise Exception('Could not find libopusfile.')
@@ -926,8 +977,12 @@ class Optimize(Feature):
         return "Optimization and Tuning"
 
     @staticmethod
-    def get_optimization_level():
-        optimize_level = SCons.ARGUMENTS.get('optimize', Optimize.LEVEL_DEFAULT)
+    def get_optimization_level(build):
+        optimize_level = build.env.get('optimize', None)
+        if optimize_level is None:
+            optimize_level = SCons.ARGUMENTS.get('optimize',
+                                                 Optimize.LEVEL_DEFAULT)
+
         try:
             optimize_integer = int(optimize_level)
             if optimize_integer == 0:
@@ -953,7 +1008,7 @@ class Optimize(Feature):
         return optimize_level
 
     def enabled(self, build):
-        build.flags['optimize'] = Optimize.get_optimization_level()
+        build.flags['optimize'] = Optimize.get_optimization_level(build)
         return build.flags['optimize'] != Optimize.LEVEL_OFF
 
     def add_options(self, build, vars):
@@ -1010,7 +1065,10 @@ class Optimize(Feature):
             if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
-                build.env.Append(CCFLAGS='/arch:SSE2')
+                # SSE and SSE2 are core instructions on x64
+                # and consequently raise a warning message from compiler with this flag on x64.
+                if not build.machine_is_64bit:
+                    build.env.Append(CCFLAGS='/arch:SSE2')
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
             elif optimize_level == Optimize.LEVEL_NATIVE:
                 self.status = "native: tuned for this CPU (%s)" % build.machine
@@ -1055,6 +1113,9 @@ class Optimize(Feature):
                         # the sse flags are not set by default on 32 bit builds
                         # but are not supported on arm builds
                         build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = "portable"
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
                 else:
                     self.status = "portable"
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
@@ -1079,6 +1140,9 @@ class Optimize(Feature):
                     # the sse flags are not set by default on 32 bit builds
                     # but are not supported on arm builds
                     build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = "portable"
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
             elif optimize_level == Optimize.LEVEL_LEGACY:
                 if build.architecture_is_x86:
                     self.status = "legacy: pure i386 code"

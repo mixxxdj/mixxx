@@ -369,7 +369,7 @@
 				<MinimumSize>22,</MinimumSize>
 				<Children>
 					<StatusLight>
-						<TooltipId>PeakIndicator</TooltipId>
+						<TooltipId>sampler_PeakIndicator</TooltipId>
 						<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 						<PathBack>btn_clipping_sampler.png</PathBack>
 						<Connection>
@@ -377,7 +377,7 @@
 						</Connection>
 					</StatusLight>
 					<VuMeter>
-						<TooltipId>channel_VuMeter</TooltipId>
+						<TooltipId>sampler_VuMeter</TooltipId>
 						<PathVu>btn_volume_display_sampler_over.png</PathVu>
 						<PathBack>btn_volume_display_sampler.png</PathBack>
 						<Horizontal>false</Horizontal>
