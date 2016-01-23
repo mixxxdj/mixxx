@@ -21,7 +21,7 @@
 
 // Forward declaration(s)
 class Controller;
-class ControlObjectSlave;
+class ControlObjectScript;
 class ControllerEngine;
 
 // ControllerEngineConnection class for closure-compatible engine.connectControl
@@ -111,7 +111,6 @@ class ControllerEngine : public QObject {
     virtual void timerEvent(QTimerEvent *event);
 
   public slots:
-    void slotValueChanged(double value);
     // Evaluate a script file
     bool evaluate(QString filepath);
 
@@ -160,7 +159,7 @@ class ControllerEngine : public QObject {
     bool checkException();
     QScriptEngine *m_pEngine;
 
-    ControlObjectSlave* getControlObjectSlave(QString group, QString name);
+    ControlObjectScript* getControlObjectScript(QString group, QString name);
 
     // Scratching functions & variables
     void scratchProcess(int timerId);
@@ -173,7 +172,7 @@ class ControllerEngine : public QObject {
     QMultiHash<ConfigKey, ControllerEngineConnection> m_connectedControls;
     QList<QString> m_scriptFunctionPrefixes;
     QMap<QString,QStringList> m_scriptErrors;
-    QHash<ConfigKey, ControlObjectSlave*> m_controlCache;
+    QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     struct TimerInfo {
         QScriptValue callback;
         QScriptValue context;

@@ -36,7 +36,7 @@ class ControlObjectSlave : public QObject {
             const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
     // Called from update();
-    inline void emitValueChanged() {
+    virtual void emitValueChanged() {
         emit(valueChanged(get()));
     }
 
@@ -91,7 +91,7 @@ class ControlObjectSlave : public QObject {
             // not know the resulting value so it makes sense that we should emit a
             // general valueChanged() signal even though the change originated from
             // us. For this reason, we provide NULL here so that the change is
-            // broadcast as valueChanged() and not valueChangedByThis().
+            // not filtered in valueChanged()
             m_pControl->reset();
         }
     }
@@ -112,6 +112,14 @@ class ControlObjectSlave : public QObject {
 
     // Receives the value from the master control by a unique auto connection
     void slotValueChangedAuto(double v, QObject* pSetter) {
+        if (pSetter != this) {
+            // This is base implementation of this function without scaling
+            emit(valueChanged(v));
+        }
+    }
+
+    // Receives the value from the master control by a unique Queued connection
+    void slotValueChangedQueued(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
             emit(valueChanged(v));
