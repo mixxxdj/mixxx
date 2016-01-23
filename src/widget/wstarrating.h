@@ -29,9 +29,9 @@ class WStarRating : public WWidget {
 
   protected:
     void paintEvent(QPaintEvent* e) override;
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void leaveEvent(QEvent *);
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void leaveEvent(QEvent *) override;
     void fillDebugTooltip(QStringList* debug) override;
 
     StarRating m_starRating;
