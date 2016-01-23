@@ -16,8 +16,7 @@
 
 const int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
-const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
-    static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
+const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 const int kFilterLength = 5;
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.

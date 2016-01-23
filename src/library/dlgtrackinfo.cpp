@@ -11,8 +11,7 @@
 const int kFilterLength = 80;
 const int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
-const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
-    static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
+const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)
