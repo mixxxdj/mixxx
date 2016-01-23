@@ -172,11 +172,14 @@ VMS2.Deck.prototype.jogMove = function(lsbValue) {
 VMS2.Deck.prototype.vinylButtonHandler = function(value) {
     if(value === ButtonState.pressed) {
         this.vinylButton = true;
-        // vinyl button toggles scratchmode
-        this.scratchMode = !this.scratchMode;
-        this.Buttons.Vinyl.setLed(this.scratchMode ? LedState.on : LedState.off);
+        this.hotCueDeleted = false;
     } else {
-        // force vinylButton up
+        // Toggle scratch mode only on release and only if a hot cue wasn't deleted
+        if (!this.hotCueDeleted) {
+            // vinyl button toggles scratchmode
+            this.scratchMode = !this.scratchMode;
+            this.Buttons.Vinyl.setLed(this.scratchMode ? LedState.on : LedState.off);
+        }
         this.vinylButton = false;
         // Force keylock up too since they're they same physical button
         //  (This prevents keylock getting stuck down if shift is released first)
