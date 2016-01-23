@@ -2,43 +2,40 @@
 <MixxxMIDIPreset mixxxVersion="1.11.0" vschemaVersion="1">
   <info>
     <name>American Audio VMS2 (Alternative)</name>
-    <author>Stefan Nuernberger</author>
+    <author>Stefan N&uuml;rnberger</author>
     <description>
-American Audio VMS2 controller mapping with
-enhanced usability.
+American  Audio   VMS2  controller  mapping   with  enhanced
+usability.
 
-The center part with the rotational knob is used
-for browsing. Rotate knob for browsing the library.
-Push the knob button to switch browsing between
-entries and sidebar.
-Direction buttons around the knob are mapped to:
-   [&lt;] previous element in sidebar
-   [&gt;] next element in sidebar
-   [/\] previous element in browser list
-   [\/] next element in browser list
-When the effects framework is ready these buttons
-could be remapped to control effects.
+The  center  part  with  the rotational  knob  is  used  for
+browsing.  Rotate knob  for browsing  the library.  Push the
+knob button to switch  browsing between entries and sidebar.
+Direction  buttons around  the  knob are  mapped to:
+    [&lt;] previous element  in sidebar
+    [&gt;] next  element in sidebar
+    [/\]  previous element  in browser list
+    [\/]  next element in browser list
 
-Faster scrolling through the list is possible by holding
+Faster  scrolling through  the list  is possible  by holding
 SHIFT button and rotating (any) one of the platters.
 
-The platters are mapped to only adjust pitch instead of
-instantly switching to scratch mode when no additional
-buttons are pressed.
-For scratch mode hold VINYL button and then touch the
-platter. This might sound tricky but prevents accidentally
-interrupting a running track by touching the platter.
+The  platters   only  adjust  pitch  instead   of  instantly
+switching   to  scratch   mode  on   touch.  This   prevents
+interrupting a  running track  by accidentally  touching the
+platter. To toggle scratch mode  for a deck, press the VINYL
+button. The button backlight  indicates whether scratch mode
+is active.
 
-Since MIXXX only supports one loop per deck and the VMS2
-does not have EQ kill switches, the secondary IN/OUT/RELOOP
-buttons (access holding SHIFT) have been remapped to kill
+Since MIXXX  only supports  one loop per  deck and  the VMS2
+does not have EQ  kill switches, the secondary IN/OUT/RELOOP
+buttons (access  holding SHIFT)  have been remapped  to kill
 LOW/MID/HIGH respectively on each deck.
 
 SoftTakeover is disabled for all controls.
 
-HotCues, Loop Control, Pitch Range Change, Pitch Bend,
-KeyLock, Smart Grid, Cue, Play, Pause, Sync, and Track
-Loading all work like in the original VMS4 script.
+HotCues,  Loop  Control,  Pitch Range  Change,  Pitch  Bend,
+KeyLock,  Smart  Grid, Cue,  Play,  Pause,  Sync, and  Track
+Loading all work in a normal fashion.
     </description>
   </info>
   <controller id="American Audio VMS2">
@@ -1606,20 +1603,6 @@ Loading all work like in the original VMS4 script.
 	<key>fwd</key>
 	<status>0x90</status>
 	<midino>0x4B</midino>
-	<minimum>0.5</minimum>
-      </output>
-      <output>
-	<group>[Channel1]</group>
-	<key>keylock</key>
-	<status>0x90</status>
-	<midino>0x27</midino>
-	<minimum>0.5</minimum>
-      </output>
-      <output>
-	<group>[Channel2]</group>
-	<key>keylock</key>
-	<status>0x90</status>
-	<midino>0x49</midino>
 	<minimum>0.5</minimum>
       </output>
       <!-- Hot cues -->

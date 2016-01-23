@@ -174,6 +174,7 @@ VMS2.Deck.prototype.vinylButtonHandler = function(value) {
         this.vinylButton = true;
         // vinyl button toggles scratchmode
         this.scratchMode = !this.scratchMode;
+        this.Buttons.Vinyl.setLed(this.scratchMode ? LedState.on : LedState.off);
     } else {
         // force vinylButton up
         this.vinylButton = false;
