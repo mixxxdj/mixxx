@@ -697,7 +697,6 @@ bool BaseSqlTableModel::setData(
     // Do not save the track here. Changing the track dirties it and the caching
     // system will automatically save the track once it is unloaded from
     // memory. rryan 10/2010
-    //m_trackDAO.saveTrack(pTrack);
 
     return true;
 }
