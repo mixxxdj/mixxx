@@ -5,33 +5,98 @@
 #include <QMessageBox>
 #include <QDebug>
 
+namespace {
+
+// Iterate over a list of tracks and generate a minimal set of files to copy.
+// Finds duplicate filenames.  Munges filenames if they refer to different files,
+// and skips if they refer to the same disk location.  Returns a map from
+// QString (the destination possibly-munged filenames) to QFileinfo (the source
+// file information).
+QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
+    // QMap is a non-obvious return value, but it's easy for callers to use
+    // in practice and is the best object for producing the final list
+    // efficiently.
+    QMap<QString, QFileInfo> copylist;
+    for (const auto& it : tracks) {
+        auto fileinfo = it->getFileInfo();
+
+        // The munging loop is on the outside because for each munged name
+        // we have to see if we already munged the same file the same way.
+        bool success = false;
+        for (int i = 0; i < 10000; ++i) {
+            QString dest_filename;
+            // For the first case, just use the filename as-is.
+            if (i == 0) {
+                dest_filename = fileinfo.fileName();
+            } else {
+                // We don't have total control over the inputs, so definitely
+                // don't use .arg().arg().arg().
+                const QString index_str =
+                        QString("%1").arg(i, 4, 10, QChar('0'));
+                dest_filename = QString("%1-%2.%3")
+                        .arg(fileinfo.baseName(), index_str,
+                             fileinfo.completeSuffix());
+            }
+            auto seen_it = copylist.find(dest_filename);
+            if (seen_it == copylist.end()) {
+                // Usual case -- haven't seen this filename before, so add it.
+                copylist[dest_filename] = fileinfo;
+                success = true;
+                break;
+            }
+
+            if (fileinfo == *seen_it) {
+                // These are the same file, so don't add this new one to the
+                // list. The operator== should detect duplicates via symlinks.
+                success = true;
+                break;
+            }
+
+            // seen filename, but different files.  Need to munge so continue
+            // the loop.
+        }
+
+        if (!success) {
+            qWarning() << "We tried 10000 mungings of the filename and did not "
+                    "find anything that wasn't taken. Giving up.";
+        }
+    }
+    return copylist;
+}
+
+}  // namespace
+
 void TrackExportWorker::run() {
     int i = 0;
-    for (const auto& track : m_tracks) {
-        auto fileinfo = track->getFileInfo();
-        emit(progress(fileinfo.fileName(), i, m_tracks.size()));
-        exportTrack(track);
+    QMap<QString, QFileInfo> copy_list = createCopylist(m_tracks);
+    for (auto dest_filename : copy_list.keys()) {
+        auto fileinfo = copy_list.value(dest_filename);
+        // We emit progress twice per loop, which may seem excessive, but it
+        // guarantees that we emit a sane progress before we start and after
+        // we end.  In between, each filename will get its own visible tick
+        // on the bar, which looks really nice.
+        emit(progress(fileinfo.fileName(), i, copy_list.size()));
+        copyFile(fileinfo, dest_filename);
         if (load_atomic(m_bStop)) {
             emit(canceled());
             return;
         }
         ++i;
-        emit(progress(fileinfo.fileName(), i, m_tracks.size()));
+        emit(progress(fileinfo.fileName(), i, copy_list.size()));
     }
 }
 
-void TrackExportWorker::exportTrack(TrackPointer track) {
-    QString sourceFilename = track->getLocation();
-    auto source_fileinfo = track->getFileInfo();
-    const QString dest_filename = QDir(m_destDir).filePath(
-            source_fileinfo.fileName());
-    QFileInfo dest_fileinfo(dest_filename);
+void TrackExportWorker::copyFile(QFileInfo source_fileinfo,
+                                 QString dest_filename) {
+    QString sourceFilename = source_fileinfo.canonicalFilePath();
+    const QString dest_path = QDir(m_destDir).filePath(dest_filename);
+    QFileInfo dest_fileinfo(dest_path);
 
     if (dest_fileinfo.exists()) {
         switch (m_overwriteMode) {
         // Give the user the option to overwrite existing files in the destination.
         case OverwriteMode::ASK:
-            switch (makeOverwriteRequest(dest_filename)) {
+            switch (makeOverwriteRequest(dest_path)) {
             case OverwriteAnswer::SKIP:
             case OverwriteAnswer::SKIP_ALL:
                 qDebug() << "skipping" << sourceFilename;
@@ -52,12 +117,12 @@ void TrackExportWorker::exportTrack(TrackPointer track) {
         }
 
         // Remove the existing file in preparation for overwriting.
-        QFile dest_file(dest_filename);
-        qDebug() << "Removing existing file" << dest_filename;
+        QFile dest_file(dest_path);
+        qDebug() << "Removing existing file" << dest_path;
         if (!dest_file.remove()) {
             const QString error_message = tr(
                     "Error removing file %1: %2. Stopping.").arg(
-                    dest_filename, dest_file.errorString());
+                    dest_path, dest_file.errorString());
             qWarning() << error_message;
             m_errorMessage = error_message;
             stop();
@@ -65,12 +130,12 @@ void TrackExportWorker::exportTrack(TrackPointer track) {
         }
     }
 
-    qDebug() << "Copying" << sourceFilename << "to" << dest_filename;
+    qDebug() << "Copying" << sourceFilename << "to" << dest_path;
     QFile source_file(sourceFilename);
-    if (!source_file.copy(dest_filename)) {
+    if (!source_file.copy(dest_path)) {
         const QString error_message = tr(
                 "Error exporting track %1 to %2: %3. Stopping.").arg(
-                sourceFilename, dest_filename, source_file.errorString());
+                sourceFilename, dest_path, source_file.errorString());
         qWarning() << error_message;
         m_errorMessage = error_message;
         stop();
