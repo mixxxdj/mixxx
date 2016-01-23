@@ -1,15 +1,8 @@
 /**
-<<<<<<< HEAD
- * American Audio VMS2 controller script v1.10.1
+ * American Audio VMS2 controller script v1.12.0
  * Copyright (C) 2010  Anders Gunnarsson
  * Copyright (C) 2011-2012  Sean M. Pappalardo
- * Copyright (C) 2012  Stefan Nuernberger
-=======
- * American Audio VMS2 controller script v1.11.0
- * Copyright (C) 2010  Anders Gunnarsson
- * Copyright (C) 2011-2012  Sean M. Pappalardo
- * Copyright (C) 2014  Stefan Nuernberger
->>>>>>> feature/aavms2
+ * Copyright (C) 2012-2016  Stefan Nuernberger
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -74,6 +67,10 @@ VMS2.init = function (id) {    // called when the MIDI device is opened & set up
     //    engine.softTakeover("[Channel2]","filterMed",true);
     //    engine.softTakeover("[Channel2]","filterLow",true);
 
+    // Flash the sync button matching the beatgrid
+    engine.connectControl("[Channel1]","beat_active","VMS2.beatflash");
+    engine.connectControl("[Channel2]","beat_active","VMS2.beatflash");
+
     print("American Audio "+VMS2.id+" initialized.");
 }
 
@@ -134,8 +131,7 @@ VMS2.Deck.prototype.pitchCenterHandler = function(value) {
     if(value === ButtonState.pressed) {
         this.pitchLock = true;
         engine.setValue(this.group, "rate", 0);
-    }
-    else {
+    } else {
         this.pitchLock = false;
     }
 }
@@ -145,12 +141,10 @@ VMS2.Deck.prototype.pauseHandler = function(value) {
 }
 
 VMS2.Deck.prototype.jogTouchHandler = function(value) {
-    if((value === ButtonState.pressed) && this.vinylButton) {
+    if((value === ButtonState.pressed) && this.scratchMode) {
         engine.scratchEnable(this.deckNumber, 3000, 45, 1.0/8, (1.0/8)/32);
-        this.scratchMode = true;
     } else {
         engine.scratchDisable(this.deckNumber);
-        this.scratchMode = false;
     }
 }
 
@@ -178,7 +172,10 @@ VMS2.Deck.prototype.jogMove = function(lsbValue) {
 VMS2.Deck.prototype.vinylButtonHandler = function(value) {
     if(value === ButtonState.pressed) {
         this.vinylButton = true;
+        // vinyl button toggles scratchmode
+        this.scratchMode = !this.scratchMode;
     } else {
+        // force vinylButton up
         this.vinylButton = false;
         // Force keylock up too since they're they same physical button
         //  (This prevents keylock getting stuck down if shift is released first)
@@ -190,8 +187,7 @@ VMS2.Deck.prototype.keyLockButtonHandler = function(value) {
     if(value === ButtonState.pressed) {
         this.keylockButton = true;
         this.hotCueDeleted = false;
-    }
-    else {
+    } else {
         // Toggle keylock only on release and only if a hot cue wasn't deleted
         if (!this.hotCueDeleted) {
             var currentKeylock = engine.getValue(this.group, "keylock");
@@ -282,6 +278,11 @@ VMS2.rate_range = function(channel, control, value, status, group) {
     deck.Buttons.RateRange.handleEvent(value);
 }
 
+VMS2.beatflash = function(value, group, control) {
+    var deck = VMS2.getDeck(group);
+    deck.Buttons.RateRange.setLed(value ? LedState.on : LedState.off);
+}
+
 VMS2.pitch = function(channel, control, value, status, group) {
     var deck = VMS2.getDeck(group);
     if (!deck.pitchLock) {
@@ -337,17 +338,14 @@ VMS2.hotCue = function(channel, control, value, status, group) {
         if (deck.vinylButton || deck.keylockButton) {
             engine.setValue(group,"hotcue_"+hotCue+"_clear",1);
             deck.hotCueDeleted = true;
-        }
-        else {
+        } else {
             engine.setValue(group,"hotcue_"+hotCue+"_activate",1);
         }
-    }
-    else {
+    } else {
         deck.hotCuePressed = false;
         if (deck.vinylButton || deck.keylockButton) {
             engine.setValue(group,"hotcue_"+hotCue+"_clear",0);
-        }
-        else {
+        } else {
             engine.setValue(group,"hotcue_"+hotCue+"_activate",0);
         }
     }
