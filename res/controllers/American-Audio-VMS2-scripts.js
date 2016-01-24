@@ -74,6 +74,9 @@ VMS2.init = function (id) {    // called when the MIDI device is opened & set up
     engine.connectControl("[Channel1]","play_indicator","VMS2.playlight");
     engine.connectControl("[Channel2]","play_indicator","VMS2.playlight");
 
+    engine.trigger("[Channel1]",'play_indicator');
+    engine.trigger("[Channel2]",'play_indicator');
+
     print("American Audio "+VMS2.id+" initialized.");
 }
 
@@ -101,6 +104,7 @@ VMS2.Deck.vinylButton = false;
 VMS2.Deck.hotCuePressed = false;
 VMS2.Deck.pitchLock = false;
 VMS2.Deck.rangeIdx = 0;
+VMS2.Deck.playTimer = 0;
 
 VMS2.Deck.prototype.rateRangeHandler = function(value) {
     if(value === ButtonState.pressed) {
@@ -280,10 +284,38 @@ VMS2.beatflash = function(value, group, control) {
     deck.Buttons.RateRange.setLed(value ? LedState.on : LedState.off);
 }
 
+VMS2.playlightflash = function(group) {
+    var deck = VMS2.getDeck(group);
+    if (deck.switchPlaylightOff) {
+        deck.Buttons.Play.setLed(LedState.off);
+        deck.switchPlaylightOff = false;
+    } else {
+        deck.Buttons.Play.setLed(LedState.on);
+        deck.switchPlaylightOff = true;
+    }
+}
+
 VMS2.playlight = function(value, group, control) {
     var deck = VMS2.getDeck(group);
-    deck.Buttons.Play.setLed(value ? LedState.on : LedState.off);
-    deck.Buttons.Pause.setLed(value ? LedState.off : LedState.on);
+
+    if(isNaN(deck.playTimer)) {
+         deck.playTimer = 0;
+    }
+
+    if (value) {
+        deck.Buttons.Play.setLed(LedState.on);
+        deck.Buttons.Pause.setLed(LedState.off);
+        if (deck.playTimer !== 0) {
+            engine.stopTimer(deck.playTimer);
+            deck.playTimer = 0;
+        }
+    } else {
+        deck.Buttons.Play.setLed(LedState.off);
+        deck.Buttons.Pause.setLed(LedState.on);
+        // start a fancy blink timer
+        deck.switchPlaylightOff = true;
+        deck.playTimer = engine.beginTimer(500,"VMS2.playlightflash(\""+group+"\")");
+    }
 }
 
 VMS2.pitch = function(channel, control, value, status, group) {
