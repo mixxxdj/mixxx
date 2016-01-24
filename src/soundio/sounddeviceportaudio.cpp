@@ -38,7 +38,7 @@
 #include "util/timer.h"
 #include "util/trace.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-#include "visualplayposition.h"
+#include "waveform/visualplayposition.h"
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 static const int kDriftReserve = 1;

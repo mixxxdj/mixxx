@@ -35,7 +35,7 @@
 #include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"
-#include "visualplayposition.h"
+#include "waveform/visualplayposition.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"

@@ -874,6 +874,7 @@ class MixxxCore(Feature):
                    "waveform/waveformwidgetfactory.cpp",
                    "waveform/vsyncthread.cpp",
                    "waveform/guitick.cpp",
+                   "waveform/visualplayposition.cpp",
                    "waveform/renderers/waveformwidgetrenderer.cpp",
                    "waveform/renderers/waveformrendererabstract.cpp",
                    "waveform/renderers/waveformrenderbackground.cpp",
@@ -960,7 +961,6 @@ class MixxxCore(Feature):
                    "soundio/soundmanager.cpp",
                    "soundio/soundmanagerconfig.cpp",
                    "soundio/soundmanagerutil.cpp",
-                   "visualplayposition.cpp",
 
                    "encoder/encoder.cpp",
                    "encoder/encodermp3.cpp",

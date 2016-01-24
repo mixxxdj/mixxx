@@ -10,7 +10,7 @@
 #include "waveform/sharedglcontext.h"
 #include "util/dnd.h"
 #include "util/math.h"
-#include "visualplayposition.h"
+#include "waveform/visualplayposition.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "widget/wspinny.h"

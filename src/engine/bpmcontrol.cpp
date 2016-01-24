@@ -6,7 +6,7 @@
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
-#include "visualplayposition.h"
+#include "waveform/visualplayposition.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "controlobjectslave.h"
