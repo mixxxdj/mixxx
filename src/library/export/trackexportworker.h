@@ -69,7 +69,8 @@ class TrackExportWorker : public QThread {
     // exists, will emit an overwrite request signal to ask how to proceed.
     // On unrecoverable error, sets the error message and stops the export
     // process entirely.
-    void copyFile(QFileInfo source_fileinfo, QString dest_filename);
+    void copyFile(const QFileInfo& source_fileinfo,
+                  const QString& dest_filename);
 
     // Emit a signal requesting overwrite mode, and block until we get an
     // answer.  Updates m_overwriteMode appropriately.

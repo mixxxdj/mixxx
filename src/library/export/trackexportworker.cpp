@@ -45,9 +45,9 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
                 break;
             }
 
-            if (fileinfo == *seen_it) {
+            if (fileinfo.canonicalFilePath() == seen_it->canonicalFilePath()) {
                 // These are the same file, so don't add this new one to the
-                // list. The operator== should detect duplicates via symlinks.
+                // list.
                 success = true;
                 break;
             }
@@ -69,25 +69,24 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
 void TrackExportWorker::run() {
     int i = 0;
     QMap<QString, QFileInfo> copy_list = createCopylist(m_tracks);
-    for (auto dest_filename : copy_list.keys()) {
-        auto fileinfo = copy_list.value(dest_filename);
+    for (auto it = copy_list.constBegin(); it != copy_list.constEnd(); ++it) {
         // We emit progress twice per loop, which may seem excessive, but it
         // guarantees that we emit a sane progress before we start and after
         // we end.  In between, each filename will get its own visible tick
         // on the bar, which looks really nice.
-        emit(progress(fileinfo.fileName(), i, copy_list.size()));
-        copyFile(fileinfo, dest_filename);
+        emit(progress(it->fileName(), i, copy_list.size()));
+        copyFile(*it, it.key());
         if (load_atomic(m_bStop)) {
             emit(canceled());
             return;
         }
         ++i;
-        emit(progress(fileinfo.fileName(), i, copy_list.size()));
+        emit(progress(it->fileName(), i, copy_list.size()));
     }
 }
 
-void TrackExportWorker::copyFile(QFileInfo source_fileinfo,
-                                 QString dest_filename) {
+void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,
+                                 const QString& dest_filename) {
     QString sourceFilename = source_fileinfo.canonicalFilePath();
     const QString dest_path = QDir(m_destDir).filePath(dest_filename);
     QFileInfo dest_fileinfo(dest_path);
