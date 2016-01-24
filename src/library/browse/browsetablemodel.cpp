@@ -16,7 +16,7 @@
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
-                                   RecordingManager* pRecordingManager)
+                                   std::shared_ptr<RecordingManager> pRecordingManager)
         : TrackModel(pTrackCollection->database(),
                      "mixxx.db.model.browse"),
           QStandardItemModel(parent),

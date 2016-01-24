@@ -30,7 +30,9 @@ class LibraryTest : public MixxxTest,
           m_trackCollection(config()) {
         MixxxDb::initDatabaseSchema(m_dbConnection);
         m_trackCollection.connectDatabase(m_dbConnection);
-        GlobalTrackCache::createInstance(this);
+        // Make a shared_ptr out of this with a do-nothing deleter for testing.
+        GlobalTrackCache::createInstance(
+            std::shared_ptr<GlobalTrackCacheSaver>(this, [](GlobalTrackCacheSaver*) {}));
     }
     ~LibraryTest() override {
         GlobalTrackCache::destroyInstance();

@@ -65,18 +65,17 @@ TrackPointer DeckAttributes::getLoadedTrack() const {
 
 AutoDJProcessor::AutoDJProcessor(QObject* pParent,
                                  UserSettingsPointer pConfig,
-                                 PlayerManagerInterface* pPlayerManager,
+                                 std::shared_ptr<PlayerManagerInterface> pPlayerManager,
                                  int iAutoDJPlaylistId,
                                  TrackCollection* pTrackCollection)
         : QObject(pParent),
           m_pConfig(pConfig),
           m_pPlayerManager(pPlayerManager),
-          m_pAutoDJTableModel(NULL),
           m_eState(ADJ_DISABLED),
           m_transitionTime(kTransitionPreferenceDefault),
           m_nextTransitionTime(kTransitionPreferenceDefault) {
-    m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                 "mixxx.db.model.autodj");
+    m_pAutoDJTableModel = std::make_unique<PlaylistTableModel>(this, pTrackCollection,
+                                                               "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
 
     m_pShufflePlaylist = new ControlPushButton(
@@ -138,8 +137,6 @@ AutoDJProcessor::~AutoDJProcessor() {
     delete m_pShufflePlaylist;
     delete m_pEnabledAutoDJ;
     delete m_pFadeNow;
-
-    delete m_pAutoDJTableModel;
 }
 
 double AutoDJProcessor::getCrossfader() const {

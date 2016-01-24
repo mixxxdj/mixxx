@@ -4,8 +4,8 @@
 
 Sampler::Sampler(QObject* pParent,
                  UserSettingsPointer pConfig,
-                 EngineMaster* pMixingEngine,
-                 EffectsManager* pEffectsManager,
+                 std::shared_ptr<EngineMaster> pMixingEngine,
+                 std::shared_ptr<EffectsManager> pEffectsManager,
                  EngineChannel::ChannelOrientation defaultOrientation,
                  QString group) :
         BaseTrackPlayerImpl(pParent, pConfig, pMixingEngine, pEffectsManager,

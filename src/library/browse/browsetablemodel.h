@@ -45,7 +45,8 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     Q_OBJECT
 
   public:
-    BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection, RecordingManager* pRec);
+    BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection,
+                     std::shared_ptr<RecordingManager> pRec);
     virtual ~BrowseTableModel();
 
     void setPath(const MDir& path);
@@ -81,7 +82,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     QList<int> m_searchColumns;
     MDir m_current_directory;
     TrackCollection* m_pTrackCollection;
-    RecordingManager* m_pRecordingManager;
+    std::shared_ptr<RecordingManager> m_pRecordingManager;
     BrowseThreadPointer m_pBrowseThread;
     QString m_previewDeckGroup;
 };

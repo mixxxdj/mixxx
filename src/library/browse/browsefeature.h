@@ -30,7 +30,7 @@ class BrowseFeature : public LibraryFeature {
     BrowseFeature(QObject* parent,
                   UserSettingsPointer pConfig,
                   TrackCollection* pTrackCollection,
-                  RecordingManager* pRec);
+                  std::shared_ptr<RecordingManager> pRec);
     virtual ~BrowseFeature();
 
     QVariant title();

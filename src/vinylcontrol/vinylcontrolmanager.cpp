@@ -18,7 +18,7 @@
 
 VinylControlManager::VinylControlManager(QObject* pParent,
                                          UserSettingsPointer pConfig,
-                                         SoundManager* pSoundManager)
+                                         std::shared_ptr<SoundManager> pSoundManager)
         : QObject(pParent),
           m_pConfig(pConfig),
           m_pProcessor(new VinylControlProcessor(this, pConfig)),
@@ -28,6 +28,7 @@ VinylControlManager::VinylControlManager(QObject* pParent,
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+        // TODO(rryan): m_pProcessor shared_ptr.
         pSoundManager->registerInput(
             AudioInput(AudioInput::VINYLCONTROL, 0, 2, i), m_pProcessor);
     }

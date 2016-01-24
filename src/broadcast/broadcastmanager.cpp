@@ -20,8 +20,8 @@ namespace {
 const mixxx::Logger kLogger("BroadcastManager");
 }
 
-BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
-                                   SoundManager* pSoundManager)
+BroadcastManager::BroadcastManager(std::shared_ptr<SettingsManager> pSettingsManager,
+                                   std::shared_ptr<SoundManager> pSoundManager)
         : m_pConfig(pSettingsManager->settings()),
           m_pBroadcastSettings(pSettingsManager->broadcastSettings()),
           m_pNetworkStream(pSoundManager->getNetworkStream()) {

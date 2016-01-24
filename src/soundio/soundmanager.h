@@ -57,7 +57,7 @@ class SoundDeviceNotFound;
 class SoundManager : public QObject {
     Q_OBJECT
   public:
-    SoundManager(UserSettingsPointer pConfig, EngineMaster *_master);
+    SoundManager(UserSettingsPointer pConfig, std::shared_ptr<EngineMaster> pMaster);
     virtual ~SoundManager();
 
     // Returns a list of all devices we've enumerated that match the provided
@@ -145,7 +145,7 @@ class SoundManager : public QObject {
 
     void setJACKName() const;
 
-    EngineMaster *m_pMaster;
+    std::shared_ptr<EngineMaster> m_pMaster;
     UserSettingsPointer m_pConfig;
     bool m_paInitialized;
     unsigned int m_jackSampleRate;

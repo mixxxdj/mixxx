@@ -39,7 +39,7 @@ class VinylControlManager : public QObject {
     Q_OBJECT;
   public:
     VinylControlManager(QObject* pParent, UserSettingsPointer pConfig,
-                        SoundManager* pSoundManager);
+                        std::shared_ptr<SoundManager> pSoundManager);
     virtual ~VinylControlManager();
 
     // Some initialization must wait until the decks have been created

@@ -12,8 +12,6 @@
 class ControlProxy;
 class ControlPotmeter;
 class SkinLoader;
-class PlayerManager;
-class MixxxMainWindow;
 class ControlObject;
 
 namespace TrackTime {
@@ -41,9 +39,7 @@ enum class KeyunlockMode {
 class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     Q_OBJECT
   public:
-    DlgPrefDeck(QWidget *parent, MixxxMainWindow *mixxx,
-                    PlayerManager* pPlayerManager,
-                    UserSettingsPointer pConfig);
+    DlgPrefDeck(QWidget *parent, UserSettingsPointer pConfig);
     virtual ~DlgPrefDeck();
 
   public slots:
@@ -93,8 +89,6 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     QList<ControlProxy*> m_rateRangeControls;
     QList<ControlProxy*> m_keylockModeControls;
     QList<ControlProxy*> m_keyunlockModeControls;
-    MixxxMainWindow *m_mixxx;
-    PlayerManager* m_pPlayerManager;
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;

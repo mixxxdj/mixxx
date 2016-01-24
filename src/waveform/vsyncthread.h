@@ -27,8 +27,7 @@
 #endif
 
 #include "util/performancetimer.h"
-
-class GuiTick;
+#include "waveform/guitick.h"
 
 class VSyncThread : public QThread {
     Q_OBJECT
@@ -44,7 +43,7 @@ class VSyncThread : public QThread {
 
     static void swapGl(QGLWidget* glw, int index);
 
-    VSyncThread(QObject* pParent, GuiTick* pGuiTick);
+    VSyncThread(QObject* pParent, std::shared_ptr<GuiTick> pGuiTick);
     ~VSyncThread();
 
     void run();
@@ -115,7 +114,7 @@ class VSyncThread : public QThread {
     int m_vSyncPerRendering;
 
 
-    GuiTick* m_pGuiTick;
+    std::shared_ptr<GuiTick> m_pGuiTick;
 };
 
 

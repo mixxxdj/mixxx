@@ -4,7 +4,6 @@
 #include <QDateTime>
 #include <QObject>
 #include <QString>
-#include <QList>
 
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
@@ -29,7 +28,8 @@ class RecordingManager : public QObject
 {
     Q_OBJECT
   public:
-    RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine);
+    RecordingManager(UserSettingsPointer pConfig,
+                     std::shared_ptr<EngineMaster> pEngine);
     virtual ~RecordingManager();
 
 

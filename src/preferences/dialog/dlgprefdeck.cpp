@@ -17,7 +17,6 @@
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
 #include "control/controlobject.h"
-#include "mixxx.h"
 #include "defs_urls.h"
 
 namespace {
@@ -31,13 +30,10 @@ constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
 }
 
-DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
-                         PlayerManager* pPlayerManager,
+DlgPrefDeck::DlgPrefDeck(QWidget * parent,
                          UserSettingsPointer  pConfig)
         :  DlgPreferencePage(parent),
            m_pConfig(pConfig),
-           m_mixxx(mixxx),
-           m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
            m_iNumConfiguredSamplers(0) {
     setupUi(this);

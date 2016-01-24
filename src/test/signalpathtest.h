@@ -36,8 +36,8 @@ class TestEngineMaster : public EngineMaster {
   public:
     TestEngineMaster(UserSettingsPointer _config,
                      const char* group,
-                     EffectsManager* pEffectsManager,
-                     ChannelHandleFactory* pChannelHandleFactory,
+                     std::shared_ptr<EffectsManager> pEffectsManager,
+                     std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory,
                      bool bEnableSidechain)
         : EngineMaster(_config, group, pEffectsManager, pChannelHandleFactory,
                        bEnableSidechain) {
@@ -55,29 +55,28 @@ class BaseSignalPathTest : public MixxxTest {
   protected:
     BaseSignalPathTest() {
         m_pGuiTick = std::make_unique<GuiTick>();
-        m_pChannelHandleFactory = new ChannelHandleFactory();
+        m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
-        m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
-                                               m_pEffectsManager, m_pChannelHandleFactory,
-                                               false);
+        m_pEffectsManager = std::make_shared<EffectsManager>(nullptr, config(), m_pChannelHandleFactory);
+        m_pEngineMaster = std::make_shared<TestEngineMaster>(m_pConfig, "[Master]",
+                                                             m_pEffectsManager, m_pChannelHandleFactory,
+                                                             false);
 
-        m_pMixerDeck1 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
+        auto pEngineMaster = std::static_pointer_cast<EngineMaster>(m_pEngineMaster);
+
+        m_pMixerDeck1 = new Deck(NULL, m_pConfig, pEngineMaster, m_pEffectsManager,
                                  EngineChannel::CENTER, m_sGroup1);
         m_pMixerDeck1->setupEqControls();
-
-        m_pMixerDeck2 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
+        m_pMixerDeck2 = new Deck(NULL, m_pConfig, pEngineMaster, m_pEffectsManager,
                                  EngineChannel::CENTER, m_sGroup2);
         m_pMixerDeck2->setupEqControls();
-
-        m_pMixerDeck3 = new Deck(NULL, m_pConfig, m_pEngineMaster, m_pEffectsManager,
+        m_pMixerDeck3 = new Deck(NULL, m_pConfig, pEngineMaster, m_pEffectsManager,
                                  EngineChannel::CENTER, m_sGroup3);
         m_pMixerDeck3->setupEqControls();
         m_pChannel1 = m_pMixerDeck1->getEngineDeck();
         m_pChannel2 = m_pMixerDeck2->getEngineDeck();
         m_pChannel3 = m_pMixerDeck3->getEngineDeck();
-        m_pPreview1 = new PreviewDeck(NULL, m_pConfig,
-                                      m_pEngineMaster, m_pEffectsManager,
+        m_pPreview1 = new PreviewDeck(NULL, m_pConfig, pEngineMaster, m_pEffectsManager,
                                       EngineChannel::CENTER, m_sPreviewGroup);
         ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
 
@@ -105,10 +104,6 @@ class BaseSignalPathTest : public MixxxTest {
         m_pChannel3 = NULL;
         m_pEngineSync = NULL;
         delete m_pPreview1;
-
-        // Deletes all EngineChannels added to it.
-        delete m_pEngineMaster;
-        delete m_pEffectsManager;
         delete m_pNumDecks;
     }
 
@@ -201,15 +196,16 @@ class BaseSignalPathTest : public MixxxTest {
         m_pEngineMaster->process(kProcessBufferSize);
     }
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    std::shared_ptr<ChannelHandleFactory> m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
     std::unique_ptr<GuiTick> m_pGuiTick;
-    EffectsManager* m_pEffectsManager;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
     EngineSync* m_pEngineSync;
-    TestEngineMaster* m_pEngineMaster;
-    Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
+    std::shared_ptr<TestEngineMaster> m_pEngineMaster;
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
-    PreviewDeck* m_pPreview1;
+    Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
+    TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
+    PreviewDeck *m_pPreview1;
 
     static const char* m_sGroup1;
     static const char* m_sGroup2;

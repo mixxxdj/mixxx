@@ -5,7 +5,7 @@
 
 #include "library/crate/crateid.h"
 #include "control/controlproxy.h"
-#include "mixxx.h"
+#include "widget/wmainwindow.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
 // plugins we link in build/depends.py.
@@ -110,8 +110,8 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         case QEvent::TouchBegin:
             // try to deliver as touch event
             baseReturn = QApplication::notify(target, event);
-            if (dynamic_cast<MixxxMainWindow*>(touchEvent->widget())) {
-                // the touchEvent has fallen trough to the MixxxMainWindow, because there
+            if (dynamic_cast<WMainWindow*>(touchEvent->widget())) {
+                // the touchEvent has fallen trough to the WMainWindow, because there
                 // was no touch enabled widget found.
                 // Now we resent this event and all following events for this touch point
                 // as Mouse events.

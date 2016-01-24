@@ -7,12 +7,13 @@
 #include "soundio/soundmanagerutil.h"
 
 Microphone::Microphone(QObject* pParent, const QString& group, int index,
-                       SoundManager* pSoundManager, EngineMaster* pEngine,
-                       EffectsManager* pEffectsManager)
+                       std::shared_ptr<SoundManager> pSoundManager,
+                       std::shared_ptr<EngineMaster> pEngine,
+                       std::shared_ptr<EffectsManager> pEffectsManager)
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
     EngineMicrophone* pMicrophone =
-            new EngineMicrophone(channelGroup, pEffectsManager);
+            new EngineMicrophone(channelGroup, pEffectsManager.get());
     pEngine->addChannel(pMicrophone);
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 2, index);
     pSoundManager->registerInput(micInput, pMicrophone);

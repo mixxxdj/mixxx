@@ -26,7 +26,7 @@ class EffectSettingsModel : public QAbstractTableModel {
     EffectSettingsModel();
     ~EffectSettingsModel();
 
-    void resetFromEffectManager(EffectsManager* pEffectsManager);
+    void resetFromEffectManager(const EffectsManager& effectsManager);
 
     bool addProfileToModel(EffectProfilePtr profile);
     void deleteProfileFromModel(EffectProfilePtr profile);

@@ -1,6 +1,8 @@
 #ifndef DLGRECORDING_H
 #define DLGRECORDING_H
 
+#include <QSharedPointer>
+
 #include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/libraryview.h"
@@ -21,7 +23,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
   public:
     DlgRecording(QWidget *parent, UserSettingsPointer pConfig,
                  Library* pLibrary, TrackCollection* pTrackCollection,
-                 RecordingManager* pRecManager, KeyboardEventFilter* pKeyboard);
+                 std::shared_ptr<RecordingManager> pRecManager, KeyboardEventFilter* pKeyboard);
     ~DlgRecording() override;
 
     void onSearch(const QString& text) override;
@@ -60,7 +62,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     QString m_bytesRecordedStr;
     QString m_durationRecordedStr;
 
-    RecordingManager* m_pRecordingManager;
+    std::shared_ptr<RecordingManager> m_pRecordingManager;
 };
 
 #endif //DLGRECORDING_H

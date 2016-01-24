@@ -26,7 +26,7 @@ const QString kQuickLinksSeparator = "-+-";
 BrowseFeature::BrowseFeature(QObject* parent,
                              UserSettingsPointer pConfig,
                              TrackCollection* pTrackCollection,
-                             RecordingManager* pRecordingManager)
+                             std::shared_ptr<RecordingManager> pRecordingManager)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_browseModel(this, pTrackCollection, pRecordingManager),

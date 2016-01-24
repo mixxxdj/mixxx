@@ -33,7 +33,7 @@ class AutoDJFeature : public LibraryFeature {
   public:
     AutoDJFeature(Library* pLibrary,
                   UserSettingsPointer pConfig,
-                  PlayerManagerInterface* pPlayerManager,
+                  std::shared_ptr<PlayerManagerInterface> pPlayerManager,
                   TrackCollection* pTrackCollection);
     virtual ~AutoDJFeature();
 

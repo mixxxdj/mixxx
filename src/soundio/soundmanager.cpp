@@ -59,7 +59,7 @@ const unsigned int kSleepSecondsAfterClosingDevice = 5;
 } // anonymous namespace
 
 SoundManager::SoundManager(UserSettingsPointer pConfig,
-                           EngineMaster *pMaster)
+                           std::shared_ptr<EngineMaster> pMaster)
         : m_pMaster(pMaster),
           m_pConfig(pConfig),
           m_paInitialized(false),
@@ -92,7 +92,7 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
     queryDevices();
 
     if (!m_config.readFromDisk()) {
-        m_config.loadDefaults(this, SoundManagerConfig::ALL);
+        m_config.loadDefaults(*this, SoundManagerConfig::ALL);
     }
     checkConfig();
     m_config.writeToDisk(); // in case anything changed by applying defaults
@@ -566,11 +566,11 @@ SoundDeviceError SoundManager::setConfig(SoundManagerConfig config) {
 void SoundManager::checkConfig() {
     if (!m_config.checkAPI(*this)) {
         m_config.setAPI(SoundManagerConfig::kDefaultAPI);
-        m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
+        m_config.loadDefaults(*this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }
     if (!m_config.checkSampleRate(*this)) {
         m_config.setSampleRate(SoundManagerConfig::kFallbackSampleRate);
-        m_config.loadDefaults(this, SoundManagerConfig::OTHER);
+        m_config.loadDefaults(*this, SoundManagerConfig::OTHER);
     }
 
     // Even if we have a two-deck skin, if someone has configured a deck > 2

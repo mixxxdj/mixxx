@@ -29,7 +29,7 @@ class SoundManager;
 // For mocking PlayerManager.
 class PlayerManagerInterface {
   public:
-    virtual ~PlayerManagerInterface() {};
+    virtual ~PlayerManagerInterface() {}
 
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
     virtual BaseTrackPlayer* getPlayer(QString group) const = 0;
@@ -58,10 +58,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     Q_OBJECT
   public:
     PlayerManager(UserSettingsPointer pConfig,
-                  SoundManager* pSoundManager,
-                  EffectsManager* pEffectsManager,
-                  EngineMaster* pEngine);
-    virtual ~PlayerManager();
+                  std::shared_ptr<SoundManager> pSoundManager,
+                  std::shared_ptr<EffectsManager> pEffectsManager,
+                  std::shared_ptr<EngineMaster> pEngine);
+    ~PlayerManager() override;
 
     // Add a deck to the PlayerManager
     void addDeck();
@@ -137,7 +137,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Binds signals between PlayerManager and Library. Does not store a pointer
     // to the Library.
-    void bindToLibrary(Library* pLibrary);
+    void bindToLibrary(std::shared_ptr<Library> pLibrary);
 
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
@@ -238,9 +238,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     mutable QMutex m_mutex;
 
     UserSettingsPointer m_pConfig;
-    SoundManager* m_pSoundManager;
-    EffectsManager* m_pEffectsManager;
-    EngineMaster* m_pEngine;
+    std::shared_ptr<SoundManager> m_pSoundManager;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
+    std::shared_ptr<EngineMaster> m_pEngine;
     SamplerBank* m_pSamplerBank;
     AnalyzerQueue* m_pAnalyzerQueue;
     ControlObject* m_pCONumDecks;

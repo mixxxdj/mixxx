@@ -23,15 +23,15 @@
 #include "preferences/dialog/ui_dlgprefvinyldlg.h"
 #include "preferences/usersettings.h"
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
 #include "preferences/dlgpreferencepage.h"
 
 class ControlProxy;
-class VinylControlManager;
 
 class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     Q_OBJECT
   public:
-    DlgPrefVinyl(QWidget* pParent, VinylControlManager* m_pVCMan, UserSettingsPointer _config);
+    DlgPrefVinyl(QWidget* pParent, std::shared_ptr<VinylControlManager> pVCMan, UserSettingsPointer _config);
     virtual ~DlgPrefVinyl();
 
   public slots:
@@ -64,7 +64,7 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
 
     QList<VinylControlSignalWidget*> m_signalWidgets;
 
-    VinylControlManager* m_pVCManager;
+    std::shared_ptr<VinylControlManager> m_pVCManager;
     UserSettingsPointer config;
     QList<ControlProxy*> m_COSpeeds;
     ControlProxy* m_pNumDecks;

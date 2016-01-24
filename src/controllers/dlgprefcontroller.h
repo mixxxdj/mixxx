@@ -28,7 +28,7 @@ class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT
   public:
     DlgPrefController(QWidget *parent, Controller* controller,
-                      ControllerManager* controllerManager,
+                      std::shared_ptr<ControllerManager> controllerManager,
                       UserSettingsPointer pConfig);
     virtual ~DlgPrefController();
 
@@ -94,7 +94,7 @@ class DlgPrefController : public DlgPreferencePage {
 
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
-    ControllerManager* m_pControllerManager;
+    std::shared_ptr<ControllerManager> m_pControllerManager;
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
     ControllerPresetPointer m_pPreset;

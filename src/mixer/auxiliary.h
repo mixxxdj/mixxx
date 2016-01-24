@@ -4,11 +4,10 @@
 #include <QObject>
 #include <QString>
 
+#include "effects/effectsmanager.h"
+#include "engine/enginemaster.h"
 #include "mixer/baseplayer.h"
-
-class EffectsManager;
-class EngineMaster;
-class SoundManager;
+#include "soundio/soundmanager.h"
 
 class Auxiliary : public BasePlayer {
     Q_OBJECT
@@ -16,9 +15,9 @@ class Auxiliary : public BasePlayer {
     Auxiliary(QObject* pParent,
               const QString& group,
               int index,
-              SoundManager* pSoundManager,
-              EngineMaster* pMixingEngine,
-              EffectsManager* pEffectsManager);
+              std::shared_ptr<SoundManager> pSoundManager,
+              std::shared_ptr<EngineMaster> pMixingEngine,
+              std::shared_ptr<EffectsManager> pEffectsManager);
     virtual ~Auxiliary();
 };
 

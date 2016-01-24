@@ -41,7 +41,8 @@ const QString kDefaultQuickEffectId = FilterEffect::getId();
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
 
-DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
+DlgPrefEQ::DlgPrefEQ(QWidget* pParent,
+                     std::shared_ptr<EffectsManager> pEffectsManager,
                      UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_COLoFreq(kConfigKey, "LoEQFrequency"),
@@ -724,7 +725,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
     if (pChainSlot) {
         EffectChainPointer pChain = pChainSlot->getEffectChain();
         VERIFY_OR_DEBUG_ASSERT(pChain) {
-            pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+            pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager.get());
         }
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
         pChain->replaceEffect(0, pEffect);

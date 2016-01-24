@@ -60,19 +60,24 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
-#include "mixxx.h"
+#include "preferences/dialog/dlgpreferences.h"
+#include "preferences/dialog/dlgprefsound.h"
+#include "controllers/dlgprefcontrollers.h"
+#include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefwaveform.h"
+#include "preferences/dialog/dlgprefautodj.h"
+#include "preferences/dialog/dlgprefeq.h"
+#include "preferences/dialog/dlgprefcrossfader.h"
+#include "preferences/dialog/dlgprefrecord.h"
+#include "preferences/dialog/dlgprefreplaygain.h"
+#include "preferences/dialog/dlgprefeffects.h"
+#include "widget/wmainwindow.h"
 #include "controllers/controllermanager.h"
 #include "skin/skinloader.h"
-#include "library/library.h"
 
-DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
-                               SoundManager * soundman, PlayerManager* pPlayerManager,
-                               ControllerManager * controllers, VinylControlManager *pVCManager,
-                               LV2Backend* pLV2Backend,
-                               EffectsManager* pEffectsManager,
-                               SettingsManager* pSettingsManager,
-                               Library *pLibrary)
-        : m_pConfig(pSettingsManager->settings()),
+DlgPreferences::DlgPreferences(WMainWindow* pMainWindow, SkinLoader* pSkinLoader,
+                               std::shared_ptr<mixxx::CoreServices> pCoreServices)
+        : m_pConfig(pCoreServices->settingsManager()->settings()),
           m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
     setupUi(this);
@@ -90,48 +95,47 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     }
 
     // Construct widgets for use in tabs.
-    m_soundPage = new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig);
+    m_soundPage = new DlgPrefSound(this, pCoreServices->soundManager(), m_pConfig);
     addPageWidget(m_soundPage);
-    m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
+    m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pCoreServices->libraryManager());
     addPageWidget(m_libraryPage);
-    connect(m_libraryPage, SIGNAL(scanLibrary()),
-            pLibrary, SLOT(scan()));
-    m_controllersPage = new DlgPrefControllers(this, m_pConfig, controllers,
-                                            m_pControllerTreeItem);
+    m_controllersPage = new DlgPrefControllers(this, m_pConfig, pCoreServices->controllerManager(),
+                                               m_pControllerTreeItem);
     addPageWidget(m_controllersPage);
 
 #ifdef __VINYLCONTROL__
     // It's important for this to be before the connect for wsound.
     // TODO(rryan) determine why/if this is still true
-    m_vinylControlPage = new DlgPrefVinyl(this, pVCManager, m_pConfig);
+    m_vinylControlPage = new DlgPrefVinyl(this, pCoreServices->vinylControlManager(), m_pConfig);
     addPageWidget(m_vinylControlPage);
 #else
-    m_noVinylControlPage = new DlgPrefNoVinyl(this, soundman, m_pConfig);
+    m_noVinylControlPage = new DlgPrefNoVinyl(this);
     addPageWidget(m_noVinylControlPage);
 #endif
 
-    m_interfacePage = new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig);
+    m_interfacePage = new DlgPrefInterface(this, pMainWindow, pSkinLoader, m_pConfig);
     addPageWidget(m_interfacePage);
-    m_waveformPage = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
+    m_waveformPage = new DlgPrefWaveform(this, pMainWindow, m_pConfig,
+                                         pCoreServices->libraryManager());
     addPageWidget(m_waveformPage);
-    m_deckPage = new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig);
+    m_deckPage = new DlgPrefDeck(this, m_pConfig);
     addPageWidget(m_deckPage);
-    m_equalizerPage = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
+    m_equalizerPage = new DlgPrefEQ(this, pCoreServices->effectsManager(), m_pConfig);
     addPageWidget(m_equalizerPage);
     m_crossfaderPage = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_crossfaderPage);
-    m_effectsPage = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
+    m_effectsPage = new DlgPrefEffects(this, m_pConfig, pCoreServices->effectsManager());
     addPageWidget(m_effectsPage);
 #ifdef __LILV__
-    m_lv2Page = new DlgPrefLV2(this, pLV2Backend, m_pConfig, pEffectsManager);
+    m_lv2Page = new DlgPrefLV2(this, m_pConfig, pCoreServices->effectsManager());
     addPageWidget(m_lv2Page);
 #endif /* __LILV__ */
     m_autoDjPage = new DlgPrefAutoDJ(this, m_pConfig);
     addPageWidget(m_autoDjPage);
 
 #ifdef __BROADCAST__
-    m_broadcastingPage = new DlgPrefBroadcast(this,
-        pSettingsManager->broadcastSettings());
+    m_broadcastingPage = new DlgPrefBroadcast(
+        this, pCoreServices->settingsManager()->broadcastSettings());
     addPageWidget(m_broadcastingPage);
 #endif
 

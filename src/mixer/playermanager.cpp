@@ -32,9 +32,9 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
-                             SoundManager* pSoundManager,
-                             EffectsManager* pEffectsManager,
-                             EngineMaster* pEngine) :
+                             std::shared_ptr<SoundManager> pSoundManager,
+                             std::shared_ptr<EffectsManager> pEffectsManager,
+                             std::shared_ptr<EngineMaster> pEngine) :
         m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
@@ -115,14 +115,14 @@ PlayerManager::~PlayerManager() {
     }
 }
 
-void PlayerManager::bindToLibrary(Library* pLibrary) {
+void PlayerManager::bindToLibrary(std::shared_ptr<Library> pLibrary) {
     QMutexLocker locker(&m_mutex);
-    connect(pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+    connect(pLibrary.get(), SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(pLibrary, SIGNAL(loadTrack(TrackPointer)),
+    connect(pLibrary.get(), SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrackIntoNextAvailableDeck(TrackPointer)));
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
-            pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
+            pLibrary.get(), SLOT(slotLoadLocationToPlayer(QString, QString)));
 
     m_pAnalyzerQueue = new AnalyzerQueue(pLibrary->dbConnectionPool(), m_pConfig);
 
@@ -380,7 +380,8 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
     m_pSoundManager->registerOutput(
-            AudioOutput(AudioOutput::DECK, 0, 2, number - 1), m_pEngine);
+            AudioOutput(AudioOutput::DECK, 0, 2, number - 1),
+            m_pEngine.get());
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();

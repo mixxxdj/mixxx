@@ -21,14 +21,15 @@ class SkinLoader {
     SkinLoader(UserSettingsPointer pConfig);
     virtual ~SkinLoader();
 
+
     QWidget* loadConfiguredSkin(QWidget* pParent,
                                 KeyboardEventFilter* pKeyboard,
-                                PlayerManager* pPlayerManager,
-                                ControllerManager* pControllerManager,
-                                Library* pLibrary,
-                                VinylControlManager* pVCMan,
-                                EffectsManager* pEffectsManager,
-                                RecordingManager* pRecordingManager);
+                                std::shared_ptr<PlayerManager> pPlayerManager,
+                                std::shared_ptr<ControllerManager> pControllerManager,
+                                std::shared_ptr<Library> pLibrary,
+                                std::shared_ptr<VinylControlManager> pVCMan,
+                                std::shared_ptr<EffectsManager> pEffectsManager,
+                                std::shared_ptr<RecordingManager> pRecordingManager);
 
     LaunchImage* loadLaunchImage(QWidget* pParent);
 

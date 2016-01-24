@@ -14,17 +14,13 @@ EffectSettingsModel::EffectSettingsModel() {
 EffectSettingsModel::~EffectSettingsModel() {
 }
 
-void EffectSettingsModel::resetFromEffectManager(EffectsManager* pEffectsManager) {
-    if (!pEffectsManager) {
-        return;
-    }
-
+void EffectSettingsModel::resetFromEffectManager(const EffectsManager& effectsManager) {
     beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
     endRemoveRows();
     m_profiles.clear();
 
-    for (EffectManifestPointer pManifest : pEffectsManager->getAvailableEffectManifests()) {
-        const bool visibility = pEffectsManager->getEffectVisibility(pManifest);
+    for (EffectManifestPointer pManifest : effectsManager.getAvailableEffectManifests()) {
+        const bool visibility = effectsManager.getEffectVisibility(pManifest);
         addProfileToModel(EffectProfilePtr(new EffectProfile(pManifest, visibility)));
     }
 }

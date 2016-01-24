@@ -63,8 +63,8 @@ Library::Library(
         QObject* parent,
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        PlayerManagerInterface* pPlayerManager,
-        RecordingManager* pRecordingManager)
+        std::shared_ptr<PlayerManagerInterface> pPlayerManager,
+        std::shared_ptr<RecordingManager> pRecordingManager)
     : m_pConfig(pConfig),
       m_pDbConnectionPool(pDbConnectionPool),
       m_pSidebarModel(new SidebarModel(parent)),
@@ -104,7 +104,7 @@ Library::Library(
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
 
     addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));

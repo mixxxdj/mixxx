@@ -24,7 +24,6 @@
 #include "soundio/sounddevice.h"
 
 class SoundManager;
-class PlayerManager;
 class ControlObject;
 class SoundDevice;
 class DlgPrefSoundItem;
@@ -42,8 +41,7 @@ class ControlProxy;
 class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
   public:
-    DlgPrefSound(QWidget *parent, SoundManager *soundManager,
-                 PlayerManager* pPlayerManager,
+    DlgPrefSound(QWidget *parent, std::shared_ptr<SoundManager> soundManager,
                  UserSettingsPointer config);
     virtual ~DlgPrefSound();
 
@@ -94,8 +92,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
     void checkLatencyCompensation();
 
-    SoundManager *m_pSoundManager;
-    PlayerManager *m_pPlayerManager;
+    std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pConfig;
     ControlProxy* m_pMasterAudioLatencyOverloadCount;
     ControlProxy* m_pMasterLatency;

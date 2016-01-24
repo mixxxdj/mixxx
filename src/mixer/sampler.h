@@ -1,6 +1,8 @@
 #ifndef MIXER_SAMPLER_H
 #define MIXER_SAMPLER_H
 
+#include "effects/effectsmanager.h"
+#include "engine/enginemaster.h"
 #include "mixer/basetrackplayer.h"
 
 class Sampler : public BaseTrackPlayerImpl {
@@ -8,8 +10,8 @@ class Sampler : public BaseTrackPlayerImpl {
   public:
     Sampler(QObject* pParent,
             UserSettingsPointer pConfig,
-            EngineMaster* pMixingEngine,
-            EffectsManager* pEffectsManager,
+            std::shared_ptr<EngineMaster> pMixingEngine,
+            std::shared_ptr<EffectsManager> pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             QString group);
     virtual ~Sampler();

@@ -17,7 +17,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
   public:
     DlgPrefControllers(DlgPreferences* pDlgPreferences,
                        UserSettingsPointer pConfig,
-                       ControllerManager* pControllerManager,
+                       std::shared_ptr<ControllerManager> pControllerManager,
                        QTreeWidgetItem* pControllerTreeItem);
     virtual ~DlgPrefControllers();
 
@@ -39,7 +39,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
 
     DlgPreferences* m_pDlgPreferences;
     UserSettingsPointer m_pConfig;
-    ControllerManager* m_pControllerManager;
+    std::shared_ptr<ControllerManager> m_pControllerManager;
     QTreeWidgetItem* m_pControllerTreeItem;
     QList<DlgPrefController*> m_controllerWindows;
     QList<QTreeWidgetItem*> m_controllerTreeItems;

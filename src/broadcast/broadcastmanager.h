@@ -2,6 +2,7 @@
 #define BROADCAST_BROADCASTMANAGER_H
 
 #include <QObject>
+#include <QSharedPointer>
 
 #include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
@@ -22,8 +23,8 @@ class BroadcastManager : public QObject {
         STATUSCO_WARNING = 4
     };
 
-    BroadcastManager(SettingsManager* pSettingsManager,
-                     SoundManager* pSoundManager);
+    BroadcastManager(std::shared_ptr<SettingsManager> pSettingsManager,
+                     std::shared_ptr<SoundManager> pSoundManager);
     virtual ~BroadcastManager();
 
     // Returns true if the broadcast connection is enabled. Note this only

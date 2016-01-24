@@ -11,12 +11,12 @@
 #include "waveform/waveform.h"
 #include "skin/skincontext.h"
 #include "util/performancetimer.h"
+#include "waveform/guitick.h"
 
 class WWaveformViewer;
 class WaveformWidgetAbstract;
 class QTimer;
 class VSyncThread;
-class GuiTick;
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -102,7 +102,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void addTimerListener(QWidget* pWidget);
 
-    void startVSync(GuiTick* pGuiTick);
+    void startVSync(std::shared_ptr<GuiTick> pGuiTick);
     void setVSyncType(int vsType);
     int getVSyncType();
 

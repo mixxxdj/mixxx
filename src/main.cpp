@@ -23,7 +23,7 @@
 #include <QString>
 #include <QTextCodec>
 
-#include "mixxx.h"
+#include "coreservices.h"
 #include "mixxxapplication.h"
 #include "sources/soundsourceproxy.h"
 #include "errordialoghandler.h"
@@ -31,6 +31,7 @@
 #include "util/console.h"
 #include "util/logging.h"
 #include "util/version.h"
+#include "widget/wmainwindow.h"
 
 #ifdef Q_OS_LINUX
 #include <X11/Xlib.h>
@@ -38,20 +39,38 @@
 
 namespace {
 
+#define CLEAR_AND_CHECK_DELETED(x) clearHelper(x, #x);
+
+template <typename T>
+void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
+    std::weak_ptr<T> weak(ref_ptr);
+    ref_ptr.reset();
+    if (auto shared = weak.lock()) {
+        qWarning() << name << "was leaked!";
+    }
+}
+
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
     int result = -1;
-    MixxxMainWindow mainWindow(app, args);
-    // If startup produced a fatal error, then don't even start the
-    // Qt event loop.
-    if (ErrorDialogHandler::instance()->checkError()) {
-        mainWindow.finalize();
-    } else {
-        qDebug() << "Displaying main window";
-        mainWindow.show();
+    mixxx::CoreServices::initializeStaticServices();
+    {  // Scope for mixxx::CoreServices.
+        auto core = std::make_shared<mixxx::CoreServices>(nullptr, app, args.getSettingsPath());
+        core->initialize();
+        {  // Scope for WMainWindow.
+            WMainWindow window(app, core);
 
-        qDebug() << "Running Mixxx";
-        result = app->exec();
+            // If startup produced a fatal error, then don't even start the Qt event
+            // loop.
+            if (!ErrorDialogHandler::instance()->checkError()) {
+                qDebug() << "Running Mixxx";
+                result = app->exec();
+            }
+        }
+        core->finalize();
+        CLEAR_AND_CHECK_DELETED(core);
     }
+    qDebug() << "Mixxx shutdown complete with code" << result;
+    mixxx::CoreServices::shutdownStaticServices();
     return result;
 }
 
@@ -91,17 +110,6 @@ int main(int argc, char * argv[]) {
     // If you change this here, you also need to change it in
     // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
     QThread::currentThread()->setObjectName("Main");
-
-    // Create the ErrorDialogHandler in the main thread, otherwise it will be
-    // created in the thread of the first caller to instance(), which may not be
-    // the main thread. Bug #1748636.
-    ErrorDialogHandler::instance();
-
-    mixxx::Logging::initialize(args.getSettingsPath(),
-                               args.getLogLevel(),
-                               args.getLogFlushLevel(),
-                               args.getDebugAssertBreak());
-
     MixxxApplication app(argc, argv);
 
     // Support utf-8 for all translation strings. Not supported in Qt 5.
@@ -110,8 +118,6 @@ int main(int argc, char * argv[]) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 #endif
-
-    SoundSourceProxy::registerSoundSourceProviders();
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());
@@ -133,11 +139,5 @@ int main(int argc, char * argv[]) {
     // When the last window is closed, terminate the Qt event loop.
     QObject::connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 
-    int result = runMixxx(&app, args);
-
-    qDebug() << "Mixxx shutdown complete with code" << result;
-
-    mixxx::Logging::shutdown();
-
-    return result;
+    return runMixxx(&app, args);
 }

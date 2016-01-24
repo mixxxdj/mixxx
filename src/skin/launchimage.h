@@ -39,6 +39,8 @@ class LaunchImage: public QWidget {
   public:
     LaunchImage(QWidget* pParent, const QString& styleSheet);
     virtual ~LaunchImage();
+
+  public slots:
     void progress(int value);
 
   protected:

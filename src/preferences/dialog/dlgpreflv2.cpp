@@ -5,23 +5,22 @@
 #include <QCheckBox>
 #include <QPushButton>
 
-#include "dlgpreflv2.h"
+#include "preferences/dialog/dlgpreflv2.h"
 #include "engine/enginefilterbessel4.h"
 #include "control/controlobject.h"
 #include "util/math.h"
-#include "effects/effectsmanager.h"
 
-DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
+DlgPrefLV2::DlgPrefLV2(QWidget* pParent,
                        UserSettingsPointer pConfig,
-                       EffectsManager* pEffectsManager)
+                       std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
-          m_pLV2Backend(lv2Backend),
           m_iCheckedParameters(0),
           m_pEffectsManager(pEffectsManager) {
     Q_UNUSED(pConfig);
-
     setupUi(this);
 
+    m_pLV2Backend = dynamic_cast<LV2Backend*>(
+            pEffectsManager->getEffectsBackendByType(EffectBackendType::LV2));
     if (!m_pLV2Backend) {
         return;
     }

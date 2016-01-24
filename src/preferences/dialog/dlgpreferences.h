@@ -23,14 +23,13 @@
 #include <QRect>
 #include <QStringList>
 
+#include "coreservices.h"
 #include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
 #include "preferences/dlgpreferencepage.h"
-#include "preferences/settingsmanager.h"
 
-class MixxxMainWindow;
-class SoundManager;
+class WMainWindow;
 class DlgPrefSound;
 class DlgPrefLibrary;
 class DlgPrefController;
@@ -52,13 +51,7 @@ class DlgPrefReplayGain;
 #ifdef __LILV__
 class DlgPrefLV2;
 #endif /* __LILV__ */
-class LV2Backend;
-class ControllerManager;
-class EffectsManager;
 class SkinLoader;
-class PlayerManager;
-class Library;
-class VinylControlManager;
 #ifdef __MODPLUG__
 class DlgPrefModplug;
 #endif
@@ -66,11 +59,8 @@ class DlgPrefModplug;
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
-    DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
-                   PlayerManager* pPlayerManager, ControllerManager* controllers,
-                   VinylControlManager* pVCManager, LV2Backend* pLV2Backend, 
-                   EffectsManager* pEffectsManager,
-                   SettingsManager* pSettingsManager, Library *pLibrary);
+    DlgPreferences(WMainWindow* pMainWindow, SkinLoader* pSkinLoader,
+                   std::shared_ptr<mixxx::CoreServices> pCoreServices);
     virtual ~DlgPreferences();
 
     void addPageWidget(DlgPreferencePage* pWidget);

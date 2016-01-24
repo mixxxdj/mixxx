@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QScopedPointer>
+#include <QSharedPointer>
 
 #include "test/librarytest.h"
 #include "library/autodj/autodjprocessor.h"
@@ -121,7 +122,7 @@ class MockAutoDJProcessor : public AutoDJProcessor {
   public:
     MockAutoDJProcessor(QObject* pParent,
                         UserSettingsPointer pConfig,
-                        PlayerManagerInterface* pPlayerManager,
+                        std::shared_ptr<PlayerManagerInterface> pPlayerManager,
                         int iAutoDJPlaylistId,
                         TrackCollection* pCollection)
             : AutoDJProcessor(pParent, pConfig, pPlayerManager,
@@ -162,7 +163,7 @@ class AutoDJProcessorTest : public LibraryTest {
                     AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
         }
 
-        pPlayerManager.reset(new MockPlayerManager());
+        pPlayerManager = std::make_shared<MockPlayerManager>();
 
         // Setup 4 fake decks.
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel1]")))
@@ -181,8 +182,8 @@ class AutoDJProcessorTest : public LibraryTest {
         EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
 
         pProcessor.reset(new MockAutoDJProcessor(
-                NULL, config(), pPlayerManager.data(),
-                m_iAutoDJPlaylistId, collection()));
+            NULL, config(), pPlayerManager,
+            m_iAutoDJPlaylistId, collection()));
     }
 
     virtual ~AutoDJProcessorTest() {
@@ -198,7 +199,7 @@ class AutoDJProcessorTest : public LibraryTest {
     FakeDeck deck2;
     FakeDeck deck3;
     FakeDeck deck4;
-    QScopedPointer<MockPlayerManager> pPlayerManager;
+    std::shared_ptr<MockPlayerManager> pPlayerManager;
     int m_iAutoDJPlaylistId;
     QScopedPointer<MockAutoDJProcessor> pProcessor;
 };
@@ -213,7 +214,7 @@ TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
     pProcessor.reset(new MockAutoDJProcessor(
-            NULL, config(), pPlayerManager.data(),
+            NULL, config(), pPlayerManager,
             m_iAutoDJPlaylistId, collection()));
     EXPECT_EQ(25, pProcessor->getTransitionTime());
 }

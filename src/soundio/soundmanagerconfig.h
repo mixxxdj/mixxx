@@ -80,7 +80,7 @@ public:
     void clearInputs();
     bool hasMicInputs();
     bool hasExternalRecordBroadcast();
-    void loadDefaults(SoundManager *soundManager, unsigned int flags);
+    void loadDefaults(const SoundManager& soundManager, unsigned int flags);
 private:
     QFileInfo m_configFile;
     QString m_api;

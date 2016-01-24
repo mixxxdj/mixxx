@@ -383,7 +383,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     // don't parent till here so the first opengl waveform doesn't screw
     // up --bkgood
     // I'm disregarding this return value because I want to return the
-    // created parent so MixxxMainWindow can use it for nefarious purposes (
+    // created parent so WMainWindow can use it for nefarious purposes (
     // fullscreen mostly) --bkgood
     m_pParent = pParent;
     QList<QWidget*> widgets = parseNode(skinDocument);
@@ -394,7 +394,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     } else if (widgets.size() > 1) {
         SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced more than 1 widget!";
     }
-    // Because the config is destroyed before MixxxMainWindow, we need to
+    // Because the config is destroyed before WMainWindow, we need to
     // parent the attributes to some other widget.  Otherwise they won't
     // be able to persist because the config will have already been deleted.
     foreach(ControlObject* pControl, created_attributes) {

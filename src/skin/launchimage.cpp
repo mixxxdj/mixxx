@@ -1,5 +1,6 @@
 #include <skin/launchimage.h>
 
+#include <QApplication>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
@@ -56,6 +57,7 @@ LaunchImage::~LaunchImage() {
 
 void LaunchImage::progress(int value) {
     m_pProgressBar->setValue(value);
+    qApp->processEvents();
 }
 
 void LaunchImage::paintEvent(QPaintEvent *)
@@ -65,4 +67,3 @@ void LaunchImage::paintEvent(QPaintEvent *)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
-

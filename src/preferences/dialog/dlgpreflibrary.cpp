@@ -17,7 +17,7 @@
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
         UserSettingsPointer pConfig,
-        Library* pLibrary)
+        std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_dirListModel(),
           m_pConfig(pConfig),
@@ -27,11 +27,13 @@ DlgPrefLibrary::DlgPrefLibrary(
     setupUi(this);
 
     connect(this, SIGNAL(requestAddDir(QString)),
-            m_pLibrary, SLOT(slotRequestAddDir(QString)));
+            m_pLibrary.get(), SLOT(slotRequestAddDir(QString)));
     connect(this, SIGNAL(requestRemoveDir(QString, Library::RemovalType)),
-            m_pLibrary, SLOT(slotRequestRemoveDir(QString, Library::RemovalType)));
+            m_pLibrary.get(), SLOT(slotRequestRemoveDir(QString, Library::RemovalType)));
     connect(this, SIGNAL(requestRelocateDir(QString,QString)),
-            m_pLibrary, SLOT(slotRequestRelocateDir(QString,QString)));
+            m_pLibrary.get(), SLOT(slotRequestRelocateDir(QString,QString)));
+    connect(this, SIGNAL(scanLibrary()),
+            m_pLibrary.get(), SLOT(scan()));
     connect(PushButtonAddDir, SIGNAL(clicked()),
             this, SLOT(slotAddDir()));
     connect(PushButtonRemoveDir, SIGNAL(clicked()),

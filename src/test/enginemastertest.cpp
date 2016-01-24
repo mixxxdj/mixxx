@@ -21,7 +21,7 @@ class EngineChannelMock : public EngineChannel {
   public:
     EngineChannelMock(const QString& group,
                       ChannelOrientation defaultOrientation,
-                      EngineMaster* pMaster)
+                      std::shared_ptr<EngineMaster> pMaster)
             : EngineChannel(pMaster->registerChannelGroup(group),
                             defaultOrientation) {
     }
@@ -55,8 +55,9 @@ class EngineMasterTest : public BaseSignalPathTest {
 TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     const QString testName = "SingleChannelOutputWorks";
 
+    auto pEngineMaster = std::static_pointer_cast<EngineMaster>(m_pEngineMaster);
     EngineChannelMock* pChannel = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test1]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -92,8 +93,9 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
 TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     const QString testName = "SingleChannelPFLOutputWorks";
 
+    auto pEngineMaster = std::static_pointer_cast<EngineMaster>(m_pEngineMaster);
     EngineChannelMock* pChannel = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test1]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -129,11 +131,12 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
 TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     const QString testName = "TwoChannelOutputWorks";
 
+    auto pEngineMaster = std::static_pointer_cast<EngineMaster>(m_pEngineMaster);
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test1]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test2]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -186,11 +189,12 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
 TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     const QString testName = "TwoChannelPFLOutputWorks";
 
+    auto pEngineMaster = std::static_pointer_cast<EngineMaster>(m_pEngineMaster);
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test1]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test2]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -243,14 +247,15 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
 TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     const QString testName = "ThreeChannelOutputWorks";
 
+    auto pEngineMaster = std::static_pointer_cast<EngineMaster>(m_pEngineMaster);
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test1]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test2]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel2);
     EngineChannelMock* pChannel3 = new EngineChannelMock(
-            "[Test3]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test3]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -319,14 +324,15 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
 TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     const QString testName = "ThreeChannelPFLOutputWorks";
 
+    auto pEngineMaster = std::static_pointer_cast<EngineMaster>(m_pEngineMaster);
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test1]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test2]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel2);
     EngineChannelMock* pChannel3 = new EngineChannelMock(
-            "[Test3]", EngineChannel::CENTER, m_pEngineMaster);
+            "[Test3]", EngineChannel::CENTER, pEngineMaster);
     m_pEngineMaster->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's

@@ -48,8 +48,8 @@ class Library: public QObject,
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            PlayerManagerInterface* pPlayerManager,
-            RecordingManager* pRecordingManager);
+            std::shared_ptr<PlayerManagerInterface> pPlayerManager,
+            std::shared_ptr<RecordingManager> pRecordingManager);
     ~Library() override;
 
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {

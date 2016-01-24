@@ -15,7 +15,7 @@ const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
 RecordingFeature::RecordingFeature(Library* pLibrary,
                                    UserSettingsPointer pConfig,
                                    TrackCollection* pTrackCollection,
-                                   RecordingManager* pRecordingManager)
+                                   std::shared_ptr<RecordingManager> pRecordingManager)
         : LibraryFeature(pLibrary),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),

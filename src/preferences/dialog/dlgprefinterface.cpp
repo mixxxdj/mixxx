@@ -13,17 +13,17 @@
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
 #include "control/controlobject.h"
-#include "mixxx.h"
 #include "util/screensaver.h"
 #include "defs_urls.h"
 #include "util/autohidpi.h"
+#include "widget/wmainwindow.h"
 
-DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
-                                 SkinLoader* pSkinLoader,
-                                 UserSettingsPointer pConfig)
+DlgPrefInterface::DlgPrefInterface(QWidget* parent, WMainWindow* pMainWindow,
+                                   SkinLoader* pSkinLoader,
+                                   UserSettingsPointer pConfig)
         :  DlgPreferencePage(parent),
            m_pConfig(pConfig),
-           m_mixxx(mixxx),
+           m_pMainWindow(pMainWindow),
            m_pSkinLoader(pSkinLoader),
            m_dScaleFactorAuto(1.0),
            m_bUseAutoScaleFactor(false),
@@ -154,14 +154,14 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     // Screensaver mode
     //
     comboBoxScreensaver->clear();
-    comboBoxScreensaver->addItem(tr("Allow screensaver to run"), 
+    comboBoxScreensaver->addItem(tr("Allow screensaver to run"),
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_OFF));
-    comboBoxScreensaver->addItem(tr("Prevent screensaver from running"), 
+    comboBoxScreensaver->addItem(tr("Prevent screensaver from running"),
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON));
-    comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"), 
+    comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"),
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON_PLAY));
 
-    int inhibitsettings = static_cast<int>(mixxx->getInhibitScreensaver());
+    int inhibitsettings = static_cast<int>(m_pMainWindow->getInhibitScreensaver());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 
     //
@@ -229,7 +229,7 @@ void DlgPrefInterface::slotUpdate() {
 
     loadTooltipPreferenceFromConfig();
 
-    int inhibitsettings = static_cast<int>(m_mixxx->getInhibitScreensaver());
+    int inhibitsettings = static_cast<int>(m_pMainWindow->getInhibitScreensaver());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 
     bool effectAdoptMetaknobValue = m_pConfig->getValue(
@@ -348,14 +348,14 @@ void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey("[Effects]", "AdoptMetaknobValue"),
             ConfigValue(radioButtonKeepMetaknobPosition->isChecked()));
 
-    m_mixxx->setToolTipsCfg(m_tooltipMode);
+    m_pMainWindow->setToolTipsCfg(m_tooltipMode);
 
     // screensaver mode update
     int screensaverComboBoxState = comboBoxScreensaver->itemData(
             comboBoxScreensaver->currentIndex()).toInt();
-    int screensaverConfiguredState = static_cast<int>(m_mixxx->getInhibitScreensaver());
+    int screensaverConfiguredState = static_cast<int>(m_pMainWindow->getInhibitScreensaver());
     if (screensaverComboBoxState != screensaverConfiguredState) {
-        m_mixxx->setInhibitScreensaver(
+        m_pMainWindow->setInhibitScreensaver(
                 static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
@@ -366,7 +366,7 @@ void DlgPrefInterface::slotApply() {
     }
 
     if (m_bRebootMixxxView) {
-        m_mixxx->rebootMixxxView();
+        m_pMainWindow->rebootMixxxView();
         // Allow switching skins multiple times without closing the dialog
         m_skinOnUpdate = m_skin;
     }
@@ -406,7 +406,7 @@ bool DlgPrefInterface::checkSkinResolution(QString skin)
 }
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
-    mixxx::TooltipsPreference configTooltips = m_mixxx->getToolTipsCfg();
+    mixxx::TooltipsPreference configTooltips = m_pMainWindow->getToolTipsCfg();
     switch (configTooltips) {
         case mixxx::TooltipsPreference::TOOLTIPS_OFF:
             radioButtonTooltipsOff->setChecked(true);

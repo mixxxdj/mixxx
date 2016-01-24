@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QScopedPointer>
+#include <QSharedPointer>
 #include <QString>
 
 #include "preferences/usersettings.h"
@@ -51,8 +52,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   public:
     BaseTrackPlayerImpl(QObject* pParent,
                         UserSettingsPointer pConfig,
-                        EngineMaster* pMixingEngine,
-                        EffectsManager* pEffectsManager,
+                        std::shared_ptr<EngineMaster> pMixingEngine,
+                        std::shared_ptr<EffectsManager> pEffectsManager,
                         EngineChannel::ChannelOrientation defaultOrientation,
                         const QString& group,
                         bool defaultMaster,
@@ -95,7 +96,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void disconnectLoadedTrack();
 
     UserSettingsPointer m_pConfig;
-    EngineMaster* m_pEngineMaster;
+    std::shared_ptr<EngineMaster> m_pEngineMaster;
     TrackPointer m_pLoadedTrack;
     EngineDeck* m_pChannel;
     bool m_replaygainPending;

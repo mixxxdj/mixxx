@@ -19,7 +19,6 @@
 #include "preferences/dialog/dlgprefsounditem.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
@@ -29,11 +28,11 @@
  * Construct a new sound preferences pane. Initializes and populates all the
  * all the controls to the values obtained from SoundManager.
  */
-DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
-                           PlayerManager* pPlayerManager, UserSettingsPointer pConfig)
+DlgPrefSound::DlgPrefSound(QWidget* pParent,
+                           std::shared_ptr<SoundManager> pSoundManager,
+                           UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
-          m_pPlayerManager(pPlayerManager),
           m_pConfig(pConfig),
           m_settingsModified(false),
           m_bLatencyChanged(false),
@@ -41,7 +40,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
           m_loading(false) {
     setupUi(this);
 
-    connect(m_pSoundManager, SIGNAL(devicesUpdated()),
+    connect(m_pSoundManager.get(), SIGNAL(devicesUpdated()),
             this, SLOT(refreshDevices()));
 
     apiComboBox->clear();
@@ -140,14 +139,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(queryButton, SIGNAL(clicked()),
             this, SLOT(queryClicked()));
 
-    connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
+    connect(m_pSoundManager.get(), SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
             this, SLOT(addPath(AudioOutput)));
-    connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
+    connect(m_pSoundManager.get(), SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
             this, SLOT(loadSettings()));
 
-    connect(m_pSoundManager, SIGNAL(inputRegistered(AudioInput, AudioDestination*)),
+    connect(m_pSoundManager.get(), SIGNAL(inputRegistered(AudioInput, AudioDestination*)),
             this, SLOT(addPath(AudioInput)));
-    connect(m_pSoundManager, SIGNAL(inputRegistered(AudioInput, AudioDestination*)),
+    connect(m_pSoundManager.get(), SIGNAL(inputRegistered(AudioInput, AudioDestination*)),
             this, SLOT(loadSettings()));
 
     m_pMasterAudioLatencyOverloadCount =
@@ -418,7 +417,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     keylockComboBox->setCurrentIndex(keylock_engine);
 
     m_loading = false;
-    // DlgPrefSoundItem has it's own inhibit flag 
+    // DlgPrefSoundItem has it's own inhibit flag
     emit(loadPaths(m_config));
 }
 
@@ -591,7 +590,7 @@ void DlgPrefSound::queryClicked() {
  */
 void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig;
-    newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
+    newConfig.loadDefaults(*m_pSoundManager, SoundManagerConfig::ALL);
     loadSettings(newConfig);
     keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
     m_pKeylockEngine->set(EngineBuffer::RUBBERBAND);

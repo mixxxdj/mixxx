@@ -15,6 +15,7 @@
 #include "engine/effects/message.h"
 #include "util/class.h"
 #include "util/fifo.h"
+#include "util/memory.h"
 
 class EngineEffectsManager;
 class EffectChainManager;
@@ -27,7 +28,7 @@ class EffectsManager : public QObject {
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
 
     EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                   ChannelHandleFactory* pChannelHandleFactory);
+                   std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {
@@ -46,6 +47,9 @@ class EffectsManager : public QObject {
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
+    // Gets the first registered backend with the provided type or nullptr if
+    // no such backend is registered.
+    EffectsBackend* getEffectsBackendByType(EffectBackendType type) const;
     void registerInputChannel(const ChannelHandleAndGroup& handle_group);
     void registerOutputChannel(const ChannelHandleAndGroup& handle_group);
     const QSet<ChannelHandleAndGroup>& registeredInputChannels() const;
@@ -92,7 +96,7 @@ class EffectsManager : public QObject {
     EffectPointer instantiateEffect(const QString& effectId);
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
-    bool getEffectVisibility(EffectManifestPointer pManifest); 
+    bool getEffectVisibility(EffectManifestPointer pManifest) const;
 
     // Temporary, but for setting up all the default EffectChains and EffectRacks
     void setup();
@@ -120,7 +124,7 @@ class EffectsManager : public QObject {
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    std::shared_ptr<ChannelHandleFactory> m_pChannelHandleFactory;
 
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;

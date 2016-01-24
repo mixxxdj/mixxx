@@ -24,12 +24,15 @@ class EffectsBackend : public QObject {
     EffectsBackend(QObject* pParent, EffectBackendType type);
     virtual ~EffectsBackend();
 
-    // returns a list sorted like it should be displayed in the GUI 
+    // returns a list sorted like it should be displayed in the GUI
     virtual const QList<QString> getEffectIds() const;
     virtual EffectManifestPointer getManifest(const QString& effectId) const;
     virtual bool canInstantiateEffect(const QString& effectId) const;
     virtual EffectPointer instantiateEffect(
             EffectsManager* pEffectsManager, const QString& effectId);
+    EffectBackendType type() const {
+        return m_type;
+    }
 
   signals:
     void effectRegistered(EffectManifestPointer);
@@ -48,7 +51,7 @@ class EffectsBackend : public QObject {
                         new EffectProcessorInstantiator<EffectProcessorImpl>()));
     }
 
-    EffectBackendType m_type;
+    const EffectBackendType m_type;
 
   private:
     class RegisteredEffect {

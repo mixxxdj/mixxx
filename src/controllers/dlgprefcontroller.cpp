@@ -22,7 +22,7 @@
 #include "util/version.h"
 
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
-                                     ControllerManager* controllerManager,
+                                     std::shared_ptr<ControllerManager> controllerManager,
                                      UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
@@ -68,11 +68,11 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
 
     // Connect our signals to controller manager.
     connect(this, SIGNAL(openController(Controller*)),
-            m_pControllerManager, SLOT(openController(Controller*)));
+            m_pControllerManager.get(), SLOT(openController(Controller*)));
     connect(this, SIGNAL(closeController(Controller*)),
-            m_pControllerManager, SLOT(closeController(Controller*)));
+            m_pControllerManager.get(), SLOT(closeController(Controller*)));
     connect(this, SIGNAL(loadPreset(Controller*, ControllerPresetPointer)),
-            m_pControllerManager, SLOT(loadPreset(Controller*, ControllerPresetPointer)));
+            m_pControllerManager.get(), SLOT(loadPreset(Controller*, ControllerPresetPointer)));
 
     // Input mappings
     connect(m_ui.btnAddInputMapping, SIGNAL(clicked()),
@@ -744,5 +744,3 @@ void DlgPrefController::openScript() {
         }
     }
 }
-
-

@@ -886,7 +886,7 @@ class MixxxCore(Feature):
                    "controllers/keyboard/keyboardeventfilter.cpp",
 
                    "main.cpp",
-                   "mixxx.cpp",
+                   "coreservices.cpp",
                    "mixxxapplication.cpp",
                    "errordialoghandler.cpp",
 
@@ -950,6 +950,7 @@ class MixxxCore(Feature):
                    "widget/wcoverartmenu.cpp",
                    "widget/wsingletoncontainer.cpp",
                    "widget/wmainmenubar.cpp",
+                   "widget/wmainwindow.cpp",
 
                    "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",

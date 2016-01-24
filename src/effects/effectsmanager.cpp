@@ -22,7 +22,7 @@ const unsigned int kEffectMessagPipeFifoSize = 2048;
 
 
 EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                               ChannelHandleFactory* pChannelHandleFactory)
+                               std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory)
         : QObject(pParent),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
@@ -97,6 +97,15 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 
     connect(pBackend, SIGNAL(effectRegistered(EffectManifestPointer)),
             this, SIGNAL(availableEffectsUpdated(EffectManifestPointer)));
+}
+
+EffectsBackend* EffectsManager::getEffectsBackendByType(EffectBackendType type) const {
+    for (auto* backend : m_effectsBackends) {
+        if (backend->type() == type) {
+            return backend;
+        }
+    }
+    return nullptr;
 }
 
 void EffectsManager::slotBackendRegisteredEffect(EffectManifestPointer pManifest) {
@@ -329,7 +338,7 @@ void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool v
     }
 }
 
-bool EffectsManager::getEffectVisibility(EffectManifestPointer pManifest) {
+bool EffectsManager::getEffectVisibility(EffectManifestPointer pManifest) const {
     return m_visibleEffectManifests.contains(pManifest);
 }
 

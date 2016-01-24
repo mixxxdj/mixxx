@@ -3,18 +3,19 @@
 
 #include <QWidget>
 
+#include "library/library.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
-class MixxxMainWindow;
 class Library;
+class WMainWindow;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
     Q_OBJECT
   public:
-    DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                    UserSettingsPointer pConfig, Library* pLibrary);
+    DlgPrefWaveform(QWidget* pParent, WMainWindow* pMainWindow,
+                    UserSettingsPointer pConfig, std::shared_ptr<Library> pLibrary);
     virtual ~DlgPrefWaveform();
 
   public slots:
@@ -44,8 +45,8 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void calculateCachedWaveformDiskUsage();
 
     UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
-    MixxxMainWindow* m_pMixxx;
+    std::shared_ptr<Library> m_pLibrary;
+    WMainWindow* m_pMainWindow;
 };
 
 

@@ -97,12 +97,12 @@ QString SkinLoader::getDefaultSkinName() const {
 
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
                                         KeyboardEventFilter* pKeyboard,
-                                        PlayerManager* pPlayerManager,
-                                        ControllerManager* pControllerManager,
-                                        Library* pLibrary,
-                                        VinylControlManager* pVCMan,
-                                        EffectsManager* pEffectsManager,
-                                        RecordingManager* pRecordingManager) {
+                                        std::shared_ptr<PlayerManager> pPlayerManager,
+                                        std::shared_ptr<ControllerManager> pControllerManager,
+                                        std::shared_ptr<Library> pLibrary,
+                                        std::shared_ptr<VinylControlManager> pVCMan,
+                                        std::shared_ptr<EffectsManager> pEffectsManager,
+                                        std::shared_ptr<RecordingManager> pRecordingManager) {
     ScopedTimer timer("SkinLoader::loadConfiguredSkin");
     QString skinPath = getConfiguredSkinPath();
 
@@ -111,9 +111,11 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         return NULL;
     }
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager,
-                            pControllerManager, pLibrary, pVCMan,
-                            pEffectsManager, pRecordingManager);
+    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager.get(),
+                            pControllerManager.get(), pLibrary.get(),
+                            pVCMan.get(), pEffectsManager.get(),
+                            pRecordingManager.get());
+
     return legacy.parseSkin(skinPath, pParent);
 }
 

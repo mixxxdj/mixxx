@@ -46,7 +46,7 @@ void SettingsManager::initializeDefaults() {
 
     // Initialize default BPM system values.
     // NOTE(rryan): These should be in a better place but they've always been in
-    // MixxxMainWindow.
+    // WMainWindow.
     if (!m_pSettings->exists(ConfigKey("[BPM]", "BPMRangeStart"))) {
         m_pSettings->set(ConfigKey("[BPM]", "BPMRangeStart"),ConfigValue(65));
     }

@@ -41,7 +41,6 @@ class ControlPotmeter;
 class ControlPushButton;
 class EngineSideChain;
 class EffectsManager;
-class EngineEffectsManager;
 class SyncWorker;
 class GuiTick;
 class EngineSync;
@@ -57,8 +56,8 @@ class EngineMaster : public QObject, public AudioSource {
   public:
     EngineMaster(UserSettingsPointer pConfig,
                  const char* pGroup,
-                 EffectsManager* pEffectsManager,
-                 ChannelHandleFactory* pChannelHandleFactory,
+                 std::shared_ptr<EffectsManager> pEffectsManager,
+                 std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory,
                  bool bEnableSidechain);
     virtual ~EngineMaster();
 
@@ -271,11 +270,14 @@ class EngineMaster : public QObject, public AudioSource {
     // respective output.
     void processChannels(int iBufferSize);
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    std::shared_ptr<ChannelHandleFactory> m_pChannelHandleFactory;
     void applyMasterEffects();
     void processHeadphones(const double masterMixGainInHeadphones);
 
-    EngineEffectsManager* m_pEngineEffectsManager;
+    // To ensure that our pointer to EngineEffectsManager lives for as long as
+    // we do, we keep a shared_ptr to EffectsManager.
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
+    EngineEffectsManager* m_pEngineEffectsManager;  // owned by EffectsManager.
 
     // List of channels added to the engine.
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_channels;

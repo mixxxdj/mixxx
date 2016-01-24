@@ -19,7 +19,7 @@
 #endif
 #endif
 
-VSyncThread::VSyncThread(QObject* pParent, GuiTick* pGuiTick)
+VSyncThread::VSyncThread(QObject* pParent, std::shared_ptr<GuiTick> pGuiTick)
         : QThread(pParent),
           m_bDoRendering(true),
           m_vSyncTypeChanged(false),

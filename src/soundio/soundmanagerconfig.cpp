@@ -349,9 +349,9 @@ bool SoundManagerConfig::hasExternalRecordBroadcast() {
  *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
  *              load default API and master device.
  */
-void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int flags) {
+void SoundManagerConfig::loadDefaults(const SoundManager& soundManager, unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
-        QList<QString> apiList = soundManager->getHostAPIList();
+        QList<QString> apiList = soundManager.getHostAPIList();
         if (!apiList.isEmpty()) {
 #ifdef __LINUX__
             //Check for JACK and use that if it's available, otherwise use ALSA
@@ -367,7 +367,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
             // hoping this counts as more advanced, tests if ASIO is an option
             // and then that we have at least one ASIO output device -- bkgood
             if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING)
-                   && !soundManager->getDeviceList(
+                   && !soundManager.getDeviceList(
                        MIXXX_PORTAUDIO_ASIO_STRING, true, false).isEmpty()) {
                 m_api = MIXXX_PORTAUDIO_ASIO_STRING;
             } else {
@@ -384,7 +384,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
     if (flags & SoundManagerConfig::DEVICES) {
         clearOutputs();
         clearInputs();
-        QList<SoundDevicePointer> outputDevices = soundManager->getDeviceList(m_api, true, false);
+        QList<SoundDevicePointer> outputDevices = soundManager.getDeviceList(m_api, true, false);
         if (!outputDevices.isEmpty()) {
             for (const auto& pDevice: outputDevices) {
                 if (pDevice->getNumOutputChannels() < 2) {
@@ -398,7 +398,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
         }
     }
     if (flags & SoundManagerConfig::OTHER) {
-        QList<unsigned int> sampleRates = soundManager->getSampleRates(m_api);
+        QList<unsigned int> sampleRates = soundManager.getSampleRates(m_api);
         if (sampleRates.contains(defaultSampleRate)) {
             m_sampleRate = defaultSampleRate;
         } else if (sampleRates.contains(kFallbackSampleRate)) {
@@ -427,4 +427,3 @@ QSet<QString> SoundManagerConfig::getDevices() const {
     }
     return devices;
 }
-

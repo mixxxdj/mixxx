@@ -23,7 +23,7 @@ class RecordingFeature : public LibraryFeature {
     RecordingFeature(Library* parent,
                      UserSettingsPointer pConfig,
                      TrackCollection* pTrackCollection,
-                     RecordingManager* pRecordingManager);
+                     std::shared_ptr<RecordingManager> pRecordingManager);
     virtual ~RecordingFeature();
 
     QVariant title();
@@ -48,7 +48,7 @@ class RecordingFeature : public LibraryFeature {
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     const static QString m_sRecordingViewName;
-    RecordingManager* m_pRecordingManager;
+    std::shared_ptr<RecordingManager> m_pRecordingManager;
 };
 
 #endif

@@ -66,7 +66,9 @@ class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheSav
 
   protected:
     GlobalTrackCacheTest() {
-        GlobalTrackCache::createInstance(this);
+        // Make a shared_ptr out of this with a do-nothing deleter for testing.
+        GlobalTrackCache::createInstance(std::shared_ptr<GlobalTrackCacheSaver>(
+            this, [](GlobalTrackCacheSaver*) {}));
     }
     ~GlobalTrackCacheTest() {
         GlobalTrackCache::destroyInstance();

@@ -5,12 +5,11 @@
 #include <QScopedPointer>
 #include <QString>
 
+#include "control/controlproxy.h"
+#include "effects/effectsmanager.h"
+#include "engine/enginemaster.h"
 #include "mixer/baseplayer.h"
-
-class ControlProxy;
-class EffectsManager;
-class EngineMaster;
-class SoundManager;
+#include "soundio/soundmanager.h"
 
 class Microphone : public BasePlayer {
     Q_OBJECT
@@ -18,9 +17,9 @@ class Microphone : public BasePlayer {
     Microphone(QObject* pParent,
                const QString& group,
                int index,
-               SoundManager* pSoundManager,
-               EngineMaster* pMixingEngine,
-               EffectsManager* pEffectsManager);
+               std::shared_ptr<SoundManager> pSoundManager,
+               std::shared_ptr<EngineMaster> pMixingEngine,
+               std::shared_ptr<EffectsManager> pEffectsManager);
     virtual ~Microphone();
 
   signals:

@@ -10,7 +10,8 @@
 
 DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
                            Library* pLibrary, TrackCollection* pTrackCollection,
-                           RecordingManager* pRecordingManager, KeyboardEventFilter* pKeyboard)
+                           std::shared_ptr<RecordingManager> pRecordingManager,
+                           KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
@@ -34,11 +35,11 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
     connect(pLibrary, SIGNAL(setSelectedClick(bool)),
             m_pTrackTableView, SLOT(setSelectedClick(bool)));
 
-    connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
+    connect(m_pRecordingManager.get(), SIGNAL(isRecording(bool)),
             this, SLOT(slotRecordingEnabled(bool)));
-    connect(m_pRecordingManager, SIGNAL(bytesRecorded(int)),
+    connect(m_pRecordingManager.get(), SIGNAL(bytesRecorded(int)),
             this, SLOT(slotBytesRecorded(int)));
-    connect(m_pRecordingManager, SIGNAL(durationRecorded(QString)),
+    connect(m_pRecordingManager.get(), SIGNAL(durationRecorded(QString)),
             this, SLOT(slotDurationRecorded(QString)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());

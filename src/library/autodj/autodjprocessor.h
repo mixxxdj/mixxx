@@ -114,7 +114,7 @@ class AutoDJProcessor : public QObject {
 
     AutoDJProcessor(QObject* pParent,
                     UserSettingsPointer pConfig,
-                    PlayerManagerInterface* pPlayerManager,
+                    std::shared_ptr<PlayerManagerInterface> pPlayerManager,
                     int iAutoDJPlaylistId,
                     TrackCollection* pCollection);
     virtual ~AutoDJProcessor();
@@ -128,7 +128,7 @@ class AutoDJProcessor : public QObject {
     }
 
     PlaylistTableModel* getTableModel() const {
-        return m_pAutoDJTableModel;
+        return m_pAutoDJTableModel.get();
     }
 
     bool nextTrackLoaded();
@@ -193,8 +193,8 @@ class AutoDJProcessor : public QObject {
     bool removeTrackFromTopOfQueue(TrackPointer pTrack);
 
     UserSettingsPointer m_pConfig;
-    PlayerManagerInterface* m_pPlayerManager;
-    PlaylistTableModel* m_pAutoDJTableModel;
+    std::shared_ptr<PlayerManagerInterface> m_pPlayerManager;
+    std::unique_ptr<PlaylistTableModel> m_pAutoDJTableModel;
 
     AutoDJState m_eState;
     double m_transitionTime; // the desired value set by the user

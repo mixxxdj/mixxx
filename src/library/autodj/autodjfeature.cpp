@@ -42,7 +42,7 @@ namespace {
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
                              UserSettingsPointer pConfig,
-                             PlayerManagerInterface* pPlayerManager,
+                             std::shared_ptr<PlayerManagerInterface> pPlayerManager,
                              TrackCollection* pTrackCollection)
         : LibraryFeature(pLibrary),
           m_pConfig(pConfig),

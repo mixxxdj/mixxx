@@ -1,18 +1,17 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
-#include "mixxx.h"
-#include "library/library.h"
 #include "preferences/waveformsettings.h"
+#include "util/db/dbconnectionpooled.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "util/db/dbconnectionpooled.h"
+#include "widget/wmainwindow.h"
 
-DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                                 UserSettingsPointer pConfig, Library* pLibrary)
+DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, WMainWindow* pMainWindow,
+                                 UserSettingsPointer pConfig, std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
-          m_pMixxx(pMixxx) {
+          m_pMainWindow(pMainWindow) {
     setupUi(this);
 
     // Waveform overview init
@@ -199,7 +198,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
 
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
     m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
-    m_pMixxx->rebootMixxxView();
+    m_pMainWindow->rebootMixxxView();
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {

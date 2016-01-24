@@ -31,11 +31,12 @@
 
 EngineMaster::EngineMaster(UserSettingsPointer pConfig,
                            const char* group,
-                           EffectsManager* pEffectsManager,
-                           ChannelHandleFactory* pChannelHandleFactory,
+                           std::shared_ptr<EffectsManager> pEffectsManager,
+                           std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory,
                            bool bEnableSidechain)
         : m_pChannelHandleFactory(pChannelHandleFactory),
-          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+          m_pEffectsManager(pEffectsManager),
+          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : nullptr),
           m_masterGainOld(0.0),
           m_boothGainOld(0.0),
           m_headphoneMasterGainOld(0.0),

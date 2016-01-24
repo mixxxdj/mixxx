@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#include "effects/effectsmanager.h"
+#include "engine/enginemaster.h"
 #include "mixer/basetrackplayer.h"
 
 class Deck : public BaseTrackPlayerImpl {
@@ -10,8 +12,8 @@ class Deck : public BaseTrackPlayerImpl {
   public:
     Deck(QObject* pParent,
          UserSettingsPointer pConfig,
-         EngineMaster* pMixingEngine,
-         EffectsManager* pEffectsManager,
+         std::shared_ptr<EngineMaster> pMixingEngine,
+         std::shared_ptr<EffectsManager> pEffectsManager,
          EngineChannel::ChannelOrientation defaultOrientation,
          const QString& group);
     virtual ~Deck();

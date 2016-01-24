@@ -173,7 +173,7 @@ class GlobalTrackCache : public QObject {
     Q_OBJECT
 
 public:
-    static void createInstance(GlobalTrackCacheSaver* pDeleter);
+    static void createInstance(std::shared_ptr<GlobalTrackCacheSaver> pDeleter);
     // NOTE(uklotzde, 2018-02-20): We decided not to destroy the singular
     // instance during shutdown, because we are not able to guarantee that
     // all track references have been released before. Instead the singular
@@ -192,7 +192,7 @@ private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
 
-    explicit GlobalTrackCache(GlobalTrackCacheSaver* pDeleter);
+    explicit GlobalTrackCache(std::shared_ptr<GlobalTrackCacheSaver> pDeleter);
     ~GlobalTrackCache();
 
     void relocateTracks(
@@ -226,7 +226,7 @@ private:
     // Managed by GlobalTrackCacheLocker
     mutable QMutex m_mutex;
 
-    GlobalTrackCacheSaver* m_pSaver;
+    std::shared_ptr<GlobalTrackCacheSaver> m_pSaver;
 
     // This caches the unsaved Tracks by ID
     typedef std::unordered_map<TrackId, GlobalTrackCacheEntryPointer, TrackId::hash_fun_t> TracksById;

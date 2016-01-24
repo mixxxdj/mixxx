@@ -204,7 +204,7 @@ void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
 }
 
 //static
-void GlobalTrackCache::createInstance(GlobalTrackCacheSaver* pDeleter) {
+void GlobalTrackCache::createInstance(std::shared_ptr<GlobalTrackCacheSaver> pDeleter) {
     DEBUG_ASSERT(!s_pInstance);
     s_pInstance = new GlobalTrackCache(pDeleter);
 }
@@ -247,7 +247,7 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
     }
 }
 
-GlobalTrackCache::GlobalTrackCache(GlobalTrackCacheSaver* pSaver)
+GlobalTrackCache::GlobalTrackCache(std::shared_ptr<GlobalTrackCacheSaver> pSaver)
     : m_mutex(QMutex::Recursive),
       m_pSaver(pSaver),
       m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
@@ -346,7 +346,7 @@ void GlobalTrackCache::deactivate() {
     // all allocated tracks will simply be deleted when their
     // shared pointer goes out of scope. Unsaved modifications
     // will be lost.
-    m_pSaver = nullptr;
+    m_pSaver.reset();
 }
 
 bool GlobalTrackCache::isEmpty() const {

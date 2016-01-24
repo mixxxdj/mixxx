@@ -1,6 +1,7 @@
 #ifndef DLGPREFEFFECTS_H
 #define DLGPREFEFFECTS_H
 
+#include "effects/effectsmanager.h"
 #include "preferences/usersettings.h"
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
 #include "preferences/dlgpreferencepage.h"
@@ -13,7 +14,7 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
   public:
     DlgPrefEffects(QWidget* pParent,
                    UserSettingsPointer pConfig,
-                   EffectsManager* pEffectsManager);
+                   std::shared_ptr<EffectsManager> pEffectsManager);
     virtual ~DlgPrefEffects();
 
     void slotUpdate();
@@ -28,7 +29,7 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
 
     EffectSettingsModel m_availableEffectsModel;
     UserSettingsPointer m_pConfig;
-    EffectsManager* m_pEffectsManager;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
     EffectSettingsModel* m_pAvailableEffectsModel;
 };
 
