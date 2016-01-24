@@ -1,6 +1,5 @@
-// Test the exporter
-// * just use a temp directory rather than trying to mock the filesystem.
-// *
+// Exercises the track export worker.
+// Just uses temp directories rather than trying to mock the filesystem.
 
 #include "test/trackexport_test.h"
 
