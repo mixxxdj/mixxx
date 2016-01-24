@@ -21,6 +21,7 @@
     #undef Bool
     #undef Unsorted
     #undef None
+    #undef Status
 #endif // QT_OPENGL_ES_2
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
