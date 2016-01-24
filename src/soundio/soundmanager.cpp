@@ -44,6 +44,13 @@ typedef PaError (*SetJackClientName)(const char *name);
 #endif
 
 namespace {
+
+struct DeviceMode {
+    SoundDevice* device;
+    bool isInput;
+    bool isOutput;
+};
+
 #ifdef __LINUX__
 const unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
@@ -348,16 +355,16 @@ Result SoundManager::setupDevices() {
     SoundDevice* pNewMasterClockRef = NULL;
 
     // pair is isInput, isOutput
-    QHash<SoundDevice*, QPair<bool, bool> > toOpen;
-    foreach (SoundDevice *device, m_devices) {
-        bool isInput = false;
-        bool isOutput = false;
+    QList<DeviceMode> toOpen;
+    bool haveOutput = false;
+    foreach (SoundDevice* device, m_devices) {
+        DeviceMode mode = {device, false, false};
         device->clearInputs();
         device->clearOutputs();
         m_pErrorDevice = device;
         foreach (AudioInput in,
                  m_config.getInputs().values(device->getInternalName())) {
-            isInput = true;
+            mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
             AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
@@ -387,7 +394,10 @@ Result SoundManager::setupDevices() {
         }
 
         foreach (AudioOutput out, outputs) {
-            isOutput = true;
+            mode.isOutput = true;
+            if (device->getInternalName() != kNetworkDeviceInternalName) {
+                haveOutput = true;
+            }
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
             const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
@@ -416,22 +426,22 @@ Result SoundManager::setupDevices() {
             }
         }
 
-        if (isInput || isOutput) {
+        if (mode.isInput || mode.isOutput) {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
-            toOpen[device] = QPair<bool, bool>(isInput, isOutput);
+            toOpen.append(mode);
         }
     }
 
-    foreach (SoundDevice *device, toOpen.keys()) {
-        QPair<bool, bool> mode(toOpen[device]);
-        bool isInput = mode.first;
-        bool isOutput = mode.second;
+    for (const auto& mode: toOpen) {
         ++devicesAttempted;
+        SoundDevice* device = mode.device;
         m_pErrorDevice = device;
         // If we have not yet set a clock source then we use the first
+        // output device
         if (device->getInternalName() != kNetworkDeviceInternalName &&
-                pNewMasterClockRef == NULL) {
+                pNewMasterClockRef == NULL &&
+                (!haveOutput || mode.isOutput)) {
             pNewMasterClockRef = device;
             qWarning() << "Output sound device clock reference not set! Using"
                        << device->getDisplayName();
@@ -448,10 +458,10 @@ Result SoundManager::setupDevices() {
             goto closeAndError;
         } else {
             ++devicesOpened;
-            if (isOutput) {
+            if (mode.isOutput) {
                 ++outputDevicesOpened;
             }
-            if (isInput) {
+            if (mode.isInput) {
                 ++inputDevicesOpened;
             }
         }
