@@ -10,15 +10,9 @@
 
 #include "library/dao/trackdao.h"
 
-#include "library/queryutil.h"
 #include "soundsourceproxy.h"
-#include "track/beatfactory.h"
-#include "track/beats.h"
-#include "track/keyfactory.h"
-#include "track/keyutils.h"
-#include "track/tracknumbers.h"
-#include "track/trackmetadatataglib.h"
 #include "trackinfoobject.h"
+#include "library/queryutil.h"
 #include "library/coverart.h"
 #include "library/coverartutils.h"
 #include "library/dao/cratedao.h"
@@ -27,6 +21,11 @@
 #include "library/dao/analysisdao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/coverartcache.h"
+#include "track/beatfactory.h"
+#include "track/beats.h"
+#include "track/keyfactory.h"
+#include "track/keyutils.h"
+#include "track/tracknumbers.h"
 #include "util/assert.h"
 #include "util/file.h"
 #include "util/timer.h"
@@ -1316,15 +1315,30 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // default value "//".
     // See also: Schema revision 26 in schema.xml
     if (pTrack->getTrackTotal() == "//") {
-        // Reload track total from file tags
-        Mixxx::TrackMetadata trackMetadata;
-        if (OK == readTrackMetadataAndCoverArtFromFile(&trackMetadata, nullptr, trackLocation)) {
-            pTrack->setTrackTotal(trackMetadata.getTrackTotal());
+        // Reload track total from file tags into a temporary
+        // track object, if the special track total migration
+        // value "//" indicates that the track total is missing
+        // and needs to be reloaded. We need to use a temporary
+        // here, otherwise the track's metadata in the library
+        // would be overwritten.
+        const TrackPointer pTempTrack(
+                new TrackInfoObject(
+                        pTrack->getFileInfo(),
+                        pTrack->getSecurityToken()));
+        SoundSourceProxy proxy(pTempTrack);
+        // The metadata for the newly created track object has
+        // not been parsed from the file, until we explicitly
+        // (re-)load it through the SoundSourceProxy.
+        DEBUG_ASSERT(!pTempTrack->getHeaderParsed());
+        proxy.loadTrackMetadata();
+        if (pTempTrack->getHeaderParsed()) {
+            // Copy the track total from the temporary track object
+            pTrack->setTrackTotal(pTempTrack->getTrackTotal());
             // Also set the track number if it is still empty due
             // to insufficient parsing capabilities of Mixxx in
             // previous versions.
-            if (!trackMetadata.getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
-                pTrack->setTrackNumber(trackMetadata.getTrackNumber());
+            if (!pTempTrack->getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
+                pTrack->setTrackNumber(pTempTrack->getTrackNumber());
             }
         } else {
             qWarning() << "Failed to reload track total from file tags:"
