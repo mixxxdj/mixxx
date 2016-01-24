@@ -276,13 +276,27 @@ imgfmtdll_files = []
 qt_imagesformats = depends.Qt.enabled_imageformats(build)
 
 if qt5:
-        suffix = 'd.dll' if build.build_is_debug else '.dll'
-        qt_imagesformats = ['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats]
-        imgfmtdll_files.extend(qt_imagesformats)
+        if build.build_is_debug:
+                suffix = 'd.dll'
+                # If debug build, add pdb files
+                pdbSuffix = 'd.pdb'
+        else:
+                suffix = '.dll'
+                pdbSuffix = ''
+        imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+        if pdbSuffix:
+                 imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 else:
-        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-        qt_imagesformats = ['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats]
-        imgfmtdll_files.extend(qt_imagesformats)
+        if build.build_is_debug:
+                suffix = 'd4.dll'
+                # If debug build, add pdb files
+                pdbSuffix = 'd4.pdb'
+        else:
+                suffix = '4.dll'
+                pdbSuffix = ''
+        imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+        if pdbSuffix:
+                imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 
 sqldll_files = []
 if int(flags.get('qt_sqlite_plugin', 0)):
