@@ -20,7 +20,7 @@ void FakeOverwriteAnswerer::slotAskOverwriteMode(
             std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
     auto it = m_answers.find(filename);
     // Make sure this filename is in the map, and then remove it.
-    // The ASSERT_EQ map has trouble with this comparison.
+    // The ASSERT_EQ macro has trouble with this comparison.
     ASSERT_FALSE(it == m_answers.end());
     TrackExportWorker::OverwriteAnswer answer = m_answers[filename];
     m_answers.remove(filename);

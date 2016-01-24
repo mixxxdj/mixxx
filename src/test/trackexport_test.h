@@ -29,7 +29,7 @@ class FakeOverwriteAnswerer : public QObject {
     virtual ~FakeOverwriteAnswerer();
 
     void setAnswer(QString expected_filename,
-                    TrackExportWorker::OverwriteAnswer answer) {
+                   TrackExportWorker::OverwriteAnswer answer) {
         m_answers[expected_filename] = answer;
     }
 
