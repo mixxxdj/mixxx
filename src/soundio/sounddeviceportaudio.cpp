@@ -40,13 +40,49 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "visualplayposition.h"
 
+// static
+volatile int SoundDevicePortAudio::m_underflowHappened = 0;
+
+namespace {
+
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 static const int kDriftReserve = 1;
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 static const int kFifoSize = 2 * kDriftReserve + 1;
 
-// static
-volatile int SoundDevicePortAudio::m_underflowHappened = 0;
+int paV19Callback(const void *inputBuffer, void *outputBuffer,
+                  unsigned long framesPerBuffer,
+                  const PaStreamCallbackTimeInfo *timeInfo,
+                  PaStreamCallbackFlags statusFlags,
+                  void *soundDevice) {
+    return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(
+            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
+            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
+}
+
+int paV19CallbackDrift(const void *inputBuffer, void *outputBuffer,
+                       unsigned long framesPerBuffer,
+                       const PaStreamCallbackTimeInfo *timeInfo,
+                       PaStreamCallbackFlags statusFlags,
+                       void *soundDevice) {
+    return ((SoundDevicePortAudio*) soundDevice)->callbackProcessDrift(
+            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
+            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
+}
+
+int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
+                        unsigned long framesPerBuffer,
+                        const PaStreamCallbackTimeInfo *timeInfo,
+                        PaStreamCallbackFlags statusFlags,
+                        void *soundDevice) {
+    return ((SoundDevicePortAudio*) soundDevice)->callbackProcessClkRef(
+            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
+            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
+}
+
+} // anonymous namespace
+
+
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config,
                                            SoundManager *sm,
@@ -935,34 +971,4 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     m_nsInAudioCb += timer.elapsed();
     return paContinue;
-}
-
-int paV19Callback(const void *inputBuffer, void *outputBuffer,
-                  unsigned long framesPerBuffer,
-                  const PaStreamCallbackTimeInfo *timeInfo,
-                  PaStreamCallbackFlags statusFlags,
-                  void *soundDevice) {
-    return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(
-            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
-            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
-}
-
-int paV19CallbackDrift(const void *inputBuffer, void *outputBuffer,
-                       unsigned long framesPerBuffer,
-                       const PaStreamCallbackTimeInfo *timeInfo,
-                       PaStreamCallbackFlags statusFlags,
-                       void *soundDevice) {
-    return ((SoundDevicePortAudio*) soundDevice)->callbackProcessDrift(
-            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
-            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
-}
-
-int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
-                        unsigned long framesPerBuffer,
-                        const PaStreamCallbackTimeInfo *timeInfo,
-                        PaStreamCallbackFlags statusFlags,
-                        void *soundDevice) {
-    return ((SoundDevicePortAudio*) soundDevice)->callbackProcessClkRef(
-            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
-            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
 }
