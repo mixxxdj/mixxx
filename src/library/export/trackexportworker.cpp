@@ -7,6 +7,14 @@
 
 namespace {
 
+QString rewriteFilename(const QFileInfo& fileinfo, int index) {
+    // We don't have total control over the inputs, so definitely
+    // don't use .arg().arg().arg().
+    const QString index_str = QString("%1").arg(index, 4, 10, QChar('0'));
+    return QString("%1-%2.%3").arg(fileinfo.baseName(), index_str,
+                                   fileinfo.completeSuffix());
+}
+
 // Iterate over a list of tracks and generate a minimal set of files to copy.
 // Finds duplicate filenames.  Munges filenames if they refer to different files,
 // and skips if they refer to the same disk location.  Returns a map from
@@ -29,13 +37,7 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
             if (i == 0) {
                 dest_filename = fileinfo.fileName();
             } else {
-                // We don't have total control over the inputs, so definitely
-                // don't use .arg().arg().arg().
-                const QString index_str =
-                        QString("%1").arg(i, 4, 10, QChar('0'));
-                dest_filename = QString("%1-%2.%3")
-                        .arg(fileinfo.baseName(), index_str,
-                             fileinfo.completeSuffix());
+                dest_filename = rewriteFilename(fileinfo, i);
             }
             auto seen_it = copylist.find(dest_filename);
             if (seen_it == copylist.end()) {
