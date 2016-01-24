@@ -711,6 +711,7 @@ def BuildRelease(target, source, env):
         print "*** Building intermediate files"
         for subdir in next(os.walk(dist_dir))[1]:
             print "    " + dist_dir + "\\" + subdir
+            # Exclude doc and promo tracks, they are bundled elsewhere
             if subdir in ["doc", "promo"]:
                 continue
             command = '"%(wix)s\\heat.exe" dir %(distdir)s\%(sub)s -nologo -sfrag -suid -ag -srd -cg %(sub)sComp -dr %(sub)sDir -out build\wix\subdirs\%(sub)s.wxs -sw5150 -var var.%(sub)sVar' % \
@@ -767,7 +768,7 @@ def BuildRelease(target, source, env):
 
         # Harvest main PDB from install dir if they exist
         isPdb = "no"
-        if len(glob.glob(dist_dir + "\*.pdb")) > 0:
+        if bundle_pdbs and len(glob.glob(dist_dir + "\*.pdb")) > 0:
             isPdb = "yes"
             command = '"%(wix)s\\heat.exe" dir %(distdir)s -nologo -sfrag -suid -ag -srd -cg mainPDBCompGroup -dr INSTALLDIR -out build\wix\subdirs\mainPDB.wxs -sw5150 -var var.SourceDir -t build\wix\only-pdb.xslt' % \
             {'wix': wix_path,
@@ -780,8 +781,8 @@ def BuildRelease(target, source, env):
              'winlibpath': mixxx_winlib_path,
              'arch': winArch,
              'distdir': dist_dir}
-        print "Using Command: " + command
-        subprocess.check_call(command)
+            print "Using Command: " + command
+            subprocess.check_call(command)
         
         # Compile main wix files
         command = '"%(wix)s\\candle.exe" -nologo -dWINLIBPATH=%(winlibpath)s -dPlatform=%(arch)s -arch %(arch)s -out build\wix\warningDlg.wixobj build\wix\warningDlg.wxs' % \
