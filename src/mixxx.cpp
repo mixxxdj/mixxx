@@ -220,6 +220,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     connect(m_AuxiliaryMapper, SIGNAL(mapped(int)),
             this, SLOT(slotControlAuxiliary(int)));
 
+    // Needs to be created before CueControl (decks) and WTrackTableView.
     m_pGuiTick = new GuiTick();
 
 #ifdef __VINYLCONTROL__
@@ -317,7 +318,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     launchProgress(47);
 
     WaveformWidgetFactory::create(); // takes a long time
-    WaveformWidgetFactory::instance()->startVSync(this);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
     WaveformWidgetFactory::instance()->setConfig(pConfig.data());
 
     launchProgress(52);

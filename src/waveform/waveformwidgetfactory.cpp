@@ -22,8 +22,8 @@
 #include "waveform/widgets/glvsynctestwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
+#include "waveform/guitick.h"
 #include "waveform/vsyncthread.h"
-
 #include "util/cmdlineargs.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
@@ -738,8 +738,8 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     return -1;
 }
 
-void WaveformWidgetFactory::startVSync(MixxxMainWindow* mixxxMainWindow) {
-    m_vsyncThread = new VSyncThread(mixxxMainWindow);
+void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick) {
+    m_vsyncThread = new VSyncThread(this, pGuiTick);
     m_vsyncThread->start(QThread::NormalPriority);
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),

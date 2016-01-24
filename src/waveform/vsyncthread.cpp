@@ -4,7 +4,6 @@
 #include <QtDebug>
 #include <QTime>
 
-#include "mixxx.h"
 #include "vsyncthread.h"
 #include "util/performancetimer.h"
 #include "util/event.h"
@@ -20,8 +19,8 @@
 #endif
 #endif
 
-VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
-        : QThread(mixxxMainWindow),
+VSyncThread::VSyncThread(QObject* pParent, GuiTick* pGuiTick)
+        : QThread(pParent),
           m_bDoRendering(true),
           m_vSyncTypeChanged(false),
           m_usSyncIntervalTime(33333),
@@ -32,7 +31,7 @@ VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
           m_swapWait(0),
           m_displayFrameRate(60.0),
           m_vSyncPerRendering(1),
-          m_pGuiTick(mixxxMainWindow->getGuiTick()) {
+          m_pGuiTick(pGuiTick) {
 }
 
 VSyncThread::~VSyncThread() {
