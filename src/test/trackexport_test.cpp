@@ -49,15 +49,7 @@ TEST_F(TrackExporterTest, SimpleListExport) {
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
 
     worker.run();
-
-    // Wait up to 10 seconds for the total progress
-    for (int i = 0; i < 10; ++i) {
-        if (m_answerer->currentProgress() == 3 &&
-                m_answerer->currentProgressCount() == 3) {
-            break;
-        }
-        sleep(1);
-    }
+    EXPECT_TRUE(worker.wait(10000));
 
     EXPECT_EQ(3, m_answerer->currentProgress());
     EXPECT_EQ(3, m_answerer->currentProgressCount());
@@ -95,15 +87,7 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
                            TrackExportWorker::OverwriteAnswer::SKIP);
 
     worker.run();
-
-    // Wait up to 10 seconds for the total progress
-    for (int i = 0; i < 10; ++i) {
-        if (m_answerer->currentProgress() == 2 &&
-                m_answerer->currentProgressCount() == 2) {
-            break;
-        }
-        sleep(1);
-    }
+    EXPECT_TRUE(worker.wait(10000));
 
     EXPECT_EQ(2, m_answerer->currentProgress());
     EXPECT_EQ(2, m_answerer->currentProgressCount());
@@ -144,15 +128,7 @@ TEST_F(TrackExporterTest, OverwriteAll) {
                            TrackExportWorker::OverwriteAnswer::OVERWRITE_ALL);
 
     worker.run();
-
-    // Wait up to 10 seconds for the total progress
-    for (int i = 0; i < 10; ++i) {
-        if (m_answerer->currentProgress() == 2 &&
-                m_answerer->currentProgressCount() == 2) {
-            break;
-        }
-        sleep(1);
-    }
+    EXPECT_TRUE(worker.wait(10000));
 
     EXPECT_EQ(2, m_answerer->currentProgress());
     EXPECT_EQ(2, m_answerer->currentProgressCount());
@@ -192,15 +168,7 @@ TEST_F(TrackExporterTest, SkipAll) {
                            TrackExportWorker::OverwriteAnswer::SKIP_ALL);
 
     worker.run();
-
-    // Wait up to 10 seconds for the total progress
-    for (int i = 0; i < 10; ++i) {
-        if (m_answerer->currentProgress() == 2 &&
-                m_answerer->currentProgressCount() == 2) {
-            break;
-        }
-        sleep(1);
-    }
+    EXPECT_TRUE(worker.wait(10000));
 
     EXPECT_EQ(2, m_answerer->currentProgress());
     EXPECT_EQ(2, m_answerer->currentProgressCount());
@@ -238,15 +206,7 @@ TEST_F(TrackExporterTest, Cancel) {
                            TrackExportWorker::OverwriteAnswer::CANCEL);
 
     worker.run();
-
-    // Wait up to 10 seconds for the total progress.  -1 indicates cancellation.
-    for (int i = 0; i < 10; ++i) {
-        if (m_answerer->currentProgress() == -1 &&
-                m_answerer->currentProgressCount() == -1) {
-            break;
-        }
-        sleep(1);
-    }
+    EXPECT_TRUE(worker.wait(10000));
 
     EXPECT_EQ(-1, m_answerer->currentProgress());
     EXPECT_EQ(-1, m_answerer->currentProgressCount());
@@ -273,15 +233,7 @@ TEST_F(TrackExporterTest, DedupeList) {
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
 
     worker.run();
-
-    // Wait up to 10 seconds for the total progress
-    for (int i = 0; i < 10; ++i) {
-        if (m_answerer->currentProgress() == 1 &&
-                m_answerer->currentProgressCount() == 1) {
-            break;
-        }
-        sleep(1);
-    }
+    EXPECT_TRUE(worker.wait(10000));
 
     EXPECT_EQ(1, m_answerer->currentProgress());
     EXPECT_EQ(1, m_answerer->currentProgressCount());
@@ -296,7 +248,8 @@ TEST_F(TrackExporterTest, DedupeList) {
 }
 
 TEST_F(TrackExporterTest, MungeFilename) {
-    // Create a track list with a duplicate track, see that it gets deduped.
+    // Create a track list with a duplicate track in a different location,
+    // see that the name gets munged.
     QFileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
     TrackPointer track1(new TrackInfoObject(fileinfo1));
 
@@ -315,15 +268,7 @@ TEST_F(TrackExporterTest, MungeFilename) {
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
 
     worker.run();
-
-    // Wait up to 10 seconds for the total progress
-    for (int i = 0; i < 10; ++i) {
-        if (m_answerer->currentProgress() == 2 &&
-                m_answerer->currentProgressCount() == 2) {
-            break;
-        }
-        sleep(1);
-    }
+    EXPECT_TRUE(worker.wait(10000));
 
     EXPECT_EQ(2, m_answerer->currentProgress());
     EXPECT_EQ(2, m_answerer->currentProgressCount());
