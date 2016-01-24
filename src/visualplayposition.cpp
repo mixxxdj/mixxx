@@ -30,14 +30,14 @@ void VisualPlayPosition::set(double playPos, double rate,
                              double positionStep, double pSlipPosition) {
     VisualPlayPositionData data;
     data.m_referenceTime = m_timeInfoTime;
-    // Time from reference time to Buffer at DAC in µs
-    data.m_callbackEntrytoDac = (m_timeInfo.outputBufferDacTime - m_timeInfo.currentTime) * 1000000;
     data.m_enginePlayPos = playPos;
     data.m_rate = rate;
     data.m_positionStep = positionStep;
     data.m_pSlipPosition = pSlipPosition;
 
-    if (data.m_callbackEntrytoDac < 0 || data.m_callbackEntrytoDac > m_dAudioBufferSize * 1000) {
+    double callbackEntrytoDac = (m_timeInfo.outputBufferDacTime
+            - m_timeInfo.currentTime) * 1000000;
+    if (callbackEntrytoDac < 0 || callbackEntrytoDac  > m_dAudioBufferSize * 1000) {
         // m_timeInfo Invalid, Audio API broken
         if (!m_invalidTimeInfoWarned) {
             qWarning() << "VisualPlayPosition: Audio API provides invalid time stamps,"
@@ -48,6 +48,9 @@ void VisualPlayPosition::set(double playPos, double rate,
         }
         // Assume we are in time
         data.m_callbackEntrytoDac = m_dAudioBufferSize * 1000;
+    } else {
+        // Time from reference time to Buffer at DAC in µs
+        data.m_callbackEntrytoDac = callbackEntrytoDac;
     }
 
     // Atomic write
@@ -119,7 +122,10 @@ QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(QSt
 void VisualPlayPosition::setTimeInfo(const PaStreamCallbackTimeInfo* timeInfo) {
     // the timeInfo is valid only just NOW, so measure the time from NOW for
     // later correction
-    m_timeInfoTime.start();
+    qDebug() << m_timeInfoTime.restart() / 1000000000.0;
+    // m_timeInfoTime.start();
     m_timeInfo = *timeInfo;
     //qDebug() << "TimeInfo" << (timeInfo->currentTime - floor(timeInfo->currentTime)) << (timeInfo->outputBufferDacTime - floor(timeInfo->outputBufferDacTime));
+    qDebug() << "TimeInfo" << timeInfo->currentTime - timeInfo->outputBufferDacTime;
+
 }
