@@ -70,6 +70,9 @@ VMS2.init = function (id) {    // called when the MIDI device is opened & set up
     // Flash the sync button matching the beatgrid
     engine.connectControl("[Channel1]","beat_active","VMS2.beatflash");
     engine.connectControl("[Channel2]","beat_active","VMS2.beatflash");
+    // Flash the play button in pause mode
+    engine.connectControl("[Channel1]","play_indicator","VMS2.playlight");
+    engine.connectControl("[Channel2]","play_indicator","VMS2.playlight");
 
     print("American Audio "+VMS2.id+" initialized.");
 }
@@ -97,33 +100,21 @@ VMS2.Deck.keylockButton = false;
 VMS2.Deck.vinylButton = false;
 VMS2.Deck.hotCuePressed = false;
 VMS2.Deck.pitchLock = false;
+VMS2.Deck.rangeIdx = 0;
 
 VMS2.Deck.prototype.rateRangeHandler = function(value) {
     if(value === ButtonState.pressed) {
         this.Buttons.RateRange.setLed(LedState.on);
-        // Round to two decimals to avoid double-precision comparison issues
-        var currentRange = Math.round(engine.getValue(this.group, "rateRange")*100)/100;
-        switch (true) {
-        case (currentRange<VMS2.RateRanges[0]):
-            engine.setValue(this.group,"rateRange",VMS2.RateRanges[0]);
-            break;
-        case (currentRange<VMS2.RateRanges[1]):
-            engine.setValue(this.group,"rateRange",VMS2.RateRanges[1]);
-            break;
-        case (currentRange<VMS2.RateRanges[2]):
-            engine.setValue(this.group,"rateRange",VMS2.RateRanges[2]);
-            break;
-        case (currentRange<VMS2.RateRanges[3]):
-            engine.setValue(this.group,"rateRange",VMS2.RateRanges[3]);
-            break;
-        case (currentRange>=VMS2.RateRanges[3]):
-            engine.setValue(this.group,"rateRange",VMS2.RateRanges[0]);
-            break;
+        if (isNaN(this.rangeIdx)) {
+            this.rangeIdx = 0;
         }
+        this.rangeIdx = (this.rangeIdx + 1) % VMS2.RateRanges.length;
+        engine.setValue(this.group,"rateRange",VMS2.RateRanges[this.rangeIdx]);
         // Update the screen display
         engine.trigger(this.group,"rate");
+    } else {
+        this.Buttons.RateRange.setLed(LedState.off);
     }
-    else this.Buttons.RateRange.setLed(LedState.off);
 }
 
 VMS2.Deck.prototype.pitchCenterHandler = function(value) {
@@ -257,7 +248,8 @@ VMS2.getDeck = function(group) {
 
 VMS2.Decks.Left.addButton("RateRange", new VMS2.Button(0x11), "rateRangeHandler");
 VMS2.Decks.Left.addButton("PitchCenter", new VMS2.Button(), "pitchCenterHandler");
-VMS2.Decks.Left.addButton("Pause", new VMS2.Button(), "pauseHandler");
+VMS2.Decks.Left.addButton("Play", new VMS2.Button(0x0d), "none_use_default");
+VMS2.Decks.Left.addButton("Pause", new VMS2.Button(0x0e), "pauseHandler");
 VMS2.Decks.Left.addButton("JogTouch", new VMS2.Button(), "jogTouchHandler");
 VMS2.Decks.Left.addButton("Vinyl", new VMS2.Button(0x27), "vinylButtonHandler");
 VMS2.Decks.Left.addButton("KeyLock", new VMS2.Button(), "keyLockButtonHandler");
@@ -267,7 +259,8 @@ VMS2.Decks.Left.addButton("KillLow", new VMS2.Button(0x23), "killLowHandler");
 
 VMS2.Decks.Right.addButton("RateRange", new VMS2.Button(0x33), "rateRangeHandler");
 VMS2.Decks.Right.addButton("PitchCenter", new VMS2.Button(), "pitchCenterHandler");
-VMS2.Decks.Right.addButton("Pause", new VMS2.Button(), "pauseHandler");
+VMS2.Decks.Right.addButton("Play", new VMS2.Button(0x2f), "none_use_default");
+VMS2.Decks.Right.addButton("Pause", new VMS2.Button(0x30), "pauseHandler");
 VMS2.Decks.Right.addButton("JogTouch", new VMS2.Button(), "jogTouchHandler");
 VMS2.Decks.Right.addButton("Vinyl", new VMS2.Button(0x49), "vinylButtonHandler");
 VMS2.Decks.Right.addButton("KeyLock", new VMS2.Button(), "keyLockButtonHandler");
@@ -285,6 +278,12 @@ VMS2.rate_range = function(channel, control, value, status, group) {
 VMS2.beatflash = function(value, group, control) {
     var deck = VMS2.getDeck(group);
     deck.Buttons.RateRange.setLed(value ? LedState.on : LedState.off);
+}
+
+VMS2.playlight = function(value, group, control) {
+    var deck = VMS2.getDeck(group);
+    deck.Buttons.Play.setLed(value ? LedState.on : LedState.off);
+    deck.Buttons.Pause.setLed(value ? LedState.off : LedState.on);
 }
 
 VMS2.pitch = function(channel, control, value, status, group) {
@@ -407,4 +406,3 @@ VMS2.trackSelect = function(channel, control, value, status, group) {
     }
     VMS2.trackSelect.last_value = value;
 }
-

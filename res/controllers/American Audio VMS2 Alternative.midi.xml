@@ -1448,36 +1448,6 @@
     <outputs>
       <output>
 	<group>[Channel1]</group>
-	<key>play</key>
-	<status>0x90</status>
-	<midino>0x0D</midino>
-	<minimum>0.5</minimum>
-      </output>
-      <output>
-	<group>[Channel2]</group>
-	<key>play</key>
-	<status>0x90</status>
-	<midino>0x2F</midino>
-	<minimum>0.5</minimum>
-      </output>
-      <output>
-	<!-- Pause button lights when play isn't -->
-	<group>[Channel1]</group>
-	<key>play</key>
-	<status>0x90</status>
-	<midino>0x0E</midino>
-	<maximum>0.5</maximum>
-      </output>
-      <output>
-	<!-- Pause button lights when play isn't -->
-	<group>[Channel2]</group>
-	<key>play</key>
-	<status>0x90</status>
-	<midino>0x30</midino>
-	<maximum>0.5</maximum>
-      </output>
-      <output>
-	<group>[Channel1]</group>
 	<key>cue_default</key>
 	<status>0x90</status>
 	<midino>0x0C</midino>
