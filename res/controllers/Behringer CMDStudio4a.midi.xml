@@ -3,7 +3,7 @@
     <info>
         <name>Behringer CMD STUDIO 4a</name>
         <author>Craig Easton</author>
-        <description>Controller mapping for the Behringer CMD STUDIO 4a. V 1.2 Created Jan 2016 for Mixxx 2.0.0</description>
+        <description>Controller mapping for the Behringer CMD STUDIO 4a. V 1.4 Created Jan 2016 for Mixxx 2.0.0</description>
         <wiki>http://www.mixxx.org/wiki/doku.php/behringer_cmd_studio_4a</wiki>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=7868</forums>
     </info>
@@ -35,22 +35,22 @@
             </control>
             <control>
                 <group>[Playlist]</group>
-                <key>SelectPrevPlaylist</key>
+                <key>BehringerCMDStudio4a.browseLR</key>
                 <description>Browse left button.</description>
                 <status>0x90</status>
                 <midino>0x02</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Playlist]</group>
-                <key>SelectNextPlaylist</key>
+                <key>BehringerCMDStudio4a.browseLR</key>
                 <description>Browse right button.</description>
                 <status>0x90</status>
                 <midino>0x03</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
         <!-- Deck Functions. -->
@@ -838,7 +838,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.pitchDecRelease</key>
+                <key>BehringerCMDStudio4a.pitchDec</key>
                 <description>Deck A pitch- release.</description>
                 <status>0x80</status>
                 <midino>0x20</midino>
@@ -858,7 +858,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.pitchIncRelease</key>
+                <key>BehringerCMDStudio4a.pitchInc</key>
                 <description>Deck A pitch+ release.</description>
                 <status>0x80</status>
                 <midino>0x21</midino>
@@ -878,7 +878,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.pitchDecRelease</key>
+                <key>BehringerCMDStudio4a.pitchDec</key>
                 <description>Deck B pitch- release.</description>
                 <status>0x81</status>
                 <midino>0x40</midino>
@@ -898,7 +898,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.pitchIncRelease</key>
+                <key>BehringerCMDStudio4a.pitchInc</key>
                 <description>Deck B pitch+ release.</description>
                 <status>0x81</status>
                 <midino>0x41</midino>
@@ -918,7 +918,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.pitchDecRelease</key>
+                <key>BehringerCMDStudio4a.pitchDec</key>
                 <description>Deck C pitch- release.</description>
                 <status>0x82</status>
                 <midino>0x20</midino>
@@ -938,7 +938,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.pitchIncRelease</key>
+                <key>BehringerCMDStudio4a.pitchInc</key>
                 <description>Deck C pitch+ release.</description>
                 <status>0x82</status>
                 <midino>0x21</midino>
@@ -958,7 +958,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.pitchDecRelease</key>
+                <key>BehringerCMDStudio4a.pitchDec</key>
                 <description>Deck D pitch- release.</description>
                 <status>0x83</status>
                 <midino>0x40</midino>
@@ -978,7 +978,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.pitchIncRelease</key>
+                <key>BehringerCMDStudio4a.pitchInc</key>
                 <description>Deck D pitch+ release.</description>
                 <status>0x83</status>
                 <midino>0x41</midino>
@@ -1631,8 +1631,18 @@
             <control>
                 <group>[Channel1]</group>
                 <key>BehringerCMDStudio4a.del</key>
-                <description>Deck A DEL button.</description>
+                <description>Deck A DEL button push.</description>
                 <status>0x90</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck A DEL button release.</description>
+                <status>0x80</status>
                 <midino>0x2A</midino>
                 <options>
                     <script-binding/>
@@ -1641,8 +1651,18 @@
             <control>
                 <group>[Channel2]</group>
                 <key>BehringerCMDStudio4a.del</key>
-                <description>Deck B DEL button.</description>
+                <description>Deck B DEL button push.</description>
                 <status>0x91</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck B DEL button release.</description>
+                <status>0x81</status>
                 <midino>0x4A</midino>
                 <options>
                     <script-binding/>
@@ -1651,8 +1671,18 @@
             <control>
                 <group>[Channel3]</group>
                 <key>BehringerCMDStudio4a.del</key>
-                <description>Deck C DEL button.</description>
+                <description>Deck C DEL button push.</description>
                 <status>0x92</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck C DEL button release.</description>
+                <status>0x82</status>
                 <midino>0x2A</midino>
                 <options>
                     <script-binding/>
@@ -1661,8 +1691,18 @@
             <control>
                 <group>[Channel4]</group>
                 <key>BehringerCMDStudio4a.del</key>
-                <description>Deck D DEL button.</description>
+                <description>Deck D DEL button push.</description>
                 <status>0x93</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>BehringerCMDStudio4a.del</key>
+                <description>Deck D DEL button release.</description>
+                <status>0x83</status>
                 <midino>0x4A</midino>
                 <options>
                     <script-binding/>
@@ -1915,82 +1955,162 @@
             <!-- FX assign. -->
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel1]_enable</key>
-                <description>Deck A FX Assign 1.</description>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck A FX Assign 1 push.</description>
                 <status>0x90</status>
                 <midino>0x52</midino>
                 <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel1]_enable</key>
-                <description>Deck A FX Assign 2.</description>
-                <status>0x90</status>
-                <midino>0x53</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit3]</group>
-                <key>group_[Channel2]_enable</key>
-                <description>Deck B FX Assign 1.</description>
-                <status>0x91</status>
-                <midino>0x54</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit4]</group>
-                <key>group_[Channel2]_enable</key>
-                <description>Deck B FX Assign 2.</description>
-                <status>0x91</status>
-                <midino>0x55</midino>
-                <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel3]_enable</key>
-                <description>Deck C FX Assign 1.</description>
-                <status>0x92</status>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck A FX Assign 1 release.</description>
+                <status>0x80</status>
                 <midino>0x52</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Channel3]_enable</key>
-                <description>Deck C FX Assign 2.</description>
-                <status>0x92</status>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck A FX Assign 2 push.</description>
+                <status>0x90</status>
                 <midino>0x53</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck A FX Assign 2 release.</description>
+                <status>0x80</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit3]</group>
-                <key>group_[Channel4]_enable</key>
-                <description>Deck D FX Assign 1.</description>
-                <status>0x93</status>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck B FX Assign 1 push.</description>
+                <status>0x91</status>
                 <midino>0x54</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck B FX Assign 1 release.</description>
+                <status>0x81</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit4]</group>
-                <key>group_[Channel4]_enable</key>
-                <description>Deck D FX Assign 2.</description>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck B FX Assign 2 push.</description>
+                <status>0x91</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck B FX Assign 2 release.</description>
+                <status>0x81</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck C FX Assign 1 push.</description>
+                <status>0x92</status>
+                <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck C FX Assign 1 release.</description>
+                <status>0x82</status>
+                <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck C FX Assign 2 push.</description>
+                <status>0x92</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck C FX Assign 2 release.</description>
+                <status>0x82</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck D FX Assign 1 push.</description>
+                <status>0x93</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck D FX Assign 1 release.</description>
+                <status>0x83</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck D FX Assign 2 push.</description>
                 <status>0x93</status>
                 <midino>0x55</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>BehringerCMDStudio4a.fxAssign</key>
+                <description>Deck D FX Assign 2 release.</description>
+                <status>0x83</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <!-- EQ -->
