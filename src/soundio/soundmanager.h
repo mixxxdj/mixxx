@@ -115,6 +115,7 @@ class SoundManager : public QObject {
   private:
 
     struct DeviceMode {
+        SoundDevice* device;
         bool isInput;
         bool isOutput;
     };

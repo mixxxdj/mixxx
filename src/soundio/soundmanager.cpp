@@ -348,9 +348,10 @@ Result SoundManager::setupDevices() {
     SoundDevice* pNewMasterClockRef = NULL;
 
     // pair is isInput, isOutput
-    QHash<SoundDevice*, DeviceMode> toOpen;
-    foreach (SoundDevice *device, m_devices) {
-        DeviceMode mode = {false, false};
+    QList<DeviceMode> toOpen;
+    bool haveOutput = false;
+    foreach (SoundDevice* device, m_devices) {
+        DeviceMode mode = {device, false, false};
         device->clearInputs();
         device->clearOutputs();
         m_pErrorDevice = device;
@@ -387,6 +388,9 @@ Result SoundManager::setupDevices() {
 
         foreach (AudioOutput out, outputs) {
             mode.isOutput = true;
+            if (device->getInternalName() != kNetworkDeviceInternalName) {
+                haveOutput = true;
+            }
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
             const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
@@ -418,17 +422,20 @@ Result SoundManager::setupDevices() {
         if (mode.isInput || mode.isOutput) {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
-            toOpen.insert(device, mode);
+            toOpen.append(mode);
         }
     }
 
-    foreach (SoundDevice *device, toOpen.keys()) {
-        const DeviceMode mode(toOpen.value(device));
+    for (const auto& mode: toOpen) {
         ++devicesAttempted;
+        SoundDevice* device = mode.device;
         m_pErrorDevice = device;
         // If we have not yet set a clock source then we use the first
+        // output device
+        qDebug() << haveOutput << mode.isOutput;
         if (device->getInternalName() != kNetworkDeviceInternalName &&
-                pNewMasterClockRef == NULL) {
+                pNewMasterClockRef == NULL &&
+                (!haveOutput || mode.isOutput)) {
             pNewMasterClockRef = device;
             qWarning() << "Output sound device clock reference not set! Using"
                        << device->getDisplayName();
