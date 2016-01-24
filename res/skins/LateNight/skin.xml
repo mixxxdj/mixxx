@@ -64,6 +64,7 @@
 
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"/>
+  
 
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen -->
@@ -106,17 +107,23 @@
                             <Template src="skin:lower_half.xml"/>
                         </Children>
                     </WidgetGroup>
-
                     <WidgetGroup>
                         <Layout>vertical</Layout>
                         <SizePolicy>me,me</SizePolicy>
                         <Children>
-                            <SingletonContainer>
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>i,max</SizePolicy>
+                                <Children>
+									<Template src="skin:decks_left_small.xml"/>
+									<Template src="skin:decks_right_small.xml"/>
+								</Children>
+                            </WidgetGroup>	<SingletonContainer>
                                 <ObjectName>LibrarySingleton</ObjectName>
-                            </SingletonContainer>
-                            <Template src="skin:toolbar_big_library.xml"/>
+                            </SingletonContainer>		
+							<Template src="skin:toolbar_big_library.xml"/>
                         </Children>
-                    </WidgetGroup>
+                    </WidgetGroup>					
                 </Children>
             </WidgetStack>
         </Children>
