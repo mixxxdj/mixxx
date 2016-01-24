@@ -1,0 +1,123 @@
+<Template>
+    <WidgetGroup>
+        <ObjectName>DeckSmall</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me, min</SizePolicy>
+        <MinimumSize>-1,</MinimumSize>
+        <Children>
+            <WidgetGroup>
+                <ObjectName>RateContainerSmall<Variable name="channum" /></ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <MinimumSize>45,-1</MinimumSize>
+                <Children>
+                   <WidgetGroup>
+                       <ObjectName>RateAdjust</ObjectName>
+                       <Layout>vertical</Layout>
+                       <SizePolicy>min,min</SizePolicy>
+	                   <Children>
+							<Key>
+                              <ObjectName>TextColor<Variable name="channum" /></ObjectName>
+                              <Style>QLabel { qproperty-alignment: 'AlignCenter';
+                                  font: bold 13px/16px Lucida Grande, Lucida Sans
+                                  Unicode, Arial, Verdana, sans-serif;
+                                  background-color: transparent; padding: 0px; margin: 0px;}
+                              </Style>
+                              <Group>[Channel<Variable name="channum"/>]</Group>
+                              <SizePolicy>min,f</SizePolicy>
+                              <Size>-1,12</Size>
+                              <Connection>
+                                <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
+                              </Connection>
+                           </Key>
+							<WidgetGroup>
+                               <ObjectName>BpmContainer</ObjectName>
+                               <Size>45,12</Size>
+                               <Children>
+                                   <NumberBpm>
+                                      <ObjectName>BpmTextColorSmall<Variable name="channum" /></ObjectName>
+                                      <TooltipId>visual_bpm</TooltipId>
+                                      <Pos>0,0</Pos>
+                                      <Size>45,12</Size>
+                                      <Channel>
+                                          <Variable name="channum" />
+                                      </Channel>
+                                      <NumberOfDigits>2</NumberOfDigits>
+                                      <Connection>
+                                          <ConfigKey>[Channel<Variable name="channum" />],visual_bpm</ConfigKey>
+                                      </Connection>
+                                  </NumberBpm>
+                                  <PushButton>
+                                      <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                                      <NumberStates>1</NumberStates>
+                                      <State>
+                                        <Number>0</Number>
+                                        <Text></Text>
+                                      </State>
+                                      <State>
+                                        <Number>1</Number>
+                                        <Text></Text>
+                                      </State>
+                                      <Pos>0,0</Pos>
+                                      <Size>45,12</Size>
+                                      <Connection>
+                                          <ConfigKey>[Channel<Variable name="channum" />],bpm_tap</ConfigKey>
+                                          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      </Connection>
+                                  </PushButton>
+                              </Children>
+                          </WidgetGroup>
+                          <NumberRate>
+                              <TooltipId>rate_display</TooltipId>
+                              <ObjectName>RateTextColor<Variable name="channum" /></ObjectName>
+                              <Channel>
+                                  <Variable name="channum" />
+                              </Channel>
+                              <NumberOfDigits>2</NumberOfDigits>
+                          </NumberRate>
+			            </Children>
+		            </WidgetGroup>
+				</Children>
+            </WidgetGroup>
+			<WidgetGroup>
+				<ObjectName>VuMeterSmall</ObjectName>
+				<Layout>vertical</Layout>
+				<SizePolicy>min,min</SizePolicy>
+				<Size>10,</Size>
+				<Children>
+					<StatusLight>
+						<TooltipId>channel_PeakIndicator</TooltipId>
+						<PathStatusLight>btn_clipping_small_over.png</PathStatusLight>
+						<PathBack>btn_clipping_small.png</PathBack>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="channum"/>],PeakIndicator</ConfigKey>
+						</Connection>
+					</StatusLight>
+					<VuMeter>
+						<TooltipId>channel_VuMeter</TooltipId>
+						<PathVu>btn_volume_display_small_over.png</PathVu>
+						<PathBack>btn_volume_display_small.png</PathBack>
+						<Horizontal>false</Horizontal>
+						<PeakHoldSize>5</PeakHoldSize>
+						<PeakHoldTime>500</PeakHoldTime>
+						<PeakFallTime>50</PeakFallTime>
+						<PeakFallStep>2</PeakFallStep>
+						<Connection>
+							<ConfigKey>[Channel<Variable name="channum"/>],VuMeter</ConfigKey>
+						</Connection>
+					</VuMeter>
+				</Children>
+			</WidgetGroup>	
+			<WidgetGroup>
+				<ObjectName>DeckSmall<Variable name="channum" /></ObjectName>
+				<SizePolicy>me,min</SizePolicy>
+				<MinimumSize>150,-1</MinimumSize>
+				<Layout>vertical</Layout>
+				<Children>
+					<Template src="skin:deck_small_row_1.xml" />
+					<Template src="skin:deck_small_row_2.xml" />
+				</Children>
+			</WidgetGroup>
+		</Children>
+	</WidgetGroup>
+</Template>
