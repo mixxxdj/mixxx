@@ -44,6 +44,13 @@ typedef PaError (*SetJackClientName)(const char *name);
 #endif
 
 namespace {
+
+struct DeviceMode {
+    SoundDevice* device;
+    bool isInput;
+    bool isOutput;
+};
+
 #ifdef __LINUX__
 const unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
@@ -432,7 +439,6 @@ Result SoundManager::setupDevices() {
         m_pErrorDevice = device;
         // If we have not yet set a clock source then we use the first
         // output device
-        qDebug() << haveOutput << mode.isOutput;
         if (device->getInternalName() != kNetworkDeviceInternalName &&
                 pNewMasterClockRef == NULL &&
                 (!haveOutput || mode.isOutput)) {
