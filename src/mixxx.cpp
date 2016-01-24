@@ -30,8 +30,8 @@
 #include "controlobjectslave.h"
 #include "defs_urls.h"
 #include "dlgabout.h"
-#include "dlgpreferences.h"
-#include "dlgprefeq.h"
+#include "preferences/dialog/dlgpreferences.h"
+#include "preferences/dialog/dlgprefeq.h"
 #include "dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
@@ -82,7 +82,7 @@
 #endif
 
 #ifdef __MODPLUG__
-#include "dlgprefmodplug.h"
+#include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
 // static

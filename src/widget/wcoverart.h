@@ -7,12 +7,13 @@
 #include <QWidget>
 
 #include "configobject.h"
-#include "dlgcoverartfullsize.h"
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
+
+class DlgCoverArtFullSize;
 
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT

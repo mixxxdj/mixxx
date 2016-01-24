@@ -17,8 +17,8 @@
 #include "soundsourceproxy.h"
 #include "widget/wlibrary.h"
 #include "util/dnd.h"
-#include "dlghidden.h"
-#include "dlgmissing.h"
+#include "library/dlghidden.h"
+#include "library/dlgmissing.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          TrackCollection* pTrackCollection,

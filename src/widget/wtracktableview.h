@@ -6,12 +6,12 @@
 
 #include "configobject.h"
 #include "controlobjectslave.h"
-#include "trackinfoobject.h"
+#include "library/coverart.h"
+#include "library/dlgtagfetcher.h"
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
-#include "library/coverart.h"
+#include "trackinfoobject.h"
 #include "widget/wlibrarytableview.h"
-#include "dlgtagfetcher.h"
 
 class ControlObjectSlave;
 class DlgTrackInfo;

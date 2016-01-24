@@ -7,7 +7,7 @@
 #include "library/analysisfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
-#include "dlganalysis.h"
+#include "library/dlganalysis.h"
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
 #include "analyzer/analyzerqueue.h"

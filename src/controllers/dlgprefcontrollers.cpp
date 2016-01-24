@@ -2,7 +2,7 @@
 
 #include "controllers/dlgprefcontrollers.h"
 
-#include "dlgpreferences.h"
+#include "preferences/dialog/dlgpreferences.h"
 #include "controllers/controllermanager.h"
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/defs_controllers.h"
