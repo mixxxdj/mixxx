@@ -497,10 +497,10 @@ void WaveformWidgetFactory::render() {
         //qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
 
         m_frameCnt += 1.0;
-        int timeCnt = m_time.elapsed();
-        if (timeCnt > 1000) {
+        mixxx::Duration timeCnt = m_time.elapsed();
+        if (timeCnt > mixxx::Duration::fromSeconds(1)) {
             m_time.start();
-            m_frameCnt = m_frameCnt * 1000 / timeCnt; // latency correction
+            m_frameCnt = m_frameCnt * 1000 / timeCnt.toIntegerMillis(); // latency correction
             emit(waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames()));
             m_frameCnt = 0.0;
         }

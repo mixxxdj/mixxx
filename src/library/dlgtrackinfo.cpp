@@ -6,13 +6,12 @@
 #include "soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "util/duration.h"
 
 const int kFilterLength = 80;
-const int kMinBPM = 30;
-const int kMaxBPM = 240;
-// Maximum allowed interval between beats in milli seconds (calculated from
-// minBPM)
-const int kMaxInterval = static_cast<int>(1000.0 * (60.0 / kMinBPM));
+const int kMinBpm = 30;
+// Maximum allowed interval between beats (calculated from kMinBpm).
+const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)

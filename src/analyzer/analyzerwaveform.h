@@ -1,7 +1,6 @@
 #ifndef ANALYZER_ANALYZERWAVEFORM_H
 #define ANALYZER_ANALYZERWAVEFORM_H
 
-#include <QTime>
 #include <QImage>
 #include <QSqlDatabase>
 
@@ -12,6 +11,7 @@
 #include "util/math.h"
 #include "util/memory.h"
 #include "waveform/waveform.h"
+#include "util/performancetimer.h"
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP
@@ -172,7 +172,7 @@ class AnalyzerWaveform : public Analyzer {
     EngineFilterIIRBase* m_filter[FilterCount];
     std::vector<float> m_buffers[FilterCount];
 
-    QTime m_timer;
+    PerformanceTimer m_timer;
     QSqlDatabase m_database;
     std::unique_ptr<AnalysisDao> m_pAnalysisDao;
 

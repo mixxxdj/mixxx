@@ -470,9 +470,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 }
 
 void MixxxMainWindow::finalize() {
-    // TODO(rryan): Get rid of QTime here.
-    QTime qTime;
-    qTime.start();
     Timer t("MixxxMainWindow::~finalize");
     t.start();
 
@@ -480,25 +477,25 @@ void MixxxMainWindow::finalize() {
 
     qDebug() << "Destroying MixxxMainWindow";
 
-    qDebug() << "save config " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "saving configuration";
     m_pSettingsManager->save();
 
     // SoundManager depend on Engine and Config
-    qDebug() << "delete soundmanager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
 
     // GUI depends on MixxxKeyboard, PlayerManager, Library
-    qDebug() << "delete view " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting Skin";
     delete m_pWidgetParent;
 
     // ControllerManager depends on Config
-    qDebug() << "delete ControllerManager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting ControllerManager";
     delete m_pControllerManager;
 
 #ifdef __VINYLCONTROL__
     // VinylControlManager depends on a CO the engine owns
     // (vinylcontrol_enabled in VinylControlControl)
-    qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting VinylControlManager";
     delete m_pVCManager;
     qDeleteAll(m_pVinylControlEnabled);
     delete m_VCControlMapper;
@@ -509,7 +506,7 @@ void MixxxMainWindow::finalize() {
     delete m_TalkoverMapper;
 
     // LibraryScanner depends on Library
-    qDebug() << "delete library scanner " <<  qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting LibraryScanner";
     delete m_pLibraryScanner;
 
     // CoverArtCache is fairly independent of everything else.
@@ -518,20 +515,20 @@ void MixxxMainWindow::finalize() {
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
-    qDebug() << "delete library " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
 
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << "delete playerManager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting PlayerManager";
     delete m_pPlayerManager;
 
     // RecordingManager depends on config, engine
-    qDebug() << "delete RecordingManager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
 
 #ifdef __SHOUTCAST__
     // ShoutcastManager depends on config, engine
-    qDebug() << "delete ShoutcastManager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting ShoutcastManager";
     delete m_pShoutcastManager;
 #endif
 
@@ -542,14 +539,14 @@ void MixxxMainWindow::finalize() {
     qDeleteAll(m_micTalkoverControls);
 
     // EngineMaster depends on Config and m_pEffectsManager.
-    qDebug() << "delete m_pEngine " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting EngineMaster";
     delete m_pEngine;
 
-    qDebug() << "deleting preferences, " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting DlgPreferences";
     delete m_pPrefDlg;
 
     // Must delete after EngineMaster and DlgPrefEq.
-    qDebug() << "deleting effects manager, " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting EffectsManager";
     delete m_pEffectsManager;
 
     delete m_pTouchShift;
@@ -611,7 +608,7 @@ void MixxxMainWindow::finalize() {
 
     Sandbox::shutdown();
 
-    qDebug() << "delete settingsmanager" << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting SettingsManager";
     delete m_pSettingsManager;
 
     delete m_pKeyboard;

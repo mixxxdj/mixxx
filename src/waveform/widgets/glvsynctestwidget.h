@@ -21,7 +21,7 @@ class GLVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
   protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
-    virtual int render();
+    virtual mixxx::Duration render();
 
   private:
     friend class WaveformWidgetFactory;

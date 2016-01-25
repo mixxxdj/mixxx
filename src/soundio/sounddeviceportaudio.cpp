@@ -62,7 +62,6 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_inputDrift(false),
           m_bSetThreadPriority(false),
           m_underflowUpdateCount(0),
-          m_nsInAudioCb(0),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2) {
     // Setting parent class members:
@@ -885,10 +884,10 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
     if (m_framesSinceAudioLatencyUsageUpdate
             > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
-        double secInAudioCb = (double) m_nsInAudioCb / 1000000000.0;
+        double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_pMasterAudioLatencyUsage->set(secInAudioCb /
                 (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
-        m_nsInAudioCb = 0;
+        m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
         m_framesSinceAudioLatencyUsageUpdate = 0;
         //qDebug() << m_pMasterAudioLatencyUsage
         //         << m_pMasterAudioLatencyUsage->get();
@@ -933,7 +932,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     m_pSoundManager->writeProcess();
 
-    m_nsInAudioCb += timer.elapsed();
+    m_timeInAudioCallback += timer.elapsed();
     return paContinue;
 }
 

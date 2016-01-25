@@ -309,15 +309,15 @@ void ControllerManager::pollDevices() {
         return;
     }
 
-    qint64 start = Time::elapsed();
+    mixxx::Duration start = Time::elapsed();
     foreach (Controller* pDevice, m_controllers) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }
     }
 
-    qint64 duration = Time::elapsed() - start;
-    if (duration > kPollIntervalMillis * 1000000) {
+    mixxx::Duration duration = Time::elapsed() - start;
+    if (duration > mixxx::Duration::fromMillis(kPollIntervalMillis)) {
         m_skipPoll = true;
     }
     //qDebug() << "ControllerManager::pollDevices()" << duration << start;

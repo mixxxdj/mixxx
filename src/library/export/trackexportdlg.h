@@ -6,7 +6,6 @@
 #include <QDialog>
 #include <QString>
 #include <QScopedPointer>
-#include <QTime>
 
 #include "preferences/usersettings.h"
 #include "library/export/trackexportworker.h"

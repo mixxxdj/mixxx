@@ -11,6 +11,7 @@
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "trackinfoobject.h"
+#include "util/duration.h"
 #include "widget/wlibrarytableview.h"
 
 class ControlObjectSlave;
@@ -170,7 +171,7 @@ class WTrackTableView : public WLibraryTableView {
     int m_iTrackLocationColumn;
 
     // Control the delay to load a cover art.
-    qint64 m_lastUserActionNanos;
+    mixxx::Duration m_lastUserAction;
     bool m_selectionChangedSinceLastGuiTick;
     bool m_loadCachedOnly;
     ControlObjectSlave* m_pCOTGuiTick;
