@@ -157,19 +157,19 @@ class Duration {
     }
 
     QString formatNanosWithUnit() const {
-        return QString("%1ns").arg(toIntegerNanos());
+        return QString("%1 ns").arg(toIntegerNanos());
     }
 
     QString formatMicrosWithUnit() const {
-        return QString("%1us").arg(toIntegerMicros());
+        return QString("%1 us").arg(toIntegerMicros());
     }
 
     QString formatMillisWithUnit() const {
-        return QString("%1ms").arg(toIntegerMillis());
+        return QString("%1 ms").arg(toIntegerMillis());
     }
 
     QString formatSecondsWithUnit() const {
-        return QString("%1s").arg(toIntegerSeconds());
+        return QString("%1 s").arg(toIntegerSeconds());
     }
 
   private:
