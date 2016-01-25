@@ -48,6 +48,7 @@ class DlgDeveloperTools;
 class LaunchImage;
 
 #include "configobject.h"
+#include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"

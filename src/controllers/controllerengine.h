@@ -14,7 +14,7 @@
 #include <QtScript>
 
 #include "bytearrayclass.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"

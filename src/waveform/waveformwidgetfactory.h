@@ -6,7 +6,7 @@
 #include <QVector>
 
 #include "util/singleton.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/waveform.h"
 #include "skin/skincontext.h"
@@ -58,7 +58,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     //TODO merge this enum with the waveform analyzer one
     enum FilterIndex { All = 0, Low = 1, Mid = 2, High = 3, FilterCount = 4};
 
-    bool setConfig(ConfigObject<ConfigValue>* config);
+    bool setConfig(UserSettingsPointer config);
 
     //creates the waveform widget and bind it to the viewer
     //clean-up every thing if needed
@@ -134,7 +134,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     WaveformWidgetType::Type m_type;
 
-    ConfigObject<ConfigValue>* m_config;
+    UserSettingsPointer m_config;
 
     bool m_skipRender;
     int m_frameRate;

@@ -22,7 +22,7 @@
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          TrackCollection* pTrackCollection,
-                                         ConfigObject<ConfigValue>* pConfig)
+                                         UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),

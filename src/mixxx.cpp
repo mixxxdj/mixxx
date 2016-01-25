@@ -122,7 +122,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
 
     // First load launch image to show a the user a quick responds
-    m_pSkinLoader = new SkinLoader(m_pSettingsManager->settings().data());
+    m_pSkinLoader = new SkinLoader(m_pSettingsManager->settings());
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
     m_pWidgetParent = (QWidget*)m_pLaunchImage;
     setCentralWidget(m_pWidgetParent);
@@ -170,7 +170,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     QString resourcePath = pConfig->getResourcePath();
 
     mixxx::Translations::initializeTranslations(
-        pConfig.data(), pApp, args.getLocale());
+        pConfig, pApp, args.getLocale());
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
 
@@ -183,10 +183,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
     // Create the Effects subsystem.
-    m_pEffectsManager = new EffectsManager(this, pConfig.data());
+    m_pEffectsManager = new EffectsManager(this, pConfig);
 
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(pConfig.data(), "[Master]", m_pEffectsManager,
+    m_pEngine = new EngineMaster(pConfig, "[Master]", m_pEffectsManager,
                                  true, true);
 
     // Create effect backends. We do this after creating EngineMaster to allow
@@ -203,11 +203,11 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // while this is created here, setupDevices needs to be called sometime
     // after the players are added to the engine (as is done currently) -- bkgood
     // (long)
-    m_pSoundManager = new SoundManager(pConfig.data(), m_pEngine);
+    m_pSoundManager = new SoundManager(pConfig, m_pEngine);
 
-    m_pRecordingManager = new RecordingManager(pConfig.data(), m_pEngine);
+    m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 #ifdef __SHOUTCAST__
-    m_pShoutcastManager = new ShoutcastManager(pConfig.data(), m_pSoundManager);
+    m_pShoutcastManager = new ShoutcastManager(pConfig, m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -224,13 +224,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pGuiTick = new GuiTick();
 
 #ifdef __VINYLCONTROL__
-    m_pVCManager = new VinylControlManager(this, pConfig.data(), m_pSoundManager);
+    m_pVCManager = new VinylControlManager(this, pConfig, m_pSoundManager);
 #else
     m_pVCManager = NULL;
 #endif
 
     // Create the player manager. (long)
-    m_pPlayerManager = new PlayerManager(pConfig.data(), m_pSoundManager,
+    m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager,
                                          m_pEffectsManager, m_pEngine);
     for (int i = 0; i < kMicrophoneCount; ++i) {
         m_pPlayerManager->addMicrophone();
@@ -278,7 +278,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     CoverArtCache::create();
 
     // (long)
-    m_pLibrary = new Library(this, pConfig.data(),
+    m_pLibrary = new Library(this, pConfig,
                              m_pPlayerManager,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
@@ -313,13 +313,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // but do not set up controllers until the end of the application startup
     // (long)
     qDebug() << "Creating ControllerManager";
-    m_pControllerManager = new ControllerManager(pConfig.data());
+    m_pControllerManager = new ControllerManager(pConfig);
 
     launchProgress(47);
 
     WaveformWidgetFactory::create(); // takes a long time
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
-    WaveformWidgetFactory::instance()->setConfig(pConfig.data());
+    WaveformWidgetFactory::instance()->setConfig(pConfig);
 
     launchProgress(52);
 
@@ -411,7 +411,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // loaded a skin, see Bug #1047435
     m_pLibraryScanner = new LibraryScanner(this,
                                            m_pLibrary->getTrackCollection(),
-                                           pConfig.data());
+                                           pConfig);
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
@@ -1603,7 +1603,7 @@ void MixxxMainWindow::slotDeveloperTools() {
     if (m_pDeveloperTools->isChecked()) {
         if (m_pDeveloperToolsDlg == NULL) {
             UserSettingsPointer pConfig = m_pSettingsManager->settings();
-            m_pDeveloperToolsDlg = new DlgDeveloperTools(this, pConfig.data());
+            m_pDeveloperToolsDlg = new DlgDeveloperTools(this, pConfig);
             connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
                     this, SLOT(slotDeveloperToolsClosed()));
             connect(this, SIGNAL(closeDeveloperToolsDlgChecked(int)),

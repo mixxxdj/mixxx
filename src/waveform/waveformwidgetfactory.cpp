@@ -41,7 +41,7 @@ WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
 WaveformWidgetHolder::WaveformWidgetHolder()
     : m_waveformWidget(NULL),
       m_waveformViewer(NULL),
-      m_skinContextCache(NULL, QString()) {
+      m_skinContextCache(UserSettingsPointer(), QString()) {
 }
 
 WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
@@ -182,7 +182,7 @@ WaveformWidgetFactory::~WaveformWidgetFactory() {
     }
 }
 
-bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config) {
+bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     m_config = config;
     if (!m_config) {
         return false;

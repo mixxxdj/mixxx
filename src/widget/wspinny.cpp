@@ -18,7 +18,7 @@
 
 // The SampleBuffers format enables antialiasing.
 WSpinny::WSpinny(QWidget* parent, const QString& group,
-                 ConfigObject<ConfigValue>* pConfig,
+                 UserSettingsPointer pConfig,
                  VinylControlManager* pVCMan)
         : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, SharedGLContext::getWidget()),
           WBaseWidget(this),

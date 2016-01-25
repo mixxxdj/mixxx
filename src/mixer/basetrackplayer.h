@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QString>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginechannel.h"
 #include "engine/enginedeck.h"
 #include "mixer/baseplayer.h"
@@ -47,7 +47,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     Q_OBJECT
   public:
     BaseTrackPlayerImpl(QObject* pParent,
-                        ConfigObject<ConfigValue>* pConfig,
+                        UserSettingsPointer pConfig,
                         EngineMaster* pMixingEngine,
                         EffectsManager* pEffectsManager,
                         EngineChannel::ChannelOrientation defaultOrientation,
@@ -73,7 +73,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotPlayToggled(double);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackPointer m_pLoadedTrack;
 
     // Waveform display related controls

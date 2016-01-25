@@ -205,7 +205,7 @@ void ControllerEngine::initializeScriptEngine() {
 
 /* -------- ------------------------------------------------------
    Purpose: Load all script files given in the supplied list
-   Input:   Global ConfigObject, QString list of file names to load
+   Input:   List of script paths and file names to load
    Output:  Returns true if no errors occured.
    -------- ------------------------------------------------------ */
 bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,

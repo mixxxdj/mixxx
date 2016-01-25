@@ -8,7 +8,7 @@
 #include "util/assert.h"
 
 DlgAnalysis::DlgAnalysis(QWidget* parent,
-                       ConfigObject<ConfigValue>* pConfig,
+                       UserSettingsPointer pConfig,
                        TrackCollection* pTrackCollection)
         : QWidget(parent),
           m_pConfig(pConfig),

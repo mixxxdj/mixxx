@@ -4,7 +4,7 @@
 
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controllers/softtakeover.h"
 #include "test/mixxxtest.h"
 #include "util/time.h"

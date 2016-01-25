@@ -31,7 +31,7 @@ const double RateControl::kPausedJogMultiplier = 18.0;
 enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
 
 RateControl::RateControl(QString group,
-                         ConfigObject<ConfigValue>* _config)
+                         UserSettingsPointer _config)
     : EngineControl(group, _config),
       m_pBpmControl(NULL),
       m_ePbCurrent(0),

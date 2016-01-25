@@ -367,7 +367,7 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     presetDirs.append(presetFileInfo.canonicalPath());
 
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
-        presetPath, ControllerManager::getPresetPaths(m_pConfig.data()));
+        presetPath, ControllerManager::getPresetPaths(m_pConfig));
 
     // Import the preset scripts to the user scripts folder.
     for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
@@ -731,7 +731,7 @@ void DlgPrefController::openScript() {
     foreach (QModelIndex index, selectedIndices) {
         selectedRows.insert(index.row());
     }
-    QList<QString> scriptPaths = ControllerManager::getPresetPaths(m_pConfig.data());
+    QList<QString> scriptPaths = ControllerManager::getPresetPaths(m_pConfig);
 
     foreach (int row, selectedRows) {
         QString scriptName = m_ui.m_pScriptsTableWidget->item(row, 0)->text();

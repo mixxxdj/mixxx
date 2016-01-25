@@ -26,7 +26,7 @@ class BasePlaylistFeature : public LibraryFeature {
     Q_OBJECT
   public:
     BasePlaylistFeature(QObject* parent,
-                        ConfigObject<ConfigValue>* pConfig,
+                        UserSettingsPointer pConfig,
                         TrackCollection* pTrackCollection,
                         QString rootViewName);
     virtual ~BasePlaylistFeature();
@@ -77,7 +77,7 @@ class BasePlaylistFeature : public LibraryFeature {
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;

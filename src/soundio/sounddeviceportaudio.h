@@ -37,7 +37,7 @@ typedef int (*EnableAlsaRT)(PaStream* s, int enable);
 
 class SoundDevicePortAudio : public SoundDevice {
   public:
-    SoundDevicePortAudio(ConfigObject<ConfigValue> *config,
+    SoundDevicePortAudio(UserSettingsPointer config,
                          SoundManager *sm, const PaDeviceInfo *deviceInfo,
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();

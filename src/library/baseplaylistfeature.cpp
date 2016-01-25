@@ -20,7 +20,7 @@
 #include "util/assert.h"
 
 BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
-                                         ConfigObject<ConfigValue>* pConfig,
+                                         UserSettingsPointer pConfig,
                                          TrackCollection* pTrackCollection,
                                          QString rootViewName)
         : LibraryFeature(parent),

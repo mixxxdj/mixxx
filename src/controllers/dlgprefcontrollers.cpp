@@ -25,7 +25,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     connect(btnOpenUserPresets, SIGNAL(clicked()),
             &m_buttonMapper, SLOT(map()));
 
-    m_buttonMapper.setMapping(btnOpenUserPresets, userPresetsPath(m_pConfig.data()));
+    m_buttonMapper.setMapping(btnOpenUserPresets, userPresetsPath(m_pConfig));
 
     // Connections
     connect(m_pControllerManager, SIGNAL(devicesChanged()),

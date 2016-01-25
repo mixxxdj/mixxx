@@ -7,7 +7,7 @@
 #include "util/dnd.h"
 
 WTrackProperty::WTrackProperty(const char* group,
-                               ConfigObject<ConfigValue>* pConfig,
+                               UserSettingsPointer pConfig,
                                QWidget* pParent)
         : WLabel(pParent),
           m_pGroup(group),

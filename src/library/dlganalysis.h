@@ -3,7 +3,7 @@
 
 #include <QItemSelection>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/analysislibrarytablemodel.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
@@ -16,7 +16,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     Q_OBJECT
   public:
     DlgAnalysis(QWidget *parent,
-               ConfigObject<ConfigValue>* pConfig,
+               UserSettingsPointer pConfig,
                TrackCollection* pTrackCollection);
     virtual ~DlgAnalysis();
 
@@ -54,7 +54,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
 
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
     bool m_bAnalysisActive;
     QButtonGroup m_songsButtonGroup;

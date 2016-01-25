@@ -4,7 +4,7 @@
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
                        Library* pLibrary,
                        TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
          : QWidget(parent),

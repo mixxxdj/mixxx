@@ -2,7 +2,7 @@
 #define DLGHIDDEN_H
 
 #include "library/ui_dlghidden.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/library.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
@@ -15,7 +15,7 @@ class QItemSelection;
 class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     Q_OBJECT
   public:
-    DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+    DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
               Library* pLibrary, TrackCollection* pTrackCollection,
               MixxxKeyboard* pKeyboard);
     virtual ~DlgHidden();

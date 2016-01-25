@@ -8,7 +8,7 @@
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
                            Library* pLibrary, TrackCollection* pTrackCollection,
                            RecordingManager* pRecordingManager, MixxxKeyboard* pKeyboard)
         : QWidget(parent),

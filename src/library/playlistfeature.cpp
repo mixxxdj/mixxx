@@ -20,7 +20,7 @@
 
 PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
-                                 ConfigObject<ConfigValue>* pConfig)
+                                 UserSettingsPointer pConfig)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
                               "PLAYLISTHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,

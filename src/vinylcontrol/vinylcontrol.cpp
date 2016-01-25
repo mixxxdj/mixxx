@@ -2,7 +2,7 @@
 #include "controlobjectslave.h"
 #include "controlobject.h"
 
-VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
+VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
         : m_pConfig(pConfig),
           m_group(group),
           m_iLeadInTime(m_pConfig->getValueString(

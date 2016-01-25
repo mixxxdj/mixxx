@@ -48,7 +48,7 @@ static const int kFifoSize = 2 * kDriftReserve + 1;
 // static
 volatile int SoundDevicePortAudio::m_underflowHappened = 0;
 
-SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config,
+SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
                                            SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo,
                                            unsigned int devIndex)

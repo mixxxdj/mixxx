@@ -18,7 +18,7 @@
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
 AnalysisFeature::AnalysisFeature(QObject* parent,
-                               ConfigObject<ConfigValue>* pConfig,
+                               UserSettingsPointer pConfig,
                                TrackCollection* pTrackCollection) :
         LibraryFeature(parent),
         m_pConfig(pConfig),

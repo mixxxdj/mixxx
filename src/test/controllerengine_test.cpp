@@ -7,7 +7,7 @@
 
 #include "controlobject.h"
 #include "controlpotmeter.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controllers/controllerengine.h"
 #include "controllers/controllerdebug.h"
 #include "test/mixxxtest.h"

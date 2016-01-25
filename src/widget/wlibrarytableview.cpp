@@ -12,7 +12,7 @@
 #include "util/math.h"
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
-                                     ConfigObject<ConfigValue>* pConfig,
+                                     UserSettingsPointer pConfig,
                                      ConfigKey vScrollBarPosKey)
         : QTableView(parent),
           m_pConfig(pConfig),

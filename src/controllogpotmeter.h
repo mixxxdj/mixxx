@@ -19,7 +19,7 @@
 #define CONTROLLOGPOTMETER_H
 
 #include "controlpotmeter.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 /**
  *@author Tue and Ken Haste Andersen

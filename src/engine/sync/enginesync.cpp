@@ -25,7 +25,7 @@
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
 
-EngineSync::EngineSync(ConfigObject<ConfigValue>* pConfig)
+EngineSync::EngineSync(UserSettingsPointer pConfig)
         : BaseSyncableListener(pConfig) {
 }
 

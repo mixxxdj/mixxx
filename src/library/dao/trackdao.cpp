@@ -72,7 +72,7 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
                    CrateDAO& crateDao,
                    AnalysisDao& analysisDao,
                    LibraryHashDAO& libraryHashDao,
-                   ConfigObject<ConfigValue> * pConfig)
+                   UserSettingsPointer pConfig)
         : m_database(database),
           m_cueDao(cueDao),
           m_playlistDao(playlistDao),

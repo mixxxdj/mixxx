@@ -26,7 +26,7 @@
 #include "util/assert.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
-                                 ConfigObject<ConfigValue> * pConfig,
+                                 UserSettingsPointer pConfig,
                                  TrackCollection* pTrackCollection, bool sorting)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,

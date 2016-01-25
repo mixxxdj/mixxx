@@ -10,7 +10,7 @@
 #include "trackinfoobject.h"
 #include "waveform/waveformfactory.h"
 
-AnalyzerWaveform::AnalyzerWaveform(ConfigObject<ConfigValue>* pConfig) :
+AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :
         m_skipProcessing(false),
         m_waveformData(nullptr),
         m_waveformSummaryData(nullptr),

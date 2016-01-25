@@ -52,7 +52,7 @@ class LibraryScanner : public QThread {
   public:
     LibraryScanner(QWidget* pParent,
                    TrackCollection* collection,
-                   ConfigObject<ConfigValue>* pConfig);
+                   UserSettingsPointer pConfig);
     virtual ~LibraryScanner();
 
     // Call from any thread to start a scan. Does nothing if a scan is already

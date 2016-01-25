@@ -5,7 +5,7 @@
 
 #include <QtDebug>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"

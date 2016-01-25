@@ -26,7 +26,7 @@ const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 static const int kMaxRetrieveAttempts = 3;
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
-                             ConfigObject<ConfigValue>* pConfig,
+                             UserSettingsPointer pConfig,
                              PlayerManagerInterface* pPlayerManager,
                              TrackCollection* pTrackCollection)
         : LibraryFeature(pLibrary),

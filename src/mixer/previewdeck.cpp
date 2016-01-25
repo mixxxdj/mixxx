@@ -1,7 +1,7 @@
 #include "mixer/previewdeck.h"
 
 PreviewDeck::PreviewDeck(QObject* pParent,
-                         ConfigObject<ConfigValue> *pConfig,
+                         UserSettingsPointer pConfig,
                          EngineMaster* pMixingEngine,
                          EffectsManager* pEffectsManager,
                          EngineChannel::ChannelOrientation defaultOrientation,

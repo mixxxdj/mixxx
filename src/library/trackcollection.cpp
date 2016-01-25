@@ -16,7 +16,7 @@
 // static
 const int TrackCollection::kRequiredSchemaVersion = 26;
 
-TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
+TrackCollection::TrackCollection(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
           m_playlistDao(m_db),

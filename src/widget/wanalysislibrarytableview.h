@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "widget/wtracktableview.h"
 
 class TrackCollection;
@@ -11,7 +11,7 @@ class TrackCollection;
 class WAnalysisLibraryTableView : public WTrackTableView
 {
     public:
-        WAnalysisLibraryTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+        WAnalysisLibraryTableView(QWidget* parent, UserSettingsPointer pConfig,
                                  TrackCollection* pTrackCollection);
         ~WAnalysisLibraryTableView();
 

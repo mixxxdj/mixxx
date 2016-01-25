@@ -16,7 +16,7 @@
 #include "util/dnd.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
-                     ConfigObject<ConfigValue>* pConfig,
+                     UserSettingsPointer pConfig,
                      const QString& group)
         : QWidget(parent),
           WBaseWidget(this),

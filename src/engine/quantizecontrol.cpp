@@ -5,7 +5,7 @@
 #include <QtDebug>
 
 #include "controlobject.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlpushbutton.h"
 #include "cachingreader.h"
 #include "engine/quantizecontrol.h"
@@ -13,7 +13,7 @@
 #include "util/assert.h"
 
 QuantizeControl::QuantizeControl(QString group,
-                                 ConfigObject<ConfigValue>* pConfig)
+                                 UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     // Turn quantize OFF by default. See Bug #898213
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);

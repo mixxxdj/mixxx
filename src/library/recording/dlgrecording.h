@@ -1,7 +1,7 @@
 #ifndef DLGRECORDING_H
 #define DLGRECORDING_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/libraryview.h"
 #include "library/proxytrackmodel.h"
@@ -19,7 +19,7 @@ class WTrackTableView;
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgRecording(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
+    DlgRecording(QWidget *parent, UserSettingsPointer pConfig,
                  Library* pLibrary, TrackCollection* pTrackCollection,
                  RecordingManager* pRecManager, MixxxKeyboard* pKeyboard);
     virtual ~DlgRecording();
@@ -49,7 +49,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void restoreSearch(QString search);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
     BrowseTableModel m_browseModel;

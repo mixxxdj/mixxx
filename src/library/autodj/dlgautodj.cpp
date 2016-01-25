@@ -8,7 +8,7 @@
 #include "util/time.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
-                     ConfigObject<ConfigValue>* pConfig,
+                     UserSettingsPointer pConfig,
                      Library* pLibrary,
                      AutoDJProcessor* pProcessor,
                      TrackCollection* pTrackCollection,

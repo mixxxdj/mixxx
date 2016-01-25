@@ -2,7 +2,7 @@
 #define DLGMISSING_H
 
 #include "library/ui_dlgmissing.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/library.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
@@ -14,7 +14,7 @@ class MissingTableModel;
 class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     Q_OBJECT
   public:
-    DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+    DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
                Library* pLibrary, TrackCollection* pTrackCollection,
                MixxxKeyboard* pKeyboard);
     virtual ~DlgMissing();

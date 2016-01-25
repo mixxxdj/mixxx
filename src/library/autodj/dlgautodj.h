@@ -5,7 +5,7 @@
 #include <QString>
 
 #include "library/autodj/ui_dlgautodj.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
 #include "library/library.h"
@@ -19,7 +19,7 @@ class WTrackTableView;
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
-    DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+    DlgAutoDJ(QWidget* parent, UserSettingsPointer pConfig,
               Library* pLibrary,
               AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
               MixxxKeyboard* pKeyboard);

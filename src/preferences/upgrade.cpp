@@ -41,9 +41,9 @@ Upgrade::Upgrade()
 Upgrade::~Upgrade() {
 }
 
-// We return the ConfigObject here because we have to make changes to the
+// We return the UserSettings here because we have to make changes to the
 // configuration and the location of the file may change between releases.
-UserSettings* Upgrade::versionUpgrade(const QString& settingsPath) {
+UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
 /*  Pre-1.7.0:
 *
@@ -161,7 +161,8 @@ UserSettings* Upgrade::versionUpgrade(const QString& settingsPath) {
 ****************************************************************************/
 
     // Read the config file from home directory
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir(settingsPath).filePath(SETTINGS_FILE));
+    UserSettingsPointer config(new ConfigObject<ConfigValue>(
+        QDir(settingsPath).filePath(SETTINGS_FILE)));
 
     QString configVersion = config->getValueString(ConfigKey("[Config]","Version"));
 
@@ -174,7 +175,8 @@ UserSettings* Upgrade::versionUpgrade(const QString& settingsPath) {
         if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
             qDebug() << "Found pre-1.9.0 config for OS X";
             // Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
-            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/.mixxx/mixxx.cfg"));
+            config = UserSettingsPointer(new ConfigObject<ConfigValue>(
+                QDir::homePath().append("/.mixxx/mixxx.cfg")));
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
             // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
             // to QDir::filePath elsewhere in the code. This is candidate for removal.
@@ -299,7 +301,8 @@ UserSettings* Upgrade::versionUpgrade(const QString& settingsPath) {
         }
         // Reload the configuration file from the new location.
         // (We want to make sure we save to the new location...)
-        config = new ConfigObject<ConfigValue>(QDir(settingsPath).filePath(SETTINGS_FILE));
+        config = UserSettingsPointer(new ConfigObject<ConfigValue>(
+            QDir(settingsPath).filePath(SETTINGS_FILE)));
 #endif
         configVersion = "1.9.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.9.0"));

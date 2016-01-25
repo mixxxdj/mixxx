@@ -8,7 +8,7 @@
 #include <limits>
 
 #include "analyzer/analyzer.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "util/math.h"
 #include "util/memory.h"
 #include "waveform/waveform.h"
@@ -140,7 +140,7 @@ struct WaveformStride {
 
 class AnalyzerWaveform : public Analyzer {
   public:
-    AnalyzerWaveform(ConfigObject<ConfigValue>* pConfig);
+    AnalyzerWaveform(UserSettingsPointer pConfig);
     virtual ~AnalyzerWaveform();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;

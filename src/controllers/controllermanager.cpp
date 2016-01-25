@@ -57,7 +57,7 @@ bool controllerCompare(Controller *a,Controller *b) {
     return a->getName() < b->getName();
 }
 
-ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
+ControllerManager::ControllerManager(UserSettingsPointer pConfig)
         : QObject(),
           m_pConfig(pConfig),
           // WARNING: Do not parent m_pControllerLearningEventFilter to
@@ -398,7 +398,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
 }
 
 // static
-QList<QString> ControllerManager::getPresetPaths(ConfigObject<ConfigValue>* pConfig) {
+QList<QString> ControllerManager::getPresetPaths(UserSettingsPointer pConfig) {
     QList<QString> scriptPaths;
     scriptPaths.append(userPresetsPath(pConfig));
     scriptPaths.append(resourcePresetsPath(pConfig));

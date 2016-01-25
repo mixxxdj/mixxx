@@ -41,7 +41,7 @@ const QString kNetworkDeviceInternalName = "Network stream";
 
 class SoundDevice {
   public:
-    SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm);
+    SoundDevice(UserSettingsPointer config, SoundManager* sm);
     virtual ~SoundDevice();
 
     inline const QString& getInternalName() const {
@@ -92,7 +92,7 @@ class SoundDevice {
     void clearInputBuffer(const unsigned int framesToPush,
                           const unsigned int framesWriteOffset);
 
-    ConfigObject<ConfigValue> *m_pConfig;
+    UserSettingsPointer m_pConfig;
     // Pointer to the SoundManager object which we'll request audio from.
     SoundManager* m_pSoundManager;
     // The name of the soundcard, used internally (may include the device ID)

@@ -5,7 +5,7 @@
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
                      Library* pLibrary, TrackCollection* pTrackCollection,
                      MixxxKeyboard* pKeyboard)
          : QWidget(parent),

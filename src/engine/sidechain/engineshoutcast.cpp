@@ -29,7 +29,7 @@
 #endif
 
 #include "engine/sidechain/engineshoutcast.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "mixer/playerinfo.h"
 #include "encoder/encoder.h"
 #include "encoder/encodermp3.h"
@@ -44,7 +44,7 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
 
-EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
+EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
         : m_pTextCodec(NULL),
           m_pMetaData(),
           m_pShout(NULL),

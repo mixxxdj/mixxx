@@ -3,7 +3,7 @@
 #include <QtDebug>
 
 #include "cachingreader.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlindicator.h"
 #include "controllinpotmeter.h"
 #include "controlobjectslave.h"
@@ -44,7 +44,7 @@
 const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 const int kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
-EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
+EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
         : m_group(group),
           m_pConfig(_config),
