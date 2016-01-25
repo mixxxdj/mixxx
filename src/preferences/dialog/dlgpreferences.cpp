@@ -60,7 +60,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
                                EffectsManager* pEffectsManager,
-                               ConfigObject<ConfigValue>* pConfig, Library *pLibrary)
+                               UserSettingsPointer pConfig, Library *pLibrary)
         : m_pConfig(pConfig),
           m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {

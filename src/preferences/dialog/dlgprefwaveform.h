@@ -4,7 +4,7 @@
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
 class MixxxMainWindow;
@@ -13,7 +13,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     Q_OBJECT
   public:
     DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                    ConfigObject<ConfigValue> *pConfig);
+                    UserSettingsPointer pConfig);
     virtual ~DlgPrefWaveform();
 
   public slots:
@@ -38,7 +38,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
   private:
     void initWaveformControl();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     MixxxMainWindow* m_pMixxx;
 };
 

@@ -24,7 +24,7 @@
 
 #include "preferences/dialog/ui_dlgprefshoutcastdlg.h"
 #include "controlobject.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "shoutcast/defs_shoutcast.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -37,7 +37,7 @@ class ControlObjectSlave;
 class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDlg  {
     Q_OBJECT
   public:
-    DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    DlgPrefShoutcast(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefShoutcast();
 
   public slots:
@@ -51,7 +51,7 @@ class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDl
     void apply(const QString &);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     ControlObjectSlave* m_pShoutcastEnabled;
 };
 

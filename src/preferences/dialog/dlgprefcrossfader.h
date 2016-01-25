@@ -4,7 +4,7 @@
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefcrossfaderdlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -12,7 +12,7 @@
 class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfaderDlg  {
     Q_OBJECT
   public:
-    DlgPrefCrossfader(QWidget* parent, ConfigObject<ConfigValue>* _config);
+    DlgPrefCrossfader(QWidget* parent, UserSettingsPointer _config);
     virtual ~DlgPrefCrossfader();
 
   public slots:
@@ -31,7 +31,7 @@ class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfader
     void drawXfaderDisplay();
 
     // Pointer to config object
-    ConfigObject<ConfigValue>* m_config;
+    UserSettingsPointer m_config;
 
     QGraphicsScene* m_pxfScene;
 

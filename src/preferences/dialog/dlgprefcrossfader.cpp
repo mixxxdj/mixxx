@@ -7,7 +7,7 @@
 #include "util/rescaler.h"
 
 DlgPrefCrossfader::DlgPrefCrossfader(
-        QWidget* parent, ConfigObject<ConfigValue>* config)
+        QWidget* parent, UserSettingsPointer config)
         : DlgPreferencePage(parent),
           m_config(config),
           m_pxfScene(NULL),

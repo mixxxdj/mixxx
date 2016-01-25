@@ -269,7 +269,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
 #ifdef __MODPLUG__
     // restore the configuration for the modplug library before trying to load a module
-    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(0, pConfig.data());
+    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(0, pConfig);
     pModplugPrefs->loadSettings();
     pModplugPrefs->applySettings();
     delete pModplugPrefs; // not needed anymore
@@ -331,7 +331,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, m_pEffectsManager,
-                                    pConfig.data(), m_pLibrary);
+                                    pConfig, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 

@@ -5,7 +5,7 @@
 #define DLGPREFMODPLUG_H
 
 #include <QDialog>
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
 namespace Ui {
@@ -16,7 +16,7 @@ class DlgPrefModplug : public DlgPreferencePage {
     Q_OBJECT
 
   public:
-    explicit DlgPrefModplug(QWidget* parent, ConfigObject<ConfigValue>* _config);
+    explicit DlgPrefModplug(QWidget* parent, UserSettingsPointer _config);
     virtual ~DlgPrefModplug();
 
   public slots:
@@ -31,7 +31,7 @@ class DlgPrefModplug : public DlgPreferencePage {
 
   private:
     Ui::DlgPrefModplug* m_pUi;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
 };
 
 #endif // DLGPREFMODPLUG_H

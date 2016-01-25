@@ -1,7 +1,7 @@
 #include "preferences/dialog/dlgprefautodj.h"
 
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
-                             ConfigObject<ConfigValue>* pConfig)
+                             UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig) {
     setupUi(this);

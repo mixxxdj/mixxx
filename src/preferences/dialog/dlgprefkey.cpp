@@ -32,7 +32,7 @@ using Vamp::HostExt::PluginLoader;
 using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
-DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
+DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer _config)
         : DlgPreferencePage(parent),
           Ui::DlgPrefKeyDlg(),
           m_pConfig(_config),

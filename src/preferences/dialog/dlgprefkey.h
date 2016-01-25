@@ -6,14 +6,14 @@
 #include <QMap>
 
 #include "preferences/dialog/ui_dlgprefkeydlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "track/keyutils.h"
 #include "preferences/dlgpreferencepage.h"
 
 class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     Q_OBJECT
   public:
-    DlgPrefKey(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    DlgPrefKey(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefKey();
 
   public slots:
@@ -38,7 +38,7 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     void populate();
     void loadSettings();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
     QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;

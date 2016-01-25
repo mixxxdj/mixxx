@@ -26,7 +26,7 @@
 
 const char* kDefaultMetadataFormat = "$artist - $title";
 
-DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config)
+DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, UserSettingsPointer _config)
         : DlgPreferencePage(parent),
           m_pConfig(_config) {
     setupUi(this);

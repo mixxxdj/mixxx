@@ -30,7 +30,7 @@
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
 DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
-                               ConfigObject<ConfigValue> * config, Library *pLibrary)
+                               UserSettingsPointer  config, Library *pLibrary)
         : DlgPreferencePage(parent),
           m_dirListModel(),
           m_pconfig(config),

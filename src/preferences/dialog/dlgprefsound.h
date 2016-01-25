@@ -17,7 +17,7 @@
 #define DLGPREFSOUND_H
 
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "soundio/soundmanagerconfig.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -42,7 +42,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
   public:
     DlgPrefSound(QWidget *parent, SoundManager *soundManager,
                  PlayerManager* pPlayerManager,
-                 ConfigObject<ConfigValue> *config);
+                 UserSettingsPointer config);
     virtual ~DlgPrefSound();
 
   signals:
@@ -90,7 +90,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
 
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
-    ConfigObject<ConfigValue> *m_pConfig;
+    UserSettingsPointer m_pConfig;
     ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
     ControlObjectSlave* m_pMasterLatency;
     ControlObjectSlave* m_pHeadDelay;

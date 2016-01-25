@@ -5,7 +5,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                                 ConfigObject<ConfigValue>* pConfig)
+                                 UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_pMixxx(pMixxx) {

@@ -31,7 +31,7 @@
  * all the controls to the values obtained from SoundManager.
  */
 DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
-                           PlayerManager* pPlayerManager, ConfigObject<ConfigValue>* pConfig)
+                           PlayerManager* pPlayerManager, UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
           m_pPlayerManager(pPlayerManager),

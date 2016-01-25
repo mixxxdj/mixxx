@@ -1,7 +1,7 @@
 #ifndef DLGPREFEFFECTS_H
 #define DLGPREFEFFECTS_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -11,7 +11,7 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     Q_OBJECT
   public:
     DlgPrefEffects(QWidget* pParent,
-                   ConfigObject<ConfigValue>* pConfig,
+                   UserSettingsPointer pConfig,
                    EffectsManager* pEffectsManager);
     virtual ~DlgPrefEffects() {}
 
@@ -27,7 +27,7 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     void addEffectToList(const QString& id);
     void clear();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
 };
 

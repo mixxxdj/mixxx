@@ -10,14 +10,14 @@
 #include <QList>
 
 #include "analyzer/vamp/vamppluginloader.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbeatsdlg.h"
 
 class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     Q_OBJECT
   public:
-    DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    DlgPrefBeats(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefBeats();
 
   public slots:
@@ -41,7 +41,7 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     void loadSettings();
 
     // Pointer to config object
-    ConfigObject<ConfigValue>* m_pconfig;
+    UserSettingsPointer m_pconfig;
     QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;
     QString m_selectedAnalyzer;

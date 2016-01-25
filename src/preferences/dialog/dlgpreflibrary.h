@@ -23,7 +23,7 @@
 #include <QFont>
 
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/library.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -40,7 +40,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
         ADD_TRACK_TOP     // Add track to Auto-DJ Queue (top).
     };
 
-    DlgPrefLibrary(QWidget *parent, ConfigObject<ConfigValue> *config,
+    DlgPrefLibrary(QWidget *parent, UserSettingsPointer config,
                    Library *pLibrary);
     virtual ~DlgPrefLibrary();
 
@@ -77,7 +77,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void setLibraryFont(const QFont& font);
 
     QStandardItemModel m_dirListModel;
-    ConfigObject<ConfigValue>* m_pconfig;
+    UserSettingsPointer m_pconfig;
     Library* m_pLibrary;
     bool m_baddedDirectory;
     QFont m_originalTrackTableFont;

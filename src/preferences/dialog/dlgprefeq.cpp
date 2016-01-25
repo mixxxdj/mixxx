@@ -39,7 +39,7 @@ const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
 
 DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
-                     ConfigObject<ConfigValue>* pConfig)
+                     UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_COLoFreq(kConfigKey, "LoEQFrequency"),
           m_COHiFreq(kConfigKey, "HiEQFrequency"),

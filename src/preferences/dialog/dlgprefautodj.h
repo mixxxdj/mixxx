@@ -4,13 +4,13 @@
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefautodjdlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
 class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     Q_OBJECT
   public:
-    DlgPrefAutoDJ(QWidget* pParent, ConfigObject<ConfigValue> *pConfig);
+    DlgPrefAutoDJ(QWidget* pParent, UserSettingsPointer pConfig);
     virtual ~DlgPrefAutoDJ();
 
   public slots:
@@ -29,7 +29,7 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotEnableAutoDJRandomQueue(int);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
 };
 
 #endif /* DLGPREFAUTODJ_H */

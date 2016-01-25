@@ -8,7 +8,7 @@
 #include "controllers/defs_controllers.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
-                                       ConfigObject<ConfigValue>* pConfig,
+                                       UserSettingsPointer pConfig,
                                        ControllerManager* pControllerManager,
                                        QTreeWidgetItem* pControllerTreeItem)
         : DlgPreferencePage(pPreferences),
@@ -25,7 +25,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     connect(btnOpenUserPresets, SIGNAL(clicked()),
             &m_buttonMapper, SLOT(map()));
 
-    m_buttonMapper.setMapping(btnOpenUserPresets, userPresetsPath(m_pConfig));
+    m_buttonMapper.setMapping(btnOpenUserPresets, userPresetsPath(m_pConfig.data()));
 
     // Connections
     connect(m_pControllerManager, SIGNAL(devicesChanged()),

@@ -22,7 +22,7 @@
 #include <QComboBox>
 
 #include "preferences/dialog/ui_dlgprefeqdlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 #include "effects/effectsmanager.h"
@@ -35,7 +35,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
     DlgPrefEQ(QWidget *parent, EffectsManager* pEffectsManager,
-              ConfigObject<ConfigValue>* _config);
+              UserSettingsPointer _config);
     virtual ~DlgPrefEQ();
 
     QString getEQEffectGroupForDeck(int deck) const;
@@ -80,7 +80,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     ControlObjectSlave m_COLoFreq;
     ControlObjectSlave m_COHiFreq;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 
     // Members needed for changing the effects loaded on the EQ Effect Rack

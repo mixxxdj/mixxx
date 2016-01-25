@@ -16,7 +16,7 @@ using Vamp::HostExt::PluginLoader;
 using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
-DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
+DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer _config)
         : DlgPreferencePage(parent),
           m_pconfig(_config),
           m_minBpm(0),

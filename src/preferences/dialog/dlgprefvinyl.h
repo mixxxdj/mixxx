@@ -21,7 +21,7 @@
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefvinyldlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -31,7 +31,7 @@ class VinylControlManager;
 class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     Q_OBJECT
   public:
-    DlgPrefVinyl(QWidget* pParent, VinylControlManager* m_pVCMan, ConfigObject<ConfigValue>* _config);
+    DlgPrefVinyl(QWidget* pParent, VinylControlManager* m_pVCMan, UserSettingsPointer _config);
     virtual ~DlgPrefVinyl();
 
   public slots:
@@ -65,7 +65,7 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     QList<VinylControlSignalWidget*> m_signalWidgets;
 
     VinylControlManager* m_pVCManager;
-    ConfigObject<ConfigValue>* config;
+    UserSettingsPointer config;
     QList<ControlObjectSlave*> m_COSpeeds;
     ControlObjectSlave* m_pNumDecks;
     int m_iConfiguredDecks;

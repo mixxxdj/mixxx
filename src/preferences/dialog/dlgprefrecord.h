@@ -22,7 +22,7 @@
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefrecorddlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
 class ControlObject;
@@ -31,7 +31,7 @@ class ControlObjectSlave;
 class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
   public:
-    DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    DlgPrefRecord(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefRecord();
 
   public slots:
@@ -60,7 +60,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void updateTextQuality();
 
     // Pointer to config object
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     ControlObjectSlave* m_pRecordControl;
     bool m_bConfirmOverwrite;
     QString fileTypeExtension;

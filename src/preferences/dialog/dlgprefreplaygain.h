@@ -4,7 +4,7 @@
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefreplaygaindlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -12,7 +12,7 @@ class DlgPrefReplayGain: public DlgPreferencePage,
                          public Ui::DlgPrefReplayGainDlg {
     Q_OBJECT
   public:
-    DlgPrefReplayGain(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    DlgPrefReplayGain(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefReplayGain();
 
   public slots:
@@ -35,7 +35,7 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     void setLabelCurrentReplayGainBoost(int value);
 
     // Pointer to config object
-    ConfigObject<ConfigValue>* config;
+    UserSettingsPointer config;
 
     ControlObjectSlave m_replayGainBoost;
     ControlObjectSlave m_defaultBoost;

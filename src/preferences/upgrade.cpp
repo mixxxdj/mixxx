@@ -23,7 +23,7 @@
 #include <QTranslator>
 #include <QScopedPointer>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controllers/defs_controllers.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
@@ -43,7 +43,7 @@ Upgrade::~Upgrade() {
 
 // We return the ConfigObject here because we have to make changes to the
 // configuration and the location of the file may change between releases.
-ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) {
+UserSettings* Upgrade::versionUpgrade(const QString& settingsPath) {
 
 /*  Pre-1.7.0:
 *

@@ -25,7 +25,7 @@
 #include "controlobjectslave.h"
 #include "util/sandbox.h"
 
-DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig)
+DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_bConfirmOverwrite(false),

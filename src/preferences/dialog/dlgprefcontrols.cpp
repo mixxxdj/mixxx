@@ -25,7 +25,7 @@
 
 #include "mixer/basetrackplayer.h"
 #include "preferences/dialog/dlgprefcontrols.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "widget/wnumberpos.h"
@@ -41,7 +41,7 @@
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
                                  PlayerManager* pPlayerManager,
-                                 ConfigObject<ConfigValue> * pConfig)
+                                 UserSettingsPointer  pConfig)
         :  DlgPreferencePage(parent),
            m_pConfig(pConfig),
            m_mixxx(mixxx),

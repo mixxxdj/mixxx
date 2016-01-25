@@ -3,7 +3,7 @@
 #include "effects/effectsmanager.h"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
-                               ConfigObject<ConfigValue>* pConfig,
+                               UserSettingsPointer pConfig,
                                EffectsManager* pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),

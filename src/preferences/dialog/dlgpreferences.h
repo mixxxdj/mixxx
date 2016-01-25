@@ -24,7 +24,7 @@
 #include <QStringList>
 
 #include "preferences/dialog/ui_dlgpreferencesdlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlpushbutton.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -63,7 +63,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
                    VinylControlManager* pVCManager, EffectsManager* pEffectsManager,
-                   ConfigObject<ConfigValue>* pConfig, Library *pLibrary);
+                   UserSettingsPointer pConfig, Library *pLibrary);
     virtual ~DlgPreferences();
 
     void addPageWidget(DlgPreferencePage* pWidget);
@@ -99,7 +99,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QRect getDefaultGeometry();
 
     QStringList m_geometry;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     DlgPrefSound* m_wsound;
     DlgPrefLibrary* m_wlibrary;
     DlgPrefControllers *m_wcontrollers;

@@ -21,7 +21,7 @@
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefcontrolsdlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
 class ControlObjectSlave;
@@ -40,7 +40,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
   public:
     DlgPrefControls(QWidget *parent, MixxxMainWindow *mixxx,
                     SkinLoader* pSkinLoader, PlayerManager* pPlayerManager,
-                    ConfigObject<ConfigValue> *pConfig);
+                    UserSettingsPointer pConfig);
     virtual ~DlgPrefControls();
 
   public slots:
@@ -87,7 +87,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     // returns zero.
     int cueDefaultIndexByData(int userData) const;
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     ControlObject* m_pControlTrackTimeDisplay;
     ControlObjectSlave* m_pNumDecks;
     ControlObjectSlave* m_pNumSamplers;

@@ -29,7 +29,7 @@
 #include "defs_urls.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
-                           ConfigObject<ConfigValue> * _config)
+                           UserSettingsPointer  _config)
         : DlgPreferencePage(parent),
           m_pVCManager(pVCMan),
           config(_config),

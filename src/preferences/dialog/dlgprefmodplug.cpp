@@ -4,13 +4,13 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #include "preferences/dialog/ui_dlgprefmodplugdlg.h"
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "sources/soundsourcemodplug.h"
 
 #define kConfigKey "[Modplug]"
 
 DlgPrefModplug::DlgPrefModplug(QWidget *parent,
-                               ConfigObject<ConfigValue> *_config)
+                               UserSettingsPointer _config)
         : DlgPreferencePage(parent),
           m_pUi(new Ui::DlgPrefModplug),
           m_pConfig(_config) {
