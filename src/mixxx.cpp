@@ -177,7 +177,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     launchProgress(2);
 
     // Set the visibility of tooltips, default "1" = ON
-    m_toolTipsCfg = pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt();
+    m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
+        pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt());
 
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
@@ -1918,10 +1919,10 @@ void MixxxMainWindow::slotHelpManual() {
     QDesktopServices::openUrl(qManualUrl);
 }
 
-void MixxxMainWindow::setToolTipsCfg(int tt) {
+void MixxxMainWindow::setToolTipsCfg(mixxx::TooltipsPreference tt) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     pConfig->set(ConfigKey("[Controls]","Tooltips"),
-                   ConfigValue(tt));
+                 ConfigValue(static_cast<int>(tt)));
     m_toolTipsCfg = tt;
 }
 
@@ -2008,16 +2009,13 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event)
 {
     if (event->type() == QEvent::ToolTip) {
         // return true for no tool tips
-        if (m_toolTipsCfg == 2) {
-            // ON (only in Library)
-            WBaseWidget* pWidget = dynamic_cast<WBaseWidget*>(obj);
-            return pWidget != NULL;
-        } else if (m_toolTipsCfg == 1) {
-            // ON
-            return false;
-        } else {
-            // OFF
-            return true;
+        switch (m_toolTipsCfg) {
+            case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
+                return dynamic_cast<WBaseWidget*>(obj) != nullptr;
+            case mixxx::TooltipsPreference::TOOLTIPS_ON:
+                return false;
+            case mixxx::TooltipsPreference::TOOLTIPS_OFF:
+                return true;
         }
     } else {
         // standard event processing

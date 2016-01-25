@@ -49,6 +49,7 @@ class LaunchImage;
 
 #include "configobject.h"
 #include "preferences/usersettings.h"
+#include "preferences/constants.h"
 #include "trackinfoobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
@@ -79,8 +80,8 @@ class MixxxMainWindow : public QMainWindow {
     // after it was inited
     void populateMenuBar();
 
-    void setToolTipsCfg(int tt);
-    inline int getToolTipsCfg() { return m_toolTipsCfg; }
+    void setToolTipsCfg(mixxx::TooltipsPreference tt);
+    inline mixxx::TooltipsPreference getToolTipsCfg() { return m_toolTipsCfg; }
     void rebootMixxxView();
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
@@ -304,7 +305,7 @@ class MixxxMainWindow : public QMainWindow {
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;
 
-    int m_toolTipsCfg; //0=OFF, 1=ON, 2=ON (only in Library)
+    mixxx::TooltipsPreference m_toolTipsCfg;
     // Timer that tracks how long Mixxx has been running.
     Timer m_runtime_timer;
 

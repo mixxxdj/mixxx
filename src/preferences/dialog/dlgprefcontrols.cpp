@@ -25,6 +25,7 @@
 
 #include "mixer/basetrackplayer.h"
 #include "preferences/dialog/dlgprefcontrols.h"
+#include "preferences/constants.h"
 #include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
@@ -308,16 +309,15 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     //
 
     // Initialize checkboxes to match config
-    int configTooltips = m_mixxx->getToolTipsCfg();
-    //0=OFF, 1=ON, 2=ON (only in Library)
+    mixxx::TooltipsPreference configTooltips = m_mixxx->getToolTipsCfg();
     switch (configTooltips) {
-        case 0: // Off
+        case mixxx::TooltipsPreference::TOOLTIPS_OFF:
             radioButtonTooltipsOff->setChecked(true);
             break;
-        case 1: // On (Library and Skin)
+        case mixxx::TooltipsPreference::TOOLTIPS_ON:
             radioButtonTooltipsLibraryAndSkin->setChecked(true);
             break;
-        case 2: // Only in library
+        case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
             radioButtonTooltipsLibrary->setChecked(true);
             break;
     }
@@ -571,10 +571,12 @@ void DlgPrefControls::slotSetStartInFullScreen(bool b) {
 
 void DlgPrefControls::slotSetTooltips() {
     //0=OFF, 1=ON, 2=ON (only in Library)
-    int valueToSet = 1;
-    if (radioButtonTooltipsOff->isChecked()) valueToSet = 0;
-    else if (radioButtonTooltipsLibrary->isChecked()) valueToSet = 2;
-
+    mixxx::TooltipsPreference valueToSet = mixxx::TooltipsPreference::TOOLTIPS_ON;
+    if (radioButtonTooltipsOff->isChecked()) {
+        valueToSet = mixxx::TooltipsPreference::TOOLTIPS_OFF;
+    } else if (radioButtonTooltipsLibrary->isChecked()) {
+        valueToSet = mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY;
+    }
     m_mixxx->setToolTipsCfg(valueToSet);
 }
 
