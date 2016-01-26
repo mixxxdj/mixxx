@@ -837,7 +837,6 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
     // This must be the very first call, else timeInfo becomes invalid
-    m_clkRefTimer.start();
     updateCallbackEntryToDacTime(timeInfo);
 
     Trace trace("SoundDevicePortAudio::callbackProcessClkRef %1",
@@ -916,18 +915,6 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         --m_underflowUpdateCount;
     }
 
-    m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate
-            > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
-        double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
-        m_pMasterAudioLatencyUsage->set(secInAudioCb /
-                (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
-        m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
-        m_framesSinceAudioLatencyUsageUpdate = 0;
-        //qDebug() << m_pMasterAudioLatencyUsage
-        //         << m_pMasterAudioLatencyUsage->get();
-    }
-
     //Note: Input is processed first so that any ControlObject changes made in
     //      response to input are processed as soon as possible (that is, when
     //      m_pSoundManager->requestBuffer() is called below.)
@@ -967,12 +954,15 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     m_pSoundManager->writeProcess();
 
-    m_timeInAudioCallback += m_clkRefTimer.elapsed();
+    updateAudioLatencyUsage(framesPerBuffer);
+
     return paContinue;
 }
 
 void SoundDevicePortAudio::updateCallbackEntryToDacTime(
         const PaStreamCallbackTimeInfo* timeInfo) {
+    mixxx::Duration timeSinceLastCb = m_clkRefTimer.restart();
+
     PaTime callbackEntrytoDacSecs = -1;
     if (timeInfo->outputBufferDacTime > 0) {
         callbackEntrytoDacSecs = timeInfo->outputBufferDacTime
@@ -1001,4 +991,24 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
     //         << (timeInfo->outputBufferDacTime - floor(timeInfo->outputBufferDacTime));
     //qDebug() << "TimeInfo" << bufferSizeSec
     //        << timeInfo->outputBufferDacTime - timeInfo->currentTime;
+
+    qDebug() << callbackEntrytoDacSecs << callbackEntrytoDacSecs - timeSinceLastCb.toDoubleSeconds();
+}
+
+void SoundDevicePortAudio::updateAudioLatencyUsage(
+        const unsigned int framesPerBuffer) {
+    m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
+    if (m_framesSinceAudioLatencyUsageUpdate
+            > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
+        double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
+        m_pMasterAudioLatencyUsage->set(
+                secInAudioCb
+                        / (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
+        m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
+        m_framesSinceAudioLatencyUsageUpdate = 0;
+        //qDebug() << m_pMasterAudioLatencyUsage
+        //         << m_pMasterAudioLatencyUsage->get();
+    }
+    // measure time in Audio callback at the very last
+    m_timeInAudioCallback += m_clkRefTimer.elapsed();
 }
