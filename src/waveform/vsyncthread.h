@@ -57,7 +57,7 @@ class VSyncThread : public QThread {
     void setVSyncType(int mode);
     int droppedFrames();
     void setSwapWait(int sw);
-    int usFromTimerToNextSync(PerformanceTimer* timer);
+    int usFromTimerToNextSync(const PerformanceTimer& timer);
     void vsyncSlotFinished();
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void setupSync(QGLWidget* glw, int index);

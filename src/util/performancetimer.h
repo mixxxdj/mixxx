@@ -62,10 +62,11 @@ public:
       t2 = 0;
 #endif
     };
+
     void start();
     mixxx::Duration elapsed() const;
     mixxx::Duration restart();
-    mixxx::Duration difference(PerformanceTimer* timer);
+    mixxx::Duration difference(const PerformanceTimer& timer) const;
 
 private:
     qint64 t1;

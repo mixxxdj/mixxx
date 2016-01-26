@@ -33,20 +33,55 @@
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/denormalsarezero.h"
-#include "util/performancetimer.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
 
+// static
+volatile int SoundDevicePortAudio::m_underflowHappened = 0;
+
+namespace {
+
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 static const int kDriftReserve = 1;
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 static const int kFifoSize = 2 * kDriftReserve + 1;
 
-// static
-volatile int SoundDevicePortAudio::m_underflowHappened = 0;
+int paV19Callback(const void *inputBuffer, void *outputBuffer,
+                  unsigned long framesPerBuffer,
+                  const PaStreamCallbackTimeInfo *timeInfo,
+                  PaStreamCallbackFlags statusFlags,
+                  void *soundDevice) {
+    return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(
+            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
+            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
+}
+
+int paV19CallbackDrift(const void *inputBuffer, void *outputBuffer,
+                       unsigned long framesPerBuffer,
+                       const PaStreamCallbackTimeInfo *timeInfo,
+                       PaStreamCallbackFlags statusFlags,
+                       void *soundDevice) {
+    return ((SoundDevicePortAudio*) soundDevice)->callbackProcessDrift(
+            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
+            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
+}
+
+int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
+                        unsigned long framesPerBuffer,
+                        const PaStreamCallbackTimeInfo *timeInfo,
+                        PaStreamCallbackFlags statusFlags,
+                        void *soundDevice) {
+    return ((SoundDevicePortAudio*) soundDevice)->callbackProcessClkRef(
+            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
+            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
+}
+
+} // anonymous namespace
+
+
 
 SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
                                            SoundManager *sm,
@@ -63,7 +98,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_bSetThreadPriority(false),
           m_underflowUpdateCount(0),
           m_framesSinceAudioLatencyUsageUpdate(0),
-          m_syncBuffers(2) {
+          m_syncBuffers(2),
+          m_invalidTimeInfoWarned(false) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
@@ -800,8 +836,9 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         const unsigned int framesPerBuffer, CSAMPLE *out, const CSAMPLE *in,
         const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
-    PerformanceTimer timer;
-    timer.start();
+    // This must be the very first call, else timeInfo becomes invalid
+    m_clkRefTimer.start();
+    updateCallbackEntryToDacTime(timeInfo);
 
     Trace trace("SoundDevicePortAudio::callbackProcessClkRef %1",
                 getInternalName());
@@ -857,8 +894,6 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 #endif
 #endif
-
-    VisualPlayPosition::setTimeInfo(timeInfo);
 
     if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
         m_underflowHappened = true;
@@ -932,36 +967,38 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     m_pSoundManager->writeProcess();
 
-    m_timeInAudioCallback += timer.elapsed();
+    m_timeInAudioCallback += m_clkRefTimer.elapsed();
     return paContinue;
 }
 
-int paV19Callback(const void *inputBuffer, void *outputBuffer,
-                  unsigned long framesPerBuffer,
-                  const PaStreamCallbackTimeInfo *timeInfo,
-                  PaStreamCallbackFlags statusFlags,
-                  void *soundDevice) {
-    return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(
-            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
-            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
-}
+void SoundDevicePortAudio::updateCallbackEntryToDacTime(
+        const PaStreamCallbackTimeInfo* timeInfo) {
+    PaTime callbackEntrytoDacSecs = -1;
+    if (timeInfo->outputBufferDacTime > 0) {
+        callbackEntrytoDacSecs = timeInfo->outputBufferDacTime
+                - timeInfo->currentTime;
+    }
+    double bufferSizeSec = m_framesPerBuffer / m_dSampleRate;
 
-int paV19CallbackDrift(const void *inputBuffer, void *outputBuffer,
-                       unsigned long framesPerBuffer,
-                       const PaStreamCallbackTimeInfo *timeInfo,
-                       PaStreamCallbackFlags statusFlags,
-                       void *soundDevice) {
-    return ((SoundDevicePortAudio*) soundDevice)->callbackProcessDrift(
-            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
-            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
-}
+    if (callbackEntrytoDacSecs < 0 ||
+            callbackEntrytoDacSecs  > bufferSizeSec * 2) {
+        // m_timeInfo Invalid, Audio API broken
+        if (!m_invalidTimeInfoWarned) {
+            qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
+                       << "waveform syncing disabled."
+                       << "DacTime:" << timeInfo->outputBufferDacTime
+                       << "EntrytoDac:" << callbackEntrytoDacSecs;
+            m_invalidTimeInfoWarned = true;
+        }
+        // Assume we are in Time
+        VisualPlayPosition::setCallbackEntryToDacSecs(bufferSizeSec, m_clkRefTimer);
+    } else {
+        VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
+    }
 
-int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
-                        unsigned long framesPerBuffer,
-                        const PaStreamCallbackTimeInfo *timeInfo,
-                        PaStreamCallbackFlags statusFlags,
-                        void *soundDevice) {
-    return ((SoundDevicePortAudio*) soundDevice)->callbackProcessClkRef(
-            (unsigned int) framesPerBuffer, (CSAMPLE*) outputBuffer,
-            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
+    //qDebug() << "TimeInfo"
+    //         << (timeInfo->currentTime - floor(timeInfo->currentTime))
+    //         << (timeInfo->outputBufferDacTime - floor(timeInfo->outputBufferDacTime));
+    //qDebug() << "TimeInfo" << bufferSizeSec
+    //        << timeInfo->outputBufferDacTime - timeInfo->currentTime;
 }

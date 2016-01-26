@@ -217,11 +217,11 @@ mixxx::Duration PerformanceTimer::restart()
     return mixxx::Duration::fromNanos(sec * Q_INT64_C(1000000000) + frac);
 }
 
-mixxx::Duration PerformanceTimer::difference(PerformanceTimer* timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
     qint64 sec, frac;
-    sec = t1 - timer->t1;
-    frac = t2 - timer->t2;
+    sec = t1 - timer.t1;
+    frac = t2 - timer.t2;
     return mixxx::Duration::fromNanos(sec * Q_INT64_C(1000000000) + frac);
 }
 
@@ -260,9 +260,9 @@ mixxx::Duration PerformanceTimer::restart()
     return mixxx::Duration::fromNanos(getTimeFromTick(t1 - start));
 }
 
-mixxx::Duration PerformanceTimer::difference(PerformanceTimer* timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
-    return mixxx::Duration::fromNanos(getTimeFromTick(t1 - timer->t1));
+    return mixxx::Duration::fromNanos(getTimeFromTick(t1 - timer.t1));
 }
 
 ////////////////////////////// Default //////////////////////////////
@@ -283,7 +283,7 @@ mixxx::Duration PerformanceTimer::restart() const
     return mixxx::Duration::fromNanos(0);
 }
 
-mixxx::Duration PerformanceTimer::difference(PerformanceTimer* timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
     return mixxx::Duration::fromNanos(0);
 }
