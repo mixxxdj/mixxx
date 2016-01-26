@@ -17,7 +17,7 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 
 VinylControlManager::VinylControlManager(QObject* pParent,
-                                         ConfigObject<ConfigValue>* pConfig,
+                                         UserSettingsPointer pConfig,
                                          SoundManager* pSoundManager)
         : QObject(pParent),
           m_pConfig(pConfig),

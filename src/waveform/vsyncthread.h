@@ -21,6 +21,7 @@
     #undef Bool
     #undef Unsorted
     #undef None
+    #undef Status
 #endif // QT_OPENGL_ES_2
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
@@ -28,7 +29,6 @@
 #include "util/performancetimer.h"
 
 class GuiTick;
-class MixxxMainWindow;
 
 class VSyncThread : public QThread {
     Q_OBJECT
@@ -44,7 +44,7 @@ class VSyncThread : public QThread {
 
     static void swapGl(QGLWidget* glw, int index);
 
-    VSyncThread(MixxxMainWindow* mixxMainWindow);
+    VSyncThread(QObject* pParent, GuiTick* pGuiTick);
     ~VSyncThread();
 
     void run();

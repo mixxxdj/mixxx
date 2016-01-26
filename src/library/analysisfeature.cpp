@@ -7,7 +7,7 @@
 #include "library/analysisfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
-#include "dlganalysis.h"
+#include "library/dlganalysis.h"
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
 #include "analyzer/analyzerqueue.h"
@@ -18,7 +18,7 @@
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
 AnalysisFeature::AnalysisFeature(QObject* parent,
-                               ConfigObject<ConfigValue>* pConfig,
+                               UserSettingsPointer pConfig,
                                TrackCollection* pTrackCollection) :
         LibraryFeature(parent),
         m_pConfig(pConfig),

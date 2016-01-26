@@ -8,20 +8,21 @@
 #ifndef CONTROLLERENGINE_H
 #define CONTROLLERENGINE_H
 
-#include <QEvent>
-#include <QtScript>
-#include <QMessageBox>
+#include <QTimerEvent>
 #include <QFileSystemWatcher>
+#include <QMessageBox>
+#include <QtScript>
 
-#include "configobject.h"
-#include "util/alphabetafilter.h"
-#include "controllers/softtakeover.h"
-#include "controllers/controllerpreset.h"
 #include "bytearrayclass.h"
+#include "preferences/usersettings.h"
+#include "controllers/controllerpreset.h"
+#include "controllers/softtakeover.h"
+#include "util/alphabetafilter.h"
+#include "util/duration.h"
 
 // Forward declaration(s)
 class Controller;
-class ControlObjectSlave;
+class ControlObjectScript;
 class ControllerEngine;
 
 // ControllerEngineConnection class for closure-compatible engine.connectControl
@@ -46,7 +47,7 @@ class ControllerEngineConnectionScriptValue : public QObject {
     ControllerEngineConnectionScriptValue(ControllerEngineConnection conn) {
         m_conn = conn;
     }
-    QString readId() const { return m_conn.id; }
+    const QString& readId() const { return m_conn.id; }
     Q_INVOKABLE void disconnect();
 
   private:
@@ -65,20 +66,24 @@ class ControllerEngine : public QObject {
     virtual ~ControllerEngine();
 
     bool isReady();
+
     // Check whether a source file that was evaluated()'d has errors.
-    bool hasErrors(QString filename);
+    bool hasErrors(const QString& filename);
+
     // Get the errors for a source file that was evaluated()'d
-    const QStringList getErrors(QString filename);
+    const QStringList getErrors(const QString& filename);
 
     void setPopups(bool bPopups) {
         m_bPopups = bPopups;
     }
 
-    /** Resolve a function name to a QScriptValue. */
-    QScriptValue resolveFunction(QString function) const;
-    /** Look up registered script function prefixes */
-    QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
-    /** Disconnect a ControllerEngineConnection */
+    // Resolve a function name to a QScriptValue.
+    QScriptValue resolveFunction(const QString& function) const;
+
+    // Look up registered script function prefixes
+    const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
+
+    // Disconnect a ControllerEngineConnection
     void disconnectControl(const ControllerEngineConnection conn);
 
   protected:
@@ -91,7 +96,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE double getDefaultValue(QString group, QString name);
     Q_INVOKABLE double getDefaultParameter(QString group, QString name);
     Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
-                                    QScriptValue function, bool disconnect = false);
+                                            QScriptValue function, bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
@@ -111,23 +116,21 @@ class ControllerEngine : public QObject {
     virtual void timerEvent(QTimerEvent *event);
 
   public slots:
-    void slotValueChanged(double value);
     // Evaluate a script file
-    bool evaluate(QString filepath);
+    bool evaluate(const QString& filepath);
 
-    // Execute a particular function
-    bool execute(QString function);
-    // Execute a particular function with a list of arguments
-    bool execute(QString function, QScriptValueList args);
-    bool execute(QScriptValue function, QScriptValueList args);
-    // Execute a particular function with a data string (e.g. a device ID)
-    bool execute(QString function, QString data);
-    // Execute a particular function with a list of arguments
-    bool execute(QString function, const QByteArray data);
-    bool execute(QScriptValue function, const QByteArray data);
-    // Execute a particular function with a data buffer
-    //TODO: redo this one
-    //bool execute(QString function, const QByteArray data);
+    // Execute a basic MIDI message callback.
+    bool execute(QScriptValue function,
+                 unsigned char channel,
+                 unsigned char control,
+                 unsigned char value,
+                 unsigned char status,
+                 const QString& group,
+                 mixxx::Duration timestamp);
+
+    // Execute a byte array callback.
+    bool execute(QScriptValue function, const QByteArray data,
+                 mixxx::Duration timestamp);
 
     // Evaluates all provided script files and returns true if no script errors
     // occurred while evaluating them.
@@ -135,32 +138,32 @@ class ControllerEngine : public QObject {
                          const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
-    void scriptHasChanged(QString);
+    void scriptHasChanged(const QString&);
 
   signals:
     void initialized();
     void resetController();
 
   private slots:
-    void errorDialogButton(QString key, QMessageBox::StandardButton button);
+    void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
   private:
-    bool evaluate(QString scriptName, QList<QString> scriptPaths);
-    bool internalExecute(QString scriptCode);
-    bool internalExecute(QScriptValue thisObject, QString scriptCode);
-    bool internalExecute(QScriptValue thisObject, QScriptValue functionObject);
+    bool evaluate(const QString& scriptName, QList<QString> scriptPaths);
+    bool internalExecute(QScriptValue thisObject, const QString& scriptCode);
+    bool internalExecute(QScriptValue thisObject, QScriptValue functionObject,
+                         QScriptValueList arguments);
     void initializeScriptEngine();
 
-    void scriptErrorDialog(QString detailedError);
-    void generateScriptFunctions(QString code);
+    void scriptErrorDialog(const QString& detailedError);
+    void generateScriptFunctions(const QString& code);
     // Stops and removes all timers (for shutdown).
     void stopAllTimers();
 
-    void callFunctionOnObjects(QList<QString>, QString, QScriptValueList args = QScriptValueList());
+    void callFunctionOnObjects(QList<QString>, const QString&, QScriptValueList args = QScriptValueList());
     bool checkException();
     QScriptEngine *m_pEngine;
 
-    ControlObjectSlave* getControlObjectSlave(QString group, QString name);
+    ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
 
     // Scratching functions & variables
     void scratchProcess(int timerId);
@@ -172,8 +175,8 @@ class ControllerEngine : public QObject {
     bool m_bPopups;
     QMultiHash<ConfigKey, ControllerEngineConnection> m_connectedControls;
     QList<QString> m_scriptFunctionPrefixes;
-    QMap<QString,QStringList> m_scriptErrors;
-    QHash<ConfigKey, ControlObjectSlave*> m_controlCache;
+    QMap<QString, QStringList> m_scriptErrors;
+    QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     struct TimerInfo {
         QScriptValue callback;
         QScriptValue context;
@@ -185,7 +188,7 @@ class ControllerEngine : public QObject {
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
-    QVarLengthArray<qint64> m_lastMovement;
+    QVarLengthArray<mixxx::Duration> m_lastMovement;
     QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
     QVarLengthArray<bool> m_ramp, m_brakeActive;
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
@@ -194,6 +197,8 @@ class ControllerEngine : public QObject {
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
     QList<QString> m_lastScriptPaths;
+
+    friend class ControllerEngineTest;
 };
 
 #endif

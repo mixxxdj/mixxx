@@ -20,7 +20,7 @@
 
 #include "engine/engineobject.h"
 #include "engine/channelhandle.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class ControlObject;
 class EngineBuffer;

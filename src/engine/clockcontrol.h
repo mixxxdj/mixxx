@@ -1,7 +1,7 @@
 #ifndef CLOCKCONTROL_H
 #define CLOCKCONTROL_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 
 #include "trackinfoobject.h"
@@ -14,7 +14,7 @@ class ClockControl: public EngineControl {
     Q_OBJECT
   public:
     ClockControl(QString group,
-                 ConfigObject<ConfigValue>* pConfig);
+                 UserSettingsPointer pConfig);
 
     virtual ~ClockControl();
 

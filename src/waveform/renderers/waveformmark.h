@@ -5,7 +5,7 @@
 #include <QImage>
 #include <QColor>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 
 class ControlObjectSlave;

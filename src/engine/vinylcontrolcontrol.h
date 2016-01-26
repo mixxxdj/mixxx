@@ -3,7 +3,7 @@
 
 #include "engine/enginecontrol.h"
 #include "trackinfoobject.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "controlpushbutton.h"
@@ -11,7 +11,7 @@
 class VinylControlControl : public EngineControl {
     Q_OBJECT
   public:
-    VinylControlControl(QString group, ConfigObject<ConfigValue>* pConfig);
+    VinylControlControl(QString group, UserSettingsPointer pConfig);
     virtual ~VinylControlControl();
 
     void trackLoaded(TrackPointer pTrack);

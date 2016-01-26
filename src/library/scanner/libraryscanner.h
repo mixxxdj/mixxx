@@ -52,7 +52,7 @@ class LibraryScanner : public QThread {
   public:
     LibraryScanner(QWidget* pParent,
                    TrackCollection* collection,
-                   ConfigObject<ConfigValue>* pConfig);
+                   UserSettingsPointer pConfig);
     virtual ~LibraryScanner();
 
   public slots:

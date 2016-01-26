@@ -22,6 +22,8 @@
 #include <QString>
 
 #include "configobject.h"
+#include "preferences/usersettings.h"
+#include "preferences/constants.h"
 #include "trackinfoobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
@@ -63,9 +65,8 @@ class MixxxMainWindow : public QMainWindow {
     // creates the menu_bar and inserts the file Menu
     void initMenuBar();
 
-    void setToolTipsCfg(int tt);
-
-    inline int getToolTipsCfg() { return m_toolTipsCfg; }
+    void setToolTipsCfg(mixxx::TooltipsPreference tt);
+    inline mixxx::TooltipsPreference getToolTipsCfg() { return m_toolTipsCfg; }
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
@@ -176,7 +177,7 @@ class MixxxMainWindow : public QMainWindow {
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;
 
-    int m_toolTipsCfg; //0=OFF, 1=ON, 2=ON (only in Library)
+    mixxx::TooltipsPreference m_toolTipsCfg;
     // Timer that tracks how long Mixxx has been running.
     Timer m_runtime_timer;
 

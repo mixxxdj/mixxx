@@ -28,7 +28,7 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     PerformanceTimer timer;
-    //int t5, t6, t7, t8, t9, t10, t11, t12, t13;
+    //mixxx::Duration t5, t6, t7, t8, t9, t10, t11, t12, t13;
 
 
     timer.start();
@@ -62,25 +62,25 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const int lastIndex = int(lastVisualIndex + 0.5);
     lastVisualIndex = lastIndex + lastIndex % 2;
 
-    //t5 = timer.restart(); // 910
+    //t5 = timer.restart(); // 910 ns
 
     // Reset device for native painting
     painter->beginNativePainting();
 
-    //t6 = timer.restart(); // 29,150
+    //t6 = timer.restart(); // 29,150 ns
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 #ifndef __OPENGLES__
 
-    //t7 = timer.restart(); // 5,770
+    //t7 = timer.restart(); // 5,770 ns
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
 
-    //t8 = timer.restart(); // 2,611
+    //t8 = timer.restart(); // 2,611 ns
 
     if (m_alignment == Qt::AlignCenter) {
         glOrtho(firstVisualIndex, lastVisualIndex, -255.0, 255.0, -10.0, 10.0);
@@ -90,13 +90,13 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
     }
 
-    //t9 = timer.restart(); // 1,320
+    //t9 = timer.restart(); // 1,320 ns
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
 
-    //t10 = timer.restart(); // 915
+    //t10 = timer.restart(); // 915 ns
 
     if (++m_drawcount & 1) {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -108,7 +108,7 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glRectf(0, 0, 1, 1);
 
-    //t11 = timer.restart(); // 217,985
+    //t11 = timer.restart(); // 217,985 ns
 
     glEnd();
     glPopMatrix();
@@ -117,12 +117,12 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
 #endif
 
-    //t12 = timer.restart(); // 22,426
+    //t12 = timer.restart(); // 22,426 ns
     painter->endNativePainting();
 
-    //t13 = timer.restart(); // 1,430
+    //t13 = timer.restart(); // 1,430 ns
 
     //qDebug() << t5 << t6 << t7 << t8 << t9 << t10 << t11 << t12 << t13;
 
-    //qDebug() << timer.restart(); // 129,498
+    //qDebug() << timer.restart(); // 129,498 ns
 }

@@ -5,19 +5,19 @@
 #include <QString>
 
 #include "util/stat.h"
+#include "util/duration.h"
 
 class Event {
   public:
     Event()
-            : m_type(Stat::UNSPECIFIED),
-              m_time(-1) {
+            : m_type(Stat::UNSPECIFIED) {
     }
 
     typedef Stat::StatType EventType;
 
     QString m_tag;
     EventType m_type;
-    qint64 m_time;
+    mixxx::Duration m_time;
 
     static bool event(const QString& tag, Event::EventType type = Stat::EVENT) {
         return Stat::track(tag, type, Stat::experimentFlags(Stat::COUNT), 0.0);

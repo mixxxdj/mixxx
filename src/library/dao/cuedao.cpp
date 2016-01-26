@@ -10,6 +10,7 @@
 #include "trackinfoobject.h"
 #include "library/queryutil.h"
 #include "util/assert.h"
+#include "util/performancetimer.h"
 
 CueDAO::CueDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -212,7 +213,7 @@ void CueDAO::saveTrackCues(TrackId trackId, TrackInfoObject* pTrack) {
     //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call
     // this.
-    QTime time;
+    PerformanceTimer time;
 
     const QList<CuePointer> cueList(pTrack->getCuePoints());
 
@@ -245,7 +246,7 @@ void CueDAO::saveTrackCues(TrackId trackId, TrackInfoObject* pTrack) {
                 list.append(QString("%1,").arg(pCue->getId()));
         }
     }
-    //qDebug() << "Saving cues took " << time.elapsed() << "ms";
+    //qDebug() << "Saving cues took " << time.formatMillisWithUnit();
     time.start();
 
     // Strip the last ,
@@ -261,5 +262,5 @@ void CueDAO::saveTrackCues(TrackId trackId, TrackInfoObject* pTrack) {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Delete cues failed.";
     }
-    //qDebug() << "Deleting cues took " << time.elapsed() << "ms";
+    //qDebug() << "Deleting cues took " << time.formatMillisWithUnit();
 }

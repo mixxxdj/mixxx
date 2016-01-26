@@ -7,7 +7,7 @@
 #include <QtDebug>
 
 #include "control/control.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
@@ -40,7 +40,6 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* 
 }
 
 EngineAux::~EngineAux() {
-    qDebug() << "~EngineAux()";
     delete m_pPregain;
     delete m_pSampleRate;
 }

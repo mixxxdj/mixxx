@@ -5,7 +5,7 @@
 
 #include <QtDebug>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "control/control.h"
 #include "controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
@@ -38,7 +38,6 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
 }
 
 EngineMicrophone::~EngineMicrophone() {
-    qDebug() << "~EngineMicrophone()";
     delete m_pSampleRate;
     delete m_pPregain;
 }

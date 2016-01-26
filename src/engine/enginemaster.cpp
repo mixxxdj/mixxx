@@ -4,7 +4,7 @@
 #include <QList>
 #include <QPair>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlaudiotaperpot.h"
 #include "controlaudiotaperpot.h"
 #include "controlpotmeter.h"
@@ -29,7 +29,7 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
-EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
+EngineMaster::EngineMaster(UserSettingsPointer _config,
                            const char* group,
                            EffectsManager* pEffectsManager,
                            bool bEnableSidechain,

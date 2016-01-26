@@ -8,7 +8,7 @@
 #include <QMutex>
 
 #include "engine/enginecontrol.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobjectslave.h"
 #include "trackinfoobject.h"
 
@@ -84,7 +84,7 @@ class CueControl : public EngineControl {
     Q_OBJECT
   public:
     CueControl(QString group,
-               ConfigObject<ConfigValue>* _config);
+               UserSettingsPointer _config);
     virtual ~CueControl();
 
     virtual void hintReader(HintVector* pHintList);

@@ -42,7 +42,7 @@ const QString Library::m_sTrackViewName = QString("WTrackTableView");
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),

@@ -11,11 +11,12 @@
 #include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dlgcoverartfullsize.h"
 #include "util/math.h"
 #include "util/dnd.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
-                     ConfigObject<ConfigValue>* pConfig,
+                     UserSettingsPointer pConfig,
                      const QString& group)
         : QWidget(parent),
           WBaseWidget(this),

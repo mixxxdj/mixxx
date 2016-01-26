@@ -12,7 +12,7 @@
 const char* kEqualizerRackName = "[EqualizerChain]";
 const char* kQuickEffectRackName = "[QuickEffectChain]";
 
-EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
+EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig)
         : QObject(pParent),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0),

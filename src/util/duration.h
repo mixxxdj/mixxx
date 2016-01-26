@@ -1,9 +1,10 @@
 #ifndef UTIL_DURATION_H
 #define UTIL_DURATION_H
 
-#include <QtGlobal>
 #include <QMetaType>
 #include <QString>
+#include <QtDebug>
+#include <QtGlobal>
 
 namespace mixxx {
 namespace {
@@ -43,23 +44,44 @@ class Duration {
     Duration() : m_timestamp_nanos(0) {}
 
     // Returns the duration as an integer number of seconds (rounded-down).
-    inline qint64 toSeconds() const {
+    inline qint64 toIntegerSeconds() const {
         return m_timestamp_nanos / kNanosPerSecond;
     }
 
+    // Returns the duration as a floating point number of seconds.
+    inline double toDoubleSeconds() const {
+        return static_cast<double>(m_timestamp_nanos) / kNanosPerSecond;
+    }
+
     // Returns the duration as an integer number of milliseconds (rounded-down).
-    inline qint64 toMillis() const {
+    inline qint64 toIntegerMillis() const {
         return m_timestamp_nanos / kNanosPerMilli;
     }
 
+    // Returns the duration as a floating point number of milliseconds.
+    inline qint64 toDoubleMillis() const {
+        return static_cast<double>(m_timestamp_nanos) / kNanosPerMilli;
+    }
+
     // Returns the duration as an integer number of microseconds (rounded-down).
-    inline qint64 toMicros() const {
+    inline qint64 toIntegerMicros() const {
         return m_timestamp_nanos / kNanosPerMicro;
     }
 
-    // Returns the duration as an integer number of nanoseconds.
-    inline qint64 toNanos() const {
+    // Returns the duration as a floating point number of microseconds.
+    inline qint64 toDoubleMicros() const {
+        return static_cast<double>(m_timestamp_nanos) / kNanosPerMicro;
+    }
+
+    // Returns the duration as an integer number of nanoseconds. The duration is
+    // represented internally as nanoseconds so no rounding occurs.
+    inline qint64 toIntegerNanos() const {
         return m_timestamp_nanos;
+    }
+
+    // Returns the duration as an integer number of nanoseconds.
+    inline qint64 toDoubleNanos() const {
+        return static_cast<double>(m_timestamp_nanos);
     }
 
     const Duration operator+(const Duration& other) const {
@@ -84,12 +106,47 @@ class Duration {
         return *this;
     }
 
-    bool operator==(const Duration& other) const {
-        return m_timestamp_nanos == other.m_timestamp_nanos;
+    friend const Duration operator*(const Duration& duration, int scalar) {
+        Duration result = duration;
+        result.m_timestamp_nanos *= scalar;
+        return result;
     }
 
-    bool operator!=(const Duration& other) const {
-        return !(*this == other);
+    friend const Duration operator*(int scalar, const Duration& duration) {
+        return duration * scalar;
+    }
+
+    Duration& operator*=(int scalar) {
+        m_timestamp_nanos *= scalar;
+        return *this;
+    }
+
+    friend bool operator==(const Duration& lhs, const Duration& rhs) {
+        return lhs.m_timestamp_nanos == rhs.m_timestamp_nanos;
+    }
+
+    friend bool operator!=(const Duration& lhs, const Duration& rhs) {
+        return !(lhs == rhs);
+    }
+
+    friend bool operator<(const Duration& lhs, const Duration& rhs) {
+        return lhs.m_timestamp_nanos < rhs.m_timestamp_nanos;
+    }
+
+    friend bool operator>(const Duration& lhs, const Duration& rhs) {
+        return lhs.m_timestamp_nanos > rhs.m_timestamp_nanos;
+    }
+
+    friend bool operator<=(const Duration& lhs, const Duration& rhs) {
+        return lhs.m_timestamp_nanos <= rhs.m_timestamp_nanos;
+    }
+
+    friend bool operator>=(const Duration& lhs, const Duration& rhs) {
+        return lhs.m_timestamp_nanos >= rhs.m_timestamp_nanos;
+    }
+
+    friend QDebug operator<<(QDebug debug, const Duration& duration) {
+        return debug << duration.formatNanosWithUnit();
     }
 
     // Formats the duration as a two's-complement hexadecimal string.
@@ -100,19 +157,19 @@ class Duration {
     }
 
     QString formatNanosWithUnit() const {
-        return QString("%1ns").arg(toNanos());
+        return QString("%1 ns").arg(toIntegerNanos());
     }
 
     QString formatMicrosWithUnit() const {
-        return QString("%1us").arg(toMicros());
+        return QString("%1 us").arg(toIntegerMicros());
     }
 
     QString formatMillisWithUnit() const {
-        return QString("%1ms").arg(toMillis());
+        return QString("%1 ms").arg(toIntegerMillis());
     }
 
     QString formatSecondsWithUnit() const {
-        return QString("%1s").arg(toSeconds());
+        return QString("%1 s").arg(toIntegerSeconds());
     }
 
   private:

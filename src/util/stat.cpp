@@ -148,7 +148,7 @@ bool Stat::track(const QString& tag,
     report.tag = strdup(tag.toAscii().constData());
     report.type = type;
     report.compute = compute;
-    report.time = Time::elapsed();
+    report.time = Time::elapsed().toIntegerNanos();
     report.value = value;
     StatsManager* pManager = StatsManager::instance();
     return pManager && pManager->maybeWriteReport(report);

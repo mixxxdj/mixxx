@@ -6,7 +6,7 @@
 #include "controlobject.h"
 #include "controllinpotmeter.h"
 #include "controlpushbutton.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
         : m_group(pGroup),

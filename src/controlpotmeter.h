@@ -18,7 +18,7 @@
 #ifndef CONTROLPOTMETER_H
 #define CONTROLPOTMETER_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 
 /**

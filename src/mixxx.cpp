@@ -26,7 +26,8 @@
 
 #include "analyzer/analyzerqueue.h"
 #include "dlgabout.h"
-#include "dlgpreferences.h"
+#include "preferences/dialog/dlgpreferences.h"
+#include "preferences/dialog/dlgprefeq.h"
 #include "dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
@@ -70,7 +71,7 @@
 #endif
 
 #ifdef __MODPLUG__
-#include "dlgprefmodplug.h"
+#include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
 // static
@@ -105,7 +106,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_NativeMenuBarSupport(false),
           m_pKbdConfig(nullptr),
           m_pKbdConfigEmpty(nullptr),
-          m_toolTipsCfg(1), // TODO(rryan); enum
+          m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON),
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_pTouchShift(nullptr) {
@@ -127,7 +128,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     initializeWindow();
 
     // First load launch image to show a the user a quick responds
-    m_pSkinLoader = new SkinLoader(m_pSettingsManager->settings().data());
+    m_pSkinLoader = new SkinLoader(m_pSettingsManager->settings());
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
     m_pWidgetParent = (QWidget*)m_pLaunchImage;
     setCentralWidget(m_pWidgetParent);
@@ -168,23 +169,24 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     QString resourcePath = pConfig->getResourcePath();
 
     mixxx::Translations::initializeTranslations(
-        pConfig.data(), pApp, args.getLocale());
+        pConfig, pApp, args.getLocale());
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
 
     launchProgress(2);
 
     // Set the visibility of tooltips, default "1" = ON
-    m_toolTipsCfg = pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt();
+    m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
+        pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt());
 
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
     // Create the Effects subsystem.
-    m_pEffectsManager = new EffectsManager(this, pConfig.data());
+    m_pEffectsManager = new EffectsManager(this, pConfig);
 
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(pConfig.data(), "[Master]", m_pEffectsManager,
+    m_pEngine = new EngineMaster(pConfig, "[Master]", m_pEffectsManager,
                                  true, true);
 
     // Create effect backends. We do this after creating EngineMaster to allow
@@ -201,16 +203,16 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // while this is created here, setupDevices needs to be called sometime
     // after the players are added to the engine (as is done currently) -- bkgood
     // (long)
-    m_pSoundManager = new SoundManager(pConfig.data(), m_pEngine);
+    m_pSoundManager = new SoundManager(pConfig, m_pEngine);
 
-    m_pRecordingManager = new RecordingManager(pConfig.data(), m_pEngine);
+    m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
     connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
             m_pMenuBar, SLOT(onRecordingStateChange(bool)));
     connect(m_pMenuBar, SIGNAL(toggleRecording(bool)),
             m_pRecordingManager, SLOT(slotSetRecording(bool)));
     m_pMenuBar->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
 #ifdef __SHOUTCAST__
-    m_pShoutcastManager = new ShoutcastManager(pConfig.data(), m_pSoundManager);
+    m_pShoutcastManager = new ShoutcastManager(pConfig, m_pSoundManager);
     connect(m_pShoutcastManager, SIGNAL(shoutcastEnabled(bool)),
             m_pMenuBar, SLOT(onBroadcastingStateChange(bool)));
     connect(m_pMenuBar, SIGNAL(toggleBroadcasting(bool)),
@@ -221,10 +223,11 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(11);
 
+    // Needs to be created before CueControl (decks) and WTrackTableView.
     m_pGuiTick = new GuiTick();
 
 #ifdef __VINYLCONTROL__
-    m_pVCManager = new VinylControlManager(this, pConfig.data(), m_pSoundManager);
+    m_pVCManager = new VinylControlManager(this, pConfig, m_pSoundManager);
     connect(m_pMenuBar, SIGNAL(toggleVinylControl(int)),
             m_pVCManager, SLOT(toggleVinylControl(int)));
     connect(m_pVCManager, SIGNAL(vinylControlDeckEnabled(int, bool)),
@@ -234,7 +237,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #endif
 
     // Create the player manager. (long)
-    m_pPlayerManager = new PlayerManager(pConfig.data(), m_pSoundManager,
+    m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager,
                                          m_pEffectsManager, m_pEngine);
     connect(m_pPlayerManager, SIGNAL(noMicrophoneInputConfigured()),
             this, SLOT(slotNoMicrophoneInputConfigured()));
@@ -266,7 +269,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
 #ifdef __MODPLUG__
     // restore the configuration for the modplug library before trying to load a module
-    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(0, pConfig.data());
+    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(0, pConfig);
     pModplugPrefs->loadSettings();
     pModplugPrefs->applySettings();
     delete pModplugPrefs; // not needed anymore
@@ -275,7 +278,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     CoverArtCache::create();
 
     // (long)
-    m_pLibrary = new Library(this, pConfig.data(),
+    m_pLibrary = new Library(this, pConfig,
                              m_pPlayerManager,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
@@ -314,13 +317,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // but do not set up controllers until the end of the application startup
     // (long)
     qDebug() << "Creating ControllerManager";
-    m_pControllerManager = new ControllerManager(pConfig.data());
+    m_pControllerManager = new ControllerManager(pConfig);
 
     launchProgress(47);
 
     WaveformWidgetFactory::create(); // takes a long time
-    WaveformWidgetFactory::instance()->startVSync(this);
-    WaveformWidgetFactory::instance()->setConfig(pConfig.data());
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
+    WaveformWidgetFactory::instance()->setConfig(pConfig);
 
     launchProgress(52);
 
@@ -330,7 +333,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, m_pEffectsManager,
-                                    pConfig.data(), m_pLibrary);
+                                    pConfig, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
@@ -407,7 +410,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // TODO(rryan): Move LibraryScanner into Library.
     m_pLibraryScanner = new LibraryScanner(this,
                                            m_pLibrary->getTrackCollection(),
-                                           pConfig.data());
+                                           pConfig);
     connect(m_pLibraryScanner, SIGNAL(scanStarted()),
             this, SIGNAL(libraryScanStarted()));
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
@@ -472,9 +475,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 }
 
 void MixxxMainWindow::finalize() {
-    // TODO(rryan): Get rid of QTime here.
-    QTime qTime;
-    qTime.start();
     Timer t("MixxxMainWindow::~finalize");
     t.start();
 
@@ -482,30 +482,30 @@ void MixxxMainWindow::finalize() {
 
     qDebug() << "Destroying MixxxMainWindow";
 
-    qDebug() << "save config " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "saving configuration";
     m_pSettingsManager->save();
 
     // SoundManager depend on Engine and Config
-    qDebug() << "delete soundmanager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
 
     // GUI depends on MixxxKeyboard, PlayerManager, Library
-    qDebug() << "delete view " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting Skin";
     delete m_pWidgetParent;
 
     // ControllerManager depends on Config
-    qDebug() << "delete ControllerManager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting ControllerManager";
     delete m_pControllerManager;
 
 #ifdef __VINYLCONTROL__
     // VinylControlManager depends on a CO the engine owns
     // (vinylcontrol_enabled in VinylControlControl)
-    qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting VinylControlManager";
     delete m_pVCManager;
 #endif
 
     // LibraryScanner depends on Library
-    qDebug() << "delete library scanner " <<  qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting LibraryScanner";
     delete m_pLibraryScanner;
 
     // CoverArtCache is fairly independent of everything else.
@@ -514,32 +514,32 @@ void MixxxMainWindow::finalize() {
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
-    qDebug() << "delete library " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
 
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << "delete playerManager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting PlayerManager";
     delete m_pPlayerManager;
 
     // RecordingManager depends on config, engine
-    qDebug() << "delete RecordingManager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
 
 #ifdef __SHOUTCAST__
     // ShoutcastManager depends on config, engine
-    qDebug() << "delete ShoutcastManager " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting ShoutcastManager";
     delete m_pShoutcastManager;
 #endif
 
     // EngineMaster depends on Config and m_pEffectsManager.
-    qDebug() << "delete m_pEngine " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting EngineMaster";
     delete m_pEngine;
 
-    qDebug() << "deleting preferences, " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting DlgPreferences";
     delete m_pPrefDlg;
 
     // Must delete after EngineMaster and DlgPrefEq.
-    qDebug() << "deleting effects manager, " << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting EffectsManager";
     delete m_pEffectsManager;
 
     delete m_pTouchShift;
@@ -593,7 +593,7 @@ void MixxxMainWindow::finalize() {
 
     Sandbox::shutdown();
 
-    qDebug() << "delete settingsmanager" << qTime.elapsed();
+    qDebug() << t.elapsed(false).formatMillisWithUnit() << "deleting SettingsManager";
     delete m_pSettingsManager;
 
     delete m_pKeyboard;
@@ -906,7 +906,7 @@ void MixxxMainWindow::slotDeveloperTools(bool visible) {
     if (visible) {
         if (m_pDeveloperToolsDlg == nullptr) {
             UserSettingsPointer pConfig = m_pSettingsManager->settings();
-            m_pDeveloperToolsDlg = new DlgDeveloperTools(this, pConfig.data());
+            m_pDeveloperToolsDlg = new DlgDeveloperTools(this, pConfig);
             connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
                     this, SLOT(slotDeveloperToolsClosed()));
             connect(this, SIGNAL(closeDeveloperToolsDlgChecked(int)),
@@ -1002,10 +1002,10 @@ void MixxxMainWindow::slotHelpAbout() {
     about->show();
 }
 
-void MixxxMainWindow::setToolTipsCfg(int tt) {
+void MixxxMainWindow::setToolTipsCfg(mixxx::TooltipsPreference tt) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     pConfig->set(ConfigKey("[Controls]","Tooltips"),
-                   ConfigValue(tt));
+                 ConfigValue(static_cast<int>(tt)));
     m_toolTipsCfg = tt;
 }
 
@@ -1063,16 +1063,13 @@ void MixxxMainWindow::rebootMixxxView() {
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
         // return true for no tool tips
-        if (m_toolTipsCfg == 2) {
-            // ON (only in Library)
-            WBaseWidget* pWidget = dynamic_cast<WBaseWidget*>(obj);
-            return pWidget != NULL;
-        } else if (m_toolTipsCfg == 1) {
-            // ON
-            return false;
-        } else {
-            // OFF
-            return true;
+        switch (m_toolTipsCfg) {
+            case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
+                return dynamic_cast<WBaseWidget*>(obj) != nullptr;
+            case mixxx::TooltipsPreference::TOOLTIPS_ON:
+                return false;
+            case mixxx::TooltipsPreference::TOOLTIPS_OFF:
+                return true;
         }
     } else {
         // standard event processing

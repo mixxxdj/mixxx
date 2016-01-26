@@ -23,7 +23,7 @@
 #include "util/assert.h"
 #include "util/stat.h"
 
-PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
+PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
                              EffectsManager* pEffectsManager,
                              EngineMaster* pEngine) :
