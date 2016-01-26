@@ -304,7 +304,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                                                &l_SPacket);
 
                 if (l_iRet <= 0) {
-                    // An error or EOF occured,index break out and return what
+                    // An error or EOF occurred,index break out and return what
                     // we have so far.
                     qDebug() << "EOF!";
                     l_iStop = true;
@@ -500,7 +500,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
         // Use this Cache object as starting point
         l_SObj = m_SCache[l_lPos];
-        
+
         if (l_SObj == NULL) {
             qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Cache object NULL";
             return false;

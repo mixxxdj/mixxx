@@ -555,7 +555,7 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path()) == "create") {
         slotCreatePlaylist();
     } else {
-        qDebug() << "Unknonw playlist link clicked" << link.path();
+        qDebug() << "Unknown playlist link clicked" << link.path();
     }
 }
 

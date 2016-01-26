@@ -9,3 +9,4 @@ Icon=mixxx-icon
 Type=Application
 StartupNotify=true
 Categories=Qt;AudioVideo;Audio;
+Keywords=music;DJ;turntable;
