@@ -108,6 +108,7 @@ class SoundDevicePortAudio : public SoundDevice {
     int m_syncBuffers;
     bool m_invalidTimeInfoWarned;
     PerformanceTimer m_clkRefTimer;
+    PaTime m_lastCallbackEntrytoDacSecs;
 };
 
 #endif
