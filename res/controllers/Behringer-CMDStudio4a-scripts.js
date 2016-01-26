@@ -136,7 +136,7 @@ BehringerCMDStudio4a.scratch = function (channel, control, value, status, group)
     midi.sendShortMsg(status, control, BehringerCMDStudio4a.scratchButtonState[channel] ? 0x01 : 0x00);
 }
 
-// Function to deal with the FX Assign buttons, (becasue the also act as "shift" buttons).
+// Function to deal with the FX Assign buttons, (becasue they also act as "shift" buttons).
 BehringerCMDStudio4a.fxAssign = function (channel, control, value, status, group) {
     // FX Assign buttons start at 0x52.
     var fxAssignButton = (control - 0x52) & 1;  // Either 0 or 1 depending on button (1 or 2).
@@ -208,7 +208,11 @@ BehringerCMDStudio4a.hotcue = function (channel, control, value, status, group) 
                     // turn it on directly here, the only work-around I could
                     // think of was to create a (very short) timed call-back
                     // to turn it off!
-                    engine.beginTimer(50, function() { engine.setValue(group, "slip_enabled", 1); }, 1);
+					// Raised bug about this.
+					// https://bugs.launchpad.net/mixxx/+bug/1538200
+					// Changed timer from 50 to 100 after the pathology of this
+					// bug was explined in the bug report.
+                    engine.beginTimer(100, function() { engine.setValue(group, "slip_enabled", 1); }, 1);
                 }
             }
         } else {
