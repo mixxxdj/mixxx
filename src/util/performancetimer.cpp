@@ -217,11 +217,11 @@ qint64 PerformanceTimer::restart()
     return sec * Q_INT64_C(1000000000) + frac;
 }
 
-qint64 PerformanceTimer::difference(PerformanceTimer* timer)
+qint64 PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
     qint64 sec, frac;
-    sec = t1 - timer->t1;
-    frac = t2 - timer->t2;
+    sec = t1 - timer.t1;
+    frac = t2 - timer.t2;
     return sec * Q_INT64_C(1000000000) + frac;
 }
 
@@ -260,7 +260,7 @@ qint64 PerformanceTimer::restart()
     return getTimeFromTick(t1 - start);
 }
 
-qint64 PerformanceTimer::difference(PerformanceTimer* timer)
+qint64 PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
     return getTimeFromTick(t1 - timer->t1);
 }
@@ -283,7 +283,7 @@ qint64 PerformanceTimer::restart() const
     return 0;
 }
 
-qint64 PerformanceTimer::difference(PerformanceTimer* timer)
+qint64 PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
     return 0;
 }

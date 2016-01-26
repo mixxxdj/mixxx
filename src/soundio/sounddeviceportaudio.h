@@ -21,8 +21,10 @@
 #include <portaudio.h>
 
 #include <QString>
+#include "util/performancetimer.h"
 
 #include "soundio/sounddevice.h"
+
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 #define CPU_OVERLOAD_DURATION 500 // in ms
@@ -72,6 +74,8 @@ class SoundDevicePortAudio : public SoundDevice {
     }
 
   private:
+    void updateCallbackEntryToDacTime(const PaStreamCallbackTimeInfo* timeInfo);
+
     // PortAudio stream for this device.
     PaStream* volatile m_pStream;
     // PortAudio device index for this device.
@@ -100,6 +104,8 @@ class SoundDevicePortAudio : public SoundDevice {
     qint64 m_nsInAudioCb;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
+    bool m_invalidTimeInfoWarned;
+    PerformanceTimer m_clkRefTimer;
 };
 
 #endif

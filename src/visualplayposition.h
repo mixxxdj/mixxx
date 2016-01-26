@@ -1,8 +1,6 @@
 #ifndef VISUALPLAYPOSITION_H
 #define VISUALPLAYPOSITION_H
 
-#include <portaudio.h>
-
 #include <QMutex>
 #include <QTime>
 #include <QMap>
@@ -57,7 +55,7 @@ class VisualPlayPosition : public QObject {
     static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(QString group);
 
     // This is called by SoundDevicePortAudio just after the callback starts.
-    static void setTimeInfo(const PaStreamCallbackTimeInfo *timeInfo);
+    static void setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time);
 
     void setInvalid() { m_valid = false; };
 
@@ -70,11 +68,10 @@ class VisualPlayPosition : public QObject {
     double m_dAudioBufferSize; // Audio buffer size in ms
     bool m_valid;
     QString m_key;
-    bool m_invalidTimeInfoWarned;
 
     static QMap<QString, QWeakPointer<VisualPlayPosition> > m_listVisualPlayPosition;
     // Time info from the Sound device, updated just after audio callback is called
-    static PaStreamCallbackTimeInfo m_timeInfo;
+    static double m_dCallbackEntryToDacSecs;
     // Time stamp for m_timeInfo in main CPU time
     static PerformanceTimer m_timeInfoTime;
 };

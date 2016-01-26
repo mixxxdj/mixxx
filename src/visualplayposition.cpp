@@ -8,13 +8,12 @@
 
 //static
 QMap<QString, QWeakPointer<VisualPlayPosition> > VisualPlayPosition::m_listVisualPlayPosition;
-PaStreamCallbackTimeInfo VisualPlayPosition::m_timeInfo = { 0.0, 0.0, 0.0 };
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
+double VisualPlayPosition::m_dCallbackEntryToDacSecs = 0;
 
 VisualPlayPosition::VisualPlayPosition(const QString& key)
         : m_valid(false),
-          m_key(key),
-          m_invalidTimeInfoWarned(false) {
+          m_key(key) {
     m_audioBufferSize = new ControlObjectSlave(
             "[Master]", "audio_buffer_size", this);
     m_audioBufferSize->connectValueChanged(
@@ -30,28 +29,11 @@ void VisualPlayPosition::set(double playPos, double rate,
                              double positionStep, double pSlipPosition) {
     VisualPlayPositionData data;
     data.m_referenceTime = m_timeInfoTime;
+    data.m_callbackEntrytoDac = m_dCallbackEntryToDacSecs * 1000000; // s to µs
     data.m_enginePlayPos = playPos;
     data.m_rate = rate;
     data.m_positionStep = positionStep;
     data.m_pSlipPosition = pSlipPosition;
-
-    double callbackEntrytoDac = (m_timeInfo.outputBufferDacTime
-            - m_timeInfo.currentTime) * 1000000;
-    if (callbackEntrytoDac < 0 || callbackEntrytoDac  > m_dAudioBufferSize * 1000) {
-        // m_timeInfo Invalid, Audio API broken
-        if (!m_invalidTimeInfoWarned) {
-            qWarning() << "VisualPlayPosition: Audio API provides invalid time stamps,"
-                       << "waveform syncing disabled."
-                       << "DacTime:" << m_timeInfo.outputBufferDacTime
-                       << "EntrytoDac:" << data.m_callbackEntrytoDac;
-            m_invalidTimeInfoWarned = true;
-        }
-        // Assume we are in time
-        data.m_callbackEntrytoDac = m_dAudioBufferSize * 1000;
-    } else {
-        // Time from reference time to Buffer at DAC in µs
-        data.m_callbackEntrytoDac = callbackEntrytoDac;
-    }
 
     // Atomic write
     m_data.setValue(data);
@@ -65,7 +47,7 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        int usRefToVSync = vsyncThread->usFromTimerToNextSync(&data.m_referenceTime);
+        int usRefToVSync = vsyncThread->usFromTimerToNextSync(data.m_referenceTime);
         int offset = usRefToVSync - data.m_callbackEntrytoDac;
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         // add the offset for the position of the sample that will be transfered to the DAC
@@ -119,13 +101,10 @@ QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(QSt
 }
 
 //static
-void VisualPlayPosition::setTimeInfo(const PaStreamCallbackTimeInfo* timeInfo) {
-    // the timeInfo is valid only just NOW, so measure the time from NOW for
+void VisualPlayPosition::setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time) {
+    // the time is valid only just NOW, so measure the time from NOW for
     // later correction
-    qDebug() << m_timeInfoTime.restart() / 1000000000.0;
-    // m_timeInfoTime.start();
-    m_timeInfo = *timeInfo;
-    //qDebug() << "TimeInfo" << (timeInfo->currentTime - floor(timeInfo->currentTime)) << (timeInfo->outputBufferDacTime - floor(timeInfo->outputBufferDacTime));
-    qDebug() << "TimeInfo" << timeInfo->currentTime - timeInfo->outputBufferDacTime;
-
+    m_timeInfoTime = time;
+    m_dCallbackEntryToDacSecs = secs;
 }
+

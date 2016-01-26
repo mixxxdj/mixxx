@@ -33,7 +33,6 @@
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/denormalsarezero.h"
-#include "util/performancetimer.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
@@ -100,7 +99,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config,
           m_underflowUpdateCount(0),
           m_nsInAudioCb(0),
           m_framesSinceAudioLatencyUsageUpdate(0),
-          m_syncBuffers(2) {
+          m_syncBuffers(2),
+          m_invalidTimeInfoWarned(false) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
@@ -837,8 +837,9 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         const unsigned int framesPerBuffer, CSAMPLE *out, const CSAMPLE *in,
         const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
-    PerformanceTimer timer;
-    timer.start();
+    // This must be the very first call, else timeInfo becomes invalid
+    m_clkRefTimer.start();
+    updateCallbackEntryToDacTime(timeInfo);
 
     Trace trace("SoundDevicePortAudio::callbackProcessClkRef %1",
                 getInternalName());
@@ -894,8 +895,6 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 #endif
 #endif
-
-    VisualPlayPosition::setTimeInfo(timeInfo);
 
     if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
         m_underflowHappened = true;
@@ -969,6 +968,38 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 
     m_pSoundManager->writeProcess();
 
-    m_nsInAudioCb += timer.elapsed();
+    m_nsInAudioCb += m_clkRefTimer.elapsed();
     return paContinue;
+}
+
+void SoundDevicePortAudio::updateCallbackEntryToDacTime(
+        const PaStreamCallbackTimeInfo* timeInfo) {
+    PaTime callbackEntrytoDacSecs = -1;
+    if (timeInfo->outputBufferDacTime > 0) {
+        callbackEntrytoDacSecs = timeInfo->outputBufferDacTime
+                - timeInfo->currentTime;
+    }
+    double bufferSizeSec = m_framesPerBuffer / m_dSampleRate;
+
+    if (callbackEntrytoDacSecs < 0 ||
+            callbackEntrytoDacSecs  > bufferSizeSec * 2) {
+        // m_timeInfo Invalid, Audio API broken
+        if (!m_invalidTimeInfoWarned) {
+            qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
+                       << "waveform syncing disabled."
+                       << "DacTime:" << timeInfo->outputBufferDacTime
+                       << "EntrytoDac:" << callbackEntrytoDacSecs;
+            m_invalidTimeInfoWarned = true;
+        }
+        // Assume we are in Time
+        VisualPlayPosition::setCallbackEntryToDacSecs(bufferSizeSec, m_clkRefTimer);
+    } else {
+        VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
+    }
+
+    //qDebug() << "TimeInfo"
+    //         << (timeInfo->currentTime - floor(timeInfo->currentTime))
+    //         << (timeInfo->outputBufferDacTime - floor(timeInfo->outputBufferDacTime));
+    //qDebug() << "TimeInfo" << bufferSizeSec
+    //        << timeInfo->outputBufferDacTime - timeInfo->currentTime;
 }

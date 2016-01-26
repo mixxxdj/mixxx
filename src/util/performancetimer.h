@@ -60,10 +60,11 @@ public:
       t2 = 0;
 #endif
     };
+
     void start();
     qint64 elapsed() const;
     qint64 restart();
-    qint64 difference(PerformanceTimer* timer);
+    qint64 difference(const PerformanceTimer& timer) const;
 
 private:
     qint64 t1;
