@@ -205,8 +205,8 @@ void ControllerEngine::initializeScriptEngine() {
 
 /* -------- ------------------------------------------------------
    Purpose: Load all script files given in the supplied list
-   Input:   Global ConfigObject, QString list of file names to load
-   Output:  Returns true if no errors occured.
+   Input:   List of script paths and file names to load
+   Output:  Returns true if no errors occurred.
    -------- ------------------------------------------------------ */
 bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
                                        const QList<ControllerPreset::ScriptFileInfo>& scripts) {
@@ -220,7 +220,7 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
         }
 
         if (m_scriptErrors.contains(script.name)) {
-            qDebug() << "Errors occured while loading" << script.name;
+            qDebug() << "Errors occurred while loading" << script.name;
         }
     }
 
@@ -1126,7 +1126,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm,
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchTick(int deck, int interval) {
-    m_lastMovement[deck] = Time::elapsedMsecs();
+    m_lastMovement[deck] = Time::elapsed();
     m_intervalAccumulator[deck] += interval;
 }
 
@@ -1152,10 +1152,10 @@ void ControllerEngine::scratchProcess(int timerId) {
     // If we're ramping to end scratching and the wheel hasn't been turned very
     // recently (spinback after lift-off,) feed fixed data
     if (m_ramp[deck] &&
-        ((Time::elapsedMsecs() - m_lastMovement[deck]) > 0)) {
+        ((Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
         filter->observation(m_rampTo[deck] * m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
-        //m_lastMovement[deck] += 1000;
+        //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
     } else {
         // This will (and should) be 0 if no net ticks have been accumulated
         // (i.e. the wheel is stopped)
@@ -1235,7 +1235,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
         m_rampTo[deck] = getDeckRate(group);
     }
 
-    m_lastMovement[deck] = Time::elapsedMsecs();
+    m_lastMovement[deck] = Time::elapsed();
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
 

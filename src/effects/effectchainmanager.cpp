@@ -8,7 +8,7 @@
 #include "effects/effectsmanager.h"
 #include "util/xml.h"
 
-EffectChainManager::EffectChainManager(ConfigObject<ConfigValue>* pConfig,
+EffectChainManager::EffectChainManager(UserSettingsPointer pConfig,
                                        EffectsManager* pEffectsManager)
         : QObject(pEffectsManager),
           m_pConfig(pConfig),

@@ -17,7 +17,7 @@
 #include <QSignalMapper>
 
 #include "library/libraryfeature.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/treeitemmodel.h"
 
 #ifdef __AUTODJCRATES__
@@ -34,7 +34,7 @@ class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AutoDJFeature(Library* pLibrary,
-                  ConfigObject<ConfigValue>* pConfig,
+                  UserSettingsPointer pConfig,
                   PlayerManagerInterface* pPlayerManager,
                   TrackCollection* pTrackCollection);
     virtual ~AutoDJFeature();
@@ -59,7 +59,7 @@ class AutoDJFeature : public LibraryFeature {
 #endif // __AUTODJCRATES__
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;

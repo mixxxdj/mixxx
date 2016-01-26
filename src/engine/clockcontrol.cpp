@@ -1,12 +1,12 @@
 #include "engine/clockcontrol.h"
 
 #include "controlobject.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "cachingreader.h"
 #include "engine/enginecontrol.h"
 #include "controlobjectslave.h"
 
-ClockControl::ClockControl(QString group, ConfigObject<ConfigValue>* pConfig)
+ClockControl::ClockControl(QString group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     m_pCOBeatActive = new ControlObject(ConfigKey(group, "beat_active"));
     m_pCOBeatActive->set(0.0);

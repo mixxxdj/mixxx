@@ -8,6 +8,7 @@
 #include "soundsourceproxy.h"
 #include "util/sample.h"
 #include "util/samplebuffer.h"
+#include "util/performancetimer.h"
 
 namespace
 {
@@ -27,7 +28,7 @@ namespace
             numFrames = pAudioSource->getFrameCount();
         }
 
-        QTime timerReadingFile;
+        PerformanceTimer timerReadingFile;
         timerReadingFile.start();
 
         // Allocate a sample buffer with maximum size to avoid the
@@ -51,12 +52,12 @@ namespace
                 sampleBuffer.data(),
                 fingerprintSamples.size());
 
-        qDebug("reading file took: %d ms" , timerReadingFile.elapsed());
+        qDebug() << "reading file took" << timerReadingFile.elapsed().formatMillisWithUnit();
 
         ChromaprintContext* ctx = chromaprint_new(CHROMAPRINT_ALGORITHM_DEFAULT);
         chromaprint_start(ctx, pAudioSource->getSamplingRate(), kFingerprintChannels);
 
-        QTime timerGeneratingFingerprint;
+        PerformanceTimer timerGeneratingFingerprint;
         timerGeneratingFingerprint.start();
         int success = chromaprint_feed(ctx, &fingerprintSamples[0], fingerprintSamples.size());
         chromaprint_finish(ctx);
@@ -85,7 +86,8 @@ namespace
         }
         chromaprint_free(ctx);
 
-        qDebug("generating fingerprint took: %d ms" , timerGeneratingFingerprint.elapsed());
+        qDebug() << "generating fingerprint took"
+                 << timerGeneratingFingerprint.elapsed().formatMillisWithUnit();
 
         return fingerprint;
     }

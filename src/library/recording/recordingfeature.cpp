@@ -1,7 +1,7 @@
 // recordingfeature.cpp
 // Created 03/26/2010 by Tobias Rafreider
 
-#include "dlgrecording.h"
+#include "library/recording/dlgrecording.h"
 #include "trackinfoobject.h"
 #include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
@@ -13,7 +13,7 @@
 const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
 
 RecordingFeature::RecordingFeature(Library* pLibrary,
-                                   ConfigObject<ConfigValue>* pConfig,
+                                   UserSettingsPointer pConfig,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
         : LibraryFeature(pLibrary),

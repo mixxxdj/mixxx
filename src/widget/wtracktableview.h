@@ -4,14 +4,15 @@
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobjectslave.h"
-#include "trackinfoobject.h"
+#include "library/coverart.h"
+#include "library/dlgtagfetcher.h"
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
-#include "library/coverart.h"
+#include "trackinfoobject.h"
+#include "util/duration.h"
 #include "widget/wlibrarytableview.h"
-#include "dlgtagfetcher.h"
 
 class ControlObjectSlave;
 class DlgTrackInfo;
@@ -25,7 +26,7 @@ const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) f
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
-    WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+    WTrackTableView(QWidget* parent, UserSettingsPointer pConfig,
                     TrackCollection* pTrackCollection, bool sorting = true);
     virtual ~WTrackTableView();
     void contextMenuEvent(QContextMenuEvent * event);
@@ -101,7 +102,7 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel();
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capability);
 
-    ConfigObject<ConfigValue> * m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
 
     QSignalMapper m_loadTrackMapper;
@@ -170,7 +171,7 @@ class WTrackTableView : public WLibraryTableView {
     int m_iTrackLocationColumn;
 
     // Control the delay to load a cover art.
-    qint64 m_lastUserActionNanos;
+    mixxx::Duration m_lastUserAction;
     bool m_selectionChangedSinceLastGuiTick;
     bool m_loadCachedOnly;
     ControlObjectSlave* m_pCOTGuiTick;

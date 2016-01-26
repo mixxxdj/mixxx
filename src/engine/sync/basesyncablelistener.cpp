@@ -6,7 +6,7 @@
 
 static const char* kInternalClockGroup = "[InternalClock]";
 
-BaseSyncableListener::BaseSyncableListener(ConfigObject<ConfigValue>* pConfig)
+BaseSyncableListener::BaseSyncableListener(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
           m_pMasterSyncable(NULL) {

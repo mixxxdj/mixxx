@@ -7,7 +7,7 @@
 #include <QDomElement>
 #include <QMutex>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skinparser.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/tooltips.h"
@@ -28,7 +28,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
     LegacySkinParser();
-    LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
+    LegacySkinParser(UserSettingsPointer pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
                      Library* pLibrary, VinylControlManager* pVCMan,
@@ -129,7 +129,7 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     QString parseLaunchImageStyle(QDomNode node);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     ControllerManager* m_pControllerManager;

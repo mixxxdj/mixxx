@@ -20,7 +20,7 @@ static const double CUE_MODE_NUMARK = 3.0;
 static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 
 CueControl::CueControl(QString group,
-                       ConfigObject<ConfigValue>* _config) :
+                       UserSettingsPointer _config) :
         EngineControl(group, _config),
         m_bPreviewing(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(group, "play"))),

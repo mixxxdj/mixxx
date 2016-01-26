@@ -19,7 +19,7 @@
 #include "skin/launchimage.h"
 #include "util/timer.h"
 
-SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
+SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
         m_pConfig(pConfig) {
 }
 

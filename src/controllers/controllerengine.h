@@ -14,7 +14,7 @@
 #include <QtScript>
 
 #include "bytearrayclass.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"
@@ -188,7 +188,7 @@ class ControllerEngine : public QObject {
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
-    QVarLengthArray<qint64> m_lastMovement;
+    QVarLengthArray<mixxx::Duration> m_lastMovement;
     QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
     QVarLengthArray<bool> m_ramp, m_brakeActive;
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;

@@ -342,7 +342,7 @@ class VinylControl(Feature):
     def sources(self, build):
         sources = ['vinylcontrol/vinylcontrol.cpp',
                    'vinylcontrol/vinylcontrolxwax.cpp',
-                   'dlgprefvinyl.cpp',
+                   'preferences/dialog/dlgprefvinyl.cpp',
                    'vinylcontrol/vinylcontrolsignalwidget.cpp',
                    'vinylcontrol/vinylcontrolmanager.cpp',
                    'vinylcontrol/vinylcontrolprocessor.cpp',
@@ -405,8 +405,8 @@ class Vamp(Feature):
                    'analyzer/vamp/vamppluginloader.cpp',
                    'analyzer/analyzerbeats.cpp',
                    'analyzer/analyzerkey.cpp',
-                   'dlgprefbeats.cpp',
-                   'dlgprefkey.cpp']
+                   'preferences/dialog/dlgprefbeats.cpp',
+                   'preferences/dialog/dlgprefkey.cpp']
 
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
@@ -452,8 +452,8 @@ class ModPlug(Feature):
             raise Exception('Could not find libmodplug shared library.')
 
     def sources(self, build):
-        depends.Qt.uic(build)('dlgprefmodplugdlg.ui')
-        return ['sources/soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
+        depends.Qt.uic(build)('preferences/dialog/dlgprefmodplugdlg.ui')
+        return ['sources/soundsourcemodplug.cpp', 'preferences/dialog/dlgprefmodplug.cpp']
 
 
 class FAAD(Feature):
@@ -825,8 +825,8 @@ class Shoutcast(Feature):
             conf.CheckLib('ws2_32')
 
     def sources(self, build):
-        depends.Qt.uic(build)('dlgprefshoutcastdlg.ui')
-        return ['dlgprefshoutcast.cpp',
+        depends.Qt.uic(build)('preferences/dialog/dlgprefshoutcastdlg.ui')
+        return ['preferences/dialog/dlgprefshoutcast.cpp',
                 'shoutcast/shoutcastmanager.cpp',
                 'engine/sidechain/engineshoutcast.cpp']
 

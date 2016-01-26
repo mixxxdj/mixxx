@@ -6,9 +6,8 @@
 #include <QDialog>
 #include <QString>
 #include <QScopedPointer>
-#include <QTime>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/export/trackexportworker.h"
 #include "library/export/ui_dlgtrackexport.h"
 #include "trackinfoobject.h"
@@ -26,7 +25,7 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
 
     // The dialog is prepared, but not shown on construction.  Does not
     // take ownership of the export worker.
-    TrackExportDlg(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
+    TrackExportDlg(QWidget *parent, UserSettingsPointer pConfig,
                    TrackExportWorker* worker);
     virtual ~TrackExportDlg() { }
 
@@ -48,7 +47,7 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     // Makes sure the exporter thread has exited.
     void finish();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QList<TrackPointer> m_tracks;
     TrackExportWorker* m_worker;
 };

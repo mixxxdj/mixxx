@@ -56,7 +56,7 @@ const unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
 } // anonymous namespace
 
-SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
+SoundManager::SoundManager(UserSettingsPointer pConfig,
                            EngineMaster *pMaster)
         : m_pMaster(pMaster),
           m_pConfig(pConfig),

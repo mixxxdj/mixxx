@@ -13,9 +13,9 @@
 #include <QList>
 
 #include "library/libraryfeature.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "treeitemmodel.h"
-#include "dlganalysis.h"
+#include "library/dlganalysis.h"
 
 class AnalyzerQueue;
 class TrackCollection;
@@ -24,7 +24,7 @@ class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AnalysisFeature(QObject* parent,
-                    ConfigObject<ConfigValue>* pConfig,
+                    UserSettingsPointer pConfig,
                     TrackCollection* pTrackCollection);
     virtual ~AnalysisFeature();
 
@@ -62,7 +62,7 @@ class AnalysisFeature : public LibraryFeature {
     // tracks in the job
     void setTitleProgress(int trackNum, int totalNum);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
     AnalyzerQueue* m_pAnalyzerQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyse

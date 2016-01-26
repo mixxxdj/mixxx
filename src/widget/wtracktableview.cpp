@@ -15,18 +15,18 @@
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "widget/wtracktableview.h"
-#include "dlgtrackinfo.h"
+#include "library/dlgtrackinfo.h"
 #include "soundsourceproxy.h"
 #include "mixer/playermanager.h"
 #include "util/dnd.h"
 #include "util/time.h"
-#include "dlgpreflibrary.h"
+#include "preferences/dialog/dlgpreflibrary.h"
 #include "waveform/guitick.h"
 #include "widget/wcoverartmenu.h"
 #include "util/assert.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
-                                 ConfigObject<ConfigValue> * pConfig,
+                                 UserSettingsPointer pConfig,
                                  TrackCollection* pTrackCollection, bool sorting)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
@@ -40,7 +40,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
-          m_lastUserActionNanos(0),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
     // Give a NULL parent because otherwise it inherits our style which can make
@@ -159,7 +158,7 @@ void WTrackTableView::enableCachedOnly() {
         emit(onlyCachedCoverArt(true));
         m_loadCachedOnly = true;
     }
-    m_lastUserActionNanos = Time::elapsed();
+    m_lastUserAction = Time::elapsed();
 }
 
 void WTrackTableView::slotScrollValueChanged(int) {
@@ -176,8 +175,8 @@ void WTrackTableView::selectionChanged(const QItemSelection& selected,
 void WTrackTableView::slotGuiTick50ms(double) {
     // if the user is stopped in the same row for more than 0.1 s,
     // we load un-cached cover arts as well.
-    qint64 timeDeltaNanos = Time::elapsed() - m_lastUserActionNanos;
-    if (m_loadCachedOnly && timeDeltaNanos > 100000000) {
+    mixxx::Duration timeDelta = Time::elapsed() - m_lastUserAction;
+    if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
 
         // Show the currently selected track in the large cover art view. Doing
         // this in selectionChanged slows down scrolling performance so we wait

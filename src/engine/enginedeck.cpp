@@ -27,7 +27,7 @@
 #include "util/sample.h"
 
 EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
-                       ConfigObject<ConfigValue>* pConfig,
+                       UserSettingsPointer pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
                        EngineChannel::ChannelOrientation defaultOrientation)

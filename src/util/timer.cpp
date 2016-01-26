@@ -12,48 +12,49 @@ void Timer::start() {
     m_time.start();
 }
 
-qint64 Timer::restart(bool report) {
+mixxx::Duration Timer::restart(bool report) {
     if (m_running) {
-        qint64 nsec = m_time.restart();
+        mixxx::Duration elapsed = m_time.restart();
         if (report) {
             // Ignore the report if it crosses the experiment boundary.
             Experiment::Mode oldMode = Stat::modeFromFlags(m_compute);
             if (oldMode == Experiment::mode()) {
-                Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute, nsec);
+                Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute,
+                            elapsed.toIntegerNanos());
             }
         }
-        return nsec;
+        return elapsed;
     } else {
         start();
-        return 0;
+        return mixxx::Duration::fromNanos(0);
     }
 }
 
-qint64 Timer::elapsed(bool report) {
-    qint64 nsec = m_time.elapsed();
+mixxx::Duration Timer::elapsed(bool report) {
+    mixxx::Duration elapsedTime = m_time.elapsed();
     if (report) {
         // Ignore the report if it crosses the experiment boundary.
         Experiment::Mode oldMode = Stat::modeFromFlags(m_compute);
         if (oldMode == Experiment::mode()) {
-            Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute, nsec);
+            Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute,
+                        elapsedTime.toIntegerNanos());
         }
     }
-    return nsec;
+    return elapsedTime;
 }
 
 
 SuspendableTimer::SuspendableTimer(const QString& key,
                                    Stat::ComputeFlags compute)
-        : Timer(key, compute),
-          m_leapTime(0) {
+        : Timer(key, compute) {
 }
 
 void SuspendableTimer::start() {
-    m_leapTime = 0;
+    m_leapTime = mixxx::Duration::fromSeconds(0);
     Timer::start();
 }
 
-qint64 SuspendableTimer::suspend() {
+mixxx::Duration SuspendableTimer::suspend() {
     m_leapTime += m_time.elapsed();
     m_running = false;
     return m_leapTime;
@@ -63,13 +64,14 @@ void SuspendableTimer::go() {
     Timer::start();
 }
 
-qint64 SuspendableTimer::elapsed(bool report) {
+mixxx::Duration SuspendableTimer::elapsed(bool report) {
     m_leapTime += m_time.elapsed();
     if (report) {
         // Ignore the report if it crosses the experiment boundary.
         Experiment::Mode oldMode = Stat::modeFromFlags(m_compute);
         if (oldMode == Experiment::mode()) {
-            Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute, m_leapTime);
+            Stat::track(m_key, Stat::DURATION_NANOSEC, m_compute,
+                        m_leapTime.toIntegerNanos());
         }
     }
     return m_leapTime;

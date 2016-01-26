@@ -9,7 +9,7 @@
 #include <QColor>
 #include <QEvent>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 

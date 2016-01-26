@@ -45,11 +45,13 @@
 //
 // This is a fork of QPerformanceTimer just without the Q prefix
 // To fix interface changes issues in different QT versions
-// Added restart() function
-// return time in ns resolution
+// Added restart() function.
+// Returns time in nanosecond resolution.
 //
 
 #include <QtCore/qglobal.h>
+
+#include "util/duration.h"
 
 class PerformanceTimer
 {
@@ -62,9 +64,9 @@ public:
     };
 
     void start();
-    qint64 elapsed() const;
-    qint64 restart();
-    qint64 difference(const PerformanceTimer& timer) const;
+    mixxx::Duration elapsed() const;
+    mixxx::Duration restart();
+    mixxx::Duration difference(const PerformanceTimer& timer) const;
 
 private:
     qint64 t1;

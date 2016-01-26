@@ -20,7 +20,7 @@
 #include "util/assert.h"
 
 BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
-                                         ConfigObject<ConfigValue>* pConfig,
+                                         UserSettingsPointer pConfig,
                                          TrackCollection* pTrackCollection,
                                          QString rootViewName)
         : LibraryFeature(parent),
@@ -555,7 +555,7 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path()) == "create") {
         slotCreatePlaylist();
     } else {
-        qDebug() << "Unknonw playlist link clicked" << link.path();
+        qDebug() << "Unknown playlist link clicked" << link.path();
     }
 }
 

@@ -13,7 +13,7 @@
 #include <QString>
 #include <QScopedPointer>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/export/trackexportdlg.h"
 #include "library/export/trackexportworker.h"
 #include "trackinfoobject.h"
@@ -22,7 +22,7 @@
 class TrackExportWizard : public QObject {
   Q_OBJECT
   public:
-    TrackExportWizard(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
+    TrackExportWizard(QWidget *parent, UserSettingsPointer pConfig,
                       QList<TrackPointer> tracks)
             : m_parent(parent), m_pConfig(pConfig), m_tracks(tracks) { }
     virtual ~TrackExportWizard() { }
@@ -35,7 +35,7 @@ class TrackExportWizard : public QObject {
     bool selectDestinationDirectory();
 
     QWidget* m_parent;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QList<TrackPointer> m_tracks;
     QScopedPointer<TrackExportDlg> m_dialog;
     QScopedPointer<TrackExportWorker> m_worker;

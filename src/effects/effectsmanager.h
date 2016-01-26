@@ -8,7 +8,7 @@
 #include <QScopedPointer>
 #include <QPair>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
 #include "effects/effect.h"
@@ -29,7 +29,7 @@ class EffectsManager : public QObject {
   public:
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
 
-    EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig);
+    EffectsManager(QObject* pParent, UserSettingsPointer pConfig);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {

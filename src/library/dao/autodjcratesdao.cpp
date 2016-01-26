@@ -16,7 +16,7 @@ static const int kLeastPreferredPercent = 15;
 AutoDJCratesDAO::AutoDJCratesDAO(QSqlDatabase& a_rDatabase,
                                  TrackDAO& a_rTrackDAO, CrateDAO& a_rCrateDAO,
                                  PlaylistDAO &a_rPlaylistDAO,
-                                 ConfigObject<ConfigValue>* a_pConfig)
+                                 UserSettingsPointer a_pConfig)
         : m_rDatabase(a_rDatabase),
           m_rTrackDAO(a_rTrackDAO),
           m_rCrateDAO(a_rCrateDAO),
