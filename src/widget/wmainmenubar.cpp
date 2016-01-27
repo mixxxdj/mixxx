@@ -12,6 +12,8 @@
 
 namespace {
 
+const int kMaxLoadToDeckActions = 4;
+
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;
     return QString("%1\n\n%2").arg(preparedTitle.remove("&"), text);
@@ -80,8 +82,7 @@ void WMainMenuBar::initialize() {
     QString loadTrackText = tr("Load Track to Deck &%1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
     QString openText = tr("Open");
-    // TODO(rryan): Better choice of number of decks.
-    for (unsigned int deck = 0; deck < 4; ++deck) {
+    for (unsigned int deck = 0; deck < kMaxLoadToDeckActions; ++deck) {
         QString playerLoadStatusText = loadTrackStatusText.arg(QString::number(deck + 1));
         QAction* pFileLoadSongToPlayer = new QAction(
             loadTrackText.arg(QString::number(deck + 1)), this);
@@ -96,10 +97,14 @@ void WMainMenuBar::initialize() {
         pFileLoadSongToPlayer->setStatusTip(playerLoadStatusText);
         pFileLoadSongToPlayer->setWhatsThis(
             buildWhatsThis(openText, playerLoadStatusText));
+        // Visibility of load to deck actions is set in
+        // WMainMenuBar::onNumberOfDecksChanged.
+        pFileLoadSongToPlayer->setVisible(false);
         connect(pFileLoadSongToPlayer, SIGNAL(triggered()),
                 &m_loadToDeckMapper, SLOT(map()));
         m_loadToDeckMapper.setMapping(pFileLoadSongToPlayer, deck + 1);
         pFileMenu->addAction(pFileLoadSongToPlayer);
+        m_loadToDeckActions.push_back(pFileLoadSongToPlayer);
     }
 
     pFileMenu->addSeparator();
@@ -305,7 +310,6 @@ void WMainMenuBar::initialize() {
     QString vinylControlText = tr(
             "Use timecoded vinyls on external turntables to control Mixxx");
 
-    // TODO(rryan): Only show menu items to activate vinyl inputs that exist.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         QString vinylControlTitle = tr("Enable Vinyl Control &%1").arg(i + 1);
         QAction* vc_checkbox = new QAction(vinylControlTitle, this);
@@ -324,6 +328,9 @@ void WMainMenuBar::initialize() {
         // it was saved as.
         vc_checkbox->setCheckable(true);
         vc_checkbox->setChecked(false);
+        // The visibility of these actions is set in
+        // WMainMenuBar::onNumberOfDecksChanged.
+        vc_checkbox->setVisible(false);
         vc_checkbox->setStatusTip(vinylControlText);
         vc_checkbox->setWhatsThis(buildWhatsThis(vinylControlTitle,
                                                  vinylControlText));
@@ -669,6 +676,17 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
             new VisibilityControlConnection(this, pAction, key);
     connect(this, SIGNAL(internalOnNewSkinLoaded()),
             pConnection, SLOT(slotReconnectControl()));
+}
+
+void WMainMenuBar::onNumberOfDecksChanged(int decks) {
+    int deck = 0;
+    for (QAction* pVinylControlEnabled : m_vinylControlEnabledActions) {
+        pVinylControlEnabled->setVisible(deck++ < decks);
+    }
+    deck = 0;
+    for (QAction* pLoadToDeck : m_loadToDeckActions) {
+        pLoadToDeck->setVisible(deck++ < decks);
+    }
 }
 
 VisibilityControlConnection::VisibilityControlConnection(

@@ -245,6 +245,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             this, SLOT(slotNoDeckPassthroughInputConfigured()));
     connect(m_pPlayerManager, SIGNAL(noVinylControlInputConfigured()),
             this, SLOT(slotNoVinylControlInputConfigured()));
+    connect(m_pPlayerManager, SIGNAL(numberOfDecksChanged(int)),
+            m_pMenuBar, SLOT(onNumberOfDecksChanged(int)));
 
     for (int i = 0; i < kMicrophoneCount; ++i) {
         m_pPlayerManager->addMicrophone();
