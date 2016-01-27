@@ -311,6 +311,7 @@ void PlayerManager::addDeck() {
     QMutexLocker locker(&m_mutex);
     addDeckInner();
     m_pCONumDecks->set((double)m_decks.count());
+    emit(numberOfDecksChanged(m_decks.count()));
 }
 
 void PlayerManager::addConfiguredDecks() {

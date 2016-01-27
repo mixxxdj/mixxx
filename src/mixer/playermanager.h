@@ -203,6 +203,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // input configured.
     void noVinylControlInputConfigured();
 
+    void numberOfDecksChanged(int decks);
+
   private:
     TrackPointer lookupTrack(QString location);
     // Must hold m_mutex before calling this method. Internal method that
