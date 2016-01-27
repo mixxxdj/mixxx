@@ -103,7 +103,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
-          m_NativeMenuBarSupport(false),
           m_pKbdConfig(nullptr),
           m_pKbdConfigEmpty(nullptr),
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON),
@@ -123,7 +122,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
 
     initializeKeyboard();
-    initMenuBar();
+    createMenuBar();
 
     initializeWindow();
 
@@ -206,19 +205,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pSoundManager = new SoundManager(pConfig, m_pEngine);
 
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
-    connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
-            m_pMenuBar, SLOT(onRecordingStateChange(bool)));
-    connect(m_pMenuBar, SIGNAL(toggleRecording(bool)),
-            m_pRecordingManager, SLOT(slotSetRecording(bool)));
-    m_pMenuBar->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
+
+
 #ifdef __SHOUTCAST__
     m_pShoutcastManager = new ShoutcastManager(pConfig, m_pSoundManager);
-    connect(m_pShoutcastManager, SIGNAL(shoutcastEnabled(bool)),
-            m_pMenuBar, SLOT(onBroadcastingStateChange(bool)));
-    connect(m_pMenuBar, SIGNAL(toggleBroadcasting(bool)),
-            m_pShoutcastManager, SLOT(setEnabled(bool)));
-
-    m_pMenuBar->onBroadcastingStateChange(m_pShoutcastManager->isEnabled());
 #endif
 
     launchProgress(11);
@@ -228,10 +218,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, pConfig, m_pSoundManager);
-    connect(m_pMenuBar, SIGNAL(toggleVinylControl(int)),
-            m_pVCManager, SLOT(toggleVinylControl(int)));
-    connect(m_pVCManager, SIGNAL(vinylControlDeckEnabled(int, bool)),
-            m_pMenuBar, SLOT(onVinylControlDeckEnabledStateChange(int, bool)));
 #else
     m_pVCManager = NULL;
 #endif
@@ -245,8 +231,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             this, SLOT(slotNoDeckPassthroughInputConfigured()));
     connect(m_pPlayerManager, SIGNAL(noVinylControlInputConfigured()),
             this, SLOT(slotNoVinylControlInputConfigured()));
-    connect(m_pPlayerManager, SIGNAL(numberOfDecksChanged(int)),
-            m_pMenuBar, SLOT(onNumberOfDecksChanged(int)));
 
     for (int i = 0; i < kMicrophoneCount; ++i) {
         m_pPlayerManager->addMicrophone();
@@ -284,10 +268,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                              m_pPlayerManager,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
-    connect(m_pMenuBar, SIGNAL(createCrate()),
-            m_pLibrary, SLOT(slotCreateCrate()));
-    connect(m_pMenuBar, SIGNAL(createPlaylist()),
-            m_pLibrary, SLOT(slotCreatePlaylist()));
 
     launchProgress(35);
 
@@ -340,6 +320,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg->setHidden(true);
 
     launchProgress(60);
+
+    // Connect signals to the menubar. Should be done before we go fullscreen
+    // and emit newSkinLoaded.
+    connectMenuBar();
 
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
@@ -417,12 +401,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             this, SIGNAL(libraryScanStarted()));
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SIGNAL(libraryScanFinished()));
-    connect(m_pLibraryScanner, SIGNAL(scanStarted()),
-            m_pMenuBar, SLOT(onLibraryScanStarted()));
-    connect(m_pLibraryScanner, SIGNAL(scanFinished()),
-            m_pMenuBar, SLOT(onLibraryScanFinished()));
-    connect(m_pMenuBar, SIGNAL(rescanLibrary()),
-            m_pLibraryScanner, SLOT(scan()));
 
     // Refresh the library models when the library (re)scan is finished.
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
@@ -609,7 +587,7 @@ void MixxxMainWindow::finalize() {
 }
 
 void MixxxMainWindow::initializeWindow() {
-    // be sure initMenuBar() is called first
+    // be sure createMenuBar() is called first
     DEBUG_ASSERT(m_pMenuBar != nullptr);
 
     QPalette Pal(palette());
@@ -802,12 +780,16 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
     this->setWindowTitle(appTitle);
 }
 
-void MixxxMainWindow::initMenuBar() {
-    ScopedTimer t("MixxxMainWindow::initMenuBar");
+void MixxxMainWindow::createMenuBar() {
+    ScopedTimer t("MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pKbdConfig != nullptr);
     m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(),
                                   m_pKbdConfig);
+    setMenuBar(m_pMenuBar);
+}
 
+void MixxxMainWindow::connectMenuBar() {
+    ScopedTimer t("MixxxMainWindow::connectMenuBar");
     connect(this, SIGNAL(newSkinLoaded()),
             m_pMenuBar, SLOT(onNewSkinLoaded()));
 
@@ -839,7 +821,55 @@ void MixxxMainWindow::initMenuBar() {
     connect(m_pMenuBar, SIGNAL(toggleDeveloperTools(bool)),
             this, SLOT(slotDeveloperTools(bool)));
 
-    setMenuBar(m_pMenuBar);
+    if (m_pRecordingManager) {
+        connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
+                m_pMenuBar, SLOT(onRecordingStateChange(bool)));
+        connect(m_pMenuBar, SIGNAL(toggleRecording(bool)),
+                m_pRecordingManager, SLOT(slotSetRecording(bool)));
+        m_pMenuBar->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
+    }
+
+#ifdef __SHOUTCAST__
+    if (m_pShoutcastManager) {
+        connect(m_pShoutcastManager, SIGNAL(shoutcastEnabled(bool)),
+                m_pMenuBar, SLOT(onBroadcastingStateChange(bool)));
+        connect(m_pMenuBar, SIGNAL(toggleBroadcasting(bool)),
+                m_pShoutcastManager, SLOT(setEnabled(bool)));
+        m_pMenuBar->onBroadcastingStateChange(m_pShoutcastManager->isEnabled());
+    }
+#endif
+
+#ifdef __VINYLCONTROL__
+    if (m_pVCManager) {
+        connect(m_pMenuBar, SIGNAL(toggleVinylControl(int)),
+                m_pVCManager, SLOT(toggleVinylControl(int)));
+        connect(m_pVCManager, SIGNAL(vinylControlDeckEnabled(int, bool)),
+                m_pMenuBar, SLOT(onVinylControlDeckEnabledStateChange(int, bool)));
+    }
+#endif
+
+    if (m_pPlayerManager) {
+        connect(m_pPlayerManager, SIGNAL(numberOfDecksChanged(int)),
+                m_pMenuBar, SLOT(onNumberOfDecksChanged(int)));
+        m_pMenuBar->onNumberOfDecksChanged(m_pPlayerManager->numberOfDecks());
+    }
+
+    if (m_pLibrary) {
+        connect(m_pMenuBar, SIGNAL(createCrate()),
+                m_pLibrary, SLOT(slotCreateCrate()));
+        connect(m_pMenuBar, SIGNAL(createPlaylist()),
+                m_pLibrary, SLOT(slotCreatePlaylist()));
+    }
+
+    if (m_pLibraryScanner) {
+        connect(m_pLibraryScanner, SIGNAL(scanStarted()),
+                m_pMenuBar, SLOT(onLibraryScanStarted()));
+        connect(m_pLibraryScanner, SIGNAL(scanFinished()),
+                m_pMenuBar, SLOT(onLibraryScanFinished()));
+        connect(m_pMenuBar, SIGNAL(rescanLibrary()),
+                m_pLibraryScanner, SLOT(scan()));
+    }
+
 }
 
 void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
@@ -936,25 +966,19 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
     if (toggle) {
         showFullScreen();
 #ifdef __LINUX__
-        // Fix for "No menu bar with ubuntu unity in full screen mode" Bug #885890
-        // Not for Mac OS because the native menu bar will unhide when moving
-        // the mouse to the top of screen
-
-        //menuBar()->setNativeMenuBar(false);
-        // ^ This leaves a broken native Menu Bar with Ubuntu Unity Bug #1076789#
-        // it is only allowed to change this prior initMenuBar()
-
-        m_NativeMenuBarSupport = m_pMenuBar->isNativeMenuBar();
-        if (m_NativeMenuBarSupport) {
+        // Fix for "No menu bar with ubuntu unity in full screen mode" Bug
+        // #885890 and Bug #1076789. Before touching anything here, please read
+        // those bugs.
+        createMenuBar();
+        connectMenuBar();
+        if (m_pMenuBar->isNativeMenuBar()) {
             m_pMenuBar->setNativeMenuBar(false);
         }
 #endif
     } else {
 #ifdef __LINUX__
-        if (m_NativeMenuBarSupport) {
-            initMenuBar();
-            m_pMenuBar->setNativeMenuBar(m_NativeMenuBarSupport);
-        }
+        createMenuBar();
+        connectMenuBar();
 #endif
         showNormal();
     }

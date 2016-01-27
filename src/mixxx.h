@@ -63,7 +63,8 @@ class MixxxMainWindow : public QMainWindow {
     void finalize();
 
     // creates the menu_bar and inserts the file Menu
-    void initMenuBar();
+    void createMenuBar();
+    void connectMenuBar();
 
     void setToolTipsCfg(mixxx::TooltipsPreference tt);
     inline mixxx::TooltipsPreference getToolTipsCfg() { return m_toolTipsCfg; }
@@ -170,9 +171,6 @@ class MixxxMainWindow : public QMainWindow {
 
     /** Pointer to preference dialog */
     DlgPreferences* m_pPrefDlg;
-
-    // Fullscreen patch
-    bool m_NativeMenuBarSupport;
 
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;

@@ -203,6 +203,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // input configured.
     void noVinylControlInputConfigured();
 
+    // Emitted when the number of decks changes.
     void numberOfDecksChanged(int decks);
 
   private:
