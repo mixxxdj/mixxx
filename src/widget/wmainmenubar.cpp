@@ -294,7 +294,7 @@ void WMainMenuBar::initialize() {
     pViewFullScreen->setChecked(false);
     pViewFullScreen->setStatusTip(fullScreenText);
     pViewFullScreen->setWhatsThis(buildWhatsThis(fullScreenTitle, fullScreenText));
-    connect(pViewFullScreen, SIGNAL(toggled(bool)),
+    connect(pViewFullScreen, SIGNAL(triggered(bool)),
             this, SIGNAL(toggleFullScreen(bool)));
     connect(this, SIGNAL(internalFullScreenStateChange(bool)),
             pViewFullScreen, SLOT(setChecked(bool)));
@@ -336,7 +336,7 @@ void WMainMenuBar::initialize() {
                                                  vinylControlText));
 
         m_vinylControlEnabledMapper.setMapping(vc_checkbox, i);
-        connect(vc_checkbox, SIGNAL(toggled(bool)),
+        connect(vc_checkbox, SIGNAL(triggered(bool)),
                 &m_vinylControlEnabledMapper, SLOT(map()));
         pVinylControlMenu->addAction(vc_checkbox);
     }
@@ -355,7 +355,7 @@ void WMainMenuBar::initialize() {
     pOptionsRecord->setCheckable(true);
     pOptionsRecord->setStatusTip(recordText);
     pOptionsRecord->setWhatsThis(buildWhatsThis(recordTitle, recordText));
-    connect(pOptionsRecord, SIGNAL(toggled(bool)),
+    connect(pOptionsRecord, SIGNAL(triggered(bool)),
             this, SIGNAL(toggleRecording(bool)));
     connect(this, SIGNAL(internalRecordingStateChange(bool)),
             pOptionsRecord, SLOT(setChecked(bool)));
@@ -398,7 +398,7 @@ void WMainMenuBar::initialize() {
     pOptionsKeyboard->setChecked(keyboardShortcutsEnabled);
     pOptionsKeyboard->setStatusTip(keyboardShortcutText);
     pOptionsKeyboard->setWhatsThis(buildWhatsThis(keyboardShortcutTitle, keyboardShortcutText));
-    connect(pOptionsKeyboard, SIGNAL(toggled(bool)),
+    connect(pOptionsKeyboard, SIGNAL(triggered(bool)),
             this, SIGNAL(toggleKeyboardShortcuts(bool)));
 
     pOptionsMenu->addAction(pOptionsKeyboard);
@@ -452,7 +452,7 @@ void WMainMenuBar::initialize() {
         pDeveloperTools->setChecked(false);
         pDeveloperTools->setStatusTip(developerToolsText);
         pDeveloperTools->setWhatsThis(buildWhatsThis(developerToolsTitle, developerToolsText));
-        connect(pDeveloperTools, SIGNAL(toggled(bool)),
+        connect(pDeveloperTools, SIGNAL(triggered(bool)),
                 this, SIGNAL(toggleDeveloperTools(bool)));
         connect(this, SIGNAL(internalDeveloperToolsStateChange(bool)),
                 pDeveloperTools, SLOT(setChecked(bool)));
@@ -472,7 +472,7 @@ void WMainMenuBar::initialize() {
             enableExperimentTitle, enableExperimentToolsText));
         pDeveloperStatsExperiment->setCheckable(true);
         pDeveloperStatsExperiment->setChecked(Experiment::isExperiment());
-        connect(pDeveloperStatsExperiment, SIGNAL(toggled(bool)),
+        connect(pDeveloperStatsExperiment, SIGNAL(triggered(bool)),
                 this, SLOT(slotDeveloperStatsExperiment(bool)));
         pDeveloperMenu->addAction(pDeveloperStatsExperiment);
 
@@ -490,7 +490,7 @@ void WMainMenuBar::initialize() {
             enableBaseTitle, enableBaseToolsText));
         pDeveloperStatsBase->setCheckable(true);
         pDeveloperStatsBase->setChecked(Experiment::isBase());
-        connect(pDeveloperStatsBase, SIGNAL(toggled(bool)),
+        connect(pDeveloperStatsBase, SIGNAL(triggered(bool)),
                 this, SLOT(slotDeveloperStatsBase(bool)));
         pDeveloperMenu->addAction(pDeveloperStatsBase);
 
@@ -509,7 +509,7 @@ void WMainMenuBar::initialize() {
         pDeveloperDebugger->setCheckable(true);
         pDeveloperDebugger->setStatusTip(scriptDebuggerText);
         pDeveloperDebugger->setChecked(scriptDebuggerEnabled);
-        connect(pDeveloperDebugger, SIGNAL(toggled(bool)),
+        connect(pDeveloperDebugger, SIGNAL(triggered(bool)),
                 this, SLOT(slotDeveloperDebugger(bool)));
         pDeveloperMenu->addAction(pDeveloperDebugger);
 
@@ -695,7 +695,7 @@ VisibilityControlConnection::VisibilityControlConnection(
           m_key(key),
           m_pAction(pAction) {
     slotReconnectControl();
-    connect(m_pAction, SIGNAL(toggled(bool)),
+    connect(m_pAction, SIGNAL(triggered(bool)),
             this, SLOT(slotActionToggled(bool)));
 }
 
