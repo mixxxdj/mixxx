@@ -97,8 +97,8 @@ BehringerCMDStudio4a.del = function (channel, control, value, status, group) {
     } else {
         // Button released.
         BehringerCMDStudio4a.delPushed = false;
+        // Only toggle the DEL-mode if the "shift" function wasn't used.
         if (!BehringerCMDStudio4a.delShiftUsed) {
-            // Only toggle the DEL-mode if the "shift" function wasn't used.
             BehringerCMDStudio4a.delButtonState[channel] = !BehringerCMDStudio4a.delButtonState[channel];
             midi.sendShortMsg(0x90 + channel, control, BehringerCMDStudio4a.delButtonState[channel] ? 0x01 : 0x00);
         }
@@ -149,8 +149,8 @@ BehringerCMDStudio4a.fxAssign = function (channel, control, value, status, group
     {
         // Button released.
         BehringerCMDStudio4a.fxAssignPushed = false;
+        // Only toggle the effect on release if the "shift" function wasn't used.
         if (!BehringerCMDStudio4a.fxAssignShiftUsed) {
-            // Only toggle the effect on release if the "shift" function wasn't used.
             script.toggleControl(group,"group_[Channel"+(channel+1)+"]_enable");
         }
     }
