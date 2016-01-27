@@ -828,7 +828,7 @@
             <!-- Pitch stuff.-->
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.pitchDec</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck A pitch- push.</description>
                 <status>0x90</status>
                 <midino>0x20</midino>
@@ -838,7 +838,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.pitchDec</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck A pitch- release.</description>
                 <status>0x80</status>
                 <midino>0x20</midino>
@@ -848,7 +848,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.pitchInc</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck A pitch+ push.</description>
                 <status>0x90</status>
                 <midino>0x21</midino>
@@ -858,7 +858,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>BehringerCMDStudio4a.pitchInc</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck A pitch+ release.</description>
                 <status>0x80</status>
                 <midino>0x21</midino>
@@ -868,7 +868,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.pitchDec</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck B pitch- push.</description>
                 <status>0x91</status>
                 <midino>0x40</midino>
@@ -878,7 +878,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.pitchDec</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck B pitch- release.</description>
                 <status>0x81</status>
                 <midino>0x40</midino>
@@ -888,7 +888,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.pitchInc</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck B pitch+ push.</description>
                 <status>0x91</status>
                 <midino>0x41</midino>
@@ -898,7 +898,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>BehringerCMDStudio4a.pitchInc</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck B pitch+ release.</description>
                 <status>0x81</status>
                 <midino>0x41</midino>
@@ -908,7 +908,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.pitchDec</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck C pitch- push.</description>
                 <status>0x92</status>
                 <midino>0x20</midino>
@@ -918,7 +918,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.pitchDec</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck C pitch- release.</description>
                 <status>0x82</status>
                 <midino>0x20</midino>
@@ -928,7 +928,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.pitchInc</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck C pitch+ push.</description>
                 <status>0x92</status>
                 <midino>0x21</midino>
@@ -938,7 +938,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>BehringerCMDStudio4a.pitchInc</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck C pitch+ release.</description>
                 <status>0x82</status>
                 <midino>0x21</midino>
@@ -948,7 +948,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.pitchDec</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck D pitch- push.</description>
                 <status>0x93</status>
                 <midino>0x40</midino>
@@ -958,7 +958,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.pitchDec</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck D pitch- release.</description>
                 <status>0x83</status>
                 <midino>0x40</midino>
@@ -968,7 +968,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.pitchInc</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck D pitch+ push.</description>
                 <status>0x93</status>
                 <midino>0x41</midino>
@@ -978,7 +978,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>BehringerCMDStudio4a.pitchInc</key>
+                <key>BehringerCMDStudio4a.pitch</key>
                 <description>Deck D pitch+ release.</description>
                 <status>0x83</status>
                 <midino>0x41</midino>

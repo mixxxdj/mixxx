@@ -26,8 +26,7 @@ BehringerCMDStudio4a.delButtonState = [false,false,false,false];
 BehringerCMDStudio4a.scratchButtonState = [false,false,false,false];
 
 // Button push/release state variables.
-BehringerCMDStudio4a.pitchDecPushed = [false,false,false,false];
-BehringerCMDStudio4a.pitchIncPushed = [false,false,false,false];
+BehringerCMDStudio4a.pitchPushed = [[false,false,false,false], [false,false,false,false]];
 BehringerCMDStudio4a.delPushed = false;
 BehringerCMDStudio4a.delShiftUsed = false;
 BehringerCMDStudio4a.fxAssignPushed = false;
@@ -208,7 +207,7 @@ BehringerCMDStudio4a.hotcue = function (channel, control, value, status, group) 
                     // turn it on directly here, the only work-around I could
                     // think of was to create a (very short) timed call-back
                     // to turn it off!
-					// Raised bug about this.
+					// Raised bug about this:
 					// https://bugs.launchpad.net/mixxx/+bug/1538200
 					// Changed timer from 50 to 100 after the pathology of this
 					// bug was explined in the bug report.
@@ -223,56 +222,26 @@ BehringerCMDStudio4a.hotcue = function (channel, control, value, status, group) 
 }
 
 // Functions to deal with the pitch inc/dec buttons, (because they have a DEL-mode behaviour).
-BehringerCMDStudio4a.pitchDec = function (channel, control, value, status, group) {
+BehringerCMDStudio4a.pitch = function (channel, control, value, status, group) {
+	// Work out the direction.
+	var direction = ((control & 0x01) == 0) ? "down" : "up";
+	// Work out the type (and join) by looking at the DEL button state.
+	var type = BehringerCMDStudio4a.delButtonState[channel] ? "pitch" : "rate";
+	var join = BehringerCMDStudio4a.delButtonState[channel] ? "" : "_perm";
+	// Pushed or released?
     if (value == 127) {
         // Button pushed.
-        BehringerCMDStudio4a.pitchDecPushed[channel] = true;
-        if (BehringerCMDStudio4a.delButtonState[channel]) {
-            // DEL mode is active, do "key" changes instead.
-            // Check if the other button is pressed too, if so we reset the pitch.
-            if (BehringerCMDStudio4a.pitchIncPushed[channel]) {
-                engine.setValue(group, "pitch", 0);
-            } else {
-                engine.setValue(group, "pitch_down", 1);
-            }
-        } else {
-            // DEL-mode is not active, just do "rate" changes.
-            engine.setValue(group, "rate_perm_down", 1);
-            // Check if the other button is pressed too, if so we reset the rate.
-            if (BehringerCMDStudio4a.pitchIncPushed[channel]) {
-                engine.setValue(group, "rate", 0);
-            }
-        }
+        BehringerCMDStudio4a.pitchPushed[control & 0x01][channel] = true;
+		// Is the other button pushed too?
+		if (BehringerCMDStudio4a.pitchPushed[(~control) & 0x01][channel]) {
+			engine.setValue(group, type, 0); // Yep! reset the control.
+		} else {
+			engine.setValue(group, type+join+"_"+direction, 1);
+		}
     } else {
         // Button released.
-        BehringerCMDStudio4a.pitchDecPushed[channel] = false;
-        engine.setValue(group, "rate_perm_down", 0); // Keeps the UI in sync with the button state.
-    }
-}
-BehringerCMDStudio4a.pitchInc = function (channel, control, value, status, group) {
-    if (value == 127) {
-        // Button pushed.
-        BehringerCMDStudio4a.pitchIncPushed[channel] = true;
-        if (BehringerCMDStudio4a.delButtonState[channel]) {
-            // DEL-mode is active, do "key" changes instead.
-            // Check if the other button is pressed too, if so we reset the pitch.
-            if (BehringerCMDStudio4a.pitchDecPushed[channel]) {
-                engine.setValue(group, "pitch", 0);
-            } else {
-                engine.setValue(group, "pitch_up", 1);          
-            }
-        } else {
-            // DEL-mode is not active, just do "rate" changes.
-            engine.setValue(group, "rate_perm_up", 1);
-            // Check if the other button is pressed too, if so we reset the rate.
-            if (BehringerCMDStudio4a.pitchDecPushed[channel]) {
-                engine.setValue(group, "rate", 0);
-            }
-        }
-    } else {
-        // Button released.
-        BehringerCMDStudio4a.pitchIncPushed[channel] = false;
-        engine.setValue(group, "rate_perm_up", 0); // Keeps the UI in sync with the button state.
+        BehringerCMDStudio4a.pitchPushed[control & 0x01][channel] = false;
+        engine.setValue(group, "rate_perm_"+direction, 0); // Keeps the UI in sync with the button state.
     }
 }
 
