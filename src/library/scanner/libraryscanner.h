@@ -52,7 +52,7 @@ class LibraryScanner : public QThread {
   public:
     LibraryScanner(QWidget* pParent,
                    TrackCollection* collection,
-                   ConfigObject<ConfigValue>* pConfig);
+                   UserSettingsPointer pConfig);
     virtual ~LibraryScanner();
 
     // Call from any thread to start a scan. Does nothing if a scan is already
@@ -72,8 +72,8 @@ class LibraryScanner : public QThread {
     void progressLoading(QString path);
     void progressCoverArt(QString file);
     void trackAdded(TrackPointer pTrack);
-    void tracksMoved(QSet<int> oldTrackIds, QSet<int> newTrackIds);
-    void tracksChanged(QSet<int> changedTrackIds);
+    void tracksMoved(QSet<TrackId> oldTrackIds, QSet<TrackId> newTrackIds);
+    void tracksChanged(QSet<TrackId> changedTrackIds);
 
     // Emitted by scan() to invoke slotStartScan in the scanner thread's event
     // loop.

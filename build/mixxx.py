@@ -321,8 +321,8 @@ class MixxxBuild(object):
             print 'Automatically detecting Mac OS X SDK.'
 
             # SDK versions in order of precedence.
-            sdk_versions = ( '10.9', '10.8', '10.7', '10.6', '10.5', )
-            clang_sdk_versions = ( '10.9', '10.8', '10.7', )
+            sdk_versions = ( '10.11', '10.10', '10.9', '10.8', '10.7', '10.6', '10.5', )
+            clang_sdk_versions = ( '10.11', '10.10', '10.9', '10.8', '10.7', )
             valid_cpp_lib_versions = ( 'libstdc++', 'libc++', )
 
             # By default use old gcc C++ library version
@@ -350,10 +350,10 @@ class MixxxBuild(object):
                     print "Automatically selected OS X SDK:", sdk_path
 
                     common_flags = ['-isysroot', sdk_path,
-                                    '-mmacosx-version-min=%s' % min_sdk_version]
+                                    '-mmacosx-version-min=%s' % min_sdk_version,
+                                    '-stdlib=%s' % osx_stdlib]
                     link_flags = [
                         '-Wl,-syslibroot,' + sdk_path,
-                        '-stdlib=%s' % osx_stdlib
                     ]
                     self.env.Append(CCFLAGS=common_flags)
                     self.env.Append(LINKFLAGS=common_flags + link_flags)

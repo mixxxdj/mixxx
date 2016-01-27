@@ -39,22 +39,23 @@ class ShoutcastManager;
 class SkinLoader;
 class EffectsManager;
 class VinylControlManager;
+class SettingsManager;
 class GuiTick;
 class DlgPreferences;
 class SoundManager;
 class ControlPushButton;
 class DlgDeveloperTools;
-class Upgrade;
 class LaunchImage;
 
 #include "configobject.h"
+#include "preferences/usersettings.h"
+#include "preferences/constants.h"
 #include "trackinfoobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
 class ControlObjectSlave;
 class ControlObject;
-class QTranslator;
 
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
@@ -68,7 +69,7 @@ class MixxxMainWindow : public QMainWindow {
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
     virtual ~MixxxMainWindow();
 
-    void initalize(QApplication *app, const CmdlineArgs& args);
+    void initialize(QApplication *app, const CmdlineArgs& args);
     void finalize();
 
     // initializes all QActions of the application
@@ -79,8 +80,8 @@ class MixxxMainWindow : public QMainWindow {
     // after it was inited
     void populateMenuBar();
 
-    void setToolTipsCfg(int tt);
-    inline int getToolTipsCgf() { return m_toolTipsCfg; }
+    void setToolTipsCfg(mixxx::TooltipsPreference tt);
+    inline mixxx::TooltipsPreference getToolTipsCfg() { return m_toolTipsCfg; }
     void rebootMixxxView();
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
@@ -182,14 +183,8 @@ class MixxxMainWindow : public QMainWindow {
     virtual bool event(QEvent* e);
 
   private:
-    void logBuildDetails();
     void initializeWindow();
     void initializeKeyboard();
-    void initializeTranslations(QApplication* pApp);
-    void initializeFonts();
-    bool loadTranslations(const QLocale& systemLocale, QString userLocale,
-                          const QString& translation, const QString& prefix,
-                          const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
     void linkSkinWidget(ControlObjectSlave** pCOS,
@@ -199,6 +194,8 @@ class MixxxMainWindow : public QMainWindow {
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
     LaunchImage* m_pLaunchImage;
+
+    SettingsManager* m_pSettingsManager;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;
@@ -221,8 +218,6 @@ class MixxxMainWindow : public QMainWindow {
 #endif
     ControllerManager* m_pControllerManager;
 
-    ConfigObject<ConfigValue>* m_pConfig;
-
     GuiTick* m_pGuiTick;
 
     VinylControlManager* m_pVCManager;
@@ -232,8 +227,6 @@ class MixxxMainWindow : public QMainWindow {
     LibraryScanner* m_pLibraryScanner;
     // The library management object
     Library* m_pLibrary;
-
-    Upgrade* m_pUpgrader;
 
     QMenuBar* m_pMenuBar;
     // file_menu contains all items of the menubar entry "File"
@@ -312,7 +305,7 @@ class MixxxMainWindow : public QMainWindow {
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;
 
-    int m_toolTipsCfg; //0=OFF, 1=ON, 2=ON (only in Library)
+    mixxx::TooltipsPreference m_toolTipsCfg;
     // Timer that tracks how long Mixxx has been running.
     Timer m_runtime_timer;
 

@@ -4,7 +4,7 @@
 #include <QString>
 #include <QVariant>
 
-#include "util.h"
+#include "util/class.h"
 #include "effects/effectmanifestparameter.h"
 
 class EngineEffectParameter {

@@ -11,7 +11,7 @@
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 
 #include "util/performancetimer.h"
 
@@ -68,10 +68,10 @@ void GLSLWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 
-int GLSLWaveformWidget::render() {
+mixxx::Duration GLSLWaveformWidget::render() {
     PerformanceTimer timer;
-    int t1;
-    //int t2, t3;
+    mixxx::Duration t1;
+    //mixxx::Duration t2, t3;
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
@@ -82,7 +82,7 @@ int GLSLWaveformWidget::render() {
     //glFinish();
     //t3 = timer.restart();
     //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
-    return t1 / 1000; // return timer for painter setup
+    return t1; // return timer for painter setup
 }
 
 void GLSLWaveformWidget::resize(int width, int height) {

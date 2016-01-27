@@ -5,7 +5,7 @@
 #include "widget/wwidget.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "visualplayposition.h"
+#include "waveform/visualplayposition.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
 
@@ -47,9 +47,11 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     m_timer = new QTime();
     currentFrame = 0;
     m_lastFrameTime = 0;
+    for (int i = 0; i < 100; ++i) {
+        m_lastFramesTime[i] = 0;
+    }
     m_lastSystemFrameTime = 0;
     for (int i = 0; i < 100; ++i) {
-        m_lastSystemFramesTime[i] = 0;
         m_lastSystemFramesTime[i] = 0;
     }
 #endif
@@ -164,7 +166,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
-    m_lastSystemFrameTime = m_timer->restart();
+    m_lastSystemFrameTime = m_timer->restart().toIntegerNanos();
 #endif
 
     //PerformanceTimer timer;
@@ -180,9 +182,9 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
         return;
     } else {
         for (int i = 0; i < stackSize; i++) {
-            // qDebug() << i << " a  " << timer.restart();
+            // qDebug() << i << " a  " << timer.restart().formatNanosWithUnit();
             m_rendererStack.at(i)->draw(painter, event);
-            // qDebug() << i << " e " << timer.restart();
+            // qDebug() << i << " e " << timer.restart().formatNanosWithUnit();
         }
 
         painter->setPen(m_colors.getPlayPosColor());
@@ -218,7 +220,7 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
                       QString::number(m_rateDir) + " | " +
                       QString::number(m_zoomFactor));
 
-    m_lastFrameTime = m_timer->restart();
+    m_lastFrameTime = m_timer->restart().toIntegerNanos();
 
     ++currentFrame;
     currentFrame = currentFrame%100;
@@ -226,7 +228,7 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
     m_lastFramesTime[currentFrame] = m_lastFrameTime;
 #endif
 
-    //qDebug() << "draw() ende" << timer.restart();
+    //qDebug() << "draw() ende" << timer.restart().formatNanosWithUnit();
 }
 
 void WaveformWidgetRenderer::resize(int width, int height) {

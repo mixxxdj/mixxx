@@ -22,14 +22,14 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "util/types.h"
+#include "cachingreader.h"
+#include "preferences/usersettings.h"
+#include "control/controlvalue.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "trackinfoobject.h"
-#include "configobject.h"
-#include "rotary.h"
-#include "control/controlvalue.h"
-#include "cachingreader.h"
+#include "util/rotary.h"
+#include "util/types.h"
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -52,7 +52,6 @@ class ControlObject;
 class ControlObjectSlave;
 class ControlPushButton;
 class ControlIndicator;
-class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
@@ -117,7 +116,7 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(QString _group, ConfigObject<ConfigValue>* _config,
+    EngineBuffer(QString _group, UserSettingsPointer _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
@@ -125,6 +124,7 @@ class EngineBuffer : public EngineObject {
 
     // Return the current rate (not thread-safe)
     double getSpeed();
+    bool getScratching();
     // Returns current bpm value (not thread-safe)
     double getBpm();
     // Returns the BPM of the loaded track around the current position (not thread-safe)
@@ -242,7 +242,7 @@ class EngineBuffer : public EngineObject {
 
     // Holds the name of the control group
     QString m_group;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
 
     LoopingControl* m_pLoopingControl;
     FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);

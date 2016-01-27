@@ -9,21 +9,24 @@
 #include <QUrl>
 #include <QIcon>
 #include <QPoint>
+#include <QSet>
 
 #include "library/libraryfeature.h"
 #include "library/cratetablemodel.h"
+#include "library/library.h"
 
 #include "treeitemmodel.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
+#include "trackinfoobject.h"
 
 class TrackCollection;
 
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(QObject* parent,
+    CrateFeature(Library* pLibrary,
                  TrackCollection* pTrackCollection,
-                 ConfigObject<ConfigValue>* pConfig);
+                 UserSettingsPointer pConfig);
     virtual ~CrateFeature();
 
     QVariant title();
@@ -39,7 +42,7 @@ class CrateFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
 
   signals:
-    void analyzeTracks(QList<int>);
+    void analyzeTracks(QList<TrackId>);
 
   public slots:
     void activate();
@@ -56,11 +59,17 @@ class CrateFeature : public LibraryFeature {
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
+    // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
+    void slotExportTrackFiles();
     void slotAnalyzeCrate();
     void slotCrateTableChanged(int crateId);
     void slotCrateContentChanged(int crateId);
     void slotCrateTableRenamed(int crateId, QString a_strName);
     void htmlLinkClicked(const QUrl& link);
+
+  private slots:
+    void slotTrackSelected(TrackPointer pTrack);
+    void slotResetSelectedTrack();
 
   private:
     QString getRootViewHtml() const;
@@ -85,12 +94,15 @@ class CrateFeature : public LibraryFeature {
 #endif // __AUTODJCRATES__
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
+    QAction *m_pExportTrackFilesAction;
     QAction *m_pAnalyzeCrateAction;
     QList<QPair<int, QString> > m_crateList;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
+    TrackPointer m_pSelectedTrack;
+    QSet<int> m_cratesSelectedTrackIsIn;
 };
 
 #endif /* CRATEFEATURE_H */

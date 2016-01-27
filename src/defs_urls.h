@@ -19,7 +19,7 @@
 
 #define MIXXX_WEBSITE_URL       "http://www.mixxx.org"
 #define MIXXX_SUPPORT_URL       "http://www.mixxx.org/support/"
-#define MIXXX_FEEDBACK_URL      "https://docs.google.com/a/mixxx.org/forms/d/1raQ0WnrdVJYSE5r2tsV4jIRd90oZVrF-TRKWeW2kfEU/viewform"
+#define MIXXX_FEEDBACK_URL      "https://docs.google.com/forms/d/14pLA_aeK0TZUgpfEa6uVLknRX2CBPBPf99gHNHkYgUc/viewform"
 #define MIXXX_TRANSLATION_URL   "https://www.transifex.com/projects/p/mixxxdj/"
 #define MIXXX_MANUAL_URL        "http://mixxx.org/manual/2.0"
 #define MIXXX_SHORTCUTS_URL     "http://mixxx.org/manual/2.0/chapters/appendix.html#keyboard-mapping-table"

@@ -18,11 +18,12 @@
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
+#include "util/version.h"
 
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
-                                     ConfigObject<ConfigValue> *pConfig)
+                                     UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_pControllerManager(controllerManager),
@@ -366,7 +367,7 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     presetDirs.append(presetFileInfo.canonicalPath());
 
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
-            presetPath, ControllerManager::getPresetPaths(m_pConfig));
+        presetPath, ControllerManager::getPresetPaths(m_pConfig));
 
     // Import the preset scripts to the user scripts folder.
     for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
@@ -720,7 +721,7 @@ void DlgPrefController::openScript() {
     if (selectedIndices.isEmpty()) {
          QMessageBox::information(
                     this,
-                    tr("Mixxx"),
+                    Version::applicationName(),
                     tr("Please select a script from the list to open."),
                     QMessageBox::Ok, QMessageBox::Ok);
         return;

@@ -13,21 +13,21 @@ LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
         setStyleSheet(
                 "LaunchImage { background-color: #202020; }"
                 "QLabel { "
-                    "image: url(:/images/mixxx-icon-logo-symbolic.png);"
+                    "image: url(:/images/mixxx-icon-logo-symbolic.svg);"
                     "padding:0;"
                     "margin:0;"
                     "border:none;"
-                    "min-width: 208px;"
+                    "min-width: 236px;"
                     "min-height: 48px;"
-                    "max-width: 208px;"
+                    "max-width: 236px;"
                     "max-height: 48px;"
                 "}"
                 "QProgressBar {"
                     "background-color: #202020; "
                     "border:none;"
-                    "min-width: 208px;"
+                    "min-width: 236px;"
                     "min-height: 3px;"
-                    "max-width: 208px;"
+                    "max-width: 236px;"
                     "max-height: 3px;"
                 "}"
                 "QProgressBar::chunk { background-color: #f3efed; }");
@@ -41,7 +41,7 @@ LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
     m_pProgressBar->setTextVisible(false);
 
     QHBoxLayout* hbox = new QHBoxLayout(this);
-    QVBoxLayout* vbox = new QVBoxLayout(this);
+    QVBoxLayout* vbox = new QVBoxLayout();
     vbox->addStretch();
     vbox->addWidget(label);
     vbox->addWidget(m_pProgressBar);

@@ -2,13 +2,13 @@
 
 #include <QtDebug>
 
-#include "util/types.h"
-#include "util/defs.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
-#include "sampleutil.h"
-#include "soundmanagerutil.h"
 #include "engine/enginemicrophone.h"
+#include "soundio/soundmanagerutil.h"
+#include "util/defs.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 namespace {
 

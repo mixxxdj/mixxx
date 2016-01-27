@@ -4,8 +4,8 @@
 #include "controlpushbutton.h"
 #include "controlobjectslave.h"
 #include "util/math.h"
-#include "playermanager.h"
-#include "basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "mixer/basetrackplayer.h"
 
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
@@ -63,7 +63,7 @@ TrackPointer DeckAttributes::getLoadedTrack() const {
 }
 
 AutoDJProcessor::AutoDJProcessor(QObject* pParent,
-                                 ConfigObject<ConfigValue>* pConfig,
+                                 UserSettingsPointer pConfig,
                                  PlayerManagerInterface* pPlayerManager,
                                  int iAutoDJPlaylistId,
                                  TrackCollection* pTrackCollection)
@@ -626,19 +626,19 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
         return false;
     }
 
-    int trackId = pTrack->getId();
+    TrackId trackId(pTrack->getId());
 
     // Loaded track is not a library track.
-    if (trackId == -1) {
+    if (!trackId.isValid()) {
         return false;
     }
 
     // Get the track id at the top of the playlist.
-    int nextId = m_pAutoDJTableModel->getTrackId(
-            m_pAutoDJTableModel->index(0, 0));
+    TrackId nextId(m_pAutoDJTableModel->getTrackId(
+            m_pAutoDJTableModel->index(0, 0)));
 
     // No track at the top of the queue.
-    if (nextId == -1) {
+    if (!nextId.isValid()) {
         return false;
     }
 

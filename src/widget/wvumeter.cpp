@@ -124,8 +124,7 @@ void WVuMeter::onConnectedControlChanged(double dParameter, double dValue) {
         m_dPeakParameter = 0;
     }
 
-    double msecsElapsed = m_timer.restart() / 1000000.0;
-    updateState(msecsElapsed);
+    updateState(m_timer.restart());
 }
 
 void WVuMeter::setPeak(double parameter) {
@@ -135,7 +134,8 @@ void WVuMeter::setPeak(double parameter) {
     }
 }
 
-void WVuMeter::updateState(double msecsElapsed) {
+void WVuMeter::updateState(mixxx::Duration elapsed) {
+    double msecsElapsed = elapsed.toDoubleMillis();
     // If we're holding at a peak then don't update anything
     m_dPeakHoldCountdownMs -= msecsElapsed;
     if (m_dPeakHoldCountdownMs > 0) {

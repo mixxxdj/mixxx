@@ -1,7 +1,6 @@
 #include "glrgbwaveformwidget.h"
 
-#include "sharedglcontext.h"
-
+#include "waveform/sharedglcontext.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/glwaveformrendererrgb.h"
@@ -51,10 +50,10 @@ void GLRGBWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 
-int GLRGBWaveformWidget::render() {
+mixxx::Duration GLRGBWaveformWidget::render() {
     PerformanceTimer timer;
-    int t1;
-    //int t2, t3;
+    mixxx::Duration t1;
+    //mixxx::Duration t2, t3;
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
@@ -65,5 +64,5 @@ int GLRGBWaveformWidget::render() {
     // glFinish();
     //t3 = timer.restart();
     //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
-    return t1 / 1000; // return timer for painter setup
+    return t1; // return timer for painter setup
 }

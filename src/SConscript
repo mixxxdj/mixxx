@@ -74,6 +74,12 @@ elif build.platform_is_osx:
 else:
         mixxx_bin = env.Program('mixxx', sources)
 
+# For convenience, copy the Mixxx binary out of the build directory to the
+# root. Don't do it on windows because the binary can't run on its own and needs
+# the DLLs present with it.
+if not build.platform_is_windows:
+    Command("../mixxx", mixxx_bin, Copy("$TARGET", "$SOURCE"))
+
 test_bin = None
 def build_tests():
         global test_bin
@@ -81,6 +87,7 @@ def build_tests():
         test_env = env.Clone()
         test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
         test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
+        test_env.Append(CPPPATH="#lib/benchmark/include")
         test_files = [test_env.StaticObject(filename)
                       if filename !='main.cpp' else filename
                       for filename in test_files]
@@ -93,7 +100,13 @@ def build_tests():
         env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
         env.Append(LIBS = 'gmock')
 
+        env.Append(LIBPATH="#lib/benchmark/lib")
+        env.Append(LIBS = 'benchmark')
+
         if build.platform_is_windows:
+                # For SHGetValueA in Google's benchmark library.
+                env.Append(LIBS = 'Shlwapi')
+
                 # TODO(rryan): Build Mixxx core as a shared object and link it
                 # into mixxx and mixxx-test. We could build both in different
                 # environments right now but then automoc and protoc get run in
@@ -166,10 +179,21 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
 #        unix_share_path = flags['prefix'] + "/share"
 #        unix_bin_path   = flags['prefix'] + "/bin"
 
+bundle_pdbs = build.platform_is_windows and (
+        build.build_is_debug or
+        SCons.ARGUMENTS.get('bundle_pdbs', '') in ('yes', 'y', '1'))
+
 #Mixxx binary
 binary_files = [mixxx_bin];
 if test_bin is not None:
         binary_files.append(test_bin)
+        if bundle_pdbs:
+                binary_files.append(
+                        Glob('#' + os.path.join(build.build_dir, 'mixxx-test.pdb')))
+
+if bundle_pdbs:
+        binary_files.append(
+                Glob('#' + os.path.join(build.build_dir, 'mixxx.pdb')))
 
 #Soundsource plugins
 soundsource_plugin_files = soundsource_plugins
@@ -206,8 +230,8 @@ dotdesktop_files = Glob('#res/linux/mixxx.desktop')
 #.appdata.xml file for KDE/GNOME AppStream iniative
 dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
 
-#udev rule file for HID controllers
-hidudev_files = Glob('#res/linux/mixxx-usb-hid.rules')
+#udev rule file for USB HID and Bulk controllers
+hidudev_files = Glob('#res/linux/mixxx.usb.rules')
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx-icon.png')
@@ -220,10 +244,6 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 # TODO: Use reference to SharedLibrary for libsndfile and others, glob only gets
 # all files on 2+ builds after a clean.
 dll_files = []
-bundle_pdbs = build.platform_is_windows and (
-        build.build_is_debug or
-        SCons.ARGUMENTS.get('bundle_pdbs', '') in ('yes', 'y', '1'))
-
 if build.toolchain_is_msvs:
         mixxx_winlib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc90-release')
         # skip the MSVC DLLs incase they're in there too
@@ -257,12 +277,18 @@ qt_imagesformats = depends.Qt.enabled_imageformats(build)
 
 if qt5:
         suffix = 'd.dll' if build.build_is_debug else '.dll'
-        qt_imagesformats = ['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats]
-        imgfmtdll_files.extend(qt_imagesformats)
+        imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+        # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
+        pdbSuffix = 'd.pdb' if (bundle_pdbs and build.build_is_debug) else ''
+        if pdbSuffix:
+                 imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 else:
         suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-        qt_imagesformats = ['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats]
-        imgfmtdll_files.extend(qt_imagesformats)
+        imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+        # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
+        pdbSuffix = 'd4.pdb' if (bundle_pdbs and build.build_is_debug) else ''
+        if pdbSuffix:
+                imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 
 sqldll_files = []
 if int(flags.get('qt_sqlite_plugin', 0)):
@@ -311,7 +337,11 @@ if build.platform_is_linux or build.platform_is_bsd:
                 docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
                 icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
                 promotracks = env.Install(os.path.join(unix_share_path, 'mixxx', 'promo'), promotracks_files)
-                hidudev = env.Install('/etc/udev/rules.d', hidudev_files)
+
+                # NOTE(rryan): Hack to detect when we're Debian packaging.
+                building_debian_package = 'debian/tmp/usr' in install_root
+                udev_root = '/etc/udev/rules.d'
+                hidudev = env.Install(udev_root, hidudev_files)
 
                 #Makes each of those Install builders get fired off when you run "scons install" :)
                 env.Alias('install', binary)
@@ -327,7 +357,8 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', icon)
                 env.Alias('install', promotracks)
                 env.Alias('install', vamp_plugin)
-                if os.access('/etc/udev/rules.d', os.W_OK):
+
+                if not building_debian_package and os.access(udev_root, os.W_OK):
                         env.Alias('install', hidudev)
 
                 #Delete the old Mixxx installation (because SCONS won't overwrite it)
@@ -681,10 +712,10 @@ def BuildUbuntuPackage(target, source, env):
 
         ubuntu_distros = ubuntu_distros.split(',')
 
-        # Big hack for PPA upload. We need LP to believe that our original
+        # Big hack for beta PPA upload. We need LP to believe that our original
         # package version is always changing otherwise it will reject our orig
         # source tarball.
-        if ubuntu_ppa is not None:
+        if ubuntu_ppa and 'mixxxbetas' in ubuntu_ppa:
                 mixxx_version = '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
 
         # Destroy ubuntu/ and create it
@@ -742,6 +773,18 @@ def BuildUbuntuPackage(target, source, env):
         print "* Copying Debian build directory from build/debian to debian (cwd: %s)" % os.getcwd()
         print
         os.system('cp -r build/debian .')
+        os.system('cp res/linux/mixxx.usb.rules ./debian/mixxx.mixxx-usb.udev')
+
+        # Replace environment variables in the rules file.
+        # TODO(rryan) something more elegant? I don't know a better way. When
+        # Ubuntu build servers build us we don't get the chance to pass
+        # environment variables in.
+        with open('debian/rules', 'r') as fr:
+                rules = fr.read()
+                rules = rules.replace('$(MIXXX_BUILD)', build.build)
+
+                with open('debian/rules', 'w') as fw:
+                        fw.write(rules)
 
         for ubuntu_distro in ubuntu_distros:
                 # if a control.$distro file exists, use it
@@ -769,13 +812,15 @@ def BuildUbuntuPackage(target, source, env):
                 print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
                 print
 
-                command = ["ARCH=%s" % arch,
+                command = ["MIXXX_BUILD=%s" % build.build,
+                           "ARCH=%s" % arch,
                            "DIST=%s" % ubuntu_distro]
 
                 if package_target == 'source':
                         # TODO(rryan) we have to figure out the key-signing situation
                         # here.
-                        command.extend(['debuild', '-S', '-sa'])
+                        # Preserve the MIXXX_BUILD environment variable.
+                        command.extend(['debuild', '-eMIXXX_BUILD', '-S', '-sa',])
                 else:
                         command.extend(['pdebuild'])
                 result = os.system(' '.join(command))

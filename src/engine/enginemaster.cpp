@@ -1,53 +1,35 @@
-/***************************************************************************
-                          enginemaster.cpp  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+#include "engine/enginemaster.h"
 
 #include <QtDebug>
 #include <QList>
 #include <QPair>
 
-#include "controlpushbutton.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
+#include "controlaudiotaperpot.h"
 #include "controlaudiotaperpot.h"
 #include "controlpotmeter.h"
-#include "controlaudiotaperpot.h"
+#include "controlpushbutton.h"
+#include "effects/effectsmanager.h"
+#include "engine/channelmixer.h"
+#include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
-#include "engine/engineworkerscheduler.h"
-#include "engine/enginedeck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
+#include "engine/enginedeck.h"
+#include "engine/enginedelay.h"
 #include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
+#include "engine/engineworkerscheduler.h"
 #include "engine/enginexfader.h"
-#include "engine/enginedelay.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
-#include "sampleutil.h"
-#include "engine/effects/engineeffectsmanager.h"
-#include "effects/effectsmanager.h"
+#include "mixer/playermanager.h"
+#include "util/defs.h"
+#include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "util/defs.h"
-#include "playermanager.h"
-#include "engine/channelmixer.h"
 
-
-
-EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
+EngineMaster::EngineMaster(UserSettingsPointer _config,
                            const char* group,
                            EffectsManager* pEffectsManager,
                            bool bEnableSidechain,
@@ -184,7 +166,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "sidechainEnabled"));
-
 
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }

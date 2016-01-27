@@ -65,7 +65,7 @@ QString BeatFactory::getPreferredSubVersion(
             it.key().contains(kSubVersionFragmentSeparator) ||
             it.value().contains(kSubVersionKeyValueSeparator) ||
             it.value().contains(kSubVersionFragmentSeparator)) {
-            qDebug() << "ERROR: Your analyser key/value contains invalid characters:"
+            qDebug() << "ERROR: Your analyzer key/value contains invalid characters:"
                      << it.key() << ":" << it.value() << "Skipping.";
             continue;
         }

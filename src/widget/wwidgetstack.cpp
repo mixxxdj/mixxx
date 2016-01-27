@@ -6,10 +6,9 @@ WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
                                                        ControlObject* pControl,
                                                        int index)
         : QObject(pParent),
-          m_control(pControl ? pControl->getKey() : ConfigKey()),
+          m_control(pControl ? pControl->getKey() : ConfigKey(), this),
           m_index(index) {
-    connect(&m_control, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueChanged(double)));
+    m_control.connectValueChanged(SLOT(slotValueChanged(double)));
 }
 
 WidgetStackControlListener::~WidgetStackControlListener() {
@@ -25,9 +24,9 @@ void WidgetStackControlListener::slotValueChanged(double v) {
 
 void WidgetStackControlListener::onCurrentWidgetChanged(int index) {
     if (index == m_index && m_control.get() == 0.0) {
-        m_control.slotSet(1.0);
+        m_control.set(1.0);
     } else if (index != m_index && m_control.get() != 0.0) {
-        m_control.slotSet(0.0);
+        m_control.set(0.0);
     }
 }
 
@@ -37,17 +36,19 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
                            ControlObject* pCurrentPageControl)
         : QStackedWidget(pParent),
           WBaseWidget(this),
-          m_nextControl(pNextControl ? pNextControl->getKey() : ConfigKey()),
-          m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()),
+          m_nextControl(
+                  pNextControl ?
+                  pNextControl->getKey() : ConfigKey(), this),
+          m_prevControl(
+                  pPrevControl ?
+                  pPrevControl->getKey() : ConfigKey(), this),
           m_currentPageControl(
                   pCurrentPageControl ?
-                  pCurrentPageControl->getKey() : ConfigKey()) {
-    connect(&m_nextControl, SIGNAL(valueChanged(double)),
-            this, SLOT(onNextControlChanged(double)));
-    connect(&m_prevControl, SIGNAL(valueChanged(double)),
-            this, SLOT(onPrevControlChanged(double)));
-    connect(&m_currentPageControl, SIGNAL(valueChanged(double)),
-            this, SLOT(onCurrentPageControlChanged(double)));
+                  pCurrentPageControl->getKey() : ConfigKey(), this) {
+    m_nextControl.connectValueChanged(SLOT(onNextControlChanged(double)));
+    m_prevControl.connectValueChanged(SLOT(onPrevControlChanged(double)));
+    m_currentPageControl.connectValueChanged(
+            SLOT(onCurrentPageControlChanged(double)));
     connect(&m_showMapper, SIGNAL(mapped(int)),
             this, SLOT(showIndex(int)));
     connect(&m_hideMapper, SIGNAL(mapped(int)),

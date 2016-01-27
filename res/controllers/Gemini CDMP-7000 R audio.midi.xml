@@ -1,6 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset mixxxVersion="" schemaVersion="1">
-    <info/>
+<MixxxControllerPreset mixxxVersion="1.11.0+" schemaVersion="1">
+    <info>
+      <name>Gemini CDMP-7000 R</name>
+      <author>djtrinidad</author>
+      <description>Gemini CDMP-7000 mapping for Deck 2</description>
+      <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=6535</forums>
+    </info>
     <controller id="gemini">
         <scriptfiles>
             <file functionprefix="cdmp7000" filename="Gemini-CDMP-7000-scripts.js"/>

@@ -1,3 +1,5 @@
+#include "engine/sidechain/enginenetworkstream.h"
+
 #ifdef __WINDOWS__
 #include <windows.h>
 #include "util/performancetimer.h"
@@ -12,11 +14,7 @@ typedef VOID (WINAPI *PgGetSystemTimeFn)(LPFILETIME);
 static PgGetSystemTimeFn s_pfpgGetSystemTimeFn = NULL;
 #endif
 
-
-
-#include "engine/sidechain/enginenetworkstream.h"
-
-#include "sampleutil.h"
+#include "util/sample.h"
 
 const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Related chunk sizes:
@@ -215,12 +213,12 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
         static PerformanceTimer timerSinceInc;
         GetSystemTimeAsFileTime(&ft);
         qint64 now = ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
-        if(now == oldNow) {
+        if (now == oldNow) {
             // timer was not incremented since last call (< 15 ms)
             // Add time since last function call after last increment
             // This reduces the jitter < one call cycle which is sufficient
             LARGE_INTEGER li;
-            now += timerSinceInc.elapsed() / 1000;
+            now += timerSinceInc.elapsed().toIntegerMicros();
         } else {
             // timer was incremented
             LARGE_INTEGER li;

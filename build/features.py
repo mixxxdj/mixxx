@@ -6,6 +6,25 @@ from mixxx import Feature
 import SCons.Script as SCons
 import depends
 
+class OpenGLES(Feature):
+	def description(self):
+		return "OpenGL-ES >= 2.0 support [Experimental]"
+
+	def enabled(self, build):
+		build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
+		return int(build.flags['opengles'])
+
+	def add_options(self, build, vars):
+		vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
+
+	def configure(self, build, conf):
+		if not self.enabled(build):
+          		return
+		if build.flags['opengles']:
+			build.env.Append(CPPDEFINES='__OPENGLES__')
+
+	def sources(self, build):
+		return []
 
 class HSS1394(Feature):
     def description(self):
@@ -180,7 +199,7 @@ class Mad(Feature):
         build.env.Append(CPPDEFINES='__MAD__')
 
     def sources(self, build):
-        return ['soundsourcemp3.cpp']
+        return ['sources/soundsourcemp3.cpp']
 
 
 class CoreAudio(Feature):
@@ -215,7 +234,7 @@ class CoreAudio(Feature):
         build.env.Append(CPPDEFINES='__COREAUDIO__')
 
     def sources(self, build):
-        return ['soundsourcecoreaudio.cpp',
+        return ['sources/soundsourcecoreaudio.cpp',
                 '#lib/apple/CAStreamBasicDescription.cpp']
 
 
@@ -323,7 +342,7 @@ class VinylControl(Feature):
     def sources(self, build):
         sources = ['vinylcontrol/vinylcontrol.cpp',
                    'vinylcontrol/vinylcontrolxwax.cpp',
-                   'dlgprefvinyl.cpp',
+                   'preferences/dialog/dlgprefvinyl.cpp',
                    'vinylcontrol/vinylcontrolsignalwidget.cpp',
                    'vinylcontrol/vinylcontrolmanager.cpp',
                    'vinylcontrol/vinylcontrolprocessor.cpp',
@@ -344,7 +363,7 @@ class Vamp(Feature):
     INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
 
     def description(self):
-        return "Vamp Analysers support"
+        return "Vamp Analyzer support"
 
     def enabled(self, build):
         build.flags['vamp'] = util.get_flags(build.env, 'vamp', 1)
@@ -359,6 +378,8 @@ class Vamp(Feature):
         if not self.enabled(build):
             return
 
+        build.env.Append(CPPDEFINES='__VAMP__')
+
         # If there is no system vamp-hostdk installed, then we'll directly link
         # the vamp-hostsdk.
         if not conf.CheckLib(['vamp-hostsdk']):
@@ -368,9 +389,8 @@ class Vamp(Feature):
 
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
-            # Optionally link libdl and libX11. Required for some distros.
+            # Optionally link libdl Required for some distros.
             conf.CheckLib(['dl', 'libdl'])
-            conf.CheckLib(['X11', 'libX11'])
 
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
@@ -381,10 +401,13 @@ class Vamp(Feature):
                 'pkg-config fftw3 --silence-errors --cflags --libs')
 
     def sources(self, build):
-        sources = ['vamp/vampanalyser.cpp',
-                   'vamp/vamppluginloader.cpp',
-                   'analyserbeats.cpp',
-                   'dlgprefbeats.cpp']
+        sources = ['analyzer/vamp/vampanalyzer.cpp',
+                   'analyzer/vamp/vamppluginloader.cpp',
+                   'analyzer/analyzerbeats.cpp',
+                   'analyzer/analyzerkey.cpp',
+                   'preferences/dialog/dlgprefbeats.cpp',
+                   'preferences/dialog/dlgprefkey.cpp']
+
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
             sources.extend(path % hostsdk_src_path for path in
@@ -429,8 +452,8 @@ class ModPlug(Feature):
             raise Exception('Could not find libmodplug shared library.')
 
     def sources(self, build):
-        depends.Qt.uic(build)('dlgprefmodplugdlg.ui')
-        return ['soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
+        depends.Qt.uic(build)('preferences/dialog/dlgprefmodplugdlg.ui')
+        return ['sources/soundsourcemodplug.cpp', 'preferences/dialog/dlgprefmodplug.cpp']
 
 
 class FAAD(Feature):
@@ -754,6 +777,7 @@ class TestSuite(Feature):
 
         env = test_env
         SCons.Export('env')
+        SCons.Export('build')
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
@@ -763,6 +787,12 @@ class TestSuite(Feature):
         test_env['LIB_OUTPUT'] = '#/lib/gmock-1.7.0/lib'
 
         env.SConscript(env.File('SConscript', gmock_dir))
+
+        # Build the benchmark library
+        test_env.Append(CPPPATH="#lib/benchmark/include")
+        benchmark_dir = test_env.Dir("#lib/benchmark")
+        test_env['LIB_OUTPUT'] = '#/lib/benchmark/lib'
+        env.SConscript(env.File('SConscript', benchmark_dir))
 
         return []
 
@@ -795,8 +825,8 @@ class Shoutcast(Feature):
             conf.CheckLib('ws2_32')
 
     def sources(self, build):
-        depends.Qt.uic(build)('dlgprefshoutcastdlg.ui')
-        return ['dlgprefshoutcast.cpp',
+        depends.Qt.uic(build)('preferences/dialog/dlgprefshoutcastdlg.ui')
+        return ['preferences/dialog/dlgprefshoutcast.cpp',
                 'shoutcast/shoutcastmanager.cpp',
                 'engine/sidechain/engineshoutcast.cpp']
 
@@ -828,12 +858,6 @@ class Opus(Feature):
 
         # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
-        if not conf.CheckLib(['opus', 'libopus']):
-            if explicit:
-                raise Exception('Could not find libopus.')
-            else:
-                build.flags['opus'] = 0
-            return
         if not conf.CheckLib(['opusfile', 'libopusfile']):
             if explicit:
                 raise Exception('Could not find libopusfile.')
@@ -847,12 +871,12 @@ class Opus(Feature):
             build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
 
     def sources(self, build):
-        return ['soundsourceopus.cpp']
+        return ['sources/soundsourceopus.cpp']
 
 
 class FFMPEG(Feature):
     def description(self):
-        return "FFMPEG/LibAV support"
+        return "FFmpeg/Avconv support"
 
     def enabled(self, build):
         build.flags['ffmpeg'] = util.get_flags(build.env, 'ffmpeg', 0)
@@ -861,16 +885,16 @@ class FFMPEG(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('ffmpeg', 'Set to 1 to enable FFMPEG/Libav support \
-                           (supported FFMPEG 0.11-2.0 and Libav 0.8.x-9.x)', 0)
+        vars.Add('ffmpeg', 'Set to 1 to enable FFmpeg/Avconv support \
+                           (supported FFmpeg 0.11-2.x and Avconv 0.8.x-11.x)', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
-        # Supported version are FFMPEG 0.11-2.0 and Libav 0.8.x-9.x
-        # FFMPEG is multimedia library that can be found http://ffmpeg.org/
-        # Libav is fork of FFMPEG that is used mainly in Debian and Ubuntu
+        # Supported version are FFmpeg 0.11-2.x and Avconv 0.8.x-11.x
+        # FFmpeg is multimedia library that can be found http://ffmpeg.org/
+        # Avconv is fork of FFmpeg that is used mainly in Debian and Ubuntu
         # that can be found http://libav.org
         if build.platform_is_linux or build.platform_is_osx \
                 or build.platform_is_bsd:
@@ -885,12 +909,12 @@ class FFMPEG(Feature):
                                 'It can be separated from main package so'
                                 'check your operating system packages.')
 
-            # Needed to build new FFMPEG
+            # Needed to build new FFmpeg
             build.env.Append(CCFLAGS='-D__STDC_CONSTANT_MACROS')
             build.env.Append(CCFLAGS='-D__STDC_LIMIT_MACROS')
             build.env.Append(CCFLAGS='-D__STDC_FORMAT_MACROS')
 
-            # Grabs the libs and cflags for ffmpeg
+            # Grabs the libs and cflags for FFmpeg
             build.env.ParseConfig('pkg-config libavcodec --silence-errors \
                                   --cflags --libs')
             build.env.ParseConfig('pkg-config libavformat --silence-errors \
@@ -898,49 +922,8 @@ class FFMPEG(Feature):
             build.env.ParseConfig('pkg-config libavutil --silence-errors \
                                    --cflags --libs')
 
-            # What are libavresample and libswresample??
-            # Libav forked from FFMPEG in version 0.10 and there wasn't any
-            # separated library for resampling audio. There we resample API
-            # (actually two and they are both a big mess). API is now marked as
-            # depricated but both are  still available in current version
-            # FFMPEG up to version 1.2 or Libav up to version 9
-            # In some point developers FFMPEG decided to make libswresample
-            # (Software Resample). Libav people also noticed API problem and
-            # created libavresample. After that libavresample were imported in
-            # FFMPEG and it's API/ABI compatible with LibAV.
-            # If you have FFMPEG version 0.10 or Libav version 0.8.x your
-            # resampling is done through inner API
-            # FFMPEG 0.11 Have libswresample but ain't libavresample
-            # FFMPEG 1.0 and above have libswresample and libavresample
-            # Libav after 0.8.x and between 9 have some libavresample
-            # Libav 9 have libavresample have libavresample
-            # Most Linux systems have separated packages for libswresample/
-            # libavresample so you can have them installed or not in you
-            # system most use libavresample.
-            # Ubuntu/Debian only have Libav 0.8.x available (There is PPA for
-            # libav 9)
-            # Fedora uses newest FFMPEG 1.x/2.x (With compability libs)
-            # openSUSE uses newest FFMPEG 1.x/2.x (With compability libs)
-            # Mac OS X does have FFMPEG available (with libswresample) from
-            # macports or homebrew
-            # Microsoft Windows can download FFMPEG or Libav resample libraries
-
-            if conf.CheckForPKG('libavresample', '0.0.3'):
-                build.env.ParseConfig('pkg-config libavresample \
-                                       --silence-errors --cflags --libs')
-                build.env.Append(CPPDEFINES='__FFMPEGFILE__')
-                build.env.Append(CPPDEFINES='__LIBAVRESAMPLE__')
-                self.status = "Enabled -- with libavresample"
-            elif conf.CheckForPKG('libswresample', '0.0.1'):
-                build.env.ParseConfig('pkg-config libswresample \
-                                       --silence-errors --cflags --libs')
-                build.env.Append(CPPDEFINES='__FFMPEGFILE__')
-                build.env.Append(CPPDEFINES='__LIBSWRESAMPLE__')
-                self.status = "Enabled -- with libswresample"
-            else:
-                build.env.Append(CPPDEFINES='__FFMPEGFILE__')
-                build.env.Append(CPPDEFINES='__FFMPEGOLDAPI__')
-                self.status = "Enabled --  with old resample API"
+            build.env.Append(CPPDEFINES='__FFMPEGFILE__')
+            self.status = "Enabled"
 
         else:
             # aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev
@@ -967,7 +950,7 @@ class FFMPEG(Feature):
             build.env.Append(LIBS='ogg')
             build.env.Append(CPPDEFINES='__FFMPEGFILE__')
 
-        # Add new path for ffmpeg header files.
+        # Add new path for FFmpeg header files.
         # Non-crosscompiled builds need this too, don't they?
         if build.crosscompile and build.platform_is_windows \
                 and build.toolchain_is_gnu:
@@ -975,7 +958,7 @@ class FFMPEG(Feature):
                                                   'include', 'ffmpeg'))
 
     def sources(self, build):
-        return ['soundsourceffmpeg.cpp',
+        return ['sources/soundsourceffmpeg.cpp',
                 'encoder/encoderffmpegresample.cpp',
                 'encoder/encoderffmpegcore.cpp',
                 'encoder/encoderffmpegmp3.cpp',
@@ -1130,6 +1113,9 @@ class Optimize(Feature):
                         # the sse flags are not set by default on 32 bit builds
                         # but are not supported on arm builds
                         build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = "portable"
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
                 else:
                     self.status = "portable"
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
@@ -1154,6 +1140,9 @@ class Optimize(Feature):
                     # the sse flags are not set by default on 32 bit builds
                     # but are not supported on arm builds
                     build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = "portable"
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
             elif optimize_level == Optimize.LEVEL_LEGACY:
                 if build.architecture_is_x86:
                     self.status = "legacy: pure i386 code"

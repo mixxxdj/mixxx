@@ -153,8 +153,8 @@ class ScannerGlobal {
         m_timer.start();
     }
 
-    // Elapsed time in nanoseconds since startTimer was called.
-    qint64 timerElapsed() {
+    // Elapsed time since startTimer was called.
+    mixxx::Duration timerElapsed() {
         return m_timer.elapsed();
     }
 

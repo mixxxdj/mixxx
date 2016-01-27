@@ -1,0 +1,139 @@
+# 
+# Translators:
+# Ferran Pujol Camins <ferranpujolcamins@gmail.com>, 2016
+# Josep Maria Antolin Segura <josepma@gmail.com>, 2016
+# S.Brandt <s.brandt@mixxx.org>, 2016
+msgid ""
+msgstr ""
+"Project-Id-Version: Mixxx DJ Windows installer\n"
+"PO-Revision-Date: 2016-01-09 20:21+0000\n"
+"Last-Translator: Sébastien BLAISOT <sebastien@blaisot.org>\n"
+"Language-Team: Catalan (Spain) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ca_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ca_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#.  Programm informations
+msgctxt "ApplicationName"
+msgid "Mixxx"
+msgstr "Mixxx"
+
+msgctxt "ManufacturerName"
+msgid "Mixxx"
+msgstr "Mixxx"
+
+msgctxt "ManufacturerFullName"
+msgid "The Mixxx Development Team"
+msgstr "L'equip de desenvolupadors del Mixxx"
+
+msgctxt "ProductDescription"
+msgid "Open-source Digital DJ software"
+msgstr "Programari de DJ digital de codi obert"
+
+msgctxt "Comments"
+msgid "Installs Mixxx"
+msgstr "Instal·la el Mixxx"
+
+#.  Error messages
+#.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
+msgctxt "OS2Old"
+msgid "This product requires Windows XP or above."
+msgstr "Aquesta aplicació requereix Windows XP o una versió més recent."
+
+msgctxt "NewerInstalled"
+msgid "The same or a newer version of this product is already installed."
+msgstr "Ja teniu instal·lada aquesta versió del Mixxx o una de més recent."
+
+msgctxt "x64VersionRequired"
+msgid ""
+"You need to install the 64-bit version of this product on 64-bit Windows."
+msgstr "Heu d'instal·lar la versió de 64 bits d'aquest producte en un Windows de 64 bits."
+
+msgctxt "x86VersionRequired"
+msgid ""
+"You need to install the 32-bit version of this product on 32-bit Windows."
+msgstr "Heu d'instal·lar la versió de 32 bits d'aquest producte en un Windows de 32 bits."
+
+msgctxt "x86VersionWarning"
+msgid ""
+"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
+"We recommend using the 64-bit version for better performance.\r\n"
+"You can download the 64-bit installation package from http://mixxx.org/download/"
+msgstr "Esteu apunt d'instal·lar la versió de 32 bits en un sistema operatiu de 64 bits.\nRecomanem utilitzar la versió de 64 bits per a un millor rendiment.\nPodeu descarregar l'instal·lador de la versió de 64 bits des de http://mixxx.org/download/"
+
+msgctxt "XPWarning"
+msgid ""
+"You are installing Mixxx on an outdated operating system. Some functions may"
+" not work well or at all. We recommend upgrading your operating system."
+msgstr "Esteu instal·lant el Mixxx en un sistema operatiu obsolet. Algunes de les funcionalitats poden no funcionar correctament. Recomanem actualitzar el sistema operatiu."
+
+msgctxt "bitWidthMismatch32"
+msgid ""
+"You are about to install the 32-bit version but a 64-bit one is already "
+"installed. This can lead to undesired behavior. Please un-install the "
+"existing Mixxx first, or download the 64-bit installation package to upgrade"
+" (unless you know exactly what you are doing.)"
+msgstr "Esteu a punt d'instal·lar la versió de 32 bits tot i que teniu instal·lada una versió de 64 bits. Això pot provocar un comportament no desitjat. Si us plau, desinstal·leu la versió existent del Mixxx primer, o bé descarregueu l'instal·lador de 64 bits per a actualitzar la versió (a no ser que sapigueu exactament el que esteu fent)."
+
+msgctxt "bitWidthMismatch64"
+msgid ""
+"You are about to install the 64-bit version but a 32-bit one is already "
+"installed. This can lead to undesired behavior. Please un-install the "
+"existing Mixxx first, or download the 32-bit installation package to upgrade"
+" (unless you know exactly what you are doing.)"
+msgstr "Esteu a punt d'instal·lar la versió de 64 bits tot i que teniu instal·lada una versió de 32 bits. Això pot provocar un comportament no desitjat. Si us plau, desinstal·leu la versió existent del Mixxx primer, o bé descarregueu l'instal·lador de 32 bits per a actualitzar la versió (a no ser que sapigueu exactament el que esteu fent)."
+
+msgctxt "OlderVersionFound"
+msgid ""
+"An older version of Mixxx has been detected. As we changed installer, we can"
+" not smoothly upgrade. Please uninstall older version before installing this"
+" one."
+msgstr "Hem detectat una versió anterior del Mixxx. Degut a que hem canviat l'instal·lador, no podem portar a terme l'actualització. És necessari que desinstal·leu la versió anterior abans d'instal·lar aquesta nova versió."
+
+#.  Custom Warning Dialog
+msgctxt "WarningDlgTitle"
+msgid "{\\WixUI_Font_Title}Warning"
+msgstr "{\\WixUI_Font_Title}Avís"
+
+#.  Features translations
+msgctxt "FeatureCompleteDescription"
+msgid "The complete package."
+msgstr "El paquet complet."
+
+msgctxt "FeatureMainProgramTitle"
+msgid "Core application"
+msgstr "L'aplicació."
+
+msgctxt "FeatureMainProgramDescription"
+msgid "The core Mixxx application including controller presets."
+msgstr "L'aplicació Mixxx incloent les preconfiguracions de controladors."
+
+msgctxt "FeatureDesktopShortcutTitle"
+msgid "Desktop Shortcut"
+msgstr "Accés directe des de l'Escriptori"
+
+msgctxt "FeatureDesktopShortcutDescription"
+msgid "Add a shortcut to Mixxx on your desktop"
+msgstr "Afegeix un accés directe al Mixxx al vostre escriptori"
+
+msgctxt "FeatureManualTitle"
+msgid "User Manual"
+msgstr "Manual d'usuari"
+
+msgctxt "FeatureManualDescription"
+msgid ""
+"The Mixxx user manual in PDF form, also available at "
+"http://mixxx.org/manual/"
+msgstr "El Manual d'usuari del Mixxx en format PDF, també disponible des de http://mixxx.org/manual/"
+
+msgctxt "FeatureTranslationsTitle"
+msgid "Translations"
+msgstr "Traduccions"
+
+msgctxt "FeatureTranslationsDescription"
+msgid ""
+"Resource files that allow Mixxx to display in alternate languages, other "
+"than US english"
+msgstr "Fitxers de recursos addicionals que permeten mostrar el Mixxx en idiomes alternatius a l'anglès nordamericà."
