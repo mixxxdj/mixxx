@@ -239,23 +239,6 @@ void LegacySkinParser::freeChannelStrings() {
     }
 }
 
-bool LegacySkinParser::compareConfigKeys(QDomNode node, QString key)
-{
-    QDomNode n = node;
-
-    // Loop over each <Connection>, check if it's ConfigKey matches key
-    while (!n.isNull())
-    {
-        n = m_pContext->selectNode(n, "Connection");
-        if (!n.isNull())
-        {
-            if  (m_pContext->selectString(n, "ConfigKey").contains(key))
-                return true;
-        }
-    }
-    return false;
-}
-
 SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     QDomNode manifest_node = skinDocument.namedItem("manifest");
     SkinManifest manifest;
