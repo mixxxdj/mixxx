@@ -650,8 +650,8 @@ void MixxxMainWindow::initializeKeyboard() {
     // Check first in user's Mixxx directory
     QString userKeyboard = QDir(m_cmdLineArgs.getSettingsPath()).filePath("Custom.kbd.cfg");
 
-    //Empty keyboard configuration
-    m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>("");
+    // Empty keyboard configuration
+    m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>(QString());
 
     if (QFile::exists(userKeyboard)) {
         qDebug() << "Found and will use custom keyboard preset" << userKeyboard;

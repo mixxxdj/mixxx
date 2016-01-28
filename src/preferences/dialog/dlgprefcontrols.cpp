@@ -496,8 +496,6 @@ void DlgPrefControls::slotSetRateRange(int pos) {
 void DlgPrefControls::slotSetRateRangePercent (int rateRangePercent) {
     double rateRange = rateRangePercent / 100.;
 
-    qDebug() << "slotSetRateRangePercent" << rateRange;
-
     // Set rate range for every group
     foreach (ControlObjectSlave* pControl, m_rateRangeControls) {
         pControl->set(rateRange);
