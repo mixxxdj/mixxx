@@ -92,7 +92,7 @@ mixxx::Duration PerformanceTimer::restart()
     return mixxx::Duration::fromNanos(absoluteToNSecs(t1-start));
 }
 
-mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
     return mixxx::Duration::fromNanos(absoluteToNSecs(t1 - timer.t1));
 }
@@ -127,7 +127,7 @@ mixxx::Duration PerformanceTimer::restart()
     return mixxx::Duration::fromNanos(getTimeFromTick(t1 - start));
 }
 
-mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
     return mixxx::Duration::fromNanos(getTimeFromTick(t1 - timer.t1));
 }
