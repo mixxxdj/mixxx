@@ -1041,6 +1041,12 @@ void MixxxMainWindow::rebootMixxxView() {
     QPoint initPosition = pos();
     QSize initSize = size();
 
+    // We need to tell the menu bar that we are about to delete the old skin and
+    // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
+    // that need to be deleted -- otherwise we can't tell what features the skin
+    // supports since the controls from the previous skin will be left over.
+    m_pMenuBar->onNewSkinAboutToLoad();
+
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();

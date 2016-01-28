@@ -20,6 +20,7 @@ class VisibilityControlConnection : public QObject {
     virtual ~VisibilityControlConnection();
 
   private slots:
+    void slotClearControl();
     void slotReconnectControl();
     void slotControlChanged();
     void slotActionToggled(bool toggle);
@@ -42,6 +43,7 @@ class WMainMenuBar : public QMenuBar {
     void onLibraryScanFinished();
     void onRecordingStateChange(bool recording);
     void onBroadcastingStateChange(bool broadcasting);
+    void onNewSkinAboutToLoad();
     void onNewSkinLoaded();
     void onDeveloperToolsHidden();
     void onDeveloperToolsShown();
@@ -72,6 +74,7 @@ class WMainMenuBar : public QMenuBar {
     void internalLibraryScanActive(bool active);
     void internalDeveloperToolsStateChange(bool visible);
     void internalOnNewSkinLoaded();
+    void internalOnNewSkinAboutToLoad();
 
   private slots:
     void slotDeveloperStatsExperiment(bool enable);

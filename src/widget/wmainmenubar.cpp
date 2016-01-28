@@ -617,6 +617,10 @@ void WMainMenuBar::onNewSkinLoaded() {
     emit(internalOnNewSkinLoaded());
 }
 
+void WMainMenuBar::onNewSkinAboutToLoad() {
+    emit(internalOnNewSkinAboutToLoad());
+}
+
 void WMainMenuBar::onRecordingStateChange(bool recording) {
     emit(internalRecordingStateChange(recording));
 }
@@ -676,6 +680,8 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
             new VisibilityControlConnection(this, pAction, key);
     connect(this, SIGNAL(internalOnNewSkinLoaded()),
             pConnection, SLOT(slotReconnectControl()));
+    connect(this, SIGNAL(internalOnNewSkinAboutToLoad()),
+            pConnection, SLOT(slotClearControl()));
 }
 
 void WMainMenuBar::onNumberOfDecksChanged(int decks) {
@@ -702,6 +708,11 @@ VisibilityControlConnection::VisibilityControlConnection(
 VisibilityControlConnection::~VisibilityControlConnection() {
 }
 
+void VisibilityControlConnection::slotClearControl() {
+    m_pControl.reset();
+    m_pAction->setEnabled(false);
+}
+
 void VisibilityControlConnection::slotReconnectControl() {
     m_pControl.reset(new ControlObjectSlave(m_key, this));
     m_pControl->connectValueChanged(SLOT(slotControlChanged()));
@@ -710,9 +721,13 @@ void VisibilityControlConnection::slotReconnectControl() {
 }
 
 void VisibilityControlConnection::slotControlChanged() {
-    m_pAction->setChecked(m_pControl->toBool());
+    if (m_pControl) {
+        m_pAction->setChecked(m_pControl->toBool());
+    }
 }
 
 void VisibilityControlConnection::slotActionToggled(bool toggle) {
-    m_pControl->set(toggle ? 1.0 : 0.0);
+    if (m_pControl) {
+        m_pControl->set(toggle ? 1.0 : 0.0);
+    }
 }
