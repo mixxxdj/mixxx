@@ -86,7 +86,9 @@ static bool sDebug = false;
 
 ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
                                     bool* created) {
-    ControlObject* pControl = ControlObject::getControl(key);
+    // Don't warn if the control doesn't exist. Skins use this to create
+    // controls.
+    ControlObject* pControl = ControlObject::getControl(key, false);
 
     if (pControl) {
         if (created) {
@@ -96,9 +98,11 @@ ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
     }
 
     // TODO(rryan): Make this configurable by the skin.
-    qWarning() << "Requested control does not exist:"
-               << QString("%1,%2").arg(key.group, key.item)
-               << "Creating it.";
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        qWarning() << "Requested control does not exist:"
+                   << QString("%1,%2").arg(key.group, key.item)
+                   << "Creating it.";
+    }
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
     ControlPushButton* controlButton = new ControlPushButton(key, bPersist);
