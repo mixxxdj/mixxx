@@ -1091,6 +1091,10 @@ class MixxxCore(Feature):
             # Default GNU Options
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
+            # Quiet down Clang warnings about inconsistent use of override
+            # keyword until Qt fixes qt_metacall.
+            if build.compiler_is_clang:
+                build.env.Append(CCFLAGS='-Wno-inconsistent-missing-override')
             build.env.Append(CCFLAGS='-Wextra')
 
             # Always generate debugging info.
