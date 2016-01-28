@@ -1011,7 +1011,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 
         if (!m_invalidTimeInfoWarned) {
             qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
-                       << "waveform by CPU Timer"
+                       << "syncing waveforms with a CPU Timer"
                        << "DacTime:" << timeInfo->outputBufferDacTime
                        << "EntrytoDac:" << callbackEntrytoDacSecs;
             m_invalidTimeInfoWarned = true;
