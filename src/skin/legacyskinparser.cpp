@@ -84,8 +84,11 @@ QMutex LegacySkinParser::s_safeStringMutex;
 
 static bool sDebug = false;
 
-ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
+ControlObject* controlFromConfigKey(const ConfigKey& key, bool bPersist,
                                     bool* created) {
+    if (key.isEmpty()) {
+        return nullptr;
+    }
     // Don't warn if the control doesn't exist. Skins use this to create
     // controls.
     ControlObject* pControl = ControlObject::getControl(key, false);
@@ -113,7 +116,7 @@ ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
     return controlButton;
 }
 
-ControlObject* LegacySkinParser::controlFromConfigNode(QDomElement element,
+ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& element,
                                                        const QString& nodeName,
                                                        bool* created) {
     if (element.isNull() || !m_pContext->hasNode(element, nodeName)) {
@@ -317,38 +320,43 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
 
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
-        if (ok) {
-            ConfigKey configKey = ConfigKey::parseCommaSeparated(
-                    QString::fromStdString(attribute.config_key()));
-            // Set the specified attribute, possibly creating the control
-            // object in the process.
-            bool created = false;
-            // If there is no existing value for this CO in the skin,
-            // update the config with the specified value. If the attribute
-            // is set to persist, the value will be read when the control is created.
-            // TODO: This is a hack, but right now it's the cleanest way to
-            // get a CO with a specified initial value.  We should have a better
-            // mechanism to provide initial default values for COs.
-            if (attribute.persist() &&
-                    m_pConfig->getValueString(configKey).isEmpty()) {
-                m_pConfig->set(configKey, ConfigValue(QString::number(value)));
-            }
-            ControlObject* pControl = controlFromConfigKey(configKey,
-                                                           attribute.persist(),
-                                                           &created);
-            if (created) {
-                created_attributes.append(pControl);
-            }
-            if (!attribute.persist()) {
-                // Only set the value if the control wasn't set up through
-                // the persist logic.  Skin attributes are always
-                // set on skin load.
-                pControl->set(value);
-            }
-        } else {
+        if (!ok) {
             SKIN_WARNING(skinDocument, *m_pContext)
                     << "Error reading double value from skin attribute: "
                     << QString::fromStdString(attribute.value());
+            continue;
+        }
+
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(
+            QString::fromStdString(attribute.config_key()));
+        // Set the specified attribute, possibly creating the control
+        // object in the process.
+        bool created = false;
+        // If there is no existing value for this CO in the skin,
+        // update the config with the specified value. If the attribute
+        // is set to persist, the value will be read when the control is created.
+        // TODO: This is a hack, but right now it's the cleanest way to
+        // get a CO with a specified initial value.  We should have a better
+        // mechanism to provide initial default values for COs.
+        if (attribute.persist() &&
+            m_pConfig->getValueString(configKey).isEmpty()) {
+            m_pConfig->set(configKey, ConfigValue(QString::number(value)));
+        }
+        ControlObject* pControl = controlFromConfigKey(configKey,
+                                                       attribute.persist(),
+                                                       &created);
+        if (pControl == nullptr) {
+            continue;
+        }
+
+        if (created) {
+            created_attributes.append(pControl);
+        }
+        if (!attribute.persist()) {
+            // Only set the value if the control wasn't set up through
+            // the persist logic.  Skin attributes are always
+            // set on skin load.
+            pControl->set(value);
         }
     }
 
@@ -664,7 +672,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
         pPrevControl->setParent(pStack);
     }
 
-    if (createdCurrentPage) {
+    if (pCurrentPageControl != nullptr && createdCurrentPage) {
         pCurrentPageControl->setParent(pStack);
     }
 
@@ -709,7 +717,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
                 bool created;
                 pControl = controlFromConfigKey(configKey, false, &created);
-                if (created) {
+                if (pControl != nullptr && created) {
                     // If we created the control, parent it to the child widget so
                     // it doesn't leak.
                     pControl->setParent(pChild);
@@ -1845,7 +1853,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
         ControlObject* control = controlFromConfigNode(
                 con.toElement(), "ConfigKey", &created);
 
-        if (!control) {
+        if (control == nullptr) {
             continue;
         }
 

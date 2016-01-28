@@ -119,7 +119,7 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     QString lookupNodeGroup(QDomElement node);
     static const char* safeChannelString(QString channelStr);
-    ControlObject* controlFromConfigNode(QDomElement element,
+    ControlObject* controlFromConfigNode(const QDomElement& element,
                                          const QString& nodeName,
                                          bool* created);
 
