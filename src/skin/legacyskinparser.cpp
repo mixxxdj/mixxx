@@ -1704,7 +1704,7 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
 
         bool widthOk = false;
         int x = xs.toInt(&widthOk);
-        if (widthOk) {
+        if (widthOk && x >= 0) {
             if (hasHorizontalPolicy &&
                     sizePolicy.horizontalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting width fixed to" << x;
@@ -1717,7 +1717,7 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
 
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
-        if (heightOk) {
+        if (heightOk && y >= 0) {
             if (hasVerticalPolicy &&
                     sizePolicy.verticalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting height fixed to" << x;
