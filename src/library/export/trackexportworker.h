@@ -11,7 +11,8 @@
 
 // A QThread class for copying a list of files to a single destination directory.
 // Currently does not preserve subdirectory relationships.  This class performs
-// all copies in a blocking style within its own thread.
+// all copies in a blocking style within its own thread.  May be canceled from
+// another thread.
 class TrackExportWorker : public QThread {
     Q_OBJECT
   public:
@@ -47,7 +48,7 @@ class TrackExportWorker : public QThread {
     }
 
     // Cancels the export after the current copy operation.
-    //May be called from another thread.
+    // May be called from another thread.
     void stop();
 
   signals:
@@ -63,7 +64,13 @@ class TrackExportWorker : public QThread {
     void canceled();
 
   private:
-    void exportTrack(TrackPointer track);
+    // Copies the file at source_fileinfo to the destination directory with the
+    // name given by dest_filename (not a full path).  If the destination file
+    // exists, will emit an overwrite request signal to ask how to proceed.
+    // On unrecoverable error, sets the error message and stops the export
+    // process entirely.
+    void copyFile(const QFileInfo& source_fileinfo,
+                  const QString& dest_filename);
 
     // Emit a signal requesting overwrite mode, and block until we get an
     // answer.  Updates m_overwriteMode appropriately.
