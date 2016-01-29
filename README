@@ -52,7 +52,6 @@ Mixxx has the following dependencies:
 - libusb-1.0
 - libmp4v2 (optional, m4a support)
 - libfaad (optional, m4a support)
-- vamp-plugin-sdk (optional, internal version included)
 - libchromaprint
 - librubberband
 

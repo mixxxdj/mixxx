@@ -22,8 +22,6 @@ addons:
       - libtag1-dev
       - libprotobuf-dev
       - protobuf-compiler
-      - libvamp-hostsdk3
-      - vamp-plugin-sdk
       - libusb-1.0-0-dev
       - libfftw3-dev
       - libmad0-dev
