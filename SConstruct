@@ -51,7 +51,6 @@ available_features = [features.Mad,
                       features.WavPack,
                       features.ModPlug,
                       features.TestSuite,
-                      features.Vamp,
                       features.AutoDjCrates,
                       features.ColorDiagnostics,
                       features.AddressSanitizer,
@@ -90,18 +89,10 @@ soundsource_plugins = SConscript(
     File('plugins/SConscript'), variant_dir=Dir(build.build_dir + "/plugins"),
     duplicate=0, exports=['build'])
 
-#Build Vamp minimal plugins
-#VariantDir("vamp-plugins", "src", duplicate=0)
-mixxxminimal_depends = [ depends.SoundTouch ]
-mixxxminimal_plugins = SConscript(
-    File('vamp-plugins/SConscript'),
-    variant_dir=Dir(build.build_dir + "/vamp-plugins"),
-    duplicate=0, exports=['build', 'mixxxminimal_depends'])
-
 # Setup and build the "mixxx" executable target. Also sets up our install
 # targets for each platform.
 SConscript(File('src/SConscript'), variant_dir=Dir(build.build_dir), duplicate=0,
-           exports=['build', 'sources', 'soundsource_plugins', 'mixxxminimal_plugins'])
+           exports=['build', 'sources', 'soundsource_plugins'])
 
 #On OS X, if the bundle has been built, copy it up:
 #Command("Mixxx.app", os.path.join(build.build_dir, "Mixxx.app"), Copy("$TARGET", "$SOURCE"))

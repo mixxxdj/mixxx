@@ -456,6 +456,36 @@ class RubberBand(Dependence):
                 "Could not find librubberband or its development headers.")
 
 
+class QueenMaryDsp(Dependence):
+    def sources(self, build):
+        return ["#lib/qm-dsp/ChangeDetectionFunction.cpp",
+	        "#lib/qm-dsp/DownBeat.cpp",
+	        "#lib/qm-dsp/PeakPicking.cpp",
+	        "#lib/qm-dsp/Chromagram.cpp",
+	        "#lib/qm-dsp/FFT.cpp",
+	        "#lib/qm-dsp/PhaseVocoder.cpp",
+	        "#lib/qm-dsp/ConstantQ.cpp",
+	        "#lib/qm-dsp/Filter.cpp",
+	        "#lib/qm-dsp/Pitch.cpp",
+	        "#lib/qm-dsp/Correlation.cpp",
+	        "#lib/qm-dsp/FiltFilt.cpp",
+	        "#lib/qm-dsp/TCSgram.cpp",
+	        "#lib/qm-dsp/CQprecalc.cpp",
+	        "#lib/qm-dsp/Framer.cpp",
+	        "#lib/qm-dsp/TempoTrack.cpp",
+	        "#lib/qm-dsp/Decimator.cpp",
+	        "#lib/qm-dsp/GetKeyMode.cpp",
+	        "#lib/qm-dsp/TempoTrackV2.cpp",
+	        "#lib/qm-dsp/DetectionFunction.cpp",
+	        "#lib/qm-dsp/KLDivergence.cpp",
+	        "#lib/qm-dsp/TonalEstimator.cpp",
+	        "#lib/qm-dsp/DFProcess.cpp",
+	        "#lib/qm-dsp/MathUtilities.cpp"]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH="#lib/qm-dsp")
+
+
 class TagLib(Dependence):
     def configure(self, build, conf):
         libs = ['tag']
@@ -575,6 +605,8 @@ class MixxxCore(Feature):
                    "preferences/dialog/dlgprefsound.cpp",
                    "preferences/dialog/dlgprefsounditem.cpp",
                    "preferences/dialog/dlgprefwaveform.cpp",
+                   'preferences/dialog/dlgprefbeats.cpp',
+                   'preferences/dialog/dlgprefkey.cpp',
                    "preferences/settingsmanager.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
@@ -667,6 +699,8 @@ class MixxxCore(Feature):
                    "analyzer/analyzerqueue.cpp",
                    "analyzer/analyzerwaveform.cpp",
                    "analyzer/analyzergain.cpp",
+                   'analyzer/analyzerbeats.cpp',
+                   'analyzer/analyzerkey.cpp',
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -1260,7 +1294,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
-                QtScriptByteArray, Reverb, FpClassify]
+                QtScriptByteArray, Reverb, FpClassify, QueenMaryDsp]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
