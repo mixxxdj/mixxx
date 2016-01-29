@@ -44,7 +44,12 @@ TEST_F(TrackExporterTest, SimpleListExport) {
     QFileInfo fileinfo3(m_testDataDir.filePath("cover-test.m4a"));
     TrackPointer track3(new TrackInfoObject(fileinfo3));
 
-    QList<TrackPointer> tracks{track1, track2, track3};
+    // An initializer list would be prettier here, but it doesn't compile
+    // on MSVC or OSX.
+    QList<TrackPointer> tracks;
+    tracks.append(track1);
+    tracks.append(track2);
+    tracks.append(track3);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
 
@@ -78,7 +83,9 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks{track1, track2};
+    QList<TrackPointer> tracks;
+    tracks.append(track1);
+    tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
     m_answerer->setAnswer(m_exportDir.filePath("cover-test.ogg"),
@@ -120,7 +127,9 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks{track1, track2};
+    QList<TrackPointer> tracks;
+    tracks.append(track1);
+    tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
     m_answerer->setAnswer(m_exportDir.filePath("cover-test.m4a"),
@@ -159,7 +168,9 @@ TEST_F(TrackExporterTest, SkipAll) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks{track1, track2};
+    QList<TrackPointer> tracks;
+    tracks.append(track1);
+    tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
     m_answerer->setAnswer(m_exportDir.filePath("cover-test.m4a"),
@@ -196,7 +207,9 @@ TEST_F(TrackExporterTest, Cancel) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks{track1, track2};
+    QList<TrackPointer> tracks;
+    tracks.append(track1);
+    tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
     m_answerer->setAnswer(m_exportDir.filePath("cover-test.m4a"),
@@ -225,7 +238,9 @@ TEST_F(TrackExporterTest, DedupeList) {
     TrackPointer track2(new TrackInfoObject(fileinfo1));
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks{track1, track2};
+    QList<TrackPointer> tracks;
+    tracks.append(track1);
+    tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
 
@@ -260,7 +275,9 @@ TEST_F(TrackExporterTest, MungeFilename) {
     TrackPointer track2(new TrackInfoObject(fileinfo2));
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks{track1, track2};
+    QList<TrackPointer> tracks;
+    tracks.append(track1);
+    tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
 
