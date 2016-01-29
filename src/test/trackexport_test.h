@@ -30,6 +30,9 @@ class FakeOverwriteAnswerer : public QObject {
 
     void setAnswer(QString expected_filename,
                    TrackExportWorker::OverwriteAnswer answer) {
+        // We should never copy a duplicate filename, so if a name already
+        // exists that's a bug in the test.
+        Q_ASSERT(m_answers.find(expected_filename) == m_answers.end());
         m_answers[expected_filename] = answer;
     }
 

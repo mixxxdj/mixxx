@@ -123,7 +123,6 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     QList<TrackPointer> tracks{track1, track2};
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
-    // This could be flaky if the map key order is non-deterministic.
     m_answerer->setAnswer(m_exportDir.filePath("cover-test.m4a"),
                            TrackExportWorker::OverwriteAnswer::OVERWRITE_ALL);
 
@@ -163,7 +162,6 @@ TEST_F(TrackExporterTest, SkipAll) {
     QList<TrackPointer> tracks{track1, track2};
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
-    // This could be flaky if the map key order is non-deterministic.
     m_answerer->setAnswer(m_exportDir.filePath("cover-test.m4a"),
                            TrackExportWorker::OverwriteAnswer::SKIP_ALL);
 
@@ -201,7 +199,6 @@ TEST_F(TrackExporterTest, Cancel) {
     QList<TrackPointer> tracks{track1, track2};
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
-    // This could be flaky if the map key order is non-deterministic.
     m_answerer->setAnswer(m_exportDir.filePath("cover-test.m4a"),
                            TrackExportWorker::OverwriteAnswer::CANCEL);
 
