@@ -227,10 +227,6 @@ Section "Mixxx (required)" SecMixxx
   ; Copies both DLLs and PDBs.
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*"
 
-  SetOutPath $INSTDIR\plugins\vamp
-  ; Copies both DLLs and PDBs.
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*"
-
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\*.kbd.cfg"
 
@@ -333,8 +329,6 @@ Section "Uninstall"
   RMDir "$INSTDIR\fonts"
   Delete $INSTDIR\plugins\soundsource\*
   RMDir "$INSTDIR\plugins\soundsource"
-  Delete $INSTDIR\plugins\vamp\*
-  RMDir "$INSTDIR\plugins\vamp"
   Delete $INSTDIR\plugins\*
   RMDir "$INSTDIR\plugins"
   Delete $INSTDIR\translations\*
