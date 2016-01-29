@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QSqlDatabase>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
 #include "trackinfoobject.h"
 
@@ -31,7 +31,7 @@ class AnalysisDao : public DAO {
         QByteArray data;
     };
 
-    AnalysisDao(QSqlDatabase& database, ConfigObject<ConfigValue>* pConfig);
+    AnalysisDao(QSqlDatabase& database, UserSettingsPointer pConfig);
     virtual ~AnalysisDao();
 
     virtual void initialize();
@@ -62,7 +62,7 @@ class AnalysisDao : public DAO {
     bool deleteFile(const QString& filename) const;
     QList<AnalysisInfo> loadAnalysesFromQuery(TrackId trackId, QSqlQuery* query);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QSqlDatabase m_db;
 };
 

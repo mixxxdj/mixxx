@@ -7,7 +7,7 @@
 #include "util/assert.h"
 
 TrackExportDlg::TrackExportDlg(QWidget *parent,
-                               ConfigObject<ConfigValue>* pConfig,
+                               UserSettingsPointer pConfig,
                                TrackExportWorker* worker)
         : QDialog(parent),
           Ui::DlgTrackExport(),
@@ -98,4 +98,3 @@ void TrackExportDlg::finish() {
     hide();
     accept();
 }
-

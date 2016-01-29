@@ -7,7 +7,7 @@
 #include <QHideEvent>
 #include <QEvent>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
 #include "vinylcontrol/vinylsignalquality.h"
@@ -22,7 +22,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     Q_OBJECT
   public:
     WSpinny(QWidget* parent, const QString& group,
-            ConfigObject<ConfigValue>* pConfig,
+            UserSettingsPointer pConfig,
             VinylControlManager* pVCMan);
     virtual ~WSpinny();
 
@@ -68,7 +68,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
   private:
     QString m_group;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QImage* m_pBgImage;
     QImage* m_pMaskImage;
     QImage* m_pFgImage;

@@ -8,7 +8,7 @@
 #include "skin/svgparser.h"
 #include "util/cmdlineargs.h"
 
-SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
+SkinContext::SkinContext(UserSettingsPointer pConfig,
                          const QString& xmlPath)
         : m_xmlPath(xmlPath),
           m_pConfig(pConfig),

@@ -21,8 +21,11 @@
 #include <portaudio.h>
 
 #include <QString>
+#include "util/performancetimer.h"
 
 #include "soundio/sounddevice.h"
+#include "util/duration.h"
+
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 #define CPU_OVERLOAD_DURATION 500 // in ms
@@ -37,7 +40,7 @@ typedef int (*EnableAlsaRT)(PaStream* s, int enable);
 
 class SoundDevicePortAudio : public SoundDevice {
   public:
-    SoundDevicePortAudio(ConfigObject<ConfigValue> *config,
+    SoundDevicePortAudio(UserSettingsPointer config,
                          SoundManager *sm, const PaDeviceInfo *deviceInfo,
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();
@@ -72,6 +75,8 @@ class SoundDevicePortAudio : public SoundDevice {
     }
 
   private:
+    void updateCallbackEntryToDacTime(const PaStreamCallbackTimeInfo* timeInfo);
+
     // PortAudio stream for this device.
     PaStream* volatile m_pStream;
     // PortAudio device index for this device.
@@ -97,29 +102,11 @@ class SoundDevicePortAudio : public SoundDevice {
     ControlObjectSlave* m_pMasterAudioLatencyOverload;
     int m_underflowUpdateCount;
     static volatile int m_underflowHappened;
-    qint64 m_nsInAudioCb;
+    mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
+    bool m_invalidTimeInfoWarned;
+    PerformanceTimer m_clkRefTimer;
 };
-
-// Wrapper function to call SoundDevicePortAudio::callbackProcess. Used by
-// PortAudio, which knows nothing about C++.
-int paV19Callback(const void* inputBuffer, void* outputBuffer,
-                  unsigned long framesPerBuffer,
-                  const PaStreamCallbackTimeInfo* timeInfo,
-                  PaStreamCallbackFlags statusFlags,
-                  void* soundDevice);
-
-int paV19CallbackDrift(const void* inputBuffer, void* outputBuffer,
-                  unsigned long framesPerBuffer,
-                  const PaStreamCallbackTimeInfo* timeInfo,
-                  PaStreamCallbackFlags statusFlags,
-                  void* soundDevice);
-
-int paV19CallbackClkRef(const void* inputBuffer, void* outputBuffer,
-                  unsigned long framesPerBuffer,
-                  const PaStreamCallbackTimeInfo* timeInfo,
-                  PaStreamCallbackFlags statusFlags,
-                  void* soundDevice);
 
 #endif

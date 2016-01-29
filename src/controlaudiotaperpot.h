@@ -3,7 +3,7 @@
 #define CONTROLAUDIOTAPERPOT_H
 
 #include "controlpotmeter.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class ControlAudioTaperPot : public ControlPotmeter {
     Q_OBJECT

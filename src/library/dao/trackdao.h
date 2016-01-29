@@ -12,7 +12,7 @@
 #include <QCache>
 #include <QString>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
 #include "trackinfoobject.h"
 #include "util/class.h"
@@ -104,7 +104,7 @@ class TrackDAO : public QObject, public virtual DAO {
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
              AnalysisDao& analysisDao, LibraryHashDAO& libraryHashDao,
-             ConfigObject<ConfigValue>* pConfig = NULL);
+             UserSettingsPointer pConfig);
     virtual ~TrackDAO();
 
     void finish();
@@ -209,7 +209,7 @@ class TrackDAO : public QObject, public virtual DAO {
     CrateDAO& m_crateDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     // Mutex that protects m_sTracks.
     static QMutex m_sTracksMutex;
     // Weak pointer cache of active tracks.

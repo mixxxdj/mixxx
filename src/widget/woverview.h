@@ -33,7 +33,7 @@ class Waveform;
 class WOverview : public WWidget {
     Q_OBJECT
   public:
-    WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent=NULL);
+    WOverview(const char* pGroup, UserSettingsPointer pConfig, QWidget* parent=NULL);
     virtual ~WOverview();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -94,7 +94,7 @@ class WOverview : public WWidget {
     }
 
     const QString m_group;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     ControlObjectSlave* m_endOfTrackControl;
     double m_endOfTrack;
     ControlObjectSlave* m_trackSamplesControl;

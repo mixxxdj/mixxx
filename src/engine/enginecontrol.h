@@ -7,7 +7,7 @@
 #include <QObject>
 #include <QList>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 #include "control/controlvalue.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -35,7 +35,7 @@ class EngineControl : public QObject {
     Q_OBJECT
   public:
     EngineControl(QString group,
-                  ConfigObject<ConfigValue>* _config);
+                  UserSettingsPointer _config);
     virtual ~EngineControl();
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -91,12 +91,12 @@ class EngineControl : public QObject {
     void seekExact(double sample);
     EngineBuffer* pickSyncTarget();
 
-    ConfigObject<ConfigValue>* getConfig();
+    UserSettingsPointer getConfig();
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
 
     QString m_group;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
 
   private:
     struct SampleOfTrack {

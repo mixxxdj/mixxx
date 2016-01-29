@@ -9,7 +9,7 @@
 #include <QFileInfo>
 #include <QtAlgorithms>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"

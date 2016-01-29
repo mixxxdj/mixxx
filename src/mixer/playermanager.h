@@ -9,7 +9,7 @@
 #include <QMap>
 #include <QMutex>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 
 class AnalyzerQueue;
@@ -55,7 +55,7 @@ class PlayerManagerInterface {
 class PlayerManager : public QObject, public PlayerManagerInterface {
     Q_OBJECT
   public:
-    PlayerManager(ConfigObject<ConfigValue>* pConfig,
+    PlayerManager(UserSettingsPointer pConfig,
                   SoundManager* pSoundManager,
                   EffectsManager* pEffectsManager,
                   EngineMaster* pEngine);
@@ -212,7 +212,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
     EngineMaster* m_pEngine;

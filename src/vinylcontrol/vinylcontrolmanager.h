@@ -12,7 +12,7 @@
 #include <QTimerEvent>
 
 #include "soundio/soundmanagerutil.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "vinylcontrol/vinylsignalquality.h"
 
 class ControlObjectSlave;
@@ -37,7 +37,7 @@ const int kMaxNumberOfDecks = 4; // set to 4 because it will ideally not be more
 class VinylControlManager : public QObject {
     Q_OBJECT;
   public:
-    VinylControlManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig,
+    VinylControlManager(QObject* pParent, UserSettingsPointer pConfig,
                         SoundManager* pSoundManager);
     virtual ~VinylControlManager();
 
@@ -60,7 +60,7 @@ class VinylControlManager : public QObject {
     void slotNumDecksChanged(double);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QSet<VinylSignalQualityListener*> m_listeners;
     VinylControlProcessor* m_pProcessor;
     int m_iTimerId;

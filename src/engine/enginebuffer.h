@@ -23,7 +23,7 @@
 #include <gtest/gtest_prod.h>
 
 #include "cachingreader.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "control/controlvalue.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
@@ -116,7 +116,7 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(QString _group, ConfigObject<ConfigValue>* _config,
+    EngineBuffer(QString _group, UserSettingsPointer _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
@@ -242,7 +242,7 @@ class EngineBuffer : public EngineObject {
 
     // Holds the name of the control group
     QString m_group;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
 
     LoopingControl* m_pLoopingControl;
     FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);

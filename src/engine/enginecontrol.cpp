@@ -8,7 +8,7 @@
 #include "mixer/playermanager.h"
 
 EngineControl::EngineControl(QString group,
-                             ConfigObject<ConfigValue>* _config)
+                             UserSettingsPointer _config)
         : m_group(group),
           m_pConfig(_config),
           m_pEngineMaster(NULL),
@@ -81,7 +81,7 @@ QString EngineControl::getGroup() const {
     return m_group;
 }
 
-ConfigObject<ConfigValue>* EngineControl::getConfig() {
+UserSettingsPointer EngineControl::getConfig() {
     return m_pConfig;
 }
 

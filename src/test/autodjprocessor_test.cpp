@@ -120,7 +120,7 @@ class MockPlayerManager : public PlayerManagerInterface {
 class MockAutoDJProcessor : public AutoDJProcessor {
   public:
     MockAutoDJProcessor(QObject* pParent,
-                        ConfigObject<ConfigValue>* pConfig,
+                        UserSettingsPointer pConfig,
                         PlayerManagerInterface* pPlayerManager,
                         int iAutoDJPlaylistId,
                         TrackCollection* pCollection)

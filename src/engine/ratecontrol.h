@@ -6,7 +6,7 @@
 
 #include <QObject>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
 
@@ -31,7 +31,7 @@ class PositionScratchController;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(QString group, ConfigObject<ConfigValue>* _config);
+    RateControl(QString group, UserSettingsPointer _config);
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);

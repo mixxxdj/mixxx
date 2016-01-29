@@ -10,7 +10,7 @@
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
-AnalyzerKey::AnalyzerKey(ConfigObject<ConfigValue>* pConfig)
+AnalyzerKey::AnalyzerKey(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_pVamp(NULL),
           m_iSampleRate(0),

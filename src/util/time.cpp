@@ -1,5 +1,9 @@
 #include "util/time.h"
 
+#include <QtGlobal>
+#include <QStringBuilder>
+#include <QTime>
+
 #include "util/assert.h"
 
 // static
@@ -7,7 +11,7 @@ LLTIMER Time::s_timer;
 // static
 bool Time::s_testMode = false;
 // static
-qint64 Time::s_testElapsed_nsecs = 0;
+mixxx::Duration Time::s_testElapsed = mixxx::Duration::fromNanos(0);
 
 // static
 QString Time::formatSeconds(double dSeconds, Precision precision) {
