@@ -52,7 +52,7 @@ namespace
                 sampleBuffer.data(),
                 fingerprintSamples.size());
 
-        qDebug() << "reading file took" << timerReadingFile.elapsed().formatMillisWithUnit();
+        qDebug() << "reading file took" << timerReadingFile.elapsed().debugMillisWithUnit();
 
         ChromaprintContext* ctx = chromaprint_new(CHROMAPRINT_ALGORITHM_DEFAULT);
         chromaprint_start(ctx, pAudioSource->getSamplingRate(), kFingerprintChannels);
@@ -87,7 +87,7 @@ namespace
         chromaprint_free(ctx);
 
         qDebug() << "generating fingerprint took"
-                 << timerGeneratingFingerprint.elapsed().formatMillisWithUnit();
+                 << timerGeneratingFingerprint.elapsed().debugMillisWithUnit();
 
         return fingerprint;
     }

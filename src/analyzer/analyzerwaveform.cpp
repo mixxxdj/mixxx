@@ -315,7 +315,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
 #endif
 
     qDebug() << "Waveform generation for track" << tio->getId() << "done"
-             << m_timer.elapsed().formatSecondsWithUnit();
+             << m_timer.elapsed().debugSecondsWithUnit();
 }
 
 void AnalyzerWaveform::storeIfGreater(float* pDest, float source) {

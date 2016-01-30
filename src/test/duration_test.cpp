@@ -159,15 +159,21 @@ TEST(DurationTest, Format) {
     Duration d = Duration::fromNanos(255);
     EXPECT_QSTRING_EQ("0x00000000000000ff", d.formatHex());
     EXPECT_QSTRING_EQ("255 ns", d.formatNanosWithUnit());
+    EXPECT_STREQ("0x00000000000000ff", d.debugHex());
+    EXPECT_STREQ("255 ns", d.debugNanosWithUnit());
 
     d = Duration::fromNanos(-255);
     // Formatted as -255 in two's-complement.
     EXPECT_QSTRING_EQ("0xffffffffffffff01", d.formatHex());
     EXPECT_QSTRING_EQ("-255 ns", d.formatNanosWithUnit());
+    EXPECT_STREQ("0xffffffffffffff01", d.debugHex());
+    EXPECT_STREQ("-255 ns", d.debugNanosWithUnit());
 
     d = Duration::fromNanos(1e9);
     EXPECT_QSTRING_EQ("0x000000003b9aca00", d.formatHex());
     EXPECT_QSTRING_EQ("1000000000 ns", d.formatNanosWithUnit());
+    EXPECT_STREQ("0x000000003b9aca00", d.debugHex());
+    EXPECT_STREQ("1000000000 ns", d.debugNanosWithUnit());
 }
 
 }  // namespace mixxx

@@ -5,6 +5,7 @@
 #include <QString>
 #include <QtDebug>
 #include <QtGlobal>
+#include <QTextStreamFunction>
 
 namespace mixxx {
 namespace {
@@ -16,6 +17,16 @@ const qint64 kNanosPerMilli = 1e6;
 const qint64 kNanosPerMicro = 1e3;
 
 }  // namespace
+
+class DurationDebugArray : public QByteArray {
+  public:
+    DurationDebugArray(QByteArray& ba)
+        : QByteArray(ba) {
+    }
+    friend QDebug operator<<(QDebug debug, const DurationDebugArray& dda) {
+        return debug << dda.constData();
+    }
+};
 
 // Represents a duration in a type-safe manner. Provides conversion methods to
 // convert between physical units. Durations can be negative.
@@ -146,30 +157,57 @@ class Duration {
     }
 
     friend QDebug operator<<(QDebug debug, const Duration& duration) {
-        return debug << duration.formatNanosWithUnit();
+        return debug << duration.debugNanosWithUnit();
     }
 
     // Formats the duration as a two's-complement hexadecimal string.
     QString formatHex() const {
         // Format as fixed-width (8 digits).
-        return "0x" + QString("%1").arg(m_timestamp_nanos, 16, 16,
-                                        QLatin1Char('0'));
+        return QString("0x%1").arg(m_timestamp_nanos, 16, 16, QLatin1Char('0'));
+    }
+
+    // Formats the duration as a two's-complement hexadecimal string.
+    DurationDebugArray debugHex() const {
+        QByteArray ret("0x0000000000000000");
+        QByteArray hex = QByteArray::number(m_timestamp_nanos, 16);
+        ret.replace(18 - hex.size(), hex.size(), hex);
+        return DurationDebugArray(ret);
     }
 
     QString formatNanosWithUnit() const {
         return QString("%1 ns").arg(toIntegerNanos());
     }
 
+    DurationDebugArray debugNanosWithUnit() const {
+        QByteArray ret = QByteArray::number(toIntegerNanos()) + " ns";
+        return DurationDebugArray(ret);
+    }
+
     QString formatMicrosWithUnit() const {
         return QString("%1 us").arg(toIntegerMicros());
+    }
+
+    DurationDebugArray debugMicrosWithUnit() const {
+        QByteArray ret = QByteArray::number(toIntegerMicros()) + " us";
+        return DurationDebugArray(ret);
     }
 
     QString formatMillisWithUnit() const {
         return QString("%1 ms").arg(toIntegerMillis());
     }
 
+    DurationDebugArray debugMillisWithUnit() const {
+        QByteArray ret = QByteArray::number(toIntegerMillis()) + " ms";
+        return DurationDebugArray(ret);
+    }
+
     QString formatSecondsWithUnit() const {
         return QString("%1 s").arg(toIntegerSeconds());
+    }
+
+    DurationDebugArray debugSecondsWithUnit() const {
+        QByteArray ret = QByteArray::number(toIntegerSeconds()) + " s";
+        return DurationDebugArray(ret);
     }
 
   private:

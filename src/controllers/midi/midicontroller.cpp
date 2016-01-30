@@ -167,26 +167,26 @@ QString formatMidiMessage(const QString& controllerName,
     switch (opCode) {
         case MIDI_PITCH_BEND:
             return QString("%1: t:%2 status 0x%3: pitch bend ch %4, value 0x%5")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                    .arg(controllerName, timestamp.debugMillisWithUnit(),
                          QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
         case MIDI_SONG_POS:
             return QString("%1: t:%5 status 0x%3: song position 0x%4")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                    .arg(controllerName, timestamp.debugMillisWithUnit(),
                          QString::number(status, 16).toUpper(),
                          QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
         case MIDI_PROGRAM_CH:
         case MIDI_CH_AFTERTOUCH:
             return QString("%1: t:%2 status 0x%3 (ch %4, opcode 0x%5), value 0x%6")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                    .arg(controllerName, timestamp.debugMillisWithUnit(),
                          QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((status & 255)>>4, 16).toUpper(),
                          QString::number(control, 16).toUpper().rightJustified(2,'0'));
         case MIDI_SONG:
             return QString("%1: t:%2 status 0x%3: select song #%4")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                    .arg(controllerName, timestamp.debugMillisWithUnit(),
                          QString::number(status, 16).toUpper(),
                          QString::number(control+1, 10));
         case MIDI_NOTE_OFF:
@@ -194,7 +194,7 @@ QString formatMidiMessage(const QString& controllerName,
         case MIDI_AFTERTOUCH:
         case MIDI_CC:
             return QString("%1: t:%2 status 0x%3 (ch %4, opcode 0x%5), ctrl 0x%6, val 0x%7")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                    .arg(controllerName, timestamp.debugMillisWithUnit(),
                          QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((status & 255)>>4, 16).toUpper(),
@@ -202,7 +202,7 @@ QString formatMidiMessage(const QString& controllerName,
                          QString::number(value, 16).toUpper().rightJustified(2,'0'));
         default:
             return QString("%1: t:%2 status 0x%3")
-                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                    .arg(controllerName, timestamp.debugMillisWithUnit(),
                          QString::number(status, 16).toUpper());
     }
 }
