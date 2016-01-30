@@ -215,14 +215,14 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2;
     frames *= rate_delta;
     frames += rate_old * bufferSizeFrames;
-    frames = abs(frames);
+    frames = fabs(frames);
 
-    // If the current position fraction plus the future position fraction
-    // loops over 1.0, we need to round up
+    // Intentional integer rounding: increases by one if the fractional part of
+    // m_dNextFrame and frames are greater than one"
     int unscaled_frames_needed = static_cast<int>(frames +
             m_dNextFrame - floor(m_dNextFrame));
 
-    // Multiply by 2 because it is predicting mono rates, while we want a
+    // Multiply by 2 because it is predicting frame rates, while we want a
     // number of samples.
     int unscaled_samples_needed = unscaled_frames_needed * 2;
 
