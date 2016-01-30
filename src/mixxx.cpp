@@ -2013,11 +2013,13 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event)
                 return false;
             case mixxx::TooltipsPreference::TOOLTIPS_OFF:
                 return true;
+            default:
+                DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+                return true;
         }
-    } else {
-        // standard event processing
-        return QObject::eventFilter(obj, event);
     }
+    // standard event processing
+    return QObject::eventFilter(obj, event);
 }
 
 bool MixxxMainWindow::event(QEvent* e) {
