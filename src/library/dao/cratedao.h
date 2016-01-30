@@ -12,7 +12,7 @@
 
 #include "library/dao/dao.h"
 #include "track/trackid.h"
-#include "util.h"
+#include "util/class.h"
 
 #define CRATE_TABLE "crates"
 #define CRATE_TRACKS_TABLE "crate_tracks"

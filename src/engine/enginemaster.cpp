@@ -1,35 +1,35 @@
+#include "engine/enginemaster.h"
 
 #include <QtDebug>
 #include <QList>
 #include <QPair>
 
-#include "controlpushbutton.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
+#include "controlaudiotaperpot.h"
 #include "controlaudiotaperpot.h"
 #include "controlpotmeter.h"
-#include "controlaudiotaperpot.h"
+#include "controlpushbutton.h"
+#include "effects/effectsmanager.h"
+#include "engine/channelmixer.h"
+#include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
-#include "engine/engineworkerscheduler.h"
-#include "engine/enginedeck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
+#include "engine/enginedeck.h"
+#include "engine/enginedelay.h"
 #include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
+#include "engine/engineworkerscheduler.h"
 #include "engine/enginexfader.h"
-#include "engine/enginedelay.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
-#include "sampleutil.h"
-#include "engine/effects/engineeffectsmanager.h"
-#include "effects/effectsmanager.h"
+#include "mixer/playermanager.h"
+#include "util/defs.h"
+#include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "util/defs.h"
-#include "playermanager.h"
-#include "engine/channelmixer.h"
 
-EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
+EngineMaster::EngineMaster(UserSettingsPointer _config,
                            const char* group,
                            EffectsManager* pEffectsManager,
                            bool bEnableSidechain,
@@ -140,14 +140,17 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPushButton(
-            ConfigKey("[Mixer Profile]", "xFaderMode"));
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"));
     m_pXFaderMode->setButtonMode(ControlPushButton::TOGGLE);
+
     m_pXFaderCurve = new ControlPotmeter(
-            ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
+            EngineXfader::kTransformMin, EngineXfader::kTransformMax);
     m_pXFaderCalibration = new ControlPotmeter(
-            ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCalibration"),
+            0.5, 1.);
     m_pXFaderReverse = new ControlPushButton(
-            ConfigKey("[Mixer Profile]", "xFaderReverse"));
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"));
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"),

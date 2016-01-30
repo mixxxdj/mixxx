@@ -10,6 +10,7 @@
 #include "trackinfoobject.h"
 #include "library/queryutil.h"
 #include "util/assert.h"
+#include "util/performancetimer.h"
 
 CueDAO::CueDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -52,7 +53,7 @@ int CueDAO::numCuesForTrack(TrackId trackId) {
     return 0;
 }
 
-Cue* CueDAO::cueFromRow(const QSqlQuery& query) const {
+CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     QSqlRecord record = query.record();
     int id = record.value(record.indexOf("id")).toInt();
     TrackId trackId(record.value(record.indexOf("track_id")));
@@ -61,18 +62,18 @@ Cue* CueDAO::cueFromRow(const QSqlQuery& query) const {
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = record.value(record.indexOf("label")).toString();
-    Cue* cue = new Cue(id, trackId, (Cue::CueType)type,
-                       position, length, hotcue, label);
-    m_cues[id] = cue;
-    return cue;
+    CuePointer pCue(new Cue(id, trackId, (Cue::CueType)type,
+                       position, length, hotcue, label));
+    m_cues[id] = pCue;
+    return pCue;
 }
 
-QList<Cue*> CueDAO::getCuesForTrack(TrackId trackId) const {
+QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
     //qDebug() << "CueDAO::getCuesForTrack" << QThread::currentThread() << m_database.connectionName();
-    QList<Cue*> cues;
+    QList<CuePointer> cues;
     // A hash from hotcue index to cue id and cue*, used to detect if more
     // than one cue has been assigned to a single hotcue id.
-    QMap<int, QPair<int, Cue*> > dupe_hotcues;
+    QMap<int, QPair<int, CuePointer> > dupe_hotcues;
 
     QSqlQuery query(m_database);
     query.prepare("SELECT * FROM " CUE_TABLE " WHERE track_id = :id");
@@ -81,13 +82,13 @@ QList<Cue*> CueDAO::getCuesForTrack(TrackId trackId) const {
         const int idColumn = query.record().indexOf("id");
         const int hotcueIdColumn = query.record().indexOf("hotcue");
         while (query.next()) {
-            Cue* cue = NULL;
+            CuePointer pCue;
             int cueId = query.value(idColumn).toInt();
             if (m_cues.contains(cueId)) {
-                cue = m_cues[cueId];
+                pCue = m_cues[cueId];
             }
-            if (cue == NULL) {
-                cue = cueFromRow(query);
+            if (!pCue) {
+                pCue = cueFromRow(query);
             }
             int hotcueId = query.value(hotcueIdColumn).toInt();
             if (hotcueId != -1) {
@@ -95,10 +96,10 @@ QList<Cue*> CueDAO::getCuesForTrack(TrackId trackId) const {
                     m_cues.remove(dupe_hotcues[hotcueId].first);
                     cues.removeOne(dupe_hotcues[hotcueId].second);
                 }
-                dupe_hotcues[hotcueId] = qMakePair(cueId, cue);
+                dupe_hotcues[hotcueId] = qMakePair(cueId, pCue);
             }
-            if (cue != NULL) {
-                cues.push_back(cue);
+            if (pCue) {
+                cues.push_back(pCue);
             }
         }
     } else {
@@ -212,9 +213,9 @@ void CueDAO::saveTrackCues(TrackId trackId, TrackInfoObject* pTrack) {
     //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call
     // this.
-    QTime time;
+    PerformanceTimer time;
 
-    const QList<Cue*>& cueList = pTrack->getCuePoints();
+    const QList<CuePointer> cueList(pTrack->getCuePoints());
 
     // qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
     //          << "new size:" << cueList.size();
@@ -223,29 +224,29 @@ void CueDAO::saveTrackCues(TrackId trackId, TrackInfoObject* pTrack) {
 
     time.start();
     // For each id still in the TIO, save or delete it.
-    QListIterator<Cue*> cueIt(cueList);
+    QListIterator<CuePointer> cueIt(cueList);
     while (cueIt.hasNext()) {
-        Cue* cue = cueIt.next();
-        int cueId = cue->getId();
+        CuePointer pCue(cueIt.next());
+        int cueId = pCue->getId();
         bool newCue = cueId == -1;
         if (newCue) {
             // New cue
-            cue->setTrackId(trackId);
+            pCue->setTrackId(trackId);
         } else {
             //idList.append(QString("%1").arg(cueId));
             list.append(QString("%1,").arg(cueId));
         }
         // Update or save cue
-        if (cue->isDirty()) {
-            saveCue(cue);
+        if (pCue->isDirty()) {
+            saveCue(pCue.data());
 
             // Since this cue didn't have an id until now, add it to the list of
             // cues not to delete.
             if (newCue)
-                list.append(QString("%1,").arg(cue->getId()));
+                list.append(QString("%1,").arg(pCue->getId()));
         }
     }
-    //qDebug() << "Saving cues took " << time.elapsed() << "ms";
+    //qDebug() << "Saving cues took " << time.formatMillisWithUnit();
     time.start();
 
     // Strip the last ,
@@ -261,5 +262,5 @@ void CueDAO::saveTrackCues(TrackId trackId, TrackInfoObject* pTrack) {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Delete cues failed.";
     }
-    //qDebug() << "Deleting cues took " << time.elapsed() << "ms";
+    //qDebug() << "Deleting cues took " << time.formatMillisWithUnit();
 }

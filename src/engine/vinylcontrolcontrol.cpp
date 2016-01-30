@@ -4,7 +4,7 @@
 #include "library/dao/cue.h"
 #include "util/math.h"
 
-VinylControlControl::VinylControlControl(QString group, ConfigObject<ConfigValue>* pConfig)
+VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_bSeekRequested(false) {
     m_pControlVinylStatus = new ControlObject(ConfigKey(group, "vinylcontrol_status"));
@@ -124,10 +124,10 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
         double shortest_distance = 0;
         int nearest_playpos = -1;
 
-        QList<Cue*> cuePoints = m_pCurrentTrack->getCuePoints();
-        QListIterator<Cue*> it(cuePoints);
+        const QList<CuePointer> cuePoints(m_pCurrentTrack->getCuePoints());
+        QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
-            Cue* pCue = it.next();
+            CuePointer pCue(it.next());
             if (pCue->getType() != Cue::CUE || pCue->getHotCue() == -1) {
                 continue;
             }

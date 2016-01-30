@@ -1,22 +1,21 @@
-#include "test/mixxxtest.h"
+#include <gmock/gmock.h>
 
+#include <QtDebug>
+
+#include "track/trackmetadata.h"
 #include "soundsourceproxy.h"
-#include "metadata/trackmetadata.h"
-#include "samplebuffer.h"
+#include "test/mixxxtest.h"
+#include "util/samplebuffer.h"
 
 #ifdef __FFMPEGFILE__
 #include "sources/soundsourceffmpeg.h"
 #endif
 
-#include <gmock/gmock.h>
-
-#include <QtDebug>
-
 class SoundSourceProxyTest: public MixxxTest {
   protected:
     static QStringList getFileNameSuffixes() {
         QStringList availableFileNameSuffixes;
-        availableFileNameSuffixes << ".aiff" << ".flac" 
+        availableFileNameSuffixes << ".aiff" << ".flac"
                 << "-png.mp3" << ".ogg" << ".opus" << ".wav" << ".wv";
 
 #ifndef __WINDOWS__
@@ -53,7 +52,8 @@ class SoundSourceProxyTest: public MixxxTest {
     }
 
     static Mixxx::AudioSourcePointer openAudioSource(const QString& filePath) {
-        return SoundSourceProxy(filePath).openAudioSource();
+        TrackPointer pTrack(new TrackInfoObject(filePath));
+        return SoundSourceProxy(pTrack).openAudioSource();
     }
 };
 
@@ -71,18 +71,20 @@ TEST_F(SoundSourceProxyTest, open) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    SoundSourceProxy proxy(
-            QDir::currentPath().append("/src/test/id3-test-data/artist.mp3"));
+    TrackPointer pTrack(new TrackInfoObject(
+            QDir::currentPath().append("/src/test/id3-test-data/artist.mp3")));
+    SoundSourceProxy proxy(pTrack);
     Mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(OK, proxy.parseTrackMetadataAndCoverArt(&trackMetadata, NULL));
+    EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
     EXPECT_EQ("Test Artist", trackMetadata.getArtist());
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    SoundSourceProxy proxy(
-        QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3"));
+    TrackPointer pTrack(new TrackInfoObject(
+            QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3")));
+    SoundSourceProxy proxy(pTrack);
     Mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(OK, proxy.parseTrackMetadataAndCoverArt(&trackMetadata, NULL));
+    EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
     EXPECT_EQ("TITLE2", trackMetadata.getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbum());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumArtist());
@@ -170,6 +172,3 @@ TEST_F(SoundSourceProxyTest, seekForward) {
         }
     }
 }
-
-
-

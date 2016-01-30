@@ -8,11 +8,11 @@
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
-#include "playerinfo.h"
-#include "playermanager.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 
 SetlogFeature::SetlogFeature(QObject* parent,
-                             ConfigObject<ConfigValue>* pConfig,
+                             UserSettingsPointer pConfig,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1) {
@@ -26,7 +26,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_pGetNewPlaylist = new QAction(tr("Create new history playlist"), this);
     connect(m_pGetNewPlaylist, SIGNAL(triggered()), this, SLOT(slotGetNewPlaylist()));
 
-    // initialised in a new generic slot(get new history playlist purpose)
+    // initialized in a new generic slot(get new history playlist purpose)
     emit(slotGetNewPlaylist());
 
     //construct child model
@@ -208,9 +208,10 @@ void SetlogFeature::slotJoinWithPrevious() {
                         QModelIndex index = m_pPlaylistTableModel->index(i,0);
                         if (index.isValid()) {
                             TrackPointer track = m_pPlaylistTableModel->getTrack(index);
-                            // Do not update the playcount, just set played
-                            // status.
-                            track->setPlayed(true);
+                            // Do not update the play count, just set played status.
+                            PlayCounter playCounter(track->getPlayCounter());
+                            playCounter.setPlayed();
+                            track->setPlayCounter(playCounter);
                         }
                     }
 
@@ -256,7 +257,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 
     // If the track is not present in the recent tracks list, mark it
     // played and update its playcount.
-    currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
+    currentPlayingTrack->updatePlayCounter();
 
     // We can only add tracks that are Mixxx library tracks, not external
     // sources.

@@ -9,7 +9,7 @@
 #include <QModelIndex>
 #include <QString>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
 

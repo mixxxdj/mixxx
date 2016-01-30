@@ -1,6 +1,8 @@
-#include "util/math.h"
-#include <QDebug>
 #include "effects/native/phasereffect.h"
+
+#include <QDebug>
+
+#include "util/math.h"
 
 const unsigned int updateCoef = 32;
 
@@ -17,9 +19,9 @@ EffectManifest PhaserEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-                "A more complex sound effect obtained by mixing the input signal" 
-                "with a copy passed through a series of all-pass filters."));
-    
+                "A more complex sound effect obtained by mixing the input signal"
+                " with a copy passed through a series of all-pass filters."));
+
     EffectManifestParameter* stereo = manifest.addParameter();
     stereo->setId("stereo");
     stereo->setName(QObject::tr("Stereo"));
@@ -45,7 +47,7 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("lfo_frequency");
     frequency->setName(QObject::tr("Rate"));
-    frequency->setDescription("Controls the speed of the low frequency oscilator.");   
+    frequency->setDescription("Controls the speed of the low frequency oscilator.");
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -90,7 +92,7 @@ EffectManifest PhaserEffect::getManifest() {
 }
 
 PhaserEffect::PhaserEffect(EngineEffect* pEffect,
-                           const EffectManifest& manifest) 
+                           const EffectManifest& manifest)
         : m_pStagesParameter(pEffect->getParameterById("stages")),
           m_pLFOFrequencyParameter(pEffect->getParameterById("lfo_frequency")),
           m_pDepthParameter(pEffect->getParameterById("depth")),
@@ -128,7 +130,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE* oldInRight = pState->oldInRight;
     CSAMPLE* oldOutRight = pState->oldOutRight;
 
-    // Using two sets of coefficients for left and right channel 
+    // Using two sets of coefficients for left and right channel
     CSAMPLE filterCoefLeft = 0;
     CSAMPLE filterCoefRight = 0;
 
@@ -140,7 +142,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
-        left = pInput[i] + tanh(left * feedback); 
+        left = pInput[i] + tanh(left * feedback);
         right = pInput[i + 1] + tanh(right * feedback);
 
         // For stereo enabled, the channels are out of phase
@@ -152,7 +154,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         if ((counter++) % updateCoef == 0) {
                 CSAMPLE delayLeft = 0.5 + 0.5 * sin(pState->leftPhase);
                 CSAMPLE delayRight = 0.5 + 0.5 * sin(pState->rightPhase);
-                
+
                 // Coefficient computing based on the following:
                 // https://ccrma.stanford.edu/~jos/pasp/Classic_Virtual_Analog_Phase.html
                 CSAMPLE wLeft = range * delayLeft;
@@ -164,7 +166,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
                 filterCoefLeft = (1.0 - tanwLeft) / (1.0 + tanwLeft);
                 filterCoefRight = (1.0 - tanwRight) / (1.0 + tanwRight);
         }
-       
+
         left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
         right = processSample(right, oldInRight, oldOutRight, filterCoefRight, stages);
 

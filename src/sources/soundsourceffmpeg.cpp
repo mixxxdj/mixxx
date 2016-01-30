@@ -1,5 +1,6 @@
 #include "sources/soundsourceffmpeg.h"
 
+#include <mutex>
 #include <vector>
 
 #define AUDIOSOURCEFFMPEG_CACHESIZE 1000
@@ -8,14 +9,30 @@
 
 namespace Mixxx {
 
+namespace {
+    std::once_flag initFFmpegLibFlag;
+
+    // This function must be called once during startup.
+    void initFFmpegLib() {
+        av_register_all();
+        avcodec_register_all();
+    }
+} // anonymous namespace
+
+SoundSourceProviderFFmpeg::SoundSourceProviderFFmpeg() {
+    std::call_once(initFFmpegLibFlag, initFFmpegLib);
+}
+
 QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     QStringList list;
     AVInputFormat *l_SInputFmt  = NULL;
 
     while ((l_SInputFmt = av_iformat_next(l_SInputFmt))) {
         if (l_SInputFmt->name == NULL) {
-            break;
+            break; // exit loop
         }
+
+        qDebug() << "FFmpeg input format:" << l_SInputFmt->name;
 
         if (!strcmp(l_SInputFmt->name, "flac")) {
             list.append("flac");
@@ -287,7 +304,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                                                &l_SPacket);
 
                 if (l_iRet <= 0) {
-                    // An error or EOF occured,index break out and return what
+                    // An error or EOF occurred,index break out and return what
                     // we have so far.
                     qDebug() << "EOF!";
                     l_iStop = true;
@@ -483,7 +500,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
         // Use this Cache object as starting point
         l_SObj = m_SCache[l_lPos];
-        
+
         if (l_SObj == NULL) {
             qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Cache object NULL";
             return false;

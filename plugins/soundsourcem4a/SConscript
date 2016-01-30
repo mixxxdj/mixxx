@@ -15,12 +15,14 @@ m4a_sources = [
     "sources/soundsource.cpp",
     "sources/soundsourceplugin.cpp",
     "sources/audiosource.cpp",
-    "samplebuffer.cpp",
-    "singularsamplebuffer.cpp",
-    "sampleutil.cpp",
-    "metadata/trackmetadata.cpp",
-    "metadata/trackmetadatataglib.cpp",
-    "util/replaygain.cpp"
+    "util/samplebuffer.cpp",
+    "util/singularsamplebuffer.cpp",
+    "util/sample.cpp",
+    "track/trackmetadata.cpp",
+    "track/trackmetadatataglib.cpp",
+    "track/tracknumbers.cpp",
+    "track/replaygain.cpp",
+    "track/bpm.cpp"
 ]
 
 #Tell SCons to build the SoundSourceM4A plugin

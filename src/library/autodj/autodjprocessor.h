@@ -5,12 +5,12 @@
 #include <QString>
 #include <QModelIndexList>
 
-#include "util.h"
-#include "trackinfoobject.h"
-#include "configobject.h"
-#include "library/playlisttablemodel.h"
-#include "engine/enginechannel.h"
+#include "preferences/usersettings.h"
 #include "controlobjectslave.h"
+#include "engine/enginechannel.h"
+#include "library/playlisttablemodel.h"
+#include "trackinfoobject.h"
+#include "util/class.h"
 
 class ControlPushButton;
 class TrackCollection;
@@ -113,7 +113,7 @@ class AutoDJProcessor : public QObject {
     };
 
     AutoDJProcessor(QObject* pParent,
-                    ConfigObject<ConfigValue>* pConfig,
+                    UserSettingsPointer pConfig,
                     PlayerManagerInterface* pPlayerManager,
                     int iAutoDJPlaylistId,
                     TrackCollection* pCollection);
@@ -190,7 +190,7 @@ class AutoDJProcessor : public QObject {
     // present.
     bool removeTrackFromTopOfQueue(TrackPointer pTrack);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     PlayerManagerInterface* m_pPlayerManager;
     PlaylistTableModel* m_pAutoDJTableModel;
 

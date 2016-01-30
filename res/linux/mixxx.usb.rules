@@ -1,0 +1,11 @@
+# This udev rule allows Mixxx to access HID and USB Bulk controllers when running as a normal user
+
+# Allow scanning and use of USB HID devices
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{bInterfaceClass}=="03", GROUP="users", MODE="0660"
+
+# Vendors with USB Bulk-transfer DJ controllers
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="06f8", GROUP="users", MODE="0660" # Hercules
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="15e4", GROUP="users", MODE="0660" # Numark (may be needed for NS7/V7)
+
+# Only some distribuions require the below
+KERNEL=="hiddev*", NAME="usb/%k", GROUP="users"

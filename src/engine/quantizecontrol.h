@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 
 #include "trackinfoobject.h"
@@ -11,12 +11,11 @@
 
 class ControlObject;
 class ControlPushButton;
-class ControlObjectThread;
 
 class QuantizeControl : public EngineControl {
     Q_OBJECT
   public:
-    QuantizeControl(QString group, ConfigObject<ConfigValue>* pConfig);
+    QuantizeControl(QString group, UserSettingsPointer pConfig);
     virtual ~QuantizeControl();
 
     virtual void setCurrentSample(const double dCurrentSample,

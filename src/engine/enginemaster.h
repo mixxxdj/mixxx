@@ -26,7 +26,7 @@
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "engine/channelhandle.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 #include "recording/recordingmanager.h"
 
 class EngineWorkerScheduler;
@@ -53,7 +53,7 @@ static const int kPreallocatedChannels = 64;
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
-    EngineMaster(ConfigObject<ConfigValue>* pConfig,
+    EngineMaster(UserSettingsPointer pConfig,
                  const char* pGroup,
                  EffectsManager* pEffectsManager,
                  bool bEnableSidechain,

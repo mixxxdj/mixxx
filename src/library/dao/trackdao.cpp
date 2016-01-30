@@ -10,13 +10,14 @@
 
 #include "library/dao/trackdao.h"
 
-#include "metadata/audiotagger.h"
 #include "library/queryutil.h"
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
+#include "track/tracknumbers.h"
+#include "track/trackmetadatataglib.h"
 #include "trackinfoobject.h"
 #include "library/coverart.h"
 #include "library/coverartutils.h"
@@ -71,7 +72,7 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
                    CrateDAO& crateDao,
                    AnalysisDao& analysisDao,
                    LibraryHashDAO& libraryHashDao,
-                   ConfigObject<ConfigValue> * pConfig)
+                   UserSettingsPointer pConfig)
         : m_database(database),
           m_cueDao(cueDao),
           m_playlistDao(playlistDao),
@@ -263,32 +264,26 @@ void TrackDAO::saveTrack(TrackPointer track) {
 }
 
 void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
-    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
-        return;
-    }
-    //qDebug() << "TrackDAO::saveTrack" << pTrack->getId() << pTrack->getInfo();
-    TrackId trackId(pTrack->getId());
-    if (trackId.isValid()) {
-        // Track has already been stored in database
-        if (pTrack->isDirty()) {
-            //qDebug() << this << "Dirty tracks before clean save:" << m_dirtyTracks.size();
-            //qDebug() << "TrackDAO::saveTrack. Dirty. Calling update";
+    DEBUG_ASSERT(nullptr != pTrack);
+
+    if (pTrack->isDirty()) {
+        // Only update the database if the track has already been added!
+        if (pTrack->getId().isValid()) {
             updateTrack(pTrack);
-
-            // Write audio meta data, if enabled in the preferences
-            // TODO(DSC) Only wite tag if file Metatdata is dirty
-            writeMetadataToFile(pTrack);
-
-            //qDebug() << this << "Dirty tracks remaining after clean save:" << m_dirtyTracks.size();
-        } else {
-            //qDebug() << "TrackDAO::saveTrack. Not Dirty";
-            //qDebug() << this << "Dirty tracks remaining:" << m_dirtyTracks.size();
-            //qDebug() << "Skipping track update for track" << pTrack->getId();
         }
-    } else {
-        // Track has not been added to database
-        //qDebug() << "TrackDAO::saveTrack. Adding track";
-        addTrack(pTrack, false);
+
+        // Write audio meta data, if enabled in the preferences.
+        //
+        // TODO(DSC) Only write tag if file metadata is dirty.
+        // Currently metadata will also be saved if for example
+        // cue points have been modified, even if this information
+        // is only stored in the database.
+        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+            SoundSourceProxy::saveTrackMetadata(pTrack);
+        }
+
+        pTrack->resetDirty();
+        emit(trackClean(pTrack->getId()));
     }
 }
 
@@ -392,6 +387,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":composer", pTrack->getComposer());
     m_pQueryLibraryInsert->bindValue(":grouping", pTrack->getGrouping());
     m_pQueryLibraryInsert->bindValue(":tracknumber", pTrack->getTrackNumber());
+    m_pQueryLibraryInsert->bindValue(":tracktotal", pTrack->getTrackTotal());
     m_pQueryLibraryInsert->bindValue(":filetype", pTrack->getType());
     m_pQueryLibraryInsert->bindValue(":location", trackLocationId);
     m_pQueryLibraryInsert->bindValue(":comment", pTrack->getComment());
@@ -401,14 +397,14 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":bitrate", pTrack->getBitrate());
     m_pQueryLibraryInsert->bindValue(":samplerate", pTrack->getSampleRate());
     m_pQueryLibraryInsert->bindValue(":cuepoint", pTrack->getCuePoint());
-    m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
+    m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->isBpmLocked()? 1 : 0);
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain().getRatio());
     m_pQueryLibraryInsert->bindValue(":replaygain_peak", pTrack->getReplayGain().getPeak());
 
     // We no longer store the wavesummary in the library table.
     m_pQueryLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
 
-    m_pQueryLibraryInsert->bindValue(":timesplayed", pTrack->getTimesPlayed());
+    m_pQueryLibraryInsert->bindValue(":timesplayed", pTrack->getPlayCounter().getTimesPlayed());
     //query.bindValue(":datetime_added", pTrack->getDateAdded());
     m_pQueryLibraryInsert->bindValue(":channels", pTrack->getChannels());
     m_pQueryLibraryInsert->bindValue(":mixxx_deleted", 0);
@@ -489,7 +485,7 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryTrackLocationSelect->prepare("SELECT id FROM track_locations WHERE location=:location");
 
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
-            "(artist, title, album, album_artist, year, genre, tracknumber, composer, "
+            "(artist, title, album, album_artist, year, genre, tracknumber, tracktotal, composer, "
             "grouping, filetype, location, comment, url, duration, rating, key, key_id, "
             "bitrate, samplerate, cuepoint, bpm, replaygain, replaygain_peak, wavesummaryhex, "
             "timesplayed, channels, mixxx_deleted, header_parsed, "
@@ -497,7 +493,7 @@ void TrackDAO::addTracksPrepare() {
             "keys_version, keys_sub_version, keys, "
             "coverart_source, coverart_type, coverart_location, coverart_hash ) "
             "VALUES ("
-            ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
+            ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :tracktotal, :composer, :grouping, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :replaygain_peak, :wavesummaryhex, "
             ":timesplayed, :channels, :mixxx_deleted, :header_parsed, "
@@ -638,22 +634,18 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         pTrack->setId(trackId);
         m_analysisDao.saveTrackAnalyses(pTrack);
         m_cueDao.saveTrackCues(trackId, pTrack);
-        pTrack->setDirty(false);
+        pTrack->resetDirty();
     }
     m_tracksAddedSet.insert(trackId);
     return true;
 }
 
 TrackId TrackDAO::addTrack(const QFileInfo& fileInfo, bool unremove) {
-    TrackId trackId;
-    TrackInfoObject * pTrack = new TrackInfoObject(fileInfo);
-    if (pTrack) {
-        // Add the song to the database.
-        addTrack(pTrack, unremove);
-        trackId = pTrack->getId();
-        delete pTrack;
-    }
-    return trackId;
+    TrackPointer pTrack(new TrackInfoObject(fileInfo));
+    SoundSourceProxy(pTrack).loadTrackMetadata();
+    // Add the song to the database.
+    addTrack(pTrack.data(), unremove);
+    return pTrack->getId();
 }
 
 void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
@@ -746,13 +738,13 @@ QList<TrackId> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
         int addIndex = query.value(addIndexColumn).toInt();
         QString filePath = query.value(locationColumn).toString();
         const QFileInfo& fileInfo = fileInfoList.at(addIndex);
-        TrackInfoObject* pTrack = new TrackInfoObject(fileInfo);
-        addTracksAdd(pTrack, unremove);
+        TrackPointer pTrack(new TrackInfoObject(fileInfo));
+        SoundSourceProxy(pTrack).loadTrackMetadata();
+        addTracksAdd(pTrack.data(), unremove);
         TrackId trackId = pTrack->getId();
         if (trackId.isValid()) {
             trackIds.append(trackId);
         }
-        delete pTrack;
     }
 
     // Now that we have imported any tracks that were not already in the
@@ -1021,6 +1013,12 @@ bool setTrackNumber(const QSqlRecord& record, const int column,
     return false;
 }
 
+bool setTrackTotal(const QSqlRecord& record, const int column,
+                    TrackPointer pTrack) {
+    pTrack->setTrackTotal(record.value(column).toString());
+    return false;
+}
+
 bool setTrackComment(const QSqlRecord& record, const int column,
                      TrackPointer pTrack) {
     pTrack->setComment(record.value(column).toString());
@@ -1081,13 +1079,17 @@ bool setTrackReplayGainPeak(const QSqlRecord& record, const int column,
 
 bool setTrackTimesPlayed(const QSqlRecord& record, const int column,
                          TrackPointer pTrack) {
-    pTrack->setTimesPlayed(record.value(column).toInt());
+    PlayCounter playCounter(pTrack->getPlayCounter());
+    playCounter.setTimesPlayed(record.value(column).toInt());
+    pTrack->setPlayCounter(playCounter);
     return false;
 }
 
 bool setTrackPlayed(const QSqlRecord& record, const int column,
                     TrackPointer pTrack) {
-    pTrack->setPlayed(record.value(column).toBool());
+    PlayCounter playCounter(pTrack->getPlayCounter());
+    playCounter.setPlayed(record.value(column).toBool());
+    pTrack->setPlayCounter(playCounter);
     return false;
 }
 
@@ -1129,7 +1131,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     } else {
         pTrack->setBpm(bpm);
     }
-    pTrack->setBpmLock(bpmLocked);
+    pTrack->setBpmLocked(bpmLocked);
     return false;
 }
 
@@ -1182,6 +1184,10 @@ struct ColumnPopulator {
 #define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
 
 TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
+    if (!trackId.isValid()) {
+        return TrackPointer();
+    }
+
     ScopedTimer t("TrackDAO::getTrackFromDB");
     QSqlQuery query(m_database);
 
@@ -1197,6 +1203,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         { "composer", setTrackComposer },
         { "grouping", setTrackGrouping },
         { "tracknumber", setTrackNumber },
+        { "tracktotal", setTrackTotal },
         { "filetype", setTrackFiletype },
         { "rating", setTrackRating },
         { "comment", setTrackComment },
@@ -1270,9 +1277,8 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // Location is the first column.
     QString location = queryRecord.value(0).toString();
 
-    TrackPointer pTrack = TrackPointer(
-            new TrackInfoObject(location, SecurityTokenPointer(),
-                                false),
+    TrackPointer pTrack(
+            new TrackInfoObject(location),
             TrackInfoObject::onTrackReferenceExpired);
     pTrack->setId(trackId);
 
@@ -1289,13 +1295,34 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         }
     }
 
+    // Data migration: Reload track total from file tags if not initialized
+    // yet. The added column "tracktotal" has been initialized with the
+    // default value "//".
+    // See also: Schema revision 26 in schema.xml
+    if (pTrack->getTrackTotal() == "//") {
+        // Reload track total from file tags
+        Mixxx::TrackMetadata trackMetadata;
+        if (OK == readTrackMetadataAndCoverArtFromFile(&trackMetadata, nullptr, location)) {
+            pTrack->setTrackTotal(trackMetadata.getTrackTotal());
+            // Also set the track number if it is still empty due
+            // to insufficient parsing capabilities of Mixxx in
+            // previous versions.
+            if (!trackMetadata.getTrackNumber().isEmpty() && pTrack->getTrackNumber().isEmpty()) {
+                pTrack->setTrackNumber(trackMetadata.getTrackNumber());
+            }
+        } else {
+            qWarning() << "Failed to reload track total from file tags:"
+                    << location;
+        }
+    }
+
     // Populate track cues from the cues table.
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
 
     // Normally we will set the track as clean but sometimes when loading from
     // the database we need to perform upkeep that ought to be written back to
     // the database when the track is deleted.
-    pTrack->setDirty(shouldDirty);
+    pTrack->markDirty(shouldDirty);
 
     // Listen to dirty and changed signals
     connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
@@ -1343,9 +1370,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // If the header hasn't been parsed, parse it but only after we set the
     // track clean and hooked it up to the track cache, because this will
     // dirty it.
-    if (!pTrack->getHeaderParsed()) {
-         pTrack->parse(false);
-    }
+    SoundSourceProxy(pTrack).loadTrackMetadata();
 
     return pTrack;
 }
@@ -1416,7 +1441,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     }
 
     ScopedTransaction transaction(m_database);
-    // QTime time;
+    // PerformanceTimer time;
     // time.start();
     //qDebug() << "TrackDAO::updateTrackInDatabase" << QThread::currentThread() << m_database.connectionName();
 
@@ -1436,7 +1461,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "album_artist=:album_artist, "
                   "year=:year, genre=:genre, composer=:composer, "
                   "grouping=:grouping, filetype=:filetype, "
-                  "tracknumber=:tracknumber, comment=:comment, url=:url, "
+                  "tracknumber=:tracknumber, tracktotal=:tracktotal, "
+                  "comment=:comment, url=:url, "
                   "duration=:duration, rating=:rating, "
                   "key=:key, key_id=:key_id, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
@@ -1459,6 +1485,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":grouping", pTrack->getGrouping());
     query.bindValue(":filetype", pTrack->getType());
     query.bindValue(":tracknumber", pTrack->getTrackNumber());
+    query.bindValue(":tracktotal", pTrack->getTrackTotal());
     query.bindValue(":comment", pTrack->getComment());
     query.bindValue(":url", pTrack->getURL());
     query.bindValue(":duration", pTrack->getDuration());
@@ -1469,14 +1496,15 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":replaygain", pTrack->getReplayGain().getRatio());
     query.bindValue(":replaygain_peak", pTrack->getReplayGain().getPeak());
     query.bindValue(":rating", pTrack->getRating());
-    query.bindValue(":timesplayed", pTrack->getTimesPlayed());
-    query.bindValue(":played", pTrack->getPlayed() ? 1 : 0);
+    const PlayCounter playCounter(pTrack->getPlayCounter());
+    query.bindValue(":timesplayed", playCounter.getTimesPlayed());
+    query.bindValue(":played", playCounter.isPlayed() ? 1 : 0);
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());
     query.bindValue(":track_id", trackId.toVariant());
 
-    query.bindValue(":bpm_lock", pTrack->hasBpmLock() ? 1 : 0);
+    query.bindValue(":bpm_lock", pTrack->isBpmLocked() ? 1 : 0);
 
     BeatsPointer pBeats = pTrack->getBeats();
     QByteArray* pBeatsBlob = NULL;
@@ -1534,16 +1562,16 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
         return;
     }
 
-    //qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
+    //qDebug() << "Update track took : " << time.elapsed().formatMillisWithUnit() << "Now updating cues";
     //time.start();
     m_analysisDao.saveTrackAnalyses(pTrack);
     m_cueDao.saveTrackCues(trackId, pTrack);
     transaction.commit();
 
-    //qDebug() << "Update track in database took: " << time.elapsed() << "ms";
+    //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();
     //time.start();
-    pTrack->setDirty(false);
-    //qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
+    pTrack->resetDirty();
+    //qDebug() << "Dirtying track took: " << time.elapsed().formatMillisWithUnit();
 }
 
 // Mark all the tracks in the library as invalid.
@@ -1823,19 +1851,6 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
     }
 }
 
-void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
-    if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-
-        Mixxx::TrackMetadata trackMetadata;
-        pTrack->getMetadata(&trackMetadata);
-
-        AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
-        if (OK != tagger.save(trackMetadata)) {
-            qWarning() << "Failed to write track metadata:" << pTrack->getLocation();
-        }
-    }
-}
-
 bool TrackDAO::verifyRemainingTracks(
         const QStringList& libraryRootDirs,
         volatile const bool* pCancel) {
@@ -1898,7 +1913,7 @@ bool TrackDAO::verifyRemainingTracks(
 namespace {
     QImage parseCoverArt(const QFileInfo& fileInfo) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
-        return CoverArtUtils::extractEmbeddedCover(fileInfo.filePath(), pToken);
+        return CoverArtUtils::extractEmbeddedCover(fileInfo, pToken);
     }
 }
 
@@ -2059,8 +2074,8 @@ TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
     // TrackPointer. We explicitly do not process cover art while creating the
     // TrackInfoObject since we want to do it asynchronously (see below).
     if (pTrack.isNull()) {
-        pTrack = TrackPointer(new TrackInfoObject(
-                trackLocation, SecurityTokenPointer(), true, false));
+        pTrack = TrackPointer(new TrackInfoObject(trackLocation));
+        SoundSourceProxy(pTrack).loadTrackMetadata();
     }
 
     // If the track wasn't in the library already then it has not yet been

@@ -3,7 +3,7 @@
 
 #include "sources/soundsourceplugin.h"
 
-#include "singularsamplebuffer.h"
+#include "util/singularsamplebuffer.h"
 
 #ifdef __MP4V2__
 #include <mp4v2/mp4v2.h>

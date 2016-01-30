@@ -9,7 +9,7 @@
 
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class ControlObject;
 
@@ -20,8 +20,8 @@ class ControlDoublePrivate : public QObject {
 
     // Used to implement control persistence. All controls that are marked
     // "persist in user config" get and set their value on creation/deletion
-    // using this ConfigObject.
-    static void setUserConfig(ConfigObject<ConfigValue>* pConfig) {
+    // using this UserSettings.
+    static void setUserConfig(UserSettingsPointer pConfig) {
         s_pUserConfig = pConfig;
     }
 
@@ -168,7 +168,7 @@ class ControlDoublePrivate : public QObject {
     // should be passed it explicitly. However, the Control system is so
     // pervasive that updating every control creation to include the
     // configuration object would be arduous.
-    static ConfigObject<ConfigValue>* s_pUserConfig;
+    static UserSettingsPointer s_pUserConfig;
 
     // Hash of ControlDoublePrivate instantiations.
     static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOHash;

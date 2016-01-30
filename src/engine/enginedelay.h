@@ -18,7 +18,7 @@
 #define ENGINEDELAY_H
 
 #include "engine/engineobject.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class ControlPotmeter;
 class ControlObjectSlave;

@@ -29,14 +29,13 @@
 #include "util/file.h"
 #include "util/timer.h"
 #include "library/scanner/scannerutil.h"
-#include "upgrade.h"
 
 // TODO(rryan) make configurable
 const int kScannerThreadPoolSize = 1;
 
 LibraryScanner::LibraryScanner(QWidget* pParentWidget,
                                TrackCollection* collection,
-                               ConfigObject<ConfigValue>* pConfig)
+                               UserSettingsPointer pConfig)
               : m_pCollection(collection),
                 m_libraryHashDao(m_database),
                 m_cueDao(m_database),
@@ -175,7 +174,7 @@ void LibraryScanner::slotStartScan() {
 
     QSet<QString> trackLocations = m_trackDao.getTrackLocations();
     QHash<QString, int> directoryHashes = m_libraryHashDao.getDirectoryHashes();
-    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNameRegex());
+    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
     QRegExp coverExtensionFilter =
             QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
                     Qt::CaseInsensitive);
@@ -380,12 +379,12 @@ void LibraryScanner::slotFinishUnhashedScan() {
     }
 
     // TODO(XXX) doesn't take into account verifyRemainingTracks.
-    qDebug("Scan took: %lld ns. "
+    qDebug("Scan took: %s. "
            "%d unchanged directories. "
            "%d changed/added directories. "
            "%d tracks verified from changed/added directories. "
            "%d new tracks.",
-           m_scannerGlobal->timerElapsed(),
+           m_scannerGlobal->timerElapsed().formatNanosWithUnit().toLocal8Bit().constData(),
            m_scannerGlobal->verifiedDirectories().size(),
            m_scannerGlobal->numScannedDirectories(),
            m_scannerGlobal->verifiedTracks().size(),

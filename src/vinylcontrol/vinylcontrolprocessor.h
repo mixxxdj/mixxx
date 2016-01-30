@@ -7,10 +7,10 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "util/fifo.h"
 #include "vinylcontrol/vinylsignalquality.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class VinylControl;
 class ControlPushButton;
@@ -22,7 +22,7 @@ class ControlPushButton;
 class VinylControlProcessor : public QThread, public AudioDestination {
     Q_OBJECT
   public:
-    VinylControlProcessor(QObject* pParent, ConfigObject<ConfigValue>* pConfig);
+    VinylControlProcessor(QObject* pParent, UserSettingsPointer pConfig);
     virtual ~VinylControlProcessor();
 
     // Called from main thread. Must only touch m_bReportSignalQuality.
@@ -65,7 +65,7 @@ class VinylControlProcessor : public QThread, public AudioDestination {
   private:
     void reloadConfig();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     ControlPushButton* m_pToggle;
     // A pre-allocated array of FIFOs for writing samples from the engine
     // callback to the processor thread. There is a maximum of

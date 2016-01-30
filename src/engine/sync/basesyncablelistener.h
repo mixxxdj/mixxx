@@ -2,7 +2,7 @@
 #define BASESYNCABLELISTENER_H
 
 #include "engine/sync/syncable.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class EngineChannel;
 class InternalClock;
@@ -10,7 +10,7 @@ class MidiMasterClock;
 
 class BaseSyncableListener : public SyncableListener {
   public:
-    BaseSyncableListener(ConfigObject<ConfigValue>* pConfig);
+    BaseSyncableListener(UserSettingsPointer pConfig);
     virtual ~BaseSyncableListener();
 
     void addSyncableDeck(Syncable* pSyncable);
@@ -86,7 +86,7 @@ class BaseSyncableListener : public SyncableListener {
     // Check if there is only one playing syncable deck, and notify it if so.
     void checkUniquePlayingSyncable();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     // The InternalClock syncable.
     InternalClock* m_pInternalClock;
     // Midi master clock.

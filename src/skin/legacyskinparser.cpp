@@ -17,8 +17,8 @@
 #include "controlobjectslave.h"
 
 #include "mixxxkeyboard.h"
-#include "playermanager.h"
-#include "basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "mixer/basetrackplayer.h"
 #include "library/library.h"
 #include "util/xml.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -84,9 +84,14 @@ QMutex LegacySkinParser::s_safeStringMutex;
 
 static bool sDebug = false;
 
-ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
+ControlObject* controlFromConfigKey(const ConfigKey& key, bool bPersist,
                                     bool* created) {
-    ControlObject* pControl = ControlObject::getControl(key);
+    if (key.isEmpty()) {
+        return nullptr;
+    }
+    // Don't warn if the control doesn't exist. Skins use this to create
+    // controls.
+    ControlObject* pControl = ControlObject::getControl(key, false);
 
     if (pControl) {
         if (created) {
@@ -96,9 +101,11 @@ ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
     }
 
     // TODO(rryan): Make this configurable by the skin.
-    qWarning() << "Requested control does not exist:"
-               << QString("%1,%2").arg(key.group, key.item)
-               << "Creating it.";
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        qWarning() << "Requested control does not exist:"
+                   << QString("%1,%2").arg(key.group, key.item)
+                   << "Creating it.";
+    }
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
     ControlPushButton* controlButton = new ControlPushButton(key, bPersist);
@@ -109,7 +116,7 @@ ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
     return controlButton;
 }
 
-ControlObject* LegacySkinParser::controlFromConfigNode(QDomElement element,
+ControlObject* LegacySkinParser::controlFromConfigNode(const QDomElement& element,
                                                        const QString& nodeName,
                                                        bool* created) {
     if (element.isNull() || !m_pContext->hasNode(element, nodeName)) {
@@ -137,7 +144,7 @@ LegacySkinParser::LegacySkinParser()
           m_pContext(NULL) {
 }
 
-LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
+LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
                                    MixxxKeyboard* pKeyboard,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
@@ -239,23 +246,6 @@ void LegacySkinParser::freeChannelStrings() {
     }
 }
 
-bool LegacySkinParser::compareConfigKeys(QDomNode node, QString key)
-{
-    QDomNode n = node;
-
-    // Loop over each <Connection>, check if it's ConfigKey matches key
-    while (!n.isNull())
-    {
-        n = m_pContext->selectNode(n, "Connection");
-        if (!n.isNull())
-        {
-            if  (m_pContext->selectString(n, "ConfigKey").contains(key))
-                return true;
-        }
-    }
-    return false;
-}
-
 SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     QDomNode manifest_node = skinDocument.namedItem("manifest");
     SkinManifest manifest;
@@ -330,38 +320,43 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
 
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
-        if (ok) {
-            ConfigKey configKey = ConfigKey::parseCommaSeparated(
-                    QString::fromStdString(attribute.config_key()));
-            // Set the specified attribute, possibly creating the control
-            // object in the process.
-            bool created = false;
-            // If there is no existing value for this CO in the skin,
-            // update the config with the specified value. If the attribute
-            // is set to persist, the value will be read when the control is created.
-            // TODO: This is a hack, but right now it's the cleanest way to
-            // get a CO with a specified initial value.  We should have a better
-            // mechanism to provide initial default values for COs.
-            if (attribute.persist() &&
-                    m_pConfig->getValueString(configKey).isEmpty()) {
-                m_pConfig->set(configKey, ConfigValue(QString::number(value)));
-            }
-            ControlObject* pControl = controlFromConfigKey(configKey,
-                                                           attribute.persist(),
-                                                           &created);
-            if (created) {
-                created_attributes.append(pControl);
-            }
-            if (!attribute.persist()) {
-                // Only set the value if the control wasn't set up through
-                // the persist logic.  Skin attributes are always
-                // set on skin load.
-                pControl->set(value);
-            }
-        } else {
+        if (!ok) {
             SKIN_WARNING(skinDocument, *m_pContext)
                     << "Error reading double value from skin attribute: "
                     << QString::fromStdString(attribute.value());
+            continue;
+        }
+
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(
+            QString::fromStdString(attribute.config_key()));
+        // Set the specified attribute, possibly creating the control
+        // object in the process.
+        bool created = false;
+        // If there is no existing value for this CO in the skin,
+        // update the config with the specified value. If the attribute
+        // is set to persist, the value will be read when the control is created.
+        // TODO: This is a hack, but right now it's the cleanest way to
+        // get a CO with a specified initial value.  We should have a better
+        // mechanism to provide initial default values for COs.
+        if (attribute.persist() &&
+            m_pConfig->getValueString(configKey).isEmpty()) {
+            m_pConfig->set(configKey, ConfigValue(QString::number(value)));
+        }
+        ControlObject* pControl = controlFromConfigKey(configKey,
+                                                       attribute.persist(),
+                                                       &created);
+        if (pControl == nullptr) {
+            continue;
+        }
+
+        if (created) {
+            created_attributes.append(pControl);
+        }
+        if (!attribute.persist()) {
+            // Only set the value if the control wasn't set up through
+            // the persist logic.  Skin attributes are always
+            // set on skin load.
+            pControl->set(value);
         }
     }
 
@@ -408,7 +403,7 @@ LaunchImage* LegacySkinParser::parseLaunchImage(QString skinPath, QWidget* pPare
     }
 
     // This allows image urls like
-    // url(skin:/style/mixxx-icon-logo-symbolic.png);
+    // url(skin:/style/mixxx-icon-logo-symbolic.svg);
     QStringList skinPaths(skinPath);
     QDir::setSearchPaths("skin", skinPaths);
 
@@ -677,7 +672,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
         pPrevControl->setParent(pStack);
     }
 
-    if (createdCurrentPage) {
+    if (pCurrentPageControl != nullptr && createdCurrentPage) {
         pCurrentPageControl->setParent(pStack);
     }
 
@@ -722,7 +717,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
                 bool created;
                 pControl = controlFromConfigKey(configKey, false, &created);
-                if (created) {
+                if (pControl != nullptr && created) {
                     // If we created the control, parent it to the child widget so
                     // it doesn't leak.
                     pControl->setParent(pChild);
@@ -1025,6 +1020,7 @@ QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
         return NULL;
 
     WStarRating* p = new WStarRating(pSafeChannelStr, m_pParent);
+    commonWidgetSetup(node, p, false);
     p->setup(node, *m_pContext);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -1720,7 +1716,7 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
 
         bool widthOk = false;
         int x = xs.toInt(&widthOk);
-        if (widthOk) {
+        if (widthOk && x >= 0) {
             if (hasHorizontalPolicy &&
                     sizePolicy.horizontalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting width fixed to" << x;
@@ -1733,7 +1729,7 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
 
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
-        if (heightOk) {
+        if (heightOk && y >= 0) {
             if (hasVerticalPolicy &&
                     sizePolicy.verticalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting height fixed to" << x;
@@ -1857,7 +1853,7 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
         ControlObject* control = controlFromConfigNode(
                 con.toElement(), "ConfigKey", &created);
 
-        if (!control) {
+        if (control == nullptr) {
             continue;
         }
 
@@ -2093,5 +2089,3 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget, const QString&
 QString LegacySkinParser::parseLaunchImageStyle(QDomNode node) {
     return m_pContext->selectString(node, "LaunchImageStyle");
 }
-
-

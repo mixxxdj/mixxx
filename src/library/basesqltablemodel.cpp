@@ -2,7 +2,6 @@
 
 #include <QtAlgorithms>
 #include <QtDebug>
-#include <QTime>
 #include <QUrl>
 
 #include "library/basesqltablemodel.h"
@@ -13,13 +12,14 @@
 #include "library/bpmdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "library/queryutil.h"
-#include "playermanager.h"
-#include "playerinfo.h"
+#include "mixer/playermanager.h"
+#include "mixer/playerinfo.h"
 #include "track/keyutils.h"
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "util/time.h"
 #include "util/dnd.h"
 #include "util/assert.h"
+#include "util/performancetimer.h"
 
 static const bool sDebug = false;
 
@@ -200,7 +200,7 @@ void BaseSqlTableModel::select() {
         qDebug() << this << "select()";
     }
 
-    QTime time;
+    PerformanceTimer time;
     time.start();
 
     // Prepare query for id and all columns not in m_trackSource
@@ -310,8 +310,8 @@ void BaseSqlTableModel::select() {
         endInsertRows();
     }
 
-    int elapsed = time.elapsed();
-    qDebug() << this << "select() took" << elapsed << "ms" << rowInfo.size();
+    qDebug() << this << "select() took" << time.elapsed().formatMillisWithUnit()
+             << rowInfo.size();
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,
@@ -562,7 +562,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = Time::formatSeconds(duration, false);
+                    value = Time::formatSeconds(duration);
                 } else {
                     value = QString();
                 }
@@ -848,9 +848,19 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         // QVariant::toFloat needs >= QT 4.6.x
         pTrack->setBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
-        pTrack->setPlayedAndUpdatePlaycount(value.toBool());
+        // Update both the played flag and the number of times played
+        pTrack->updatePlayCounter(value.toBool());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) == column) {
-        pTrack->setTimesPlayed(value.toInt());
+        const int timesPlayed = value.toInt();
+        if (0 < timesPlayed) {
+            // Preserve the played flag and only set the number of times played
+            PlayCounter playCounter(pTrack->getPlayCounter());
+            playCounter.setTimesPlayed(timesPlayed);
+            pTrack->setPlayCounter(playCounter);
+        } else {
+            // Reset both the played flag and the number of times played
+            pTrack->resetPlayCounter();
+        }
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
         StarRating starRating = qVariantValue<StarRating>(value);
         pTrack->setRating(starRating.starCount());
@@ -858,7 +868,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setKeyText(value.toString(),
                            mixxx::track::io::key::USER);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
-        pTrack->setBpmLock(value.toBool());
+        pTrack->setBpmLocked(value.toBool());
     } else {
         // We never should get up to this point!
         DEBUG_ASSERT_AND_HANDLE(false) {

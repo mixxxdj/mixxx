@@ -127,7 +127,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     //ScopedTimer t("WaveformRendererEndOfTrack::draw");
 
-    const int elapsed = m_timer.elapsed() % m_blinkingPeriodMillis;
+    const int elapsed = m_timer.elapsed().toIntegerMillis() % m_blinkingPeriodMillis;
 
     const double blickIntensity = (double)(2 * abs(elapsed - m_blinkingPeriodMillis/2)) /
             m_blinkingPeriodMillis;

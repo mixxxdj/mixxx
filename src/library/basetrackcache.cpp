@@ -8,6 +8,7 @@
 #include "library/trackcollection.h"
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
+#include "util/performancetimer.h"
 
 namespace {
 
@@ -174,7 +175,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
 }
 
 bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
-    QTime timer;
+    PerformanceTimer timer;
     timer.start();
 
     if (sDebug) {
@@ -208,7 +209,7 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         }
     }
 
-    qDebug() << this << "updateIndexWithQuery took" << timer.elapsed() << "ms";
+    qDebug() << this << "updateIndexWithQuery took" << timer.elapsed().formatMillisWithUnit();
     return true;
 }
 
@@ -310,9 +311,9 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) == column) {
         trackValue.setValue(pTrack->getReplayGain().getRatio());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
-        trackValue.setValue(pTrack->getPlayed());
+        trackValue.setValue(pTrack->getPlayCounter().isPlayed());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) == column) {
-        trackValue.setValue(pTrack->getTimesPlayed());
+        trackValue.setValue(pTrack->getPlayCounter().getTimesPlayed());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
         trackValue.setValue(pTrack->getRating());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
@@ -320,7 +321,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) == column) {
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
-        trackValue.setValue(pTrack->hasBpmLock());
+        trackValue.setValue(pTrack->isBpmLocked());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||

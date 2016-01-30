@@ -1,19 +1,17 @@
 #ifndef MIXXX_AUDIOSOURCE_H
 #define MIXXX_AUDIOSOURCE_H
 
-#include "audiosignal.h"
-#include "urlresource.h"
-
-#include "samplebuffer.h"
-
-#include "util/defs.h" // Result
-
 #include <QSharedPointer>
+
+#include "sources/urlresource.h"
+#include "util/audiosignal.h"
+#include "util/result.h"
+#include "util/samplebuffer.h"
 
 namespace Mixxx {
 
 // forward declaration(s)
-struct AudioSourceConfig;
+class AudioSourceConfig;
 
 // Common interface and base class for audio sources.
 //
@@ -32,7 +30,9 @@ struct AudioSourceConfig;
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
 class AudioSource: public UrlResource, public AudioSignal {
-public:
+  public:
+    static const SampleLayout kSampleLayout = SampleLayout::Interleaved;
+
     // Returns the total number of sample frames.
     inline SINT getFrameCount() const {
         return m_frameCount;
@@ -182,8 +182,9 @@ public:
             SINT* pMaxFrameIndexOfInterval,
             SINT maxFrameIndexOfAudioSource);
 
-protected:
+  protected:
     explicit AudioSource(const QUrl& url);
+    explicit AudioSource(const AudioSource& other) = default;
 
     inline static bool isValidFrameCount(SINT frameCount) {
         return kFrameCountZero <= frameCount;
@@ -196,8 +197,8 @@ protected:
             SINT numberOfFrames,
             bool readStereoSamples = false) const;
 
-private:
-    friend struct AudioSourceConfig;
+  private:
+    friend class AudioSourceConfig;
 
     static const SINT kFrameCountZero = 0;
     static const SINT kFrameCountDefault = kFrameCountZero;
@@ -214,16 +215,14 @@ private:
 };
 
 // Parameters for configuring audio sources
-class AudioSourceConfig: public AudioSignal {
-public:
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-    // NOTE(uklotzde): Inheriting constructors are supported since VS2015.
-    AudioSourceConfig() {}
-    AudioSourceConfig(SINT channelCount, SINT samplingRate): AudioSignal(channelCount, samplingRate) {}
-#else
-    // Inherit constructors from base class
-    using AudioSignal::AudioSignal;
-#endif
+class AudioSourceConfig : public AudioSignal {
+  public:
+    AudioSourceConfig()
+        : AudioSignal(AudioSource::kSampleLayout) {
+    }
+    AudioSourceConfig(SINT channelCount, SINT samplingRate)
+        : AudioSignal(AudioSource::kSampleLayout, channelCount, samplingRate) {
+    }
 
     using AudioSignal::setChannelCount;
     using AudioSignal::resetChannelCount;

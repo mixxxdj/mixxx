@@ -1,15 +1,13 @@
 #include <QtDebug>
 #include <QFileInfo>
 
-#include "controlobject.h"
-#include "controlobjectthread.h"
-
 #include "cachingreader.h"
+#include "controlobject.h"
 #include "trackinfoobject.h"
-#include "sampleutil.h"
+#include "util/assert.h"
 #include "util/counter.h"
 #include "util/math.h"
-#include "util/assert.h"
+#include "util/sample.h"
 
 namespace {
 
@@ -34,7 +32,7 @@ const SINT kDefaultHintSamples = 1024 * CachingReaderChunk::kChannels;
 const int CachingReader::maximumCachingReaderChunksInMemory = 80;
 
 CachingReader::CachingReader(QString group,
-                             ConfigObject<ConfigValue>* config)
+                             UserSettingsPointer config)
         : m_pConfig(config),
           m_chunkReadRequestFIFO(1024),
           m_readerStatusFIFO(1024),

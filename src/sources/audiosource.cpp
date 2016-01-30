@@ -1,6 +1,6 @@
 #include "sources/audiosource.h"
 
-#include "sampleutil.h"
+#include "util/sample.h"
 
 namespace Mixxx {
 
@@ -21,6 +21,7 @@ void AudioSource::clampFrameInterval(
 
 AudioSource::AudioSource(const QUrl& url)
         : UrlResource(url),
+          AudioSignal(kSampleLayout),
           m_frameCount(kFrameCountDefault),
           m_bitrate(kBitrateDefault) {
 }

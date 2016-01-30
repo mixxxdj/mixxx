@@ -6,7 +6,7 @@
 #include <QTimerEvent>
 
 #include "ui_dlgdevelopertoolsdlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "control/controlmodel.h"
 #include "util/statmodel.h"
@@ -15,7 +15,7 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
     Q_OBJECT
   public:
     DlgDeveloperTools(QWidget* pParent,
-                      ConfigObject<ConfigValue>* pConfig);
+                      UserSettingsPointer pConfig);
     virtual ~DlgDeveloperTools();
 
   protected:

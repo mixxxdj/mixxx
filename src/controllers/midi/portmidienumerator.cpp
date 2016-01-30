@@ -24,6 +24,11 @@ bool shouldBlacklistDevice(const PmDeviceInfo* device) {
 PortMidiEnumerator::PortMidiEnumerator(ConfigObject<ConfigValue>* config) :
         MidiEnumerator(),
         m_pConfig(config) {
+    PmError err = Pm_Initialize();
+    // Based on reading the source, it's not possible for this to fail.
+    if (err != pmNoError) {
+        qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
+    }
 }
 
 PortMidiEnumerator::~PortMidiEnumerator() {
@@ -31,6 +36,11 @@ PortMidiEnumerator::~PortMidiEnumerator() {
     QListIterator<Controller*> dev_it(m_devices);
     while (dev_it.hasNext()) {
         delete dev_it.next();
+    }
+    PmError err = Pm_Terminate();
+    // Based on reading the source, it's not possible for this to fail.
+    if (err != pmNoError) {
+        qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
     }
 }
 

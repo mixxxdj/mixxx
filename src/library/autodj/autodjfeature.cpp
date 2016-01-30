@@ -12,10 +12,10 @@
 
 #include "library/library.h"
 #include "library/parser.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"
-#include "dlgautodj.h"
+#include "library/autodj/dlgautodj.h"
 #include "library/treeitem.h"
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
@@ -26,7 +26,7 @@ const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 static const int kMaxRetrieveAttempts = 3;
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
-                             ConfigObject<ConfigValue>* pConfig,
+                             UserSettingsPointer pConfig,
                              PlayerManagerInterface* pPlayerManager,
                              TrackCollection* pTrackCollection)
         : LibraryFeature(pLibrary),
@@ -128,7 +128,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
-    
+
 #endif // __AUTODJCRATES__
 }
 
@@ -272,7 +272,7 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
     }
 #endif // __AUTODJCRATES__
 }
-// Adds a random track : this will be faster when there are sufficiently large 
+// Adds a random track : this will be faster when there are sufficiently large
 // tracks in the crates
 
 void AutoDJFeature::slotAddRandomTrack(bool) {
@@ -307,7 +307,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             if (trackId.isValid()) {
                 TrackPointer addedTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
                 if(addedTrack->exists()) {
-                    if(!addedTrack->getPlayed()) {
+                    if(!addedTrack->getPlayCounter().isPlayed()) {
                         playlistDao.appendTrackToPlaylist(trackId, m_iAutoDJPlaylistId);
                         m_pAutoDJView->onShow();
                         return;

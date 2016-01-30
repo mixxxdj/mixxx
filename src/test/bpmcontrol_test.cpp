@@ -6,7 +6,6 @@
 #include "mixxxtest.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
-#include "controlobjectthread.h"
 #include "engine/bpmcontrol.h"
 #include "track/beats.h"
 #include "track/beatfactory.h"

@@ -3,7 +3,7 @@ import argparse
 import sys
 
 # Usage:
-# ./generate_sample_functions.py --sampleutil_autogen_h ../src/sampleutil_autogen.h --channelmixer_autogen_cpp ../src/engine/channelmixer_autogen.cpp
+# ./generate_sample_functions.py --sample_autogen_h ../src/util/sample_autogen.h --channelmixer_autogen_cpp ../src/engine/channelmixer_autogen.cpp
 
 BASIC_INDENT = 4
 
@@ -27,8 +27,8 @@ def hanging_indent(base, groups, hanging_suffix, terminator, depth=0):
 
 def write_channelmixer_autogen(output, num_channels):
     output.append('#include "engine/channelmixer.h"')
+    output.append('#include "util/sample.h"')
     output.append('#include "util/timer.h"')
-    output.append('#include "sampleutil.h"')
     output.append('////////////////////////////////////////////////////////')
     output.append('// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //')
     output.append('// SEE scripts/generate_sample_functions.py           //')
@@ -131,9 +131,9 @@ def write_channelmixer_autogen(output, num_channels):
     write_mixchannels(False, output)
     write_mixchannels(True, output)
 
-def write_sampleutil_autogen(output, num_channels):
-    output.append('#ifndef SAMPLEUTILAUTOGEN_H')
-    output.append('#define SAMPLEUTILAUTOGEN_H')
+def write_sample_autogen(output, num_channels):
+    output.append('#ifndef MIXXX_UTIL_SAMPLEAUTOGEN_H')
+    output.append('#define MIXXX_UTIL_SAMPLEAUTOGEN_H')
     output.append('////////////////////////////////////////////////////////')
     output.append('// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //')
     output.append('// SEE scripts/generate_sample_functions.py           //')
@@ -143,7 +143,7 @@ def write_sampleutil_autogen(output, num_channels):
         copy_with_gain(output, 0, i)
         copy_with_ramping_gain(output, 0, i)
 
-    output.append('#endif /* SAMPLEUTILAUTOGEN_H */')
+    output.append('#endif /* MIXXX_UTIL_SAMPLEAUTOGEN_H */')
 
 def copy_with_gain(output, base_indent_depth, num_channels):
     def write(data, depth=0):
@@ -249,8 +249,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Auto-generate sample processing and mixing functions.' +
         'Example Call:' +
-        './generate_sample_functions.py --sampleutil_autogen_h ../src/sampleutil_autogen.h --channelmixer_autogen_cpp ../src/engine/channelmixer_autogen.cpp')
-    parser.add_argument('--sampleutil_autogen_h')
+        './generate_sample_functions.py --sample_autogen_h ../src/util/sample_autogen.h --channelmixer_autogen_cpp ../src/engine/channelmixer_autogen.cpp')
+    parser.add_argument('--sample_autogen_h')
     parser.add_argument('--channelmixer_autogen_cpp')
     parser.add_argument('--max_channels', type=int, default=32)
     args = parser.parse_args()

@@ -12,7 +12,7 @@
 const char* kEqualizerRackName = "[EqualizerChain]";
 const char* kQuickEffectRackName = "[QuickEffectChain]";
 
-EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
+EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig)
         : QObject(pParent),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0),
@@ -130,7 +130,6 @@ QString EffectsManager::getNextEffectId(const QString& effectId) {
 
 QString EffectsManager::getPrevEffectId(const QString& effectId) {
     const QList<QString> effects = getAvailableEffects();
-    //qSort(effects.begin(), effects.end());  For alphabetical order
 
     if (effects.isEmpty()) {
         return QString();

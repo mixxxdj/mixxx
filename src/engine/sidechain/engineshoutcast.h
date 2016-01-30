@@ -26,9 +26,8 @@
 #include <QMutex>
 #include <QSemaphore>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
-#include "controlobjectthread.h"
 #include "controlobjectslave.h"
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/networkstreamworker.h"
@@ -57,7 +56,7 @@ class EngineShoutcast :
         STATUSCO_FAILURE = 3 // Happens when disconnected by an error
     };
 
-    EngineShoutcast(ConfigObject<ConfigValue>* _config);
+    EngineShoutcast(UserSettingsPointer _config);
     virtual ~EngineShoutcast();
 
     // This is called by the Engine implementation for each sample. Encode and
@@ -127,9 +126,8 @@ class EngineShoutcast :
     int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
-    ConfigObject<ConfigValue>* m_pConfig;
-    Encoder *m_encoder;
-    ControlObject* m_pShoutcastNeedUpdateFromPrefs;
+    UserSettingsPointer m_pConfig;
+    Encoder* m_encoder;
     ControlPushButton* m_pShoutcastEnabled;
     ControlObjectSlave* m_pMasterSamplerate;
     ControlObject* m_pStatusCO;

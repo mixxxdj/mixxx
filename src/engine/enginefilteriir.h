@@ -1,12 +1,12 @@
 #ifndef ENGINEFILTERIIR_H
 #define ENGINEFILTERIIR_H
 
-#include <string.h>
+#define MIXXX
+#include <cstdio>
+#include <fidlib.h>
 
 #include "engine/engineobject.h"
-#include "sampleutil.h"
-#define MIXXX
-#include <fidlib.h>
+#include "util/sample.h"
 
 // set to 1 to print some analysis data using qDebug()
 // It prints the resulting delay after 50 % of impulse have passed

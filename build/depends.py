@@ -20,7 +20,7 @@ class PortAudio(Dependence):
             conf.CheckLib('advapi32')
 
     def sources(self, build):
-        return ['sounddeviceportaudio.cpp']
+        return ['soundio/sounddeviceportaudio.cpp']
 
 
 class PortMIDI(Dependence):
@@ -497,6 +497,20 @@ class ProtoBuf(Dependence):
             raise Exception(
                 "Could not find libprotobuf or its development headers.")
 
+class FpClassify(Dependence):
+
+    def enabled(self, build):
+        return build.toolchain_is_gnu
+
+    # This is a wrapper arround the fpclassify function that pevents inlining
+    # It is compiled without optimization and allows to use these function
+    # from -ffast-math optimized objects
+    def sources(self, build):
+        # add this file without fast-math flag
+        env = build.env.Clone()
+        if '-ffast-math' in env['CCFLAGS']:
+                env['CCFLAGS'].remove('-ffast-math')
+        return env.Object('util/fpclassify.cpp')
 
 class QtScriptByteArray(Dependence):
     def configure(self, build, conf):
@@ -532,7 +546,7 @@ class MixxxCore(Feature):
                    "control/controlmodel.cpp",
                    "controlobject.cpp",
                    "controlobjectslave.cpp",
-                   "controlobjectthread.cpp",
+                   "controlobjectscript.cpp",
                    "controlaudiotaperpot.cpp",
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
@@ -542,32 +556,28 @@ class MixxxCore(Feature):
                    "controlindicator.cpp",
                    "controlttrotary.cpp",
 
-                   "preferences/dlgpreferencepage.cpp",
-                   "dlgpreferences.cpp",
-                   "dlgprefsound.cpp",
-                   "dlgprefsounditem.cpp",
-                   "controllers/dlgprefcontroller.cpp",
                    "controllers/dlgcontrollerlearning.cpp",
+                   "controllers/dlgprefcontroller.cpp",
                    "controllers/dlgprefcontrollers.cpp",
-                   "dlgpreflibrary.cpp",
-                   "dlgprefcontrols.cpp",
-                   "dlgprefwaveform.cpp",
-                   "dlgprefautodj.cpp",
-                   "dlgprefkey.cpp",
-                   "dlgprefreplaygain.cpp",
-                   "dlgprefnovinyl.cpp",
                    "dlgabout.cpp",
-                   "dlgprefeq.cpp",
-                   "dlgprefeffects.cpp",
-                   "dlgprefcrossfader.cpp",
-                   "dlgtagfetcher.cpp",
-                   "dlgtrackinfo.cpp",
-                   "dlganalysis.cpp",
-                   "dlgautodj.cpp",
-                   "dlghidden.cpp",
-                   "dlgmissing.cpp",
                    "dlgdevelopertools.cpp",
-                   "dlgcoverartfullsize.cpp",
+
+                   "preferences/dialog/dlgprefautodj.cpp",
+                   "preferences/dialog/dlgprefcontrols.cpp",
+                   "preferences/dialog/dlgprefcrossfader.cpp",
+                   "preferences/dialog/dlgprefeffects.cpp",
+                   "preferences/dialog/dlgprefeq.cpp",
+                   "preferences/dialog/dlgpreferences.cpp",
+                   "preferences/dialog/dlgpreflibrary.cpp",
+                   "preferences/dialog/dlgprefnovinyl.cpp",
+                   "preferences/dialog/dlgprefrecord.cpp",
+                   "preferences/dialog/dlgprefreplaygain.cpp",
+                   "preferences/dialog/dlgprefsound.cpp",
+                   "preferences/dialog/dlgprefsounditem.cpp",
+                   "preferences/dialog/dlgprefwaveform.cpp",
+                   "preferences/settingsmanager.cpp",
+                   "preferences/upgrade.cpp",
+                   "preferences/dlgpreferencepage.cpp",
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -655,10 +665,9 @@ class MixxxCore(Feature):
                    "cachingreaderchunk.cpp",
                    "cachingreaderworker.cpp",
 
-                   "analyserrg.cpp",
-                   "analyserqueue.cpp",
-                   "analyserwaveform.cpp",
-                   "analyserkey.cpp",
+                   "analyzer/analyzerqueue.cpp",
+                   "analyzer/analyzerwaveform.cpp",
+                   "analyzer/analyzergain.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -691,7 +700,6 @@ class MixxxCore(Feature):
                    "mixxx.cpp",
                    "mixxxapplication.cpp",
                    "errordialoghandler.cpp",
-                   "upgrade.cpp",
 
                    "sources/soundsourceproviderregistry.cpp",
                    "sources/soundsourceplugin.cpp",
@@ -699,11 +707,6 @@ class MixxxCore(Feature):
                    "sources/soundsource.cpp",
                    "sources/audiosource.cpp",
 
-                   "metadata/trackmetadata.cpp",
-                   "metadata/trackmetadatataglib.cpp",
-                   "metadata/audiotagger.cpp",
-
-                   "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
                    "widget/wbasewidget.cpp",
                    "widget/wwidget.cpp",
@@ -750,7 +753,7 @@ class MixxxCore(Feature):
                    "widget/wcoverartmenu.cpp",
                    "widget/wsingletoncontainer.cpp",
 
-                   "network.cpp",
+                   "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",
                    "musicbrainz/gzip.cpp",
                    "musicbrainz/crc.c",
@@ -758,7 +761,6 @@ class MixxxCore(Feature):
                    "musicbrainz/chromaprinter.cpp",
                    "musicbrainz/musicbrainzclient.cpp",
 
-                   "rotary.cpp",
                    "widget/wtracktableview.cpp",
                    "widget/wtracktableviewheader.cpp",
                    "widget/wlibrarysidebar.cpp",
@@ -791,14 +793,25 @@ class MixxxCore(Feature):
                    "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
                    "library/setlogfeature.cpp",
+                   "library/autodj/dlgautodj.cpp",
+                   "library/dlganalysis.cpp",
+                   "library/dlgcoverartfullsize.cpp",
+                   "library/dlghidden.cpp",
+                   "library/dlgmissing.cpp",
+                   "library/dlgtagfetcher.cpp",
+                   "library/dlgtrackinfo.cpp",
 
                    "library/browse/browsetablemodel.cpp",
                    "library/browse/browsethread.cpp",
                    "library/browse/browsefeature.cpp",
                    "library/browse/foldertreemodel.cpp",
 
+                   "library/export/trackexportdlg.cpp",
+                   "library/export/trackexportwizard.cpp",
+                   "library/export/trackexportworker.cpp",
+
                    "library/recording/recordingfeature.cpp",
-                   "dlgrecording.cpp",
+                   "library/recording/dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
                    "engine/sidechain/enginerecord.cpp",
 
@@ -857,11 +870,13 @@ class MixxxCore(Feature):
 
                    "widget/wwaveformviewer.cpp",
 
+                   "waveform/sharedglcontext.cpp",
                    "waveform/waveform.cpp",
                    "waveform/waveformfactory.cpp",
                    "waveform/waveformwidgetfactory.cpp",
                    "waveform/vsyncthread.cpp",
                    "waveform/guitick.cpp",
+                   "waveform/visualplayposition.cpp",
                    "waveform/renderers/waveformwidgetrenderer.cpp",
                    "waveform/renderers/waveformrendererabstract.cpp",
                    "waveform/renderers/waveformrenderbackground.cpp",
@@ -916,11 +931,6 @@ class MixxxCore(Feature):
                    "skin/pixmapsource.cpp",
                    "skin/launchimage.cpp",
 
-                   "sampleutil.cpp",
-                   "samplebuffer.cpp",
-                   "singularsamplebuffer.cpp",
-                   "circularsamplebuffer.cpp",
-
                    "trackinfoobject.cpp",
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
@@ -929,23 +939,30 @@ class MixxxCore(Feature):
                    "track/keys.cpp",
                    "track/keyfactory.cpp",
                    "track/keyutils.cpp",
+                   "track/playcounter.cpp",
+                   "track/replaygain.cpp",
+                   "track/bpm.cpp",
+                   "track/tracknumbers.cpp",
+                   "track/trackmetadata.cpp",
+                   "track/trackmetadatataglib.cpp",
 
-                   "baseplayer.cpp",
-                   "basetrackplayer.cpp",
-                   "deck.cpp",
-                   "sampler.cpp",
-                   "previewdeck.cpp",
-                   "playermanager.cpp",
-                   "samplerbank.cpp",
-                   "sounddevice.cpp",
-                   "sounddevicenetwork.cpp",
+                   "mixer/auxiliary.cpp",
+                   "mixer/baseplayer.cpp",
+                   "mixer/basetrackplayer.cpp",
+                   "mixer/deck.cpp",
+                   "mixer/microphone.cpp",
+                   "mixer/playerinfo.cpp",
+                   "mixer/playermanager.cpp",
+                   "mixer/previewdeck.cpp",
+                   "mixer/sampler.cpp",
+                   "mixer/samplerbank.cpp",
+
+                   "soundio/sounddevice.cpp",
+                   "soundio/sounddevicenetwork.cpp",
                    "engine/sidechain/enginenetworkstream.cpp",
-                   "soundmanager.cpp",
-                   "soundmanagerconfig.cpp",
-                   "soundmanagerutil.cpp",
-                   "dlgprefrecord.cpp",
-                   "playerinfo.cpp",
-                   "visualplayposition.cpp",
+                   "soundio/soundmanager.cpp",
+                   "soundio/soundmanagerconfig.cpp",
+                   "soundio/soundmanagerutil.cpp",
 
                    "encoder/encoder.cpp",
                    "encoder/encodermp3.cpp",
@@ -973,7 +990,13 @@ class MixxxCore(Feature):
                    "util/movinginterquartilemean.cpp",
                    "util/console.cpp",
                    "util/dbid.cpp",
-                   "util/replaygain.cpp",
+                   "util/sample.cpp",
+                   "util/samplebuffer.cpp",
+                   "util/singularsamplebuffer.cpp",
+                   "util/circularsamplebuffer.cpp",
+                   "util/rotary.cpp",
+                   "util/logging.cpp",
+                   "util/cmdlineargs.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -997,31 +1020,32 @@ class MixxxCore(Feature):
             'controllers/dlgprefcontrollerdlg.ui',
             'controllers/dlgprefcontrollersdlg.ui',
             'dlgaboutdlg.ui',
-            'dlganalysis.ui',
-            'dlgautodj.ui',
-            'dlgcoverartfullsize.ui',
             'dlgdevelopertoolsdlg.ui',
-            'dlghidden.ui',
-            'dlgmissing.ui',
-            'dlgprefbeatsdlg.ui',
-            'dlgprefcontrolsdlg.ui',
-            'dlgprefwaveformdlg.ui',
-            'dlgprefautodjdlg.ui',
-            'dlgprefcrossfaderdlg.ui',
-            'dlgprefkeydlg.ui',
-            'dlgprefeqdlg.ui',
-            'dlgprefeffectsdlg.ui',
-            'dlgpreferencesdlg.ui',
-            'dlgprefnovinyldlg.ui',
-            'dlgpreflibrarydlg.ui',
-            'dlgprefrecorddlg.ui',
-            'dlgprefreplaygaindlg.ui',
-            'dlgprefsounddlg.ui',
-            'dlgprefsounditem.ui',
-            'dlgprefvinyldlg.ui',
-            'dlgrecording.ui',
-            'dlgtagfetcher.ui',
-            'dlgtrackinfo.ui',
+            'library/autodj/dlgautodj.ui',
+            'library/dlganalysis.ui',
+            'library/dlgcoverartfullsize.ui',
+            'library/dlghidden.ui',
+            'library/dlgmissing.ui',
+            'library/dlgtagfetcher.ui',
+            'library/dlgtrackinfo.ui',
+            'library/export/dlgtrackexport.ui',
+            'library/recording/dlgrecording.ui',
+            'preferences/dialog/dlgprefautodjdlg.ui',
+            'preferences/dialog/dlgprefbeatsdlg.ui',
+            'preferences/dialog/dlgprefcontrolsdlg.ui',
+            'preferences/dialog/dlgprefcrossfaderdlg.ui',
+            'preferences/dialog/dlgprefeffectsdlg.ui',
+            'preferences/dialog/dlgprefeqdlg.ui',
+            'preferences/dialog/dlgpreferencesdlg.ui',
+            'preferences/dialog/dlgprefkeydlg.ui',
+            'preferences/dialog/dlgpreflibrarydlg.ui',
+            'preferences/dialog/dlgprefnovinyldlg.ui',
+            'preferences/dialog/dlgprefrecorddlg.ui',
+            'preferences/dialog/dlgprefreplaygaindlg.ui',
+            'preferences/dialog/dlgprefsounddlg.ui',
+            'preferences/dialog/dlgprefsounditem.ui',
+            'preferences/dialog/dlgprefvinyldlg.ui',
+            'preferences/dialog/dlgprefwaveformdlg.ui',
         ]
         map(Qt.uic(build), ui_files)
 
@@ -1069,6 +1093,10 @@ class MixxxCore(Feature):
             # Default GNU Options
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
+            # Quiet down Clang warnings about inconsistent use of override
+            # keyword until Qt fixes qt_metacall.
+            if build.compiler_is_clang:
+                build.env.Append(CCFLAGS='-Wno-inconsistent-missing-override')
             build.env.Append(CCFLAGS='-Wextra')
 
             # Always generate debugging info.
@@ -1143,12 +1171,22 @@ class MixxxCore(Feature):
             # to quickly test if a folder has subfolders
             build.env.Append(LIBS='shell32')
 
+            # Causes the cmath headers to declare M_PI and friends.
+            # http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx
+            # We could define this in our headers but then include order
+            # matters since headers we don't control may include cmath first.
+            build.env.Append(CPPDEFINES='_USE_MATH_DEFINES')
+
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
 
             # Check for pkg-config >= 0.15.0
             if not conf.CheckForPKGConfig('0.15.0'):
                 raise Exception('pkg-config >= 0.15.0 not found.')
+
+            if not conf.CheckLib(['X11', 'libX11']):
+                raise Exception(
+                    "Could not find libX11 or its development headers.")
 
         elif build.platform_is_osx:
             # Stuff you may have compiled by hand
@@ -1224,7 +1262,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
-                QtScriptByteArray, Reverb]
+                QtScriptByteArray, Reverb, FpClassify]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

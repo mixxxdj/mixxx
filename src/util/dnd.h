@@ -10,7 +10,7 @@
 #include <QRegExp>
 #include <QScopedPointer>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "soundsourceproxy.h"
 #include "library/parser.h"
@@ -18,7 +18,7 @@
 #include "library/parserpls.h"
 #include "library/parsercsv.h"
 #include "util/sandbox.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 class DragAndDropHelper {
   public:
@@ -75,7 +75,7 @@ class DragAndDropHelper {
     // Allow loading to a player if the player isn't playing or the settings
     // allow interrupting a playing player.
     static bool allowLoadToPlayer(const QString& group,
-                                  ConfigObject<ConfigValue>* pConfig) {
+                                  UserSettingsPointer pConfig) {
         return allowLoadToPlayer(
                 group, ControlObject::get(ConfigKey(group, "play")) > 0.0,
                 pConfig);
@@ -85,7 +85,7 @@ class DragAndDropHelper {
     // allow interrupting a playing player.
     static bool allowLoadToPlayer(const QString& group,
                                   bool isPlaying,
-                                  ConfigObject<ConfigValue>* pConfig) {
+                                  UserSettingsPointer pConfig) {
         // Always allow loads to preview decks.
         if (PlayerManager::isPreviewDeckGroup(group)) {
             return true;

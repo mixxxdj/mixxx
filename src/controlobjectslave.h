@@ -6,7 +6,7 @@
 #include <QString>
 
 #include "control/control.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 // This class is the successor of ControlObjectThread. It should be used for
 // new code to avoid unnecessary locking during send if no slot is connected.
@@ -36,7 +36,7 @@ class ControlObjectSlave : public QObject {
             const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
     // Called from update();
-    inline void emitValueChanged() {
+    virtual void emitValueChanged() {
         emit(valueChanged(get()));
     }
 
@@ -60,6 +60,11 @@ class ControlObjectSlave : public QObject {
     // Returns the parameterized value of the object. Thread safe, non-blocking.
     inline double getParameterForValue(double value) const {
         return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
+    }
+
+    // Returns the normalized parameter of the object. Thread safe, non-blocking.
+    inline double getDefault() const {
+        return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
 
   public slots:
@@ -86,7 +91,7 @@ class ControlObjectSlave : public QObject {
             // not know the resulting value so it makes sense that we should emit a
             // general valueChanged() signal even though the change originated from
             // us. For this reason, we provide NULL here so that the change is
-            // broadcast as valueChanged() and not valueChangedByThis().
+            // not filtered in valueChanged()
             m_pControl->reset();
         }
     }
@@ -107,6 +112,14 @@ class ControlObjectSlave : public QObject {
 
     // Receives the value from the master control by a unique auto connection
     void slotValueChangedAuto(double v, QObject* pSetter) {
+        if (pSetter != this) {
+            // This is base implementation of this function without scaling
+            emit(valueChanged(v));
+        }
+    }
+
+    // Receives the value from the master control by a unique Queued connection
+    void slotValueChangedQueued(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
             emit(valueChanged(v));

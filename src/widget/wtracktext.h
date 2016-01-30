@@ -5,14 +5,14 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 #include "widget/wlabel.h"
 
 class WTrackText : public WLabel {
     Q_OBJECT
   public:
-    WTrackText(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget *parent);
+    WTrackText(const char* group, UserSettingsPointer pConfig, QWidget *parent);
     virtual ~WTrackText();
 
   signals:
@@ -31,7 +31,7 @@ class WTrackText : public WLabel {
     void mouseMoveEvent(QMouseEvent *event);
 
     const char* m_pGroup;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
 };
 

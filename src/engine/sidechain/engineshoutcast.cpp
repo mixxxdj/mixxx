@@ -29,8 +29,8 @@
 #endif
 
 #include "engine/sidechain/engineshoutcast.h"
-#include "configobject.h"
-#include "playerinfo.h"
+#include "preferences/usersettings.h"
+#include "mixer/playerinfo.h"
 #include "encoder/encoder.h"
 #include "encoder/encodermp3.h"
 #include "encoder/encodervorbis.h"
@@ -44,7 +44,7 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
 
-EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
+EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
         : m_pTextCodec(NULL),
           m_pMetaData(),
           m_pShout(NULL),
@@ -104,9 +104,9 @@ EngineShoutcast::~EngineShoutcast() {
     wait(4000);
 
     // Signal user if thread doesn't die
-    DEBUG_ASSERT_AND_HANDLE(isRunning()) {
+    DEBUG_ASSERT_AND_HANDLE(!isRunning()) {
        qWarning() << "EngineShoutcast:~EngineShoutcast(): Thread didn't die.\
-       Ignored but add this to bug report if problems rise!";
+       Ignored but file a bug report if problems rise!";
     }
 
     delete m_pStatusCO;
@@ -344,7 +344,7 @@ void EngineShoutcast::updateFromPreferences() {
 
     // Initialize m_encoder
     if (m_encoder) {
-        // delete m_encoder if it has been initalized (with maybe) different bitrate
+        // delete m_encoder if it has been initialized (with maybe) different bitrate
         delete m_encoder;
         m_encoder = NULL;
     }

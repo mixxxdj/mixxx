@@ -19,13 +19,13 @@
 #ifndef ENGINESYNC_H
 #define ENGINESYNC_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/sync/syncable.h"
 #include "engine/sync/basesyncablelistener.h"
 
 class EngineSync : public BaseSyncableListener {
   public:
-    explicit EngineSync(ConfigObject<ConfigValue>* pConfig);
+    explicit EngineSync(UserSettingsPointer pConfig);
     virtual ~EngineSync();
 
     // Used by Syncables to tell EngineSync it wants to be enabled in a

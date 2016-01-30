@@ -22,7 +22,7 @@ class OpenGLES(Feature):
           		return
 		if build.flags['opengles']:
 			build.env.Append(CPPDEFINES='__OPENGLES__')
-	
+
 	def sources(self, build):
 		return []
 
@@ -64,7 +64,7 @@ class HSS1394(Feature):
 
 
 class HID(Feature):
-    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-pre'
+    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-rc1'
 
     def description(self):
         return "HID controller support"
@@ -120,8 +120,9 @@ class HID(Feature):
             sources.append(
                 os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
         elif build.platform_is_linux:
+            # hidapi compiles the libusb implementation by default on Linux
             sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
+                os.path.join(self.HIDAPI_INTERNAL_PATH, 'libusb/hid.c'))
         elif build.platform_is_osx:
             sources.append(
                 os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
@@ -341,7 +342,7 @@ class VinylControl(Feature):
     def sources(self, build):
         sources = ['vinylcontrol/vinylcontrol.cpp',
                    'vinylcontrol/vinylcontrolxwax.cpp',
-                   'dlgprefvinyl.cpp',
+                   'preferences/dialog/dlgprefvinyl.cpp',
                    'vinylcontrol/vinylcontrolsignalwidget.cpp',
                    'vinylcontrol/vinylcontrolmanager.cpp',
                    'vinylcontrol/vinylcontrolprocessor.cpp',
@@ -362,7 +363,7 @@ class Vamp(Feature):
     INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
 
     def description(self):
-        return "Vamp Analysers support"
+        return "Vamp Analyzer support"
 
     def enabled(self, build):
         build.flags['vamp'] = util.get_flags(build.env, 'vamp', 1)
@@ -377,6 +378,8 @@ class Vamp(Feature):
         if not self.enabled(build):
             return
 
+        build.env.Append(CPPDEFINES='__VAMP__')
+
         # If there is no system vamp-hostdk installed, then we'll directly link
         # the vamp-hostsdk.
         if not conf.CheckLib(['vamp-hostsdk']):
@@ -386,9 +389,8 @@ class Vamp(Feature):
 
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
-            # Optionally link libdl and libX11. Required for some distros.
+            # Optionally link libdl Required for some distros.
             conf.CheckLib(['dl', 'libdl'])
-            conf.CheckLib(['X11', 'libX11'])
 
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
@@ -399,10 +401,13 @@ class Vamp(Feature):
                 'pkg-config fftw3 --silence-errors --cflags --libs')
 
     def sources(self, build):
-        sources = ['vamp/vampanalyser.cpp',
-                   'vamp/vamppluginloader.cpp',
-                   'analyserbeats.cpp',
-                   'dlgprefbeats.cpp']
+        sources = ['analyzer/vamp/vampanalyzer.cpp',
+                   'analyzer/vamp/vamppluginloader.cpp',
+                   'analyzer/analyzerbeats.cpp',
+                   'analyzer/analyzerkey.cpp',
+                   'preferences/dialog/dlgprefbeats.cpp',
+                   'preferences/dialog/dlgprefkey.cpp']
+
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
             sources.extend(path % hostsdk_src_path for path in
@@ -447,8 +452,8 @@ class ModPlug(Feature):
             raise Exception('Could not find libmodplug shared library.')
 
     def sources(self, build):
-        depends.Qt.uic(build)('dlgprefmodplugdlg.ui')
-        return ['sources/soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
+        depends.Qt.uic(build)('preferences/dialog/dlgprefmodplugdlg.ui')
+        return ['sources/soundsourcemodplug.cpp', 'preferences/dialog/dlgprefmodplug.cpp']
 
 
 class FAAD(Feature):
@@ -772,6 +777,7 @@ class TestSuite(Feature):
 
         env = test_env
         SCons.Export('env')
+        SCons.Export('build')
         env.SConscript(env.File('SConscript', gtest_dir))
 
         # build and configure gmock
@@ -781,6 +787,12 @@ class TestSuite(Feature):
         test_env['LIB_OUTPUT'] = '#/lib/gmock-1.7.0/lib'
 
         env.SConscript(env.File('SConscript', gmock_dir))
+
+        # Build the benchmark library
+        test_env.Append(CPPPATH="#lib/benchmark/include")
+        benchmark_dir = test_env.Dir("#lib/benchmark")
+        test_env['LIB_OUTPUT'] = '#/lib/benchmark/lib'
+        env.SConscript(env.File('SConscript', benchmark_dir))
 
         return []
 
@@ -813,8 +825,8 @@ class Shoutcast(Feature):
             conf.CheckLib('ws2_32')
 
     def sources(self, build):
-        depends.Qt.uic(build)('dlgprefshoutcastdlg.ui')
-        return ['dlgprefshoutcast.cpp',
+        depends.Qt.uic(build)('preferences/dialog/dlgprefshoutcastdlg.ui')
+        return ['preferences/dialog/dlgprefshoutcast.cpp',
                 'shoutcast/shoutcastmanager.cpp',
                 'engine/sidechain/engineshoutcast.cpp']
 
@@ -846,12 +858,6 @@ class Opus(Feature):
 
         # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
-        if not conf.CheckLib(['opus', 'libopus']):
-            if explicit:
-                raise Exception('Could not find libopus.')
-            else:
-                build.flags['opus'] = 0
-            return
         if not conf.CheckLib(['opusfile', 'libopusfile']):
             if explicit:
                 raise Exception('Could not find libopusfile.')
@@ -1107,6 +1113,9 @@ class Optimize(Feature):
                         # the sse flags are not set by default on 32 bit builds
                         # but are not supported on arm builds
                         build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = "portable"
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
                 else:
                     self.status = "portable"
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
@@ -1131,6 +1140,9 @@ class Optimize(Feature):
                     # the sse flags are not set by default on 32 bit builds
                     # but are not supported on arm builds
                     build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+                elif build.architecture_is_arm:
+                    self.status = "portable"
+                    build.env.Append(CCFLAGS='-mfloat-abi=hard -mfpu=neon')
             elif optimize_level == Optimize.LEVEL_LEGACY:
                 if build.architecture_is_x86:
                     self.status = "legacy: pure i386 code"

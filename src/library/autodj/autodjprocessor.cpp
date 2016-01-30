@@ -4,8 +4,8 @@
 #include "controlpushbutton.h"
 #include "controlobjectslave.h"
 #include "util/math.h"
-#include "playermanager.h"
-#include "basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "mixer/basetrackplayer.h"
 
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
@@ -63,7 +63,7 @@ TrackPointer DeckAttributes::getLoadedTrack() const {
 }
 
 AutoDJProcessor::AutoDJProcessor(QObject* pParent,
-                                 ConfigObject<ConfigValue>* pConfig,
+                                 UserSettingsPointer pConfig,
                                  PlayerManagerInterface* pPlayerManager,
                                  int iAutoDJPlaylistId,
                                  TrackCollection* pTrackCollection)

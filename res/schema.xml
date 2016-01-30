@@ -405,4 +405,15 @@ METADATA
       ALTER TABLE library ADD COLUMN replaygain_peak REAL DEFAULT -1.0;
     </sql>
   </revision>
+  <revision version="26" min_compatible="3">
+    <description>
+      Add new column "tracktotal" column that stores the total number of
+      tracks as a string. The total number of tracks will be reloaded
+      from the corresponding file upon first access when encountering
+      the default value.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN tracktotal TEXT DEFAULT '//';
+    </sql>
+  </revision>
 </schema>

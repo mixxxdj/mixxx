@@ -3,11 +3,17 @@
 
 // Causes MSVC to define M_PI and friends.
 // http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx
+// Our SConscript defines this but check anyway.
+#ifdef __WINDOWS__
+#ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
+#endif
+#endif
 #include <cmath>
 #include <algorithm>
 
 #include "util/assert.h"
+#include "util/fpclassify.h"
 
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.
@@ -35,20 +41,8 @@ inline bool even(T value) {
 }
 
 #ifdef _MSC_VER
-// VC++ uses _isnan() instead of isnan() and !_finite instead of isinf.
-#include <float.h>
-#define isnan(x) _isnan(x)
-#define isinf(x) (!_finite(x))
 // Ask VC++ to emit an intrinsic for fabs instead of calling std::fabs.
 #pragma intrinsic(fabs)
-#else
-// for isnan() and isinf() everywhere else use the cmath version. We define
-// these as macros to prevent clashing with c++11 built-ins in the global
-// namespace. If you say "using std::isnan;" then this will fail to build with
-// std=c++11. See https://bugs.webkit.org/show_bug.cgi?id=59249 for some
-// relevant discussion.
-#define isnan std::isnan
-#define isinf std::isinf
 #endif
 
 inline int roundUpToPowerOf2(int v) {

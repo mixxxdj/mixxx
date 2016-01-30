@@ -1,6 +1,6 @@
 #include "engine/effects/engineeffect.h"
-#include "sampleutil.h"
 
+#include "util/sample.h"
 
 EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<ChannelHandleAndGroup>& registeredChannels,

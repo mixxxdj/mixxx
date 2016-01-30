@@ -3,8 +3,8 @@
 
 #include "library/previewbuttondelegate.h"
 #include "library/trackmodel.h"
-#include "playerinfo.h"
-#include "playermanager.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 #include "trackinfoobject.h"
 #include "controlobjectslave.h"
 

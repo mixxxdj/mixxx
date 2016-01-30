@@ -6,14 +6,14 @@
 #include "controlobjectslave.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "effects/native/lvmixeqbase.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbessel4.h"
 #include "engine/enginefilterdelay.h"
-#include "util.h"
+#include "util/class.h"
 #include "util/types.h"
 #include "util/defs.h"
-#include "lvmixeqbase.h"
 
 class Bessel4LVMixEQEffectGroupState :
         public LVMixEQEffectGroupState<EngineFilterBessel4Low> {

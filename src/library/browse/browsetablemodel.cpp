@@ -8,10 +8,10 @@
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
 #include "library/previewbuttondelegate.h"
-#include "playerinfo.h"
+#include "mixer/playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
-#include "metadata/trackmetadatataglib.h"
+#include "track/trackmetadatataglib.h"
 #include "util/dnd.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
@@ -162,77 +162,7 @@ bool BrowseTableModel::isColumnHiddenByDefault(int column) {
 void BrowseTableModel::moveTrack(const QModelIndex&, const QModelIndex&) {
 }
 
-void BrowseTableModel::removeTrack(const QModelIndex& index) {
-    if (!index.isValid()) {
-        return;
-    }
-    QStringList trackLocations;
-    trackLocations.append(getTrackLocation(index));
-    removeTracks(trackLocations);
-}
-
-void BrowseTableModel::removeTracks(const QModelIndexList& indices) {
-    QStringList trackLocations;
-    foreach (QModelIndex index, indices) {
-        if (!index.isValid()) {
-            continue;
-        }
-        trackLocations.append(getTrackLocation(index));
-    }
-    removeTracks(trackLocations);
-}
-
-void BrowseTableModel::removeTracks(QStringList trackLocations) {
-    if (trackLocations.size() == 0)
-        return;
-
-    // Ask user if s/he is sure
-    if (QMessageBox::question(
-        NULL, tr("Mixxx Library"),
-        tr("Warning: This will permanently delete the following files:")
-        + "\n" + trackLocations.join("\n") + "\n" +
-        tr("Are you sure you want to delete these files from your computer?"),
-        QMessageBox::Yes, QMessageBox::Abort) == QMessageBox::Abort) {
-        return;
-    }
-
-    QList<TrackId> deleted_ids;
-    bool any_deleted = false;
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-
-    foreach (QString track_location, trackLocations) {
-        // If track is in use or deletion fails, show an error message.
-        if (isTrackInUse(track_location) || !QFile::remove(track_location)) {
-            QMessageBox::critical(
-                0, tr("Mixxx Library"),
-                tr("Could not delete the following file because"
-                   " it is in use by Mixxx or another application:") + "\n" +track_location);
-            continue;
-        }
-
-        qDebug() << "BrowseFeature: User deleted track " << track_location;
-        any_deleted = true;
-
-        deleted_ids.append(track_dao.getTrackId(track_location));
-    }
-
-    // If the tracks are contained in the Mixxx library, delete them
-    if (!deleted_ids.isEmpty()) {
-        qDebug() << "BrowseFeature: Purge affected track from database";
-        track_dao.purgeTracks(deleted_ids);
-    }
-
-    // Repopulate model if any tracks were actually deleted
-    if (any_deleted) {
-        m_pBrowseThread->executePopulation(m_current_directory,
-                                                       this);
-    }
-}
-
-bool BrowseTableModel::addTrack(const QModelIndex& index, QString location) {
-    Q_UNUSED(index);
-    Q_UNUSED(location);
-    return false;
+void BrowseTableModel::removeTracks(const QModelIndexList&) {
 }
 
 QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
@@ -345,7 +275,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     trackMetadata.setTitle(this->index(row, COLUMN_TITLE).data().toString());
     trackMetadata.setAlbum(this->index(row, COLUMN_ALBUM).data().toString());
     trackMetadata.setKey(this->index(row, COLUMN_KEY).data().toString());
-    trackMetadata.setBpm(this->index(row, COLUMN_BPM).data().toDouble());
+    trackMetadata.setBpm(Mixxx::Bpm(this->index(row, COLUMN_BPM).data().toDouble()));
     trackMetadata.setComment(this->index(row, COLUMN_COMMENT).data().toString());
     trackMetadata.setTrackNumber(this->index(row, COLUMN_TRACK_NUMBER).data().toString());
     trackMetadata.setYear(this->index(row, COLUMN_YEAR).data().toString());
@@ -362,7 +292,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     } else if (col == COLUMN_ALBUM) {
         trackMetadata.setAlbum(value.toString());
     } else if (col == COLUMN_BPM) {
-        trackMetadata.setBpm(value.toDouble());
+        trackMetadata.setBpm(Mixxx::Bpm(value.toDouble()));
     } else if (col == COLUMN_KEY) {
         trackMetadata.setKey(value.toString());
     } else if (col == COLUMN_TRACK_NUMBER) {

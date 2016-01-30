@@ -1,7 +1,7 @@
 
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
         "mixxx_deleted=0 AND fs_deleted=0";
