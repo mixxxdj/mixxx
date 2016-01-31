@@ -438,14 +438,11 @@ class SoundTouch(Dependence):
 
         if build.platform_is_linux:
             # Try using system lib
-            if conf.CheckForPKG('soundtouch', '1.7.0'):
+            if conf.CheckForPKG('soundtouch', '1.8.0'):
                 # No System Lib found
                 build.env.ParseConfig('pkg-config soundtouch --silence-errors \
                                       --cflags --libs')
                 self.INTERNAL_LINK = False
-            else:
-                raise Exception(
-                        "Could not find SoundTouch or its development headers.")
 
         if self.INTERNAL_LINK:
             env.Append(CPPPATH=[self.SOUNDTOUCH_INTERNAL_PATH])
