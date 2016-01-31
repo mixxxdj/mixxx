@@ -51,7 +51,7 @@ class Trace {
             mixxx::Duration elapsed = m_timer.elapsed();
             if (m_writeToStdout) {
                 qDebug() << "END [" << m_tag << "] elapsed: "
-                         << elapsed.formatNanosWithUnit();
+                         << elapsed.debugNanosWithUnit();
             }
 
             // NOTE(rryan) do we need to do this string append? We could add
