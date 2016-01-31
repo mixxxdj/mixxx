@@ -7,6 +7,8 @@
 #include <QtGlobal>
 #include <QTextStreamFunction>
 
+#include "util/assert.h"
+
 namespace mixxx {
 namespace {
 
@@ -18,41 +20,17 @@ const qint64 kNanosPerMicro = 1e3;
 
 }  // namespace
 
-class DurationDebugArray : public QByteArray {
+class DurationDebug;
+
+class DurationBase {
   public:
-    DurationDebugArray(QByteArray& ba)
-        : QByteArray(ba) {
-    }
-    friend QDebug operator<<(QDebug debug, const DurationDebugArray& dda) {
-        return debug << dda.constData();
-    }
-};
-
-// Represents a duration in a type-safe manner. Provides conversion methods to
-// convert between physical units. Durations can be negative.
-class Duration {
-  public:
-    // Returns a Duration object representing a duration of 'seconds'.
-    static Duration fromSeconds(qint64 seconds) {
-        return Duration(seconds * kNanosPerSecond);
-    }
-
-    // Returns a Duration object representing a duration of 'millis'.
-    static Duration fromMillis(qint64 millis) {
-        return Duration(millis * kNanosPerMilli);
-    }
-
-    // Returns a Duration object representing a duration of 'micros'.
-    static Duration fromMicros(qint64 micros) {
-        return Duration(micros * kNanosPerMicro);
-    }
-
-    // Returns a Duration object representing a duration of 'nanos'.
-    static Duration fromNanos(qint64 nanos) {
-        return Duration(nanos);
-    }
-
-    Duration() : m_timestamp_nanos(0) {}
+    enum Units {
+        HEX,
+        SECONDS,
+        MILLIS,
+        MICROS,
+        NANOS
+    };
 
     // Returns the duration as an integer number of seconds (rounded-down).
     inline qint64 toIntegerSeconds() const {
@@ -93,6 +71,76 @@ class Duration {
     // Returns the duration as an integer number of nanoseconds.
     inline qint64 toDoubleNanos() const {
         return static_cast<double>(m_timestamp_nanos);
+    }
+
+  protected:
+    DurationBase(qint64 durationNanos)
+        : m_timestamp_nanos(durationNanos) {
+    }
+
+    qint64 m_timestamp_nanos;
+};
+
+class DurationDebug : public DurationBase {
+  public:
+    DurationDebug(const DurationBase& duration, Units unit)
+        : DurationBase(duration),
+          m_unit(unit) {
+    }
+
+    friend QDebug operator<<(QDebug debug, const DurationDebug& dd) {
+        switch (dd.m_unit) {
+        case HEX:
+        {
+            QByteArray ret("0x0000000000000000");
+            QByteArray hex = QByteArray::number(dd.m_timestamp_nanos, 16);
+            ret.replace(18 - hex.size(), hex.size(), hex);
+            return debug << ret;
+        }
+        case SECONDS:
+            return debug << dd.toIntegerSeconds() << "s";
+        case MILLIS:
+            return debug << dd.toIntegerMillis() << "ms";
+        case MICROS:
+            return debug << dd.toIntegerMicros() << "us";
+        case NANOS:
+            return debug << dd.m_timestamp_nanos << "ns";
+        default:
+            DEBUG_ASSERT(!"Unit unknown");
+            return debug << dd.m_timestamp_nanos << "ns";
+        }
+    }
+
+  private:
+    Units m_unit;
+};
+
+// Represents a duration in a type-safe manner. Provides conversion methods to
+// convert between physical units. Durations can be negative.
+class Duration : public DurationBase {
+  public:
+    // Returns a Duration object representing a duration of 'seconds'.
+    static Duration fromSeconds(qint64 seconds) {
+        return Duration(seconds * kNanosPerSecond);
+    }
+
+    // Returns a Duration object representing a duration of 'millis'.
+    static Duration fromMillis(qint64 millis) {
+        return Duration(millis * kNanosPerMilli);
+    }
+
+    // Returns a Duration object representing a duration of 'micros'.
+    static Duration fromMicros(qint64 micros) {
+        return Duration(micros * kNanosPerMicro);
+    }
+
+    // Returns a Duration object representing a duration of 'nanos'.
+    static Duration fromNanos(qint64 nanos) {
+        return Duration(nanos);
+    }
+
+    Duration()
+        : DurationBase(0) {
     }
 
     const Duration operator+(const Duration& other) const {
@@ -167,55 +215,50 @@ class Duration {
     }
 
     // Formats the duration as a two's-complement hexadecimal string.
-    DurationDebugArray debugHex() const {
-        QByteArray ret("0x0000000000000000");
-        QByteArray hex = QByteArray::number(m_timestamp_nanos, 16);
-        ret.replace(18 - hex.size(), hex.size(), hex);
-        return DurationDebugArray(ret);
+    inline DurationDebug debugHex() const {
+        return debug(HEX);
     }
 
     QString formatNanosWithUnit() const {
         return QString("%1 ns").arg(toIntegerNanos());
     }
 
-    DurationDebugArray debugNanosWithUnit() const {
-        QByteArray ret = QByteArray::number(toIntegerNanos()) + " ns";
-        return DurationDebugArray(ret);
+    DurationDebug debugNanosWithUnit() const {
+        return debug(NANOS);
     }
 
     QString formatMicrosWithUnit() const {
         return QString("%1 us").arg(toIntegerMicros());
     }
 
-    DurationDebugArray debugMicrosWithUnit() const {
-        QByteArray ret = QByteArray::number(toIntegerMicros()) + " us";
-        return DurationDebugArray(ret);
+    DurationDebug debugMicrosWithUnit() const {
+        return debug(MICROS);
     }
 
     QString formatMillisWithUnit() const {
         return QString("%1 ms").arg(toIntegerMillis());
     }
 
-    DurationDebugArray debugMillisWithUnit() const {
-        QByteArray ret = QByteArray::number(toIntegerMillis()) + " ms";
-        return DurationDebugArray(ret);
+    DurationDebug debugMillisWithUnit() const {
+        return debug(MILLIS);
     }
 
     QString formatSecondsWithUnit() const {
         return QString("%1 s").arg(toIntegerSeconds());
     }
 
-    DurationDebugArray debugSecondsWithUnit() const {
-        QByteArray ret = QByteArray::number(toIntegerSeconds()) + " s";
-        return DurationDebugArray(ret);
+    DurationDebug debugSecondsWithUnit() const {
+        return debug(SECONDS);
+    }
+
+    DurationDebug debug(Units unit) const {
+        return DurationDebug(*this, unit);
     }
 
   private:
     Duration(qint64 nanoseconds)
-            : m_timestamp_nanos(nanoseconds) {
+            : DurationBase(nanoseconds) {
     }
-
-    qint64 m_timestamp_nanos;
 };
 
 }  // namespace mixxx
