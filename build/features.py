@@ -1159,7 +1159,7 @@ class Optimize(Feature):
                                 .format(optimize_level))
 
             # what others do:
-            # soundtouch uses just -O3 in Ubuntu Trusty
+            # soundtouch uses just -O3 and -msse in Ubuntu Trusty
             # rubberband uses just -O2 in Ubuntu Trusty
             # fftw3 (used by rubberband) in Ubuntu Trusty
             # -O3 -fomit-frame-pointer -mtune=native -malign-double

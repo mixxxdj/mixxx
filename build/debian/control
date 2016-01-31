@@ -31,7 +31,8 @@ Build-Depends: debhelper (>= 4.0.0),
                libchromaprint-dev,
                librubberband-dev,
                libopusfile-dev,
-               libsqlite3-dev
+               libsqlite3-dev,
+               libsoundtouch-dev
 Standards-Version: 3.7.3
 Homepage: http://www.mixxx.org/
 
