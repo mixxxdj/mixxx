@@ -11,6 +11,8 @@
 #include <QHash>
 #include <QString>
 
+#include "analyzer/plugins/analyzersoundtouchbeats.h"
+#include "analyzer/plugins/analyzerqueenmarybeats.h"
 #include "track/beat_preferences.h"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
@@ -20,6 +22,8 @@
 // static
 QList<AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     QList<AnalyzerPluginInfo> plugins;
+    plugins.append(AnalyzerSoundTouchBeats::pluginInfo());
+    plugins.append(AnalyzerQueenMaryBeats::pluginInfo());
     return plugins;
 }
 
@@ -93,7 +97,13 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     bool bShouldAnalyze = !loadStored(tio);
 
     if (bShouldAnalyze) {
-        return false;
+        if (pluginID == "mixxxbpmdetection") {
+            m_pPlugin.reset(new AnalyzerSoundTouchBeats());
+        } else if (pluginID == "qm-tempotracker") {
+            m_pPlugin.reset(new AnalyzerQueenMaryBeats());
+        } else {
+            m_pPlugin.reset(new AnalyzerQueenMaryBeats());
+        }
         bShouldAnalyze = m_pPlugin->initialize(m_iSampleRate);
     }
 
