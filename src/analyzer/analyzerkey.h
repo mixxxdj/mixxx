@@ -2,10 +2,12 @@
 #define ANALYZER_ANALYZERKEY_H
 
 #include <QHash>
+#include <QList>
+#include <QScopedPointer>
 #include <QString>
 
 #include "analyzer/analyzer.h"
-#include "analyzer/vamp/vampanalyzer.h"
+#include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 
@@ -13,6 +15,8 @@ class AnalyzerKey : public Analyzer {
   public:
     AnalyzerKey(UserSettingsPointer pConfig);
     virtual ~AnalyzerKey();
+
+    static QList<AnalyzerPluginInfo> availablePlugins();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool loadStored(TrackPointer tio) const override;
@@ -25,7 +29,7 @@ class AnalyzerKey : public Analyzer {
         QString pluginId, bool bPreferencesFastAnalysis);
 
     UserSettingsPointer m_pConfig;
-    VampAnalyzer* m_pVamp;
+    QScopedPointer<AnalyzerKeyPlugin> m_pPlugin;
     QString m_pluginId;
     int m_iSampleRate;
     int m_iTotalSamples;

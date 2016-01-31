@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QMap>
 
+#include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/dialog/ui_dlgprefkeydlg.h"
 #include "preferences/usersettings.h"
 #include "track/keyutils.h"
@@ -35,14 +36,12 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     void setNotationCustom(bool);
 
   private:
-    void populate();
     void loadSettings();
 
     UserSettingsPointer m_pConfig;
     QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
-    QList<QString> m_listName;
-    QList<QString> m_listLibrary, m_listIdentifier;
-    QString m_selectedAnalyzer;
+    QList<AnalyzerPluginInfo> m_availablePlugins;
+    QString m_selectedAnalyzerId;
     bool m_bAnalyzerEnabled;
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyzeEnabled;

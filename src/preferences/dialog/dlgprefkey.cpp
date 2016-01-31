@@ -20,17 +20,10 @@
 #include <QLineEdit>
 #include <QMessageBox>
 
-#include "analyzer/vamp/vampanalyzer.h"
-#include "analyzer/vamp/vamppluginloader.h"
+#include "analyzer/analyzerkey.h"
 #include "controlobject.h"
 #include "track/key_preferences.h"
 #include "util/xml.h"
-
-using Vamp::Plugin;
-using Vamp::PluginHostAdapter;
-using Vamp::HostExt::PluginLoader;
-using Vamp::HostExt::PluginWrapper;
-using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer _config)
         : DlgPreferencePage(parent),
@@ -66,7 +59,11 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer _config)
     m_keyLineEdits.insert(mixxx::track::io::key::B_FLAT_MINOR, b_flat_minor_edit);
     m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
 
-    populate();
+    m_availablePlugins = AnalyzerKey::availablePlugins();
+    for (const AnalyzerPluginInfo& info : m_availablePlugins) {
+        plugincombo->addItem(info.name, info.id);
+    }
+
     loadSettings();
 
     // Connections
@@ -94,19 +91,17 @@ DlgPrefKey::~DlgPrefKey() {
 
 void DlgPrefKey::loadSettings() {
     qDebug() << "DlgPrefKey::loadSettings";
-    qDebug() << "Key plugin ID:" << m_pConfig->getValueString(
+    QString keyPluginId = m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
+    qDebug() << "Key plugin ID:" << keyPluginId;
 
-    if(m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID)) == "") {
+    if (keyPluginId.isEmpty()) {
         slotResetToDefaults();
         slotApply(); // Write to config file so AnalyzerKey can get the data
         return;
     }
 
-   QString pluginid = m_pConfig->getValueString(
-       ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
-    m_selectedAnalyzer = pluginid;
+    m_selectedAnalyzerId = keyPluginId;
 
     m_bAnalyzerEnabled = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
@@ -143,9 +138,6 @@ void DlgPrefKey::loadSettings() {
         setNotationOpenKey(true);
     }
 
-    if (!m_listIdentifier.contains(pluginid)) {
-        slotResetToDefaults();
-    }
     slotUpdate();
 }
 
@@ -153,11 +145,12 @@ void DlgPrefKey::slotResetToDefaults() {
     m_bAnalyzerEnabled = true;
     m_bFastAnalysisEnabled = false;
     m_bReanalyzeEnabled = false;
-    m_selectedAnalyzer = VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID;
-    if (!m_listIdentifier.contains(m_selectedAnalyzer)) {
-        qDebug() << "DlgPrefKey: qm-keydetector Vamp plugin not found";
-        m_bAnalyzerEnabled = false;
-    }
+    // TODO(rryan)
+    m_selectedAnalyzerId = VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID;
+    // if (!m_listIdentifier.contains(m_selectedAnalyzer)) {
+    //     qDebug() << "DlgPrefKey: qm-keydetector Vamp plugin not found";
+    //     m_bAnalyzerEnabled = false;
+    // }
 
     radioNotationTraditional->setChecked(true);
     setNotationTraditional(true);
@@ -169,7 +162,7 @@ void DlgPrefKey::pluginSelected(int i) {
     if (i == -1) {
         return;
     }
-    m_selectedAnalyzer = m_listIdentifier[i];
+    m_selectedAnalyzerId = m_availablePlugins[i].id;
     slotUpdate();
 }
 
@@ -189,17 +182,18 @@ void DlgPrefKey::reanalyzeEnabled(int i){
 }
 
 void DlgPrefKey::slotApply() {
-    int selected = m_listIdentifier.indexOf(m_selectedAnalyzer);
-    if (selected == -1) {
-        return;
-    }
+    // TODO(rryan)
+    // int selected = m_listIdentifier.indexOf(m_selectedAnalyzerId);
+    // if (selected == -1) {
+    //     return;
+    // }
 
-    m_pConfig->set(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY),
-        ConfigValue(m_listLibrary[selected]));
+    // m_pConfig->set(
+    //     ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY),
+    //     ConfigValue(m_listLibrary[selected]));
     m_pConfig->set(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID),
-        ConfigValue(m_selectedAnalyzer));
+        ConfigValue(m_selectedAnalyzerId));
     m_pConfig->set(
         ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED),
         ConfigValue(m_bAnalyzerEnabled ? 1 : 0));
@@ -254,7 +248,6 @@ void DlgPrefKey::slotApply() {
     }
 
     KeyUtils::setNotation(notation);
-    m_pConfig->save();
 }
 
 void DlgPrefKey::slotUpdate() {
@@ -268,51 +261,13 @@ void DlgPrefKey::slotUpdate() {
         return;
     }
 
-    int comboselected = m_listIdentifier.indexOf(m_selectedAnalyzer);
-    if (comboselected == -1) {
-        qDebug() << "DlgPrefKey: Plugin not found in slotUpdate()";
-        return;
+    for (int i = 0; i < m_availablePlugins.size(); ++i) {
+        const auto& info = m_availablePlugins.at(i);
+        if (info.id == m_selectedAnalyzerId) {
+            plugincombo->setCurrentIndex(i);
+            break;
+        }
     }
-    plugincombo->setCurrentIndex(comboselected);
-}
-
-void DlgPrefKey::populate() {
-   VampAnalyzer::initializePluginPaths();
-   m_listIdentifier.clear();
-   m_listName.clear();
-   m_listLibrary.clear();
-   plugincombo->clear();
-   plugincombo->setDuplicatesEnabled(false);
-   VampPluginLoader* loader = VampPluginLoader::getInstance();
-   std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
-   qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
-   for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
-       // TODO(XXX): WTF, 48000
-       Plugin* plugin = loader->loadPlugin(plugins[iplugin], 48000);
-       //TODO(XXX): find a general way to add key detectors only
-       if (plugin) {
-           Plugin::OutputList outputs = plugin->getOutputDescriptors();
-           for (unsigned int ioutput=0; ioutput < outputs.size(); ioutput++) {
-               QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
-                                           + QString::number(ioutput);
-               QString displaynametext = QString::fromStdString(plugin->getName());
-               qDebug() << "Plugin output displayname:" << displayname << displaynametext;
-               bool goodones = displayname.contains(VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID);
-
-               if (goodones) {
-                   m_listName << displaynametext;
-                   QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
-                   m_listLibrary << pluginlibrary;
-                   QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
-                           + QString::number(ioutput);
-                   m_listIdentifier << displayname;
-                   plugincombo->addItem(displaynametext, displayname);
-               }
-           }
-           delete plugin;
-           plugin = 0;
-       }
-   }
 }
 
 void DlgPrefKey::setNotationCustom(bool active) {

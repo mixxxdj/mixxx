@@ -7,12 +7,14 @@
 #include "track/key_preferences.h"
 #include "track/keyfactory.h"
 
-using mixxx::track::io::key::ChromaticKey;
-using mixxx::track::io::key::ChromaticKey_IsValid;
+// static
+QList<AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
+    QList<AnalyzerPluginInfo> analyzers;
+    return analyzers;
+}
 
 AnalyzerKey::AnalyzerKey(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_pVamp(NULL),
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_bPreferencesKeyDetectionEnabled(true),
@@ -21,7 +23,6 @@ AnalyzerKey::AnalyzerKey(UserSettingsPointer pConfig)
 }
 
 AnalyzerKey::~AnalyzerKey() {
-    delete m_pVamp;
 }
 
 bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
@@ -57,20 +58,15 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     bool bShouldAnalyze = !loadStored(tio);
 
     if (bShouldAnalyze) {
-        m_pVamp = new VampAnalyzer();
-        bShouldAnalyze = m_pVamp->Init(
-            library, m_pluginId, sampleRate, totalSamples,
-            m_bPreferencesFastAnalysisEnabled);
-        if (!bShouldAnalyze) {
-            delete m_pVamp;
-            m_pVamp = NULL;
-        }
+        return false;
+        bShouldAnalyze = m_pPlugin->initialize(sampleRate);
     }
 
     if (bShouldAnalyze) {
         qDebug() << "Key calculation started with plugin" << m_pluginId;
     } else {
         qDebug() << "Key calculation will not start.";
+        m_pPlugin.reset();
     }
 
     return bShouldAnalyze;
@@ -124,47 +120,35 @@ bool AnalyzerKey::loadStored(TrackPointer tio) const {
 }
 
 void AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
-    if (m_pVamp == NULL)
+    if (m_pPlugin.isNull()) {
         return;
-    bool success = m_pVamp->Process(pIn, iLen);
+    }
+    bool success = m_pPlugin->process(pIn, iLen);
     if (!success) {
-        delete m_pVamp;
-        m_pVamp = NULL;
+        m_pPlugin.reset();
     }
 }
 
 void AnalyzerKey::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
-    delete m_pVamp;
-    m_pVamp = NULL;
+    m_pPlugin.reset();
 }
 
 void AnalyzerKey::finalize(TrackPointer tio) {
-    if (m_pVamp == NULL) {
+    if (m_pPlugin.isNull()) {
         return;
     }
 
-    bool success = m_pVamp->End();
+    bool success = m_pPlugin->finalize();
     qDebug() << "Key Detection" << (success ? "complete" : "failed");
 
-    QVector<double> frames = m_pVamp->GetInitFramesVector();
-    QVector<double> keys = m_pVamp->GetLastValuesVector();
-    delete m_pVamp;
-    m_pVamp = NULL;
-
-    if (frames.size() == 0 || frames.size() != keys.size()) {
-        qWarning() << "AnalyzerKey: Key sequence and list of times do not match.";
+    if (!success) {
+        m_pPlugin.reset();
         return;
     }
 
-    KeyChangeList key_changes;
-    for (int i = 0; i < keys.size(); ++i) {
-        if (ChromaticKey_IsValid(keys[i])) {
-            key_changes.push_back(qMakePair(
-                // int() intermediate cast required by MSVC.
-                static_cast<ChromaticKey>(int(keys[i])), frames[i]));
-        }
-    }
+    KeyChangeList key_changes = m_pPlugin->getKeyChanges();
+    m_pPlugin.reset();
 
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
         m_pluginId, m_bPreferencesFastAnalysisEnabled);

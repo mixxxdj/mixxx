@@ -17,9 +17,14 @@
 #include "track/beatutils.h"
 #include "trackinfoobject.h"
 
+// static
+QList<AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
+    QList<AnalyzerPluginInfo> plugins;
+    return plugins;
+}
+
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_pVamp(NULL),
           m_bPreferencesReanalyzeOldBpm(false),
           m_bPreferencesFixedTempo(true),
           m_bPreferencesOffsetCorrection(false),
@@ -88,19 +93,15 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     bool bShouldAnalyze = !loadStored(tio);
 
     if (bShouldAnalyze) {
-        m_pVamp = new VampAnalyzer();
-        bShouldAnalyze = m_pVamp->Init(library, pluginID, m_iSampleRate, totalSamples,
-                                       m_bPreferencesFastAnalysis);
-        if (!bShouldAnalyze) {
-            delete m_pVamp;
-            m_pVamp = NULL;
-        }
+        return false;
+        bShouldAnalyze = m_pPlugin->initialize(m_iSampleRate);
     }
 
     if (bShouldAnalyze) {
         qDebug() << "Beat calculation started with plugin" << pluginID;
     } else {
         qDebug() << "Beat calculation will not start";
+        m_pPlugin.reset();
     }
 
     return bShouldAnalyze;
@@ -178,47 +179,50 @@ bool AnalyzerBeats::loadStored(TrackPointer tio) const {
 }
 
 void AnalyzerBeats::process(const CSAMPLE *pIn, const int iLen) {
-    if (m_pVamp == NULL)
+    if (m_pPlugin.isNull()) {
         return;
-    bool success = m_pVamp->Process(pIn, iLen);
+    }
+    bool success = m_pPlugin->process(pIn, iLen);
     if (!success) {
-        delete m_pVamp;
-        m_pVamp = NULL;
+        m_pPlugin.reset();
     }
 }
 
 void AnalyzerBeats::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
-    delete m_pVamp;
-    m_pVamp = NULL;
+    m_pPlugin.reset();
 }
 
 void AnalyzerBeats::finalize(TrackPointer tio) {
-    if (m_pVamp == NULL) {
+    if (m_pPlugin.isNull()) {
         return;
     }
 
-    // Call End() here, because the number of total samples may have been
-    // estimated incorrectly.
-    bool success = m_pVamp->End();
+    bool success = m_pPlugin->finalize();
     qDebug() << "Beat Calculation" << (success ? "complete" : "failed");
 
-    QVector<double> beats = m_pVamp->GetInitFramesVector();
-    delete m_pVamp;
-    m_pVamp = NULL;
-
-    if (beats.isEmpty()) {
-        qDebug() << "Could not detect beat positions from Vamp.";
+    if (!success) {
+        m_pPlugin.reset();
         return;
     }
 
-    QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-        m_pluginId, m_bPreferencesFastAnalysis);
-    BeatsPointer pBeats = BeatFactory::makePreferredBeats(
-        tio, beats, extraVersionInfo,
-        m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
-        m_iSampleRate, m_iTotalSamples,
-        m_iMinBpm, m_iMaxBpm);
+    BeatsPointer pBeats;
+    if (m_pPlugin->supportsBeatTracking()) {
+        QVector<double> beats = m_pPlugin->getBeats();
+        qDebug() << "AnalyzerBeats plugin detected" << beats.size() << "beats";
+        QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
+            m_pluginId, m_bPreferencesFastAnalysis);
+        pBeats = BeatFactory::makePreferredBeats(
+            tio, beats, extraVersionInfo,
+            m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
+            m_iSampleRate, m_iTotalSamples,
+            m_iMinBpm, m_iMaxBpm);
+    } else {
+        float bpm = m_pPlugin->getBpm();
+        qDebug() << "AnalyzerBeats plugin detected bpm" << bpm;
+        pBeats = BeatFactory::makeBeatGrid(tio.data(), bpm, 0.0f);
+    }
+    m_pPlugin.reset();
 
     BeatsPointer pCurrentBeats = tio->getBeats();
 
