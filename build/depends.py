@@ -702,6 +702,7 @@ class MixxxCore(Feature):
                    'analyzer/analyzerbeats.cpp',
                    'analyzer/analyzerkey.cpp',
                    "analyzer/plugins/analyzerplugin.cpp",
+                   "analyzer/plugins/analyzerqueenmarykey.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",

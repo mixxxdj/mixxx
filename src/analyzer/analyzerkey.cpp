@@ -3,6 +3,7 @@
 #include <QtDebug>
 #include <QVector>
 
+#include "analyzer/plugins/analyzerqueenmarykey.h"
 #include "proto/keys.pb.h"
 #include "track/key_preferences.h"
 #include "track/keyfactory.h"
@@ -10,6 +11,7 @@
 // static
 QList<AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
     QList<AnalyzerPluginInfo> analyzers;
+    analyzers.push_back(AnalyzerQueenMaryKey::pluginInfo());
     return analyzers;
 }
 
@@ -58,7 +60,12 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     bool bShouldAnalyze = !loadStored(tio);
 
     if (bShouldAnalyze) {
-        return false;
+        if (pluginID == "qm-keydetector") {
+            m_pPlugin.reset(new AnalyzerQueenMaryKey());
+        } else {
+            // Default to our built-in key detector.
+            m_pPlugin.reset(new AnalyzerQueenMaryKey());
+        }
         bShouldAnalyze = m_pPlugin->initialize(sampleRate);
     }
 
