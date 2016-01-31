@@ -157,7 +157,7 @@ class Duration {
     }
 
     friend QDebug operator<<(QDebug debug, const Duration& duration) {
-        return debug << duration.debugNanosWithUnit();
+        return debug << duration.m_timestamp_nanos << "ns";
     }
 
     // Formats the duration as a two's-complement hexadecimal string.
