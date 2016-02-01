@@ -8,7 +8,7 @@
 #ifndef HIDCONTROLLER_H
 #define HIDCONTROLLER_H
 
-#include <hidapi/hidapi.h>
+#include <hidapi.h>
 
 #include <QAtomicInt>
 
