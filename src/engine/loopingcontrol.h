@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 #include "trackinfoobject.h"
 #include "track/beats.h"
@@ -26,7 +26,7 @@ class LoopingControl : public EngineControl {
   public:
     static QList<double> getBeatSizes();
 
-    LoopingControl(QString group, ConfigObject<ConfigValue>* _config);
+    LoopingControl(QString group, UserSettingsPointer _config);
     virtual ~LoopingControl();
 
     // process() updates the internal state of the LoopingControl to reflect the

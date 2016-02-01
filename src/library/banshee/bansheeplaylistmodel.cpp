@@ -1,6 +1,5 @@
 #include <QtAlgorithms>
 #include <QtDebug>
-#include <QTime>
 
 #include "library/banshee/bansheeplaylistmodel.h"
 #include "library/banshee/bansheedbconnection.h"

@@ -10,7 +10,7 @@
 
 #include <QtDebug>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "engine/bpmcontrol.h"
 #include "engine/sync/synccontrol.h"

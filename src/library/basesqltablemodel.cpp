@@ -2,7 +2,6 @@
 
 #include <QtAlgorithms>
 #include <QtDebug>
-#include <QTime>
 #include <QUrl>
 
 #include "library/basesqltablemodel.h"
@@ -20,6 +19,7 @@
 #include "util/time.h"
 #include "util/dnd.h"
 #include "util/assert.h"
+#include "util/performancetimer.h"
 
 static const bool sDebug = false;
 
@@ -200,7 +200,7 @@ void BaseSqlTableModel::select() {
         qDebug() << this << "select()";
     }
 
-    QTime time;
+    PerformanceTimer time;
     time.start();
 
     // Prepare query for id and all columns not in m_trackSource
@@ -310,8 +310,8 @@ void BaseSqlTableModel::select() {
         endInsertRows();
     }
 
-    int elapsed = time.elapsed();
-    qDebug() << this << "select() took" << elapsed << "ms" << rowInfo.size();
+    qDebug() << this << "select() took" << time.elapsed().debugMillisWithUnit()
+             << rowInfo.size();
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,

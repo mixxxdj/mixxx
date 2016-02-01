@@ -11,7 +11,7 @@
 // static
 volatile int SoundDeviceNetwork::m_underflowHappened = 0;
 
-SoundDeviceNetwork::SoundDeviceNetwork(ConfigObject<ConfigValue> *config,
+SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
                                        SoundManager *sm,
                                        QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),

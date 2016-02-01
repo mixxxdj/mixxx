@@ -2,13 +2,13 @@
 
 #include "controllers/dlgprefcontrollers.h"
 
-#include "dlgpreferences.h"
+#include "preferences/dialog/dlgpreferences.h"
 #include "controllers/controllermanager.h"
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/defs_controllers.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
-                                       ConfigObject<ConfigValue>* pConfig,
+                                       UserSettingsPointer pConfig,
                                        ControllerManager* pControllerManager,
                                        QTreeWidgetItem* pControllerTreeItem)
         : DlgPreferencePage(pPreferences),

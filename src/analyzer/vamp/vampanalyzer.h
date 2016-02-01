@@ -14,7 +14,7 @@
 #include <vamp-hostsdk/vamp-hostsdk.h>
 
 #include "analyzer/vamp/vamppluginloader.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "util/sample.h"
 
 class VampAnalyzer {

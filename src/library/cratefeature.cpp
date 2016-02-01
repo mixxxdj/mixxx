@@ -8,6 +8,7 @@
 #include <QDesktopServices>
 
 #include "library/cratefeature.h"
+#include "library/export/trackexportwizard.h"
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
@@ -26,7 +27,7 @@
 
 CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
-                           ConfigObject<ConfigValue>* pConfig)
+                           UserSettingsPointer pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection),
@@ -54,6 +55,10 @@ CrateFeature::CrateFeature(Library* pLibrary,
     m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
+
+    m_pExportTrackFilesAction = new QAction(tr("Export Track Files"), this);
+    connect(m_pExportTrackFilesAction, SIGNAL(triggered()),
+            this, SLOT(slotExportTrackFiles()));
 
     m_pDuplicateCrateAction = new QAction(tr("Duplicate"),this);
     connect(m_pDuplicateCrateAction, SIGNAL(triggered()),
@@ -100,6 +105,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
 
 CrateFeature::~CrateFeature() {
     //delete QActions
+    delete m_pExportTrackFilesAction;
     delete m_pCreateCrateAction;
     delete m_pDeleteCrateAction;
     delete m_pRenameCrateAction;
@@ -208,7 +214,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
 
 void CrateFeature::activateCrate(int crateId) {
     //qDebug() << "CrateFeature::activateCrate()" << crateId;
-    QModelIndex index = indexFromCrateId(crateId);   
+    QModelIndex index = indexFromCrateId(crateId);
     if (crateId != -1 && index.isValid()) {
         m_crateTableModel.setTableModel(crateId);
         emit(showTrackModel(&m_crateTableModel));
@@ -263,6 +269,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
+    menu.addAction(m_pExportTrackFilesAction);
     menu.exec(globalPos);
 }
 
@@ -614,7 +621,7 @@ void CrateFeature::slotImportPlaylist() {
       //Iterate over the List that holds URLs of playlist entires
       m_crateTableModel.addTracks(QModelIndex(), entries);
       activateChild(m_lastRightClickedIndex);
-      
+
       //delete the parser object
       delete playlist_parser;
     }
@@ -698,6 +705,24 @@ void CrateFeature::slotExportPlaylist() {
             ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
         }
     }
+}
+
+void CrateFeature::slotExportTrackFiles() {
+    // Create a new table model since the main one might have an active search.
+    QScopedPointer<CrateTableModel> pCrateTableModel(
+        new CrateTableModel(this, m_pTrackCollection));
+    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
+    pCrateTableModel->select();
+
+    int rows = pCrateTableModel->rowCount();
+    QList<TrackPointer> trackpointers;
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = m_crateTableModel.index(i, 0);
+        trackpointers.push_back(m_crateTableModel.getTrack(index));
+    }
+
+    TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
+    track_export.exportTracks();
 }
 
 void CrateFeature::slotCrateTableChanged(int crateId) {

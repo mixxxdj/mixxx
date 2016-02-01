@@ -12,11 +12,11 @@
 
 #include "analyzer/analyzer.h"
 #include "analyzer/vamp/vampanalyzer.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class AnalyzerBeats: public Analyzer {
   public:
-    AnalyzerBeats(ConfigObject<ConfigValue>* pConfig);
+    AnalyzerBeats(UserSettingsPointer pConfig);
     virtual ~AnalyzerBeats();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
@@ -30,7 +30,7 @@ class AnalyzerBeats: public Analyzer {
         QString pluginId, bool bPreferencesFastAnalysis);
     QVector<double> correctedBeats(QVector<double> rawbeats);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     VampAnalyzer* m_pVamp;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;

@@ -78,23 +78,23 @@ void PerformanceTimer::start()
     t1 = mach_absolute_time();
 }
 
-qint64 PerformanceTimer::elapsed() const
+mixxx::Duration PerformanceTimer::elapsed() const
 {
     uint64_t cpu_time = mach_absolute_time();
-    return absoluteToNSecs(cpu_time - t1);
+    return mixxx::Duration::fromNanos(absoluteToNSecs(cpu_time - t1));
 }
 
-qint64 PerformanceTimer::restart()
+mixxx::Duration PerformanceTimer::restart()
 {
     qint64 start;
     start = t1;
     t1 = mach_absolute_time();
-    return absoluteToNSecs(t1-start);
+    return mixxx::Duration::fromNanos(absoluteToNSecs(t1-start));
 }
 
-qint64 PerformanceTimer::difference(PerformanceTimer* timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
-    return absoluteToNSecs(t1 - timer->t1);
+    return mixxx::Duration::fromNanos(absoluteToNSecs(t1 - timer.t1));
 }
 
 ////////////////////////////// Symbian //////////////////////////////
@@ -114,22 +114,22 @@ void PerformanceTimer::start()
     t1 = User::FastCounter();
 }
 
-qint64 PerformanceTimer::elapsed() const
+mixxx::Duration PerformanceTimer::elapsed() const
 {
-    return getTimeFromTick(User::FastCounter() - t1);
+    return mixxx::Duration::fromNanos(getTimeFromTick(User::FastCounter() - t1));
 }
 
-qint64 PerformanceTimer::restart()
+mixxx::Duration PerformanceTimer::restart()
 {
     qint64 start;
     start = t1;
     t1 = User::FastCounter();
-    return getTimeFromTick(t1 - start);
+    return mixxx::Duration::fromNanos(getTimeFromTick(t1 - start));
 }
 
-qint64 PerformanceTimer::difference(PerformanceTimer* timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
-    return getTimeFromTick(t1 - timer->t1);
+    return mixxx::Duration::fromNanos(getTimeFromTick(t1 - timer.t1));
 }
 
 ////////////////////////////// Unix //////////////////////////////
@@ -196,17 +196,17 @@ void PerformanceTimer::start()
     do_gettime(&t1, &t2);
 }
 
-qint64 PerformanceTimer::elapsed() const
+mixxx::Duration PerformanceTimer::elapsed() const
 {
     qint64 sec, frac;
     do_gettime(&sec, &frac);
     sec = sec - t1;
     frac = frac - t2;
 
-    return sec * Q_INT64_C(1000000000) + frac;
+    return mixxx::Duration::fromNanos(sec * Q_INT64_C(1000000000) + frac);
 }
 
-qint64 PerformanceTimer::restart()
+mixxx::Duration PerformanceTimer::restart()
 {
     qint64 sec, frac;
     sec = t1;
@@ -214,15 +214,15 @@ qint64 PerformanceTimer::restart()
     do_gettime(&t1, &t2);
     sec = t1 - sec;
     frac = t2 - frac;
-    return sec * Q_INT64_C(1000000000) + frac;
+    return mixxx::Duration::fromNanos(sec * Q_INT64_C(1000000000) + frac);
 }
 
-qint64 PerformanceTimer::difference(PerformanceTimer* timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
     qint64 sec, frac;
-    sec = t1 - timer->t1;
-    frac = t2 - timer->t2;
-    return sec * Q_INT64_C(1000000000) + frac;
+    sec = t1 - timer.t1;
+    frac = t2 - timer.t2;
+    return mixxx::Duration::fromNanos(sec * Q_INT64_C(1000000000) + frac);
 }
 
 ////////////////////////////// Windows //////////////////////////////
@@ -243,26 +243,26 @@ void PerformanceTimer::start()
     t1 = li.QuadPart;
 }
 
-qint64 PerformanceTimer::elapsed() const
+mixxx::Duration PerformanceTimer::elapsed() const
 {
     LARGE_INTEGER li;
     QueryPerformanceCounter(&li);
-    return getTimeFromTick(li.QuadPart - t1);
+    return mixxx::Duration::fromNanos(getTimeFromTick(li.QuadPart - t1));
 }
 
-qint64 PerformanceTimer::restart()
+mixxx::Duration PerformanceTimer::restart()
 {
     LARGE_INTEGER li;
     qint64 start;
     start = t1;
     QueryPerformanceCounter(&li);
     t1 = li.QuadPart;
-    return getTimeFromTick(t1 - start);
+    return mixxx::Duration::fromNanos(getTimeFromTick(t1 - start));
 }
 
-qint64 PerformanceTimer::difference(PerformanceTimer* timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
-    return getTimeFromTick(t1 - timer->t1);
+    return mixxx::Duration::fromNanos(getTimeFromTick(t1 - timer.t1));
 }
 
 ////////////////////////////// Default //////////////////////////////
@@ -273,19 +273,19 @@ void PerformanceTimer::start()
 {
 }
 
-qint64 PerformanceTimer::elapsed() const
+mixxx::Duration PerformanceTimer::elapsed() const
 {
-    return 0;
+    return mixxx::Duration::fromNanos(0);
 }
 
-qint64 PerformanceTimer::restart() const
+mixxx::Duration PerformanceTimer::restart() const
 {
-    return 0;
+    return mixxx::Duration::fromNanos(0);
 }
 
-qint64 PerformanceTimer::difference(PerformanceTimer* timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
-    return 0;
+    return mixxx::Duration::fromNanos(0);
 }
 
 #endif

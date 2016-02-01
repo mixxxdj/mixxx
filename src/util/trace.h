@@ -1,13 +1,14 @@
-#ifndef TRACE_H
-#define TRACE_H
+#ifndef UTIL_TRACE_H
+#define UTIL_TRACE_H
 
 #include <QString>
 #include <QtDebug>
 
 #include "util/cmdlineargs.h"
-#include "util/stat.h"
+#include "util/duration.h"
 #include "util/event.h"
 #include "util/performancetimer.h"
+#include "util/stat.h"
 
 class Trace {
   public:
@@ -40,30 +41,31 @@ class Trace {
 
     virtual ~Trace() {
         // Proxy for whether initialize was called.
-        if (!m_tag.isEmpty()) {
-            Event::end(m_tag);
+        if (m_tag.isEmpty()) {
+            return;
+        }
 
-            qint64 elapsed = m_time ? m_timer.elapsed() : 0;
+        Event::end(m_tag);
+
+        if (m_time) {
+            mixxx::Duration elapsed = m_timer.elapsed();
             if (m_writeToStdout) {
-                if (m_time) {
-                    qDebug() << "END [" << m_tag << "]"
-                             << QString("elapsed: %1ns").arg(elapsed);
-                } else {
-                    qDebug() << "END [" << m_tag << "]";
-                }
+                qDebug() << "END [" << m_tag << "] elapsed: "
+                         << elapsed.debugNanosWithUnit();
             }
-            if (m_time) {
-                // NOTE(rryan) do we need to do this string append? We could add
-                // a check in StatsManager to infer that a DURATION_NANOSEC
-                // event for the same tag that has an EVENT_START/EVENT_END is a
-                // duration instead of changing the tag.
-                Stat::track(
-                        m_tag + "_duration",
-                        Stat::DURATION_NANOSEC,
-                        Stat::COUNT | Stat::AVERAGE | Stat::SAMPLE_VARIANCE |
-                        Stat::MAX | Stat::MIN,
-                        elapsed);
-            }
+
+            // NOTE(rryan) do we need to do this string append? We could add
+            // a check in StatsManager to infer that a DURATION_NANOSEC
+            // event for the same tag that has an EVENT_START/EVENT_END is a
+            // duration instead of changing the tag.
+            Stat::track(
+                m_tag + "_duration",
+                Stat::DURATION_NANOSEC,
+                Stat::COUNT | Stat::AVERAGE | Stat::SAMPLE_VARIANCE |
+                Stat::MAX | Stat::MIN,
+                elapsed.toIntegerNanos());
+        } else if (m_writeToStdout) {
+            qDebug() << "END [" << m_tag << "]";
         }
     }
 
@@ -99,4 +101,4 @@ class DebugTrace : public Trace {
     }
 };
 
-#endif /* TRACE_H */
+#endif /* UTIL_TRACE_H */

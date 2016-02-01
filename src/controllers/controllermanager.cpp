@@ -57,7 +57,7 @@ bool controllerCompare(Controller *a,Controller *b) {
     return a->getName() < b->getName();
 }
 
-ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
+ControllerManager::ControllerManager(UserSettingsPointer pConfig)
         : QObject(),
           m_pConfig(pConfig),
           // WARNING: Do not parent m_pControllerLearningEventFilter to
@@ -309,15 +309,15 @@ void ControllerManager::pollDevices() {
         return;
     }
 
-    qint64 start = Time::elapsed();
+    mixxx::Duration start = Time::elapsed();
     foreach (Controller* pDevice, m_controllers) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }
     }
 
-    qint64 duration = Time::elapsed() - start;
-    if (duration > kPollIntervalMillis * 1000000) {
+    mixxx::Duration duration = Time::elapsed() - start;
+    if (duration > mixxx::Duration::fromMillis(kPollIntervalMillis)) {
         m_skipPoll = true;
     }
     //qDebug() << "ControllerManager::pollDevices()" << duration << start;
@@ -398,7 +398,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
 }
 
 // static
-QList<QString> ControllerManager::getPresetPaths(ConfigObject<ConfigValue>* pConfig) {
+QList<QString> ControllerManager::getPresetPaths(UserSettingsPointer pConfig) {
     QList<QString> scriptPaths;
     scriptPaths.append(userPresetsPath(pConfig));
     scriptPaths.append(resourcePresetsPath(pConfig));

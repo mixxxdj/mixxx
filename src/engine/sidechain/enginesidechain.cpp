@@ -36,7 +36,7 @@
 
 #define SIDECHAIN_BUFFER_SIZE 65536
 
-EngineSideChain::EngineSideChain(ConfigObject<ConfigValue>* pConfig)
+EngineSideChain::EngineSideChain(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_bStopThread(false),
           m_sampleFifo(SIDECHAIN_BUFFER_SIZE),

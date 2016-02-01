@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "analyzer/analyzer.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "trackinfoobject.h"
 #include "util/samplebuffer.h"
@@ -28,9 +28,9 @@ class AnalyzerQueue : public QThread {
     void queueAnalyseTrack(TrackPointer tio);
 
     static AnalyzerQueue* createDefaultAnalyzerQueue(
-            ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
+            UserSettingsPointer pConfig, TrackCollection* pTrackCollection);
     static AnalyzerQueue* createAnalysisFeatureAnalyzerQueue(
-            ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
+            UserSettingsPointer pConfig, TrackCollection* pTrackCollection);
 
   public slots:
     void slotAnalyseTrack(TrackPointer tio);

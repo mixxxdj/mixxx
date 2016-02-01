@@ -6,7 +6,7 @@
 #include "engine/enginemaster.h"
 #include "soundio/soundmanager.h"
 
-ShoutcastManager::ShoutcastManager(ConfigObject<ConfigValue>* pConfig,
+ShoutcastManager::ShoutcastManager(UserSettingsPointer pConfig,
                                    SoundManager* pSoundManager)
         : m_pConfig(pConfig) {
     QSharedPointer<EngineNetworkStream> pNetworkStream =

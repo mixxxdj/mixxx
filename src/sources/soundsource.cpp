@@ -42,4 +42,9 @@ Result SoundSource::parseTrackMetadataAndCoverArt(
     return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt, getLocalFileName());
 }
 
+Result SoundSource::writeTrackMetadata(
+        const TrackMetadata& trackMetadata) const {
+    return writeTrackMetadataIntoFile(trackMetadata, getLocalFileName());
+}
+
 } //namespace Mixxx
