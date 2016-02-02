@@ -282,7 +282,7 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
             SoundSourceProxy::saveTrackMetadata(pTrack);
         }
 
-        pTrack->resetDirty();
+        pTrack->markClean();
         emit(trackClean(pTrack->getId()));
     }
 }
@@ -634,7 +634,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         pTrack->setId(trackId);
         m_analysisDao.saveTrackAnalyses(pTrack);
         m_cueDao.saveTrackCues(trackId, pTrack);
-        pTrack->resetDirty();
+        pTrack->markClean();
     }
     m_tracksAddedSet.insert(trackId);
     return true;
@@ -1322,7 +1322,11 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // Normally we will set the track as clean but sometimes when loading from
     // the database we need to perform upkeep that ought to be written back to
     // the database when the track is deleted.
-    pTrack->markDirty(shouldDirty);
+    if (shouldDirty) {
+        pTrack->markDirty();
+    } else {
+        pTrack->markClean();
+    }
 
     // Listen to dirty and changed signals
     connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
@@ -1570,7 +1574,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
 
     //qDebug() << "Update track in database took: " << time.elapsed().formatMillisWithUnit();
     //time.start();
-    pTrack->resetDirty();
+    pTrack->markClean();
     //qDebug() << "Dirtying track took: " << time.elapsed().formatMillisWithUnit();
 }
 

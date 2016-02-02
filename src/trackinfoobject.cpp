@@ -735,24 +735,23 @@ void TrackInfoObject::setCuePoints(const QList<CuePointer>& cuePoints) {
     emit(cuesUpdated());
 }
 
-void TrackInfoObject::resetDirty() {
+void TrackInfoObject::markDirty() {
+    QMutexLocker lock(&m_qMutex);
+    setDirtyAndUnlock(&lock, true);
+}
+
+void TrackInfoObject::markClean() {
     QMutexLocker lock(&m_qMutex);
     setDirtyAndUnlock(&lock, false);
 }
 
-bool TrackInfoObject::markDirty(bool bDirty) {
-    QMutexLocker lock(&m_qMutex);
-    return markDirtyAndUnlock(&lock, bDirty);
-}
-
-bool TrackInfoObject::markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
+void TrackInfoObject::markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
     bool result = m_bDirty || bDirty;
     setDirtyAndUnlock(pLock, result);
-    return result;
 }
 
 void TrackInfoObject::setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
-   const bool dirtyChanged = m_bDirty != bDirty;
+    const bool dirtyChanged = m_bDirty != bDirty;
     m_bDirty = bDirty;
 
     // Unlock before emitting any signals!
