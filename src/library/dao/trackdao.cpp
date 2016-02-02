@@ -283,7 +283,6 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
         }
 
         pTrack->markClean();
-        emit(trackClean(pTrack->getId()));
     }
 }
 
