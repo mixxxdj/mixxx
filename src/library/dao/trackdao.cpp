@@ -274,16 +274,18 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
 
         // Write audio meta data, if enabled in the preferences.
         //
-        // TODO(DSC) Only write tag if file metadata is dirty.
+        // TODO(XXX): Only write tag if file metadata is dirty.
         // Currently metadata will also be saved if for example
         // cue points have been modified, even if this information
         // is only stored in the database.
+        // TODO(uklotzde): We need to introduce separate flag for
+        // tracking changes of track metadata regarding file tags.
+        // Instead of another flag that needs to be managed we
+        // could alternatively store a second copy of TrackMetadata
+        // in TrackInfoObject.
         if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
             SoundSourceProxy::saveTrackMetadata(pTrack);
         }
-
-        pTrack->markClean();
-        emit(trackClean(pTrack->getId()));
     }
 }
 
