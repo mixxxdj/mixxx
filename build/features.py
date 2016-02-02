@@ -64,6 +64,7 @@ class HSS1394(Feature):
 
 
 class HID(Feature):
+    INTERNAL_LINK = False
     HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-rc1'
 
     def description(self):
@@ -81,18 +82,21 @@ class HID(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        # TODO(XXX) allow external hidapi install, but for now we just use our
-        # internal one.
-        build.env.Append(
-            CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
-
+ 
         if build.platform_is_linux:
-            build.env.ParseConfig(
-                'pkg-config libusb-1.0 --silence-errors --cflags --libs')
-            if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
-                    not conf.CheckHeader('libusb-1.0/libusb.h')):
-                raise Exception(
-                    'Did not find the libusb 1.0 development library or its header file')
+            # Try using system lib
+            if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
+                # No System Lib found
+                self.INTERNAL_LINK = True
+                build.env.ParseConfig(
+                    'pkg-config libusb-1.0 --silence-errors --cflags --libs')
+                if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
+                        not conf.CheckHeader('libusb-1.0/libusb.h')):
+                    raise Exception(
+                           'Did not find the libusb 1.0 development library or its header file')
+            else:
+                build.env.ParseConfig('pkg-config hidapi-libusb --silence-errors --cflags --libs')
+
 
             # Optionally add libpthread and librt. Some distros need this.
             conf.CheckLib(['pthread', 'libpthread'])
@@ -102,30 +106,37 @@ class HID(Feature):
             build.env.Append(CCFLAGS='-pthread')
             build.env.Append(LINKFLAGS='-pthread')
 
-        elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
-            raise Exception('Did not find the setupapi library, exiting.')
-        elif build.platform_is_osx:
-            build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
+        else:
+            self.INTERNAL_LINK = True
+            if build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
+                raise Exception('Did not find the setupapi library, exiting.')
+            elif build.platform_is_osx:
+                build.env.AppendUnique(FRAMEWORKS=['IOKit', 'CoreFoundation'])
 
         build.env.Append(CPPDEFINES='__HID__')
+        if self.INTERNAL_LINK:
+            build.env.Append(
+                 CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
 
     def sources(self, build):
         sources = ['controllers/hid/hidcontroller.cpp',
                    'controllers/hid/hidenumerator.cpp',
                    'controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
-        if build.platform_is_windows:
-            # Requires setupapi.lib which is included by the above check for
-            # setupapi.
-            sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
-        elif build.platform_is_linux:
-            # hidapi compiles the libusb implementation by default on Linux
-            sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, 'libusb/hid.c'))
-        elif build.platform_is_osx:
-            sources.append(
-                os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
+        if self.INTERNAL_LINK:
+            if build.platform_is_windows:
+                # Requires setupapi.lib which is included by the above check for
+                # setupapi.
+                sources.append(
+                    os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
+            elif build.platform_is_linux:
+                # hidapi compiles the libusb implementation by default on Linux
+                sources.append(
+                    os.path.join(self.HIDAPI_INTERNAL_PATH, 'libusb/hid.c'))
+            elif build.platform_is_osx:
+                sources.append(
+                    os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
+
         return sources
 
 
