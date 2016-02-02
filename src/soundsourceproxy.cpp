@@ -422,10 +422,11 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     QImage* pCoverImg = (withCoverArt && !parsedFromFile) ? &coverArt.image : nullptr;
 
     // Parse the tags stored in the audio file.
-    if (m_pSoundSource->parseTrackMetadataAndCoverArt(&trackMetadata, pCoverImg) == OK) {
+    if (!m_pSoundSource.isNull() &&
+            (m_pSoundSource->parseTrackMetadataAndCoverArt(&trackMetadata, pCoverImg) == OK)) {
         parsedFromFile = true;
     } else {
-        qWarning() << "Failed to parse metadata from file"
+        qWarning() << "Failed to parse track metadata from file"
                  << getUrl();
         if (parsedFromFile) {
             // Don't overwrite any existing metadata that once has
