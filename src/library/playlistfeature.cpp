@@ -99,7 +99,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
         // library, then add the track to the library before adding it to the
         // playlist.
         // Adds track, does not insert duplicates, handles unremoving logic.
-        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+        trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
     }
 
     // remove tracks that could not be added

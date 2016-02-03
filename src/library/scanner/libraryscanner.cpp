@@ -515,7 +515,8 @@ void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
     if (m_scannerGlobal) {
         m_scannerGlobal->trackAdded(pTrack->getLocation());
     }
-    if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
+    TrackId trackId(m_trackDao.addTracksAddTrack(pTrack, false));
+    if (trackId.isValid()) {
         // Successfully added. Signal the main instance of TrackDAO,
         // that there is a new track in the database.
         emit(trackAdded(pTrack));

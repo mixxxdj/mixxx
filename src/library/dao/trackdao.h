@@ -79,7 +79,7 @@ class LibraryHashDAO;
 // TrackPointers themselves within the QCache by holding a strong reference to
 // TrackPointer (and thereby serving it out of the weak pointer track cache) up
 // until the track has been saved to the database.
-class RecentTrackCacheItem final : public QObject {
+class RecentTrackCacheItem : public QObject {
     Q_OBJECT
   public:
     explicit RecentTrackCacheItem(
@@ -112,24 +112,31 @@ class TrackDAO : public QObject, public virtual DAO {
     void setDatabase(QSqlDatabase& database) { m_database = database; }
 
     void initialize();
+
     TrackId getTrackId(const QString& absoluteFilePath);
     QList<TrackId> getTrackIds(const QList<QFileInfo>& files);
+
     bool trackExistsInDatabase(const QString& absoluteFilePath);
+
+    // WARNING: Only call this from the main thread instance of TrackDAO.
+    TrackPointer getTrack(TrackId trackId, const bool cacheOnly=false) const;
+
     // Returns a set of all track locations in the library.
     QSet<QString> getTrackLocations();
     QString getTrackLocation(TrackId trackId);
-    TrackId addTrack(const QFileInfo& fileInfo, bool unremove);
+
+    TrackId addSingleTrack(const QFileInfo& fileInfo, bool unremove);
+    QList<TrackId> addMultipleTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
+
     void addTracksPrepare();
-    bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
-    void addTracksFinish(bool rollback=false);
-    QList<TrackId> addTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
+    TrackId addTracksAddFile(const QFileInfo& fileInfo, bool unremove);
+    TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
+    void addTracksFinish(bool rollback = false);
+
     void hideTracks(const QList<TrackId>& trackIds);
     void purgeTracks(const QList<TrackId>& trackIds);
     void purgeTracks(const QString& dir);
     void unhideTracks(const QList<TrackId>& trackIds);
-
-    // WARNING: Only call this from the main thread instance of TrackDAO.
-    TrackPointer getTrack(TrackId trackId, const bool cacheOnly=false) const;
 
     // Fetches trackLocation from the database or adds it. If searchForCoverArt
     // is true, searches the track and its directory for cover art via
@@ -195,11 +202,10 @@ class TrackDAO : public QObject, public virtual DAO {
     void slotTrackReferenceExpired(TrackInfoObject* pTrack);
 
   private:
+    TrackPointer getTrackFromDB(TrackId trackId) const;
+
     void saveTrack(TrackInfoObject* pTrack);
     void updateTrack(TrackInfoObject* pTrack);
-    void addTrack(TrackInfoObject* pTrack, bool unremove);
-    TrackPointer getTrackFromDB(TrackId trackId) const;
-    QString absoluteFilePath(QString location);
 
     void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack);
     void bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocationId);

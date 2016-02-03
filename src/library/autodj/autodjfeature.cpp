@@ -155,7 +155,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
         trackIds = trackDao.getTrackIds(files);
         trackDao.unhideTracks(trackIds);
     } else {
-        trackIds = trackDao.addTracks(files, true);
+        trackIds = trackDao.addMultipleTracks(files, true);
     }
 
     // remove tracks that could not be added
