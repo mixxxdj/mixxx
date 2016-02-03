@@ -375,7 +375,7 @@ void TrackDAO::bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack) {
 
 // No need to check here if the querys exist, this is already done in
 // addTracksAdd, which is the only function that calls this
-void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocationId) {
+void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, DbId trackLocationId) {
     // gets called only in addTracksAdd
     m_pQueryLibraryInsert->bindValue(":artist", pTrack->getArtist());
     m_pQueryLibraryInsert->bindValue(":title", pTrack->getTitle());
@@ -388,7 +388,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":tracknumber", pTrack->getTrackNumber());
     m_pQueryLibraryInsert->bindValue(":tracktotal", pTrack->getTrackTotal());
     m_pQueryLibraryInsert->bindValue(":filetype", pTrack->getType());
-    m_pQueryLibraryInsert->bindValue(":location", trackLocationId);
+    m_pQueryLibraryInsert->bindValue(":location", trackLocationId.toVariant());
     m_pQueryLibraryInsert->bindValue(":comment", pTrack->getComment());
     m_pQueryLibraryInsert->bindValue(":url", pTrack->getURL());
     m_pQueryLibraryInsert->bindValue(":duration", pTrack->getDuration());
@@ -544,7 +544,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     qDebug() << "TrackDAO: Adding track"
             << pTrack->getLocation();
 
-    int trackLocationId = -1;
+    DbId trackLocationId;
     TrackId trackId;
 
     // Insert the track location into the corresponding table. This will fail
@@ -571,10 +571,11 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             m_trackLocationIdColumn = m_pQueryTrackLocationSelect->record().indexOf("id");
         }
         while (m_pQueryTrackLocationSelect->next()) {
-            trackLocationId = m_pQueryTrackLocationSelect->value(m_trackLocationIdColumn).toInt();
+            trackLocationId = DbId(
+                    m_pQueryTrackLocationSelect->value(m_trackLocationIdColumn));
         }
 
-        m_pQueryLibrarySelect->bindValue(":location", trackLocationId);
+        m_pQueryLibrarySelect->bindValue(":location", trackLocationId.toVariant());
         if (!m_pQueryLibrarySelect->exec()) {
              LOG_FAILED_QUERY(*m_pQueryLibrarySelect)
                      << "Failed to query existing track: "
@@ -613,13 +614,13 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     } else {
         // Inserting succeeded, so just get the last rowid.
         QVariant lastInsert = m_pQueryTrackLocationInsert->lastInsertId();
-        trackLocationId = lastInsert.toInt();
+        trackLocationId = DbId(lastInsert);
 
         // Failure of this assert indicates that we were unable to insert the
         // track location into the table AND we could not retrieve the id of
         // that track location from the same table. "It shouldn't
         // happen"... unless I screwed up - Albert :)
-        DEBUG_ASSERT_AND_HANDLE(trackLocationId >= 0) {
+        DEBUG_ASSERT_AND_HANDLE(trackLocationId.isValid()) {
             return TrackId();
         }
 
