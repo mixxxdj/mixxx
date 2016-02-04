@@ -679,13 +679,15 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
         return TrackPointer();
     }
 
+    // Initially load the metadata for the newly created track
+    // from the file.
     SoundSourceProxy(pTrack).loadTrackMetadata();
     if (!pTrack->getHeaderParsed()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
-        // Add the track to the library no matter if parsing
-        // the metadata from file succeeded or failed.
+        // Copntinue with adding the track to the library, no matter
+        // if parsing the metadata from file succeeded or failed.
     }
 
     const TrackId trackId(addTracksAddTrack(pTrack, unremove));
