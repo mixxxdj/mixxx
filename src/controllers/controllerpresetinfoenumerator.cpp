@@ -11,10 +11,8 @@
 
 #include "controllers/defs_controllers.h"
 
-PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue>* pConfig) {
-    m_controllerDirPaths.append(userPresetsPath(pConfig));
-    m_controllerDirPaths.append(resourcePresetsPath(pConfig));
-
+PresetInfoEnumerator::PresetInfoEnumerator(const QStringList& searchPaths)
+        : m_controllerDirPaths(searchPaths) {
     // Static list of supported default extensions, sorted by popularity
     m_fileExtensions.append(QString(MIDI_PRESET_EXTENSION));
     m_fileExtensions.append(QString(HID_PRESET_EXTENSION));

@@ -8,7 +8,7 @@
 #ifndef CONTROLLERMANAGER_H
 #define CONTROLLERMANAGER_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
@@ -25,7 +25,7 @@ bool controllerCompare(Controller *a,Controller *b);
 class ControllerManager : public QObject {
     Q_OBJECT
   public:
-    ControllerManager(ConfigObject<ConfigValue> * pConfig);
+    ControllerManager(UserSettingsPointer pConfig);
     virtual ~ControllerManager();
 
     QList<Controller*> getControllers() const;
@@ -37,7 +37,7 @@ class ControllerManager : public QObject {
     void setUpDevices() { emit(requestSetUpDevices()); };
     void savePresets(bool onlyActive=false) { emit(requestSave(onlyActive)); };
 
-    static QList<QString> getPresetPaths(ConfigObject<ConfigValue>* pConfig);
+    static QList<QString> getPresetPaths(UserSettingsPointer pConfig);
 
     // If pathOrFilename is an absolute path, returns it. If it is a relative
     // path and it is contained within any of the directories in presetPaths,
@@ -67,7 +67,7 @@ class ControllerManager : public QObject {
     // Open whatever controllers are selected in the preferences. This currently
     // only runs on start-up but maybe should instead be signaled by the
     // preferences dialog on apply, and only open/close changed devices
-    int slotSetUpDevices();
+    void slotSetUpDevices();
     void slotShutdown();
     bool loadPreset(Controller* pController,
                     ControllerPresetPointer preset);
@@ -82,7 +82,7 @@ class ControllerManager : public QObject {
     }
 
   private:
-    ConfigObject<ConfigValue> *m_pConfig;
+    UserSettingsPointer m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;
     QTimer m_pollTimer;
     mutable QMutex m_mutex;
@@ -90,6 +90,7 @@ class ControllerManager : public QObject {
     QList<Controller*> m_controllers;
     QThread* m_pThread;
     PresetInfoEnumerator* m_pMainThreadPresetEnumerator;
+    bool m_skipPoll;
 };
 
 #endif  // CONTROLLERMANAGER_H

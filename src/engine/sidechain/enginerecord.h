@@ -28,7 +28,7 @@
 #endif
 #include <sndfile.h>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "trackinfoobject.h"
@@ -40,13 +40,13 @@ class Encoder;
 class EngineRecord : public QObject, public EncoderCallback, public SideChainWorker {
     Q_OBJECT
   public:
-    EngineRecord(ConfigObject<ConfigValue>* _config);
+    EngineRecord(UserSettingsPointer _config);
     virtual ~EngineRecord();
 
     void process(const CSAMPLE* pBuffer, const int iBufferSize);
     void shutdown() {}
 
-    // writes compressed audio to file 
+    // writes compressed audio to file
     void write(unsigned char *header, unsigned char *body, int headerLen, int bodyLen);
     // creates or opens an audio file
     bool openFile();
@@ -73,7 +73,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
 
     void writeCueLine();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     Encoder* m_pEncoder;
     QByteArray m_OGGquality;
     QByteArray m_MP3quality;

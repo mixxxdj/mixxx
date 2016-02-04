@@ -1,7 +1,7 @@
 #ifndef BESSEL8LVMIXEQEFFECT_H
 #define BESSEL8LVMIXEQEFFECT_H
 
-#include "lvmixeqbase.h"
+#include "effects/native/lvmixeqbase.h"
 
 #include <QMap>
 
@@ -12,10 +12,10 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/enginefilterbessel8.h"
 #include "engine/enginefilterdelay.h"
-#include "util.h"
-#include "util/types.h"
+#include "util/class.h"
 #include "util/defs.h"
-#include "sampleutil.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 
 class Bessel8LVMixEQEffectGroupState :

@@ -2,8 +2,7 @@
 
 #include "engine/enginebufferscale.h"
 #include "engine/readaheadmanager.h"
-#include "sampleutil.h"
-
+#include "util/sample.h"
 
 EngineBufferScaleDummy::EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager)
     : EngineBufferScale(),

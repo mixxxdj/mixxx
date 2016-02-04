@@ -6,8 +6,8 @@
 #include <QSqlError>
 
 #include "library/queryutil.h"
-
-#include "bansheedbconnection.h"
+#include "library/banshee/bansheedbconnection.h"
+#include "util/performancetimer.h"
 
 BansheeDbConnection::BansheeDbConnection() {
 }
@@ -75,7 +75,7 @@ QList<struct BansheeDbConnection::Playlist> BansheeDbConnection::getPlaylists() 
 
 QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylistEntries(int playlistId) {
 
-    QTime time;
+    PerformanceTimer time;
     time.start();
 
     QList<struct BansheeDbConnection::PlaylistEntry> list;
@@ -189,7 +189,8 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
         LOG_FAILED_QUERY(query);
     }
 
-    qDebug() << "BansheeDbConnection::getPlaylistEntries(), took " << time.elapsed() << "ms";
+    qDebug() << "BansheeDbConnection::getPlaylistEntries(), took"
+             << time.elapsed().debugMillisWithUnit();
 
     return list;
 }

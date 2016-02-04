@@ -13,7 +13,7 @@
 #include "controllers/controllerdebug.h"
 #include "controlobject.h"
 #include "errordialoghandler.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "util/math.h"
 
 MidiController::MidiController()
@@ -58,9 +58,9 @@ bool MidiController::savePreset(const QString fileName) const {
     return handler.save(m_preset, getName(), fileName);
 }
 
-void MidiController::applyPreset(QList<QString> scriptPaths) {
+bool MidiController::applyPreset(QList<QString> scriptPaths, bool initializeScripts) {
     // Handles the engine
-    Controller::applyPreset(scriptPaths);
+    bool result = Controller::applyPreset(scriptPaths, initializeScripts);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
@@ -70,6 +70,7 @@ void MidiController::applyPreset(QList<QString> scriptPaths) {
         createOutputHandlers();
         updateAllOutputs();
     }
+    return result;
 }
 
 void MidiController::createOutputHandlers() {
@@ -84,8 +85,8 @@ void MidiController::createOutputHandlers() {
 
         const MidiOutputMapping& mapping = outIt.value();
 
-        QString group = mapping.control.group;
-        QString key = mapping.control.item;
+        QString group = mapping.controlKey.group;
+        QString key = mapping.controlKey.item;
 
         unsigned char status = mapping.output.status;
         unsigned char control = mapping.output.control;
@@ -159,42 +160,50 @@ void MidiController::destroyOutputHandlers() {
     }
 }
 
-QString formatMidiMessage(unsigned char status, unsigned char control, unsigned char value,
-                          unsigned char channel, unsigned char opCode) {
+QString formatMidiMessage(const QString& controllerName,
+                          unsigned char status, unsigned char control,
+                          unsigned char value, unsigned char channel,
+                          unsigned char opCode, mixxx::Duration timestamp) {
     switch (opCode) {
         case MIDI_PITCH_BEND:
-            return QString("MIDI status 0x%1: pitch bend ch %2, value 0x%3")
-                    .arg(QString::number(status, 16).toUpper(),
+            return QString("%1: t:%2 status 0x%3: pitch bend ch %4, value 0x%5")
+                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                         QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
         case MIDI_SONG_POS:
-            return QString("MIDI status 0x%1: song position 0x%2")
-                    .arg(QString::number(status, 16).toUpper(),
+            return QString("%1: t:%5 status 0x%3: song position 0x%4")
+                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                         QString::number(status, 16).toUpper(),
                          QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
         case MIDI_PROGRAM_CH:
         case MIDI_CH_AFTERTOUCH:
-            return QString("MIDI status 0x%1 (ch %2, opcode 0x%3), value 0x%4")
-                    .arg(QString::number(status, 16).toUpper(),
+            return QString("%1: t:%2 status 0x%3 (ch %4, opcode 0x%5), value 0x%6")
+                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                         QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((status & 255)>>4, 16).toUpper(),
                          QString::number(control, 16).toUpper().rightJustified(2,'0'));
         case MIDI_SONG:
-            return QString("MIDI status 0x%1: select song #%2")
-                    .arg(QString::number(status, 16).toUpper(),
+            return QString("%1: t:%2 status 0x%3: select song #%4")
+                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                         QString::number(status, 16).toUpper(),
                          QString::number(control+1, 10));
         case MIDI_NOTE_OFF:
         case MIDI_NOTE_ON:
         case MIDI_AFTERTOUCH:
         case MIDI_CC:
-            return QString("MIDI status 0x%1 (ch %2, opcode 0x%3), ctrl 0x%4, val 0x%5")
-                    .arg(QString::number(status, 16).toUpper(),
+            return QString("%1: t:%2 status 0x%3 (ch %4, opcode 0x%5), ctrl 0x%6, val 0x%7")
+                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                         QString::number(status, 16).toUpper(),
                          QString::number(channel+1, 10),
                          QString::number((status & 255)>>4, 16).toUpper(),
                          QString::number(control, 16).toUpper().rightJustified(2,'0'),
                          QString::number(value, 16).toUpper().rightJustified(2,'0'));
         default:
-            return QString("MIDI status 0x%1")
-                    .arg(QString::number(status, 16).toUpper());
+            return QString("%1: t:%2 status 0x%3")
+                    .arg(controllerName, timestamp.formatMillisWithUnit(),
+                         QString::number(status, 16).toUpper());
     }
 }
 
@@ -236,12 +245,12 @@ void MidiController::commitTemporaryInputMappings() {
 }
 
 void MidiController::receive(unsigned char status, unsigned char control,
-                             unsigned char value) {
+                             unsigned char value, mixxx::Duration timestamp) {
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
-    controllerDebug(formatMidiMessage(status, control, value, channel, opCode));
-
+    controllerDebug(formatMidiMessage(getName(), status, control, value,
+                                      channel, opCode, timestamp));
     MidiKey mappingKey(status, control);
 
     if (isLearning()) {
@@ -251,7 +260,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
                 m_temporaryInputMappings.find(mappingKey.key);
         if (it != m_temporaryInputMappings.end()) {
             for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
-                processInputMapping(it.value(), status, control, value);
+                processInputMapping(it.value(), status, control, value, timestamp);
             }
             return;
         }
@@ -260,14 +269,16 @@ void MidiController::receive(unsigned char status, unsigned char control,
     QHash<uint16_t, MidiInputMapping>::const_iterator it =
             m_preset.inputMappings.find(mappingKey.key);
     for (; it != m_preset.inputMappings.end() && it.key() == mappingKey.key; ++it) {
-        processInputMapping(it.value(), status, control, value);
+        processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
 
 void MidiController::processInputMapping(const MidiInputMapping& mapping,
                                          unsigned char status,
                                          unsigned char control,
-                                         unsigned char value) {
+                                         unsigned char value,
+                                         mixxx::Duration timestamp) {
+    Q_UNUSED(timestamp);
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
@@ -277,15 +288,12 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
             return;
         }
 
-        QScriptValueList args;
-        args << QScriptValue(channel);
-        args << QScriptValue(control);
-        args << QScriptValue(value);
-        args << QScriptValue(status);
-        args << QScriptValue(mapping.control.group);
-        QScriptValue function = pEngine->resolveFunction(
-            mapping.control.item, true);
-        pEngine->execute(function, args);
+        QScriptValue function = pEngine->resolveFunction(mapping.control.item);
+        if (!pEngine->execute(function, channel, control, value, status,
+                              mapping.control.group, timestamp)) {
+            qDebug() << "MidiController: Invalid script function"
+                     << mapping.control.item;
+        }
         return;
     }
 
@@ -489,8 +497,11 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
     return _newmidivalue;
 }
 
-QString formatSysexMessage(QString controllerName, const QByteArray& data) {
-    QString message = QString("%1: %2 bytes: [").arg(controllerName).arg(data.size());
+QString formatSysexMessage(const QString& controllerName, const QByteArray& data,
+                           mixxx::Duration timestamp) {
+    QString message = QString("%1: t:%2 %3 bytes: [")
+            .arg(controllerName).arg(timestamp.formatMillisWithUnit())
+            .arg(data.size());
     for (int i = 0; i < data.size(); ++i) {
         message += QString("%1%2").arg(
             QString("%1").arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper(),
@@ -499,8 +510,8 @@ QString formatSysexMessage(QString controllerName, const QByteArray& data) {
     return message;
 }
 
-void MidiController::receive(QByteArray data) {
-    controllerDebug(formatSysexMessage(getName(), data));
+void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
+    controllerDebug(formatSysexMessage(getName(), data, timestamp));
 
     MidiKey mappingKey(data.at(0), 0xFF);
 
@@ -514,7 +525,7 @@ void MidiController::receive(QByteArray data) {
                 m_temporaryInputMappings.find(mappingKey.key);
         if (it != m_temporaryInputMappings.end()) {
             for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
-                processInputMapping(it.value(), data);
+                processInputMapping(it.value(), data, timestamp);
             }
             return;
         }
@@ -523,26 +534,28 @@ void MidiController::receive(QByteArray data) {
     QHash<uint16_t, MidiInputMapping>::const_iterator it =
             m_preset.inputMappings.find(mappingKey.key);
     for (; it != m_preset.inputMappings.end() && it.key() == mappingKey.key; ++it) {
-        processInputMapping(it.value(), data);
+        processInputMapping(it.value(), data, timestamp);
     }
 }
 
 void MidiController::processInputMapping(const MidiInputMapping& mapping,
-                                         const QByteArray& data) {
+                                         const QByteArray& data,
+                                         mixxx::Duration timestamp) {
     // Custom script handler
     if (mapping.options.script) {
         ControllerEngine* pEngine = getEngine();
         if (pEngine == NULL) {
             return;
         }
-        QScriptValue function = pEngine->resolveFunction(mapping.control.item, true);
-        if (!pEngine->execute(function, data)) {
-            qDebug() << "MidiController: Invalid script function" << mapping.control.item;
+        QScriptValue function = pEngine->resolveFunction(mapping.control.item);
+        if (!pEngine->execute(function, data, timestamp)) {
+            qDebug() << "MidiController: Invalid script function"
+                     << mapping.control.item;
         }
         return;
     }
     qWarning() << "MidiController: No script function specified for"
-               << formatSysexMessage(getName(), data);
+               << formatSysexMessage(getName(), data, timestamp);
 }
 
 void MidiController::sendShortMsg(unsigned char status, unsigned char byte1,

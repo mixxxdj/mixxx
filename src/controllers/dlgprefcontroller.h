@@ -5,8 +5,8 @@
 * @brief Configuration dialog for a DJ controller
 */
 
-#ifndef DLGPREFCONTROLLER_H_
-#define DLGPREFCONTROLLER_H_
+#ifndef DLGPREFCONTROLLER_H
+#define DLGPREFCONTROLLER_H
 
 #include <QHash>
 #include <QSortFilterProxyModel>
@@ -17,7 +17,7 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
 // Forward declarations
@@ -29,7 +29,7 @@ class DlgPrefController : public DlgPreferencePage {
   public:
     DlgPrefController(QWidget *parent, Controller* controller,
                       ControllerManager* controllerManager,
-                      ConfigObject<ConfigValue> *pConfig);
+                      UserSettingsPointer pConfig);
     virtual ~DlgPrefController();
 
   public slots:
@@ -92,7 +92,7 @@ class DlgPrefController : public DlgPreferencePage {
     void disableDevice();
 
     Ui::DlgPrefControllerDlg m_ui;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
@@ -104,4 +104,4 @@ class DlgPrefController : public DlgPreferencePage {
     bool m_bDirty;
 };
 
-#endif /*DLGPREFCONTROLLER_H_*/
+#endif /*DLGPREFCONTROLLER_H*/

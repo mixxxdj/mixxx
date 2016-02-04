@@ -1,26 +1,13 @@
-////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                               //
-////////////////////////////////////////////////////////////////////////
-/* global engine                                                      */
-/* global script                                                      */
-/* global print                                                       */
-/* global midi                                                        */
-////////////////////////////////////////////////////////////////////////
-
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2015-11-1
+// description: 2015-12-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
+// JSHint Configuration
+// global engine
+// global midi
+
 var VCI102 = {};
-
-VCI102.headVolume = function(ch, midino, value, status, group) {
-    engine.setValue(group, "headVolume", value / 127);
-};
-
-VCI102.volume = function(ch, midino, value, status, group) {
-    engine.setValue(group, "volume", value / 127);
-};
 
 VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
 
@@ -133,13 +120,12 @@ VCI102.rateValueMSB = [64, 64, 64, 64];  // defaults are at center
 
 VCI102.rateMSB = function(ch, midino, value, status, group) {
     // unlock rate control if the change is not caused by a mechanical drift
-    if (VCI102.rateEnable[ch]) {
-        engine.softTakeover(group, "rate", true);
-    } else if (Math.abs(value - VCI102.rateValueMSB[ch]) > 1) {
-        VCI102.rateEnable[ch] = true;
-        engine.softTakeover(group, "rate", false);
-    } else {
-        return;
+    if (!VCI102.rateEnable[ch]) {
+        if (Math.abs(value - VCI102.rateValueMSB[ch]) > 1) {
+            VCI102.rateEnable[ch] = true;
+        } else {
+            return;
+        }
     }
     VCI102.rateValueMSB[ch] = value;
 };
@@ -164,10 +150,11 @@ VCI102.rateLSB = function(ch, midino, value, status, group) {
 };
 
 VCI102.rateQuantizedLSB = function(ch, midino, value, status, group) {
-    engine.setValue(
-        group, "bpm", Math.round(
-            (VCI102.rate(ch, value) * engine.getValue(group, "rateRange") + 1
-            ) * engine.getValue(group, "file_bpm")));
+    // not change "bpm" direct but by "rate" to go through soft takeover
+    var bpm = engine.getValue(group, "file_bpm");
+    var range = engine.getValue(group, "rateRange");
+    engine.setValue(group, "rate", (Math.round(
+        (VCI102.rate(ch, value) * range + 1) * bpm) / bpm - 1) / range);
 };
 
 VCI102.pitch = function(ch, midino, value, status, group) {
@@ -313,6 +300,7 @@ VCI102.init = function() {
                     "[EffectRack1_EffectUnit" + k + "]", enabled, led);
             }
         }
+        engine.softTakeover(VCI102.deck[i], "rate", true);
         engine.softTakeover(VCI102.deck[i], "pitch", true);
     }
     for (i = 1; i <= 4; i++) {

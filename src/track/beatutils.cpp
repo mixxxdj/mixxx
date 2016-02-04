@@ -415,7 +415,7 @@ double BeatUtils::calculateFixedTempoFirstBeat(
     }
 
     /*
-     * calculateOffset compares the beats from the analyser and the
+     * calculateOffset compares the beats from the analyzer and the
      * beats from the beat grid constructed above in corrbeats.
      */
     // qDebug() << "Calculating best offset";

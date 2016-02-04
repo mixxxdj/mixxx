@@ -6,22 +6,22 @@
  ***************************************************************************/
 
 #include <QDir>
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
-inline QString resourcePresetsPath(ConfigObject<ConfigValue>* pConfig) {
+inline QString resourcePresetsPath(UserSettingsPointer pConfig) {
     QString presetsPath = pConfig->getResourcePath();
     QDir dir(presetsPath.append("/controllers/"));
     return dir.absolutePath().append("/");
 }
 
 // Prior to Mixxx 1.11.0 presets were stored in ${SETTINGS_PATH}/midi.
-inline QString legacyUserPresetsPath(ConfigObject<ConfigValue>* pConfig) {
+inline QString legacyUserPresetsPath(UserSettingsPointer pConfig) {
     QString presetsPath = pConfig->getSettingsPath();
     QDir dir(presetsPath.append("/midi/"));
     return dir.absolutePath().append("/");
 }
 
-inline QString userPresetsPath(ConfigObject<ConfigValue>* pConfig) {
+inline QString userPresetsPath(UserSettingsPointer pConfig) {
     QString presetsPath = pConfig->getSettingsPath();
     QDir dir(presetsPath.append("/controllers/"));
     return dir.absolutePath().append("/");

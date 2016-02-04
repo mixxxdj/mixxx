@@ -12,7 +12,7 @@
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
-
+#include "util/version.h"
 
 namespace {
 typedef QPair<QString, ConfigKey> NamedControl;
@@ -218,9 +218,10 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
         return;
     }
 
-    MidiKey key;
-    key.status = status;
-    key.control = control;
+    // NOTE(rryan): We intend to use MidiKey(status, control) here rather than
+    // setting fields individually since we will use the MidiKey with an input
+    // mapping. See Bug #1532297
+    MidiKey key(status, control);
 
     // Ignore all standard MIDI System Real-Time Messages because they
     // are continuously sent and prevent mapping of the pressed key.
@@ -461,7 +462,7 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
                       "learnable control " << key.group << " " << key.item;
         QMessageBox::warning(
                     this,
-                    tr("Mixxx"),
+                    Version::applicationName(),
                     tr("The control you clicked in Mixxx is not learnable.\n"
                        "This could be because you are using an old skin"
                        " and this control is no longer supported.\n"

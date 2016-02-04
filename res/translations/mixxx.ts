@@ -2856,14 +2856,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgautodj.ui" line="137"/>
+        <location filename="../../src/dlgautodj.ui" line="144"/>
         <source>Turn Auto DJ on or off.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgautodj.ui" line="140"/>
-        <location filename="../../src/dlgautodj.cpp" line="169"/>
-        <location filename="../../src/dlgautodj.cpp" line="170"/>
+        <location filename="../../src/dlgautodj.ui" line="147"/>
+        <location filename="../../src/dlgautodj.cpp" line="175"/>
+        <location filename="../../src/dlgautodj.cpp" line="176"/>
         <source>Enable Auto DJ</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3142,17 +3142,27 @@ You tried to learn: %1,%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="75"/>
+        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="46"/>
+        <source>Dumps all ControlObject values to a csv-file saved in the settings path (e.g. ~/.mixxx)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="49"/>
+        <source>Dump to csv</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="85"/>
         <source>Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="97"/>
+        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="94"/>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="125"/>
+        <location filename="../../src/dlgdevelopertoolsdlg.ui" line="135"/>
         <source>Stats</source>
         <translation type="unfinished"></translation>
     </message>

@@ -1,9 +1,9 @@
-#include "qtsimplewaveformwidget.h"
+#include "waveform/widgets/qtsimplewaveformwidget.h"
 
 #include <QPainter>
 #include <QtDebug>
 
-#include "sharedglcontext.h"
+#include "waveform/sharedglcontext.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/qtwaveformrenderersimplesignal.h"
@@ -54,10 +54,10 @@ void QtSimpleWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 
-int QtSimpleWaveformWidget::render() {
+mixxx::Duration QtSimpleWaveformWidget::render() {
     PerformanceTimer timer;
-    int t1;
-    //int t2, t3;
+    mixxx::Duration t1;
+    //mixxx::Duration t2, t3;
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
@@ -68,5 +68,5 @@ int QtSimpleWaveformWidget::render() {
     //glFinish();
     //t3 = timer.restart();
     //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
-    return t1 / 1000; // return timer for painter setup
+    return t1; // return timer for painter setup
 }

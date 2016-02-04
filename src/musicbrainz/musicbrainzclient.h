@@ -6,7 +6,7 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #ifndef MUSICBRAINZCLIENT_H
 #define MUSICBRAINZCLIENT_H
 
@@ -16,7 +16,7 @@
 #include <QXmlStreamReader>
 #include <QtNetwork>
 
-#include "network.h"
+#include "musicbrainz/network.h"
 
 class MusicBrainzClient : public QObject {
   Q_OBJECT
@@ -46,7 +46,7 @@ class MusicBrainzClient : public QObject {
 
             #undef cmp
         }
-        
+
         bool operator ==(const Result& other) const {
             return m_title == other.m_title &&
                    m_artist == other.m_artist &&
@@ -113,7 +113,7 @@ class MusicBrainzClient : public QObject {
     static const QString m_TrackUrl;
     static const QString m_DateRegex;
     static const int m_DefaultTimeout;
-    
+
     QNetworkAccessManager m_network;
     NetworkTimeouts m_timeouts;
     QMap<QNetworkReply*, int> m_requests;

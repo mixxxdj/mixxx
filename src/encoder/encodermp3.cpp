@@ -43,7 +43,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
      * m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
      *
      * This has solved many segfaults when using and even closing shoutcast
-     * along with LAME.  This bug was detected by using Valgrind memory analyser
+     * along with LAME.  This bug was detected by using Valgrind memory analyzer
      *
      */
     m_bufferInSize(0),
@@ -122,7 +122,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     get_lame_version__ get_lame_version = (get_lame_version__)m_library->resolve("get_lame_version");
 
 
-    //initalize function pointers
+    // initialize function pointers
     lame_init                   = (lame_init__)m_library->resolve("lame_init");
     lame_set_num_channels       = (lame_set_num_channels__)m_library->resolve("lame_set_num_channels");
     lame_set_in_samplerate      = (lame_set_in_samplerate__)m_library->resolve("lame_set_in_samplerate");
@@ -147,7 +147,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
      * Otherwise, the lame_enc.dll, libmp3lame.so or libmp3lame.mylib do not comply with the official header lame.h
      * Indicates a modified lame version
      *
-     * Should not happend on Linux, but many lame binaries for Windows are modified.
+     * Should not happen on Linux, but many lame binaries for Windows are modified.
      */
     if(!lame_init ||
        !lame_set_num_channels ||

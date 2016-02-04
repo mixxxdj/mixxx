@@ -20,7 +20,6 @@
 #include "library/scanner/libraryscanner.h"
 
 #include "soundsourceproxy.h"
-#include "library/legacylibraryimporter.h"
 #include "library/scanner/recursivescandirectorytask.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/queryutil.h"
@@ -30,14 +29,13 @@
 #include "util/file.h"
 #include "util/timer.h"
 #include "library/scanner/scannerutil.h"
-#include "upgrade.h"
 
 // TODO(rryan) make configurable
 const int kScannerThreadPoolSize = 1;
 
 LibraryScanner::LibraryScanner(QWidget* pParentWidget,
                                TrackCollection* collection,
-                               ConfigObject<ConfigValue>* pConfig)
+                               UserSettingsPointer pConfig)
               : m_pCollection(collection),
                 m_libraryHashDao(m_database),
                 m_cueDao(m_database),
@@ -78,10 +76,10 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget,
         connect(this, SIGNAL(scanFinished()), dao, SLOT(clearCache()));
         connect(this, SIGNAL(trackAdded(TrackPointer)),
                 dao, SLOT(databaseTrackAdded(TrackPointer)));
-        connect(this, SIGNAL(tracksMoved(QSet<int>, QSet<int>)),
-                dao, SLOT(databaseTracksMoved(QSet<int>, QSet<int>)));
-        connect(this, SIGNAL(tracksChanged(QSet<int>)),
-                dao, SLOT(databaseTracksChanged(QSet<int>)));
+        connect(this, SIGNAL(tracksMoved(QSet<TrackId>, QSet<TrackId>)),
+                dao, SLOT(databaseTracksMoved(QSet<TrackId>, QSet<TrackId>)));
+        connect(this, SIGNAL(tracksChanged(QSet<TrackId>)),
+                dao, SLOT(databaseTracksChanged(QSet<TrackId>)));
     }
 
     // Parented to pParentWidget so we don't need to delete it.
@@ -176,9 +174,7 @@ void LibraryScanner::slotStartScan() {
 
     QSet<QString> trackLocations = m_trackDao.getTrackLocations();
     QHash<QString, int> directoryHashes = m_libraryHashDao.getDirectoryHashes();
-    QRegExp extensionFilter =
-            QRegExp(SoundSourceProxy::supportedFileExtensionsRegex(),
-                    Qt::CaseInsensitive);
+    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
     QRegExp coverExtensionFilter =
             QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
                     Qt::CaseInsensitive);
@@ -191,25 +187,6 @@ void LibraryScanner::slotStartScan() {
     m_scannerGlobal->startTimer();
 
     emit(scanStarted());
-
-    // Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed. If the
-    // upgrade_filename already exists, then do not try to upgrade since we have
-    // already done it.
-    //  Here we need the SETTINGS_PATH from Mixxx V <= 1.7
-    QString upgrade_filename = Upgrade::mixxx17HomePath().append("DBUPGRADED");
-    qDebug() << "upgrade filename is " << upgrade_filename;
-    QFile upgradefile(upgrade_filename);
-    if (!upgradefile.exists()) {
-        QTime t2;
-        t2.start();
-        LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
-        connect(&libImport, SIGNAL(progress(QString)),
-                this, SIGNAL(progressLoading(QString)));
-        ScopedTransaction transaction(m_database);
-        libImport.import();
-        transaction.commit();
-        qDebug("Legacy importer took %d ms", t2.elapsed());
-    }
 
     // First, we're going to mark all the directories that we've previously
     // hashed as needing verification. As we search through the directory tree
@@ -341,8 +318,8 @@ void LibraryScanner::cleanUpScan() {
     // Check to see if the "deleted" tracks showed up in another location,
     // and if so, do some magic to update all our tables.
     qDebug() << "Detecting moved files.";
-    QSet<int> tracksMovedSetOld;
-    QSet<int> tracksMovedSetNew;
+    QSet<TrackId> tracksMovedSetOld;
+    QSet<TrackId> tracksMovedSetNew;
     if (!m_trackDao.detectMovedTracks(&tracksMovedSetOld,
             &tracksMovedSetNew,
             m_scannerGlobal->addedTracks(),
@@ -360,7 +337,7 @@ void LibraryScanner::cleanUpScan() {
     transaction.commit();
 
     qDebug() << "Detecting cover art for unscanned files.";
-    QSet<int> coverArtTracksChanged;
+    QSet<TrackId> coverArtTracksChanged;
     m_trackDao.detectCoverArtForUnknownTracks(
             m_scannerGlobal->shouldCancelPointer(), &coverArtTracksChanged);
 
@@ -402,12 +379,12 @@ void LibraryScanner::slotFinishUnhashedScan() {
     }
 
     // TODO(XXX) doesn't take into account verifyRemainingTracks.
-    qDebug("Scan took: %lld ns. "
+    qDebug("Scan took: %s. "
            "%d unchanged directories. "
            "%d changed/added directories. "
            "%d tracks verified from changed/added directories. "
            "%d new tracks.",
-           m_scannerGlobal->timerElapsed(),
+           m_scannerGlobal->timerElapsed().formatNanosWithUnit().toLocal8Bit().constData(),
            m_scannerGlobal->verifiedDirectories().size(),
            m_scannerGlobal->numScannedDirectories(),
            m_scannerGlobal->verifiedTracks().size(),

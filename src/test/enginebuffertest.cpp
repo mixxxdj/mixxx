@@ -5,8 +5,8 @@
 #include <QtDebug>
 #include <QTest>
 
-#include "basetrackplayer.h"
-#include "configobject.h"
+#include "mixer/basetrackplayer.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"

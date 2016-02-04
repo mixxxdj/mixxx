@@ -523,12 +523,13 @@ void BeatMap::translate(double dNumSamples) {
 
     double dNumFrames = samplesToFrames(dNumSamples);
     for (BeatList::iterator it = m_beats.begin();
-         it != m_beats.end(); ++it) {
+         it != m_beats.end(); ) {
         double newpos = it->frame_position() + dNumFrames;
         if (newpos >= 0) {
             it->set_frame_position(newpos);
+            ++it;
         } else {
-            m_beats.erase(it);
+            it = m_beats.erase(it);
         }
     }
     onBeatlistChanged();
@@ -578,7 +579,7 @@ void BeatMap::setBpm(double dBpm) {
      * If the new provided bpm is not a power-of-two fraction, we assume that the algorithm failed
      * at all to guess the bpm. I have no idea on how to deal with this.
      * If we assume that bpm does not change along the track, i.e. if we use
-     * fixed tempo approximation (see analyserbeat.*), this should coincide with the
+     * fixed tempo approximation (see analyzerbeat.*), this should coincide with the
      * method in beatgrid.cpp.
      *
      * - vittorio.

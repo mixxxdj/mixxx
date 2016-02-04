@@ -13,7 +13,7 @@
 #include <QPoint>
 #include <QString>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
@@ -28,7 +28,7 @@ class BrowseFeature : public LibraryFeature {
     Q_OBJECT
   public:
     BrowseFeature(QObject* parent,
-                  ConfigObject<ConfigValue>* pConfig,
+                  UserSettingsPointer pConfig,
                   TrackCollection* pTrackCollection,
                   RecordingManager* pRec);
     virtual ~BrowseFeature();
@@ -64,7 +64,7 @@ class BrowseFeature : public LibraryFeature {
     void saveQuickLinks();
     void loadQuickLinks();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
     TrackCollection* m_pTrackCollection;

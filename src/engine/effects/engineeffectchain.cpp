@@ -1,8 +1,8 @@
 #include "engine/effects/engineeffectchain.h"
 
 #include "engine/effects/engineeffect.h"
-#include "sampleutil.h"
 #include "util/defs.h"
+#include "util/sample.h"
 
 EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),

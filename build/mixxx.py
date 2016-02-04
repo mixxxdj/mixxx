@@ -53,7 +53,7 @@ class MixxxBuild(object):
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
                                    'powerpc64', 'powerpcspe', 's390x',
                                    'amd64', 'em64t', 'intel64', 'arm64',
-                                   'ppc64el']:
+                                   'ppc64el', 'm68k', 'mips64', 'mips64el', 'mipsn32', 'mipsn32el']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -350,10 +350,10 @@ class MixxxBuild(object):
                     print "Automatically selected OS X SDK:", sdk_path
 
                     common_flags = ['-isysroot', sdk_path,
-                                    '-mmacosx-version-min=%s' % min_sdk_version]
+                                    '-mmacosx-version-min=%s' % min_sdk_version,
+                                    '-stdlib=%s' % osx_stdlib]
                     link_flags = [
                         '-Wl,-syslibroot,' + sdk_path,
-                        '-stdlib=%s' % osx_stdlib
                     ]
                     self.env.Append(CCFLAGS=common_flags)
                     self.env.Append(LINKFLAGS=common_flags + link_flags)

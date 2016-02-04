@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset mixxxVersion="1.12.0+" schemaVersion="1">
+<MixxxMIDIPreset mixxxVersion="2.0.0+" schemaVersion="1">
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2015-11-1</description>
+    <description>2015-12-1</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -31,11 +31,11 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>VCI102.headVolume</key>
+        <key>headVolume</key>
         <status>0xB4</status>
         <midino>0x12</midino>
         <options>
-          <script-binding/>
+          <soft-takeover/>
         </options>
       </control>
       <control>
@@ -46,11 +46,11 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>VCI102.volume</key>
+        <key>volume</key>
         <status>0xB4</status>
         <midino>0x14</midino>
         <options>
-          <script-binding/>
+          <soft-takeover/>
         </options>
       </control>
       <control>
@@ -544,72 +544,108 @@
         <key>parameter1</key>
         <status>0xB0</status>
         <midino>0x16</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
         <key>parameter1</key>
         <status>0xB1</status>
         <midino>0x17</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
         <key>parameter1</key>
         <status>0xB2</status>
         <midino>0x16</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
         <key>parameter1</key>
         <status>0xB3</status>
         <midino>0x17</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
         <key>parameter2</key>
         <status>0xB0</status>
         <midino>0x17</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
         <key>parameter2</key>
         <status>0xB1</status>
         <midino>0x18</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
         <key>parameter2</key>
         <status>0xB2</status>
         <midino>0x17</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
         <key>parameter2</key>
         <status>0xB3</status>
         <midino>0x18</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
         <key>parameter3</key>
         <status>0xB0</status>
         <midino>0x18</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
         <key>parameter3</key>
         <status>0xB1</status>
         <midino>0x19</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
         <key>parameter3</key>
         <status>0xB2</status>
         <midino>0x18</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
         <key>parameter3</key>
         <status>0xB3</status>
         <midino>0x19</midino>
+        <options>
+          <soft-takeover/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>

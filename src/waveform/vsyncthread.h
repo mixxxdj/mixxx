@@ -20,6 +20,8 @@
     // clean up after Xlib.h, which #defines values that conflict with QT.
     #undef Bool
     #undef Unsorted
+    #undef None
+    #undef Status
 #endif // QT_OPENGL_ES_2
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
@@ -27,7 +29,6 @@
 #include "util/performancetimer.h"
 
 class GuiTick;
-class MixxxMainWindow;
 
 class VSyncThread : public QThread {
     Q_OBJECT
@@ -43,7 +44,7 @@ class VSyncThread : public QThread {
 
     static void swapGl(QGLWidget* glw, int index);
 
-    VSyncThread(MixxxMainWindow* mixxMainWindow);
+    VSyncThread(QObject* pParent, GuiTick* pGuiTick);
     ~VSyncThread();
 
     void run();
@@ -56,7 +57,7 @@ class VSyncThread : public QThread {
     void setVSyncType(int mode);
     int droppedFrames();
     void setSwapWait(int sw);
-    int usFromTimerToNextSync(PerformanceTimer* timer);
+    int usFromTimerToNextSync(const PerformanceTimer& timer);
     void vsyncSlotFinished();
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void setupSync(QGLWidget* glw, int index);
@@ -76,7 +77,7 @@ class VSyncThread : public QThread {
 
 #else
     void initGlxext(QGLWidget* glw);
-    bool glXExtensionSupported(Display *dpy, int screen, const char *extension);
+    //bool glXExtensionSupported(Display *dpy, int screen, const char *extension);
 
     /* Currently unused, but probably part of later a hardware sync solution
     PFNGLXGETVIDEOSYNCSGIPROC glXGetVideoSyncSGI;

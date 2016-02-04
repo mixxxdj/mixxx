@@ -27,38 +27,33 @@ void WCoverArtMenu::createActions() {
     connect(m_pUnset, SIGNAL(triggered()), this, SLOT(slotUnset()));
     addAction(m_pUnset);
 
-    m_pReload = new QAction(tr("Reload from track/folder",
-            "reload cover art from track metadata or folder"), this);
+    m_pReload = new QAction(tr("Reload from file/folder",
+            "reload cover art from file metadata or folder"), this);
     connect(m_pReload, SIGNAL(triggered()), this, SIGNAL(reloadCoverArt()));
     addAction(m_pReload);
 }
 
-void WCoverArtMenu::setCoverArt(TrackPointer pTrack, const CoverInfo& info) {
-    m_pTrack = pTrack;
-    m_coverInfo = info;
+void WCoverArtMenu::setCoverArt(const QString& trackLocation, const CoverInfo& coverInfo) {
+    m_trackLocation = trackLocation;
+    m_coverInfo = coverInfo;
 }
 
 void WCoverArtMenu::slotChange() {
-    // get initial directory (trackdir or coverdir)
-    QString initialDir;
-
-    QFileInfo track;
-    if (m_pTrack) {
-        track = m_pTrack->getFileInfo();
+    QFileInfo fileInfo;
+    if (!m_trackLocation.isEmpty()) {
+        fileInfo = QFileInfo(m_trackLocation);
     } else if (!m_coverInfo.trackLocation.isEmpty()) {
-        track = QFileInfo(m_coverInfo.trackLocation);
+        fileInfo = QFileInfo(m_coverInfo.trackLocation);
     }
 
-    // If the cover is from file metadata then use the directory the track is
-    // in.
-    if (m_coverInfo.type == CoverInfo::METADATA) {
-        initialDir = track.absolutePath();
-    } else if (m_coverInfo.type == CoverInfo::FILE) {
-        QFileInfo file(track.dir(), m_coverInfo.coverLocation);
-        initialDir = file.absolutePath();
+    QString initialDir;
+    if (m_coverInfo.type == CoverInfo::FILE) {
+        QFileInfo coverFile(fileInfo.dir(), m_coverInfo.coverLocation);
+        initialDir = coverFile.absolutePath();
     } else {
-        // Otherwise, default to the track directory.
-        initialDir = track.absolutePath();
+        // Default to the track's directory if the cover is not
+        // stored in a separate file.
+        initialDir = fileInfo.absolutePath();
     }
 
     QStringList extensions = CoverArtUtils::supportedCoverArtExtensions();

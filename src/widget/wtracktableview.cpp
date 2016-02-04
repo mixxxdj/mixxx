@@ -15,18 +15,18 @@
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "widget/wtracktableview.h"
-#include "dlgtrackinfo.h"
+#include "library/dlgtrackinfo.h"
 #include "soundsourceproxy.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "util/dnd.h"
 #include "util/time.h"
-#include "dlgpreflibrary.h"
+#include "preferences/dialog/dlgpreflibrary.h"
 #include "waveform/guitick.h"
 #include "widget/wcoverartmenu.h"
 #include "util/assert.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
-                                 ConfigObject<ConfigValue> * pConfig,
+                                 UserSettingsPointer pConfig,
                                  TrackCollection* pTrackCollection, bool sorting)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
@@ -40,7 +40,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
-          m_lastUserActionNanos(0),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
     // Give a NULL parent because otherwise it inherits our style which can make
@@ -119,7 +118,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 }
 
 WTrackTableView::~WTrackTableView() {
-    qDebug() << "~WTrackTableView()";
     WTrackTableViewHeader* pHeader =
             dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {
@@ -146,6 +144,7 @@ WTrackTableView::~WTrackTableView() {
     delete m_pBpmTwoThirdsAction;
     delete m_pBpmThreeFourthsAction;
     delete m_pBPMMenu;
+    delete m_pReplayGainResetAction;
     delete m_pPurgeAct;
     delete m_pFileBrowserAct;
     delete m_pResetPlayedAct;
@@ -159,7 +158,7 @@ void WTrackTableView::enableCachedOnly() {
         emit(onlyCachedCoverArt(true));
         m_loadCachedOnly = true;
     }
-    m_lastUserActionNanos = Time::elapsed();
+    m_lastUserAction = Time::elapsed();
 }
 
 void WTrackTableView::slotScrollValueChanged(int) {
@@ -176,8 +175,8 @@ void WTrackTableView::selectionChanged(const QItemSelection& selected,
 void WTrackTableView::slotGuiTick50ms(double) {
     // if the user is stopped in the same row for more than 0.1 s,
     // we load un-cached cover arts as well.
-    qint64 timeDeltaNanos = Time::elapsed() - m_lastUserActionNanos;
-    if (m_loadCachedOnly && timeDeltaNanos > 100000000) {
+    mixxx::Duration timeDelta = Time::elapsed() - m_lastUserAction;
+    if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
 
         // Show the currently selected track in the large cover art view. Doing
         // this in selectionChanged slows down scrolling performance so we wait
@@ -449,6 +448,10 @@ void WTrackTableView::createActions() {
     m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
     connect(m_pClearBeatsAction, SIGNAL(triggered()),
             this, SLOT(slotClearBeats()));
+
+    m_pReplayGainResetAction = new QAction(tr("Reset Replay Gain"), this);
+    connect(m_pReplayGainResetAction, SIGNAL(triggered()),
+            this, SLOT(slotReplayGainReset()));
 }
 
 // slot
@@ -870,7 +873,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pBPMMenu->addAction(m_pClearBeatsAction);
     }
 
-    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+    m_pMenu->addAction(m_pReplayGainResetAction);
+
     m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
         m_pMenu->addAction(m_pReloadMetadataAct);
@@ -893,12 +897,13 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             last.row(), m_iTrackLocationColumn).data().toString();
         info.coverLocation = last.sibling(
             last.row(), m_iCoverLocationColumn).data().toString();
-        m_pCoverMenu->setCoverArt(TrackPointer(), info);
+        m_pCoverMenu->setCoverArt(QString(), info);
         m_pMenu->addMenu(m_pCoverMenu);
     }
 
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
+    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
         m_pRemoveAct->setEnabled(!locked);
         m_pMenu->addAction(m_pRemoveAct);
@@ -1118,7 +1123,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
                if (destRow > maxRow) {
                    // If we're moving the tracks _down_,
                    // adjust the first row to reselect
-                   selectionRestoreStartRow = 
+                   selectionRestoreStartRow =
                         selectionRestoreStartRow - selectedRowCount;
                 }
             }
@@ -1263,7 +1268,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     }
 
     QModelIndexList indices = selectionModel()->selectedRows();
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
 
     TrackModel* trackModel = getTrackModel();
     if (!trackModel) {
@@ -1273,11 +1278,11 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            int iTrackId = pTrack->getId();
-            if (iTrackId == -1) {
+            TrackId trackId(pTrack->getId());
+            if (!trackId.isValid()) {
                 continue;
             }
-            trackIds.append(iTrackId);
+            trackIds.append(trackId);
         }
     }
 
@@ -1310,7 +1315,7 @@ void WTrackTableView::slotReloadTrackMetadata() {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->parse(false);
+            SoundSourceProxy(pTrack).loadTrackMetadata(true);
         }
     }
 }
@@ -1327,7 +1332,7 @@ void WTrackTableView::slotResetPlayed() {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->setTimesPlayed(0);
+            pTrack->resetPlayCounter();
         }
     }
 }
@@ -1341,15 +1346,15 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     }
 
     QModelIndexList indices = selectionModel()->selectedRows();
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (!pTrack) {
             continue;
         }
-        int iTrackId = pTrack->getId();
-        if (iTrackId != -1) {
-            trackIds.append(iTrackId);
+        TrackId trackId(pTrack->getId());
+        if (trackId.isValid()) {
+            trackIds.append(trackId);
         }
     }
    if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
@@ -1403,15 +1408,15 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
     }
 
     QModelIndexList indices = selectionModel()->selectedRows();
-    QList<int> trackIds;
+    QList<TrackId> trackIds;
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (!pTrack) {
             continue;
         }
-        int iTrackId = pTrack->getId();
-        if (iTrackId != -1) {
-            trackIds.append(iTrackId);
+        TrackId trackId(pTrack->getId());
+        if (trackId.isValid()) {
+            trackIds.append(trackId);
         }
     }
     if (iCrateId == -1) { // i.e. a new crate is suppose to be created
@@ -1466,10 +1471,9 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 
     // Save the selection
     QModelIndexList selection = selectionModel()->selectedRows();
-    QSet<int> trackIds;
-    foreach (QModelIndex index, selection) {
-        int trackId = trackModel->getTrackId(index);
-        trackIds.insert(trackId);
+    QSet<TrackId> trackIds;
+    for (const auto& index: selection) {
+        trackIds.insert(trackModel->getTrackId(index));
     }
 
     sortByColumn(headerSection);
@@ -1485,7 +1489,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     currentSelection->reset(); // remove current selection
 
     QMap<int,int> selectedRows;
-    foreach (int trackId, trackIds) {
+    for (auto  const& trackId: trackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
         // code is broken for playlists because it assumes each trackid is in
@@ -1548,7 +1552,7 @@ void WTrackTableView::slotScaleBpm(int scale) {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        if (!track->hasBpmLock()) { //bpm is not locked
+        if (!track->isBpmLocked()) { //bpm is not locked
             BeatsPointer beats = track->getBeats();
             if (beats != NULL) {
                 beats->scale(scalingFactor);
@@ -1570,7 +1574,7 @@ void WTrackTableView::lockBpm(bool lock) {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        track->setBpmLock(lock);
+        track->setBpmLocked(lock);
     }
 }
 
@@ -1585,8 +1589,24 @@ void WTrackTableView::slotClearBeats() {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        if (!track->hasBpmLock()) {
+        if (!track->isBpmLocked()) {
             track->setBeats(BeatsPointer());
+        }
+    }
+}
+
+void WTrackTableView::slotReplayGainReset() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setReplayGain(Mixxx::ReplayGain());
         }
     }
 }
@@ -1623,4 +1643,3 @@ void WTrackTableView::slotReloadCoverArt() {
         pCache->requestGuessCovers(selectedTracks);
     }
 }
-

@@ -1,7 +1,8 @@
-#include <QtDebug>
-
 #include "widget/wcoverartlabel.h"
 
+#include <QtDebug>
+
+#include "library/dlgcoverartfullsize.h"
 #include "library/coverartutils.h"
 
 static const QSize s_labelDisplaySize = QSize(100, 100);
@@ -33,12 +34,11 @@ WCoverArtLabel::~WCoverArtLabel() {
     delete m_pDlgFullSize;
 }
 
-void WCoverArtLabel::setCoverArt(TrackPointer pTrack, const CoverInfo& info, QPixmap px) {
-    qDebug() << "WCoverArtLabel::setCoverArt" << info << px.size();
-    m_pCoverMenu->setCoverArt(pTrack, info);
+void WCoverArtLabel::setCoverArt(const QString& trackLocation, const CoverInfo& coverInfo, QPixmap px) {
+    qDebug() << "WCoverArtLabel::setCoverArt" << coverInfo << px.size();
 
-    m_coverInfo = info;
-    m_pTrack = pTrack;
+    m_coverInfo = coverInfo;
+    m_pCoverMenu->setCoverArt(trackLocation, coverInfo);
 
     if (px.isNull()) {
         setPixmap(m_defaultCover);

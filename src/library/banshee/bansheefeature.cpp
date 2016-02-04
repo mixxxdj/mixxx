@@ -13,7 +13,7 @@
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 QString BansheeFeature::m_databaseFile;
 
-BansheeFeature::BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
+BansheeFeature::BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false) {
@@ -42,7 +42,7 @@ bool BansheeFeature::isSupported() {
 }
 
 // static
-void BansheeFeature::prepareDbPath(ConfigObject<ConfigValue>* pConfig) {
+void BansheeFeature::prepareDbPath(UserSettingsPointer pConfig) {
     m_databaseFile = pConfig->getValueString(ConfigKey("[Banshee]","Database"));
     if (!QFile::exists(m_databaseFile)) {
         // Fall back to default
@@ -136,7 +136,7 @@ TreeItemModel* BansheeFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist) {
+void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) {
     if (m_lastRightClickedIndex.isValid()) {
         TreeItem *item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
         *pPlaylist = item->data().toString();

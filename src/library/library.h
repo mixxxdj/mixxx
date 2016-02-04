@@ -12,7 +12,7 @@
 #include <QAbstractItemModel>
 #include <QFont>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
@@ -38,7 +38,7 @@ class Library : public QObject {
     Q_OBJECT
 public:
     Library(QObject* parent,
-            ConfigObject<ConfigValue>* pConfig,
+            UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
@@ -110,7 +110,7 @@ public:
     void setTrackTableRowHeight(int rowHeight);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;

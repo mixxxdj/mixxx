@@ -3,9 +3,10 @@
 
 #define VAMP_CONFIG_KEY "[Vamp]"
 
-// VAMP_CONFIG_KEY Preferences
-#define VAMP_ANALYSER_BEAT_LIBRARY "AnalyserBeatLibrary"
-#define VAMP_ANALYSER_BEAT_PLUGIN_ID "AnalyserBeatPluginID"
+// VAMP_CONFIG_KEY Preferences. WARNING: Do not fix the "analyser" spelling here
+// since user config files contain these.
+#define VAMP_ANALYZER_BEAT_LIBRARY "AnalyserBeatLibrary"
+#define VAMP_ANALYZER_BEAT_PLUGIN_ID "AnalyserBeatPluginID"
 
 #define BPM_CONFIG_KEY "[BPM]"
 

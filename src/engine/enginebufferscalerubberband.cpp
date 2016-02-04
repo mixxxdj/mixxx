@@ -1,16 +1,16 @@
+#include "engine/enginebufferscalerubberband.h"
+
 #include <rubberband/RubberBandStretcher.h>
 
 #include <QtDebug>
 
-#include "engine/enginebufferscalerubberband.h"
-
 #include "controlobject.h"
 #include "engine/readaheadmanager.h"
-#include "sampleutil.h"
 #include "track/keyutils.h"
 #include "util/counter.h"
-#include "util/math.h"
 #include "util/defs.h"
+#include "util/math.h"
+#include "util/sample.h"
 
 using RubberBand::RubberBandStretcher;
 

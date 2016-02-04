@@ -76,7 +76,7 @@ class Sandbox {
 
     static QMutex s_mutex;
     static bool s_bInSandbox;
-    static ConfigObject<ConfigValue>* s_pSandboxPermissions;
+    static QSharedPointer<ConfigObject<ConfigValue>> s_pSandboxPermissions;
     static QHash<QString, SecurityTokenWeakPointer> s_activeTokens;
 };
 
