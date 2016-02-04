@@ -659,7 +659,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     return trackId;
 }
 
-TrackId TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove) {
+TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove) {
     // TODO(uklotzde): Resolve TrackInfoObject through TrackCache
     TrackPointer pTrack(new TrackInfoObject(fileInfo));
 
@@ -668,7 +668,7 @@ TrackId TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Unsupported file type"
                 << pTrack->getLocation();
-        return TrackId();
+        return TrackPointer();
     }
 
     SoundSourceProxy(pTrack).loadTrackMetadata();
@@ -681,15 +681,22 @@ TrackId TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove) {
     }
 
     const TrackId trackId(addTracksAddTrack(pTrack, unremove));
+
     // TODO(uklotzde): Update TrackCache with trackId
-    return trackId;
+
+    if (trackId.isValid()) {
+        DEBUG_ASSERT(pTrack->getId() == trackId);
+        return pTrack;
+    } else {
+        return TrackPointer();
+    }
 }
 
-TrackId TrackDAO::addSingleTrack(const QFileInfo& fileInfo, bool unremove) {
+TrackPointer TrackDAO::addSingleTrack(const QFileInfo& fileInfo, bool unremove) {
     addTracksPrepare();
-    TrackId trackId(addTracksAddFile(fileInfo, unremove));
-    addTracksFinish(!trackId.isValid());
-    return trackId;
+    TrackPointer pTrack(addTracksAddFile(fileInfo, unremove));
+    addTracksFinish(pTrack.isNull());
+    return pTrack;
 }
 
 QList<TrackId> TrackDAO::addMultipleTracks(
@@ -2091,17 +2098,15 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
 TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
                                      bool processCoverArt,
                                      bool* pAlreadyInLibrary) {
-    TrackId trackId(getTrackId(trackLocation));
-    bool trackAlreadyInLibrary = trackId.isValid();
-
-    // Add Track to library -- unremove if it was previously removed.
-    if (!trackId.isValid()) {
-        trackId = addSingleTrack(trackLocation, true);
-    }
+    const TrackId trackId(getTrackId(trackLocation));
+    const bool trackAlreadyInLibrary = trackId.isValid();
 
     TrackPointer pTrack;
-    if (trackId.isValid()) {
+    if (trackAlreadyInLibrary) {
         pTrack = getTrack(trackId);
+    } else {
+        // Add Track to library -- unremove if it was previously removed.
+        pTrack = addSingleTrack(trackLocation, true);
     }
 
     // addTrack or getTrack may fail.

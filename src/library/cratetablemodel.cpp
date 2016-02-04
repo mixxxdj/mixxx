@@ -87,8 +87,8 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     // If the track is already contained in the library it will not insert
     // a duplicate. It also handles unremoving logic if the track has been
     // removed from the library recently and re-adds it.
-    const TrackId trackId(trackDao.addSingleTrack(fileInfo, true));
-    if (!trackId.isValid()) {
+    const TrackPointer pTrack(trackDao.addSingleTrack(fileInfo, true));
+    if (pTrack.isNull()) {
         qDebug() << "CrateTableModel::addTrack:"
                 << "Failed to add track"
                 << location
@@ -96,6 +96,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
         return false;
     }
 
+    const TrackId trackId(pTrack->getId());
     if (m_pTrackCollection->getCrateDAO().addTrackToCrate(trackId, m_iCrateId)) {
         // TODO(rryan) just add the track dont select
         select();
