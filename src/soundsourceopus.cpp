@@ -196,6 +196,9 @@ Result SoundSourceOpus::parseHeader() {
     QByteArray qBAFilename = getFilename().toLocal8Bit();
 #endif
     OggOpusFile *l_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
+    if (l_ptrOpusFile == NULL) {
+        return ERR;
+    }
     this->setBitrate((int)op_bitrate(l_ptrOpusFile, -1) / 1000);
     this->setSampleRate(48000);
     this->setChannels(2);
