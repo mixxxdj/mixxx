@@ -544,15 +544,12 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     qDebug() << "TrackDAO: Adding track"
             << pTrack->getLocation();
 
-    DbId trackLocationId;
     TrackId trackId;
 
     // Insert the track location into the corresponding table. This will fail
     // silently if the location is already in the table because it has a UNIQUE
     // constraint.
     bindTrackToTrackLocationsInsert(pTrack.data());
-
-    bool trackInserted = false;
     if (!m_pQueryTrackLocationInsert->exec()) {
         LOG_FAILED_QUERY(*m_pQueryTrackLocationInsert)
             << "Location " << pTrack->getLocation() << " is already in the DB";
@@ -560,7 +557,6 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         // exists. Query for its trackLocationId.
 
         m_pQueryTrackLocationSelect->bindValue(":location", pTrack->getLocation());
-
         if (!m_pQueryTrackLocationSelect->exec()) {
             // We can't even select this, something is wrong.
             LOG_FAILED_QUERY(*m_pQueryTrackLocationSelect)
@@ -570,9 +566,13 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         if (m_trackLocationIdColumn == UndefinedRecordIndex) {
             m_trackLocationIdColumn = m_pQueryTrackLocationSelect->record().indexOf("id");
         }
+        DbId trackLocationId;
         while (m_pQueryTrackLocationSelect->next()) {
+            // This loop body is executed at most once
+            DEBUG_ASSERT(!trackLocationId.isValid());
             trackLocationId = DbId(
                     m_pQueryTrackLocationSelect->value(m_trackLocationIdColumn));
+            DEBUG_ASSERT(trackLocationId.isValid());
         }
 
         m_pQueryLibrarySelect->bindValue(":location", trackLocationId.toVariant());
@@ -580,19 +580,20 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
              LOG_FAILED_QUERY(*m_pQueryLibrarySelect)
                      << "Failed to query existing track: "
                      << pTrack->getLocation();
-        } else {
-            bool mixxx_deleted = false;
-            if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
-                QSqlRecord queryLibraryRecord = m_pQueryLibrarySelect->record();
-                m_queryLibraryIdColumn = queryLibraryRecord.indexOf("id");
-                m_queryLibraryMixxxDeletedColumn =
-                        queryLibraryRecord.indexOf("mixxx_deleted");
-            }
-
-            while (m_pQueryLibrarySelect->next()) {
-                trackId = TrackId(m_pQueryLibrarySelect->value(m_queryLibraryIdColumn));
-                mixxx_deleted = m_pQueryLibrarySelect->value(m_queryLibraryMixxxDeletedColumn).toBool();
-            }
+             return TrackId();
+        }
+        if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
+            QSqlRecord queryLibraryRecord = m_pQueryLibrarySelect->record();
+            m_queryLibraryIdColumn = queryLibraryRecord.indexOf("id");
+            m_queryLibraryMixxxDeletedColumn =
+                    queryLibraryRecord.indexOf("mixxx_deleted");
+        }
+        while (m_pQueryLibrarySelect->next()) {
+            // This loop body is executed at most once
+            DEBUG_ASSERT(!trackId.isValid());
+            trackId = TrackId(m_pQueryLibrarySelect->value(m_queryLibraryIdColumn));
+            DEBUG_ASSERT(trackId.isValid());
+            bool mixxx_deleted = m_pQueryLibrarySelect->value(m_queryLibraryMixxxDeletedColumn).toBool();
             if (unremove && mixxx_deleted) {
                 // Set mixxx_deleted back to 0
                 m_pQueryLibraryUpdate->bindValue(":id", trackId.toVariant());
@@ -600,22 +601,26 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
                     LOG_FAILED_QUERY(*m_pQueryLibraryUpdate)
                             << "Failed to unremove existing track: "
                             << pTrack->getLocation();
+                    return TrackId();
                 }
             }
-            // Regardless of whether we unremoved this track or not -- it's
-            // already in the library and so we need to skip it instead of
-            // adding it to m_tracksAddedSet.
-            //
-            // TODO(XXX) this is a little weird because the track has whatever
-            // metadata the caller supplied and that metadata may differ from
-            // what is already in the database. I'm ignoring this corner case.
-            // rryan 10/2011
         }
+        // Regardless of whether we unremoved this track or not -- it's
+        // already in the library and so we need to skip it instead of
+        // adding it to m_tracksAddedSet.
+        //
+        // TODO(XXX) this is a little weird because the track has whatever
+        // metadata the caller supplied and that metadata may differ from
+        // what is already in the database. I'm ignoring this corner case.
+        // rryan 10/2011
+        // NOTE(uklotzde, 01/2016): It doesn't matter if the track metadata
+        // has been modified (dirty=true) or not (dirty=false). By not adding
+        // the track to m_tracksAddedSet we ensure that the track is not
+        // marked as clean (see below). The library will be updated when
+        // the last reference to the track is dropped.
     } else {
         // Inserting succeeded, so just get the last rowid.
-        QVariant lastInsert = m_pQueryTrackLocationInsert->lastInsertId();
-        trackLocationId = DbId(lastInsert);
-
+        const DbId trackLocationId(m_pQueryTrackLocationInsert->lastInsertId());
         // Failure of this assert indicates that we were unable to insert the
         // track location into the table AND we could not retrieve the id of
         // that track location from the same table. "It shouldn't
@@ -637,7 +642,8 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         trackId = TrackId(m_pQueryLibraryInsert->lastInsertId());
         m_analysisDao.saveTrackAnalyses(pTrack.data());
         m_cueDao.saveTrackCues(trackId, pTrack.data());
-        trackInserted = true;
+        DEBUG_ASSERT(!m_tracksAddedSet.contains(trackId));
+        m_tracksAddedSet.insert(trackId);
     }
     if (trackId.isValid()) {
         pTrack->setId(trackId);
@@ -652,8 +658,10 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     // invalid adding the track to the library must have failed
     // and the id of the track should also still be invalid.
     DEBUG_ASSERT(pTrack->getId() == trackId);
-    m_tracksAddedSet.insert(trackId);
-    if (trackInserted) {
+    // Only newly inserted tracks must be marked as clean!
+    // Existing or unremoved tracks have not been added to
+    // m_tracksAddedSet and will keep their dirty flag unchanged.
+    if (m_tracksAddedSet.contains(trackId)) {
         pTrack->markClean();
     }
     return trackId;
