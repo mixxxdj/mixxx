@@ -1214,6 +1214,20 @@ struct ColumnPopulator {
 
 #define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
 
+void TrackDAO::cacheRecentTrack(
+    TrackId trackId,
+    const TrackPointer& pTrack) const {
+    RecentTrackCacheItem* pCacheItem = new RecentTrackCacheItem(pTrack);
+    m_recentTracksCache.insert(trackId, pCacheItem);
+
+    // Queued connection. We are not in a rush to process cache
+    // expirations and it can produce dangerous signal loops.
+    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
+    connect(pCacheItem, SIGNAL(saveTrack(TrackPointer)),
+            this, SLOT(saveTrack(TrackPointer)),
+            Qt::QueuedConnection);
+}
+
 TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     if (!trackId.isValid()) {
         return TrackPointer();
@@ -1401,16 +1415,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     //qDebug() << "TrackDAO::m_sTracks.count() =" << trackCount;
 
     // Insert the loaded track into the recent tracks cache
-    RecentTrackCacheItem* pCacheItem = new RecentTrackCacheItem(pTrack);
-
-    // Queued connection. We are not in a rush to process cache
-    // expirations and it can produce dangerous signal loops.
-    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    connect(pCacheItem, SIGNAL(saveTrack(TrackPointer)),
-            this, SLOT(saveTrack(TrackPointer)),
-            Qt::QueuedConnection);
-
-    m_recentTracksCache.insert(trackId, pCacheItem);
+    cacheRecentTrack(trackId, pTrack);
 
     // If the track is dirty send dirty notifications after we inserted
     // it in the cache. BaseTrackCache cares about dirty notifications
@@ -1475,18 +1480,7 @@ TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
         // If we were able to convert a weak reference to a strong reference then
         // re-insert it into the recent tracks cache so that its least-recently-used
         // tracking is accurate.
-        // NOTE: Never call QCache::insert() while holding the weak-reference
-        // hash mutex. It may trigger a cache delete and trigger a deadlock.
-        RecentTrackCacheItem* pCacheItem = new RecentTrackCacheItem(pTrack);
-
-        // Queued connection. We are not in a rush to process cache
-        // expirations and it can produce dangerous signal loops.
-        // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-        connect(pCacheItem, SIGNAL(saveTrack(TrackPointer)),
-                this, SLOT(saveTrack(TrackPointer)),
-                Qt::QueuedConnection);
-
-        m_recentTracksCache.insert(trackId, pCacheItem);
+        cacheRecentTrack(trackId, pTrack);
     }
     return pTrack;
 }

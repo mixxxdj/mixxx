@@ -221,6 +221,11 @@ class TrackDAO : public QObject, public virtual DAO {
     static QMutex m_sTracksMutex;
     // Weak pointer cache of active tracks.
     static QHash<TrackId, TrackWeakPointer> m_sTracks;
+
+    void cacheRecentTrack(
+            TrackId trackId,
+            const TrackPointer& pTrack) const;
+
     // "Recent tracks" cache -- holds strong references to recently used
     // tracks. When a track is expired, calls saveTrack(TrackPointer) without
     // dropping the strong reference to the track. This prevents a race
