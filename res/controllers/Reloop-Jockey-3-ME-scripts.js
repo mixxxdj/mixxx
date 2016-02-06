@@ -5,10 +5,10 @@ Jockey3ME.EffectLedMeter = 0;
 Jockey3ME.EffectLedMeterValue = 1;
 Jockey3ME.LedMeterShowValue = 1;
 Jockey3ME.LedMeterShowValueTwo = false;
-Jockey3ME.VuMeter = 0;
 Jockey3ME.scratching = [];
+Jockey3ME.jogwheelResolution = 2048;
+Jockey3ME.jogwheelSpinSpeed = 33+1/3;
 Jockey3ME.hotcueClearVal = 0;
-Jockey3ME.crossfaderScratch = false;
 Jockey3ME.num_effectsValue = [0,0,0,0];
 Jockey3ME.effectsAvailable = 5; // Sets how many Effects are Loadable
 Jockey3ME.fxSelectKnopPush = [0,0,0,0];
@@ -19,13 +19,25 @@ Jockey3ME.fxSelectKnopPushLedTemp = 0;
 Jockey3ME.fxSelectKnopParamChose = 0;
 Jockey3ME.fxSelectKnopParamLinkChose = 0;
 Jockey3ME.fxSelectKnopParamLinkInverseChose = 0;
-Jockey3ME.move_beat_value = 4; // Sets how many Beats Jumping when "MOVE" is Turned
-Jockey3ME.CUP_value = 0;
+Jockey3ME.loop_move_value = 4; // Sets how many a Loop Jumping Beats when "MOVE" is Turned
+Jockey3ME.loop_move_bool = false;
 Jockey3ME.MixerDeck1 = 0;
 Jockey3ME.MixerDeck2 = 0;
-Jockey3ME.noVolHopValue = [false,false,false,false,false];
+
+script.crossfaderCurve = function (value, min, max) {
+	var newValue = script.absoluteLin(value, 2, 250, min, max);
+	var newValueThree = script.absoluteLin(value, 0.5, 0.999307, min, max);
+	if (engine.getValue("[Mixer Profile]", "xFaderMode")==1) {
+		// Constant Power
+		engine.setValue("[Mixer Profile]", "xFaderCalibration", script.absoluteLin(value, 0.5, newValueThree, min, max));
+	} else {
+		// Additive
+		engine.setValue("[Mixer Profile]", "xFaderCurve", script.absoluteLin(value, 1, newValue, min, max));
+	}
+}
 
 // Functions
+// Funny Led show on FX Dry/Wet
 Jockey3ME.EffectLedMeterShow = function () {
   midi.sendShortMsg(0x90,0x1D,Jockey3ME.EffectLedMeterValue);
   midi.sendShortMsg(0x91,0x1D,Jockey3ME.EffectLedMeterValue);
@@ -35,10 +47,6 @@ Jockey3ME.EffectLedMeterShow = function () {
     Jockey3ME.EffectLedMeter = 0;
 
     // Sets Effect Leds
-    	/*for (var i = 1, j = 176; i <= 4; i++) {
-			Jockey3ME.effectSelectLedSet(j,i);
-			j++;
-		}*/
 		for (var i = 1; i <= 4; i++) {
 			for (var j = 1; j <= 3; j++) {
 				engine.trigger("[EffectRack1_EffectUnit" + i + "_Effect1]", "parameter" + j);
@@ -47,7 +55,7 @@ Jockey3ME.EffectLedMeterShow = function () {
 		}
   };
 }
-// Main LedShow Script
+// Funny Led Show on VuMeter
 Jockey3ME.LedMeterShow = function() {
   midi.sendShortMsg(0x90,0x21,Jockey3ME.LedMeterShowValue);
   midi.sendShortMsg(0x91,0x21,Jockey3ME.LedMeterShowValue);
@@ -57,7 +65,7 @@ Jockey3ME.LedMeterShow = function() {
     --Jockey3ME.LedMeterShowValue;
   }
   if (Jockey3ME.LedMeterShowValue > 10) Jockey3ME.LedMeterShowValueTwo = true;
-  // Stop The LedShow and Start Scanning VuMeter
+  // Stop The LedShow start Show on FX
   if (Jockey3ME.LedMeterShowValueTwo && Jockey3ME.LedMeterShowValue < 0) {
     engine.stopTimer(Jockey3ME.LedMeterShowTimer);
     Jockey3ME.LedMeterShowTimer = 0;
@@ -83,20 +91,20 @@ Jockey3ME.init = function () {
     midi.sendShortMsg(0x92,j,0x00);
     midi.sendShortMsg(0x93,j,0x00);
   };
-  Jockey3ME.LedShowBeginTimer = engine.beginTimer(500,"Jockey3ME.LedShowBegin()",1); // LedShow Script Starts Here after 500ms
+  Jockey3ME.LedShowBeginTimer = engine.beginTimer(2000,"Jockey3ME.LedShowBegin()",1); // LedShow Script Starts Here after 500ms
 	for (var i = 1; i <= 4; i++) {
 		for (var j = 1; j <= 3; j++) {
 			engine.connectControl("[EffectRack1_EffectUnit" + i + "_Effect1]","parameter" + j,"Jockey3ME.FX_Param_Led");
 		}
 		engine.connectControl("[EffectRack1_EffectUnit" + i + "]","mix","Jockey3ME.FX_DryWet_Led");
-	}
+	}/* while softTakeover isn't fixed.
 	for (var k = 1; k <= 4; k++) {
 		for (var l = 1; l <= 3; l++) {
 			engine.softTakeover("[EqualizerRack1_[Channel" + k + "]_Effect1]","parameter" + l,true);
 		}
 		engine.softTakeover("[Channel" + k + "]","volume",true);
 		engine.softTakeover("[Channel" + k + "]","pregain",true);
-	}
+	}*/
 }
 
 Jockey3ME.shutdown = function () {
@@ -106,7 +114,6 @@ Jockey3ME.shutdown = function () {
     midi.sendShortMsg(0x92,i,0x00);
     midi.sendShortMsg(0x93,i,0x00);
   };
-  engine.stopTimer(Jockey3ME.VuMeter);
 }
 
 // The button that enables/disables scratching
@@ -115,7 +122,7 @@ Jockey3ME.wheelTouch = function (channel, control, value, status, group) {
     if (value == 0x7F) {  // Some wheels send 0x90 on press and release, so you need to check the value
         var alpha = 1.0/8;
         var beta = alpha/32;
-        engine.scratchEnable(currentDeck, 2048, 45+1/3, alpha, beta);
+        engine.scratchEnable(currentDeck, Jockey3ME.jogwheelResolution, Jockey3ME.jogwheelSpinSpeed, alpha, beta);
     }
     else {    // If button up
         engine.scratchDisable(currentDeck);
@@ -160,32 +167,15 @@ Jockey3ME.hotcue_clear = function (channel, control, value, status, group) {
 // Effect Sections
 Jockey3ME.effectParam = function (channel, control, value, status, group) {
   var currentDeck = parseInt(group.substring(23,24));
-  var EncoderKnopDryWet = 0;
-  var EncoderKnopFX = 0;
   var newVal = 0;
   var interval = 0.04;
-	if (control == 29) {
-		EncoderKnopDryWet = 1;
-	} else {
-		EncoderKnopFX = control - 29;
-	}
-  if (!EncoderKnopDryWet) {
+	var EncoderKnopFX = control - 29;
+	var curVal = engine.getParameter("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]", "parameter" + EncoderKnopFX);
     if (value == 0x41) {
-      var curVal = engine.getParameter("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]", "parameter" + EncoderKnopFX);
       newVal = curVal + interval;
     } else {
-      var curVal = engine.getParameter("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]", "parameter" + EncoderKnopFX);
       newVal = curVal - interval;
     }
-  } else {
-    if (value == 0x41) {
-      var curVal = engine.getParameter("[EffectRack1_EffectUnit" + currentDeck + "]", "mix");
-      newVal = curVal + interval;
-    } else {
-      var curVal = engine.getParameter("[EffectRack1_EffectUnit" + currentDeck + "]", "mix");
-      newVal = curVal - interval;
-    }
-  }
   switch (engine.getValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]", "num_parameters")) {
     case 1:
       if (EncoderKnopFX > 1) EncoderKnopFX = 0;
@@ -194,19 +184,24 @@ Jockey3ME.effectParam = function (channel, control, value, status, group) {
       if (EncoderKnopFX > 2) EncoderKnopFX = 0;
       break;
   }
-  if (EncoderKnopDryWet) {
-    engine.setParameter("[EffectRack1_EffectUnit" + currentDeck + "]", "mix", newVal);
-  } else if (EncoderKnopFX) {
-    engine.setParameter("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]", "parameter" + EncoderKnopFX, newVal);
-  };
-
-  // Leds
-
 	if (EncoderKnopFX) {
-		engine.trigger("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]", "parameter" + EncoderKnopFX);
-	} else if (EncoderKnopDryWet) {
-		engine.trigger("[EffectRack1_EffectUnit" + currentDeck + "]", "mix");
+		engine.setParameter("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]", "parameter" + EncoderKnopFX, newVal);
+		engine.trigger("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]", "parameter" + EncoderKnopFX); // Trigger Led-ring
 	}
+}
+
+Jockey3ME.effectDryWet = function (channel, control, value, status, group) {
+	var currentDeck = parseInt(group.substring(23,24));
+	var newValue = 0;
+	var interval = 0.04;
+	var curVal = engine.getParameter("[EffectRack1_EffectUnit" + currentDeck + "]", "mix");
+	if (value == 0x41) {
+		newValue = curVal + interval;
+	} else {
+		newValue = curVal - interval;
+	}
+	engine.setParameter("[EffectRack1_EffectUnit" + currentDeck + "]", "mix", newValue);
+	engine.trigger("[EffectRack1_EffectUnit" + currentDeck + "]", "mix"); // Trigger Led-ring
 }
 
 Jockey3ME.FX_Param_Led = function (group, value, control) {
@@ -280,11 +275,6 @@ Jockey3ME.effectSelectParamLinkChose = function (currentDeck,value,control,statu
 	}
 }
 
-// <<<<<<< HEAD
-  // Set Leds
-	// --- to function Jockey3ME.effectSelect() Lines 253-260 +++
-  // Jockey3ME.effectSelectLedSetNumEffect(currentDeck,status,92,(value-64));
-// =======
 Jockey3ME.effectSelectParamLinkChoseOne = function (currentDeck,value,control,status,fxSelectKnop) {
 	if ((value-64) == 1) {
 		if (!(Jockey3ME.fxSelectKnopPushLedTemp > engine.getValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect" + fxSelectKnop + "]","num_parameters"))) {
@@ -311,7 +301,6 @@ Jockey3ME.effectSelectParamLinkChoseTwo = function (currentDeck,value,control,st
 	}
 	midi.sendShortMsg((status-32),control,parseInt(Jockey3ME.fxSelectKnopPushLedTemp*10.5834));
 	Jockey3ME.fxSelectKnopParamLinkChose = Jockey3ME.fxSelectKnopPushLedTemp;
-// >>>>>>> big_effects
 }
 
 Jockey3ME.effectSelectParamLinkChoseThree = function (currentDeck,value,control,status,fxSelectKnop) {
@@ -488,10 +477,10 @@ Jockey3ME.effectSelectPush = function (channel, control, value, status, group) {
 	}
 }
 
-Jockey3ME.effectSuperKnop = function (channel, control, value, status, group) {
+Jockey3ME.effectSuperKnob = function (channel, control, value, status, group) {
 	var newValue = (value-64);
 	var currentDeck = parseInt(group.substring(23,24));
-	var interval = 0.00075;
+	var interval = 0.00065;
 	var curVal = engine.getParameter("[EffectRack1_EffectUnit" + currentDeck + "]","super1");
 	newValue = curVal + (interval * newValue);
 	engine.setParameter("[EffectRack1_EffectUnit" + currentDeck + "]","super1",newValue);
@@ -518,52 +507,44 @@ Jockey3ME.loop_double_halve = function (channel, control, value, status, group) 
 
   if (newValue == 1) {
     engine.setValue(group,"loop_double",1);
+	engine.setValue(group,"loop_double",0); // if not buttons lit all the way
   } else {
     engine.setValue(group,"loop_halve",1);
+	engine.setValue(group,"loop_halve",0);
   }
 }
 
-Jockey3ME.move_beat = function (channel, control, value, status, group) {
+// Must remap if controls are Documented
+Jockey3ME.loop_move = function (channel, control, value, status, group) {
   var newValue = (value-64);
-  engine.setValue(group,"beatjump",(newValue*Jockey3ME.move_beat_value));
+	if (status == 0xB0 && !Jockey3ME.loop_move_bool) {
+		engine.setValue(group,"loop_move",(newValue*Jockey3ME.loop_move_value));
+	} else if (status == 0xB0 && Jockey3ME.loop_move_bool) {
+		if (newValue > 0) {
+			if (Jockey3ME.loop_move_value < 64) {
+				Jockey3ME.loop_move_value *= 2;
+			}
+		} else {
+			if (Jockey3ME.loop_move_value > 0.03125) {
+				Jockey3ME.loop_move_value /= 2;
+			}
+		}
+	} else {
+		if (value == 0x7F) {
+			Jockey3ME.loop_move_bool = true;
+		} else {
+			Jockey3ME.loop_move_bool = false;
+		}
+	}
 }
 
 Jockey3ME.crossfader = function (channel, control, value, status, group) {
-  var newValue = 0;
-  if (control == 0x37 && !Jockey3ME.crossfaderScratch) {
-    newValue = ((value / 63.5) - 1);
-    engine.setValue(group,"crossfader",newValue);
-  } else if (control == 0x37 && Jockey3ME.crossfaderScratch) {
-    switch (value) {
-      case 127:
-        engine.setValue(group,"crossfader",1);
-        break;
-      case 126:
-        engine.setValue(group,"crossfader",0.96875);
-        break;
-      case 125:
-        engine.setValue(group,"crossfader",0.953125);
-        break;
-      case 2:
-        engine.setValue(group,"crossfader",-0.953125);
-        break;
-      case 1:
-        engine.setValue(group,"crossfader",-0.96875);
-        break;
-      case 0:
-        engine.setValue(group,"crossfader",-1);
-        break;
-      default:
-        engine.setValue(group,"crossfader",0);
-    }
-  } else {
-    if (value <= 126) {
-      script.crossfaderCurve(value, 0, 126);
-      Jockey3ME.crossfaderScratch = false;
-    } else {
-      Jockey3ME.crossfaderScratch = true;
-    }
-  }
+	var newValue = ((value / 63.5) - 1);
+	engine.setValue(group,"crossfader",newValue);
+}
+
+Jockey3ME.crossfaderCurve = function (channel, control, value, status, group) {
+	script.crossfaderCurve(value, 0 , 127);
 }
 
 Jockey3ME.MixerVol = function (channel, control, value, status, group) {
@@ -581,12 +562,49 @@ Jockey3ME.MixerVol = function (channel, control, value, status, group) {
 Jockey3ME.DeckSwitch = function (channel, control, value, status, group) {
   if (control == 0x3C && value == 0x7F) {
     Jockey3ME.MixerDeck1 = 1;
+		// while softTakeover isn't fixed
+		var k = 3;
+		for (var l = 1; l <= 3; l++) {
+			engine.softTakeover("[EqualizerRack1_[Channel" + k + "]_Effect1]","parameter" + l,false);
+			engine.softTakeover("[EqualizerRack1_[Channel" + k + "]_Effect1]","parameter" + l,true);
+		}
+		engine.softTakeover("[Channel" + k + "]","volume",false);
+		engine.softTakeover("[Channel" + k + "]","volume",true);
+		engine.softTakeover("[Channel" + k + "]","pregain",false);
+		engine.softTakeover("[Channel" + k + "]","pregain",true);
   } else if (control == 0x3C && value == 0x00) {
     Jockey3ME.MixerDeck1 = 0;
+		var k = 1;
+		for (var l = 1; l <= 3; l++) {
+			engine.softTakeover("[EqualizerRack1_[Channel" + k + "]_Effect1]","parameter" + l,false);
+			engine.softTakeover("[EqualizerRack1_[Channel" + k + "]_Effect1]","parameter" + l,true);
+		}
+		engine.softTakeover("[Channel" + k + "]","volume",false);
+		engine.softTakeover("[Channel" + k + "]","volume",true);
+		engine.softTakeover("[Channel" + k + "]","pregain",false);
+		engine.softTakeover("[Channel" + k + "]","pregain",true);
   } else if (control == 0x3F && value == 0x7F) {
     Jockey3ME.MixerDeck2 = 1;
+		var k = 4;
+		for (var l = 1; l <= 3; l++) {
+			engine.softTakeover("[EqualizerRack1_[Channel" + k + "]_Effect1]","parameter" + l,false);
+			engine.softTakeover("[EqualizerRack1_[Channel" + k + "]_Effect1]","parameter" + l,true);
+		}
+		engine.softTakeover("[Channel" + k + "]","volume",false);
+		engine.softTakeover("[Channel" + k + "]","volume",true);
+		engine.softTakeover("[Channel" + k + "]","pregain",false);
+		engine.softTakeover("[Channel" + k + "]","pregain",true);
   } else if (control == 0x3F && value == 0x00) {
     Jockey3ME.MixerDeck2 = 0;
+		var k = 2;
+		for (var l = 1; l <= 3; l++) {
+			engine.softTakeover("[EqualizerRack1_[Channel" + k + "]_Effect1]","parameter" + l,false);
+			engine.softTakeover("[EqualizerRack1_[Channel" + k + "]_Effect1]","parameter" + l,true);
+		}
+		engine.softTakeover("[Channel" + k + "]","volume",false);
+		engine.softTakeover("[Channel" + k + "]","volume",true);
+		engine.softTakeover("[Channel" + k + "]","pregain",false);
+		engine.softTakeover("[Channel" + k + "]","pregain",true);
   }
 }
 
@@ -618,4 +636,12 @@ Jockey3ME.EQ = function (channel, control, value, status, group) {
       print("Error on EQ chosing");
   }
 	engine.setValue("[EqualizerRack1_[Channel" + currentDeck + "]_Effect1]","parameter" + eqKnop, script.absoluteNonLin(value,0,1,4,0,127));
+}
+
+Jockey3ME.trackSearch = function (channel, control, value, status, group) {
+	var newValue = (value-64);
+	if (newValue > 1 || newValue < -1) {
+		newValue /= 2;
+	}
+	engine.setValue(group,"beatjump",newValue);
 }

@@ -14,7 +14,7 @@
             <!-- Master Section -->
             <control>
                 <group>[Master]</group>
-                <key>Jockey3ME.crossfader</key>
+                <key>Jockey3ME.crossfaderCurve</key>
                 <status>0xB0</status>
                 <midino>0x38</midino>
                 <options>
@@ -88,9 +88,9 @@
 			<control>
 				<group>[Microphone]</group>
 				<key>talkover</key>
-				<description>Microphone Talkover</description>
+				<description>Shift Sync</description>
 				<status>0x90</status>
-				<midino>0x08</midino>
+				<midino>0x56</midino>
 				<options>
 					<normal/>
 				</options>
@@ -98,9 +98,9 @@
 			<control>
 				<group>[Microphone]</group>
 				<key>talkover</key>
-				<description>Microphone Talkover</description>
+				<description>Shift Sync</description>
 				<status>0x91</status>
-				<midino>0x08</midino>
+				<midino>0x56</midino>
 				<options>
 					<normal/>
 				</options>
@@ -108,9 +108,9 @@
 			<control>
 				<group>[Microphone]</group>
 				<key>talkover</key>
-				<description>Microphone Talkover</description>
+				<description>Shift Sync</description>
 				<status>0x92</status>
-				<midino>0x08</midino>
+				<midino>0x56</midino>
 				<options>
 					<normal/>
 				</options>
@@ -118,9 +118,9 @@
 			<control>
 				<group>[Microphone]</group>
 				<key>talkover</key>
-				<description>Microphone Talkover</description>
+				<description>Shift Sync</description>
 				<status>0x93</status>
-				<midino>0x08</midino>
+				<midino>0x56</midino>
 				<options>
 					<normal/>
 				</options>
@@ -199,7 +199,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x90</status>
 				<midino>0x5D</midino>
 				<options>
@@ -209,7 +209,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x90</status>
 				<midino>0x5E</midino>
 				<options>
@@ -219,7 +219,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x90</status>
 				<midino>0x5F</midino>
 				<options>
@@ -228,8 +228,8 @@
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit1]</group>
-				<key>Jockey3ME.effectSuperKnop</key>
-				<description>FX SuperKnop on Jogwheel Mode Pitchbend</description>
+				<key>Jockey3ME.effectSuperKnob</key>
+				<description>FX SuperKnob on Jogwheel Mode Pitchbend</description>
 				<status>0xB0</status>
 				<midino>0x25</midino>
 				<options>
@@ -268,7 +268,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>Jockey3ME.effectParam</key>
+                <key>Jockey3ME.effectDryWet</key>
                 <description>FX Param Mix</description>
                 <status>0xB0</status>
                 <midino>0x1D</midino>
@@ -285,6 +285,33 @@
                     <normal/>
                 </options>
             </control>
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect1]</group>
+				<key>enabled</key>
+				<status>0x90</status>
+				<midino>0x02</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect2]</group>
+				<key>enabled</key>
+				<status>0x90</status>
+				<midino>0x03</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect3]</group>
+				<key>enabled</key>
+				<status>0x90</status>
+				<midino>0x04</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Channel1]_enable</key>
@@ -369,7 +396,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit2]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x91</status>
 				<midino>0x5D</midino>
 				<options>
@@ -379,7 +406,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit2]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x91</status>
 				<midino>0x5E</midino>
 				<options>
@@ -389,7 +416,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit2]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x91</status>
 				<midino>0x5F</midino>
 				<options>
@@ -398,8 +425,8 @@
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit2]</group>
-				<key>Jockey3ME.effectSuperKnop</key>
-				<description>FX SuperKnop on Jogwheel Mode Pitchbend</description>
+				<key>Jockey3ME.effectSuperKnob</key>
+				<description>FX SuperKnob on Jogwheel Mode Pitchbend</description>
 				<status>0xB1</status>
 				<midino>0x25</midino>
 				<options>
@@ -438,7 +465,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>Jockey3ME.effectParam</key>
+                <key>Jockey3ME.effectDryWet</key>
                 <description>FX Param Mix</description>
                 <status>0xB1</status>
                 <midino>0x1D</midino>
@@ -455,6 +482,33 @@
                     <normal/>
                 </options>
             </control>
+			<control>
+				<group>[EffectRack1_EffectUnit2_Effect1]</group>
+				<key>enabled</key>
+				<status>0x91</status>
+				<midino>0x02</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2_Effect2]</group>
+				<key>enabled</key>
+				<status>0x91</status>
+				<midino>0x03</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2_Effect3]</group>
+				<key>enabled</key>
+				<status>0x91</status>
+				<midino>0x04</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>group_[Channel1]_enable</key>
@@ -539,7 +593,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit3]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x92</status>
 				<midino>0x5D</midino>
 				<options>
@@ -549,7 +603,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit3]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x92</status>
 				<midino>0x5E</midino>
 				<options>
@@ -559,7 +613,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit3]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x92</status>
 				<midino>0x5F</midino>
 				<options>
@@ -568,8 +622,8 @@
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit3]</group>
-				<key>Jockey3ME.effectSuperKnop</key>
-				<description>FX SuperKnop on Jogwheel Mode Pitchbend</description>
+				<key>Jockey3ME.effectSuperKnob</key>
+				<description>FX SuperKnob on Jogwheel Mode Pitchbend</description>
 				<status>0xB2</status>
 				<midino>0x25</midino>
 				<options>
@@ -608,7 +662,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit3]</group>
-                <key>Jockey3ME.effectParam</key>
+                <key>Jockey3ME.effectDryWet</key>
                 <description>FX Param Mix</description>
                 <status>0xB2</status>
                 <midino>0x1D</midino>
@@ -625,6 +679,33 @@
                     <normal/>
                 </options>
             </control>
+			<control>
+				<group>[EffectRack1_EffectUnit3_Effect1]</group>
+				<key>enabled</key>
+				<status>0x92</status>
+				<midino>0x02</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3_Effect2]</group>
+				<key>enabled</key>
+				<status>0x92</status>
+				<midino>0x03</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3_Effect3]</group>
+				<key>enabled</key>
+				<status>0x92</status>
+				<midino>0x04</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
             <control>
                 <group>[EffectRack1_EffectUnit3]</group>
                 <key>group_[Channel1]_enable</key>
@@ -709,7 +790,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x93</status>
 				<midino>0x5D</midino>
 				<options>
@@ -719,7 +800,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x93</status>
 				<midino>0x5E</midino>
 				<options>
@@ -729,7 +810,7 @@
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
 				<key>Jockey3ME.effectSelectPush</key>
-				<description>FX Linking to SuperKnop on Jogmode Pitchbend</description>
+				<description>FX Sel.X Push Linking to SuperKnob on Jogmode Pitchbend</description>
 				<status>0x93</status>
 				<midino>0x5F</midino>
 				<options>
@@ -738,8 +819,8 @@
 			</control>
 			<control>
 				<group>[EffectRack1_EffectUnit4]</group>
-				<key>Jockey3ME.effectSuperKnop</key>
-				<description>FX SuperKnop on Jogwheel Mode Pitchbend</description>
+				<key>Jockey3ME.effectSuperKnob</key>
+				<description>FX SuperKnob on Jogwheel Mode Pitchbend</description>
 				<status>0xB3</status>
 				<midino>0x25</midino>
 				<options>
@@ -778,7 +859,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit4]</group>
-                <key>Jockey3ME.effectParam</key>
+                <key>Jockey3ME.effectDryWet</key>
                 <description>FX Param Mix</description>
                 <status>0xB3</status>
                 <midino>0x1D</midino>
@@ -795,6 +876,33 @@
                     <normal/>
                 </options>
             </control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect1]</group>
+				<key>enabled</key>
+				<status>0x93</status>
+				<midino>0x02</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect2]</group>
+				<key>enabled</key>
+				<status>0x93</status>
+				<midino>0x03</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect3]</group>
+				<key>enabled</key>
+				<status>0x93</status>
+				<midino>0x04</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
             <control>
                 <group>[EffectRack1_EffectUnit4]</group>
                 <key>group_[Channel1]_enable</key>
@@ -888,6 +996,26 @@
                 <key>keylock</key>
                 <status>0x90</status>
                 <midino>0x59</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>quantize</key>
+                <description>Shift CUE Sets Quantize</description>
+                <status>0x90</status>
+                <midino>0x58</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beats_translate_curpos</key>
+                <description>Shift Minus Moves Beatgrid line to PlayPos</description>
+                <status>0x90</status>
+                <midino>0x68</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1011,6 +1139,15 @@
                     <normal/>
                 </options>
             </control>
+			<control>
+				<group>[Channel1]</group>
+				<key>repeat</key>
+				<status>0x90</status>
+				<midino>0x06</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
             <control>
                 <group>[Channel1]</group>
                 <key>beatloop_4_activate</key>
@@ -1033,7 +1170,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>Jockey3ME.move_beat</key>
+                <key>Jockey3ME.loop_move</key>
                 <description>todo</description>
                 <status>0xB0</status>
                 <midino>0x2C</midino>
@@ -1043,22 +1180,12 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>quantize</key>
-                <description>Reloop Sets Quantize</description>
+                <key>Jockey3ME.loop_move</key>
+                <description>todo</description>
                 <status>0x90</status>
-                <midino>0x06</midino>
+                <midino>0x2C</midino>
                 <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beats_translate_curpos</key>
-                <description>Beat DOWN Moves Beatgrid line to PlayPos</description>
-                <status>0x90</status>
-                <midino>0x07</midino>
-                <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1124,6 +1251,16 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[Channel1]</group>
+				<key>Jockey3ME.wheelTurn</key>
+				<description>Default Jog is Pitchbend</description>
+				<status>0xB0</status>
+				<midino>0x28</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <control>
                 <group>[Channel1]</group>
                 <key>Jockey3ME.wheelTouch</key>
@@ -1133,6 +1270,25 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[Channel1]</group>
+				<key>Jockey3ME.wheelTouch</key>
+				<description>Track Search Stop</description>
+				<status>0x90</status>
+				<midino>0x26</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>Jockey3ME.trackSearch</key>
+				<status>0xB0</status>
+				<midino>0x26</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <!-- Mixer Section -->
             <control>
                 <group>[Channel1]</group>
@@ -1258,6 +1414,26 @@
                     <normal/>
                 </options>
             </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>quantize</key>
+                <description>Shift CUE Sets Quantize</description>
+                <status>0x91</status>
+                <midino>0x58</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beats_translate_curpos</key>
+                <description>Shift Minus Moves Beatgrid line to PlayPos</description>
+                <status>0x91</status>
+                <midino>0x68</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <!-- Hotcue Section -->
             <control>
                 <group>[Channel2]</group>
@@ -1377,6 +1553,15 @@
                     <normal/>
                 </options>
             </control>
+			<control>
+				<group>[Channel2]</group>
+				<key>repeat</key>
+				<status>0x91</status>
+				<midino>0x06</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
             <control>
                 <group>[Channel2]</group>
                 <key>beatloop_4_activate</key>
@@ -1399,7 +1584,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>Jockey3ME.move_beat</key>
+                <key>Jockey3ME.loop_move</key>
                 <description>todo</description>
                 <status>0xB1</status>
                 <midino>0x2C</midino>
@@ -1409,22 +1594,12 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>quantize</key>
-                <description>Reloop Sets Quantize</description>
+                <key>Jockey3ME.loop_move</key>
+                <description>todo</description>
                 <status>0x91</status>
-                <midino>0x06</midino>
+                <midino>0x2C</midino>
                 <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>beats_translate_curpos</key>
-                <description>Beat DOWN Moves Beatgrid line to PlayPos</description>
-                <status>0x91</status>
-                <midino>0x07</midino>
-                <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1490,6 +1665,16 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[Channel2]</group>
+				<key>Jockey3ME.wheelTurn</key>
+				<description>Default Jog is Pitchbend</description>
+				<status>0xB1</status>
+				<midino>0x28</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <control>
                 <group>[Channel2]</group>
                 <key>Jockey3ME.wheelTouch</key>
@@ -1499,6 +1684,25 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[Channel2]</group>
+				<key>Jockey3ME.wheelTouch</key>
+				<description>Track Search Stop</description>
+				<status>0x91</status>
+				<midino>0x26</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>Jockey3ME.trackSearch</key>
+				<status>0xB1</status>
+				<midino>0x26</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <!-- Mixer Section -->
             <control>
                 <group>[Channel2]</group>
@@ -1622,6 +1826,26 @@
                     <normal/>
                 </options>
             </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>quantize</key>
+                <description>Shift CUE Sets Quantize</description>
+                <status>0x92</status>
+                <midino>0x58</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>beats_translate_curpos</key>
+                <description>Shift Minus Moves Beatgrid line to PlayPos</description>
+                <status>0x92</status>
+                <midino>0x68</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <!-- Hotcue Section -->
             <control>
                 <group>[Channel3]</group>
@@ -1741,6 +1965,15 @@
                     <normal/>
                 </options>
             </control>
+			<control>
+				<group>[Channel3]</group>
+				<key>repeat</key>
+				<status>0x92</status>
+				<midino>0x06</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
             <control>
                 <group>[Channel3]</group>
                 <key>beatloop_4_activate</key>
@@ -1763,7 +1996,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>Jockey3ME.move_beat</key>
+                <key>Jockey3ME.loop_move</key>
                 <description>todo</description>
                 <status>0xB2</status>
                 <midino>0x2C</midino>
@@ -1773,22 +2006,12 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>quantize</key>
-                <description>Reloop Sets Quantize</description>
+                <key>Jockey3ME.loop_move</key>
+                <description>todo</description>
                 <status>0x92</status>
-                <midino>0x06</midino>
+                <midino>0x2C</midino>
                 <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
-                <key>beats_translate_curpos</key>
-                <description>Beat DOWN Moves Beatgrid line to PlayPos</description>
-                <status>0x92</status>
-                <midino>0x07</midino>
-                <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1854,6 +2077,16 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[Channel3]</group>
+				<key>Jockey3ME.wheelTurn</key>
+				<description>Default Jog is Pitchbend</description>
+				<status>0xB2</status>
+				<midino>0x28</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <control>
                 <group>[Channel3]</group>
                 <key>Jockey3ME.wheelTouch</key>
@@ -1863,6 +2096,25 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[Channel3]</group>
+				<key>Jockey3ME.wheelTouch</key>
+				<description>Track Search Stop</description>
+				<status>0x91</status>
+				<midino>0x26</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel3]</group>
+				<key>Jockey3ME.trackSearch</key>
+				<status>0xB1</status>
+				<midino>0x26</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <!-- Mixer Section -->
             <control>
                 <group>[Channel3]</group>
@@ -1929,6 +2181,26 @@
                     <normal/>
                 </options>
             </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>quantize</key>
+                <description>Shift CUE Sets Quantize</description>
+                <status>0x93</status>
+                <midino>0x58</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>beats_translate_curpos</key>
+                <description>Shift Minus Moves Beatgrid line to PlayPos</description>
+                <status>0x93</status>
+                <midino>0x68</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <!-- Hotcue Section -->
             <control>
                 <group>[Channel4]</group>
@@ -2048,6 +2320,15 @@
                     <normal/>
                 </options>
             </control>
+			<control>
+				<group>[Channel4]</group>
+				<key>repeat</key>
+				<status>0x93</status>
+				<midino>0x06</midino>
+				<options>
+					<normal/>
+				</options>
+			</control>
             <control>
                 <group>[Channel4]</group>
                 <key>beatloop_4_activate</key>
@@ -2070,7 +2351,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>Jockey3ME.move_beat</key>
+                <key>Jockey3ME.loop_move</key>
                 <description>todo</description>
                 <status>0xB3</status>
                 <midino>0x2C</midino>
@@ -2080,22 +2361,12 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>quantize</key>
-                <description>Reloop Sets Quantize</description>
+                <key>Jockey3ME.loop_move</key>
+                <description>todo</description>
                 <status>0x93</status>
-                <midino>0x06</midino>
+                <midino>0x2C</midino>
                 <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
-                <key>beats_translate_curpos</key>
-                <description>Beat DOWN Moves Beatgrid line to PlayPos</description>
-                <status>0x93</status>
-                <midino>0x07</midino>
-                <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2161,6 +2432,16 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[Channel4]</group>
+				<key>Jockey3ME.wheelTurn</key>
+				<description>Default Jog is Pitchbend</description>
+				<status>0xB3</status>
+				<midino>0x28</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <control>
                 <group>[Channel4]</group>
                 <key>Jockey3ME.wheelTouch</key>
@@ -2170,6 +2451,25 @@
                     <script-binding/>
                 </options>
             </control>
+			<control>
+				<group>[Channel4]</group>
+				<key>Jockey3ME.wheelTouch</key>
+				<description>Track Search Stop</description>
+				<status>0x93</status>
+				<midino>0x26</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel4]</group>
+				<key>Jockey3ME.trackSearch</key>
+				<status>0xB3</status>
+				<midino>0x26</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
             <!-- Mixer Section -->
             <control>
                 <group>[Channel4]</group>
@@ -2188,28 +2488,28 @@
 				<group>[Microphone]</group>
 				<key>talkover</key>
 				<status>0x90</status>
-				<midino>0x08</midino>
+				<midino>0x56</midino>
 				<minimum>0.1</minimum>
 			</output>
 			<output>
 				<group>[Microphone]</group>
 				<key>talkover</key>
 				<status>0x91</status>
-				<midino>0x08</midino>
+				<midino>0x56</midino>
 				<minimum>0.1</minimum>
 			</output>
 			<output>
 				<group>[Microphone]</group>
 				<key>talkover</key>
 				<status>0x92</status>
-				<midino>0x08</midino>
+				<midino>0x56</midino>
 				<minimum>0.1</minimum>
 			</output>
 			<output>
 				<group>[Microphone]</group>
 				<key>talkover</key>
 				<status>0x93</status>
-				<midino>0x08</midino>
+				<midino>0x56</midino>
 				<minimum>0.1</minimum>
 			</output>
 			<output>
@@ -2655,6 +2955,27 @@
                 <midino>0x01</midino>
                 <minimum>0.1</minimum>
             </output>
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect1]</group>
+				<key>enabled</key>
+				<status>0x90</status>
+				<midino>0x02</midino>
+				<minimum>0.1</minimum>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect2]</group>
+				<key>enabled</key>
+				<status>0x90</status>
+				<midino>0x03</midino>
+				<minimum>0.1</minimum>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect3]</group>
+				<key>enabled</key>
+				<status>0x90</status>
+				<midino>0x04</midino>
+				<minimum>0.1</minimum>
+			</output>
             <output>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>enabled</key>
@@ -2662,6 +2983,27 @@
                 <midino>0x01</midino>
                 <minimum>0.1</minimum>
             </output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect1]</group>
+				<key>enabled</key>
+				<status>0x91</status>
+				<midino>0x02</midino>
+				<minimum>0.1</minimum>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect2]</group>
+				<key>enabled</key>
+				<status>0x91</status>
+				<midino>0x03</midino>
+				<minimum>0.1</minimum>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect3]</group>
+				<key>enabled</key>
+				<status>0x91</status>
+				<midino>0x04</midino>
+				<minimum>0.1</minimum>
+			</output>
             <output>
                 <group>[EffectRack1_EffectUnit3]</group>
                 <key>enabled</key>
@@ -2669,6 +3011,27 @@
                 <midino>0x01</midino>
                 <minimum>0.1</minimum>
             </output>
+			<output>
+				<group>[EffectRack1_EffectUnit3_Effect1]</group>
+				<key>enabled</key>
+				<status>0x92</status>
+				<midino>0x02</midino>
+				<minimum>0.1</minimum>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit3_Effect2]</group>
+				<key>enabled</key>
+				<status>0x92</status>
+				<midino>0x03</midino>
+				<minimum>0.1</minimum>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit3_Effect3]</group>
+				<key>enabled</key>
+				<status>0x92</status>
+				<midino>0x04</midino>
+				<minimum>0.1</minimum>
+			</output>
             <output>
                 <group>[EffectRack1_EffectUnit4]</group>
                 <key>enabled</key>
@@ -2676,6 +3039,27 @@
                 <midino>0x01</midino>
                 <minimum>0.1</minimum>
             </output>
+			<output>
+				<group>[EffectRack1_EffectUnit4_Effect1]</group>
+				<key>enabled</key>
+				<status>0x93</status>
+				<midino>0x02</midino>
+				<minimum>0.1</minimum>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit4_Effect2]</group>
+				<key>enabled</key>
+				<status>0x93</status>
+				<midino>0x03</midino>
+				<minimum>0.1</minimum>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit4_Effect3]</group>
+				<key>enabled</key>
+				<status>0x93</status>
+				<midino>0x04</midino>
+				<minimum>0.1</minimum>
+			</output>
             <output>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Channel1]_enable</key>
@@ -2948,11 +3332,18 @@
                 <midino>0x05</midino>
                 <minimum>0.1</minimum>
             </output>
+			<output>
+				<group>[Channel1]</group>
+				<key>repeat</key>
+				<status>0x90</status>
+				<midino>0x06</midino>
+				<minimum>0.1</minimum>
+			</output>
             <output>
                 <group>[Channel1]</group>
                 <key>quantize</key>
                 <status>0x90</status>
-                <midino>0x06</midino>
+                <midino>0x58</midino>
                 <minimum>0.1</minimum>
             </output>
             <!-- Mixer Section -->
@@ -3082,11 +3473,18 @@
                 <midino>0x05</midino>
                 <minimum>0.1</minimum>
             </output>
+			<output>
+				<group>[Channel2]</group>
+				<key>repeat</key>
+				<status>0x91</status>
+				<midino>0x06</midino>
+				<minimum>0.1</minimum>
+			</output>
             <output>
                 <group>[Channel2]</group>
                 <key>quantize</key>
                 <status>0x91</status>
-                <midino>0x06</midino>
+                <midino>0x58</midino>
                 <minimum>0.1</minimum>
             </output>
             <!-- Mixer Section -->
@@ -3216,11 +3614,18 @@
                 <midino>0x05</midino>
                 <minimum>0.1</minimum>
             </output>
+			<output>
+				<group>[Channel3]</group>
+				<key>repeat</key>
+				<status>0x92</status>
+				<midino>0x06</midino>
+				<minimum>0.1</minimum>
+			</output>
             <output>
                 <group>[Channel3]</group>
                 <key>quantize</key>
                 <status>0x92</status>
-                <midino>0x06</midino>
+                <midino>0x58</midino>
                 <minimum>0.1</minimum>
             </output>
             <!-- Mixer Section -->
@@ -3350,11 +3755,18 @@
                 <midino>0x05</midino>
                 <minimum>0.1</minimum>
             </output>
+			<output>
+				<group>[Channel4]</group>
+				<key>repeat</key>
+				<status>0x93</status>
+				<midino>0x06</midino>
+				<minimum>0.1</minimum>
+			</output>
             <output>
                 <group>[Channel4]</group>
                 <key>quantize</key>
                 <status>0x93</status>
-                <midino>0x06</midino>
+                <midino>0x58</midino>
                 <minimum>0.1</minimum>
             </output>
             <!-- Mixer Section -->
