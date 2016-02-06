@@ -52,6 +52,7 @@ class SoundDeviceNetwork : public SoundDevice {
     int m_underflowUpdateCount;
     static volatile int m_underflowHappened;
     mixxx::Duration m_timeInAudioCallback;
+    mixxx::Duration m_audioBufferTime;
     int m_framesSinceAudioLatencyUsageUpdate;
     SoundDeviceNetworkThread* m_pThread;
     bool m_denormals;

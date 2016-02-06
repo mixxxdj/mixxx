@@ -118,7 +118,8 @@ class DurationDebug : public DurationBase {
 class Duration : public DurationBase {
   public:
     // Returns a Duration object representing a duration of 'seconds'.
-    static Duration fromSeconds(qint64 seconds) {
+    template<typename T>
+    static Duration fromSeconds(T seconds) {
         return Duration(seconds * kNanosPerSecond);
     }
 

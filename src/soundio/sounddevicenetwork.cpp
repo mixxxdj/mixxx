@@ -65,9 +65,11 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
 
     // Get latency in milleseconds
     qDebug() << "framesPerBuffer:" << m_framesPerBuffer;
-    double bufferMSec = m_framesPerBuffer / m_dSampleRate * 1000;
+
+    m_audioBufferTime = mixxx::Duration::fromSeconds(
+            m_framesPerBuffer / m_dSampleRate);
     qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:"
-             << bufferMSec << "ms";
+             << m_audioBufferTime;
 
     // Feet the network device buffer directly from the
     // clock reference device callback
@@ -338,12 +340,12 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 
     m_pSoundManager->writeProcess();
 
-    double bufferMSec = m_framesPerBuffer / m_dSampleRate * 1000;
     qint64 currentTime = m_pNetworkStream->getStreamTimeUs();
-    qint64 targetTime = m_lastTime + (bufferMSec * 1000);
+    qint64 targetTime = m_lastTime + m_audioBufferTime.toIntegerMicros();
     if (currentTime > targetTime) {
         m_underflowHappened = true;
         m_lastTime = currentTime;
+        qDebug() << "underflow" << currentTime << targetTime;
     } else {
         m_pThread->usleep_(targetTime - currentTime);
         m_lastTime = targetTime;
@@ -371,16 +373,21 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 
 void SoundDeviceNetwork::updateCallbackEntryToDacTime() {
     double timeSinceLastCbSecs = m_clkRefTimer.restart().toDoubleSeconds();
-    double bufferSizeSec = m_framesPerBuffer / m_dSampleRate;
-    double callbackEntrytoDacSecs = (m_lastCallbackEntrytoDacSecs + bufferSizeSec)
-           - timeSinceLastCbSecs;
+    double bufferSizeSec = m_audioBufferTime.toDoubleSeconds();
+    double callbackEntrytoDacSecs = bufferSizeSec;
+    if (m_lastCallbackEntrytoDacSecs > 0) {
+        callbackEntrytoDacSecs += m_lastCallbackEntrytoDacSecs
+                - timeSinceLastCbSecs;
+    }
+
     // clamp values to avoid a big offset due to clock drift.
-    callbackEntrytoDacSecs = math_clamp(callbackEntrytoDacSecs, 0.0, bufferSizeSec * 2);
+    callbackEntrytoDacSecs = math_clamp(callbackEntrytoDacSecs, 0.0001, bufferSizeSec * 2);
 
     VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
+    // VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
     m_lastCallbackEntrytoDacSecs = callbackEntrytoDacSecs;
 
-    //qDebug() << callbackEntrytoDacSecs << timeSinceLastCbSecs;
+    qDebug() << callbackEntrytoDacSecs << timeSinceLastCbSecs << bufferSizeSec;
 }
 
 void SoundDeviceNetwork::updateAudioLatencyUsage() {
