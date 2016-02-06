@@ -265,8 +265,15 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
 
     if (pTrack->isDirty()) {
         // Only update the database if the track has already been added!
-        if (pTrack->getId().isValid()) {
+        const TrackId trackId(pTrack->getId());
+        if (trackId.isValid()) {
             updateTrack(pTrack);
+            // BaseTrackCache must be informed separately, because the
+            // track has already been disconnected and TrackDAO does
+            // not receive any signals that are usually forwarded to
+            // BaseTrackCache.
+            DEBUG_ASSERT(!pTrack->isDirty());
+            emit(trackClean(trackId));
         }
 
         // Write audio meta data, if enabled in the preferences.
