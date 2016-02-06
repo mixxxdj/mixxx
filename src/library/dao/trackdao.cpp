@@ -1424,12 +1424,14 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // Insert the loaded track into the recent tracks cache
     cacheRecentTrack(trackId, pTrack);
 
-    // If the track is dirty send dirty notifications after we inserted
-    // it in the cache. BaseTrackCache cares about dirty notifications
-    // and the markDirty() call above happens before we connect to the
-    // track's signals.
-    if (shouldDirty) {
+    // BaseTrackCache cares about track trackDirty/trackClean notifications
+    // from TrackDAO that are triggered by the track itself. But the preceding
+    // track modifications above have been sent before the TrackDAO has been
+    // connected to the track's signals and need to be replayed manually.
+    if (pTrack->isDirty()) {
         emit(trackDirty(trackId));
+    } else {
+        emit(trackClean(trackId));
     }
 
     // NOTE(uklotz): Loading of metadata from the corresponding file
