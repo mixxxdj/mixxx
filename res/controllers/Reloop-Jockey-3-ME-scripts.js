@@ -12,9 +12,7 @@ Jockey3ME.hotcueClearVal = 0;
 Jockey3ME.num_effectsValue = [0,0,0,0];
 Jockey3ME.effectsAvailable = 5; // Sets how many Effects are Loadable
 Jockey3ME.fxSelectKnobPush = [0,0,0,0];
-Jockey3ME.fxSelectKnobPushIterator1 = [0,0,0,0];
-Jockey3ME.fxSelectKnobPushIterator2 = [0,0,0,0];
-Jockey3ME.fxSelectKnobPushIterator3 = [0,0,0,0];
+Jockey3ME.fxSelectKnobPushIterator = [0,0,0,0,0,0,0,0,0,0,0,0];
 Jockey3ME.fxSelectKnobPushLedTemp = 0;
 Jockey3ME.fxSelectKnobParamChose = 0;
 Jockey3ME.fxSelectKnobParamLinkChose = 0;
@@ -251,26 +249,26 @@ Jockey3ME.effectSelect = function (channel, control, value, status, group) {
 		}
 		engine.trigger("[EffectRack1_EffectUnit" + currentDeck + "]","mix");
 		Jockey3ME.effectSelectLedSetNumEffect(currentDeck,status,92,(value-64));
-	} else if (fxSelectKnob && !Jockey3ME.fxSelectKnobPushIterator1[currentDeck - 1] && !Jockey3ME.fxSelectKnobPushIterator2[currentDeck - 1] && !Jockey3ME.fxSelectKnobPushIterator3[currentDeck - 1]) {
+	} else if (fxSelectKnob && !Jockey3ME.fxSelectKnobPushIterator[currentDeck - 1] && !Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 4] && !Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 8]) {
 		engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect" + fxSelectKnob + "]","effect_selector",(value-64));
-	} else if (fxSelectKnob == 1 && Jockey3ME.fxSelectKnobPushIterator1[currentDeck - 1]) {
+	} else if (fxSelectKnob == 1 && Jockey3ME.fxSelectKnobPushIterator[currentDeck - 1]) {
 		Jockey3ME.effectSelectParamLinkChose(currentDeck,value,control,status,fxSelectKnob);
 		print("FX Sel.1 Turned");
-	} else if (fxSelectKnob == 2 && Jockey3ME.fxSelectKnobPushIterator2[currentDeck - 1]) {
+	} else if (fxSelectKnob == 2 && Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 4]) {
 		Jockey3ME.effectSelectParamLinkChose(currentDeck,value,control,status,fxSelectKnob);
 		print("FX Sel.2 Turned");
-	} else if (fxSelectKnob == 3 && Jockey3ME.fxSelectKnobPushIterator3[currentDeck - 1]) {
+	} else if (fxSelectKnob == 3 && Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 8]) {
 		Jockey3ME.effectSelectParamLinkChose(currentDeck,value,control,status,fxSelectKnob);
 		print("FX Sel.3 Turned");
 	}
 }
 
 Jockey3ME.effectSelectParamLinkChose = function (currentDeck,value,control,status,fxSelectKnob) {
-	if (Jockey3ME.fxSelectKnobPushIterator1[currentDeck - 1] == 1 || Jockey3ME.fxSelectKnobPushIterator2[currentDeck - 1] == 1 || Jockey3ME.fxSelectKnobPushIterator3[currentDeck - 1] == 1) {
+	if (Jockey3ME.fxSelectKnobPushIterator[currentDeck - 1] == 1 || Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 4] == 1 || Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 8] == 1) {
 		Jockey3ME.effectSelectParamLinkChoseOne(currentDeck,value,control,status,fxSelectKnob);
-	} else if (Jockey3ME.fxSelectKnobPushIterator1[currentDeck - 1] == 2 || Jockey3ME.fxSelectKnobPushIterator2[currentDeck - 1] == 2 || Jockey3ME.fxSelectKnobPushIterator3[currentDeck - 1] == 2) {
+	} else if (Jockey3ME.fxSelectKnobPushIterator[currentDeck - 1] == 2 || Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 4] == 2 || Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 8] == 2) {
 		Jockey3ME.effectSelectParamLinkChoseTwo(currentDeck,value,control,status,fxSelectKnob);
-	} else if (Jockey3ME.fxSelectKnobPushIterator1[currentDeck - 1] == 3 || Jockey3ME.fxSelectKnobPushIterator2[currentDeck - 1] == 3 || Jockey3ME.fxSelectKnobPushIterator3[currentDeck - 1] == 3) {
+	} else if (Jockey3ME.fxSelectKnobPushIterator[currentDeck - 1] == 3 || Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 4] == 3 || Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 8] == 3) {
 		Jockey3ME.effectSelectParamLinkChoseThree(currentDeck,value,control,status,fxSelectKnob);
 	}
 }
@@ -322,151 +320,52 @@ Jockey3ME.effectSelectPush = function (channel, control, value, status, group) {
 		var currentDeck = parseInt(group.substring(23,24));
 		Jockey3ME.fxSelectKnobPush[currentDeck-1] = control - 92;
 		if (engine.getValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect" + Jockey3ME.fxSelectKnobPush[currentDeck-1] + "]","loaded")) {
-			switch (Jockey3ME.fxSelectKnobPush[currentDeck-1]) {
-				case 1:
-					fxSelectKnobPushBreak: {
-						for (var i = 0; i < Jockey3ME.fxSelectKnobPushIterator1.length; i++) {
-							if ((currentDeck-1) == i) {
-								continue;
-							}
-							if (Jockey3ME.fxSelectKnobPushIterator1[i]) {
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								break fxSelectKnobPushBreak;
-							}
-						}
-						for (var j = 0; j < Jockey3ME.fxSelectKnobPushIterator2.length; j++) {
-							if (Jockey3ME.fxSelectKnobPushIterator2[j]) {
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								break fxSelectKnobPushBreak;
-							}
-						}
-						for (var k = 0; k < Jockey3ME.fxSelectKnobPushIterator3.length; k++) {
-							if (Jockey3ME.fxSelectKnobPushIterator3[k]) {
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								break fxSelectKnobPushBreak;
-							}
-						}
-						if (Jockey3ME.fxSelectKnobPushIterator1[currentDeck-1] == 0) {
-							Jockey3ME.fxSelectKnobParamLinkInverseChose = 0;
-							Jockey3ME.fxSelectKnobParamLinkChose = 0;
-							Jockey3ME.fxSelectKnobParamChose = 0;
-						}
-						++Jockey3ME.fxSelectKnobPushIterator1[currentDeck-1];
-						Jockey3ME.fxSelectKnobPushLedTemp = 0;
-						if (Jockey3ME.fxSelectKnobPushIterator1[currentDeck-1] > 3) {
-							Jockey3ME.fxSelectKnobPushIterator1[currentDeck-1] = 0;
-							if (engine.getValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_loaded")) {
-								engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_link_type",Jockey3ME.fxSelectKnobParamLinkChose);
-								engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_link_inverse",Jockey3ME.fxSelectKnobParamLinkInverseChose);
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								engine.beginTimer(800,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(1000,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-							}
-						}
+			fxSelectKnobPushBreak: {
+				for (var r = 0, s = 1; r < Jockey3ME.fxSelectKnobPushIterator.length; r++) {
+					if ((r % 4) == 0 && r != 0) {
+						++s;
 					}
-					Jockey3ME.fxSelectKnobPush[currentDeck-1] = 0;
-					break;
-				case 2:
-					fxSelectKnobPushBreak: {
-						for (var l = 0; l < Jockey3ME.fxSelectKnobPushIterator1.length; l++) {
-							if (Jockey3ME.fxSelectKnobPushIterator1[l]) {
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								break fxSelectKnobPushBreak;
-							}
-						}
-						for (var m = 0; m < Jockey3ME.fxSelectKnobPushIterator2.length; m++) {
-							if ((currentDeck-1) == m) {
-								continue;
-							}
-							if (Jockey3ME.fxSelectKnobPushIterator2[m]) {
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								break fxSelectKnobPushBreak;
-							}
-						}
-						for (var n = 0; n < Jockey3ME.fxSelectKnobPushIterator3.length; n++) {
-							if (Jockey3ME.fxSelectKnobPushIterator3[n]) {
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								break fxSelectKnobPushBreak;
-							}
-						}
-						if (Jockey3ME.fxSelectKnobPushIterator2[currentDeck-1] == 0) {
-							Jockey3ME.fxSelectKnobParamLinkInverseChose = 0;
-							Jockey3ME.fxSelectKnobParamLinkChose = 0;
-							Jockey3ME.fxSelectKnobParamChose = 0;
-						}
-						++Jockey3ME.fxSelectKnobPushIterator2[currentDeck-1];
-						Jockey3ME.fxSelectKnobPushLedTemp = 0;
-						if (Jockey3ME.fxSelectKnobPushIterator2[currentDeck-1] > 3) {
-							Jockey3ME.fxSelectKnobPushIterator2[currentDeck-1] = 0;
-							if (engine.getValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect2]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_loaded")) {
-								engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect2]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_link_type",Jockey3ME.fxSelectKnobParamLinkChose);
-								engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect2]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_link_inverse",Jockey3ME.fxSelectKnobParamLinkInverseChose);
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								engine.beginTimer(800,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(1000,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-							}
-						}
+					var variableSvalue = 0;
+					if (s == 2) {
+						variableSvalue = 4;
+					} else if (s == 3) {
+						variableSvalue = 8;
 					}
-					Jockey3ME.fxSelectKnobPush[currentDeck-1] = 0;
-					break;
-				case 3:
-					fxSelectKnobPushBreak: {
-						for (var o = 0; o < Jockey3ME.fxSelectKnobPushIterator1.length; o++) {
-							if (Jockey3ME.fxSelectKnobPushIterator1[o]) {
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								break fxSelectKnobPushBreak;
-							}
-						}
-						for (var p = 0; p < Jockey3ME.fxSelectKnobPushIterator2.length; p++) {
-							if (Jockey3ME.fxSelectKnobPushIterator2[p]) {
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								break fxSelectKnobPushBreak;
-							}
-						}
-						for (var q = 0; q < Jockey3ME.fxSelectKnobPushIterator3.length; q++) {
-							if ((currentDeck-1) == q) {
-								continue;
-							}
-							if (Jockey3ME.fxSelectKnobPushIterator3[q]) {
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								break fxSelectKnobPushBreak;
-							}
-						}
-						if (Jockey3ME.fxSelectKnobPushIterator3[currentDeck-1] == 0) {
-							Jockey3ME.fxSelectKnobParamChose = 0;
-							Jockey3ME.fxSelectKnobParamLinkChose = 0;
-							Jockey3ME.fxSelectKnobParamLinkInverseChose = 0;
-						}
-						++Jockey3ME.fxSelectKnobPushIterator3[currentDeck-1];
-						Jockey3ME.fxSelectKnobPushLedTemp = 0;
-						if (Jockey3ME.fxSelectKnobPushIterator3[currentDeck-1] > 3) {
-							Jockey3ME.fxSelectKnobPushIterator3[currentDeck-1] = 0;
-							if (engine.getValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect3]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_loaded")) {
-								engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect3]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_link_type",Jockey3ME.fxSelectKnobParamLinkChose);
-								engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect3]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_link_inverse",Jockey3ME.fxSelectKnobParamLinkInverseChose);
-								engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-								engine.beginTimer(800,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-								engine.beginTimer(1000,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-							}
-						}
+					if ((r - variableSvalue) == (currentDeck-1)) {
+						continue;
 					}
-					Jockey3ME.fxSelectKnobPush[currentDeck-1] = 0;
-					break;
-				default:
-					print("fxSelectKnobPush Fail.");
+					if (Jockey3ME.fxSelectKnobPushIterator[r]) {
+						engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
+						engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
+						break fxSelectKnobPushBreak;
+					}
+				}
+				var currentDeckKnob = currentDeck;
+				if (Jockey3ME.fxSelectKnobPush[currentDeck-1] == 2) {
+					currentDeckKnob += 4;
+				} else if (Jockey3ME.fxSelectKnobPush[currentDeck-1] == 3) {
+					currentDeckKnob += 8;
+				}
+				if (Jockey3ME.fxSelectKnobPushIterator[currentDeckKnob-1] == 0) {
+					Jockey3ME.fxSelectKnobParamLinkInverseChose = 0;
+					Jockey3ME.fxSelectKnobParamLinkChose = 0;
+					Jockey3ME.fxSelectKnobParamChose = 0;
+				}
+				++Jockey3ME.fxSelectKnobPushIterator[currentDeckKnob-1];
+				Jockey3ME.fxSelectKnobPushLedTemp = 0;
+				if (Jockey3ME.fxSelectKnobPushIterator[currentDeckKnob-1] > 3) {
+					Jockey3ME.fxSelectKnobPushIterator[currentDeckKnob-1] = 0;
+					if (engine.getValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect" + Jockey3ME.fxSelectKnobPush[currentDeck-1] + "]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_loaded")) {
+						engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect" + Jockey3ME.fxSelectKnobPush[currentDeck-1] + "]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_link_type",Jockey3ME.fxSelectKnobParamLinkChose);
+						engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect" + Jockey3ME.fxSelectKnobPush[currentDeck-1] + "]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_link_inverse",Jockey3ME.fxSelectKnobParamLinkInverseChose);
+						engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
+						engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
+						engine.beginTimer(800,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
+						engine.beginTimer(1000,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
+					}
+				}
 			}
+			Jockey3ME.fxSelectKnobPush[currentDeck-1] = 0;
 		} else {
 			Jockey3ME.fxSelectKnobPush[currentDeck-1] = 0;
 			engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
