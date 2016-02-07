@@ -596,6 +596,7 @@ void BeatMap::scale(enum BPMScale scale) {
 
 void BeatMap::scaleDouble() {
     Beat prevBeat = m_beats.first();
+    // Skip the first beat to preserve the first beat in a measure
     BeatList::iterator it = m_beats.begin() + 1;
     for (; it != m_beats.end(); ++it) {
         // Need to not accrue fractional frames.
@@ -609,6 +610,7 @@ void BeatMap::scaleDouble() {
 
 void BeatMap::scaleTriple() {
     Beat prevBeat = m_beats.first();
+    // Skip the first beat to preserve the first beat in a measure
     BeatList::iterator it = m_beats.begin() + 1;
     for (; it != m_beats.end(); ++it) {
         // Need to not accrue fractional frames.
@@ -624,7 +626,7 @@ void BeatMap::scaleTriple() {
 }
 
 void BeatMap::scaleHalve() {
-    Beat prevBeat = m_beats.first();
+    // Skip the first beat to preserve the first beat in a measure
     BeatList::iterator it = m_beats.begin() + 1;
     for (; it != m_beats.end(); ++it) {
         it = m_beats.erase(it);
@@ -635,7 +637,7 @@ void BeatMap::scaleHalve() {
 }
 
 void BeatMap::scaleThird() {
-    Beat prevBeat = m_beats.first();
+    // Skip the first beat to preserve the first beat in a measure
     BeatList::iterator it = m_beats.begin() + 1;
     for (; it != m_beats.end(); ++it) {
         it = m_beats.erase(it);
@@ -650,7 +652,7 @@ void BeatMap::scaleThird() {
 }
 
 void BeatMap::scaleFourth() {
-    Beat prevBeat = m_beats.first();
+    // Skip the first beat to preserve the first beat in a measure
     BeatList::iterator it = m_beats.begin() + 1;
     for (; it != m_beats.end(); ++it) {
         it = m_beats.erase(it);

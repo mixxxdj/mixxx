@@ -550,7 +550,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
 
     if (!m_pBeatsClone) {
         double cue = m_pLoadedTrack->getCuePoint();
-        m_pBeatsClone = BeatFactory::(m_pLoadedTrack.data(),
+        m_pBeatsClone = BeatFactory::makeBeatGrid(m_pLoadedTrack.data(),
                 value, cue);
     }
 
