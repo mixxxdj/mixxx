@@ -208,8 +208,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void saveTrack(TrackInfoObject* pTrack);
     void updateTrack(TrackInfoObject* pTrack);
 
-    void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack);
-    void bindTrackToLibraryInsert(TrackInfoObject* pTrack, DbId trackLocationId);
     QSqlDatabase& m_database;
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;
