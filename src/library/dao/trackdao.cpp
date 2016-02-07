@@ -78,12 +78,6 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
           m_libraryHashDao(libraryHashDao),
           m_pConfig(pConfig),
           m_recentTracksCache(kRecentTracksCacheSize),
-          m_pQueryTrackLocationInsert(nullptr),
-          m_pQueryTrackLocationSelect(nullptr),
-          m_pQueryLibraryInsert(nullptr),
-          m_pQueryLibraryUpdate(nullptr),
-          m_pQueryLibrarySelect(nullptr),
-          m_pTransaction(nullptr),
           m_trackLocationIdColumn(UndefinedRecordIndex),
           m_queryLibraryIdColumn(UndefinedRecordIndex),
           m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
@@ -476,13 +470,13 @@ void TrackDAO::addTracksPrepare() {
         addTracksFinish(true);
     }
     // Start the transaction
-    m_pTransaction = new ScopedTransaction(m_database);
+    m_pTransaction = std::make_unique<ScopedTransaction>(m_database);
 
-    m_pQueryTrackLocationInsert = new QSqlQuery(m_database);
-    m_pQueryTrackLocationSelect = new QSqlQuery(m_database);
-    m_pQueryLibraryInsert = new QSqlQuery(m_database);
-    m_pQueryLibraryUpdate = new QSqlQuery(m_database);
-    m_pQueryLibrarySelect = new QSqlQuery(m_database);
+    m_pQueryTrackLocationInsert = std::make_unique<QSqlQuery>(m_database);
+    m_pQueryTrackLocationSelect = std::make_unique<QSqlQuery>(m_database);
+    m_pQueryLibraryInsert = std::make_unique<QSqlQuery>(m_database);
+    m_pQueryLibraryUpdate = std::make_unique<QSqlQuery>(m_database);
+    m_pQueryLibrarySelect = std::make_unique<QSqlQuery>(m_database);
 
     m_pQueryTrackLocationInsert->prepare("INSERT INTO track_locations "
             "(location, directory, filename, filesize, fs_deleted, needs_verification) "
@@ -524,16 +518,11 @@ void TrackDAO::addTracksFinish(bool rollback) {
             m_pTransaction->commit();
         }
     }
-    delete m_pQueryTrackLocationInsert;
-    delete m_pQueryTrackLocationSelect;
-    delete m_pQueryLibraryInsert;
-    delete m_pQueryLibrarySelect;
-    delete m_pTransaction;
-    m_pQueryTrackLocationInsert = nullptr;
-    m_pQueryTrackLocationSelect = nullptr;
-    m_pQueryLibraryInsert = nullptr;
-    m_pQueryLibrarySelect = nullptr;
-    m_pTransaction = nullptr;
+    m_pQueryTrackLocationInsert.reset();
+    m_pQueryTrackLocationSelect.reset();
+    m_pQueryLibraryInsert.reset();
+    m_pQueryLibrarySelect.reset();
+    m_pTransaction.reset();
 
     emit(tracksAdded(m_tracksAddedSet));
     m_tracksAddedSet.clear();
@@ -1233,13 +1222,15 @@ struct ColumnPopulator {
 void TrackDAO::cacheRecentTrack(
         TrackId trackId,
         const TrackPointer& pTrack) const {
-    RecentTrackCacheItem* pCacheItem = new RecentTrackCacheItem(pTrack);
-    m_recentTracksCache.insert(trackId, pCacheItem);
+    std::unique_ptr<RecentTrackCacheItem> pCacheItem =
+            std::make_unique<RecentTrackCacheItem>(pTrack);
+    m_recentTracksCache.insert(trackId, pCacheItem.get());
+    RecentTrackCacheItem* pCachedItem = pCacheItem.release(); // m_recentTracksCache has taken ownership
 
     // Queued connection. We are not in a rush to process cache
     // expirations and it can produce dangerous signal loops.
     // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-    connect(pCacheItem, SIGNAL(saveTrack(TrackPointer)),
+    connect(pCachedItem, SIGNAL(saveTrack(TrackPointer)),
             this, SLOT(saveTrack(TrackPointer)),
             Qt::QueuedConnection);
 }
