@@ -7,6 +7,7 @@
 #include <QVector>
 
 #include "proto/keys.pb.h"
+#include "util/memory.h"
 
 #define KEY_MAP_VERSION "KeyMap-1.0"
 
@@ -16,14 +17,14 @@ class KeyFactory;
 
 class Keys {
   public:
-    explicit Keys(const QByteArray* pByteArray=NULL);
     Keys(const Keys& other);
+    explicit Keys(const QByteArray* pByteArray = nullptr);
     virtual ~Keys();
 
     Keys& operator=(const Keys& other);
 
     // Serialization
-    virtual QByteArray* toByteArray() const;
+    virtual std::unique_ptr<QByteArray> toByteArray() const;
 
     // A string representing the version of the key-processing code that
     // produced this Keys instance. Used by KeysFactory for associating a given
@@ -46,11 +47,12 @@ class Keys {
     virtual QString getGlobalKeyText() const;
 
   private:
-    Keys(const mixxx::track::io::key::KeyMap& m_keyMap);
+    explicit Keys(const mixxx::track::io::key::KeyMap& m_keyMap);
 
-    void readByteArray(const QByteArray* pByteArray);
+    bool readByteArray(const QByteArray& byteArray);
 
     mutable QMutex m_mutex;
+
     QString m_subVersion;
     mixxx::track::io::key::KeyMap m_keyMap;
 

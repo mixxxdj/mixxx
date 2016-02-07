@@ -8,8 +8,8 @@ using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::KeyMap;
 
 Keys::Keys(const QByteArray* pByteArray) {
-    if (pByteArray) {
-        readByteArray(pByteArray);
+    if (nullptr != pByteArray) {
+        readByteArray(*pByteArray);
     }
 }
 
@@ -31,12 +31,11 @@ Keys& Keys::operator=(const Keys& other) {
     return *this;
 }
 
-QByteArray* Keys::toByteArray() const {
+std::unique_ptr<QByteArray> Keys::toByteArray() const {
     QMutexLocker locker(&m_mutex);
     std::string output;
     m_keyMap.SerializeToString(&output);
-    QByteArray* pByteArray = new QByteArray(output.data(), output.length());
-    return pByteArray;
+    return std::make_unique<QByteArray>(output.data(), output.length());
 }
 
 QString Keys::getVersion() const {
@@ -66,10 +65,11 @@ QString Keys::getGlobalKeyText() const {
     return QString::fromStdString(m_keyMap.global_key_text());
 }
 
-void Keys::readByteArray(const QByteArray* pByteArray) {
-    if (!m_keyMap.ParseFromArray(pByteArray->constData(), pByteArray->size())) {
+bool Keys::readByteArray(const QByteArray& byteArray) {
+    if (!m_keyMap.ParseFromArray(byteArray.constData(), byteArray.size())) {
         qDebug() << "ERROR: Could not parse Keys from QByteArray of size"
-                 << pByteArray->size();
-        return;
+                 << byteArray.size();
+        return false;
     }
+    return true;
 }
