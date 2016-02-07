@@ -56,7 +56,7 @@ class SoundDeviceNetwork : public SoundDevice {
     int m_framesSinceAudioLatencyUsageUpdate;
     SoundDeviceNetworkThread* m_pThread;
     bool m_denormals;
-    qint64 m_lastTime;
+    qint64 m_targetTime;
     PerformanceTimer m_clkRefTimer;
     double m_lastCallbackEntrytoDacSecs;
 };
