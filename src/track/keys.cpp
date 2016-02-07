@@ -17,38 +17,17 @@ Keys::Keys(const KeyMap& keyMap)
         : m_keyMap(keyMap) {
 }
 
-Keys::Keys(const Keys& other)
-        : m_subVersion(other.m_subVersion),
-          m_keyMap(other.m_keyMap) {
-}
-
-Keys::~Keys() {
-}
-
-Keys& Keys::operator=(const Keys& other) {
-    m_keyMap = other.m_keyMap;
-    m_subVersion = other.m_subVersion;
-    return *this;
-}
-
 std::unique_ptr<QByteArray> Keys::toByteArray() const {
-    QMutexLocker locker(&m_mutex);
     std::string output;
     m_keyMap.SerializeToString(&output);
     return std::make_unique<QByteArray>(output.data(), output.length());
 }
 
-QString Keys::getVersion() const {
-    return KEY_MAP_VERSION;
-}
-
-QString Keys::getSubVersion() const {
-    QMutexLocker locker(&m_mutex);
+const QString& Keys::getSubVersion() const {
     return m_subVersion;
 }
 
 void Keys::setSubVersion(const QString& subVersion) {
-    QMutexLocker locker(&m_mutex);
     m_subVersion = subVersion;
 }
 
