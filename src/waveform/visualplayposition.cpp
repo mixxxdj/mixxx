@@ -54,8 +54,7 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
         // add the offset for the position of the sample that will be transfered to the DAC
         // When the next display frame is displayed
         playPos += data.m_positionStep * offset * data.m_rate / m_dAudioBufferSize / 1000;
-        //qDebug() << "delta Pos" << playPos - m_playPosOld << offset;
-        //m_playPosOld = playPos;
+        //qDebug() << "playPos" << playPos << offset;
         return playPos;
     }
     return -1;

@@ -6,6 +6,7 @@
 #include "util/timer.h"
 #include "util/trace.h"
 #include "controlobjectslave.h"
+#include "controlobject.h"
 #include "util/denormalsarezero.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "float.h"
@@ -87,6 +88,18 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
 
     // Create the callback Thread if requested
     if (isClkRefDevice) {
+        // Update the samplerate and latency ControlObjects, which allow the
+        // waveform view to properly correct for the latency.
+        ControlObject::set(ConfigKey("[Master]", "latency"),
+                m_audioBufferTime.toDoubleMillis());
+        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
+        ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"),
+                m_audioBufferTime.toDoubleMillis());
+
+        if (m_pMasterAudioLatencyOverloadCount) {
+            m_pMasterAudioLatencyOverloadCount->set(0);
+        }
+
         m_pThread = new SoundDeviceNetworkThread(this);
         m_pThread->start(QThread::TimeCriticalPriority);
     }
@@ -376,7 +389,7 @@ void SoundDeviceNetwork::updateCallbackEntryToDacTime() {
     // VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
     m_lastCallbackEntrytoDacSecs = callbackEntrytoDacSecs;
 
-    qDebug() << callbackEntrytoDacSecs << timeSinceLastCbSecs << bufferSizeSec;
+    //qDebug() << callbackEntrytoDacSecs << timeSinceLastCbSecs << bufferSizeSec;
 }
 
 void SoundDeviceNetwork::updateAudioLatencyUsage() {
@@ -405,7 +418,6 @@ void SoundDeviceNetwork::updateAudioLatencyUsage() {
 
     // measure time in Audio callback at the very last
     m_timeInAudioCallback += m_clkRefTimer.elapsed();
-    qDebug() << m_timeInAudioCallback;
 
     // now go to sleep until the next callback
     if (sleepUs > 0) {
