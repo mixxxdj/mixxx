@@ -509,8 +509,15 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
     if (state != Qt::Unchecked) {
         // const beatgrid requested
         if (spinBpm->value() > 0) {
+            // Since the user is not satisfied with the beat map,
+            // it is hard to predict a fitting beat. We know that we
+            // cannot use the first beat, since it is out of sync in
+            // almost all cases.
+            // The cue point should be set on a beat, so this seams
+            // to be a good alternative
+            double cue = m_pLoadedTrack->getCuePoint();
             m_pBeatsClone = BeatFactory::makeBeatGrid(m_pLoadedTrack.data(),
-                    spinBpm->value(), 0);
+                    spinBpm->value(), cue);
         } else {
             m_pBeatsClone.clear();
         }
@@ -542,8 +549,9 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     if (!m_pBeatsClone) {
-        m_pBeatsClone = BeatFactory::makeBeatGrid(m_pLoadedTrack.data(),
-                value, 0);
+        double cue = m_pLoadedTrack->getCuePoint();
+        m_pBeatsClone = BeatFactory::(m_pLoadedTrack.data(),
+                value, cue);
     }
 
     double oldValue = m_pBeatsClone->getBpm();
