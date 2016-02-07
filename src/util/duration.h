@@ -142,6 +142,10 @@ class Duration : public DurationBase {
         : DurationBase(0) {
     }
 
+    void reset() {
+        m_durationNanos = 0;
+    }
+
     const Duration operator+(const Duration& other) const {
         Duration result = *this;
         result += other;

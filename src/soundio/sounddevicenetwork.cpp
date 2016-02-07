@@ -340,17 +340,6 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 
     m_pSoundManager->writeProcess();
 
-    qint64 currentTime = m_pNetworkStream->getStreamTimeUs();
-    qint64 targetTime = m_lastTime + m_audioBufferTime.toIntegerMicros();
-    if (currentTime > targetTime) {
-        m_underflowHappened = true;
-        m_lastTime = currentTime;
-        qDebug() << "underflow" << currentTime << targetTime;
-    } else {
-        m_pThread->usleep_(targetTime - currentTime);
-        m_lastTime = targetTime;
-    }
-
     if (m_underflowUpdateCount == 0) {
         if (m_underflowHappened) {
             m_pMasterAudioLatencyOverload->set(1.0);
@@ -397,12 +386,29 @@ void SoundDeviceNetwork::updateAudioLatencyUsage() {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_pMasterAudioLatencyUsage->set(secInAudioCb /
                 (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
-        m_timeInAudioCallback.fromNanos(0);
+        m_timeInAudioCallback.reset();
         m_framesSinceAudioLatencyUsageUpdate = 0;
-        //qDebug() << m_pMasterAudioLatencyUsage
-        //         << m_pMasterAudioLatencyUsage->get();
+        //qDebug() << m_pMasterAudioLatencyUsage->get();
+    }
+
+    qint64 currentTime = m_pNetworkStream->getStreamTimeUs();
+    qint64 targetTime = m_lastTime + m_audioBufferTime.toIntegerMicros();
+    unsigned long sleepUs = 0;
+    if (currentTime > targetTime) {
+        m_underflowHappened = true;
+        m_lastTime = currentTime;
+        qDebug() << "underflow" << currentTime << targetTime;
+    } else {
+        sleepUs = targetTime - currentTime;
+        m_lastTime = targetTime;
     }
 
     // measure time in Audio callback at the very last
     m_timeInAudioCallback += m_clkRefTimer.elapsed();
+    qDebug() << m_timeInAudioCallback;
+
+    // now go to sleep until the next callback
+    if (sleepUs > 0) {
+        m_pThread->usleep_(sleepUs);
+    }
 }
