@@ -200,7 +200,7 @@ class TrackInfoObject : public QObject {
     void setRating(int);
 
     // Get URL for track
-    QString getURL();
+    QString getURL() const;
     // Set URL for track
     void setURL(const QString& url);
 
@@ -219,7 +219,7 @@ class TrackInfoObject : public QObject {
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
     // Get saved the cue point
-    float getCuePoint();
+    float getCuePoint() const;
 
     // Calls for managing the track's cue points
     CuePointer addCue();

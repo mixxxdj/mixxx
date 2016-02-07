@@ -641,7 +641,7 @@ void TrackInfoObject::setURL(const QString& url) {
     }
 }
 
-QString TrackInfoObject::getURL() {
+QString TrackInfoObject::getURL() const {
     QMutexLocker lock(&m_qMutex);
     return m_sURL;
 }
@@ -684,7 +684,7 @@ void TrackInfoObject::setCuePoint(float cue) {
     }
 }
 
-float TrackInfoObject::getCuePoint() {
+float TrackInfoObject::getCuePoint() const {
     QMutexLocker lock(&m_qMutex);
     return m_fCuePoint;
 }
