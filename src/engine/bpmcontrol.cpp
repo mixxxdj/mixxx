@@ -40,7 +40,7 @@ BpmControl::BpmControl(QString group,
             Qt::DirectConnection);
     m_pQuantize = ControlObject::getControl(group, "quantize");
     m_pRateRange = new ControlObjectSlave(group, "rateRange", this);
-    m_pRateRange->connectValueChanged(SLOT(slotAdjustRateSlider()),
+    m_pRateRange->connectValueChanged(SLOT(slotAdjustRateRange()),
             Qt::DirectConnection);
     m_pRateDir = new ControlObjectSlave(group, "rate_dir", this);
     m_pRateDir->connectValueChanged(SLOT(slotAdjustRateSlider()),
@@ -732,6 +732,13 @@ void BpmControl::slotAdjustRateSlider() {
     // Adjust playback bpm in response to a change in the rate slider.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
+}
+
+void BpmControl::slotAdjustRateRange() {
+    // Adjust rate slider position to reflect change in rate range.
+    double dRateSlider = (m_pEngineBpm->get() / m_pLocalBpm->get() - 1.0) /
+            (m_pRateDir->get() * m_pRateRange->get());
+    m_pRateSlider->set(dRateSlider);
 }
 
 void BpmControl::trackLoaded(TrackPointer pTrack) {
