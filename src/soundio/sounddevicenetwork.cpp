@@ -116,6 +116,13 @@ bool SoundDeviceNetwork::isOpen() const {
 Result SoundDeviceNetwork::close() {
     //qDebug() << "SoundDeviceNetwork::close()" << getInternalName();
     m_pNetworkStream->stopStream();
+    if (m_pThread) {
+        m_pThread->stop();
+        m_pThread->wait();
+        delete m_pThread;
+        m_pThread = nullptr;
+    }
+
     if (m_outputFifo) {
         delete m_outputFifo;
         m_outputFifo = NULL;
