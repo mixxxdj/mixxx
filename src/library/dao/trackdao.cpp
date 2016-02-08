@@ -1222,8 +1222,8 @@ struct ColumnPopulator {
 #define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
 
 void TrackDAO::cacheRecentTrack(
-    TrackId trackId,
-    const TrackPointer& pTrack) const {
+        TrackId trackId,
+        const TrackPointer& pTrack) const {
     RecentTrackCacheItem* pCacheItem = new RecentTrackCacheItem(pTrack);
     m_recentTracksCache.insert(trackId, pCacheItem);
 
