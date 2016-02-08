@@ -55,13 +55,11 @@ class LibraryScanner : public QThread {
                    UserSettingsPointer pConfig);
     virtual ~LibraryScanner();
 
+  public slots:
     // Call from any thread to start a scan. Does nothing if a scan is already
     // in progress.
     void scan();
 
-
-
-  public slots:
     // Call from any thread to cancel the scan.
     void slotCancel();
 

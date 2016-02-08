@@ -777,7 +777,7 @@ QScriptValue ControllerEngine::connectControl(
 void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
     ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
 
-    if (m_pEngine == nullptr) {
+    if (m_pEngine == nullptr || coScript == nullptr) {
         return;
     }
 
