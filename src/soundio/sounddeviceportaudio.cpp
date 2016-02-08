@@ -368,6 +368,9 @@ Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
         if (m_pMasterAudioLatencyOverloadCount) {
             m_pMasterAudioLatencyOverloadCount->set(0);
         }
+
+        m_clkRefTimer.start();
+        m_invalidTimeInfoWarned = false;
     }
     m_pStream = pStream;
     return OK;
