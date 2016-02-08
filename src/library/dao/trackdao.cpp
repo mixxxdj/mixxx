@@ -719,6 +719,9 @@ TrackPointer TrackDAO::addSingleTrack(const QFileInfo& fileInfo, bool unremove) 
     addTracksPrepare();
     TrackPointer pTrack(addTracksAddFile(fileInfo, unremove));
     addTracksFinish(pTrack.isNull());
+    if (!pTrack.isNull()) {
+        cacheRecentTrack(pTrack->getId(), pTrack);
+    }
     return pTrack;
 }
 
