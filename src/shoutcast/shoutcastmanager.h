@@ -26,6 +26,9 @@ class ShoutcastManager : public QObject {
   signals:
     void shoutcastEnabled(bool);
 
+  private slots:
+    void slotControlEnabled(double v);
+
   private:
     UserSettingsPointer m_pConfig;
     QSharedPointer<EngineShoutcast> m_pShoutcast;
