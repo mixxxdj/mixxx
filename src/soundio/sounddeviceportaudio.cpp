@@ -1002,23 +1002,28 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
     double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -
             (m_lastCallbackEntrytoDacSecs + bufferSizeSec);
 
-    if (fabs(diff) / bufferSizeSec > 0.05) {
-        // If we have more than 5 % difference we do not trust
-        // a value ~ 2 % is normal
-        //
+    if (fabs(diff) / bufferSizeSec > 0.1) {
+        // If we have more than 10 % difference we do not trust
+        // a value up to ~ 5 % is normal
+
+        if (timeSinceLastCbSecs < bufferSizeSec * 2) {
+            // do not warn if we had an underflow
+            if (!m_invalidTimeInfoWarned) {
+                qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
+                           << "syncing waveforms with a CPU Timer"
+                           << "DacTime:" << timeInfo->outputBufferDacTime
+                           << "EntrytoDac:" << callbackEntrytoDacSecs
+                           << "TimeSinceLastCb:" << timeSinceLastCbSecs
+                           << "diff:" << diff;
+                m_invalidTimeInfoWarned = true;
+            }
+        }
+
         // fall back to CPU timing
         callbackEntrytoDacSecs = (m_lastCallbackEntrytoDacSecs + bufferSizeSec)
                 - timeSinceLastCbSecs;
         // clamp values to avoid a big offset due to clock drift.
         callbackEntrytoDacSecs = math_clamp(callbackEntrytoDacSecs, 0.0, bufferSizeSec * 2);
-
-        if (!m_invalidTimeInfoWarned) {
-            qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
-                       << "syncing waveforms with a CPU Timer"
-                       << "DacTime:" << timeInfo->outputBufferDacTime
-                       << "EntrytoDac:" << callbackEntrytoDacSecs;
-            m_invalidTimeInfoWarned = true;
-        }
     }
 
     VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
