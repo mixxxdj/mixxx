@@ -515,6 +515,8 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     TrackPointer pTrack(m_trackDao.addTracksAddFile(trackPath, false));
     if (pTrack.isNull()) {
         // Acknowledge failed track addition
+        // TODO(XXX): Is it really intended to acknowledge a failed
+        // track addition with a trackAdded() signal??
         if (m_scannerGlobal) {
             m_scannerGlobal->trackAdded(trackPath);
         }
