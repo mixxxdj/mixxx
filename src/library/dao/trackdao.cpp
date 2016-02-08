@@ -679,6 +679,9 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
     TrackPointer pTrack(new TrackInfoObject(fileInfo));
 
     // Check that track is a supported extension.
+    // TODO(uklotzde): The following check can be skipped if
+    // the track is already in the library. A refactoring is
+    // needed to detect this before calling addTracksAddTrack().
     if (!SoundSourceProxy::isFileSupported(fileInfo)) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Unsupported file type"
@@ -688,12 +691,15 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
 
     // Initially load the metadata for the newly created track
     // from the file.
+    // TODO(uklotzde): Loading of metadata can be skipped if
+    // the track is already in the library. A refactoring is
+    // needed to detect this before calling addTracksAddTrack().
     SoundSourceProxy(pTrack).loadTrackMetadata();
     if (!pTrack->getHeaderParsed()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
-        // Copntinue with adding the track to the library, no matter
+        // Continue with adding the track to the library, no matter
         // if parsing the metadata from file succeeded or failed.
     }
 
