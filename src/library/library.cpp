@@ -344,20 +344,8 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
 }
 
 void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
-    // We only call this method if the user has picked a relocated directory via
-    // a file dialog. This means the system sandboxer (if we are sandboxed) has
-    // granted us permission to this folder. Create a security bookmark while we
-    // have permission so that we can access the folder on future runs. We need
-    // to canonicalize the path so we first wrap the directory string with a
-    // QDir.
-    QDir directory(newDir);
-    Sandbox::createSecurityToken(directory);
+    m_pTrackCollection->relocateDirectory(oldDir, newDir);
 
-    QSet<TrackId> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir, newDir);
-
-    // Clear cache to that all TIO with the old dir information get updated
-    m_pTrackCollection->getTrackDAO().clearCache();
-    m_pTrackCollection->getTrackDAO().databaseTracksMoved(movedIds, QSet<TrackId>());
     // also update the config file if necessary so that downgrading is still
     // possible
     QString conDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);

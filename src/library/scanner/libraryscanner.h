@@ -93,7 +93,7 @@ class LibraryScanner : public QThread {
                                    bool newDirectory, int hash);
     void slotDirectoryUnchanged(const QString& directoryPath);
     void slotTrackExists(const QString& trackPath);
-    void slotAddNewTrack(TrackPointer pTrack);
+    void slotAddNewTrack(const QString& trackPath);
 
   private:
     enum ScannerState {

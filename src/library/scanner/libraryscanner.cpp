@@ -458,8 +458,8 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
             this, SLOT(slotDirectoryUnchanged(QString)));
     connect(pTask, SIGNAL(trackExists(QString)),
             this, SLOT(slotTrackExists(QString)));
-    connect(pTask, SIGNAL(addNewTrack(TrackPointer)),
-            this, SLOT(slotAddNewTrack(TrackPointer)));
+    connect(pTask, SIGNAL(addNewTrack(QString)),
+            this, SLOT(slotAddNewTrack(QString)));
 
     // Progress signals.
     // Pass directly to the main thread
@@ -508,21 +508,33 @@ void LibraryScanner::slotTrackExists(const QString& trackPath) {
     }
 }
 
-void LibraryScanner::slotAddNewTrack(TrackPointer pTrack) {
-    //qDebug() << "LibraryScanner::slotAddNewTrack" << pTrack;
+void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
+    //qDebug() << "LibraryScanner::slotAddNewTrack" << trackPath;
     ScopedTimer timer("LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
-    if (m_scannerGlobal) {
-        m_scannerGlobal->trackAdded(pTrack->getLocation());
-    }
-    if (m_trackDao.addTracksAdd(pTrack.data(), false)) {
-        // Successfully added. Signal the main instance of TrackDAO,
-        // that there is a new track in the database.
-        emit(trackAdded(pTrack));
-        emit(progressLoading(pTrack->getLocation()));
-    } else {
+    TrackPointer pTrack(m_trackDao.addTracksAddFile(trackPath, false));
+    if (pTrack.isNull()) {
+        // Acknowledge failed track addition
+        // TODO(XXX): Is it really intended to acknowledge a failed
+        // track addition with a trackAdded() signal??
+        if (m_scannerGlobal) {
+            m_scannerGlobal->trackAdded(trackPath);
+        }
         qWarning()
-                << "Track (" + pTrack->getLocation() + ") could not be added";
+                << "Failed to add track to library:"
+                << trackPath;
+    } else {
+        // The track's actual location might differ from the
+        // given trackPath
+        const QString trackLocation(pTrack->getLocation());
+        // Acknowledge successful track addition
+        if (m_scannerGlobal) {
+            m_scannerGlobal->trackAdded(trackLocation);
+        }
+        // Signal the main instance of TrackDAO, that there is
+        // a new track in the database.
+        emit(trackAdded(pTrack));
+        emit(progressLoading(trackLocation));
     }
 }
 
