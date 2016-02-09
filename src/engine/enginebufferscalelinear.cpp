@@ -214,7 +214,7 @@ int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     //for (int j = 0; j < bufferSizeFrames; ++j) {
     //    frames += (j * rate_delta) + rate_old;
     //}
-    frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2;
+    frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2.0;
     frames *= rate_delta;
     frames += rate_old * bufferSizeFrames;
     frames = fabs(frames);
