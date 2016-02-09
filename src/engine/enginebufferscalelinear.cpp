@@ -181,7 +181,7 @@ int EngineBufferScaleLinear::do_copy(CSAMPLE* buf, const int buf_size) {
 // Stretch a specified buffer worth of audio using linear interpolation
 int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
                                       const int buf_size) {
-    const float rate_old = m_dOldRate;
+    float rate_old = m_dOldRate;
     const float rate_new = m_dRate;
     const float rate_diff = rate_new - rate_old;
 
