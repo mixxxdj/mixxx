@@ -1932,13 +1932,6 @@ bool TrackDAO::verifyRemainingTracks(
     return true;
 }
 
-namespace {
-    QImage parseCoverArt(const QFileInfo& fileInfo) {
-        SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
-        return CoverArtUtils::extractEmbeddedCover(fileInfo, pToken);
-    }
-}
-
 struct TrackWithoutCover {
     TrackId trackId;
     QString trackLocation;
@@ -2032,7 +2025,7 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
             continue;
         }
 
-        QImage image(parseCoverArt(trackInfo));
+        QImage image(CoverArtUtils::extractEmbeddedCover(trackInfo));
         if (!image.isNull()) {
             updateQuery.bindValue(":coverart_type",
                                   static_cast<int>(CoverInfo::METADATA));
