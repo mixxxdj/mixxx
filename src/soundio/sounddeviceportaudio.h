@@ -106,9 +106,10 @@ class SoundDevicePortAudio : public SoundDevice {
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
-    bool m_invalidTimeInfoWarned;
+    int m_invalidTimeInfoCount;
     PerformanceTimer m_clkRefTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
+
 };
 
 #endif

@@ -46,9 +46,14 @@ volatile int SoundDevicePortAudio::m_underflowHappened = 0;
 namespace {
 
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
-static const int kDriftReserve = 1;
+const int kDriftReserve = 1;
+
 // Buffer for drift correction 1 full, 1 for r/w, 1 empty
-static const int kFifoSize = 2 * kDriftReserve + 1;
+const int kFifoSize = 2 * kDriftReserve + 1;
+
+// We warn only at invalid timing 3, since the first two
+// callbacks can be always wrong due to a setup/open jitter
+const int m_invalidTimeInfoWarningCount = 3;
 
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
@@ -100,7 +105,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_underflowUpdateCount(0),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2),
-          m_invalidTimeInfoWarned(false),
+          m_invalidTimeInfoCount(0),
           m_lastCallbackEntrytoDacSecs(0) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
@@ -369,8 +374,7 @@ Result SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
             m_pMasterAudioLatencyOverloadCount->set(0);
         }
 
-        m_clkRefTimer.start();
-        m_invalidTimeInfoWarned = false;
+        m_invalidTimeInfoCount = 0;
     }
     m_pStream = pStream;
     return OK;
@@ -1002,24 +1006,25 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
     double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -
             (m_lastCallbackEntrytoDacSecs + bufferSizeSec);
 
-    if (fabs(diff) / bufferSizeSec > 0.1) {
-        // If we have more than 10 % difference we do not trust
-        // a value up to ~ 5 % is normal
+    if (timeSinceLastCbSecs < bufferSizeSec * 2 &&
+            fabs(diff) / bufferSizeSec > 0.1) {
+        // Fall back to CPU timing:
+        // If timeSinceLastCbSecs from a CPU timer is reasonable (no underflow)
+        // and we have more than 10 % difference to the timing provided by Portaudio
+        // we do not trust the Portaudio timing.
+        // (A difference up to ~ 5 % is normal)
 
-        if (timeSinceLastCbSecs < bufferSizeSec * 2) {
-            // do not warn if we had an underflow
-            if (!m_invalidTimeInfoWarned) {
-                qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
-                           << "syncing waveforms with a CPU Timer"
-                           << "DacTime:" << timeInfo->outputBufferDacTime
-                           << "EntrytoDac:" << callbackEntrytoDacSecs
-                           << "TimeSinceLastCb:" << timeSinceLastCbSecs
-                           << "diff:" << diff;
-                m_invalidTimeInfoWarned = true;
-            }
+        m_invalidTimeInfoCount++;
+
+        if (m_invalidTimeInfoCount == m_invalidTimeInfoWarningCount) {
+            qWarning() << "SoundDevicePortAudio: Audio API provides invalid time stamps,"
+                       << "syncing waveforms with a CPU Timer"
+                       << "DacTime:" << timeInfo->outputBufferDacTime
+                       << "EntrytoDac:" << callbackEntrytoDacSecs
+                       << "TimeSinceLastCb:" << timeSinceLastCbSecs
+                       << "diff:" << diff;
         }
 
-        // fall back to CPU timing
         callbackEntrytoDacSecs = (m_lastCallbackEntrytoDacSecs + bufferSizeSec)
                 - timeSinceLastCbSecs;
         // clamp values to avoid a big offset due to clock drift.
