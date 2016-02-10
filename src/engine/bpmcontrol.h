@@ -94,6 +94,7 @@ class BpmControl : public EngineControl {
     void slotTapFilter(double,int);
     void slotBpmTap(double);
     void slotAdjustRateSlider();
+    void slotAdjustRateRange();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);

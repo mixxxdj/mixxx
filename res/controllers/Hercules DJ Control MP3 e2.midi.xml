@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.12.0+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.0.0+">
   <info>
     <name>Hercules DJ Control MP3 e2</name>
     <author>Gianfe, Taucher and SBlaisot</author>
@@ -371,7 +371,7 @@
         <options>
           <Script-Binding/>
         </options>
-      </control> 
+      </control>
       <control>
         <status>0x90</status>
         <midino>0x2D</midino>

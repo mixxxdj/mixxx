@@ -356,7 +356,7 @@ bpm.tapButton = function(deck) {
     fRateScale = (fRateScale-1.)/engine.getValue("[Channel"+deck+"]","rateRange");
 
     engine.setValue("[Channel"+deck+"]","rate",fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
-//     print("Script: BPM="+average);
+//     print("Script: BPM="+average+" setting to "+fRateScale);
 }
 
 // ----------------- Object definitions --------------------------
