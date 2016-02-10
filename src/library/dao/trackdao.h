@@ -206,7 +206,7 @@ class TrackDAO : public QObject, public virtual DAO {
     TrackPointer getTrackFromDB(TrackId trackId) const;
 
     void saveTrack(TrackInfoObject* pTrack);
-    void updateTrack(TrackInfoObject* pTrack);
+    bool updateTrack(TrackInfoObject* pTrack);
 
     QSqlDatabase& m_database;
     CueDAO& m_cueDao;

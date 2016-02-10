@@ -260,8 +260,7 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
     if (pTrack->isDirty()) {
         // Only update the database if the track has already been added!
         const TrackId trackId(pTrack->getId());
-        if (trackId.isValid()) {
-            updateTrack(pTrack);
+        if (trackId.isValid() && updateTrack(pTrack)) {
             // BaseTrackCache must be informed separately, because the
             // track has already been disconnected and TrackDAO does
             // not receive any signals that are usually forwarded to
@@ -1516,7 +1515,7 @@ TrackPointer TrackDAO::getTrack(TrackId trackId, const bool cacheOnly) const {
 }
 
 // Saves a track's info back to the database
-void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
+bool TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     const TrackId trackId(pTrack->getId());
     DEBUG_ASSERT(trackId.isValid());
 
@@ -1576,12 +1575,12 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return;
+        return false;
     }
 
     if (query.numRowsAffected() == 0) {
         qWarning() << "updateTrack had no effect: trackId" << trackId << "invalid";
-        return;
+        return false;
     }
 
     //qDebug() << "Update track took : " << time.elapsed().formatMillisWithUnit() << "Now updating cues";
@@ -1594,6 +1593,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //time.start();
     pTrack->markClean();
     //qDebug() << "Dirtying track took: " << time.elapsed().formatMillisWithUnit();
+    return true;
 }
 
 // Mark all the tracks in the library as invalid.
