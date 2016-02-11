@@ -67,11 +67,11 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
     m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
 }
 
-std::unique_ptr<QByteArray> BeatGrid::toByteArray() const {
+QByteArray BeatGrid::toByteArray() const {
     QMutexLocker locker(&m_mutex);
     std::string output;
     m_grid.SerializeToString(&output);
-    return std::make_unique<QByteArray>(output.data(), output.length());
+    return QByteArray(output.data(), output.length());
 }
 
 void BeatGrid::readByteArray(const QByteArray& byteArray) {

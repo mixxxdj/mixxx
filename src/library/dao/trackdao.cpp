@@ -487,14 +487,14 @@ namespace {
         pTrackLibraryQuery->bindValue(":coverart_location", coverInfo.coverLocation);
         pTrackLibraryQuery->bindValue(":coverart_hash", coverInfo.hash);
 
-        std::unique_ptr<QByteArray> pBeatsBlob;
+        QByteArray beatsBlob;
         QString beatsVersion;
         QString beatsSubVersion;
         // Fall back on cached BPM
         double dBpm = track.getBpm();
         const BeatsPointer pBeats(track.getBeats());
         if (!pBeats.isNull()) {
-            pBeatsBlob = pBeats->toByteArray();
+            beatsBlob = pBeats->toByteArray();
             beatsVersion = pBeats->getVersion();
             beatsSubVersion = pBeats->getSubVersion();
             dBpm = pBeats->getBpm();
@@ -502,23 +502,22 @@ namespace {
         pTrackLibraryQuery->bindValue(":bpm", dBpm);
         pTrackLibraryQuery->bindValue(":beats_version", beatsVersion);
         pTrackLibraryQuery->bindValue(":beats_sub_version", beatsSubVersion);
-        pTrackLibraryQuery->bindValue(":beats", pBeatsBlob ? *pBeatsBlob : QVariant(QVariant::ByteArray));
+        pTrackLibraryQuery->bindValue(":beats", beatsBlob);
 
-        std::unique_ptr<QByteArray> pKeysBlob;
+        QByteArray keysBlob;
         QString keysVersion;
         QString keysSubVersion;
         QString keyText;
         mixxx::track::io::key::ChromaticKey key = mixxx::track::io::key::INVALID;
         const Keys keys(track.getKeys());
         if (keys.isValid()) {
-            pKeysBlob = keys.toByteArray();
+            keysBlob = keys.toByteArray();
             keysVersion = keys.getVersion();
             keysSubVersion = keys.getSubVersion();
             key = keys.getGlobalKey();
             keyText = KeyUtils::getGlobalKeyText(keys);
         }
-        pTrackLibraryQuery->bindValue(
-            ":keys", pKeysBlob ? *pKeysBlob : QVariant(QVariant::ByteArray));
+        pTrackLibraryQuery->bindValue(":keys", keysBlob);
         pTrackLibraryQuery->bindValue(":keys_version", keysVersion);
         pTrackLibraryQuery->bindValue(":keys_sub_version", keysSubVersion);
         pTrackLibraryQuery->bindValue(":key", keyText);

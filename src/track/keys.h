@@ -6,7 +6,6 @@
 #include <QVector>
 
 #include "proto/keys.pb.h"
-#include "util/memory.h"
 
 #define KEY_MAP_VERSION "KeyMap-1.0"
 
@@ -19,7 +18,7 @@ class Keys final {
     explicit Keys(const QByteArray* pByteArray = nullptr);
 
     // Serialization
-    std::unique_ptr<QByteArray> toByteArray() const;
+    QByteArray toByteArray() const;
 
     // A string representing the version of the key-processing code that
     // produced this Keys instance. Used by KeysFactory for associating a given

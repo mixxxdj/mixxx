@@ -43,7 +43,7 @@ class BeatMap : public QObject, public Beats {
                 BEATSCAP_MOVEBEAT | BEATSCAP_SET;
     }
 
-    virtual std::unique_ptr<QByteArray> toByteArray() const;
+    virtual QByteArray toByteArray() const;
     virtual QString getVersion() const;
     virtual QString getSubVersion() const;
     virtual void setSubVersion(QString subVersion);

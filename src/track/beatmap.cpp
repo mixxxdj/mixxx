@@ -93,7 +93,7 @@ void BeatMap::initialize(TrackPointer pTrack, int iSampleRate) {
 BeatMap::~BeatMap() {
 }
 
-std::unique_ptr<QByteArray> BeatMap::toByteArray() const {
+QByteArray BeatMap::toByteArray() const {
     QMutexLocker locker(&m_mutex);
     // No guarantees BeatLists are made of a data type which located adjacent
     // items in adjacent memory locations.
@@ -105,7 +105,7 @@ std::unique_ptr<QByteArray> BeatMap::toByteArray() const {
 
     std::string output;
     map.SerializeToString(&output);
-    return std::make_unique<QByteArray>(output.data(), output.length());
+    return QByteArray(output.data(), output.length());
 }
 
 bool BeatMap::readByteArray(const QByteArray& byteArray) {

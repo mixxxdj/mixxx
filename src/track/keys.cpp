@@ -17,10 +17,10 @@ Keys::Keys(const KeyMap& keyMap)
         : m_keyMap(keyMap) {
 }
 
-std::unique_ptr<QByteArray> Keys::toByteArray() const {
+QByteArray Keys::toByteArray() const {
     std::string output;
     m_keyMap.SerializeToString(&output);
-    return std::make_unique<QByteArray>(output.data(), output.length());
+    return QByteArray(output.data(), output.length());
 }
 
 const QString& Keys::getSubVersion() const {
