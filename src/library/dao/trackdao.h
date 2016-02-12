@@ -16,6 +16,7 @@
 #include "library/dao/dao.h"
 #include "trackinfoobject.h"
 #include "util/class.h"
+#include "util/memory.h"
 
 #define LIBRARY_TABLE "library"
 
@@ -205,10 +206,7 @@ class TrackDAO : public QObject, public virtual DAO {
     TrackPointer getTrackFromDB(TrackId trackId) const;
 
     void saveTrack(TrackInfoObject* pTrack);
-    void updateTrack(TrackInfoObject* pTrack);
-
-    void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack);
-    void bindTrackToLibraryInsert(TrackInfoObject* pTrack, DbId trackLocationId);
+    bool updateTrack(TrackInfoObject* pTrack);
 
     QSqlDatabase& m_database;
     CueDAO& m_cueDao;
@@ -235,12 +233,12 @@ class TrackDAO : public QObject, public virtual DAO {
     // been saved to the database.
     mutable QCache<TrackId, RecentTrackCacheItem> m_recentTracksCache;
 
-    QSqlQuery* m_pQueryTrackLocationInsert;
-    QSqlQuery* m_pQueryTrackLocationSelect;
-    QSqlQuery* m_pQueryLibraryInsert;
-    QSqlQuery* m_pQueryLibraryUpdate;
-    QSqlQuery* m_pQueryLibrarySelect;
-    ScopedTransaction* m_pTransaction;
+    std::unique_ptr<QSqlQuery> m_pQueryTrackLocationInsert;
+    std::unique_ptr<QSqlQuery> m_pQueryTrackLocationSelect;
+    std::unique_ptr<QSqlQuery> m_pQueryLibraryInsert;
+    std::unique_ptr<QSqlQuery> m_pQueryLibraryUpdate;
+    std::unique_ptr<QSqlQuery> m_pQueryLibrarySelect;
+    std::unique_ptr<ScopedTransaction> m_pTransaction;
     int m_trackLocationIdColumn;
     int m_queryLibraryIdColumn;
     int m_queryLibraryMixxxDeletedColumn;

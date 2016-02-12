@@ -27,6 +27,14 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
+        const QFileInfo& fileInfo) {
+    SecurityTokenPointer pToken(Sandbox::openSecurityToken(
+        QFileInfo(fileInfo), true));
+    return extractEmbeddedCover(fileInfo, pToken);
+}
+
+//static
+QImage CoverArtUtils::extractEmbeddedCover(
         const QFileInfo& fileInfo,
         SecurityTokenPointer pToken) {
     // TODO(uklotzde): Resolve the TrackPointer from the track cache
@@ -42,10 +50,8 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
             qDebug() << "CoverArtUtils::loadCover METADATA cover with empty trackLocation.";
             return QImage();
         }
-        SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-            QFileInfo(info.trackLocation), true);
-        return CoverArtUtils::extractEmbeddedCover(info.trackLocation,
-                                                   pToken);
+        const QFileInfo fileInfo(info.trackLocation);
+        return CoverArtUtils::extractEmbeddedCover(fileInfo);
     } else if (info.type == CoverInfo::FILE) {
         if (info.trackLocation.isEmpty()) {
             qDebug() << "CoverArtUtils::loadCover FILE cover with empty trackLocation."
