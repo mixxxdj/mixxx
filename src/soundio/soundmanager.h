@@ -35,6 +35,7 @@ class AudioInput;
 class AudioSource;
 class AudioDestination;
 class ControlObject;
+class ControlObjectSlave;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
@@ -106,6 +107,12 @@ class SoundManager : public QObject {
         return m_pNetworkStream;
     }
 
+    void underflowHappened() {
+        m_underflowHappened = 1;
+    }
+
+    void processUnderflowHappened();
+
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
@@ -142,6 +149,11 @@ class SoundManager : public QObject {
     ControlObject* m_pControlObjectVinylControlGainCO;
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
+
+    QAtomicInt m_underflowHappened;
+    int m_underflowUpdateCount;
+    ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
+    ControlObjectSlave* m_pMasterAudioLatencyOverload;
 };
 
 #endif

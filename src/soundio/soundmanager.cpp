@@ -25,6 +25,7 @@
 #endif // ifdef __PORTAUDIO__
 
 #include "controlobject.h"
+#include "controlobjectslave.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
@@ -45,6 +46,8 @@ typedef PaError (*SetJackClientName)(const char *name);
 
 namespace {
 
+#define CPU_OVERLOAD_DURATION 500 // in ms
+
 struct DeviceMode {
     SoundDevice* device;
     bool isInput;
@@ -64,12 +67,22 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
           m_paInitialized(false),
           m_jackSampleRate(-1),
 #endif
-          m_pErrorDevice(NULL) {
+          m_pErrorDevice(NULL),
+          m_underflowHappened(0) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
-    m_pControlObjectSoundStatusCO = new ControlObject(ConfigKey("[SoundManager]", "status"));
+    m_pControlObjectSoundStatusCO = new ControlObject(
+            ConfigKey("[SoundManager]", "status"));
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
-    m_pControlObjectVinylControlGainCO = new ControlObject(ConfigKey(VINYL_PREF_KEY, "gain"));
+
+    m_pControlObjectVinylControlGainCO = new ControlObject(
+            ConfigKey(VINYL_PREF_KEY, "gain"));
+
+    m_pMasterAudioLatencyOverloadCount = new ControlObjectSlave("[Master]",
+            "audio_latency_overload_count");
+
+    m_pMasterAudioLatencyOverload = new ControlObjectSlave("[Master]",
+            "audio_latency_overload");
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -104,6 +117,8 @@ SoundManager::~SoundManager() {
 
     delete m_pControlObjectSoundStatusCO;
     delete m_pControlObjectVinylControlGainCO;
+    delete m_pMasterAudioLatencyOverloadCount;
+    delete m_pMasterAudioLatencyOverload;
 }
 
 QList<SoundDevice*> SoundManager::getDeviceList(
@@ -353,6 +368,8 @@ Result SoundManager::setupDevices() {
     // Instead of clearing m_pClkRefDevice and then assigning it directly,
     // compute the new one then atomically hand off below.
     SoundDevice* pNewMasterClockRef = NULL;
+
+    m_pMasterAudioLatencyOverloadCount->set(0);
 
     // pair is isInput, isOutput
     QList<DeviceMode> toOpen;
@@ -647,4 +664,24 @@ void SoundManager::setConfiguredDeckCount(int count) {
 
 int SoundManager::getConfiguredDeckCount() const {
     return m_config.getDeckCount();
+}
+
+void SoundManager::processUnderflowHappened() {
+    if (m_underflowUpdateCount == 0) {
+        if (m_underflowHappened) {
+            m_pMasterAudioLatencyOverload->set(1.0);
+            m_pMasterAudioLatencyOverloadCount->set(
+                    m_pMasterAudioLatencyOverloadCount->get() + 1);
+            m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_config.getSampleRate()
+                    / m_config.getFramesPerBuffer() / 1000;
+
+            m_underflowHappened = 0; // reseting her is not thread save,
+                                     // but that is OK, because we count only
+                                     // 1 underflow each 500 ms
+        } else {
+            m_pMasterAudioLatencyOverload->set(0.0);
+        }
+    } else {
+        --m_underflowUpdateCount;
+    }
 }

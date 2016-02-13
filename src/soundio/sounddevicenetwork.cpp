@@ -15,9 +15,6 @@
 #include "soundio/soundmanagerutil.h"
 #include "util/sample.h"
 
-// static
-volatile int SoundDeviceNetwork::m_underflowHappened = 0;
-
 SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
                                        SoundManager *sm,
                                        QSharedPointer<EngineNetworkStream> pNetworkStream)
@@ -27,7 +24,6 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
           m_inputFifo(NULL),
           m_outputDrift(false),
           m_inputDrift(false),
-          m_underflowUpdateCount(0),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_pThread(NULL),
           m_denormals(false),
@@ -41,18 +37,12 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
     m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
 
-    m_pMasterAudioLatencyOverloadCount = new ControlObjectSlave("[Master]",
-            "audio_latency_overload_count");
     m_pMasterAudioLatencyUsage = new ControlObjectSlave("[Master]",
             "audio_latency_usage");
-    m_pMasterAudioLatencyOverload = new ControlObjectSlave("[Master]",
-            "audio_latency_overload");
 }
 
 SoundDeviceNetwork::~SoundDeviceNetwork() {
-    delete m_pMasterAudioLatencyOverloadCount;
     delete m_pMasterAudioLatencyUsage;
-    delete m_pMasterAudioLatencyOverload;
 }
 
 Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
@@ -95,10 +85,6 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
         ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
         ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"),
                 m_audioBufferTime.toDoubleMillis());
-
-        if (m_pMasterAudioLatencyOverloadCount) {
-            m_pMasterAudioLatencyOverloadCount->set(0);
-        }
 
         m_targetTime = 0;
 
@@ -199,8 +185,8 @@ void SoundDeviceNetwork::readProcess() {
     int readCount = inChunkSize;
     if (inChunkSize > readAvailable) {
         readCount = readAvailable;
-        m_underflowHappened = 1;
-        //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
+        m_pSoundManager->underflowHappened();
+        qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
     }
     if (readCount) {
         CSAMPLE* dataPtr1;
@@ -238,10 +224,10 @@ void SoundDeviceNetwork::writeProcess() {
     int writeCount = outChunkSize;
     if (outChunkSize > writeAvailable) {
         writeCount = writeAvailable;
-        m_underflowHappened = 1;
-        //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
+        m_pSoundManager->underflowHappened();
+        qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
     }
-    //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize;
+    qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize;
     if (writeCount) {
         CSAMPLE* dataPtr1;
         ring_buffer_size_t size1;
@@ -275,10 +261,10 @@ void SoundDeviceNetwork::writeProcess() {
                 &dataPtr1, &size1, &dataPtr2, &size2);
         if (writeAvailable >= outChunkSize * 2) {
             // Underflow
-            //qDebug() << "SoundDeviceNetwork::writeProcess() Buffer empty";
+            qDebug() << "SoundDeviceNetwork::writeProcess() Buffer empty";
             // catch up by filling buffer until we are synced
             m_pNetworkStream->writeSilence(writeAvailable - copyCount);
-            m_underflowHappened = 1;
+            m_pSoundManager->underflowHappened();
         } else if (writeAvailable > readAvailable + outChunkSize / 2) {
             // try to keep PAs buffer filled up to 0.5 chunks
             if (m_outputDrift) {
@@ -362,22 +348,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 
     m_pSoundManager->writeProcess();
 
-    if (m_underflowUpdateCount == 0) {
-        if (m_underflowHappened) {
-            m_pMasterAudioLatencyOverload->set(1.0);
-            m_pMasterAudioLatencyOverloadCount->set(
-                    m_pMasterAudioLatencyOverloadCount->get() + 1);
-            m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_dSampleRate
-                    / m_framesPerBuffer / 1000;
-            m_underflowHappened = 0; // reseting her is not thread save,
-                                     // but that is OK, because we count only
-                                     // 1 underflow each 500 ms
-        } else {
-            m_pMasterAudioLatencyOverload->set(0.0);
-        }
-    } else {
-        --m_underflowUpdateCount;
-    }
+    m_pSoundManager->processUnderflowHappened();
 
     updateAudioLatencyUsage();
 }
@@ -407,7 +378,7 @@ void SoundDeviceNetwork::updateAudioLatencyUsage() {
     qint64 currentTime = m_pNetworkStream->getStreamTimeUs();
     unsigned long sleepUs = 0;
     if (currentTime > m_targetTime) {
-        m_underflowHappened = true;
+        m_pSoundManager->underflowHappened();
         m_targetTime = currentTime;
         qDebug() << "underflow" << currentTime << m_targetTime;
     } else {

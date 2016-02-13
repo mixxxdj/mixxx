@@ -46,11 +46,7 @@ class SoundDeviceNetwork : public SoundDevice {
     bool m_outputDrift;
     bool m_inputDrift;
 
-    ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
     ControlObjectSlave* m_pMasterAudioLatencyUsage;
-    ControlObjectSlave* m_pMasterAudioLatencyOverload;
-    int m_underflowUpdateCount;
-    static volatile int m_underflowHappened;
     mixxx::Duration m_timeInAudioCallback;
     mixxx::Duration m_audioBufferTime;
     int m_framesSinceAudioLatencyUsageUpdate;
