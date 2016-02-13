@@ -1277,7 +1277,30 @@ QSplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
 QSplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
 
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
-QLabel, QRadioButton { background: transparent; color: #cfb32c;}
+QLabel, QRadioButton { background: transparent; color: #cfb32c; }
+
+/* Additional space for QRadionButtons and QLabels */
+WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
+
+/* Additional space for the first QRadionButton in the row */
+WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
+
+/* Additional space for the QPushButtons */
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton { margin: 9px 3px 6px 3px; padding: 3px 8px; min-width: 65px; }
+
+/* Additional space for the first QPushButton in the row */
+#DlgMissing > QPushButton#btnPurge,
+#DlgHidden > QPushButton#btnUnhide,
+#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
+#DlgRecording > QPushButton#pushButtonRecording,
+#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
+
+/* Additional space for the last QPushButton in the row */
+#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
 
 /* Spacing between treeview and searchbar */
 QTreeView { margin: 10px 0px 0px 0px; }
