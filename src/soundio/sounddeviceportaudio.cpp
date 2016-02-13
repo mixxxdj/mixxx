@@ -601,8 +601,11 @@ void SoundDevicePortAudio::writeProcess() {
                         //qDebug() << "SoundDevicePortAudio::writeProcess() OK" << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
                         m_outputDrift = true;
                     }
-                } else if (writeAvailable < outChunkSize / 2) {
-                    // We are not able to store all new frames
+                } else if (writeAvailable < outChunkSize / 2 ||
+                        readAvailable > outChunkSize * 1.5
+                   ) {
+                    // We are not able to store at least the half of the new frames
+                    // or we have a risk of an m_outputFifo overflow
                     if (m_outputDrift) {
                         //qDebug() << "SoundDevicePortAudio::writeProcess() skip one frame"
                         //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;

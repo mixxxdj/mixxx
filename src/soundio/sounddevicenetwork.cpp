@@ -186,7 +186,7 @@ void SoundDeviceNetwork::readProcess() {
     if (inChunkSize > readAvailable) {
         readCount = readAvailable;
         m_pSoundManager->underflowHappened();
-        qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
+        //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
     }
     if (readCount) {
         CSAMPLE* dataPtr1;
@@ -225,9 +225,9 @@ void SoundDeviceNetwork::writeProcess() {
     if (outChunkSize > writeAvailable) {
         writeCount = writeAvailable;
         m_pSoundManager->underflowHappened();
-        qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
+        //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
     }
-    qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize;
+    //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize;
     if (writeCount) {
         CSAMPLE* dataPtr1;
         ring_buffer_size_t size1;
@@ -251,7 +251,7 @@ void SoundDeviceNetwork::writeProcess() {
             * m_iNumOutputChannels;
     int readAvailable = m_outputFifo->readAvailable();
     int copyCount = qMin(readAvailable, writeAvailable);
-    //qDebug() << "SoundDevicePortAudio::writeProcess()" << toRead << writeAvailable;
+    //qDebug() << "SoundDevicePortAudio::writeProcess()" << readAvailable << writeAvailable;
     if (copyCount > 0) {
         CSAMPLE* dataPtr1;
         ring_buffer_size_t size1;
@@ -266,7 +266,7 @@ void SoundDeviceNetwork::writeProcess() {
             m_pNetworkStream->writeSilence(writeAvailable - copyCount);
             m_pSoundManager->underflowHappened();
         } else if (writeAvailable > readAvailable + outChunkSize / 2) {
-            // try to keep PAs buffer filled up to 0.5 chunks
+            // try to keep network buffer filled up to 0.5 chunks
             if (m_outputDrift) {
                 // duplicate one frame
                 //qDebug() << "SoundDeviceNetwork::writeProcess() duplicate one frame"
@@ -275,8 +275,11 @@ void SoundDeviceNetwork::writeProcess() {
             } else {
                 m_outputDrift = true;
             }
-        } else if (writeAvailable < outChunkSize / 2) {
-            // We are not able to store all new frames
+        } else if (writeAvailable < outChunkSize / 2 ||
+                readAvailable > outChunkSize * 1.5
+           ) {
+            // We are not able to store at least the half of the new frames
+            // or we have a risk of an m_outputFifo overflow
             if (m_outputDrift) {
                 //qDebug() << "SoundDeviceNetwork::writeProcess() skip one frame"
                 //         << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
@@ -380,7 +383,7 @@ void SoundDeviceNetwork::updateAudioLatencyUsage() {
     if (currentTime > m_targetTime) {
         m_pSoundManager->underflowHappened();
         m_targetTime = currentTime;
-        qDebug() << "underflow" << currentTime << m_targetTime;
+        //qDebug() << "underflow" << currentTime << m_targetTime;
     } else {
         sleepUs = m_targetTime - currentTime;
     }
