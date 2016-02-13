@@ -458,7 +458,7 @@ void SoundDevicePortAudio::readProcess() {
                 m_inputFifo->releaseWriteRegions(copyCount);
 
                 if (readAvailable > writeAvailable + inChunkSize / 2) {
-                    // we are not able to consume all frames
+                    // we are not able to consume enough frames
                     if (m_inputDrift) {
                         // Skip one frame
                         //qDebug() << "SoundDevicePortAudio::readProcess() skip one frame"
@@ -473,8 +473,10 @@ void SoundDevicePortAudio::readProcess() {
                     } else {
                         m_inputDrift = true;
                     }
-                } else if (readAvailable < inChunkSize / 2) {
-                    // We should read at least inChunkSize
+                } else if (readAvailable < inChunkSize / 2 ||
+                        m_inputFifo->readAvailable() < inChunkSize * 1.5) {
+                    // We should read at least a half inChunkSize
+                    // and our m_iputFifo should now hold a half chunk extra
                     if (m_inputDrift) {
                         // duplicate one frame
                         //qDebug() << "SoundDevicePortAudio::readProcess() duplicate one frame"
@@ -502,6 +504,7 @@ void SoundDevicePortAudio::readProcess() {
             m_pSoundManager->underflowHappened(15);
             //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
         }
+        //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize;
         if (readCount) {
             CSAMPLE* dataPtr1;
             ring_buffer_size_t size1;
