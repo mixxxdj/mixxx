@@ -107,8 +107,9 @@ class SoundManager : public QObject {
         return m_pNetworkStream;
     }
 
-    void underflowHappened() {
+    void underflowHappened(int code) {
         m_underflowHappened = 1;
+        qDebug() << "underflowHappened code" << code;
     }
 
     void processUnderflowHappened();

@@ -185,7 +185,7 @@ void SoundDeviceNetwork::readProcess() {
     int readCount = inChunkSize;
     if (inChunkSize > readAvailable) {
         readCount = readAvailable;
-        m_pSoundManager->underflowHappened();
+        m_pSoundManager->underflowHappened(21);
         //qDebug() << "readProcess()" << (float)readAvailable / inChunkSize << "underflow";
     }
     if (readCount) {
@@ -224,7 +224,7 @@ void SoundDeviceNetwork::writeProcess() {
     int writeCount = outChunkSize;
     if (outChunkSize > writeAvailable) {
         writeCount = writeAvailable;
-        m_pSoundManager->underflowHappened();
+        m_pSoundManager->underflowHappened(23);
         //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize << "Overflow";
     }
     //qDebug() << "writeProcess():" << (float) writeAvailable / outChunkSize;
@@ -264,7 +264,7 @@ void SoundDeviceNetwork::writeProcess() {
             qDebug() << "SoundDeviceNetwork::writeProcess() Buffer empty";
             // catch up by filling buffer until we are synced
             m_pNetworkStream->writeSilence(writeAvailable - copyCount);
-            m_pSoundManager->underflowHappened();
+            m_pSoundManager->underflowHappened(24);
         } else if (writeAvailable > readAvailable + outChunkSize / 2) {
             // try to keep network buffer filled up to 0.5 chunks
             if (m_outputDrift) {
@@ -381,7 +381,7 @@ void SoundDeviceNetwork::updateAudioLatencyUsage() {
     qint64 currentTime = m_pNetworkStream->getStreamTimeUs();
     unsigned long sleepUs = 0;
     if (currentTime > m_targetTime) {
-        m_pSoundManager->underflowHappened();
+        m_pSoundManager->underflowHappened(22);
         m_targetTime = currentTime;
         //qDebug() << "underflow" << currentTime << m_targetTime;
     } else {
