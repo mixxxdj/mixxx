@@ -408,6 +408,9 @@ Result SoundManager::setupDevices() {
         if (device->getInternalName() == kNetworkDeviceInternalName) {
             AudioOutput out(AudioPath::SIDECHAIN, 0, 2, 0);
             outputs.append(out);
+            if (m_config.getForceNetworkClock()) {
+                pNewMasterClockRef = device;
+            }
         }
 
         foreach (AudioOutput out, outputs) {
@@ -426,12 +429,15 @@ Result SoundManager::setupDevices() {
             AudioOutputBuffer aob(out, pBuffer);
             err = device->addOutput(aob) != SOUNDDEVICE_ERROR_OK ? ERR : OK;
             if (err != OK) goto closeAndError;
-            if (out.getType() == AudioOutput::MASTER) {
-                pNewMasterClockRef = device;
-            } else if ((out.getType() == AudioOutput::DECK ||
-                        out.getType() == AudioOutput::BUS)
-                    && !pNewMasterClockRef) {
-                pNewMasterClockRef = device;
+
+            if (!m_config.getForceNetworkClock()) {
+                if (out.getType() == AudioOutput::MASTER) {
+                    pNewMasterClockRef = device;
+                } else if ((out.getType() == AudioOutput::DECK ||
+                            out.getType() == AudioOutput::BUS)
+                        && !pNewMasterClockRef) {
+                    pNewMasterClockRef = device;
+                }
             }
 
             // Check if any AudioSource is registered for this AudioOutput and
@@ -450,26 +456,19 @@ Result SoundManager::setupDevices() {
         }
     }
 
-    pNewMasterClockRef = nullptr;
-
     for (const auto& mode: toOpen) {
         ++devicesAttempted;
         SoundDevice* device = mode.device;
         m_pErrorDevice = device;
 
-        if (device->getInternalName() == kNetworkDeviceInternalName) {
-            pNewMasterClockRef = device;
-        }
-
         // If we have not yet set a clock source then we use the first
         // output device
-//        if (device->getInternalName() != kNetworkDeviceInternalName &&
-//                pNewMasterClockRef == NULL &&
-//                (!haveOutput || mode.isOutput)) {
-//            pNewMasterClockRef = device;
-//            qWarning() << "Output sound device clock reference not set! Using"
-//                       << device->getDisplayName();
-//        }
+        if (pNewMasterClockRef == NULL &&
+                (!haveOutput || mode.isOutput)) {
+            pNewMasterClockRef = device;
+            qWarning() << "Output sound device clock reference not set! Using"
+                       << device->getDisplayName();
+        }
 
         int syncBuffers = m_config.getSyncBuffers();
         // If we are in safe mode and using experimental polling support, use
