@@ -27,6 +27,7 @@
 #include "soundio/soundmanagerconfig.h"
 #include "util/result.h"
 #include "util/types.h"
+#include "util/cmdlineargs.h"
 
 class SoundDevice;
 class EngineMaster;

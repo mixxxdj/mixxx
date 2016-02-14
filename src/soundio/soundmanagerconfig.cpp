@@ -38,7 +38,8 @@ SoundManagerConfig::SoundManagerConfig()
       m_sampleRate(kFallbackSampleRate),
       m_deckCount(kDefaultDeckCount),
       m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
-      m_syncBuffers(2) {
+      m_syncBuffers(2),
+      m_forceNetworkClock(false) {
     m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
@@ -70,8 +71,10 @@ bool SoundManagerConfig::readFromDisk() {
     // audioBufferSizeIndex is refereed as "latency" in the config file
     setAudioBufferSizeIndex(rootElement.attribute("latency", "0").toUInt());
     setSyncBuffers(rootElement.attribute("sync_buffers", "2").toUInt());
+    setForceNetworkClock(rootElement.attribute("force_network_clock",
+            "0").toUInt() != 0);
     setDeckCount(rootElement.attribute("deck_count",
-                                       QString(kDefaultDeckCount)).toUInt());
+            QString(kDefaultDeckCount)).toUInt());
     clearOutputs();
     clearInputs();
     QDomNodeList devElements(rootElement.elementsByTagName("SoundDevice"));
@@ -126,6 +129,7 @@ bool SoundManagerConfig::writeToDisk() const {
     // audioBufferSizeIndex is refereed as "latency" in the config file
     docElement.setAttribute("latency", m_audioBufferSizeIndex);
     docElement.setAttribute("sync_buffers", m_syncBuffers);
+    docElement.setAttribute("force_network_clock", m_forceNetworkClock);
     docElement.setAttribute("deck_count", m_deckCount);
     doc.appendChild(docElement);
 
@@ -194,6 +198,14 @@ unsigned int SoundManagerConfig::getSyncBuffers() const {
 void SoundManagerConfig::setSyncBuffers(unsigned int syncBuffers) {
     // making sure we don't divide by zero elsewhere
     m_syncBuffers = qMin(syncBuffers, (unsigned int)2);
+}
+
+bool SoundManagerConfig::getForceNetworkClock() const {
+    return m_forceNetworkClock;
+}
+
+void SoundManagerConfig::setForceNetworkClock(bool force) {
+    m_forceNetworkClock = force;
 }
 
 /**
@@ -416,4 +428,5 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
     }
 
     m_syncBuffers = kDefaultSyncBuffers;
+    m_forceNetworkClock = false;
 }

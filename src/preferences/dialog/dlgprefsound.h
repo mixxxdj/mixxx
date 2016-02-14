@@ -78,6 +78,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void audioBufferChanged(int index);
     void updateAudioBufferSizes(int sampleRateIndex);
     void syncBuffersChanged(int index);
+    void engineClockChanged(int index);
     void refreshDevices();
     void settingChanged();
     void queryClicked();
