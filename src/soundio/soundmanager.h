@@ -109,7 +109,9 @@ class SoundManager : public QObject {
 
     void underflowHappened(int code) {
         m_underflowHappened = 1;
-        qDebug() << "underflowHappened code" << code;
+        if (CmdlineArgs::Instance().getDeveloper()) {
+            qWarning() << "underflowHappened code:" << code;
+        }
     }
 
     void processUnderflowHappened();
