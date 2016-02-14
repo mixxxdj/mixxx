@@ -86,7 +86,10 @@ Result SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
         ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"),
                 m_audioBufferTime.toDoubleMillis());
 
-        m_targetTime = 0;
+        // Network stream was just started above so we have to wait until
+        // we can pass one chunk.
+        // The first callback runs early to do the one time setups
+        m_targetTime = m_audioBufferTime.toIntegerMicros();
 
         m_pThread = new SoundDeviceNetworkThread(this);
         m_pThread->start(QThread::TimeCriticalPriority);
@@ -259,13 +262,13 @@ void SoundDeviceNetwork::writeProcess() {
         ring_buffer_size_t size2;
         m_outputFifo->aquireReadRegions(copyCount,
                 &dataPtr1, &size1, &dataPtr2, &size2);
-        if (writeAvailable >= outChunkSize * 2) {
+        if (writeAvailable - copyCount > outChunkSize) {
             // Underflow
-            qDebug() << "SoundDeviceNetwork::writeProcess() Buffer empty";
-            // catch up by filling buffer until we are synced
-            m_pNetworkStream->writeSilence(writeAvailable - copyCount);
+            //qDebug() << "SoundDeviceNetwork::writeProcess() Buffer empty";
+            // catch up by filling buffer until we are a halve buffer behind
+            m_pNetworkStream->writeSilence(writeAvailable - copyCount - outChunkSize / 2);
             m_pSoundManager->underflowHappened(24);
-        } else if (writeAvailable > readAvailable + outChunkSize / 2) {
+        } else if (writeAvailable - copyCount > outChunkSize / 2) {
             // try to keep network buffer filled up to 0.5 chunks
             if (m_outputDrift) {
                 // duplicate one frame
@@ -382,11 +385,13 @@ void SoundDeviceNetwork::updateAudioLatencyUsage() {
     unsigned long sleepUs = 0;
     if (currentTime > m_targetTime) {
         m_pSoundManager->underflowHappened(22);
-        m_targetTime = currentTime;
         //qDebug() << "underflow" << currentTime << m_targetTime;
+        m_targetTime = currentTime;
     } else {
         sleepUs = m_targetTime - currentTime;
     }
+
+    //qDebug() << "sleep" << sleepUs;
 
     // measure time in Audio callback at the very last
     m_timeInAudioCallback += m_clkRefTimer.elapsed();
