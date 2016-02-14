@@ -75,8 +75,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     engineClockComboBox->clear();
     engineClockComboBox->addItem(tr("Soundcard Clock"));
     engineClockComboBox->addItem(tr("Network Clock"));
-    deviceSyncComboBox->setCurrentIndex(0);
-    connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
+    engineClockComboBox->setCurrentIndex(0);
+    connect(engineClockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(engineClockChanged(int)));
 
     keylockComboBox->clear();
@@ -96,6 +96,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(deviceSyncComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(settingChanged()));
+    connect(engineClockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
     connect(keylockComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
