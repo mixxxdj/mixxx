@@ -286,7 +286,7 @@ void SoundDeviceNetwork::writeProcess() {
             if (m_outputDrift) {
                 //qDebug() << "SoundDeviceNetwork::writeProcess() skip one frame"
                 //         << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                ++copyCount;
+                copyCount += m_iNumOutputChannels;
             } else {
                 m_outputDrift = true;
             }
