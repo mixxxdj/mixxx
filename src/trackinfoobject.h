@@ -32,10 +32,27 @@ class TrackInfoObject : public QObject {
     Q_OBJECT
 
   public:
-    // Initialize track with a QFileInfo class
-    explicit TrackInfoObject(
+    TrackInfoObject(const TrackInfoObject&) = delete;
+    TrackInfoObject(TrackInfoObject&&) = delete;
+
+    // Creates a new empty temporary instance for fake tracks or for
+    // testing purposes. The resulting track will neither be stored
+    // in the database nor will the metadata of the corresponding file
+    // be updated.
+    static TrackPointer newTemporary(
             const QFileInfo& fileInfo = QFileInfo(),
-            SecurityTokenPointer pToken = SecurityTokenPointer());
+            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
+    // Creates a new temporary instance from another track that references
+    // the same file. Please remember that the corresponding file might
+    // be modified after all references to the original track have been
+    // dropped. To be safe just keep the pointer to the original track
+    // for the lifetime of this temporary instance.
+    static TrackPointer newTemporaryForSameFile(
+            const TrackPointer& pTrack);
+    // Creates a dummy instance for testing purposes.
+    static TrackPointer newDummy(
+            const QFileInfo& fileInfo,
+            TrackId trackId);
 
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
@@ -293,6 +310,10 @@ class TrackInfoObject : public QObject {
     void slotBeatsUpdated();
 
   private:
+    TrackInfoObject(
+            const QFileInfo& fileInfo,
+            const SecurityTokenPointer& pToken,
+            TrackId trackId);
 
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
@@ -394,7 +415,6 @@ class TrackInfoObject : public QObject {
     CoverArt m_coverArt;
 
     friend class TrackDAO;
-    friend class AutoDJProcessorTest;
 };
 
 #endif // TRACKINFOOBJECT_H

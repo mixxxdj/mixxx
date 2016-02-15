@@ -19,7 +19,7 @@ class BeatGridTest : public testing::Test {
 };
 
 TEST_F(BeatGridTest, Scale) {
-    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    TrackPointer pTrack(TrackInfoObject::newTemporary());
 
     int sampleRate = 44100;
     double bpm = 60.0;
@@ -41,7 +41,7 @@ TEST_F(BeatGridTest, Scale) {
 }
 
 TEST_F(BeatGridTest, TestNthBeatWhenOnBeat) {
-    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    TrackPointer pTrack(TrackInfoObject::newTemporary());
 
     int sampleRate = 44100;
     double bpm = 60.0;
@@ -77,7 +77,7 @@ TEST_F(BeatGridTest, TestNthBeatWhenOnBeat) {
 }
 
 TEST_F(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
-    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    TrackPointer pTrack(TrackInfoObject::newTemporary());
 
     int sampleRate = 44100;
     double bpm = 60.0;
@@ -115,7 +115,7 @@ TEST_F(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
 }
 
 TEST_F(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
-    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    TrackPointer pTrack(TrackInfoObject::newTemporary());
 
     int sampleRate = 44100;
     double bpm = 60.0;
@@ -153,7 +153,7 @@ TEST_F(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
 }
 
 TEST_F(BeatGridTest, TestNthBeatWhenNotOnBeat) {
-    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    TrackPointer pTrack(TrackInfoObject::newTemporary());
     int sampleRate = 44100;
     double bpm = 60.0;
     const int kFrameSize = 2;

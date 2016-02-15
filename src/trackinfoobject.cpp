@@ -36,13 +36,14 @@ inline bool compareAndSet(T* pField, const T& value) {
 
 TrackInfoObject::TrackInfoObject(
         const QFileInfo& fileInfo,
-        SecurityTokenPointer pToken)
+        const SecurityTokenPointer& pToken,
+        TrackId trackId)
         : m_fileInfo(fileInfo),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
           m_bDeleteOnReferenceExpiration(false),
-          m_qMutex(QMutex::Recursive) {
-    m_id = TrackId();
+          m_qMutex(QMutex::Recursive),
+          m_id(std::move(trackId)) {
     m_analyzerProgress = -1;
 
     m_bDirty = false;
@@ -56,6 +57,39 @@ TrackInfoObject::TrackInfoObject(
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dateAdded = QDateTime::currentDateTime();
+}
+
+//static
+TrackPointer TrackInfoObject::newTemporary(
+        const QFileInfo& fileInfo,
+        const SecurityTokenPointer& pSecurityToken) {
+    return TrackPointer(
+            new TrackInfoObject(
+                    fileInfo,
+                    pSecurityToken,
+                    TrackId()),
+            &QObject::deleteLater);
+}
+
+//static
+TrackPointer TrackInfoObject::newTemporaryForSameFile(
+        const TrackPointer& pTrack) {
+    QMutexLocker lock(&pTrack->m_qMutex);
+    return newTemporary(
+                pTrack->m_fileInfo,
+                pTrack->m_pSecurityToken);
+}
+
+//static
+TrackPointer TrackInfoObject::newDummy(
+        const QFileInfo& fileInfo,
+        TrackId trackId) {
+    return TrackPointer(
+            new TrackInfoObject(
+                    fileInfo,
+                    SecurityTokenPointer(),
+                    trackId),
+            &QObject::deleteLater);
 }
 
 // static

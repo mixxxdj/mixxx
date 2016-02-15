@@ -479,8 +479,7 @@ void DlgTrackInfo::reloadTrackMetadata() {
         // We cannot reuse m_pLoadedTrack, because it might already been
         // modified and we want to read fresh metadata directly from the
         // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
-                                                m_pLoadedTrack->getSecurityToken()));
+        TrackPointer pTrack(TrackInfoObject::newTemporaryForSameFile(m_pLoadedTrack));
         SoundSourceProxy(pTrack).loadTrackMetadata();
         if (!pTrack.isNull()) {
             populateFields(*pTrack);
