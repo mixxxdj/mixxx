@@ -91,10 +91,8 @@ CoverArt CoverArtUtils::guessCoverArt(TrackPointer pTrack) {
         return art;
     }
 
-    const QFileInfo trackInfo = pTrack->getFileInfo();
-    const QString trackLocation = trackInfo.absoluteFilePath();
-
-    art.image = extractEmbeddedCover(trackLocation, pTrack->getSecurityToken());
+    const QFileInfo fileInfo(pTrack->getFileInfo());
+    art.image = extractEmbeddedCover(fileInfo, pTrack->getSecurityToken());
     if (!art.image.isNull()) {
         art.info.hash = calculateHash(art.image);
         art.info.coverLocation = QString();
@@ -104,7 +102,7 @@ CoverArt CoverArtUtils::guessCoverArt(TrackPointer pTrack) {
     }
 
     QLinkedList<QFileInfo> possibleCovers = findPossibleCoversInFolder(
-        trackInfo.absolutePath());
+            fileInfo.absolutePath());
     art = selectCoverArtForTrack(pTrack.data(), possibleCovers);
     if (art.info.type == CoverInfo::FILE) {
         qDebug() << "CoverArtUtils::guessCoverArt found file art" << art;
