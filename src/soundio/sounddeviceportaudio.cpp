@@ -599,9 +599,9 @@ void SoundDevicePortAudio::writeProcess() {
                 ring_buffer_size_t size2;
                 m_outputFifo->aquireReadRegions(copyCount,
                         &dataPtr1, &size1, &dataPtr2, &size2);
-                if (writeAvailable == outChunkSize * 2) {
-                    // Underflow
-                    //qDebug() << "SoundDevicePortAudio::writeProcess() Buffer empty" << (float)copyCount / outChunkSize;
+                if (writeAvailable >= outChunkSize * 2) {
+                    // Underflow (2 is max for native ALSA devices)
+                    //qDebug() << "SoundDevicePortAudio::writeProcess() fill buffer" << (float)(writeAvailable - copyCount) / outChunkSize;
                     // fill buffer with duplicate of first sample
                     for (int i = 0; i < writeAvailable - copyCount;
                             i += m_outputParams.channelCount) {
