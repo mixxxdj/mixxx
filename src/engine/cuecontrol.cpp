@@ -351,7 +351,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
         return;
 
     int hotcue = pControl->getHotcueNumber();
-    detachCue(hotcue);
+    hotcueClear(pControl, v);
     CuePointer pCue(m_pLoadedTrack->addCue());
     double cuePosition =
             (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
