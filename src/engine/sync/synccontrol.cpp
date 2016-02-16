@@ -232,8 +232,9 @@ void SyncControl::setMasterBpm(double bpm) {
 
     double localBpm = m_pLocalBpm->get();
     if (localBpm > 0.0) {
-        double newRate = (bpm * m_masterBpmAdjustFactor / m_pLocalBpm->get() - 1.0)
-                / m_pRateDirection->get() / m_pRateRange->get();
+        double newRate = m_pRateDirection->get() *
+                ((bpm * m_masterBpmAdjustFactor / localBpm) - 1.0) /
+                m_pRateRange->get();
         m_pRateSlider->set(newRate);
     } else {
         m_pRateSlider->set(0);
