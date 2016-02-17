@@ -377,10 +377,10 @@ void RateControl::trackUnloaded(TrackPointer pTrack) {
     m_pTrack.clear();
 }
 
-double RateControl::getRawRate() const {
-    return m_pRateSlider->get() *
-        m_pRateRange->get() *
-        m_pRateDir->get();
+double RateControl::calcRateRatio() const {
+    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
+            m_pRateSlider->get();
+    return rateRatio;
 }
 
 double RateControl::getWheelFactor() const {
@@ -622,8 +622,9 @@ double RateControl::getTempRate() {
 void RateControl::setRateTemp(double v)
 {
     // Do not go backwards
-    if ((1. + getRawRate() + v) < 0)
+    if ((calcRateRatio() + v) < 0) {
         return;
+    }
 
     m_dRateTemp = v;
     if (m_dRateTemp < -1.0) {
