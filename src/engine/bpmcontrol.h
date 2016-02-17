@@ -104,6 +104,7 @@ class BpmControl : public EngineControl {
     }
     bool syncTempo();
     double calcSyncAdjustment(double my_percentage, bool userTweakingSync);
+    double calcRateRatio() const;
 
     friend class SyncControl;
 
