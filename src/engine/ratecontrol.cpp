@@ -208,12 +208,14 @@ void RateControl::setBpmControl(BpmControl* bpmcontrol) {
     m_pBpmControl = bpmcontrol;
 }
 
+//static
 void RateControl::setRateRamp(bool linearMode)
 {
     m_eRateRampMode = linearMode ?
             RateControl::RATERAMP_LINEAR : RateControl::RATERAMP_STEP;
 }
 
+//static
 void RateControl::setRateRampSensitivity(int sense)
 {
     // Reverse the actual sensitivity value passed.
@@ -228,18 +230,22 @@ void RateControl::setRateRampSensitivity(int sense)
     }
 }
 
+//static
 void RateControl::setTemp(double v) {
     m_dTemp = v;
 }
 
+//static
 void RateControl::setTempSmall(double v) {
     m_dTempSmall = v;
 }
 
+//static
 void RateControl::setPerm(double v) {
     m_dPerm = v;
 }
 
+//static
 void RateControl::setPermSmall(double v) {
     m_dPermSmall = v;
 }
@@ -275,9 +281,10 @@ void RateControl::slotControlFastBack(double v)
 void RateControl::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
-    if (buttonRatePermDown->get())
+    if (buttonRatePermDown->get()) {
         m_pRateSlider->set(m_pRateSlider->get() -
-                           m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+                           m_pRateDir->get() * m_dPerm / (100 * m_pRateRange->get()));
+    }
 }
 
 void RateControl::slotControlRatePermDownSmall(double)
