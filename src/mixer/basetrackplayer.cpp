@@ -38,7 +38,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pLowFilterKill(NULL),
           m_pMidFilterKill(NULL),
           m_pHighFilterKill(NULL),
-          m_pSpeed(NULL),
+          m_pRateSlider(NULL),
           m_pPitchAdjust(NULL),
           m_replaygainPending(false) {
     ChannelHandleAndGroup channelGroup =
@@ -290,8 +290,8 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject) {
     switch (reset) {
       case RESET_PITCH_AND_SPEED:
         // Note: speed may affect pitch
-        if (m_pSpeed != NULL) {
-            m_pSpeed->set(0.0);
+        if (m_pRateSlider != NULL) {
+            m_pRateSlider->set(0.0);
         }
         // Fallthrough intended
       case RESET_PITCH:
@@ -301,8 +301,8 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject) {
         break;
       case RESET_SPEED:
         // Note: speed may affect pitch
-        if (m_pSpeed != NULL) {
-            m_pSpeed->set(0.0);
+        if (m_pRateSlider != NULL) {
+            m_pRateSlider->set(0.0);
         }
         break;
     }
@@ -342,7 +342,7 @@ void BaseTrackPlayerImpl::setupEqControls() {
     m_pLowFilterKill = new ControlObjectSlave(group, "filterLowKill", this);
     m_pMidFilterKill = new ControlObjectSlave(group, "filterMidKill", this);
     m_pHighFilterKill = new ControlObjectSlave(group, "filterHighKill", this);
-    m_pSpeed = new ControlObjectSlave(group, "rate", this);
+    m_pRateSlider = new ControlObjectSlave(group, "rate", this);
     m_pPitchAdjust = new ControlObjectSlave(group, "pitch_adjust", this);
 }
 
