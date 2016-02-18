@@ -100,7 +100,7 @@ DJCRMX2.Deck.prototype.wheelTurn = function (value) {
     }
     
     if (engine.isScratching(this.number)) {
-        engine.scratchTick(1,newValue);
+        engine.scratchTick(this.number, newValue);
     } else {
         engine.setValue(this.group, "jog", newValue);
     }   
