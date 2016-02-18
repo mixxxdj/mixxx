@@ -47,7 +47,7 @@ DJCRMX2.Deck.prototype.wheelPress = function (value) {
 
          var alpha = 1.0 / 8;
          var beta = alpha / 32;
-         engine.scratchEnable(this.number, 250, 50, alpha, beta);
+         engine.scratchEnable(this.number, 256, 33 + 1/3, alpha, beta);
     } else {
         // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
         // Depending on how fast the platter was moving, lengthen the time we'll wait.
