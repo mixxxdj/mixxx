@@ -4,7 +4,6 @@
  */
 
 function DJCRMX2() {}
-DJCRMX2.scratching = [];
 DJCRMX2.decks = [];
 
 /* [ Function init ]
@@ -14,8 +13,6 @@ DJCRMX2.init = function (id) {
     DJCRMX2.id = id;
     DJCRMX2.decks[1] = new DJCRMX2.Deck(1);
     DJCRMX2.decks[2] = new DJCRMX2.Deck(2);
-    DJCRMX2.scratching[1] = false;
-    DJCRMX2.scratching[2] = false;
     engine.setValue("[Microphone]", "enabled", 0);
     engine.setValue("[Microphone]", "talkover", 0);
 }
@@ -51,7 +48,6 @@ DJCRMX2.Deck.prototype.wheelPress = function (value) {
          var alpha = 1.0 / 8;
          var beta = alpha / 32;
          engine.scratchEnable(this.number, 250, 50, alpha, beta);
-         DJCRMX2.scratching[this.number] = true; //[DEP]
     } else {
         // The wheel touch sensor can be overly sensitive, so don't release scratch mode right away.
         // Depending on how fast the platter was moving, lengthen the time we'll wait.
@@ -88,6 +84,28 @@ DJCRMX2.Deck.prototype.finishWheelPress = function() {
     }
 };
 
+
+/* [ Function wheelTurn ]
+ * Pays attention to the current deck, checks scratching, affects the
+ * song accordingly.
+ */
+DJCRMX2.Deck.prototype.wheelTurn = function (value) {
+    var newValue = 0;
+    // Spinning backwards = 127 or less (less meaning faster)
+    // Spinning forwards  = 1 or more (more meaning faster)
+    if (value - 64 > 0) {
+        newValue = value - 128;
+    } else {
+        newValue = value;
+    }
+    
+    if (engine.isScratching(this.number)) {
+        engine.scratchTick(1,newValue);
+    } else {
+        engine.setValue(this.group, "jog", newValue);
+    }   
+}
+
 /*  [ Function wheelPress ]
  * Detects whether a jog wheel is pressed or not and sets a specific
  * variable on and off accordingly.
@@ -110,27 +128,15 @@ DJCRMX2.wheelPress = function (channel, control, value, status, group) {
  * song accordingly.
  */
 DJCRMX2.wheelTurn = function (channel, control, value, status, group) {
-    var newValue = 0;
-    // Spinning backwards = 127 or less (less meaning faster)
-    // Spinning forwards  = 1 or more (more meaning faster)
-    if (value - 64 > 0) {
-        newValue = value - 128;
-    } else {
-        newValue = value;
-    }
-    //if (!engine.isScratching(DJCRMX2.currentDeck)) // [FUT]
+    var deck = 0;     
     if (group == "[Channel1]") {
-        if (DJCRMX2.scratching[1] == true) {
-            engine.scratchTick(1,newValue);
-            return;
-        }
-    } else if (group == "[Channel2]") {
-        if (DJCRMX2.scratching[2] == true) {
-            engine.scratchTick(2,newValue);
-            return;
-        }
+        deck = 1;
+    } else  if (group == "[Channel2]") {
+        deck = 2;
+    } else {
+        return; 
     }
-    engine.setValue(group, "jog", newValue);
+    DJCRMX2.decks[deck].wheelTurn(value);
 }
 
 DJCRMX2.micSwitch = function (channel, control, value, status)
@@ -148,8 +154,6 @@ DJCRMX2.micSwitch = function (channel, control, value, status)
  * Sets variables down for shutoff.
  */
 DJCRMX2.shutdown = function (id) {
-    DJCRMX2.scratching[1] = false;
-    DJCRMX2.scratching[2] = false;
     engine.setValue("[Microphone]", "enabled", 0);
     engine.setValue("[Microphone]", "talkover", 0);
 }
