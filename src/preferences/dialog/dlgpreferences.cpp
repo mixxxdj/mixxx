@@ -21,6 +21,8 @@
 #include <QScrollArea>
 #include <QTabBar>
 #include <QTabWidget>
+#include <QMoveEvent>
+#include <QResizeEvent>
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
