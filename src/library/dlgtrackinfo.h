@@ -59,7 +59,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotReloadCoverArt();
 
   private:
-    void populateFields(TrackPointer pTrack);
+    void populateFields(const TrackInfoObject& track);
     void populateCues(TrackPointer pTrack);
     void saveTrack();
     void unloadTrack(bool save);
