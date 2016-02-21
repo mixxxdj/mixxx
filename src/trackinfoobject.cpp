@@ -35,12 +35,10 @@ inline bool compareAndSet(T* pField, const T& value) {
 } // anonymous namespace
 
 TrackInfoObject::TrackInfoObject(
-        const TrackPointer& pParentTrack,
         const QFileInfo& fileInfo,
         const SecurityTokenPointer& pToken,
         TrackId trackId)
-        : m_pParentTrack(pParentTrack),
-          m_fileInfo(fileInfo),
+        : m_fileInfo(fileInfo),
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
           m_bDeleteOnReferenceExpiration(false),
@@ -67,7 +65,6 @@ TrackPointer TrackInfoObject::newTemporary(
         const SecurityTokenPointer& pSecurityToken) {
     return TrackPointer(
             new TrackInfoObject(
-                    TrackPointer(),
                     fileInfo,
                     pSecurityToken,
                     TrackId()),
@@ -78,13 +75,9 @@ TrackPointer TrackInfoObject::newTemporary(
 TrackPointer TrackInfoObject::cloneTemporary(
         const TrackPointer& pTrack) {
     QMutexLocker lock(&pTrack->m_qMutex);
-    return TrackPointer(
-            new TrackInfoObject(
-                    pTrack,
-                    pTrack->m_fileInfo,
-                    pTrack->m_pSecurityToken,
-                    TrackId()),
-            &QObject::deleteLater);
+    return newTemporary(
+            pTrack->m_fileInfo,
+            pTrack->m_pSecurityToken);
 }
 
 //static
@@ -93,7 +86,6 @@ TrackPointer TrackInfoObject::newDummy(
         TrackId trackId) {
     return TrackPointer(
             new TrackInfoObject(
-                    TrackPointer(),
                     fileInfo,
                     SecurityTokenPointer(),
                     trackId),

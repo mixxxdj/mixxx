@@ -38,11 +38,17 @@ class TrackInfoObject : public QObject {
     // testing purposes. The resulting track will neither be stored
     // in the database nor will the metadata of the corresponding file
     // be updated.
+    // NOTE(uklotzde): Temporary track objects do not provide any guarantees
+    // regarding safe file access, i.e. tags might be written back into the
+    // file whenever the corresponding track is evicted from TrackCache!
     static TrackPointer newTemporary(
             const QFileInfo& fileInfo = QFileInfo(),
             const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
     // Creates a new temporary instance from another track that references
     // the same file.
+    // NOTE(uklotzde): Temporary track objects do not provide any guarantees
+    // regarding safe file access, i.e. tags might be written back into the
+    // file whenever the corresponding track is evicted from TrackCache!
     static TrackPointer cloneTemporary(
             const TrackPointer& pTrack);
     // Creates a dummy instance for testing purposes.
@@ -307,7 +313,6 @@ class TrackInfoObject : public QObject {
 
   private:
     TrackInfoObject(
-            const TrackPointer& pParentTrack,
             const QFileInfo& fileInfo,
             const SecurityTokenPointer& pToken,
             TrackId trackId);
@@ -324,14 +329,6 @@ class TrackInfoObject : public QObject {
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
     void setId(TrackId id);
-
-    // Stores a pointer to the original track for temporary instances that
-    // have been created by cloning another track with cloneTemporary().
-    // Ensures that the lifetime of cloned instances does not exceed the
-    // lifetime of their parent tracks. Especially important for parent
-    // tracks that are managed by TrackCache, because tags might be written
-    // back into the file when the track is evicted from the cache.
-    const TrackPointer m_pParentTrack;
 
     // The file
     const QFileInfo m_fileInfo;

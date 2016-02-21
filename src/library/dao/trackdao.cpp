@@ -1351,7 +1351,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
 
     // TODO(uklotzde): Resolve through TrackCache
     TrackPointer pTrack(
-            new TrackInfoObject(TrackPointer(), fileInfo, SecurityTokenPointer(), trackId),
+            new TrackInfoObject(fileInfo, SecurityTokenPointer(), trackId),
             TrackInfoObject::onTrackReferenceExpired);
 
     // TIO already stats the file to see if it exists, what its length is,
