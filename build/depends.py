@@ -412,12 +412,20 @@ class Ebur128Gpl(Dependence):
         build.env.Append(CPPPATH="#lib/ebu_r128")
 
 class Ebur128Mit(Dependence):
+    INTERNAL_PATH = '#lib/libebur128-1.1.0'
+    INTERNAL_LINK = False
+
+    def sources(self, build):
+        if self.INTERNAL_LINK:
+            return ['%s/ebur128/ebur128.c' % self.INTERNAL_PATH]
+
     def configure(self, build, conf, env=None):
         if env is None:
             env = build.env
         if not conf.CheckLib(['ebur128', 'libebur128']):
-            raise Exception(
-                "Could not find libebur128 or its development headers.")
+            self.INTERNAL_LINK = True;
+            env.Append(CPPPATH=['%s/ebur128' % self.INTERNAL_PATH])
+            #env.Append(CPPDEFINES='USE_SPEEX_RESAMPLER') # Required for unused EBUR128_MODE_TRUE_PEAK
 
 
 class SoundTouch(Dependence):
@@ -455,7 +463,7 @@ class SoundTouch(Dependence):
         if build.platform_is_linux:
             # Try using system lib
             if conf.CheckForPKG('soundtouch', '1.8.0'):
-                # No System Lib found
+                # System Lib found
                 build.env.ParseConfig('pkg-config soundtouch --silence-errors \
                                       --cflags --libs')
                 self.INTERNAL_LINK = False
