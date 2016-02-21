@@ -10,35 +10,34 @@
 var VCI102 = {};
 
 VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
+VCI102.fx12 = ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
+VCI102.fx34 = ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
+VCI102.fx = VCI102.fx12.concat(VCI102.fx34);
 
-VCI102.fxButton = [
-    ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"],
-    ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"]
+VCI102.fxButton = [VCI102.fx12, VCI102.fx12];
+
+VCI102.fxKnob = [
+    ["super1", "mix"],
+    ["super1", "mix"]
 ];
 
-VCI102.setFxButton = function(ch, value) {
+VCI102.shift = function(ch, midino, value, status, group) {
     var i, j, enabled;
-    if (value) {
-        VCI102.fxButton[ch] =
-            ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
-    } else {
-        VCI102.fxButton[ch] =
-            ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
-    }
+    ch = VCI102.deck.indexOf(group);  // override channel by group
+    VCI102.fxButton[ch] = value ? VCI102.fx34 : VCI102.fx12;
+    VCI102.fxKnob[ch].reverse();
     for (i = ch; i < 4; i += 2) {
         enabled = "group_" + VCI102.deck[i] + "_enable";
         for (j = 0; j < 2; j++) {
-            engine.trigger(VCI102.fxButton[ch % 2][j], enabled);
+            engine.trigger(VCI102.fxButton[ch][j], enabled);
         }
     }
 };
 
-VCI102.shiftL = function(ch, midino, value, status, group) {
-    VCI102.setFxButton(0, value);
-};
-
-VCI102.shiftR = function(ch, midino, value, status, group) {
-    VCI102.setFxButton(1, value);
+VCI102.super_mix = function(ch, midino, value, status, group) {
+    // if shift is pressed then "mix" else "super1" with soft takeover
+    engine.setValue(group, VCI102.fxKnob[ch % 2][0], value / 127);
+    engine.softTakeoverIgnoreNextValue(group, VCI102.fxKnob[ch % 2][1]);
 };
 
 VCI102.selectTimer = 0;
@@ -327,6 +326,8 @@ VCI102.init = function() {
         }
         engine.softTakeover(VCI102.deck[i], "rate", true);
         engine.softTakeover(VCI102.deck[i], "pitch", true);
+        engine.softTakeover(VCI102.fx[i], "super1", true);
+        engine.softTakeover(VCI102.fx[i], "mix", true);
     }
     for (i = 1; i <= 4; i++) {
         activate = "hotcue_" + i + "_activate";

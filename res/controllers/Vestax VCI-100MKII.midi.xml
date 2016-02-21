@@ -54,8 +54,8 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>VCI102.shiftL</key>
+        <group>[Channel1]</group>
+        <key>VCI102.shift</key>
         <status>0x94</status>
         <midino>0x24</midino>
         <options>
@@ -63,8 +63,8 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>VCI102.shiftR</key>
+        <group>[Channel2]</group>
+        <key>VCI102.shift</key>
         <status>0x94</status>
         <midino>0x34</midino>
         <options>
@@ -649,27 +649,39 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>mix</key>
+        <key>VCI102.super_mix</key>
         <status>0xB0</status>
         <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>mix</key>
+        <key>VCI102.super_mix</key>
         <status>0xB1</status>
         <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>mix</key>
+        <key>VCI102.super_mix</key>
         <status>0xB2</status>
         <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4]</group>
-        <key>mix</key>
+        <key>VCI102.super_mix</key>
         <status>0xB3</status>
         <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
       </control>
       <control>
         <group>[QuickEffectRack1_[Channel1]_Effect1]</group>
