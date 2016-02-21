@@ -35,7 +35,6 @@
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
-#include "library/scanner/libraryscanner.h"
 #include "controllers/controllermanager.h"
 #include "mixxxkeyboard.h"
 #include "mixer/playermanager.h"
@@ -98,7 +97,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pVCManager(nullptr),
 #endif
           m_pKeyboard(nullptr),
-          m_pLibraryScanner(nullptr),
           m_pLibrary(nullptr),
           m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
@@ -391,23 +389,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
             QStringList(SoundSourceProxy::getSupportedFileExtensions()).join(","));
 
-    // Scan the library directory. Initialize this after the skinloader has
+    // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see Bug #1047435
-    // TODO(rryan): Move LibraryScanner into Library.
-    m_pLibraryScanner = new LibraryScanner(this,
-                                           m_pLibrary->getTrackCollection(),
-                                           pConfig);
-    connect(m_pLibraryScanner, SIGNAL(scanStarted()),
-            this, SIGNAL(libraryScanStarted()));
-    connect(m_pLibraryScanner, SIGNAL(scanFinished()),
-            this, SIGNAL(libraryScanFinished()));
-
-    // Refresh the library models when the library (re)scan is finished.
-    connect(m_pLibraryScanner, SIGNAL(scanFinished()),
-            m_pLibrary, SLOT(slotRefreshLibraryModels()));
-
     if (rescan || hasChanged_MusicDir || m_pSettingsManager->shouldRescanLibrary()) {
-        m_pLibraryScanner->scan();
+        m_pLibrary->scan();
     }
 
     // Try open player device If that fails, the preference panel is opened.
@@ -483,10 +468,6 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting VinylControlManager";
     delete m_pVCManager;
 #endif
-
-    // LibraryScanner depends on Library
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryScanner";
-    delete m_pLibraryScanner;
 
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
@@ -859,15 +840,12 @@ void MixxxMainWindow::connectMenuBar() {
                 m_pLibrary, SLOT(slotCreateCrate()));
         connect(m_pMenuBar, SIGNAL(createPlaylist()),
                 m_pLibrary, SLOT(slotCreatePlaylist()));
-    }
-
-    if (m_pLibraryScanner) {
-        connect(m_pLibraryScanner, SIGNAL(scanStarted()),
+        connect(m_pLibrary, SIGNAL(scanStarted()),
                 m_pMenuBar, SLOT(onLibraryScanStarted()));
-        connect(m_pLibraryScanner, SIGNAL(scanFinished()),
+        connect(m_pLibrary, SIGNAL(scanFinished()),
                 m_pMenuBar, SLOT(onLibraryScanFinished()));
         connect(m_pMenuBar, SIGNAL(rescanLibrary()),
-                m_pLibraryScanner, SLOT(scan()));
+                m_pLibrary, SLOT(scan()));
     }
 
 }
@@ -1135,10 +1113,6 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     if (!confirmExit()) {
         event->ignore();
     }
-}
-
-void MixxxMainWindow::slotScanLibrary() {
-    m_pLibraryScanner->scan();
 }
 
 void MixxxMainWindow::slotToCenterOfPrimaryScreen() {
