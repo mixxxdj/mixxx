@@ -403,7 +403,7 @@ class ReplayGain(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
 
-class Ebu_r128(Dependence):
+class Ebur128Gpl(Dependence):
 
     def sources(self, build):
         return ["#lib/ebu_r128/ebu_r128_proc.cc"]
@@ -688,7 +688,7 @@ class MixxxCore(Feature):
                    "analyzer/analyzerqueue.cpp",
                    "analyzer/analyzerwaveform.cpp",
                    "analyzer/analyzergain.cpp",
-                   "analyzer/analyzerebur128.cpp",
+                   "analyzer/analyzerebur128gpl.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -1280,7 +1280,7 @@ class MixxxCore(Feature):
                 CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
-        return [SoundTouch, ReplayGain, Ebu_r128, PortAudio, PortMIDI, Qt, TestHeaders,
+        return [SoundTouch, ReplayGain, Ebur128Gpl, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
                 QtScriptByteArray, Reverb, FpClassify]

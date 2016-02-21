@@ -1,4 +1,4 @@
-#include <analyzer/analyzerebur128.h>
+#include <analyzer/analyzerebur128gpl.h>
 #include <QtDebug>
 #include <ebu_r128_proc.h>
 
@@ -9,7 +9,7 @@
 
 static const float kReplayGain2ReferenceLUFS = -18;
 
-AnalyzerEbur128::AnalyzerEbur128(UserSettingsPointer config)
+AnalyzerEbur128Gpl::AnalyzerEbur128Gpl(UserSettingsPointer config)
         : m_pConfig(config),
           m_initalized(false),
           m_iBufferSize(0) {
@@ -18,13 +18,13 @@ AnalyzerEbur128::AnalyzerEbur128(UserSettingsPointer config)
     m_pEbu128Proc = new Ebu_r128_proc();
 }
 
-AnalyzerEbur128::~AnalyzerEbur128() {
+AnalyzerEbur128Gpl::~AnalyzerEbur128Gpl() {
     delete [] m_pTempBuffer[0];
     delete [] m_pTempBuffer[1];
     delete m_pEbu128Proc;
 }
 
-bool AnalyzerEbur128::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerEbur128Gpl::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     if (loadStored(tio) || totalSamples == 0) {
         return false;
     }
@@ -35,7 +35,7 @@ bool AnalyzerEbur128::initialize(TrackPointer tio, int sampleRate, int totalSamp
     return true;
 }
 
-bool AnalyzerEbur128::loadStored(TrackPointer tio) const {
+bool AnalyzerEbur128Gpl::loadStored(TrackPointer tio) const {
     bool bAnalyserEnabled = (bool)m_pConfig->getValueString(
             ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
     if (/*tio->getReplayGain().hasRatio() ||*/ !bAnalyserEnabled) {
@@ -44,13 +44,13 @@ bool AnalyzerEbur128::loadStored(TrackPointer tio) const {
     return false;
 }
 
-void AnalyzerEbur128::cleanup(TrackPointer tio) {
+void AnalyzerEbur128Gpl::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
     m_pEbu128Proc->reset();
     m_initalized = false;
 }
 
-void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyzerEbur128Gpl::process(const CSAMPLE *pIn, const int iLen) {
     if (!m_initalized) {
         return;
     }
@@ -66,7 +66,7 @@ void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
     m_pEbu128Proc->process(halfLength, m_pTempBuffer);
 }
 
-void AnalyzerEbur128::finalize(TrackPointer tio) {
+void AnalyzerEbur128Gpl::finalize(TrackPointer tio) {
     if (!m_initalized) {
         return;
     }

@@ -1,15 +1,15 @@
-#ifndef ANALYZEREBUR128_H_
-#define ANALYZEREBUR128_H_
+#ifndef ANALYZEREBUR128GPL_H_
+#define ANALYZEREBUR128GPL_H_
 
 #include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
 
 class Ebu_r128_proc;
 
-class AnalyzerEbur128 : public Analyzer {
+class AnalyzerEbur128Gpl : public Analyzer {
   public:
-    AnalyzerEbur128(UserSettingsPointer config);
-    virtual ~AnalyzerEbur128();
+    AnalyzerEbur128Gpl(UserSettingsPointer config);
+    virtual ~AnalyzerEbur128Gpl();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool loadStored(TrackPointer tio) const override;
@@ -25,4 +25,4 @@ class AnalyzerEbur128 : public Analyzer {
     int m_iBufferSize;
 };
 
-#endif /* ANALYZEREBUR128_H_ */
+#endif /* ANALYZEREBUR128GPL_H_ */
