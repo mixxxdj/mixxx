@@ -33,7 +33,6 @@ class TrackInfoObject : public QObject {
 
   public:
     TrackInfoObject(const TrackInfoObject&) = delete;
-    TrackInfoObject(TrackInfoObject&&) = delete;
 
     // Creates a new empty temporary instance for fake tracks or for
     // testing purposes. The resulting track will neither be stored
