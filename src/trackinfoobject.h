@@ -42,11 +42,8 @@ class TrackInfoObject : public QObject {
             const QFileInfo& fileInfo = QFileInfo(),
             const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
     // Creates a new temporary instance from another track that references
-    // the same file. Please remember that the corresponding file might
-    // be modified after all references to the original track have been
-    // dropped. To be safe just keep the pointer to the original track
-    // for the lifetime of this temporary instance.
-    static TrackPointer newTemporaryForSameFile(
+    // the same file.
+    static TrackPointer cloneTemporary(
             const TrackPointer& pTrack);
     // Creates a dummy instance for testing purposes.
     static TrackPointer newDummy(
@@ -310,6 +307,7 @@ class TrackInfoObject : public QObject {
 
   private:
     TrackInfoObject(
+            const TrackPointer& pParentTrack,
             const QFileInfo& fileInfo,
             const SecurityTokenPointer& pToken,
             TrackId trackId);
@@ -326,6 +324,14 @@ class TrackInfoObject : public QObject {
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
     void setId(TrackId id);
+
+    // Stores a pointer to the original track for temporary instances that
+    // have been created by cloning another track with cloneTemporary().
+    // Ensures that the lifetime of cloned instances does not exceed the
+    // lifetime of their parent tracks. Especially important for parent
+    // tracks that are managed by TrackCache, because tags might be written
+    // back into the file when the track is evicted from the cache.
+    const TrackPointer m_pParentTrack;
 
     // The file
     const QFileInfo m_fileInfo;

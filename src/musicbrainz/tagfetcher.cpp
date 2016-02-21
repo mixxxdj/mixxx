@@ -114,7 +114,7 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
     QList<TrackPointer> tracksGuessed;
     foreach (const MusicBrainzClient::Result& result, results) {
         TrackPointer track(
-                TrackInfoObject::newTemporaryForSameFile(
+                TrackInfoObject::cloneTemporary(
                         originalTrack));
         track->setTitle(result.m_title);
         track->setArtist(result.m_artist);

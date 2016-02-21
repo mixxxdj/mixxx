@@ -1351,7 +1351,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
 
     // TODO(uklotzde): Resolve through TrackCache
     TrackPointer pTrack(
-            new TrackInfoObject(fileInfo, SecurityTokenPointer(), trackId),
+            new TrackInfoObject(TrackPointer(), fileInfo, SecurityTokenPointer(), trackId),
             TrackInfoObject::onTrackReferenceExpired);
 
     // TIO already stats the file to see if it exists, what its length is,
@@ -1379,7 +1379,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         // here, otherwise the track's metadata in the library
         // would be overwritten.
         const TrackPointer pTempTrack(
-                TrackInfoObject::newTemporaryForSameFile(pTrack));
+                TrackInfoObject::cloneTemporary(pTrack));
         SoundSourceProxy proxy(pTempTrack);
         // The metadata for the newly created track object has
         // not been parsed from the file, until we explicitly
