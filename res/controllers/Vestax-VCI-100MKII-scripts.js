@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2015-12-1
+// description: 2016-3-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -264,7 +264,7 @@ VCI102.shutdown = function() {
     }
 };
 
-VCI102.init = function() {
+VCI102.init = function(id, debug) {
     var i, j, k, activate, enabled, led;
     var LED = [
         [0x2C, 0x25, 0x27, 0x28],
@@ -312,7 +312,6 @@ VCI102.init = function() {
         };
     }
 
-    VCI102.shutdown();
     for (i = 0; i < 4; i++) {
         engine.connectControl(VCI102.deck[i], "loop_enabled", VCI102.slip);
         engine.connectControl(VCI102.deck[i], "pfl", headMix);
@@ -330,8 +329,7 @@ VCI102.init = function() {
         engine.softTakeover(VCI102.fx[i], "mix", true);
     }
     for (i = 1; i <= 4; i++) {
-        activate = "hotcue_" + i + "_activate";
-        makeButton(activate);
+        makeButton(activate = "hotcue_" + i + "_activate");
         makeButton("hotcue_" + i + "_clear");
         enabled = "hotcue_" + i + "_enabled";
         for (j = 0; j < 2; j++) {

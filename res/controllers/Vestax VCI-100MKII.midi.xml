@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2015-12-1</description>
+    <description>2016-3-1</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -72,8 +72,8 @@
         </options>
       </control>
       <control>
-        <group>[Playlist]</group>
-        <key>LoadSelectedIntoFirstStopped</key>
+        <group>[Master]</group>
+        <key>maximize_library</key>
         <status>0x94</status>
         <midino>0x36</midino>
       </control>
@@ -829,25 +829,25 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>beats_translate_match_alignment</key>
+        <key>beats_translate_earlier</key>
         <status>0x90</status>
         <midino>0x43</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>beats_translate_match_alignment</key>
+        <key>beats_translate_earlier</key>
         <status>0x91</status>
         <midino>0x43</midino>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>beats_translate_match_alignment</key>
+        <key>beats_translate_earlier</key>
         <status>0x92</status>
         <midino>0x43</midino>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>beats_translate_match_alignment</key>
+        <key>beats_translate_earlier</key>
         <status>0x93</status>
         <midino>0x43</midino>
       </control>
@@ -877,25 +877,25 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>beats_translate_earlier</key>
+        <key>beats_translate_later</key>
         <status>0x90</status>
         <midino>0x4A</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>beats_translate_earlier</key>
+        <key>beats_translate_later</key>
         <status>0x91</status>
         <midino>0x4A</midino>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>beats_translate_earlier</key>
+        <key>beats_translate_later</key>
         <status>0x92</status>
         <midino>0x4A</midino>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>beats_translate_earlier</key>
+        <key>beats_translate_later</key>
         <status>0x93</status>
         <midino>0x4A</midino>
       </control>
@@ -925,25 +925,25 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>beats_translate_later</key>
+        <key>beats_translate_match_alignment</key>
         <status>0x90</status>
         <midino>0x4B</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>beats_translate_later</key>
+        <key>beats_translate_match_alignment</key>
         <status>0x91</status>
         <midino>0x4B</midino>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>beats_translate_later</key>
+        <key>beats_translate_match_alignment</key>
         <status>0x92</status>
         <midino>0x4B</midino>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>beats_translate_later</key>
+        <key>beats_translate_match_alignment</key>
         <status>0x93</status>
         <midino>0x4B</midino>
       </control>
@@ -970,76 +970,76 @@
         <key>quantize</key>
         <status>0x93</status>
         <midino>0x24</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>waveform_zoom_down</key>
-        <status>0x90</status>
-        <midino>0x44</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>waveform_zoom_down</key>
-        <status>0x91</status>
-        <midino>0x44</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>waveform_zoom_down</key>
-        <status>0x92</status>
-        <midino>0x44</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>waveform_zoom_down</key>
-        <status>0x93</status>
-        <midino>0x44</midino>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>keylock</key>
-        <status>0x90</status>
-        <midino>0x2D</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>keylock</key>
-        <status>0x91</status>
-        <midino>0x2D</midino>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>keylock</key>
-        <status>0x92</status>
-        <midino>0x2D</midino>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>keylock</key>
-        <status>0x93</status>
-        <midino>0x2D</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>waveform_zoom_up</key>
+        <status>0x90</status>
+        <midino>0x44</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>waveform_zoom_up</key>
+        <status>0x91</status>
+        <midino>0x44</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>waveform_zoom_up</key>
+        <status>0x92</status>
+        <midino>0x44</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>waveform_zoom_up</key>
+        <status>0x93</status>
+        <midino>0x44</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>keylock</key>
+        <status>0x90</status>
+        <midino>0x2D</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>keylock</key>
+        <status>0x91</status>
+        <midino>0x2D</midino>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>keylock</key>
+        <status>0x92</status>
+        <midino>0x2D</midino>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>keylock</key>
+        <status>0x93</status>
+        <midino>0x2D</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>waveform_zoom_down</key>
         <status>0x90</status>
         <midino>0x4D</midino>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>waveform_zoom_up</key>
+        <key>waveform_zoom_down</key>
         <status>0x91</status>
         <midino>0x4D</midino>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>waveform_zoom_up</key>
+        <key>waveform_zoom_down</key>
         <status>0x92</status>
         <midino>0x4D</midino>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>waveform_zoom_up</key>
+        <key>waveform_zoom_down</key>
         <status>0x93</status>
         <midino>0x4D</midino>
       </control>
