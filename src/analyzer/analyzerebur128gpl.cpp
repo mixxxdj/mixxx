@@ -54,7 +54,7 @@ void AnalyzerEbur128Gpl::process(const CSAMPLE *pIn, const int iLen) {
     if (!m_initalized) {
         return;
     }
-    ScopedTimer t("AnalyserEbur128::process()");
+    ScopedTimer t("AnalyserEbur128Gpl::process()");
     int halfLength = static_cast<int>(iLen / 2);
     if (halfLength > m_iBufferSize) {
         delete [] m_pTempBuffer[0];
@@ -75,5 +75,5 @@ void AnalyzerEbur128Gpl::finalize(TrackPointer tio) {
     Mixxx::ReplayGain replayGain(tio->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGain2));
     tio->setReplayGain(replayGain);
-    qDebug() << "ReplayGain2 result is" << fReplayGain2 << "dB for" << tio->getLocation();
+    qDebug() << "ReplayGain2 (GPL) result is" << fReplayGain2 << "dB for" << tio->getLocation();
 }

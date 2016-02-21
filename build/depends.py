@@ -411,6 +411,14 @@ class Ebur128Gpl(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/ebu_r128")
 
+class Ebur128Mit(Dependence):
+    def configure(self, build, conf, env=None):
+        if env is None:
+            env = build.env
+        if not conf.CheckLib(['ebur128', 'libebur128']):
+            raise Exception(
+                "Could not find libebur128 or its development headers.")
+
 
 class SoundTouch(Dependence):
     SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-1.8.0'
@@ -689,6 +697,7 @@ class MixxxCore(Feature):
                    "analyzer/analyzerwaveform.cpp",
                    "analyzer/analyzergain.cpp",
                    "analyzer/analyzerebur128gpl.cpp",
+                   "analyzer/analyzerebur128mit.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -1280,7 +1289,7 @@ class MixxxCore(Feature):
                 CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
-        return [SoundTouch, ReplayGain, Ebur128Gpl, PortAudio, PortMIDI, Qt, TestHeaders,
+        return [SoundTouch, ReplayGain, Ebur128Gpl, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
                 QtScriptByteArray, Reverb, FpClassify]
