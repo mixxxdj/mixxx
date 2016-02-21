@@ -52,7 +52,8 @@ void AnalyzerEbur128Mit::process(const CSAMPLE *pIn, const int iLen) {
         return;
     }
     ScopedTimer t("AnalyserEbur128Mit::process()");
-    int e = ebur128_add_frames_float(m_pState, pIn, static_cast<size_t>(iLen));
+    size_t frames = iLen / 2;
+    int e = ebur128_add_frames_float(m_pState, pIn, frames);
     DEBUG_ASSERT(e == EBUR128_SUCCESS);
 }
 
@@ -61,9 +62,17 @@ void AnalyzerEbur128Mit::finalize(TrackPointer tio) {
         return;
     }
     double averageLufs;
-    if (ebur128_loudness_global(m_pState, &averageLufs) != EBUR128_SUCCESS) {
+    int e = ebur128_loudness_global(m_pState, &averageLufs);
+    if (e != EBUR128_SUCCESS) {
+        qDebug() << "AnalyzerEbur128Mit::finalize failed with" << e;
         return;
     }
+    if (averageLufs == -HUGE_VAL || averageLufs == 0.0) {
+        qDebug() << "AnalyzerEbur128Mit::finalize averageLufs invalid:"
+                 << averageLufs;
+        return;
+    }
+
     const float fReplayGain2 = kReplayGain2ReferenceLUFS - averageLufs;
     Mixxx::ReplayGain replayGain(tio->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGain2));
