@@ -26,7 +26,7 @@ class AnalyzerGain : public Analyzer {
 
   private:
     bool m_bStepControl;
-    UserSettingsPointer m_pConfigReplayGain;
+    UserSettingsPointer m_pConfig;
     CSAMPLE* m_pLeftTempBuffer;
     CSAMPLE* m_pRightTempBuffer;
     ReplayGain* m_pReplayGain;

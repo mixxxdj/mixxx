@@ -8,7 +8,7 @@
 #include "util/timer.h"
 
 AnalyzerGain::AnalyzerGain(UserSettingsPointer config) {
-    m_pConfigReplayGain = config;
+    m_pConfig = config;
     m_bStepControl = false;
     m_pLeftTempBuffer = NULL;
     m_pRightTempBuffer = NULL;
@@ -26,16 +26,24 @@ bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples
     if (loadStored(tio) || totalSamples == 0) {
         return false;
     }
+
     m_bStepControl = m_pReplayGain->initialise((long)sampleRate, 2);
     return true;
 }
 
 bool AnalyzerGain::loadStored(TrackPointer tio) const {
-    bool bAnalyzerEnabled = (bool)m_pConfigReplayGain->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
-    if (/*tio->getReplayGain().hasRatio() ||*/ !bAnalyzerEnabled) {
-        return true;
+    int version = m_pConfig->getValueString(
+            ConfigKey("[ReplayGain]", "ReplayGainVersion")).toInt();
+    bool analyzerEnabled = ((bool)m_pConfig->getValueString(
+            ConfigKey("[ReplayGain]", "ReplayGainAnalyserEnabled")).toInt()) &&
+            (version == 1);
+    bool reanalyse = m_pConfig->getValueString(
+            ConfigKey("[ReplayGain]", "ReplayGainReanalyse")).toInt();
+
+    if (analyzerEnabled && reanalyse) {
+        return false;
     }
-    return false;
+    return tio->getReplayGain().hasRatio();
 }
 
 void AnalyzerGain::cleanup(TrackPointer tio) {
