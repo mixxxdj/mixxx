@@ -53,7 +53,7 @@ void AnalyzerEbur128Mit::process(const CSAMPLE *pIn, const int iLen) {
     }
     ScopedTimer t("AnalyserEbur128Mit::process()");
     int e = ebur128_add_frames_float(m_pState, pIn, static_cast<size_t>(iLen));
-    DEBUG_ASSERT(e = EBUR128_SUCCESS);
+    DEBUG_ASSERT(e == EBUR128_SUCCESS);
 }
 
 void AnalyzerEbur128Mit::finalize(TrackPointer tio) {
