@@ -49,8 +49,17 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
-        m_pRecordingManager(pRecordingManager) {
+        m_pRecordingManager(pRecordingManager),
+        m_scanner(m_pTrackCollection, pConfig) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
+
+    connect(&m_scanner, SIGNAL(scanStarted()),
+            this, SIGNAL(scanStarted()));
+    connect(&m_scanner, SIGNAL(scanFinished()),
+            this, SIGNAL(scanFinished()));
+    // Refresh the library models when the library (re)scan is finished.
+    connect(&m_scanner, SIGNAL(scanFinished()),
+            this, SLOT(slotRefreshLibraryModels()));
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -65,11 +74,12 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     BrowseFeature* browseFeature = new BrowseFeature(
         this, pConfig, m_pTrackCollection, m_pRecordingManager);
     connect(browseFeature, SIGNAL(scanLibrary()),
-            parent, SLOT(slotScanLibrary()));
-    connect(parent, SIGNAL(libraryScanStarted()),
+            &m_scanner, SLOT(scan()));
+    connect(&m_scanner, SIGNAL(scanStarted()),
             browseFeature, SLOT(slotLibraryScanStarted()));
-    connect(parent, SIGNAL(libraryScanFinished()),
+    connect(&m_scanner, SIGNAL(scanFinished()),
             browseFeature, SLOT(slotLibraryScanFinished()));
+
     addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
