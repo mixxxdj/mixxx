@@ -176,7 +176,7 @@ VCI102.setLoopLength = function(ch, status, value) {
     midi.sendShortMsg(status, LED[ch][1], (value > 4 || value * 4 < 1) * 127);
 };
 
-VCI102.beatloop_exit = function(ch, midino, value, status, group) {
+VCI102.loop = function(ch, midino, value, status, group) {
     if (value) {
         if (engine.getValue(group, "loop_enabled")) {
             engine.setValue(group, "reloop_exit", 1);
@@ -186,9 +186,9 @@ VCI102.beatloop_exit = function(ch, midino, value, status, group) {
     }
 };
 
-VCI102.reloop_out = function(ch, midino, value, status, group) {
+VCI102.reloop = function(ch, midino, value, status, group) {
     if (engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "loop_out", value);
+        engine.setValue(group, "loop_out", value / 127);
     } else {
         engine.setValue(group, "reloop_exit", 1);
     }
@@ -208,6 +208,31 @@ VCI102.loop_double = function(ch, midino, value, status, group) {
     } else if (value) {
         VCI102.setLoopLength(ch, status, VCI102.loopLength[ch] * 2);
     }
+};
+
+VCI102.move = function(ch, group, dir) {
+    if (dir) {
+        if (engine.getValue(group, "loop_enabled")) {
+            // move the loop by the current length
+            engine.setValue(
+                group, "loop_move", dir * (
+                    engine.getValue(group, "loop_end_position")
+                        - engine.getValue(group, "loop_start_position"))
+                    / engine.getValue(group, "track_samplerate")
+                    * engine.getValue(group, "file_bpm") / 120);
+        } else {
+            // jump by the default length
+            engine.setValue(group, "beatjump", dir * VCI102.loopLength[ch]);
+        }
+    }
+};
+
+VCI102.move_backward = function(ch, midino, value, status, group) {
+    VCI102.move(ch, group, value / -127);
+};
+
+VCI102.move_forward = function(ch, midino, value, status, group) {
+    VCI102.move(ch, group, value / 127);
 };
 
 VCI102.Deck = ["[Channel1]", "[Channel2]"];
