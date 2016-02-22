@@ -38,11 +38,13 @@ bool AnalyzerEbur128Gpl::initialize(TrackPointer tio, int sampleRate, int totalS
 bool AnalyzerEbur128Gpl::loadStored(TrackPointer tio) const {
     int version = m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainVersion")).toInt();
+    // WARNING: Do not fix the "analyser" spelling here since user config files
+    // contain these strings.
     bool analyzerEnabled = ((bool)m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainAnalyserEnabled")).toInt()) &&
             (version == 2);
     bool reanalyse = m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainReanalyse")).toInt();
+            ConfigKey("[ReplayGain]", "ReplayGainReanalyze")).toInt();
 
     if (analyzerEnabled && reanalyse) {
         return false;

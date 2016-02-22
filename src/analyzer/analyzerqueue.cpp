@@ -443,7 +443,7 @@ AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
 
     ret->addAnalyzer(new AnalyzerWaveform(pConfig));
     ret->addAnalyzer(new AnalyzerGain(pConfig));
-    ret->addAnalyzer(new AnalyzerEbur128Gpl(pConfig));
+    ret->addAnalyzer(new AnalyzerEbur128Mit(pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));
@@ -460,7 +460,7 @@ AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
     ret->addAnalyzer(new AnalyzerGain(pConfig));
-    ret->addAnalyzer(new AnalyzerEbur128Gpl(pConfig));
+    ret->addAnalyzer(new AnalyzerEbur128Mit(pConfig));
 #ifdef __VAMP__
     VampAnalyzer::initializePluginPaths();
     ret->addAnalyzer(new AnalyzerBeats(pConfig));

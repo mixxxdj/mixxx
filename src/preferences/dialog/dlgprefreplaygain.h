@@ -20,7 +20,8 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     void slotUpdateReplayGainBoost();
     void slotUpdateDefaultBoost();
     void slotSetRGEnabled();
-    void slotSetRGAnalyzerEnabled();
+    void slotSetRGAnalyzerChanged();
+    void slotSetReanalyze();
 
     void slotApply();
     void slotUpdate();
@@ -35,11 +36,13 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     void setLabelCurrentReplayGainBoost(int value);
 
     // Pointer to config object
-    UserSettingsPointer config;
+    UserSettingsPointer m_pConfig;
 
     ControlObjectSlave m_replayGainBoost;
     ControlObjectSlave m_defaultBoost;
     ControlObjectSlave m_enabled;
+
+    QButtonGroup m_analysisButtonGroup;
 };
 
 #endif /* DLGPREFREPLAYGAIN_H */

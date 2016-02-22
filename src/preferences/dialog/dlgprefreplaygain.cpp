@@ -10,17 +10,20 @@ static const int kReplayGainReferenceLUFS = -18;
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, UserSettingsPointer  _config)
         : DlgPreferencePage(parent),
-          config(_config),
+          m_pConfig(_config),
           m_replayGainBoost(kConfigKey, "ReplayGainBoost"),
           m_defaultBoost(kConfigKey, "DefaultBoost"),
           m_enabled(kConfigKey, "ReplayGainEnabled") {
     setupUi(this);
 
-    //Connections
+    m_analysisButtonGroup.addButton(radioButtonRG1);
+    m_analysisButtonGroup.addButton(radioButtonRG2);
+    m_analysisButtonGroup.addButton(radioButtonDisable);
+
     connect(EnableGain, SIGNAL(stateChanged(int)),
             this, SLOT(slotSetRGEnabled()));
-    connect(EnableAnalyzer, SIGNAL(stateChanged(int)),
-            this, SLOT(slotSetRGAnalyzerEnabled()));
+    connect(&m_analysisButtonGroup, SIGNAL(buttonClicked(int)),
+            this, SLOT(slotSetRGAnalyzerChanged()));
     connect(SliderReplayGainBoost, SIGNAL(valueChanged(int)),
             this, SLOT(slotUpdateReplayGainBoost()));
     connect(SliderReplayGainBoost, SIGNAL(sliderReleased()),
@@ -29,6 +32,8 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, UserSettingsPointer  _con
             this, SLOT(slotUpdateDefaultBoost()));
     connect(SliderDefaultBoost, SIGNAL(sliderReleased()),
             this, SLOT(slotApply()));
+    connect(checkBoxReanalyze, SIGNAL(stateChanged(int)),
+            this, SLOT(slotSetReanalyze()));
 
     loadSettings();
 }
@@ -37,27 +42,43 @@ DlgPrefReplayGain::~DlgPrefReplayGain() {
 }
 
 void DlgPrefReplayGain::loadSettings() {
-    int iReplayGainBoost = config->getValueString(
+    int iReplayGainBoost = m_pConfig->getValueString(
             ConfigKey(kConfigKey, "InitialReplayGainBoost"), "0").toInt();
     SliderReplayGainBoost->setValue(iReplayGainBoost);
     setLabelCurrentReplayGainBoost(iReplayGainBoost);
 
 
-    int iDefaultBoost = config->getValueString(
+    int iDefaultBoost = m_pConfig->getValueString(
             ConfigKey(kConfigKey, "InitialDefaultBoost"), "-6").toInt();
     SliderDefaultBoost->setValue(iDefaultBoost);
     LabelCurrentDefaultBoost->setText(
             QString("%1 dB").arg(iDefaultBoost));
 
-    bool gainEnabled = config->getValueString(
+    bool gainEnabled = m_pConfig->getValueString(
             ConfigKey(kConfigKey, "ReplayGainEnabled"), "1").toInt() == 1;
     EnableGain->setChecked(gainEnabled);
 
     // WARNING: Do not fix the "analyser" spelling here since user config files
     // contain these strings.
-    bool analyzerEnabled = config->getValueString(
+    bool analyzerEnabled = m_pConfig->getValueString(
             ConfigKey(kConfigKey, "ReplayGainAnalyserEnabled"), "1").toInt();
-    EnableAnalyzer->setChecked(analyzerEnabled);
+
+    int version = m_pConfig->getValueString(
+            ConfigKey("[ReplayGain]", "ReplayGainVersion")).toInt();
+
+    if (!analyzerEnabled) {
+        radioButtonDisable->setChecked(true);
+    } else if (version == 1) {
+        radioButtonRG1->setChecked(true);
+    } else {
+        radioButtonRG2->setChecked(true);
+    }
+
+    checkBoxReanalyze->setEnabled(analyzerEnabled);
+
+    bool reanalyse = m_pConfig->getValueString(
+            ConfigKey("[ReplayGain]", "ReplayGainReanalyze")).toInt();
+    checkBoxReanalyze->setChecked(reanalyse);
 
     slotUpdate();
     slotUpdateReplayGainBoost();
@@ -68,13 +89,15 @@ void DlgPrefReplayGain::slotResetToDefaults() {
     EnableGain->setChecked(true);
     // Turn ReplayGain Analyzer on by default as it does not give appreciable
     // delay on recent hardware (<5 years old).
-    EnableAnalyzer->setChecked(true);
+    radioButtonRG2->setChecked(true);
+    checkBoxReanalyze->setChecked(false);
+    checkBoxReanalyze->setEnabled(true);
     SliderReplayGainBoost->setValue(0);
     setLabelCurrentReplayGainBoost(0);
     SliderDefaultBoost->setValue(-6);
     LabelCurrentDefaultBoost->setText("-6 dB");
 
-    int iDefaultBoost = config->getValueString(
+    int iDefaultBoost = m_pConfig->getValueString(
             ConfigKey(kConfigKey, "InitialDefaultBoost"), "-6").toInt();
     SliderDefaultBoost->setValue(iDefaultBoost);
     LabelCurrentDefaultBoost->setText(
@@ -87,26 +110,32 @@ void DlgPrefReplayGain::slotResetToDefaults() {
 
 void DlgPrefReplayGain::slotSetRGEnabled() {
     if (EnableGain->isChecked()) {
-        config->set(ConfigKey(kConfigKey,"ReplayGainEnabled"), ConfigValue(1));
+        m_pConfig->set(ConfigKey(kConfigKey,"ReplayGainEnabled"), ConfigValue(1));
     } else {
-        config->set(ConfigKey(kConfigKey,"ReplayGainEnabled"), ConfigValue(0));
+        m_pConfig->set(ConfigKey(kConfigKey,"ReplayGainEnabled"), ConfigValue(0));
     }
     slotUpdate();
     slotApply();
 }
 
-void DlgPrefReplayGain::slotSetRGAnalyzerEnabled() {
+void DlgPrefReplayGain::slotSetRGAnalyzerChanged() {
+    bool rg1 = radioButtonRG1->isChecked();
+    bool disabled = radioButtonDisable->isChecked();
+
     // WARNING: Do not fix the "analyser" spelling here since user config files
     // contain these strings.
-    int enabled = EnableAnalyzer->isChecked() ? 1 : 0;
-    config->set(ConfigKey(kConfigKey,"ReplayGainAnalyserEnabled"),
-                ConfigValue(enabled));
+    m_pConfig->set(ConfigKey(kConfigKey,"ReplayGainAnalyserEnabled"),
+                ConfigValue(!disabled));
+    checkBoxReanalyze->setEnabled(!disabled);
+    m_pConfig->set(ConfigKey(kConfigKey,"ReplayGainVersion"),
+                ConfigValue(rg1 ? 1 : 2));
+
     slotApply();
 }
 
 void DlgPrefReplayGain::slotUpdateReplayGainBoost() {
     int value = SliderReplayGainBoost->value();
-    config->set(ConfigKey(kConfigKey, "InitialReplayGainBoost"),
+    m_pConfig->set(ConfigKey(kConfigKey, "InitialReplayGainBoost"),
                 ConfigValue(value));
     setLabelCurrentReplayGainBoost(value);
     slotApply();
@@ -120,7 +149,7 @@ void DlgPrefReplayGain::setLabelCurrentReplayGainBoost(int value) {
 
 void DlgPrefReplayGain::slotUpdateDefaultBoost() {
     int value = SliderDefaultBoost->value();
-    config->set(ConfigKey(kConfigKey, "InitialDefaultBoost"),
+    m_pConfig->set(ConfigKey(kConfigKey, "InitialDefaultBoost"),
                 ConfigValue(value));
     LabelCurrentDefaultBoost->setText(
             QString("%1 dB").arg(value));
@@ -128,7 +157,7 @@ void DlgPrefReplayGain::slotUpdateDefaultBoost() {
 }
 
 void DlgPrefReplayGain::slotUpdate() {
-    if (config->getValueString(
+    if (m_pConfig->getValueString(
             ConfigKey(kConfigKey,"ReplayGainEnabled")).toInt() == 1) {
         SliderReplayGainBoost->setEnabled(true);
         SliderDefaultBoost->setEnabled(true);
@@ -145,3 +174,11 @@ void DlgPrefReplayGain::slotApply() {
     m_defaultBoost.set(db2ratio(defaultBoostDb));
     m_enabled.set(EnableGain->isChecked() ? 1.0 : 0.0);
 }
+
+void DlgPrefReplayGain::slotSetReanalyze() {
+    bool checked = checkBoxReanalyze->isChecked();
+    m_pConfig->set(ConfigKey(kConfigKey,"ReplayGainReanalyze"),
+                ConfigValue(checked));
+    slotApply();
+}
+

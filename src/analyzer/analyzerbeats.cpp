@@ -232,7 +232,7 @@ void AnalyzerBeats::finalize(TrackPointer tio) {
     // If the track received the beat lock while we were analyzing it then we
     // abort setting it.
     if (tio->isBpmLocked()) {
-        qDebug() << "Track was BPM-locked as we were analysing it. Aborting analysis.";
+        qDebug() << "Track was BPM-locked as we were analyzing it. Aborting analysis.";
         return;
     }
 

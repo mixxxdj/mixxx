@@ -34,16 +34,21 @@ bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples
 bool AnalyzerGain::loadStored(TrackPointer tio) const {
     int version = m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainVersion")).toInt();
+    // WARNING: Do not fix the "analyser" spelling here since user config files
+    // contain these strings.
     bool analyzerEnabled = ((bool)m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainAnalyserEnabled")).toInt()) &&
             (version == 1);
     bool reanalyse = m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainReanalyse")).toInt();
+            ConfigKey("[ReplayGain]", "ReplayGainReanalyze")).toInt();
 
-    if (analyzerEnabled && reanalyse) {
-        return false;
+    if (analyzerEnabled) {
+        if (reanalyse) {
+            return false;
+        }
+        return tio->getReplayGain().hasRatio();
     }
-    return tio->getReplayGain().hasRatio();
+    return true;
 }
 
 void AnalyzerGain::cleanup(TrackPointer tio) {
