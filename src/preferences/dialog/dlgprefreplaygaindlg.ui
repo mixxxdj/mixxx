@@ -227,16 +227,16 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <widget class="QRadioButton" name="radioButtonRG1">
+       <widget class="QRadioButton" name="radioButtonRG2">
         <property name="text">
-         <string>ReplayGain 1.0</string>
+         <string>ReplayGain 2.0 (EBU R 128)</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioButtonRG2">
+       <widget class="QRadioButton" name="radioButtonRG1">
         <property name="text">
-         <string>ReplayGain 2.0 (EBU R 128)</string>
+         <string>ReplayGain 1.0</string>
         </property>
        </widget>
       </item>
