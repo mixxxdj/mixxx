@@ -32,10 +32,22 @@ class TrackInfoObject : public QObject {
     Q_OBJECT
 
   public:
-    // Initialize track with a QFileInfo class
-    explicit TrackInfoObject(
+    TrackInfoObject(const TrackInfoObject&) = delete;
+
+    // Creates a new empty temporary instance for fake tracks or for
+    // testing purposes. The resulting track will neither be stored
+    // in the database nor will the metadata of the corresponding file
+    // be updated.
+    // NOTE(uklotzde): Temporary track objects do not provide any guarantees
+    // regarding safe file access, i.e. tags might be written back into the
+    // file whenever the corresponding track is evicted from TrackCache!
+    static TrackPointer newTemporary(
             const QFileInfo& fileInfo = QFileInfo(),
-            SecurityTokenPointer pToken = SecurityTokenPointer());
+            const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
+    // Creates a dummy instance for testing purposes.
+    static TrackPointer newDummy(
+            const QFileInfo& fileInfo,
+            TrackId trackId);
 
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
@@ -293,6 +305,10 @@ class TrackInfoObject : public QObject {
     void slotBeatsUpdated();
 
   private:
+    TrackInfoObject(
+            const QFileInfo& fileInfo,
+            const SecurityTokenPointer& pSecurityToken,
+            TrackId trackId);
 
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
@@ -394,7 +410,6 @@ class TrackInfoObject : public QObject {
     CoverArt m_coverArt;
 
     friend class TrackDAO;
-    friend class AutoDJProcessorTest;
 };
 
 #endif // TRACKINFOOBJECT_H

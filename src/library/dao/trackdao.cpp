@@ -684,7 +684,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
 
 TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove) {
     // TODO(uklotzde): Resolve TrackInfoObject through TrackCache
-    TrackPointer pTrack(new TrackInfoObject(fileInfo));
+    TrackPointer pTrack(TrackInfoObject::newTemporary(fileInfo));
 
     // Check that track is a supported extension.
     // TODO(uklotzde): The following check can be skipped if
@@ -1351,9 +1351,8 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
 
     // TODO(uklotzde): Resolve through TrackCache
     TrackPointer pTrack(
-            new TrackInfoObject(fileInfo),
+            new TrackInfoObject(fileInfo, SecurityTokenPointer(), trackId),
             TrackInfoObject::onTrackReferenceExpired);
-    pTrack->setId(trackId);
 
     // TIO already stats the file to see if it exists, what its length is,
     // etc. So don't bother setting it.
@@ -1380,7 +1379,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         // here, otherwise the track's metadata in the library
         // would be overwritten.
         const TrackPointer pTempTrack(
-                new TrackInfoObject(
+                TrackInfoObject::newTemporary(
                         pTrack->getFileInfo(),
                         pTrack->getSecurityToken()));
         SoundSourceProxy proxy(pTempTrack);
