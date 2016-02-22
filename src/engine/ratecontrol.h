@@ -47,7 +47,7 @@ public:
     double calculateSpeed(double baserate, double speed, bool paused,
                          int iSamplesPerBuffer, bool* pReportScratching,
                          bool* pReportReverse);
-    double getRawRate() const;
+    double calcRateRatio() const;
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);

@@ -6,6 +6,8 @@
 #include <QByteArray>
 #include <QSharedPointer>
 
+#include "util/memory.h"
+
 class Beats;
 typedef QSharedPointer<Beats> BeatsPointer;
 
@@ -37,7 +39,7 @@ class Beats {
     virtual Beats::CapabilitiesFlags getCapabilities() const = 0;
 
     // Serialization
-    virtual QByteArray* toByteArray() const = 0;
+    virtual QByteArray toByteArray() const = 0;
 
     // A string representing the version of the beat-processing code that
     // produced this Beats instance. Used by BeatsFactory for associating a
@@ -92,7 +94,7 @@ class Beats {
     // startPosition and endPosition. BeatIterator must be iterated while
     // holding a strong references to the Beats object to ensure that the Beats
     // object is not deleted. Caller takes ownership of the returned BeatIterator;
-    virtual BeatIterator* findBeats(double startSample, double stopSample) const = 0;
+    virtual std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const = 0;
 
     // Return whether or not a sample lies between startPosition and endPosition
     virtual bool hasBeatInRange(double startSample, double stopSample) const = 0;

@@ -18,6 +18,8 @@
 #ifndef ENGINEDECK_H
 #define ENGINEDECK_H
 
+#include <QScopedPointer>
+
 #include "preferences/usersettings.h"
 #include "controlobjectslave.h"
 #include "controlpushbutton.h"
@@ -74,6 +76,10 @@ class EngineDeck : public EngineChannel, public AudioDestination {
   public slots:
     void slotPassingToggle(double v);
 
+  private slots:
+    // Reject all change requests for input configured.
+    void slotInputConfiguredChangeRequest(double) {}
+
   private:
     UserSettingsPointer m_pConfig;
     EngineBuffer* m_pBuffer;
@@ -83,6 +89,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     ControlObjectSlave* m_pSampleRate;
 
     // Begin vinyl passthrough fields
+    QScopedPointer<ControlObject> m_pInputConfigured;
     ControlPushButton* m_pPassing;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_bPassthroughIsActive;

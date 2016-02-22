@@ -436,14 +436,11 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
     if (!m_bCrossfadeReady) {
         // Read buffer, as if there where no parameter change
         // (Must be called only once per callback)
-        CSAMPLE* fadeout = m_pScale->getScaled(iBufferSize);
-        SampleUtil::copy(m_pCrossfadeBuffer, fadeout, iBufferSize);
-
+        m_pScale->getScaled(m_pCrossfadeBuffer, iBufferSize);
         // Restore the original position that was lost due to getScaled() above
         m_pReadAheadManager->notifySeek(m_filepos_play);
-
         m_bCrossfadeReady = true;
-    }
+     }
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -978,17 +975,13 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
 
             // Perform scaling of Reader buffer into buffer.
-            CSAMPLE* output = m_pScale->getScaled(iBufferSize);
-            double samplesRead = m_pScale->getSamplesRead();
+            double samplesRead = m_pScale->getScaled(pOutput, iBufferSize);
 
             //qDebug() << "sourceSamples used " << iSourceSamples
             //         <<" samplesRead " << samplesRead
             //         << ", buffer pos " << iBufferStartSample
             //         << ", play " << filepos_play
             //         << " bufferlen " << iBufferSize;
-
-            // Copy scaled audio into pOutput
-            SampleUtil::copy(pOutput, output, iBufferSize);
 
             if (m_bScalerOverride) {
                 // If testing, we don't have a real log so we fake the position.

@@ -221,7 +221,10 @@ void DlgAutoDJ::updateSelectionInfo() {
     if (!indices.isEmpty()) {
         label.append(Time::formatSeconds(duration));
         label.append(QString(" (%1)").arg(indices.size()));
+        labelSelectionInfo->setText(label);
+        labelSelectionInfo->setEnabled(true);
+    } else {
+        labelSelectionInfo->setText("");
+        labelSelectionInfo->setEnabled(false);
     }
-
-    labelSelectionInfo->setText(label);
 }

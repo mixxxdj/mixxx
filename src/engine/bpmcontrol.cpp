@@ -212,8 +212,8 @@ void BpmControl::slotSetEngineBpm(double bpm) {
     double raterange = m_pRateRange->get();
 
     if (localbpm && ratedir && raterange) {
-        double newRate = bpm / localbpm;
-        m_pRateSlider->set((newRate - 1.0) / ratedir / raterange);
+        double newRateRatio = bpm / localbpm;
+        m_pRateSlider->set((newRateRatio - 1.0) / ratedir / raterange);
     }
 }
 
@@ -236,7 +236,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength;
-    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    double dRate = calcRateRatio();
     m_pFileBpm->set(averageBpm / dRate);
     slotAdjustRateSlider();
 }
@@ -732,7 +732,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 
 void BpmControl::slotAdjustRateSlider() {
     // Adjust playback bpm in response to a change in the rate slider.
-    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    double dRate = calcRateRatio();
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
@@ -894,4 +894,10 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;
     }
+}
+
+double BpmControl::calcRateRatio() const {
+    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
+            m_pRateSlider->get();
+    return rateRatio;
 }

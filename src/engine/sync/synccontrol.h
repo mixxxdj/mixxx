@@ -94,6 +94,7 @@ class SyncControl : public EngineControl, public Syncable {
     // should match against.
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
     void updateTargetBeatDistance();
+    double calcRateRatio();
 
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the

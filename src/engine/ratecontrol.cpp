@@ -208,12 +208,14 @@ void RateControl::setBpmControl(BpmControl* bpmcontrol) {
     m_pBpmControl = bpmcontrol;
 }
 
+//static
 void RateControl::setRateRamp(bool linearMode)
 {
     m_eRateRampMode = linearMode ?
             RateControl::RATERAMP_LINEAR : RateControl::RATERAMP_STEP;
 }
 
+//static
 void RateControl::setRateRampSensitivity(int sense)
 {
     // Reverse the actual sensitivity value passed.
@@ -228,18 +230,22 @@ void RateControl::setRateRampSensitivity(int sense)
     }
 }
 
+//static
 void RateControl::setTemp(double v) {
     m_dTemp = v;
 }
 
+//static
 void RateControl::setTempSmall(double v) {
     m_dTempSmall = v;
 }
 
+//static
 void RateControl::setPerm(double v) {
     m_dPerm = v;
 }
 
+//static
 void RateControl::setPermSmall(double v) {
     m_dPermSmall = v;
 }
@@ -275,9 +281,10 @@ void RateControl::slotControlFastBack(double v)
 void RateControl::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
-    if (buttonRatePermDown->get())
+    if (buttonRatePermDown->get()) {
         m_pRateSlider->set(m_pRateSlider->get() -
-                           m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+                           m_pRateDir->get() * m_dPerm / (100 * m_pRateRange->get()));
+    }
 }
 
 void RateControl::slotControlRatePermDownSmall(double)
@@ -377,10 +384,10 @@ void RateControl::trackUnloaded(TrackPointer pTrack) {
     m_pTrack.clear();
 }
 
-double RateControl::getRawRate() const {
-    return m_pRateSlider->get() *
-        m_pRateRange->get() *
-        m_pRateDir->get();
+double RateControl::calcRateRatio() const {
+    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
+            m_pRateSlider->get();
+    return rateRatio;
 }
 
 double RateControl::getWheelFactor() const {
@@ -622,8 +629,9 @@ double RateControl::getTempRate() {
 void RateControl::setRateTemp(double v)
 {
     // Do not go backwards
-    if ((1. + getRawRate() + v) < 0)
+    if ((calcRateRatio() + v) < 0) {
         return;
+    }
 
     m_dRateTemp = v;
     if (m_dRateTemp < -1.0) {

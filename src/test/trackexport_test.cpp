@@ -88,9 +88,9 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
-    m_answerer->setAnswer(m_exportDir.filePath("cover-test.ogg"),
+    m_answerer->setAnswer(QFileInfo(file1).canonicalFilePath(),
                            TrackExportWorker::OverwriteAnswer::OVERWRITE);
-    m_answerer->setAnswer(m_exportDir.filePath("cover-test.m4a"),
+    m_answerer->setAnswer(QFileInfo(file2).canonicalFilePath(),
                            TrackExportWorker::OverwriteAnswer::SKIP);
 
     worker.run();
@@ -132,7 +132,7 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
-    m_answerer->setAnswer(m_exportDir.filePath("cover-test.m4a"),
+    m_answerer->setAnswer(QFileInfo(file2).canonicalFilePath(),
                            TrackExportWorker::OverwriteAnswer::OVERWRITE_ALL);
 
     worker.run();
@@ -173,7 +173,7 @@ TEST_F(TrackExporterTest, SkipAll) {
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
-    m_answerer->setAnswer(m_exportDir.filePath("cover-test.m4a"),
+    m_answerer->setAnswer(QFileInfo(file2).canonicalFilePath(),
                            TrackExportWorker::OverwriteAnswer::SKIP_ALL);
 
     worker.run();
@@ -212,7 +212,7 @@ TEST_F(TrackExporterTest, Cancel) {
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
-    m_answerer->setAnswer(m_exportDir.filePath("cover-test.m4a"),
+    m_answerer->setAnswer(QFileInfo(file2).canonicalFilePath(),
                            TrackExportWorker::OverwriteAnswer::CANCEL);
 
     worker.run();

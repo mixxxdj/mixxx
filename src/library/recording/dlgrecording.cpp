@@ -57,7 +57,8 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
 
     connect(pushButtonRecording, SIGNAL(toggled(bool)),
             this,  SLOT(toggleRecording(bool)));
-    label->setText(tr("Start recording here ..."));
+    label->setText("");
+    label->setEnabled(false);
 }
 
 DlgRecording::~DlgRecording() {
@@ -117,9 +118,11 @@ void DlgRecording::toggleRecording(bool toggle) {
 void DlgRecording::slotRecordingEnabled(bool isRecording) {
     if (isRecording) {
         pushButtonRecording->setText((tr("Stop Recording")));
+        label->setEnabled(true);
     } else {
         pushButtonRecording->setText((tr("Start Recording")));
-        label->setText("Start recording here ...");
+        label->setText("");
+        label->setEnabled(false);
     }
     //This will update the recorded track table view
     m_browseModel.setPath(m_recordingDir);

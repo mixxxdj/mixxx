@@ -4,6 +4,8 @@
 #ifndef ENGINEMICROPHONE_H
 #define ENGINEMICROPHONE_H
 
+#include <QScopedPointer>
+
 #include "controlobjectslave.h"
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
@@ -50,10 +52,14 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     bool isSolo();
     double getSoloDamping();
 
+  private slots:
+    // Reject all change requests for input configured.
+    void slotInputConfiguredChangeRequest(double) {}
+
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
-    ControlObject* m_pEnabled;
+    QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
     ControlObjectSlave* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;

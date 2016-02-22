@@ -9,6 +9,7 @@
 #include <QFileInfo>
 #include <QtAlgorithms>
 
+#include "soundsourceproxy.h"
 #include "preferences/usersettings.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"
@@ -23,6 +24,7 @@ class DirectoryDAOTest : public MixxxTest {
   protected:
     virtual void SetUp() {
         m_pTrackCollection = new TrackCollection(config());
+        m_supportedFileExt = "." % SoundSourceProxy::getSupportedFileExtensions().first();
     }
 
     virtual void TearDown() {
@@ -39,6 +41,7 @@ class DirectoryDAOTest : public MixxxTest {
     }
 
     TrackCollection* m_pTrackCollection;
+    QString m_supportedFileExt;
 };
 
 TEST_F(DirectoryDAOTest, addDirTest) {
@@ -141,14 +144,10 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
-    trackDAO.addTracksAdd(new TrackInfoObject(
-            testdir + "/a"), false);
-    trackDAO.addTracksAdd(new TrackInfoObject(
-            testdir + "/b"), false);
-    trackDAO.addTracksAdd(new TrackInfoObject(
-            test2 + "/c"), false);
-    trackDAO.addTracksAdd(new TrackInfoObject(
-            test2 + "/d"), false);
+    trackDAO.addTracksAddFile(testdir + "/a" + m_supportedFileExt, false);
+    trackDAO.addTracksAddFile(testdir + "/b" + m_supportedFileExt, false);
+    trackDAO.addTracksAddFile(test2 + "/c" + m_supportedFileExt, false);
+    trackDAO.addTracksAddFile(test2 + "/d" + m_supportedFileExt, false);
     trackDAO.addTracksFinish(false);
 
     QSet<TrackId> ids = directoryDao.relocateDirectory(testdir, testnew);
