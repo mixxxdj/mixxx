@@ -1379,7 +1379,9 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         // here, otherwise the track's metadata in the library
         // would be overwritten.
         const TrackPointer pTempTrack(
-                TrackInfoObject::cloneTemporary(pTrack));
+                TrackInfoObject::newTemporary(
+                        pTrack->getFileInfo(),
+                        pTrack->getSecurityToken()));
         SoundSourceProxy proxy(pTempTrack);
         // The metadata for the newly created track object has
         // not been parsed from the file, until we explicitly

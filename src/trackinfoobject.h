@@ -44,13 +44,6 @@ class TrackInfoObject : public QObject {
     static TrackPointer newTemporary(
             const QFileInfo& fileInfo = QFileInfo(),
             const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer());
-    // Creates a new temporary instance from another track that references
-    // the same file.
-    // NOTE(uklotzde): Temporary track objects do not provide any guarantees
-    // regarding safe file access, i.e. tags might be written back into the
-    // file whenever the corresponding track is evicted from TrackCache!
-    static TrackPointer cloneTemporary(
-            const TrackPointer& pTrack);
     // Creates a dummy instance for testing purposes.
     static TrackPointer newDummy(
             const QFileInfo& fileInfo,

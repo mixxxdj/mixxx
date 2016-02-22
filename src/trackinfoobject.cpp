@@ -72,15 +72,6 @@ TrackPointer TrackInfoObject::newTemporary(
 }
 
 //static
-TrackPointer TrackInfoObject::cloneTemporary(
-        const TrackPointer& pTrack) {
-    QMutexLocker lock(&pTrack->m_qMutex);
-    return newTemporary(
-            pTrack->m_fileInfo,
-            pTrack->m_pSecurityToken);
-}
-
-//static
 TrackPointer TrackInfoObject::newDummy(
         const QFileInfo& fileInfo,
         TrackId trackId) {
