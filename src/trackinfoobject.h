@@ -307,7 +307,7 @@ class TrackInfoObject : public QObject {
   private:
     TrackInfoObject(
             const QFileInfo& fileInfo,
-            const SecurityTokenPointer& pToken,
+            const SecurityTokenPointer& pSecurityToken,
             TrackId trackId);
 
     // Set whether the TIO is dirty or not and unlock before emitting

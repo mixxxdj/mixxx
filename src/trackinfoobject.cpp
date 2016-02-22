@@ -22,6 +22,16 @@
 
 namespace {
 
+SecurityTokenPointer openSecurityToken(
+        const QFileInfo& fileInfo,
+        const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer()) {
+    if (pSecurityToken.isNull()) {
+        return Sandbox::openSecurityToken(fileInfo, true);
+    } else {
+        return pSecurityToken;
+    }
+}
+
 template<typename T>
 inline bool compareAndSet(T* pField, const T& value) {
     if (*pField != value) {
@@ -36,11 +46,10 @@ inline bool compareAndSet(T* pField, const T& value) {
 
 TrackInfoObject::TrackInfoObject(
         const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pToken,
+        const SecurityTokenPointer& pSecurityToken,
         TrackId trackId)
         : m_fileInfo(fileInfo),
-          m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
-                  m_fileInfo, true) : pToken),
+          m_pSecurityToken(openSecurityToken(m_fileInfo, pSecurityToken)),
           m_bDeleteOnReferenceExpiration(false),
           m_qMutex(QMutex::Recursive),
           m_id(trackId) {
