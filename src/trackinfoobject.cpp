@@ -161,10 +161,12 @@ void TrackInfoObject::setTrackMetadata(
     }
 }
 
-void TrackInfoObject::getTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata, bool* pParsedFromFile) const {
+void TrackInfoObject::getTrackMetadata(
+        Mixxx::TrackMetadata* pTrackMetadata,
+        bool* pHeaderParsed) const {
     QMutexLocker lock(&m_qMutex);
     *pTrackMetadata = m_metadata;
-    *pParsedFromFile = m_bHeaderParsed;
+    *pHeaderParsed = m_bHeaderParsed;
 }
 
 QString TrackInfoObject::getLocation() const {
@@ -364,9 +366,9 @@ void TrackInfoObject::slotBeatsUpdated() {
     emit(beatsUpdated());
 }
 
-void TrackInfoObject::setHeaderParsed(bool parsedFromFile) {
+void TrackInfoObject::setHeaderParsed(bool headerParsed) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_bHeaderParsed, parsedFromFile)) {
+    if (compareAndSet(&m_bHeaderParsed, headerParsed)) {
         markDirtyAndUnlock(&lock);
     }
 }

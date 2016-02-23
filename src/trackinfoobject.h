@@ -138,8 +138,10 @@ class TrackInfoObject : public QObject {
     // Returns ReplayGain
     Mixxx::ReplayGain getReplayGain() const;
 
-    void setHeaderParsed(bool parsed = true);
+    // Indicates if the metadata has been parsed from file tags.
     bool isHeaderParsed() const;
+    // Only used by TrackDAO!
+    void setHeaderParsed(bool headerParsed);
 
     void setDateAdded(const QDateTime& dateAdded);
     QDateTime getDateAdded() const;
@@ -262,8 +264,15 @@ class TrackInfoObject : public QObject {
 
     // Set/get track trackMetadata all at once.
     // When setting metadata the cover art image is optional and might be NULL.
-    void setTrackMetadata(const Mixxx::TrackMetadata& trackMetadata, QImage *pCoverArt, bool parsedFromFile);
-    void getTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata, bool* pParsedFromFile) const;
+    // fileTimeStamp.isNull() indicates that the metadata has not
+    // been parsed from the file.
+    void setTrackMetadata(
+            const Mixxx::TrackMetadata& trackMetadata,
+            QImage *pCoverArt,
+            bool parsedFromFile);
+    void getTrackMetadata(
+            Mixxx::TrackMetadata* pTrackMetadata,
+            bool* pHeaderParsed) const;
 
     // Mark the track dirty if it isn't already.
     void markDirty();
@@ -316,7 +325,8 @@ class TrackInfoObject : public QObject {
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
     void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
 
-    // Set a unique identifier for the track. Only used by TrackDAO!
+    // Set a unique identifier for the track.
+    // Only used by TrackDAO!
     void setId(TrackId id);
 
     // The file
