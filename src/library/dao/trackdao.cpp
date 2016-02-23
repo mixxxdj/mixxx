@@ -475,7 +475,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":replaygain_peak", track.getReplayGain().getPeak());
         pTrackLibraryQuery->bindValue(":channels", track.getChannels());
 
-        pTrackLibraryQuery->bindValue(":header_parsed", track.getHeaderParsed() ? 1 : 0);
+        pTrackLibraryQuery->bindValue(":header_parsed", track.isHeaderParsed() ? 1 : 0);
 
         const PlayCounter playCounter(track.getPlayCounter());
         pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
@@ -703,7 +703,7 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
     // the track is already in the library. A refactoring is
     // needed to detect this before calling addTracksAddTrack().
     SoundSourceProxy(pTrack).loadTrackMetadata();
-    if (!pTrack->getHeaderParsed()) {
+    if (!pTrack->isHeaderParsed()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
@@ -1386,9 +1386,9 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         // The metadata for the newly created track object has
         // not been parsed from the file, until we explicitly
         // (re-)load it through the SoundSourceProxy.
-        DEBUG_ASSERT(!pTempTrack->getHeaderParsed());
+        DEBUG_ASSERT(!pTempTrack->isHeaderParsed());
         proxy.loadTrackMetadata();
-        if (pTempTrack->getHeaderParsed()) {
+        if (pTempTrack->isHeaderParsed()) {
             // Copy the track total from the temporary track object
             pTrack->setTrackTotal(pTempTrack->getTrackTotal());
             // Also set the track number if it is still empty due
@@ -1457,7 +1457,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // We could (re-)load the metadata here, but this would risk to
     // overwrite the metadata that is currently stored in the library.
     // Instead prefer to log an informational warning for the user.
-    if (!pTrack->getHeaderParsed()) {
+    if (!pTrack->isHeaderParsed()) {
         qWarning() << "Metadata of the track" << pTrack->getLocation()
                 << "has never been loaded from this file."
                 << "Please consider reloading it manually if you prefer"

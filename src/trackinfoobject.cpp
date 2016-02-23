@@ -371,7 +371,7 @@ void TrackInfoObject::setHeaderParsed(bool parsedFromFile) {
     }
 }
 
-bool TrackInfoObject::getHeaderParsed() const {
+bool TrackInfoObject::isHeaderParsed() const {
     QMutexLocker lock(&m_qMutex);
     return m_bHeaderParsed;
 }

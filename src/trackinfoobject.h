@@ -139,7 +139,7 @@ class TrackInfoObject : public QObject {
     Mixxx::ReplayGain getReplayGain() const;
 
     void setHeaderParsed(bool parsed = true);
-    bool getHeaderParsed() const;
+    bool isHeaderParsed() const;
 
     void setDateAdded(const QDateTime& dateAdded);
     QDateTime getDateAdded() const;
