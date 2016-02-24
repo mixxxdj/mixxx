@@ -9,7 +9,7 @@
 
 AnalyzerGain::AnalyzerGain(UserSettingsPointer config) {
     m_pConfig = config;
-    m_bStepControl = false;
+    m_initalized = false;
     m_pLeftTempBuffer = NULL;
     m_pRightTempBuffer = NULL;
     m_iBufferSize = 0;
@@ -27,7 +27,7 @@ bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples
         return false;
     }
 
-    m_bStepControl = m_pReplayGain->initialise((long)sampleRate, 2);
+    m_initalized = m_pReplayGain->initialise((long)sampleRate, 2);
     return true;
 }
 
@@ -52,12 +52,12 @@ bool AnalyzerGain::loadStored(TrackPointer tio) const {
 }
 
 void AnalyzerGain::cleanup(TrackPointer tio) {
-    m_bStepControl = false;
+    m_initalized = false;
     Q_UNUSED(tio);
 }
 
 void AnalyzerGain::process(const CSAMPLE *pIn, const int iLen) {
-    if (!m_bStepControl) {
+    if (!m_initalized) {
         return;
     }
     ScopedTimer t("AnalyzerGain::process()");
@@ -72,7 +72,7 @@ void AnalyzerGain::process(const CSAMPLE *pIn, const int iLen) {
     SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer, m_pRightTempBuffer, pIn, halfLength);
     SampleUtil::applyGain(m_pLeftTempBuffer, 32767, halfLength);
     SampleUtil::applyGain(m_pRightTempBuffer, 32767, halfLength);
-    m_bStepControl = m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer, halfLength);
+    m_initalized = m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer, halfLength);
 }
 
 void AnalyzerGain::finalize(TrackPointer tio) {
@@ -81,19 +81,19 @@ void AnalyzerGain::finalize(TrackPointer tio) {
     // One may think to digg into replay_gain code and modify it so that
     // it directly sends results as relative peaks.
     // In that way there is no need to spend resources in calculating log10 or pow.
-    if(!m_bStepControl)
+    if(!m_initalized)
         return;
 
     float fReplayGainOutput = m_pReplayGain->end();
     if (fReplayGainOutput == GAIN_NOT_ENOUGH_SAMPLES) {
-        qDebug() << "ReplayGain analysis failed:" << fReplayGainOutput;
-        m_bStepControl = false;
+        qDebug() << "ReplayGain 1.0 analysis failed";
+        m_initalized = false;
         return;
     }
 
     Mixxx::ReplayGain replayGain(tio->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGainOutput));
     tio->setReplayGain(replayGain);
-    qDebug() << "ReplayGain1 result is" << fReplayGainOutput << "dB for" << tio->getLocation();
-    m_bStepControl=false;
+    qDebug() << "ReplayGain 1.0 result is" << fReplayGainOutput << "dB for" << tio->getLocation();
+    m_initalized = false;
 }

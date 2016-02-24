@@ -79,9 +79,10 @@ void AnalyzerEbur128Gpl::finalize(TrackPointer tio) {
         return;
     }
     const float averageLufs = m_pEbu128Proc->integrated();
+    cleanup(tio);
     const float fReplayGain2 = kReplayGain2ReferenceLUFS - averageLufs;
     Mixxx::ReplayGain replayGain(tio->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGain2));
     tio->setReplayGain(replayGain);
-    qDebug() << "ReplayGain2 (GPL) result is" << fReplayGain2 << "dB for" << tio->getLocation();
+    qDebug() << "ReplayGain 2.0 (GPL) result is" << fReplayGain2 << "dB for" << tio->getLocation();
 }

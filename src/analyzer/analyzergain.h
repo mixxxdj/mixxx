@@ -25,7 +25,7 @@ class AnalyzerGain : public Analyzer {
     void finalize(TrackPointer tio) override;
 
   private:
-    bool m_bStepControl;
+    bool m_initalized;
     UserSettingsPointer m_pConfig;
     CSAMPLE* m_pLeftTempBuffer;
     CSAMPLE* m_pRightTempBuffer;
