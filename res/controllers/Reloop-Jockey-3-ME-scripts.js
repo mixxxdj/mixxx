@@ -23,11 +23,11 @@ Jockey3ME.MixerDeck1 = 0;
 Jockey3ME.MixerDeck2 = 0;
 
 script.crossfaderCurve = function (value, min, max) {
-	var newValue = script.absoluteLin(value, 2, 250, min, max);
+	var newValue = script.absoluteLin(value, 2, 150, min, max);
 	var newValueThree = script.absoluteLin(value, 0.5, 0.999307, min, max);
 	if (engine.getValue("[Mixer Profile]", "xFaderMode")==1) {
 		// Constant Power
-		engine.setValue("[Mixer Profile]", "xFaderCalibration", script.absoluteLin(value, 0.5, newValueThree, min, max));
+		engine.setValue("[Mixer Profile]", "xFaderCalibration", script.absoluteLin(value, 0, newValueThree, min, max));
 	} else {
 		// Additive
 		engine.setValue("[Mixer Profile]", "xFaderCurve", script.absoluteLin(value, 1, newValue, min, max));
@@ -253,13 +253,10 @@ Jockey3ME.effectSelect = function (channel, control, value, status, group) {
 		engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect" + fxSelectKnob + "]","effect_selector",(value-64));
 	} else if (fxSelectKnob == 1 && Jockey3ME.fxSelectKnobPushIterator[currentDeck - 1]) {
 		Jockey3ME.effectSelectParamLinkChose(currentDeck,value,control,status,fxSelectKnob);
-		print("FX Sel.1 Turned");
 	} else if (fxSelectKnob == 2 && Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 4]) {
 		Jockey3ME.effectSelectParamLinkChose(currentDeck,value,control,status,fxSelectKnob);
-		print("FX Sel.2 Turned");
 	} else if (fxSelectKnob == 3 && Jockey3ME.fxSelectKnobPushIterator[(currentDeck - 1) + 8]) {
 		Jockey3ME.effectSelectParamLinkChose(currentDeck,value,control,status,fxSelectKnob);
-		print("FX Sel.3 Turned");
 	}
 }
 
@@ -376,6 +373,7 @@ Jockey3ME.effectSelectPush = function (channel, control, value, status, group) {
 	}
 }
 
+// This is control by Jogwheel Pitch bend
 Jockey3ME.effectSuperKnob = function (channel, control, value, status, group) {
 	var newValue = (value-64);
 	var currentDeck = parseInt(group.substring(23,24));
@@ -419,14 +417,10 @@ Jockey3ME.loop_move = function (channel, control, value, status, group) {
 	if (status == 0xB0 && !Jockey3ME.loop_move_bool) {
 		engine.setValue(group,"loop_move",(newValue*Jockey3ME.loop_move_value));
 	} else if (status == 0xB0 && Jockey3ME.loop_move_bool) {
-		if (newValue > 0) {
-			if (Jockey3ME.loop_move_value < 64) {
-				Jockey3ME.loop_move_value *= 2;
-			}
-		} else {
-			if (Jockey3ME.loop_move_value > 0.03125) {
-				Jockey3ME.loop_move_value /= 2;
-			}
+		if (newValue > 0 && Jockey3ME.loop_move_value < 64) {
+			Jockey3ME.loop_move_value *= 2;
+		} else if (Jockey3ME.loop_move_value > 0.03125) {
+			Jockey3ME.loop_move_value /= 2;
 		}
 	} else {
 		if (value == 0x7F) {
@@ -452,9 +446,9 @@ Jockey3ME.MixerVol = function (channel, control, value, status, group) {
     currentDeck += 2;
   }
   if (control == 0x2D || control == 0x6C) {
-	  engine.setValue("[Channel" + currentDeck + "]","pregain",script.absoluteNonLin(value,0,1,4,0,127));
+	  engine.setValue("[Channel" + currentDeck + "]","pregain",script.absoluteLin(value,0,script.absoluteLin(value,0,4,0,127),0,127));
   } else {
-	  engine.setValue("[Channel" + currentDeck + "]","volume",script.absoluteNonLin(value,0,0.25,1,0,127));
+	  engine.setValue("[Channel" + currentDeck + "]","volume",script.absoluteLin(value,0,script.absoluteLin(value,0,1,0,127),0,127));
   }
 }
 
@@ -534,9 +528,10 @@ Jockey3ME.EQ = function (channel, control, value, status, group) {
     default:
       print("Error on EQ chosing");
   }
-	engine.setValue("[EqualizerRack1_[Channel" + currentDeck + "]_Effect1]","parameter" + eqKnob, script.absoluteNonLin(value,0,1,4,0,127));
+	engine.setValue("[EqualizerRack1_[Channel" + currentDeck + "]_Effect1]","parameter" + eqKnob, script.absoluteLin(value,0,script.absoluteLin(value,0,4,0,127),0,127));
 }
 
+// Jogwheel Search Mode
 Jockey3ME.trackSearch = function (channel, control, value, status, group) {
 	var newValue = (value-64);
 	if (newValue > 1 || newValue < -1) {
