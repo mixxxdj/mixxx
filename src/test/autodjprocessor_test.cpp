@@ -141,8 +141,8 @@ class AutoDJProcessorTest : public LibraryTest {
         return TrackId(trackId.toInt() + 1);
     }
     static TrackPointer newTestTrack(TrackId trackId) {
-        TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-        pTrack->setId(trackId);
+        TrackPointer pTrack(
+                TrackInfoObject::newDummy(kTrackLocationTest, trackId));
         SoundSourceProxy(pTrack).loadTrackMetadata();
         return pTrack;
     }
@@ -186,10 +186,6 @@ class AutoDJProcessorTest : public LibraryTest {
     }
 
     virtual ~AutoDJProcessorTest() {
-    }
-
-    void setTrackId(TrackPointer pTrack, TrackId trackId) {
-        pTrack->setId(trackId);
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {
@@ -1146,8 +1142,8 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
 
     // Load the track and mark it playing (as the loadTrackToPlayer signal would
     // have connected to this eventually).
-    TrackPointer pTrack(new TrackInfoObject());
-    setTrackId(pTrack, testId);
+    TrackPointer pTrack(newTestTrack(testId));
+    pTrack->setDuration(0);
     deck1.slotLoadTrack(pTrack, true);
 
     // Expect that the track is rejected an a new one is loaded

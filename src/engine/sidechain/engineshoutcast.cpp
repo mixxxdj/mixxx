@@ -377,6 +377,7 @@ bool EngineShoutcast::serverConnect() {
 bool EngineShoutcast::processConnect() {
     m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
     m_iShoutFailures = 0;
+    m_lastErrorStr.clear();
     // set to a high number to automatically update the metadata
     // on the first change
     m_iMetaDataLife = 31337;
@@ -416,12 +417,17 @@ bool EngineShoutcast::processConnect() {
             m_iShoutStatus == SHOUTERR_UNSUPPORTED ||
             m_iShoutStatus == SHOUTERR_NOLOGIN ||
             m_iShoutStatus == SHOUTERR_MALLOC) {
-            qDebug() << "Streaming server made fatal error. Can't continue connecting:" << shout_get_error(m_pShout);
+            m_lastErrorStr = shout_get_error(m_pShout);
+            qDebug() << "Streaming server made fatal error. Can't continue connecting:"
+                     << m_lastErrorStr;
             break;
         }
 
         m_iShoutFailures++;
-        qDebug() << m_iShoutFailures << "/" << kMaxShoutFailures << "Streaming server failed connect. Failures:" << shout_get_error(m_pShout);
+        m_lastErrorStr = shout_get_error(m_pShout);
+        qDebug() << m_iShoutFailures << "/" << kMaxShoutFailures
+                 << "Streaming server failed connect. Failures:"
+                 << m_lastErrorStr;
     }
 
     // If we don't have any fatal errors let's try to connect
@@ -439,14 +445,13 @@ bool EngineShoutcast::processConnect() {
             m_iShoutStatus = shout_get_connected(m_pShout);
 
             if (m_iShoutStatus != SHOUTERR_BUSY &&
-                m_iShoutStatus != SHOUTERR_SUCCESS &&
-                m_iShoutStatus != SHOUTERR_CONNECTED) {
-                qDebug() << "Streaming server made error:" << shout_get_error(m_pShout);
+                    m_iShoutStatus != SHOUTERR_SUCCESS &&
+                    m_iShoutStatus != SHOUTERR_CONNECTED) {
+                qDebug() << "Streaming server made error:" << m_iShoutStatus;
             }
 
             // If socket is busy then we wait half second
-            if(m_iShoutStatus == SHOUTERR_BUSY)
-            {
+            if (m_iShoutStatus == SHOUTERR_BUSY) {
                QThread::msleep(500);
             }
 
@@ -467,11 +472,13 @@ bool EngineShoutcast::processConnect() {
             emit(shoutcastConnected());
             return true;
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
+            m_lastErrorStr = "Socket error";
             qDebug() << "EngineShoutcast::processConnect() socket error."
                      << "Is socket already in use?";
         } else if (m_pShoutcastEnabled->toBool()) {
+            m_lastErrorStr = shout_get_error(m_pShout);
             qDebug() << "EngineShoutcast::processConnect() error:"
-                     << m_iShoutStatus << shout_get_error(m_pShout);
+                     << m_iShoutStatus << m_lastErrorStr;
         }
     } else {
         // no connection
@@ -535,8 +542,9 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                 m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
                 processDisconnect();
                 if (!processConnect()) {
-                    errorDialog(tr("Lost connection to streaming server"),
-                                tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                    errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
+                                m_lastErrorStr + "\n" +
+                                tr("Please check your connection to the Internet"));
                 }
             }
         }
@@ -554,8 +562,9 @@ bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
             m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
             processDisconnect();
             if (!processConnect()) {
-                errorDialog(tr("Lost connection to streaming server"),
-                            tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
+                            m_lastErrorStr + "\n" +
+                            tr("Please check your connection to the Internet"));
             }
         } else{
             m_iShoutFailures++;
@@ -770,6 +779,7 @@ void EngineShoutcast::run() {
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
     if (!processConnect()) {
         errorDialog(tr("Can't connect to streaming server"),
+                    m_lastErrorStr + "\n" +
                     tr("Please check your connection to the Internet and verify that your username and password are correct."));
         return;
     }

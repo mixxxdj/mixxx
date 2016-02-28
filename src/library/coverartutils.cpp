@@ -39,7 +39,8 @@ QImage CoverArtUtils::extractEmbeddedCover(
         SecurityTokenPointer pToken) {
     // TODO(uklotzde): Resolve the TrackPointer from the track cache
     // to avoid accessing reading the file while it is written.
-    TrackPointer pTrack(new TrackInfoObject(fileInfo, pToken));
+    TrackPointer pTrack(
+            TrackInfoObject::newTemporary(fileInfo, pToken));
     return SoundSourceProxy(pTrack).parseCoverImage();
 }
 
