@@ -19,6 +19,7 @@ class MockPortMidiController : public PortMidiController {
                            const PmDeviceInfo* outputDeviceInfo,
                            int inputDeviceIndex,
                            int outputDeviceIndex) : PortMidiController(
+                               UserSettingsPointer(),
                                inputDeviceInfo, outputDeviceInfo,
                                inputDeviceIndex, outputDeviceIndex) {
     }

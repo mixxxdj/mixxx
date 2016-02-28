@@ -10,7 +10,7 @@
 #include "controllers/midi/portmidicontroller.h"
 #include "controllers/controllerdebug.h"
 
-PortMidiController::PortMidiController(ConfigObject<ConfigValue>* config,
+PortMidiController::PortMidiController(UserSettingsPointer config,
                                        const PmDeviceInfo* inputDeviceInfo,
                                        const PmDeviceInfo* outputDeviceInfo,
                                        int inputDeviceIndex,

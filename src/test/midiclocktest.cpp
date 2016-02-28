@@ -7,15 +7,15 @@
 
 class FakeClock : public MockableClock {
   public:
-    void setTime(qint64 time) {
+    void setTime(mixxx::Duration time) {
         m_time = time;
     }
 
-    virtual qint64 now() {
+    virtual mixxx::Duration now() {
         return m_time;
     }
   private:
-    qint64 m_time;
+    mixxx::Duration m_time;
 };
 
 class MidiSourceClockTest : public MixxxTest {
@@ -43,7 +43,7 @@ TEST_F(MidiSourceClockTest, SimpleTest) {
     // This test should end before the ringbuffer is exhausted and not on
     // a beat.
     for (double t = 0; t < MidiSourceClock::kPulsesPerQuarter * 2.5; ++t) {
-        m_pFakeClock->setTime(static_cast<qint64>(t * nanos_per_pulse));
+        m_pFakeClock->setTime(mixxx::Duration::fromNanos(t * nanos_per_pulse));
         m_pMidiSourceClock->pulse();
     }
 
@@ -61,7 +61,7 @@ TEST_F(MidiSourceClockTest, RingBufferTest) {
     // This test should exhaust the ringbuffer at least once, and end on
     // a beat.
     for (double t = 0; t < MidiSourceClock::kPulsesPerQuarter * 6; ++t) {
-        m_pFakeClock->setTime(static_cast<qint64>(t * nanos_per_pulse));
+        m_pFakeClock->setTime(mixxx::Duration::fromNanos(t * nanos_per_pulse));
         m_pMidiSourceClock->pulse();
     }
 

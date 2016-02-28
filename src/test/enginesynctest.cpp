@@ -251,19 +251,19 @@ TEST_F(EngineSyncTest, MidiSourceClockMasterSetSlaveSliderMoves) {
     // TODO: refactor this with the test above -- but we have to be careful to
     // reset state between passes.
     // If midi clock is master, and we turn on a slave, the slider should move.
-    QScopedPointer<ControlObjectThread> pButtonMasterSyncMidi(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pButtonMasterSyncMidi(getControlObjectSlave(
             ConfigKey(m_sMidiSourceClockGroup, "sync_master")));
     pButtonMasterSyncMidi->slotSet(1);
-    QScopedPointer<ControlObjectThread> pMasterSyncSlider(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pMasterSyncSlider(getControlObjectSlave(
             ConfigKey(m_sMidiSourceClockGroup, "bpm")));
     pMasterSyncSlider->set(100.0);
 
     // Set the file bpm of channel 1 to 160bpm.
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pFileBpm1(getControlObjectSlave(
         ConfigKey(m_sGroup1, "file_bpm")));
     pFileBpm1->set(80.0);
 
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pButtonMasterSync1(getControlObjectSlave(
             ConfigKey(m_sGroup1, "sync_mode")));
     pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
@@ -843,7 +843,7 @@ TEST_F(EngineSyncTest, EnableOneDeckSliderUpdates) {
 
 TEST_F(EngineSyncTest, EnableMidiSliderUpdates) {
     // If we enable midi to be master, the internal slider should immediately update.
-    QScopedPointer<ControlObjectThread> pButtonMidiSyncMaster(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pButtonMidiSyncMaster(getControlObjectSlave(
             ConfigKey(m_sMidiSourceClockGroup, "sync_master")));
     ControlObject::getControl(ConfigKey(m_sMidiSourceClockGroup, "bpm"))->set(132.0);
 
@@ -1467,18 +1467,18 @@ TEST_F(EngineSyncTest, MasterBpmNeverZero) {
 
 TEST_F(EngineSyncTest, MidiRateChangeMovesSlider) {
     // If the midi rate changes, the rate sliders should change on followers.
-    QScopedPointer<ControlObjectThread> pButtonMasterSyncMidi(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pButtonMasterSyncMidi(getControlObjectSlave(
             ConfigKey(m_sMidiSourceClockGroup, "sync_master")));
     pButtonMasterSyncMidi->slotSet(1);
-    QScopedPointer<ControlObjectThread> pMidiSlider(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pMidiSlider(getControlObjectSlave(
             ConfigKey(m_sMidiSourceClockGroup, "bpm")));
     pMidiSlider->set(100.0);
 
-    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pFileBpm1(getControlObjectSlave(
         ConfigKey(m_sGroup1, "file_bpm")));
     pFileBpm1->set(80.0);
 
-    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+    QScopedPointer<ControlObjectSlave> pButtonMasterSync1(getControlObjectSlave(
             ConfigKey(m_sGroup1, "sync_mode")));
     pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();

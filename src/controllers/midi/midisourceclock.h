@@ -11,12 +11,12 @@ public:
     virtual ~MockableClock() {
     }
     ;
-    virtual qint64 now() = 0;
+    virtual mixxx::Duration now() = 0;
 };
 
 class WallClock: public MockableClock {
 public:
-    virtual qint64 now() {
+    virtual mixxx::Duration now() {
         return Time::elapsed();
     }
 };
@@ -76,15 +76,16 @@ public:
     }
 
     // Return the time of the last beat;
-    qint64 lastBeatTime() const {
-        return m_iLastBeatTime;
+    mixxx::Duration lastBeatTime() const {
+        return m_lastBeatTime;
     }
 
     // Calculate instantaneous beat fraction based on provided values.  If
     // the beat fraction is >= 1.0, the integer value will be sliced off until
     // the result is between 0 <= x < 1.0.  Can be called from any thread
     // since it's static.
-    static double beatFraction(const qint64 last_beat, const qint64 now,
+    static double beatFraction(const mixxx::Duration& last_beat,
+                               const mixxx::Duration& now,
                                const double bpm);
 
     // Convenience function for callers that have access to the MidiSourceClock
@@ -102,18 +103,19 @@ public:
 private:
     // Calculate the bpm based on the pulse times and counts.  Returns values
     // between the min and max allowable bpm, or 0.0 for error conditions.
-    static double calcBpm(qint64 early_pulse, qint64 late_pulse,
+    static double calcBpm(const mixxx::Duration& early_pulse,
+                          const mixxx::Duration& late_pulse,
                           int pulse_count);
 
     bool m_bRunning = false;
     // It's a hack to say 124 all over the source, but it provides a sane
     // baseline in case the midi device is already running when Mixxx starts up.
     double m_dBpm = 124.0;
-    qint64 m_iLastBeatTime = 0;
+    mixxx::Duration m_lastBeatTime;
 
     MockableClock* m_pClock;
 
-    qint64 m_iPulseRingBuffer[kRingBufferSize];
+    mixxx::Duration m_pulseRingBuffer[kRingBufferSize];
     int m_iRingBufferPos = 0;
     int m_iFilled = 0;
 };

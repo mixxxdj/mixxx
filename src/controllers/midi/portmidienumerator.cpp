@@ -21,7 +21,7 @@ bool shouldBlacklistDevice(const PmDeviceInfo* device) {
             deviceName.startsWith("Midi Through Port", Qt::CaseInsensitive);
 }
 
-PortMidiEnumerator::PortMidiEnumerator(ConfigObject<ConfigValue>* config) :
+PortMidiEnumerator::PortMidiEnumerator(UserSettingsPointer config) :
         MidiEnumerator(),
         m_pConfig(config) {
     PmError err = Pm_Initialize();

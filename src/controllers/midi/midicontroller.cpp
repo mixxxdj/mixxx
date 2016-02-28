@@ -17,7 +17,7 @@
 #include "mixer/playermanager.h"
 #include "util/math.h"
 
-MidiController::MidiController(ConfigObject<ConfigValue>* config)
+MidiController::MidiController(UserSettingsPointer config)
         : Controller(), m_pConfig(config), m_midiSourceClock(&m_wallClock) {
     m_pClockBpm = new ControlObjectSlave("[MidiSourceClock]", "bpm", this);
     m_pClockLastBeat = new ControlObjectSlave("[MidiSourceClock]",
@@ -278,7 +278,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 //                m_pConfig->getValueString(ConfigKey("[MidiSourceClock]", "source_device"));
 //        if (m_preset.deviceId() == master_midi_device) {
         m_pClockBpm->set(m_midiSourceClock.bpm());
-        m_pClockLastBeat->set(m_midiSourceClock.lastBeatTime());
+        m_pClockLastBeat->set(m_midiSourceClock.lastBeatTime().toDoubleNanos());
         m_pClockRunning->set(static_cast<double>(m_midiSourceClock.running()));
 //        }
         return;

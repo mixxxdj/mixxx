@@ -43,8 +43,8 @@ void MidiSourceClock::pulse() {
 
     // Ringbuffer filling.
     // TODO(owen): We should have a ringbuffer convenience class.
-    const qint64 lastPulseTime = m_pClock->now();
-    m_iPulseRingBuffer[m_iRingBufferPos] = lastPulseTime;
+    const mixxx::Duration lastPulseTime = m_pClock->now();
+    m_pulseRingBuffer[m_iRingBufferPos] = lastPulseTime;
     m_iRingBufferPos = (m_iRingBufferPos + 1) % kRingBufferSize;
     if (m_iFilled < kRingBufferSize) {
         ++m_iFilled;
@@ -52,25 +52,26 @@ void MidiSourceClock::pulse() {
 
     // If this pulse is a beat mark, record it, even if we have very few samples.
     if (m_iRingBufferPos % kPulsesPerQuarter == 0) {
-        m_iLastBeatTime = lastPulseTime;
+        m_lastBeatTime = lastPulseTime;
     }
 
     // Figure out the bpm if we have enough samples.
     if (m_iFilled > 2) {
-        qint64 earlyPulseTime = 0;
+        mixxx::Duration earlyPulseTime;
         if (m_iFilled < kRingBufferSize) {
-            earlyPulseTime = m_iPulseRingBuffer[0];
+            earlyPulseTime = m_pulseRingBuffer[0];
         } else {
             // In a filled ring buffer, the earliest pulse is the next one that
             // will get filled.
-            earlyPulseTime = m_iPulseRingBuffer[m_iRingBufferPos];
+            earlyPulseTime = m_pulseRingBuffer[m_iRingBufferPos];
         }
         m_dBpm = calcBpm(earlyPulseTime, lastPulseTime, m_iFilled);
     }
 }
 
 // static
-double MidiSourceClock::calcBpm(qint64 early_pulse, qint64 late_pulse,
+double MidiSourceClock::calcBpm(const mixxx::Duration& early_pulse,
+                                const mixxx::Duration& late_pulse,
                                 int pulse_count) {
     // Get the elapsed time between the latest pulse and the earliest pulse
     // and divide by the number of pulses in the buffer to get bpm.  Midi
@@ -90,8 +91,8 @@ double MidiSourceClock::calcBpm(qint64 early_pulse, qint64 late_pulse,
         return 0.0;
     }
 
-    const double elapsed_mins = static_cast<double>(late_pulse - early_pulse)
-            / (60.0 * 1e9);
+    const mixxx::Duration elapsed = late_pulse - early_pulse;
+    const double elapsed_mins = elapsed.toDoubleSeconds() / 60.0;
 
     // We subtract one since two time values denote a single span of time --
     // so a filled value of 3 indicates 2 pulse periods, etc.
@@ -106,7 +107,8 @@ double MidiSourceClock::calcBpm(qint64 early_pulse, qint64 late_pulse,
 }
 
 // static
-double MidiSourceClock::beatFraction(const qint64 last_beat, const qint64 now,
+double MidiSourceClock::beatFraction(const mixxx::Duration& last_beat,
+                                     const mixxx::Duration& now,
                                      const double bpm) {
     DEBUG_ASSERT_AND_HANDLE(now >= last_beat) {
         qWarning() << "MidiSourceClock asked to calculate beat fraction but "
@@ -116,13 +118,14 @@ double MidiSourceClock::beatFraction(const qint64 last_beat, const qint64 now,
     // Get seconds per beat.
     const double beat_length = 60.0 / bpm;
     // seconds / secondsperbeat = fraction of beat.
-    const double beat_percent = static_cast<double>(now - last_beat) / 1e9
-                                / beat_length;
+    const mixxx::Duration beat_duration = now - last_beat;
+    const double beat_percent = beat_duration.toDoubleSeconds() / beat_length;
     // Ensure values are < 1.0.
     return beat_percent - floor(beat_percent);
 }
 
 double MidiSourceClock::beatFraction() const {
-    return beatFraction(m_iLastBeatTime, m_pClock->now(), m_dBpm);
+    const mixxx::Duration now = m_pClock->now();
+    return beatFraction(m_lastBeatTime, now, m_dBpm);
 }
 
