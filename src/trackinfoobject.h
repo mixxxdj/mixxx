@@ -259,16 +259,12 @@ class TrackInfoObject : public QObject {
     void setCoverInfo(const CoverInfo& cover);
     CoverInfo getCoverInfo() const;
 
-    void setCoverArt(const CoverArt& cover);
+    void setCoverArt(const CoverArt& coverArt);
     CoverArt getCoverArt() const;
 
-    // Set/get track trackMetadata all at once.
-    // When setting metadata the cover art image is optional and might be NULL.
-    // fileTimeStamp.isNull() indicates that the metadata has not
-    // been parsed from the file.
+    // Set/get track metadata and cover art (optional) all at once.
     void setTrackMetadata(
             const Mixxx::TrackMetadata& trackMetadata,
-            QImage *pCoverArt,
             bool parsedFromFile);
     void getTrackMetadata(
             Mixxx::TrackMetadata* pTrackMetadata,

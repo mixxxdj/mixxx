@@ -103,7 +103,6 @@ void TrackInfoObject::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpir
 
 void TrackInfoObject::setTrackMetadata(
         const Mixxx::TrackMetadata& trackMetadata,
-        QImage *pCoverArt,
         bool parsedFromFile) {
     {
         // enter locking scope
@@ -112,7 +111,6 @@ void TrackInfoObject::setTrackMetadata(
         bool modified = compareAndSet(&m_bHeaderParsed, parsedFromFile);
         bool modifiedReplayGain =
                 (m_metadata.getReplayGain() != trackMetadata.getReplayGain());
-        bool modifiedCoverArt = false;
         if (m_metadata != trackMetadata) {
             const Mixxx::ReplayGain replayGainBackup(m_metadata.getReplayGain());
             m_metadata = trackMetadata;
@@ -123,23 +121,11 @@ void TrackInfoObject::setTrackMetadata(
             }
             modified = true;
         }
-        if (pCoverArt && !pCoverArt->isNull()) {
-            m_coverArt.image = *pCoverArt;
-            m_coverArt.info.hash = CoverArtUtils::calculateHash(
-                m_coverArt.image);
-            m_coverArt.info.coverLocation = QString();
-            m_coverArt.info.type = CoverInfo::METADATA;
-            m_coverArt.info.source = CoverInfo::GUESSED;
-            modifiedCoverArt = true;
-            modified = true;
-        }
         if (modified) {
+            // explicitly unlock before emitting signals
             markDirtyAndUnlock(&lock);
             if (modifiedReplayGain) {
                 emit(ReplayGainUpdated(trackMetadata.getReplayGain()));
-            }
-            if (modifiedCoverArt) {
-                emit(coverArtUpdated());
             }
         }
         // implicitly unlocked when leaving scope
