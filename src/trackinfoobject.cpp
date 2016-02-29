@@ -109,16 +109,11 @@ void TrackInfoObject::setTrackMetadata(
         QMutexLocker lock(&m_qMutex);
 
         bool modified = compareAndSet(&m_bHeaderParsed, parsedFromFile);
-        bool modifiedReplayGain =
-                (m_metadata.getReplayGain() != trackMetadata.getReplayGain());
+        bool modifiedReplayGain = false;
         if (m_metadata != trackMetadata) {
-            const Mixxx::ReplayGain replayGainBackup(m_metadata.getReplayGain());
+            bool modifiedReplayGain =
+                    (m_metadata.getReplayGain() != trackMetadata.getReplayGain());
             m_metadata = trackMetadata;
-            if (!trackMetadata.getReplayGain().hasRatio()) {
-                // restore replay gain
-                m_metadata.setReplayGain(replayGainBackup);
-                modifiedReplayGain = false;
-            }
             modified = true;
         }
         if (modified) {
@@ -228,15 +223,12 @@ Mixxx::ReplayGain TrackInfoObject::getReplayGain() const {
 }
 
 void TrackInfoObject::setReplayGain(const Mixxx::ReplayGain& replayGain) {
-    { // locked
-        QMutexLocker lock(&m_qMutex);
-        //qDebug() << "Reported ReplayGain value: " << m_fReplayGain;
-        if (m_metadata.getReplayGain() != replayGain) {
-            m_metadata.setReplayGain(replayGain);
-            markDirtyAndUnlock(&lock);
-        }
-    } // unlocked
-    emit(ReplayGainUpdated(replayGain));
+    QMutexLocker lock(&m_qMutex);
+    if (m_metadata.getReplayGain() != replayGain) {
+        m_metadata.setReplayGain(replayGain);
+        markDirtyAndUnlock(&lock);
+        emit(ReplayGainUpdated(replayGain));
+    }
 }
 
 double TrackInfoObject::getBpm() const {
