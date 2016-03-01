@@ -567,7 +567,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     int minAutoDJCrateTracks = m_pConfig->getValueString(
                 ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
-    // Incase we start off with < minimum tracks
+    // In case we start off with < minimum tracks
     if (randomQueueEnabled && (tracksToAdd > 0)) {
         emit(randomTrackRequested(tracksToAdd));
     }
