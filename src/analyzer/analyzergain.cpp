@@ -44,10 +44,12 @@ bool AnalyzerGain::loadStored(TrackPointer tio) const {
 
     if (analyzerEnabled) {
         if (reanalyze) {
+            // ignore stored replay gain
             return false;
         }
         return tio->getReplayGain().hasRatio();
     }
+    // not enabled, pretend we have already a stored value.
     return true;
 }
 
