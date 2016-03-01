@@ -118,17 +118,25 @@ void DlgPrefReplayGain::slotSetRGEnabled() {
     slotApply();
 }
 
-void DlgPrefReplayGain::slotSetRGAnalyzerChanged() {
-    bool rg1 = radioButtonRG1->isChecked();
-    bool disabled = radioButtonDisable->isChecked();
+bool DlgPrefReplayGain::isReplayGainAnalyserEnabled() const {
+    return !radioButtonDisable->isChecked();
+}
 
+int DlgPrefReplayGain::getReplayGainVersion() const {
+    if (radioButtonRG1->isChecked()) {
+        return 1;
+    }
+    return 2;
+}
+
+void DlgPrefReplayGain::slotSetRGAnalyzerChanged() {
     // WARNING: Do not fix the "analyser" spelling here since user config files
     // contain these strings.
     m_pConfig->set(ConfigKey(kConfigKey,"ReplayGainAnalyserEnabled"),
-                ConfigValue(!disabled));
-    checkBoxReanalyze->setEnabled(!disabled);
+                ConfigValue(isReplayGainAnalyserEnabled()));
+    checkBoxReanalyze->setEnabled(isReplayGainAnalyserEnabled());
     m_pConfig->set(ConfigKey(kConfigKey,"ReplayGainVersion"),
-                ConfigValue(rg1 ? 1 : 2));
+                ConfigValue(getReplayGainVersion()));
 
     slotApply();
 }
