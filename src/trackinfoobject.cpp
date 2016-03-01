@@ -111,7 +111,7 @@ void TrackInfoObject::setTrackMetadata(
         bool modified = compareAndSet(&m_bHeaderParsed, parsedFromFile);
         bool modifiedReplayGain = false;
         if (m_metadata != trackMetadata) {
-            bool modifiedReplayGain =
+            modifiedReplayGain =
                     (m_metadata.getReplayGain() != trackMetadata.getReplayGain());
             m_metadata = trackMetadata;
             modified = true;
