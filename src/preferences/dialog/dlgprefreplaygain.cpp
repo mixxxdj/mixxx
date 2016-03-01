@@ -64,7 +64,7 @@ void DlgPrefReplayGain::loadSettings() {
             ConfigKey(kConfigKey, "ReplayGainAnalyserEnabled"), "1").toInt();
 
     int version = m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainVersion")).toInt();
+            ConfigKey("[ReplayGain]", "ReplayGainAnalyserVersion")).toInt();
 
     if (!analyzerEnabled) {
         radioButtonDisable->setChecked(true);
@@ -135,7 +135,7 @@ void DlgPrefReplayGain::slotSetRGAnalyzerChanged() {
     m_pConfig->set(ConfigKey(kConfigKey,"ReplayGainAnalyserEnabled"),
                 ConfigValue(isReplayGainAnalyserEnabled()));
     checkBoxReanalyze->setEnabled(isReplayGainAnalyserEnabled());
-    m_pConfig->set(ConfigKey(kConfigKey,"ReplayGainVersion"),
+    m_pConfig->set(ConfigKey(kConfigKey,"ReplayGainAnalyserVersion"),
                 ConfigValue(getReplayGainVersion()));
 
     slotApply();
