@@ -39,11 +39,11 @@ bool AnalyzerGain::loadStored(TrackPointer tio) const {
     bool analyzerEnabled = ((bool)m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainAnalyserEnabled")).toInt()) &&
             (version == 1);
-    bool reanalyse = m_pConfig->getValueString(
+    bool reanalyze = m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainReanalyze")).toInt();
 
     if (analyzerEnabled) {
-        if (reanalyse) {
+        if (reanalyze) {
             return false;
         }
         return tio->getReplayGain().hasRatio();

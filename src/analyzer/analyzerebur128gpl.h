@@ -19,7 +19,7 @@ class AnalyzerEbur128Gpl : public Analyzer {
 
   private:
     UserSettingsPointer m_pConfig;
-    bool m_initalized;
+    bool m_initialized;
     CSAMPLE* m_pTempBuffer[2];
     Ebu_r128_proc*  m_pEbu128Proc;
     int m_iBufferSize;

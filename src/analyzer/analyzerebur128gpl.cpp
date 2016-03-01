@@ -11,7 +11,7 @@ static const float kReplayGain2ReferenceLUFS = -18;
 
 AnalyzerEbur128Gpl::AnalyzerEbur128Gpl(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_initalized(false),
+          m_initialized(false),
           m_iBufferSize(0) {
     m_pTempBuffer[0] = NULL;
     m_pTempBuffer[1] = NULL;
@@ -31,7 +31,7 @@ bool AnalyzerEbur128Gpl::initialize(TrackPointer tio, int sampleRate, int totalS
 
     m_pEbu128Proc->init (2, sampleRate);
     m_pEbu128Proc->integr_start ();
-    m_initalized = true;
+    m_initialized = true;
     return true;
 }
 
@@ -55,11 +55,11 @@ bool AnalyzerEbur128Gpl::loadStored(TrackPointer tio) const {
 void AnalyzerEbur128Gpl::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
     m_pEbu128Proc->reset();
-    m_initalized = false;
+    m_initialized = false;
 }
 
 void AnalyzerEbur128Gpl::process(const CSAMPLE *pIn, const int iLen) {
-    if (!m_initalized) {
+    if (!m_initialized) {
         return;
     }
     ScopedTimer t("AnalyserEbur128Gpl::process()");
@@ -75,7 +75,7 @@ void AnalyzerEbur128Gpl::process(const CSAMPLE *pIn, const int iLen) {
 }
 
 void AnalyzerEbur128Gpl::finalize(TrackPointer tio) {
-    if (!m_initalized) {
+    if (!m_initialized) {
         return;
     }
     const float averageLufs = m_pEbu128Proc->integrated();
