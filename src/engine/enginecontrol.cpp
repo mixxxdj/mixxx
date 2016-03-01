@@ -8,9 +8,9 @@
 #include "mixer/playermanager.h"
 
 EngineControl::EngineControl(QString group,
-                             UserSettingsPointer _config)
+                             UserSettingsPointer pConfig)
         : m_group(group),
-          m_pConfig(_config),
+          m_pConfig(pConfig),
           m_pEngineMaster(NULL),
           m_pEngineBuffer(NULL) {
     setCurrentSample(0.0, 0.0);

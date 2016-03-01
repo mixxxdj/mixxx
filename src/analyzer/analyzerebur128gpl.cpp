@@ -9,8 +9,8 @@
 
 static const float kReplayGain2ReferenceLUFS = -18;
 
-AnalyzerEbur128Gpl::AnalyzerEbur128Gpl(UserSettingsPointer config)
-        : m_pConfig(config),
+AnalyzerEbur128Gpl::AnalyzerEbur128Gpl(UserSettingsPointer pConfig)
+        : m_pConfig(pConfig),
           m_initalized(false),
           m_iBufferSize(0) {
     m_pTempBuffer[0] = NULL;

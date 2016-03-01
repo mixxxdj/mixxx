@@ -7,8 +7,8 @@
 #include "util/sample.h"
 #include "util/timer.h"
 
-AnalyzerGain::AnalyzerGain(UserSettingsPointer config) {
-    m_pConfig = config;
+AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig) {
+    m_pConfig = pConfig;
     m_initalized = false;
     m_pLeftTempBuffer = NULL;
     m_pRightTempBuffer = NULL;

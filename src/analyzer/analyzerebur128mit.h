@@ -7,7 +7,7 @@
 
 class AnalyzerEbur128Mit : public Analyzer {
   public:
-    AnalyzerEbur128Mit(UserSettingsPointer config);
+    AnalyzerEbur128Mit(UserSettingsPointer pConfig);
     virtual ~AnalyzerEbur128Mit();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;

@@ -44,7 +44,7 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
 
-EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
+EngineShoutcast::EngineShoutcast(UserSettingsPointer pConfig)
         : m_pTextCodec(NULL),
           m_pMetaData(),
           m_pShout(NULL),
@@ -52,7 +52,7 @@ EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
           m_iShoutFailures(0),
-          m_pConfig(_config),
+          m_pConfig(pConfig),
           m_encoder(NULL),
           m_pMasterSamplerate(new ControlObjectSlave("[Master]", "samplerate")),
           m_custom_metadata(false),

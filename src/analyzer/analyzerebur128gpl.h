@@ -8,7 +8,7 @@ class Ebu_r128_proc;
 
 class AnalyzerEbur128Gpl : public Analyzer {
   public:
-    AnalyzerEbur128Gpl(UserSettingsPointer config);
+    AnalyzerEbur128Gpl(UserSettingsPointer pConfig);
     virtual ~AnalyzerEbur128Gpl();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;

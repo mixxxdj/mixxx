@@ -18,7 +18,7 @@ const int kReplayGainReferenceLUFS = -18;
 const char* kInitialDefaultBoostDefault = "-6";
 } // anonymous namespace
 
-DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer  pConfig)
+DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_replayGainBoost(kConfigKey, kReplayGainBoost),
