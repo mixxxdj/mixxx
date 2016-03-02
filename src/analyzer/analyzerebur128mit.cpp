@@ -6,7 +6,9 @@
 #include "util/sample.h"
 #include "util/timer.h"
 
-static const float kReplayGain2ReferenceLUFS = -18;
+namespace {
+const double kReplayGain2ReferenceLUFS = -18;
+} // anonymous namespace
 
 AnalyzerEbur128Mit::AnalyzerEbur128Mit(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
@@ -25,11 +27,11 @@ bool AnalyzerEbur128Mit::initialize(TrackPointer tio,
     }
 
     m_pState = ebur128_init(2u,
-            static_cast<unsigned int>(sampleRate),
+            static_cast<unsigned long>(sampleRate),
             EBUR128_MODE_I);
 
-    m_initalized = true;
-    return true;
+    m_initalized = nullptr != m_pState;
+    return m_initalized;
 }
 
 bool AnalyzerEbur128Mit::loadStored(TrackPointer tio) const {
@@ -80,12 +82,12 @@ void AnalyzerEbur128Mit::finalize(TrackPointer tio) {
         return;
     }
     if (averageLufs == -HUGE_VAL || averageLufs == 0.0) {
-        qDebug() << "AnalyzerEbur128Mit::finalize averageLufs invalid:"
+        qWarning() << "AnalyzerEbur128Mit::finalize averageLufs invalid:"
                  << averageLufs;
         return;
     }
 
-    const float fReplayGain2 = kReplayGain2ReferenceLUFS - averageLufs;
+    const double fReplayGain2 = kReplayGain2ReferenceLUFS - averageLufs;
     Mixxx::ReplayGain replayGain(tio->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGain2));
     tio->setReplayGain(replayGain);
