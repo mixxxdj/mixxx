@@ -32,10 +32,10 @@ bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples
 }
 
 bool AnalyzerGain::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    int version = m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainVersion")).toInt();
     // WARNING: Do not fix the "analyser" spelling here since user config files
     // contain these strings.
+    int version = m_pConfig->getValueString(
+            ConfigKey("[ReplayGain]", "ReplayGainAnalyserVersion")).toInt();
     bool analyzerEnabled = ((bool)m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainAnalyserEnabled")).toInt()) &&
             (version == 1);
