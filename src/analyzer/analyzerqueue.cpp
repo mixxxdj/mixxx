@@ -101,7 +101,7 @@ bool AnalyzerQueue::isLoadedTrackWaiting(TrackPointer analysingTrack) {
             QListIterator<Analyzer*> ita(m_aq);
             bool processTrack = false;
             while (ita.hasNext()) {
-                if (!ita.next()->loadStored(pTrack)) {
+                if (!ita.next()->isDisabledOrLoadStoredSuccess(pTrack)) {
                     processTrack = true;
                 }
             }

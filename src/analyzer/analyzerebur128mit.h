@@ -11,7 +11,7 @@ class AnalyzerEbur128Mit : public Analyzer {
     virtual ~AnalyzerEbur128Mit();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool loadStored(TrackPointer tio) const override;
+    bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
     void process(const CSAMPLE* pIn, const int iLen) override;
     void cleanup(TrackPointer tio) override;
     void finalize(TrackPointer tio) override;

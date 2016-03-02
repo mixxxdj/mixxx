@@ -25,7 +25,7 @@ AnalyzerEbur128Gpl::~AnalyzerEbur128Gpl() {
 }
 
 bool AnalyzerEbur128Gpl::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-    if (loadStored(tio) || totalSamples == 0) {
+    if (isDisabledOrLoadStoredSuccess(tio) || totalSamples == 0) {
         return false;
     }
 
@@ -35,7 +35,7 @@ bool AnalyzerEbur128Gpl::initialize(TrackPointer tio, int sampleRate, int totalS
     return true;
 }
 
-bool AnalyzerEbur128Gpl::loadStored(TrackPointer tio) const {
+bool AnalyzerEbur128Gpl::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     int version = m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainVersion")).toInt();
     // WARNING: Do not fix the "analyser" spelling here since user config files
@@ -46,10 +46,13 @@ bool AnalyzerEbur128Gpl::loadStored(TrackPointer tio) const {
     bool reanalyse = m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainReanalyze")).toInt();
 
-    if (analyzerEnabled && reanalyse) {
-        return false;
+    if (analyzerEnabled) {
+        if (reanalyse) {
+            return false;
+        }
+        return tio->getReplayGain().hasRatio();
     }
-    return tio->getReplayGain().hasRatio();
+    return true;
 }
 
 void AnalyzerEbur128Gpl::cleanup(TrackPointer tio) {

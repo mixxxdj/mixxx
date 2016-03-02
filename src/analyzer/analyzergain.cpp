@@ -23,7 +23,7 @@ AnalyzerGain::~AnalyzerGain() {
 }
 
 bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-    if (loadStored(tio) || totalSamples == 0) {
+    if (isDisabledOrLoadStoredSuccess(tio) || totalSamples == 0) {
         return false;
     }
 
@@ -31,7 +31,7 @@ bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples
     return true;
 }
 
-bool AnalyzerGain::loadStored(TrackPointer tio) const {
+bool AnalyzerGain::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     int version = m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainVersion")).toInt();
     // WARNING: Do not fix the "analyser" spelling here since user config files

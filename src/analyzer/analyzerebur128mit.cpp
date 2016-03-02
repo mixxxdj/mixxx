@@ -22,7 +22,7 @@ AnalyzerEbur128Mit::~AnalyzerEbur128Mit() {
 
 bool AnalyzerEbur128Mit::initialize(TrackPointer tio,
         int sampleRate, int totalSamples) {
-    if (loadStored(tio) || totalSamples == 0) {
+    if (isDisabledOrLoadStoredSuccess(tio) || totalSamples == 0) {
         return false;
     }
 
@@ -34,7 +34,7 @@ bool AnalyzerEbur128Mit::initialize(TrackPointer tio,
     return m_initalized;
 }
 
-bool AnalyzerEbur128Mit::loadStored(TrackPointer tio) const {
+bool AnalyzerEbur128Mit::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     int version = m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainVersion")).toInt();
     // WARNING: Do not fix the "analyser" spelling here since user config files
