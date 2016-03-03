@@ -2,7 +2,6 @@
 #define TRACKINFOOBJECT_H
 
 #include <QAtomicInt>
-#include <QDateTime>
 #include <QFileInfo>
 #include <QList>
 #include <QMutex>
@@ -11,22 +10,18 @@
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
-#include "track/replaygain.h"
 #include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/trackid.h"
 #include "track/playcounter.h"
+#include "track/trackmetadata.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
 class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
-
-namespace Mixxx {
-    class TrackMetadata;
-}
 
 class TrackInfoObject : public QObject {
     Q_OBJECT
@@ -143,8 +138,10 @@ class TrackInfoObject : public QObject {
     // Returns ReplayGain
     Mixxx::ReplayGain getReplayGain() const;
 
-    void setHeaderParsed(bool parsed = true);
-    bool getHeaderParsed() const;
+    // Indicates if the metadata has been parsed from file tags.
+    bool isHeaderParsed() const;
+    // Only used by TrackDAO!
+    void setHeaderParsed(bool headerParsed);
 
     void setDateAdded(const QDateTime& dateAdded);
     QDateTime getDateAdded() const;
@@ -262,11 +259,16 @@ class TrackInfoObject : public QObject {
     void setCoverInfo(const CoverInfo& cover);
     CoverInfo getCoverInfo() const;
 
-    void setCoverArt(const CoverArt& cover);
+    void setCoverArt(const CoverArt& coverArt);
     CoverArt getCoverArt() const;
 
-    void setMetadata(const Mixxx::TrackMetadata& trackMetadata);
-    void getMetadata(Mixxx::TrackMetadata* pTrackMetadata) const;
+    // Set/get track metadata and cover art (optional) all at once.
+    void setTrackMetadata(
+            const Mixxx::TrackMetadata& trackMetadata,
+            bool parsedFromFile);
+    void getTrackMetadata(
+            Mixxx::TrackMetadata* pTrackMetadata,
+            bool* pHeaderParsed) const;
 
     // Mark the track dirty if it isn't already.
     void markDirty();
@@ -319,8 +321,8 @@ class TrackInfoObject : public QObject {
     void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
     void setKeysAndUnlock(QMutexLocker* pLock, const Keys& keys);
 
-    // Set a unique identifier for the track. Only used by services like
-    // TrackDAO
+    // Set a unique identifier for the track.
+    // Only used by TrackDAO!
     void setId(TrackId id);
 
     // The file
@@ -343,47 +345,18 @@ class TrackInfoObject : public QObject {
     // TrackDAO to determine whether or not to write the Track back.
     bool m_bDirty;
 
-    // Metadata
-    // Album
-    QString m_sAlbum;
-    // Artist
-    QString m_sArtist;
-    // Album Artist
-    QString m_sAlbumArtist;
-    // Title
-    QString m_sTitle;
-    // Genre
-    QString m_sGenre;
-    // Composer
-    QString m_sComposer;
-    // Grouping
-    QString m_sGrouping;
-    // Year
-    QString m_sYear;
-    // Track number/total
-    QString m_sTrackNumber;
-    QString m_sTrackTotal;
-
     // File type
     QString m_sType;
-    // User comment
-    QString m_sComment;
+
+    // Track metadata
+    Mixxx::TrackMetadata m_metadata;
+
     // URL (used in promo track)
     QString m_sURL;
-    // Duration of track in seconds
-    int m_iDuration;
-    // Sample rate
-    int m_iSampleRate;
-    // Number of channels
-    int m_iChannels;
+
     // Track rating
     int m_iRating;
-    // Bitrate, number of kilobits per second of audio in the track
-    int m_iBitrate;
-    // Replay Gain volume
-    Mixxx::ReplayGain m_replayGain;
-    // True if header was parsed
-    bool m_bHeaderParsed;
+
     // Cue point in samples or something
     float m_fCuePoint;
     // Date the track was added to the library
@@ -393,6 +366,10 @@ class TrackInfoObject : public QObject {
 
     Keys m_keys;
 
+    // Various boolean flags. Please refer to the corresponding
+    // setter/getter functions for detailed information about
+    // their usage.
+    bool m_bHeaderParsed;
     bool m_bBpmLocked;
 
     // The list of cue points for the track
