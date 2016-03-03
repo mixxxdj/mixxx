@@ -15,6 +15,7 @@
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/dlgtrackinfo.h"
+#include "track/trackref.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
@@ -1168,8 +1169,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         QList<QString> fileLocationList;
         foreach (const QFileInfo& fileInfo, fileList) {
-            // TODO(uklotzde): Replace with TrackRef::location()
-            fileLocationList.append(fileInfo.absoluteFilePath());
+            fileLocationList.append(TrackRef::location(fileInfo));
         }
 
         // Drag-and-drop from an external application
