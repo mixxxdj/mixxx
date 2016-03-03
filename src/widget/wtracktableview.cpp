@@ -5,25 +5,26 @@
 #include <QDrag>
 #include <QShortcut>
 
-#include "widget/wwidget.h"
+#include "widget/wtracktableview.h"
+
+#include "widget/wcoverartmenu.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableviewheader.h"
+#include "widget/wwidget.h"
 #include "library/coverartcache.h"
-#include "library/librarytablemodel.h"
-#include "control/controlobject.h"
-#include "library/trackcollection.h"
-#include "track/track.h"
-#include "control/controlproxy.h"
-#include "widget/wtracktableview.h"
 #include "library/dlgtrackinfo.h"
+#include "library/librarytablemodel.h"
+#include "library/trackcollection.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "track/track.h"
 #include "sources/soundsourceproxy.h"
 #include "mixer/playermanager.h"
-#include "util/dnd.h"
-#include "util/time.h"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "waveform/guitick.h"
+#include "util/dnd.h"
+#include "util/time.h"
 #include "util/assert.h"
-#include "widget/wcoverartmenu.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
