@@ -9,6 +9,7 @@
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "track/trackmetadatataglib.h"
+#include "track/trackref.h"
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/compatibility.h"
@@ -161,7 +162,7 @@ QString Track::getLocation() const {
     // (copy-on write). But operating on a single instance of QFileInfo
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.absoluteFilePath();
+    return TrackRef::location(m_fileInfo);
 }
 
 QString Track::getCanonicalLocation() const {
@@ -169,7 +170,7 @@ QString Track::getCanonicalLocation() const {
     // (copy-on write). But operating on a single instance of QFileInfo
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-    return m_fileInfo.canonicalFilePath();
+    return TrackRef::canonicalLocation(m_fileInfo);
 }
 
 QString Track::getDirectory() const {

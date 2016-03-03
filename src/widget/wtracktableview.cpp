@@ -19,6 +19,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "track/trackref.h"
 #include "sources/soundsourceproxy.h"
 #include "mixer/playermanager.h"
 #include "preferences/dialog/dlgpreflibrary.h"
@@ -1232,8 +1233,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         QList<QString> fileLocationList;
         for (const QFileInfo& fileInfo : fileList) {
-            // TODO(uklotzde): Replace with TrackRef::location()
-            fileLocationList.append(fileInfo.absoluteFilePath());
+            fileLocationList.append(TrackRef::location(fileInfo));
         }
 
         // Drag-and-drop from an external application
