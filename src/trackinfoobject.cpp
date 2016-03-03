@@ -5,16 +5,14 @@
 
 #include "trackinfoobject.h"
 
-#include "library/coverartutils.h"
-#include "soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "track/trackmetadatataglib.h"
+#include "track/trackref.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/time.h"
-#include "util/xml.h"
 
 
 namespace {
