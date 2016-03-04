@@ -109,7 +109,6 @@ class MidiController : public Controller {
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
     UserSettingsPointer m_pConfig;
-    WallClock m_wallClock;
     MidiSourceClock m_midiSourceClock;
 
     // Slaves are cleaned up by QT.

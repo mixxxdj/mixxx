@@ -2,24 +2,9 @@
 #define MIDISOURCECLOCK_H
 
 #include <QList>
+#include <QMutex>
 
-#include "util/time.h"
-
-// Stub out the Time::elapsed function for easier testing.
-class MockableClock {
-public:
-    virtual ~MockableClock() {
-    }
-    ;
-    virtual mixxx::Duration now() = 0;
-};
-
-class WallClock: public MockableClock {
-public:
-    virtual mixxx::Duration now() {
-        return Time::elapsed();
-    }
-};
+#include "util/duration.h"
 
 // MidiSourceClock is not thread-safe, but is thread compatible using ControlObjects.
 // The MIDI thread will make calls into MidiSourceClock and then update two Control
@@ -48,13 +33,11 @@ private:
     static const int kRingBufferSize = kPulsesPerQuarter * 4;
 
 public:
-    // Injectable clock for testing.  Does not take ownership of the clock.
-    MidiSourceClock(MockableClock* clock)
-            : m_pClock(clock) {
-    }
+    MidiSourceClock() {}
 
     // Handle an incoming midi status.  Return true if handled.
-    bool handleMessage(unsigned char status);
+    bool handleMessage(unsigned char status,
+                       const mixxx::Duration& timestamp);
 
     // Signals MIDI Start Sequence.  The MidiSourceClock will reset its beat
     // fraction to 0, but the bpm value will be seeded with the last recorded
@@ -68,16 +51,24 @@ public:
 
     // Signals MIDI Timing Clock.  The timing between pulses will be used to
     // determine bpm.  kPulsesPerQuarter pulses = 1 beat.
-    void pulse();
+    void pulse(const mixxx::Duration& timestamp);
 
     // Return the current BPM.  Values are significant to 5 decimal places.
     double bpm() const {
+        QMutexLocker lock(&m_mutex);
         return m_dBpm;
     }
 
-    // Return the time of the last beat;
+    // Return the exact recorded time of the last beat pulse.
     mixxx::Duration lastBeatTime() const {
+        QMutexLocker lock(&m_mutex);
         return m_lastBeatTime;
+    }
+
+    // Return a smoothed beat time interpolated from received data.
+    mixxx::Duration smoothedBeatTime() const {
+        QMutexLocker lock(&m_mutex);
+        return m_smoothedBeatTime;
     }
 
     // Calculate instantaneous beat fraction based on provided values.  If
@@ -87,11 +78,6 @@ public:
     static double beatFraction(const mixxx::Duration& last_beat,
                                const mixxx::Duration& now,
                                const double bpm);
-
-    // Convenience function for callers that have access to the MidiSourceClock
-    // object.  Returns the instantaneous beat fraction.  This should only be
-    // called from the same thread that makes calls to pulse().
-    double beatFraction() const;
 
     // Returns true if the clock is running.  A master sync listener should
     // always call this to make sure that the beatfraction and bpm are
@@ -111,9 +97,12 @@ private:
     // It's a hack to say 124 all over the source, but it provides a sane
     // baseline in case the midi device is already running when Mixxx starts up.
     double m_dBpm = 124.0;
+    // Reported time of the last beat
     mixxx::Duration m_lastBeatTime;
-
-    MockableClock* m_pClock;
+    // De-jittered time of the last beat
+    mixxx::Duration m_smoothedBeatTime;
+    // Mutex for accessing bpm and last beat time for thread safety.
+    mutable QMutex m_mutex;
 
     mixxx::Duration m_pulseRingBuffer[kRingBufferSize];
     int m_iRingBufferPos = 0;

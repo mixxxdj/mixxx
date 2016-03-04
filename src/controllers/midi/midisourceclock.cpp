@@ -2,7 +2,8 @@
 #include "controllers/midi/midisourceclock.h"
 #include "util/math.h"
 
-bool MidiSourceClock::handleMessage(unsigned char status) {
+bool MidiSourceClock::handleMessage(unsigned char status,
+                                    const mixxx::Duration& timestamp) {
     // TODO(owen): We need to support MIDI_CONTINUE.
     switch (status) {
     case MIDI_START:
@@ -12,7 +13,7 @@ bool MidiSourceClock::handleMessage(unsigned char status) {
         stop();
         return true;
     case MIDI_TIMING_CLK:
-        pulse();
+        pulse(timestamp);
         return true;
     default:
         return false;
@@ -31,7 +32,7 @@ void MidiSourceClock::stop() {
     m_bRunning = false;
 }
 
-void MidiSourceClock::pulse() {
+void MidiSourceClock::pulse(const mixxx::Duration& timestamp) {
     // Update the ring buffer and calculate new bpm.  Update the last beat time
     // if we are on a beat.
 
@@ -43,8 +44,7 @@ void MidiSourceClock::pulse() {
 
     // Ringbuffer filling.
     // TODO(owen): We should have a ringbuffer convenience class.
-    const mixxx::Duration lastPulseTime = m_pClock->now();
-    m_pulseRingBuffer[m_iRingBufferPos] = lastPulseTime;
+    m_pulseRingBuffer[m_iRingBufferPos] = timestamp;
     m_iRingBufferPos = (m_iRingBufferPos + 1) % kRingBufferSize;
     if (m_iFilled < kRingBufferSize) {
         ++m_iFilled;
@@ -52,7 +52,16 @@ void MidiSourceClock::pulse() {
 
     // If this pulse is a beat mark, record it, even if we have very few samples.
     if (m_iRingBufferPos % kPulsesPerQuarter == 0) {
-        m_lastBeatTime = lastPulseTime;
+        QMutexLocker lock(&m_mutex);
+        if (m_dBpm != 0.0 && m_lastBeatTime.toIntegerNanos() != 0) {
+            // Calculate the smoothed last beat time from the current bpm
+            // and the actual last beat time.  By not using the last smoothed
+            // time we prevent drift.
+            const double beat_length = 60.0 * 1e9 / m_dBpm;
+            const auto beat_duration = mixxx::Duration::fromNanos(beat_length);
+            m_smoothedBeatTime = m_lastBeatTime + beat_duration;
+        }
+        m_lastBeatTime = timestamp;
     }
 
     // Figure out the bpm if we have enough samples.
@@ -65,7 +74,8 @@ void MidiSourceClock::pulse() {
             // will get filled.
             earlyPulseTime = m_pulseRingBuffer[m_iRingBufferPos];
         }
-        m_dBpm = calcBpm(earlyPulseTime, lastPulseTime, m_iFilled);
+        QMutexLocker lock(&m_mutex);
+        m_dBpm = calcBpm(earlyPulseTime, timestamp, m_iFilled);
     }
 }
 
@@ -115,6 +125,9 @@ double MidiSourceClock::beatFraction(const mixxx::Duration& last_beat,
                    << "now < last_beat:" << now << last_beat;
         return 0.0;
     }
+    if (bpm == 0.0) {
+        return 0.0;
+    }
     // Get seconds per beat.
     const double beat_length = 60.0 / bpm;
     // seconds / secondsperbeat = fraction of beat.
@@ -123,9 +136,3 @@ double MidiSourceClock::beatFraction(const mixxx::Duration& last_beat,
     // Ensure values are < 1.0.
     return beat_percent - floor(beat_percent);
 }
-
-double MidiSourceClock::beatFraction() const {
-    const mixxx::Duration now = m_pClock->now();
-    return beatFraction(m_lastBeatTime, now, m_dBpm);
-}
-

@@ -18,7 +18,7 @@
 #include "util/math.h"
 
 MidiController::MidiController(UserSettingsPointer config)
-        : Controller(), m_pConfig(config), m_midiSourceClock(&m_wallClock) {
+        : Controller(), m_pConfig(config) {
     m_pClockBpm = new ControlObjectSlave("[MidiSourceClock]", "bpm", this);
     m_pClockLastBeat = new ControlObjectSlave("[MidiSourceClock]",
                                               "last_beat_time", this);
@@ -209,7 +209,7 @@ QString formatMidiMessage(const QString& controllerName,
             return QString("MIDI status 0x%1: Start Sequence")
                     .arg(QString::number(status, 16).toUpper());
         case MIDI_TIMING_CLK:
-            return QString("MIDI status 0x%1: Clock Tick")
+            return QString("MIDI status 0x%1: Timing Clock")
                     .arg(QString::number(status, 16).toUpper());
         case MIDI_STOP:
             return QString("MIDI status 0x%1: Stop Sequence")
@@ -269,7 +269,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
     // no further action is needed.  Note that the clock code is active even if
     // this device is not master, so if the user changes masters all of the data
     // is ready to be used instantly.
-    if (m_midiSourceClock.handleMessage(status)) {
+    if (m_midiSourceClock.handleMessage(status, timestamp)) {
         // TODO:
         // Are we actually clock master?  Doing a string comparison on every pulse
         // is not great.  The better solution would to be notified when the config
@@ -278,7 +278,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 //                m_pConfig->getValueString(ConfigKey("[MidiSourceClock]", "source_device"));
 //        if (m_preset.deviceId() == master_midi_device) {
         m_pClockBpm->set(m_midiSourceClock.bpm());
-        m_pClockLastBeat->set(m_midiSourceClock.lastBeatTime().toDoubleNanos());
+        m_pClockLastBeat->set(m_midiSourceClock.smoothedBeatTime().toDoubleNanos());
         m_pClockRunning->set(static_cast<double>(m_midiSourceClock.running()));
 //        }
         return;
