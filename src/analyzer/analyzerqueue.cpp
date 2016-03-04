@@ -11,8 +11,6 @@
 #include "analyzer/vamp/vampanalyzer.h"
 #endif
 #include "analyzer/analyzergain.h"
-#include <analyzer/analyzerebur128gpl.h>
-#include <analyzer/analyzerebur128mit.h>
 #include <analyzer/analyzerebur128mit.h>
 #include "analyzer/analyzerwaveform.h"
 #include "library/trackcollection.h"
