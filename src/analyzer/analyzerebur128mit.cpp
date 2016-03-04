@@ -38,9 +38,9 @@ bool AnalyzerEbur128Mit::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     // WARNING: Do not fix the "analyser" spelling here since user config files
     // contain these strings.
     int version = m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainAnalyserVersion")).toInt();
+            ConfigKey("[ReplayGain]", "ReplayGainAnalyserVersion"), "2").toInt();
     bool analyzerEnabled = ((bool)m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainAnalyserEnabled")).toInt()) &&
+            ConfigKey("[ReplayGain]", "ReplayGainAnalyserEnabled"), "1").toInt()) &&
             (version == 2);
     bool reanalyse = m_pConfig->getValueString(
             ConfigKey("[ReplayGain]", "ReplayGainReanalyze")).toInt();

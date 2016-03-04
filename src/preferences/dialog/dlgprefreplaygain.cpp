@@ -74,7 +74,7 @@ void DlgPrefReplayGain::loadSettings() {
             ConfigKey(kConfigKey, kReplayGainAnalyserEnabled), "1").toInt();
 
     int version = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kReplayGainAnalyserVersion)).toInt();
+            ConfigKey(kConfigKey, kReplayGainAnalyserVersion), "2").toInt();
 
     if (!analyzerEnabled) {
         radioButtonDisable->setChecked(true);
