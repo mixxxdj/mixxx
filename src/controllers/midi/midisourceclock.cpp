@@ -60,6 +60,8 @@ void MidiSourceClock::pulse(const mixxx::Duration& timestamp) {
             const double beat_length = 60.0 * 1e9 / m_dBpm;
             const auto beat_duration = mixxx::Duration::fromNanos(beat_length);
             m_smoothedBeatTime = m_lastBeatTime + beat_duration;
+        } else {
+            m_smoothedBeatTime = timestamp;
         }
         m_lastBeatTime = timestamp;
     }
