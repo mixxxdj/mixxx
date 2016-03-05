@@ -320,8 +320,16 @@ public:
         bool hasDuration;
 
         OutputDescriptor() : // defaults for mandatory non-class-type members
-            hasFixedBinCount(false), hasKnownExtents(false), isQuantized(false),
-            sampleType(OneSamplePerStep), hasDuration(false) { }
+            hasFixedBinCount(false),
+            binCount(0),
+            hasKnownExtents(false),
+            minValue(0),
+            maxValue(0),
+            isQuantized(false),
+            quantizeStep(0),
+            sampleType(OneSamplePerStep), 
+            sampleRate(0), 
+            hasDuration(false) { }
     };
 
     typedef std::vector<OutputDescriptor> OutputList;

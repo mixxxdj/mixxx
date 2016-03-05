@@ -38,8 +38,6 @@
 
 #include <map>
 #include <algorithm>
-// http://msdn.microsoft.com/en-us/library/4hwaceh6(v=vs.80).aspx
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <climits>
 
@@ -222,8 +220,7 @@ PluginSummarisingAdapter::Impl::~Impl()
 }
 
 bool
-PluginSummarisingAdapter::Impl::initialise(size_t channels,
-                                           size_t stepSize, size_t blockSize)
+PluginSummarisingAdapter::Impl::initialise(size_t, size_t stepSize, size_t blockSize)
 {
     m_stepSize = stepSize;
     m_blockSize = blockSize;
@@ -453,7 +450,7 @@ void
 PluginSummarisingAdapter::Impl::accumulate(int output,
                                            const Feature &f,
                                            RealTime timestamp,
-                                           bool final)
+                                           bool /* final */)
 {
     // What should happen if a feature's duration spans a segment
     // boundary?  I think we probably want to chop it, and pretend
@@ -568,8 +565,6 @@ PluginSummarisingAdapter::Impl::accumulateFinalDurations()
 
         if (acount == 0) continue;
 
-        RealTime prevTimestamp = i->second;
-
 #ifdef DEBUG_PLUGIN_SUMMARISING_ADAPTER
         std::cerr << "output " << output << ": ";
 #endif
@@ -633,9 +628,6 @@ PluginSummarisingAdapter::Impl::findSegmentBounds(RealTime t,
 void
 PluginSummarisingAdapter::Impl::segment()
 {
-    SegmentBoundaries::iterator boundaryitr = m_boundaries.begin();
-    RealTime segmentStart = RealTime::zeroTime;
-    
 #ifdef DEBUG_PLUGIN_SUMMARISING_ADAPTER_SEGMENT
     std::cerr << "segment: starting" << std::endl;
 #endif

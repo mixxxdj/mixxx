@@ -34,35 +34,17 @@
     authorization.
 */
 
-#include <vamp-hostsdk/PluginHostAdapter.h>
 #include <vamp-hostsdk/PluginLoader.h>
 #include <vamp-hostsdk/PluginInputDomainAdapter.h>
 #include <vamp-hostsdk/PluginChannelAdapter.h>
 #include <vamp-hostsdk/PluginBufferingAdapter.h>
+#include <vamp-hostsdk/PluginHostAdapter.h>
+
+#include <vamp/vamp.h>
+
+#include "Files.h"
 
 #include <fstream>
-#include <cctype> // tolower
-
-#include <cstring>
-
-#ifdef _WIN32
-
-#include <windows.h>
-#include <tchar.h>
-#define PLUGIN_SUFFIX "dll"
-
-#else /* ! _WIN32 */
-
-#include <dirent.h>
-#include <dlfcn.h>
-
-#ifdef __APPLE__
-#define PLUGIN_SUFFIX "dylib"
-#else /* ! __APPLE__ */
-#define PLUGIN_SUFFIX "so"
-#endif /* ! __APPLE__ */
-
-#endif /* ! _WIN32 */
 
 using namespace std;
 
@@ -124,13 +106,6 @@ protected:
     bool decomposePluginKey(PluginKey key,
                             string &libraryName, string &identifier);
 
-    void *loadLibrary(string path);
-    void unloadLibrary(void *handle);
-    void *lookupInLibrary(void *handle, const char *symbol);
-
-    string splicePath(string a, string b);
-    vector<string> listFiles(string dir, string ext);
-    
     static InstanceCleaner m_cleaner;
 };
 
@@ -227,83 +202,64 @@ PluginLoader::Impl::listPlugins()
 void
 PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
 {
-    vector<string> path = PluginHostAdapter::getPluginPath();
-
     string libraryName, identifier;
+    vector<string> fullPaths;
+    
     if (forPlugin != "") {
         if (!decomposePluginKey(forPlugin, libraryName, identifier)) {
             std::cerr << "WARNING: Vamp::HostExt::PluginLoader: Invalid plugin key \""
                       << forPlugin << "\" in enumerate" << std::endl;
             return;
         }
+        fullPaths = Files::listLibraryFilesMatching(libraryName);
+    } else {
+        fullPaths = Files::listLibraryFiles();
     }
 
-    for (size_t i = 0; i < path.size(); ++i) {
-        
-        vector<string> files = listFiles(path[i], PLUGIN_SUFFIX);
+    for (size_t i = 0; i < fullPaths.size(); ++i) {
 
-        for (vector<string>::iterator fi = files.begin();
-             fi != files.end(); ++fi) {
+        string fullPath = fullPaths[i];
+        void *handle = Files::loadLibrary(fullPath);
+        if (!handle) continue;
             
-            if (libraryName != "") {
-                // libraryName is lowercased and lacking an extension,
-                // as it came from the plugin key
-                string temp = *fi;
-                for (size_t i = 0; i < temp.length(); ++i) {
-                    temp[i] = tolower(temp[i]);
-                }
-                string::size_type pi = temp.find('.');
-                if (pi == string::npos) {
-                    if (libraryName != temp) continue;
-                } else {
-                    if (libraryName != temp.substr(0, pi)) continue;
-                }
-            }
-
-            string fullPath = path[i];
-            fullPath = splicePath(fullPath, *fi);
-            void *handle = loadLibrary(fullPath);
-            if (!handle) continue;
+        VampGetPluginDescriptorFunction fn =
+            (VampGetPluginDescriptorFunction)Files::lookupInLibrary
+            (handle, "vampGetPluginDescriptor");
             
-            VampGetPluginDescriptorFunction fn =
-                (VampGetPluginDescriptorFunction)lookupInLibrary
-                (handle, "vampGetPluginDescriptor");
-            
-            if (!fn) {
-                if (forPlugin != "") {
-                    cerr << "Vamp::HostExt::PluginLoader: No vampGetPluginDescriptor function found in library \""
-                         << fullPath << "\"" << endl;
-                }
-                unloadLibrary(handle);
-                continue;
-            }
-            
-            int index = 0;
-            const VampPluginDescriptor *descriptor = 0;
-            bool found = false;
-            
-            while ((descriptor = fn(VAMP_API_VERSION, index))) {
-                ++index;
-                if (identifier != "") {
-                    if (descriptor->identifier != identifier) continue;
-                }
-                found = true;
-                PluginKey key = composePluginKey(*fi, descriptor->identifier);
-//                std::cerr << "enumerate: " << key << " (path: " << fullPath << ")" << std::endl;
-                if (m_pluginLibraryNameMap.find(key) ==
-                    m_pluginLibraryNameMap.end()) {
-                    m_pluginLibraryNameMap[key] = fullPath;
-                }
-            }
-
-            if (!found && forPlugin != "") {
-                cerr << "Vamp::HostExt::PluginLoader: Plugin \""
-                     << identifier << "\" not found in library \""
+        if (!fn) {
+            if (forPlugin != "") {
+                cerr << "Vamp::HostExt::PluginLoader: No vampGetPluginDescriptor function found in library \""
                      << fullPath << "\"" << endl;
             }
-            
-            unloadLibrary(handle);
+            Files::unloadLibrary(handle);
+            continue;
         }
+            
+        int index = 0;
+        const VampPluginDescriptor *descriptor = 0;
+        bool found = false;
+            
+        while ((descriptor = fn(VAMP_API_VERSION, index))) {
+            ++index;
+            if (identifier != "") {
+                if (descriptor->identifier != identifier) continue;
+            }
+            found = true;
+            PluginKey key = composePluginKey(fullPath, descriptor->identifier);
+//                std::cerr << "enumerate: " << key << " (path: " << fullPath << ")" << std::endl;
+            if (m_pluginLibraryNameMap.find(key) ==
+                m_pluginLibraryNameMap.end()) {
+                m_pluginLibraryNameMap[key] = fullPath;
+            }
+        }
+
+        if (!found && forPlugin != "") {
+            cerr << "Vamp::HostExt::PluginLoader: Plugin \""
+                 << identifier << "\" not found in library \""
+                 << fullPath << "\"" << endl;
+        }
+            
+        Files::unloadLibrary(handle);
     }
 
     if (forPlugin == "") m_allPluginsEnumerated = true;
@@ -312,18 +268,7 @@ PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
 PluginLoader::PluginKey
 PluginLoader::Impl::composePluginKey(string libraryName, string identifier)
 {
-    string basename = libraryName;
-
-    string::size_type li = basename.rfind('/');
-    if (li != string::npos) basename = basename.substr(li + 1);
-
-    li = basename.find('.');
-    if (li != string::npos) basename = basename.substr(0, li);
-
-    for (size_t i = 0; i < basename.length(); ++i) {
-        basename[i] = tolower(basename[i]);
-    }
-
+    string basename = Files::lcBasename(libraryName);
     return basename + ":" + identifier;
 }
 
@@ -382,17 +327,17 @@ PluginLoader::Impl::loadPlugin(PluginKey key,
         return 0;
     }
     
-    void *handle = loadLibrary(fullPath);
+    void *handle = Files::loadLibrary(fullPath);
     if (!handle) return 0;
     
     VampGetPluginDescriptorFunction fn =
-        (VampGetPluginDescriptorFunction)lookupInLibrary
+        (VampGetPluginDescriptorFunction)Files::lookupInLibrary
         (handle, "vampGetPluginDescriptor");
 
     if (!fn) {
         cerr << "Vamp::HostExt::PluginLoader: No vampGetPluginDescriptor function found in library \""
              << fullPath << "\"" << endl;
-        unloadLibrary(handle);
+        Files::unloadLibrary(handle);
         return 0;
     }
 
@@ -474,12 +419,12 @@ PluginLoader::Impl::generateTaxonomy()
     for (vector<string>::iterator i = catpath.begin();
          i != catpath.end(); ++i) {
         
-        vector<string> files = listFiles(*i, suffix);
+        vector<string> files = Files::listFiles(*i, suffix);
 
         for (vector<string>::iterator fi = files.begin();
              fi != files.end(); ++fi) {
 
-            string filepath = splicePath(*i, *fi);
+            string filepath = Files::splicePath(*i, *fi);
             ifstream is(filepath.c_str(), ifstream::in | ifstream::binary);
 
             if (is.fail()) {
@@ -525,154 +470,11 @@ PluginLoader::Impl::generateTaxonomy()
     }
 }    
 
-void *
-PluginLoader::Impl::loadLibrary(string path)
-{
-    void *handle = 0;
-#ifdef _WIN32
-#ifdef UNICODE
-    int len = path.length() + 1; // cannot be more wchars than length in bytes of utf8 string
-    wchar_t *buffer = new wchar_t[len];
-    int rv = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), len, buffer, len);
-    if (rv <= 0) {
-        cerr << "Vamp::HostExt::PluginLoader: Unable to convert library path \""
-             << path << "\" to wide characters " << endl;
-        delete[] buffer;
-        return handle;
-    }
-    handle = LoadLibrary(buffer);
-    delete[] buffer;
-#else
-    handle = LoadLibrary(path.c_str());
-#endif
-    if (!handle) {
-        cerr << "Vamp::HostExt::PluginLoader: Unable to load library \""
-             << path << "\"" << endl;
-    }
-#else
-    handle = dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
-    if (!handle) {
-        cerr << "Vamp::HostExt::PluginLoader: Unable to load library \""
-             << path << "\": " << dlerror() << endl;
-    }
-#endif
-    return handle;
-}
-
-void
-PluginLoader::Impl::unloadLibrary(void *handle)
-{
-#ifdef _WIN32
-    FreeLibrary((HINSTANCE)handle);
-#else
-    dlclose(handle);
-#endif
-}
-
-void *
-PluginLoader::Impl::lookupInLibrary(void *handle, const char *symbol)
-{
-#ifdef _WIN32
-    return (void *)GetProcAddress((HINSTANCE)handle, symbol);
-#else
-    return (void *)dlsym(handle, symbol);
-#endif
-}
-
-string
-PluginLoader::Impl::splicePath(string a, string b)
-{
-#ifdef _WIN32
-    return a + "\\" + b;
-#else
-    return a + "/" + b;
-#endif
-}
-
-vector<string>
-PluginLoader::Impl::listFiles(string dir, string extension)
-{
-    vector<string> files;
-
-#ifdef _WIN32
-    string expression = dir + "\\*." + extension;
-#ifdef UNICODE
-    int len = expression.length() + 1; // cannot be more wchars than length in bytes of utf8 string
-    wchar_t *buffer = new wchar_t[len];
-    int rv = MultiByteToWideChar(CP_UTF8, 0, expression.c_str(), len, buffer, len);
-    if (rv <= 0) {
-        cerr << "Vamp::HostExt::PluginLoader: Unable to convert wildcard path \""
-             << expression << "\" to wide characters" << endl;
-        delete[] buffer;
-        return files;
-    }
-    WIN32_FIND_DATA data;
-    HANDLE fh = FindFirstFile(buffer, &data);
-    if (fh == INVALID_HANDLE_VALUE) {
-        delete[] buffer;
-        return files;
-    }
-
-    bool ok = true;
-    while (ok) {
-        wchar_t *fn = data.cFileName;
-        int wlen = wcslen(fn) + 1;
-        int maxlen = wlen * 6;
-        char *conv = new char[maxlen];
-        int rv = WideCharToMultiByte(CP_UTF8, 0, fn, wlen, conv, maxlen, 0, 0);
-        if (rv > 0) {
-            files.push_back(conv);
-        }
-        delete[] conv;
-        ok = FindNextFile(fh, &data);
-    }
-
-    FindClose(fh);
-    delete[] buffer;
-#else
-    WIN32_FIND_DATA data;
-    HANDLE fh = FindFirstFile(expression.c_str(), &data);
-    if (fh == INVALID_HANDLE_VALUE) return files;
-
-    bool ok = true;
-    while (ok) {
-        files.push_back(data.cFileName);
-        ok = FindNextFile(fh, &data);
-    }
-
-    FindClose(fh);
-#endif
-#else
-
-    size_t extlen = extension.length();
-    DIR *d = opendir(dir.c_str());
-    if (!d) return files;
-            
-    struct dirent *e = 0;
-    while ((e = readdir(d))) {
- 
-        if (!e->d_name) continue;
-       
-        size_t len = strlen(e->d_name);
-        if (len < extlen + 2 ||
-            e->d_name + len - extlen - 1 != "." + extension) {
-            continue;
-        }
-
-        files.push_back(e->d_name);
-    }
-
-    closedir(d);
-#endif
-
-    return files;
-}
-
 void
 PluginLoader::Impl::pluginDeleted(PluginDeletionNotifyAdapter *adapter)
 {
     void *handle = m_pluginLibraryHandleMap[adapter];
-    if (handle) unloadLibrary(handle);
+    if (handle) Files::unloadLibrary(handle);
     m_pluginLibraryHandleMap.erase(adapter);
 }
 

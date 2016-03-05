@@ -6,7 +6,7 @@
     An API for audio analysis and feature extraction plugins.
 
     Centre for Digital Music, Queen Mary, University of London.
-    Copyright 2006 Chris Cannam.
+    Copyright 2006-2012 Chris Cannam and QMUL.
   
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation
@@ -34,13 +34,42 @@
     authorization.
 */
 
-#ifndef _VAMP_SDK_SINGLE_INCLUDE_H_
-#define _VAMP_SDK_SINGLE_INCLUDE_H_
+#include <vamp-sdk/FFT.h>
 
-#include "PluginBase.h"
-#include "Plugin.h"
-#include "RealTime.h"
+#include <cmath>
 
+#if ( VAMP_SDK_MAJOR_VERSION != 2 || VAMP_SDK_MINOR_VERSION != 6 )
+#error Unexpected version of Vamp SDK header included
 #endif
 
+#ifdef _MSC_VER
+#include <stdlib.h>
+#include <malloc.h>
+#endif
+
+_VAMP_SDK_PLUGSPACE_BEGIN(FFT.cpp)
+
+namespace Vamp {
+
+#include "FFTimpl.cpp"
+
+void
+FFT::forward(unsigned int n,
+	     const double *ri, const double *ii,
+	     double *ro, double *io)
+{
+    fft(n, false, ri, ii, ro, io);
+}
+
+void
+FFT::inverse(unsigned int n,
+	     const double *ri, const double *ii,
+	     double *ro, double *io)
+{
+    fft(n, true, ri, ii, ro, io);
+}
+
+}
+
+_VAMP_SDK_PLUGSPACE_END(FFT.cpp)
 

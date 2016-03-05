@@ -37,7 +37,7 @@
 #include <vamp-hostsdk/PluginHostAdapter.h>
 #include <cstdlib>
 
-#if ( VAMP_SDK_MAJOR_VERSION != 2 || VAMP_SDK_MINOR_VERSION != 3 )
+#if ( VAMP_SDK_MAJOR_VERSION != 2 || VAMP_SDK_MINOR_VERSION != 6 )
 #error Unexpected version of Vamp SDK header included
 #endif
 
@@ -265,7 +265,11 @@ PluginHostAdapter::getCurrentProgram() const
     if (!m_handle) return "";
 
     int pn = m_descriptor->getCurrentProgram(m_handle);
-    return m_descriptor->programs[pn];
+    if (pn < (int)m_descriptor->programCount) {
+        return m_descriptor->programs[pn];
+    } else {
+        return "";
+    }
 }
 
 void

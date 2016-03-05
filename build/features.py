@@ -371,7 +371,7 @@ class VinylControl(Feature):
 
 class Vamp(Feature):
     INTERNAL_LINK = False
-    INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
+    INTERNAL_VAMP_PATH = '#lib/vamp-2.6'
 
     def description(self):
         return "Vamp Analyzer support"
@@ -422,7 +422,8 @@ class Vamp(Feature):
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
             sources.extend(path % hostsdk_src_path for path in
-                           ['%s/PluginBufferingAdapter.cpp',
+                           ['%s/Files.cpp',
+                            '%s/PluginBufferingAdapter.cpp',
                             '%s/PluginChannelAdapter.cpp',
                             '%s/PluginHostAdapter.cpp',
                             '%s/PluginInputDomainAdapter.cpp',

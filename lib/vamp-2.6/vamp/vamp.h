@@ -250,7 +250,7 @@ typedef struct _VampPluginDescriptor
     /** API version with which this descriptor is compatible. */
     unsigned int vampApiVersion;
 
-    /** Computer-usable name of the plugin. Must not change. [a-zA-Z0-9_] */
+    /** Computer-usable name of the plugin. Must not change. [a-zA-Z0-9_-] */
     const char *identifier;
 
     /** Human-readable name of the plugin. May be translatable. */

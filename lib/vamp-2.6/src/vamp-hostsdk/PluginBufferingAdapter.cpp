@@ -244,8 +244,10 @@ protected:
     bool m_unrun;
     mutable OutputList m_outputs;
     mutable std::map<int, bool> m_rewriteOutputTimes;
+    std::map<int, int> m_fixedRateFeatureNos; // output no -> feature no
 		
     void processBlock(FeatureSet& allFeatureSets);
+    void adjustFixedRateFeatureTime(int outputNo, Feature &);
 };
 		
 PluginBufferingAdapter::PluginBufferingAdapter(Plugin *plugin) :
@@ -564,6 +566,8 @@ PluginBufferingAdapter::Impl::reset()
         m_queue[i]->reset();
     }
 
+    m_fixedRateFeatureNos.clear();
+
     m_plugin->reset();
 }
 
@@ -607,6 +611,25 @@ PluginBufferingAdapter::Impl::process(const float *const *inputBuffers,
     return allFeatureSets;
 }
     
+void
+PluginBufferingAdapter::Impl::adjustFixedRateFeatureTime(int outputNo,
+                                                         Feature &feature)
+{
+    if (feature.hasTimestamp) {
+        double secs = feature.timestamp.sec;
+        secs += feature.timestamp.nsec / 1e9;
+        m_fixedRateFeatureNos[outputNo] =
+            int(secs * double(m_outputs[outputNo].sampleRate) + 0.5);
+    }
+
+    feature.timestamp = RealTime::fromSeconds
+        (m_fixedRateFeatureNos[outputNo] / double(m_outputs[outputNo].sampleRate));
+
+    feature.hasTimestamp = true;
+    
+    m_fixedRateFeatureNos[outputNo] = m_fixedRateFeatureNos[outputNo] + 1;
+}    
+
 PluginBufferingAdapter::FeatureSet
 PluginBufferingAdapter::Impl::getRemainingFeatures() 
 {
@@ -631,9 +654,18 @@ PluginBufferingAdapter::Impl::getRemainingFeatures()
 
     for (map<int, FeatureList>::iterator iter = featureSet.begin();
          iter != featureSet.end(); ++iter) {
+
+        int outputNo = iter->first;
         FeatureList featureList = iter->second;
+
         for (size_t i = 0; i < featureList.size(); ++i) {
-            allFeatureSets[iter->first].push_back(featureList[i]);
+
+            if (m_outputs[outputNo].sampleType ==
+                OutputDescriptor::FixedSampleRate) {
+                adjustFixedRateFeatureTime(outputNo, featureList[i]);
+            }
+
+            allFeatureSets[outputNo].push_back(featureList[i]);
         }
     }
     
@@ -681,15 +713,12 @@ PluginBufferingAdapter::Impl::processBlock(FeatureSet& allFeatureSets)
                     break;
 
                 case OutputDescriptor::FixedSampleRate:
-                    // use our internal timestamp if feature lacks one
-                    if (!featureList[i].hasTimestamp) {
-                        featureList[i].timestamp = timestamp + adjustment;
-                        featureList[i].hasTimestamp = true;
-                    }
+                    adjustFixedRateFeatureTime(outputNo, featureList[i]);
                     break;
 
                 case OutputDescriptor::VariableSampleRate:
-                    break;		// plugin must set timestamp
+                    // plugin must set timestamp
+                    break;
 
                 default:
                     break;

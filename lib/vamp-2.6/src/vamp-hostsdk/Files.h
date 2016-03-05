@@ -6,7 +6,7 @@
     An API for audio analysis and feature extraction plugins.
 
     Centre for Digital Music, Queen Mary, University of London.
-    Copyright 2006 Chris Cannam.
+    Copyright 2006-2015 Chris Cannam and QMUL.
   
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation
@@ -34,36 +34,30 @@
     authorization.
 */
 
-#ifndef _VAMP_HOSTSDK_HOSTGUARD_H_
-#define _VAMP_HOSTSDK_HOSTGUARD_H_
+#ifndef VAMP_FILES_H
+#define VAMP_FILES_H
 
-#ifdef _VAMP_IN_PLUGINSDK
-#error You have included headers from both vamp-sdk and vamp-hostsdk in the same source file. Please include only vamp-sdk headers in plugin code, and only vamp-hostsdk headers in host code.
-#else
+#include <vector>
+#include <string>
 
-#define _VAMP_IN_HOSTSDK
+/**
+ * This is a private implementation class for the Vamp Host SDK.
+ */
+class Files
+{
+public:
+    static std::vector<std::string> listLibraryFiles();
+    static std::vector<std::string> listLibraryFilesMatching(std::string libname);
 
-#ifdef _VAMP_NO_HOST_NAMESPACE
-#define _VAMP_SDK_HOSTSPACE_BEGIN(h)
-#define _VAMP_SDK_HOSTSPACE_END(h)
-#define _VAMP_SDK_PLUGSPACE_BEGIN(h)
-#define _VAMP_SDK_PLUGSPACE_END(h)
-#else
-#define _VAMP_SDK_HOSTSPACE_BEGIN(h) \
-	namespace _VampHost {
+    static void *loadLibrary(std::string filename);
+    static void unloadLibrary(void *);
+    static void *lookupInLibrary(void *, const char *symbol);
 
-#define _VAMP_SDK_HOSTSPACE_END(h) \
-	} \
-	using namespace _VampHost;
-#define _VAMP_SDK_PLUGSPACE_BEGIN(h) \
-	namespace _VampHost {
-
-#define _VAMP_SDK_PLUGSPACE_END(h) \
-	} \
-	using namespace _VampHost;
-#endif
+    static std::string lcBasename(std::string path);
+    static std::string splicePath(std::string a, std::string b);
+    static std::vector<std::string> listFiles(std::string dir, std::string ext);
+};
 
 #endif
 
-#endif
-
+    

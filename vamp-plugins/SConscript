@@ -49,7 +49,7 @@ if int(build.flags['vamp']):
     # If there is no system vamp-hostdk installed, then we'll directly link
     # the vamp-hostsdk.
     if not conf.CheckLib('vamp-sdk'):
-        INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
+        INTERNAL_VAMP_PATH = '#lib/vamp-2.6'
         # For header includes
         env.Append(CPPPATH=[INTERNAL_VAMP_PATH])
         sdk_src_path = '%s/src/vamp-sdk' % INTERNAL_VAMP_PATH

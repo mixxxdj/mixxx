@@ -66,6 +66,9 @@ namespace HostExt {
  * class, and are certainly not required to use this actual class.
  * But we do strongly recommend it.
  *
+ * This class is not thread-safe; use it from a single application
+ * thread, or guard access to it with a mutex.
+ *
  * \note This class was introduced in version 1.1 of the Vamp plugin SDK.
  */
 

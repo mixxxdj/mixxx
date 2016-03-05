@@ -39,7 +39,7 @@
 #include <cstring>
 #include <cstdlib>
 
-#if ( VAMP_SDK_MAJOR_VERSION != 2 || VAMP_SDK_MINOR_VERSION != 3 )
+#if ( VAMP_SDK_MAJOR_VERSION != 2 || VAMP_SDK_MINOR_VERSION != 6 )
 #error Unexpected version of Vamp SDK header included
 #endif
 
@@ -588,7 +588,7 @@ PluginAdapterBase::Impl::vampGetRemainingFeatures(VampPluginHandle handle)
 }
 
 void
-PluginAdapterBase::Impl::vampReleaseFeatureSet(VampFeatureList *fs)
+PluginAdapterBase::Impl::vampReleaseFeatureSet(VampFeatureList *)
 {
 #ifdef DEBUG_PLUGIN_ADAPTER
     std::cerr << "PluginAdapterBase::Impl::vampReleaseFeatureSet" << std::endl;
