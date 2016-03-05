@@ -15,6 +15,13 @@
 // value object. Only the id can be set once.
 class TrackRef {
 public:
+    // All file-related track properties are snapshots from the provided
+    // QFileInfo. Obtaining them might involve accessing the file system
+    // and should be used consciously! The QFileInfo class does some
+    // caching behind the scenes.
+    // Please note that the canonical location of QFileInfo may change at
+    // any time, when the underlying file system structure is modified.
+    // It becomes empty if the file is deleted.
     static QString location(const QFileInfo& fileInfo) {
         return fileInfo.absoluteFilePath();
     }
@@ -22,20 +29,26 @@ public:
         return fileInfo.canonicalFilePath();
     }
 
+    // Converts a QFileInfo and an optional TrackId into a TrackRef. This
+    // involves obtaining the file-related track properties from QFileInfo
+    // (see above) and should used consciously!
+    static TrackRef fromFileInfo(
+            const QFileInfo& fileInfo,
+            TrackId id = TrackId()) {
+        return TrackRef(
+                location(fileInfo),
+                canonicalLocation(fileInfo),
+                id);
+    }
+
+    // Default constructor
     TrackRef() {
         DEBUG_ASSERT(verifyConsistency());
     }
-    // Conversion from QFileInfo with an optional TrackId
-    explicit TrackRef(
-            const QFileInfo& fileInfo,
-            TrackId id = TrackId())
-        : m_location(location(fileInfo)),
-          m_canonicalLocation(canonicalLocation(fileInfo)),
-          m_id(id) {
-        DEBUG_ASSERT(verifyConsistency());
-    }
-    // Create a copy of an existing TrackRef, but overwrite the
-    // TrackId with a custom value.
+    // Regular copy constructor
+    TrackRef(const TrackRef& other) = default;
+    // Custom copy constructor:  Creates a copy of an existing TrackRef,
+    // but overwrite the TrackId with a custom value.
     TrackRef(
             const TrackRef& other,
             TrackId id)
@@ -76,6 +89,17 @@ public:
 
     bool isValid() const {
         return hasId() || hasCanonicalLocation();
+    }
+protected:
+    // Initializing constructor
+    TrackRef(
+            const QString& location,
+            const QString& canonicalLocation,
+            TrackId id = TrackId())
+        : m_location(location),
+          m_canonicalLocation(canonicalLocation),
+          m_id(id) {
+        DEBUG_ASSERT(verifyConsistency());
     }
 
 private:
