@@ -11,10 +11,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2014-10-08 11:26:57 -0400 (Wed, 08 Oct 2014) $
+// Last changed  : $Date: 2015-02-21 23:24:29 +0200 (Sat, 21 Feb 2015) $
 // File revision : $Revision: 4 $
 //
-// $Id: FIRFilter.h 201 2014-10-08 15:26:57Z oparviai $
+// $Id: FIRFilter.h 202 2015-02-21 21:24:29Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -64,10 +64,6 @@ protected:
 
     // Memory for filter coefficients
     SAMPLETYPE *filterCoeffs;
-
-    // Memory for keeping temporary sums in multichannel processing
-    LONG_SAMPLETYPE *sum;
-    uint sumsize;
 
     virtual uint evaluateFilterStereo(SAMPLETYPE *dest, 
                                       const SAMPLETYPE *src, 

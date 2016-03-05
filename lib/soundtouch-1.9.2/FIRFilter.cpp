@@ -11,10 +11,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2014-10-08 11:26:57 -0400 (Wed, 08 Oct 2014) $
+// Last changed  : $Date: 2015-02-21 23:24:29 +0200 (Sat, 21 Feb 2015) $
 // File revision : $Revision: 4 $
 //
-// $Id: FIRFilter.cpp 201 2014-10-08 15:26:57Z oparviai $
+// $Id: FIRFilter.cpp 202 2015-02-21 21:24:29Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -61,22 +61,18 @@ FIRFilter::FIRFilter()
     length = 0;
     lengthDiv8 = 0;
     filterCoeffs = NULL;
-    sum = NULL;
-    sumsize = 0;
 }
 
 
 FIRFilter::~FIRFilter()
 {
     delete[] filterCoeffs;
-    delete[] sum;
 }
 
 // Usual C-version of the filter routine for stereo sound
 uint FIRFilter::evaluateFilterStereo(SAMPLETYPE *dest, const SAMPLETYPE *src, uint numSamples) const
 {
-    uint i, j, end;
-    LONG_SAMPLETYPE suml, sumr;
+    int j, end;
 #ifdef SOUNDTOUCH_FLOAT_SAMPLES
     // when using floating point samples, use a scaler instead of a divider
     // because division is much slower operation than multiplying.
@@ -90,9 +86,12 @@ uint FIRFilter::evaluateFilterStereo(SAMPLETYPE *dest, const SAMPLETYPE *src, ui
 
     end = 2 * (numSamples - length);
 
+    #pragma omp parallel for
     for (j = 0; j < end; j += 2) 
     {
         const SAMPLETYPE *ptr;
+        LONG_SAMPLETYPE suml, sumr;
+        uint i;
 
         suml = sumr = 0;
         ptr = src + j;
@@ -133,28 +132,31 @@ uint FIRFilter::evaluateFilterStereo(SAMPLETYPE *dest, const SAMPLETYPE *src, ui
 // Usual C-version of the filter routine for mono sound
 uint FIRFilter::evaluateFilterMono(SAMPLETYPE *dest, const SAMPLETYPE *src, uint numSamples) const
 {
-    uint i, j, end;
-    LONG_SAMPLETYPE sum;
+    int j, end;
 #ifdef SOUNDTOUCH_FLOAT_SAMPLES
     // when using floating point samples, use a scaler instead of a divider
     // because division is much slower operation than multiplying.
     double dScaler = 1.0 / (double)resultDivider;
 #endif
 
-
     assert(length != 0);
 
     end = numSamples - length;
+    #pragma omp parallel for
     for (j = 0; j < end; j ++) 
     {
+        const SAMPLETYPE *pSrc = src + j;
+        LONG_SAMPLETYPE sum;
+        uint i;
+
         sum = 0;
         for (i = 0; i < length; i += 4) 
         {
             // loop is unrolled by factor of 4 here for efficiency
-            sum += src[i + 0] * filterCoeffs[i + 0] + 
-                   src[i + 1] * filterCoeffs[i + 1] + 
-                   src[i + 2] * filterCoeffs[i + 2] + 
-                   src[i + 3] * filterCoeffs[i + 3];
+            sum += pSrc[i + 0] * filterCoeffs[i + 0] + 
+                   pSrc[i + 1] * filterCoeffs[i + 1] + 
+                   pSrc[i + 2] * filterCoeffs[i + 2] + 
+                   pSrc[i + 3] * filterCoeffs[i + 3];
         }
 #ifdef SOUNDTOUCH_INTEGER_SAMPLES
         sum >>= resultDivFactor;
@@ -164,7 +166,6 @@ uint FIRFilter::evaluateFilterMono(SAMPLETYPE *dest, const SAMPLETYPE *src, uint
         sum *= dScaler;
 #endif // SOUNDTOUCH_INTEGER_SAMPLES
         dest[j] = (SAMPLETYPE)sum;
-        src ++;
     }
     return end;
 }
@@ -172,15 +173,7 @@ uint FIRFilter::evaluateFilterMono(SAMPLETYPE *dest, const SAMPLETYPE *src, uint
 
 uint FIRFilter::evaluateFilterMulti(SAMPLETYPE *dest, const SAMPLETYPE *src, uint numSamples, uint numChannels)
 {
-    uint i, j, end, c;
-
-    if (sumsize < numChannels)
-    {
-        // allocate large enough array for keeping sums
-        sumsize = numChannels;
-        delete[] sum;
-        sum = new LONG_SAMPLETYPE[numChannels];
-    }
+    int j, end;
 
 #ifdef SOUNDTOUCH_FLOAT_SAMPLES
     // when using floating point samples, use a scaler instead of a divider
@@ -192,17 +185,21 @@ uint FIRFilter::evaluateFilterMulti(SAMPLETYPE *dest, const SAMPLETYPE *src, uin
     assert(src != NULL);
     assert(dest != NULL);
     assert(filterCoeffs != NULL);
+    assert(numChannels < 16);
 
     end = numChannels * (numSamples - length);
 
-    for (c = 0; c < numChannels; c ++)
-    {
-        sum[c] = 0;
-    }
-
+    #pragma omp parallel for
     for (j = 0; j < end; j += numChannels)
     {
         const SAMPLETYPE *ptr;
+        LONG_SAMPLETYPE sums[16];
+        uint c, i;
+
+        for (c = 0; c < numChannels; c ++)
+        {
+            sums[c] = 0;
+        }
 
         ptr = src + j;
 
@@ -211,7 +208,7 @@ uint FIRFilter::evaluateFilterMulti(SAMPLETYPE *dest, const SAMPLETYPE *src, uin
             SAMPLETYPE coef=filterCoeffs[i];
             for (c = 0; c < numChannels; c ++)
             {
-                sum[c] += ptr[0] * coef;
+                sums[c] += ptr[0] * coef;
                 ptr ++;
             }
         }
@@ -219,13 +216,11 @@ uint FIRFilter::evaluateFilterMulti(SAMPLETYPE *dest, const SAMPLETYPE *src, uin
         for (c = 0; c < numChannels; c ++)
         {
 #ifdef SOUNDTOUCH_INTEGER_SAMPLES
-            sum[c] >>= resultDivFactor;
+            sums[c] >>= resultDivFactor;
 #else
-            sum[c] *= dScaler;
+            sums[c] *= dScaler;
 #endif // SOUNDTOUCH_INTEGER_SAMPLES
-            *dest = (SAMPLETYPE)sum[c];
-            dest++;
-            sum[c] = 0;
+            dest[j+c] = (SAMPLETYPE)sums[c];
         }
     }
     return numSamples - length;
