@@ -270,17 +270,14 @@ void MidiController::receive(unsigned char status, unsigned char control,
     // this device is not master, so if the user changes masters all of the data
     // is ready to be used instantly.
     if (m_midiSourceClock.handleMessage(status, timestamp)) {
-        // TODO:
-        // Are we actually clock master?  Doing a string comparison on every pulse
-        // is not great.  The better solution would to be notified when the config
-        // value changes.
-//        const QString master_midi_device =
-//                m_pConfig->getValueString(ConfigKey("[MidiSourceClock]", "source_device"));
-//        if (m_preset.deviceId() == master_midi_device) {
-        m_pClockBpm->set(m_midiSourceClock.bpm());
-        m_pClockLastBeat->set(m_midiSourceClock.smoothedBeatTime().toDoubleNanos());
-        m_pClockRunning->set(static_cast<double>(m_midiSourceClock.running()));
-//        }
+        // TODO(owen): Use preferences to determine if we are clock master and only
+        // set values if so.
+        // TODO(owen): Enable midi clock handling when UI is finished.
+        if (false) {
+            m_pClockBpm->set(m_midiSourceClock.bpm());
+            m_pClockLastBeat->set(m_midiSourceClock.smoothedBeatTime().toDoubleNanos());
+            m_pClockRunning->set(static_cast<double>(m_midiSourceClock.running()));
+        }
         return;
     }
 
