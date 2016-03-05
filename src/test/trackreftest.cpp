@@ -51,7 +51,8 @@ TEST_F(TrackRefTest, DefaultConstructor) {
 }
 
 TEST_F(TrackRefTest, FromFileInfoWithId) {
-    const TrackRef actual(m_tempFileInfo, m_validTrackId);
+    const TrackRef actual(
+            TrackRef::fromFileInfo(m_tempFileInfo, m_validTrackId));
 
     verifyFileInfo(actual, m_tempFileInfo);
     EXPECT_TRUE(actual.hasId());
@@ -59,7 +60,8 @@ TEST_F(TrackRefTest, FromFileInfoWithId) {
 }
 
 TEST_F(TrackRefTest, FromFileInfoWithoutId) {
-    const TrackRef actual(m_tempFileInfo);
+    const TrackRef actual(
+            TrackRef::fromFileInfo(m_tempFileInfo));
 
     verifyFileInfo(actual, m_tempFileInfo);
     EXPECT_FALSE(actual.hasId());
@@ -67,7 +69,8 @@ TEST_F(TrackRefTest, FromFileInfoWithoutId) {
 }
 
 TEST_F(TrackRefTest, CopyAndSetId) {
-    const TrackRef withoutId(m_tempFileInfo);
+    const TrackRef withoutId(
+            TrackRef::fromFileInfo(m_tempFileInfo));
 
     const TrackRef actual(withoutId, m_validTrackId);
 
