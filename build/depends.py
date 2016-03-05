@@ -957,6 +957,7 @@ class MixxxCore(Feature):
                    "track/tracknumbers.cpp",
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
+                   "track/trackref.cpp",
 
                    "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",

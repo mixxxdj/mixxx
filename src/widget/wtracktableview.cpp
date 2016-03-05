@@ -5,24 +5,26 @@
 #include <QDrag>
 #include <QShortcut>
 
-#include "widget/wwidget.h"
+#include "widget/wtracktableview.h"
+
+#include "widget/wcoverartmenu.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableviewheader.h"
+#include "widget/wwidget.h"
 #include "library/coverartcache.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
+#include "library/dlgtrackinfo.h"
+#include "track/trackref.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "widget/wtracktableview.h"
-#include "library/dlgtrackinfo.h"
 #include "soundsourceproxy.h"
 #include "mixer/playermanager.h"
-#include "util/dnd.h"
-#include "util/time.h"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "waveform/guitick.h"
-#include "widget/wcoverartmenu.h"
+#include "util/dnd.h"
+#include "util/time.h"
 #include "util/assert.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
@@ -1167,8 +1169,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         QList<QString> fileLocationList;
         foreach (const QFileInfo& fileInfo, fileList) {
-            // TODO(uklotzde): Replace with TrackRef::location()
-            fileLocationList.append(fileInfo.absoluteFilePath());
+            fileLocationList.append(TrackRef::location(fileInfo));
         }
 
         // Drag-and-drop from an external application
