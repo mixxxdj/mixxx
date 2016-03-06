@@ -75,8 +75,7 @@ public:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private:
     double getJogFactor() const;

@@ -194,9 +194,8 @@ class EngineBuffer : public EngineObject {
     void slotEjectTrack(double);
 
   signals:
-    void trackLoaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
-    void trackUnloaded(TrackPointer pTrack);
 
   private slots:
     void slotTrackLoading();

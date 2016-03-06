@@ -307,34 +307,26 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     }
 }
 
-void SyncControl::trackLoaded(TrackPointer pTrack) {
+void SyncControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     //qDebug() << getGroup() << "SyncControl::trackLoaded";
-    Q_UNUSED(pTrack);
-    m_masterBpmAdjustFactor = kBpmUnity;
     if (getSyncMode() == SYNC_MASTER) {
-        // If we loaded a new track while master, hand off.
+        // If we change or remove a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
-
-    if (getSyncMode() != SYNC_NONE) {
-        // Because of the order signals get processed, the file/local_bpm COs and
-        // rate slider are not updated as soon as we need them, so do that now.
-        m_pFileBpm->set(pTrack->getBpm());
-        m_pLocalBpm->set(pTrack->getBpm());
-        double dRate = calcRateRatio();
-        // We used to set the m_pBpm here, but that causes a signal loop whereby
-        // that was interpretted as a rate slider tweak, and the master bpm
-        // was changed.  Instead, now we pass the suggested bpm to enginesync
-        // explicitly, and it can decide what to do with it.
-        m_pEngineSync->notifyTrackLoaded(this, m_pLocalBpm->get() * dRate);
-    }
-}
-
-void SyncControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
-    if (getSyncMode() == SYNC_MASTER) {
-        // If we unloaded a new track while master, hand off.
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
+    if (!pNewTrack.isNull()) {
+        m_masterBpmAdjustFactor = kBpmUnity;
+        if (getSyncMode() != SYNC_NONE) {
+            // Because of the order signals get processed, the file/local_bpm COs and
+            // rate slider are not updated as soon as we need them, so do that now.
+            m_pFileBpm->set(pNewTrack->getBpm());
+            m_pLocalBpm->set(pNewTrack->getBpm());
+            double dRate = calcRateRatio();
+            // We used to set the m_pBpm here, but that causes a signal loop whereby
+            // that was interpretted as a rate slider tweak, and the master bpm
+            // was changed.  Instead, now we pass the suggested bpm to enginesync
+            // explicitly, and it can decide what to do with it.
+            m_pEngineSync->notifyTrackLoaded(this, m_pLocalBpm->get() * dRate);
+        }
     }
 }
 

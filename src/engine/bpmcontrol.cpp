@@ -736,36 +736,28 @@ void BpmControl::slotAdjustRateSlider() {
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
-void BpmControl::trackLoaded(TrackPointer pTrack) {
-    if (m_pTrack) {
-        trackUnloaded(m_pTrack);
-    }
-
-    // reset for new track
-    resetSyncAdjustment();
-
-    if (pTrack) {
-        m_pTrack = pTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
-                this, SLOT(slotUpdatedTrackBeats()));
-    }
-}
-
-void BpmControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
+void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (m_pTrack) {
         disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));
+    }
+
+    // reset for a new track
+    resetSyncAdjustment();
+
+    if (pNewTrack) {
+        m_pTrack = pNewTrack;
+        m_pBeats = m_pTrack->getBeats();
+        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                this, SLOT(slotUpdatedTrackBeats()));
+    } else {
         m_pTrack.clear();
         m_pBeats.clear();
     }
-    m_dUserOffset = 0.0;
-    m_dLastSyncAdjustment = 1.0;
 }
 
-void BpmControl::slotUpdatedTrackBeats()
-{
+void BpmControl::slotUpdatedTrackBeats() {
     if (m_pTrack) {
         resetSyncAdjustment();
         m_pBeats = m_pTrack->getBeats();
