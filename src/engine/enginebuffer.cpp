@@ -1305,7 +1305,7 @@ void EngineBuffer::hintReader(const double dRate) {
 }
 
 // WARNING: This method runs in the GUI thread
-void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
+void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
     // Signal to the reader to load the track. The reader will respond with
     // trackLoading and then either with trackLoaded or trackLoadFailed signals.
     m_bPlayAfterLoading = play;

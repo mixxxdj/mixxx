@@ -99,7 +99,7 @@ class SignalPathTest : public MixxxTest {
     void loadTrack(EngineDeck* pDeck, QString path) {
         const QString kTrackLocationTest(path);
         TrackPointer pTrack(TrackInfoObject::newTemporary(kTrackLocationTest));
-        pDeck->getEngineBuffer()->slotLoadTrack(pTrack, true);
+        pDeck->getEngineBuffer()->loadTrack(pTrack, true);
 
         // Wait for the track to load.
         ProcessBuffer();

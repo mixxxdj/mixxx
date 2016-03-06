@@ -173,6 +173,11 @@ class EngineBuffer : public EngineObject {
         }
     }
 
+    // Request that the EngineBuffer load a track. Since the process is
+    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
+    // has completed.
+    void loadTrack(TrackPointer pTrack, bool play);
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -185,11 +190,6 @@ class EngineBuffer : public EngineObject {
     void slotControlSeekExact(double);
     void slotControlSlip(double);
     void slotKeylockEngineChanged(double);
-
-    // Request that the EngineBuffer load a track. Since the process is
-    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
-    // has completed.
-    void slotLoadTrack(TrackPointer pTrack, bool play);
 
     void slotEjectTrack(double);
 
