@@ -179,7 +179,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
                 this, SLOT(slotSetReplayGain(Mixxx::ReplayGain)));
     }
 
-    // Request a new track from the reader
+    // Request a new track from EngineBuffer
     emit(loadTrack(track, bPlay));
 }
 

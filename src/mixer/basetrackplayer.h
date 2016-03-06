@@ -68,7 +68,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void setupEqControls();
 
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bPlay=false);
+    void slotLoadTrack(TrackPointer track, bool bPlay) override;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
     void slotSetReplayGain(Mixxx::ReplayGain replayGain);

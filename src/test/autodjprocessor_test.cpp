@@ -72,7 +72,7 @@ class FakeDeck : public BaseTrackPlayer {
     // a success or failure signal. To simulate a load success, call
     // fakeTrackLoadedEvent. To simulate a failure, call
     // fakeTrackLoadFailedEvent.
-    void slotLoadTrack(TrackPointer pTrack, bool bPlay) {
+    void slotLoadTrack(TrackPointer pTrack, bool bPlay) override {
         loadedTrack = pTrack;
         play.set(bPlay);
     }
