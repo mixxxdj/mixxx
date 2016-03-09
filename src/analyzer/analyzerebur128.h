@@ -1,9 +1,10 @@
 #ifndef ANALYZER_ANALYZEREBUR128_H_
 #define ANALYZER_ANALYZEREBUR128_H_
 
+#include <ebur128.h>
+
 #include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
-#include <ebur128.h>
 
 class AnalyzerEbur128 : public Analyzer {
   public:
