@@ -1,14 +1,14 @@
-#ifndef ANALYZEREBUR128MIT_H_
-#define ANALYZEREBUR128MIT_H_
+#ifndef ANALYZER_ANALYZEREBUR128_H_
+#define ANALYZER_ANALYZEREBUR128_H_
 
 #include "analyzer/analyzer.h"
 #include "preferences/usersettings.h"
 #include <ebur128.h>
 
-class AnalyzerEbur128Mit : public Analyzer {
+class AnalyzerEbur128 : public Analyzer {
   public:
-    AnalyzerEbur128Mit(UserSettingsPointer pConfig);
-    virtual ~AnalyzerEbur128Mit();
+    AnalyzerEbur128(UserSettingsPointer pConfig);
+    virtual ~AnalyzerEbur128();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
@@ -24,4 +24,4 @@ class AnalyzerEbur128Mit : public Analyzer {
     ebur128_state* m_pState;
 };
 
-#endif /* ANALYZEREBUR128MIT_H_ */
+#endif /* ANALYZER_ANALYZEREBUR128_H_ */

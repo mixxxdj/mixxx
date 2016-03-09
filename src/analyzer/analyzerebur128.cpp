@@ -1,4 +1,4 @@
-#include <analyzer/analyzerebur128mit.h>
+#include <analyzer/analyzerebur128.h>
 #include <QtDebug>
 
 #include "trackinfoobject.h"
@@ -10,17 +10,17 @@ namespace {
 const double kReplayGain2ReferenceLUFS = -18;
 } // anonymous namespace
 
-AnalyzerEbur128Mit::AnalyzerEbur128Mit(UserSettingsPointer pConfig)
+AnalyzerEbur128::AnalyzerEbur128(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_initalized(false),
           m_iBufferSize(0),
           m_pState(nullptr) {
 }
 
-AnalyzerEbur128Mit::~AnalyzerEbur128Mit() {
+AnalyzerEbur128::~AnalyzerEbur128() {
 }
 
-bool AnalyzerEbur128Mit::initialize(TrackPointer tio,
+bool AnalyzerEbur128::initialize(TrackPointer tio,
         int sampleRate, int totalSamples) {
     if (isDisabledOrLoadStoredSuccess(tio) || totalSamples == 0) {
         return false;
@@ -34,7 +34,7 @@ bool AnalyzerEbur128Mit::initialize(TrackPointer tio,
     return m_initalized;
 }
 
-bool AnalyzerEbur128Mit::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
+bool AnalyzerEbur128::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     // WARNING: Do not fix the "analyser" spelling here since user config files
     // contain these strings.
     int version = m_pConfig->getValueString(
@@ -54,13 +54,13 @@ bool AnalyzerEbur128Mit::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     return true;
 }
 
-void AnalyzerEbur128Mit::cleanup(TrackPointer tio) {
+void AnalyzerEbur128::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
     ebur128_destroy(&m_pState);
     m_initalized = false;
 }
 
-void AnalyzerEbur128Mit::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
     if (!m_initalized) {
         return;
     }
@@ -70,7 +70,7 @@ void AnalyzerEbur128Mit::process(const CSAMPLE *pIn, const int iLen) {
     DEBUG_ASSERT(e == EBUR128_SUCCESS);
 }
 
-void AnalyzerEbur128Mit::finalize(TrackPointer tio) {
+void AnalyzerEbur128::finalize(TrackPointer tio) {
     if (!m_initalized) {
         return;
     }
