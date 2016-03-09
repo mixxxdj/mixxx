@@ -7,17 +7,17 @@ class ReplayGainSettings {
   public:
     ReplayGainSettings(UserSettingsPointer pConfig);
 
-    int getInitialReplayGainBoost();
+    int getInitialReplayGainBoost() const;
     void setInitialReplayGainBoost(int value);
-    int getInitialDefaultBoost();
+    int getInitialDefaultBoost() const;
     void setInitialDefaultBoost(int value);
-    bool getReplayGainEnabled();
+    bool getReplayGainEnabled() const;
     void setReplayGainEnabled(bool value);
-    bool getReplayGainAnalyserEnabled();
-    void setReplayGainAnalyserEnabled(bool value);
-    int getReplayGainAnalyserVersion();
-    void setReplayGainAnalyserVersion(int value);
-    bool getReplayGainReanalyze();
+    bool getReplayGainAnalyzerEnabled() const;
+    void setReplayGainAnalyzerEnabled(bool value);
+    int getReplayGainAnalyzerVersion() const;
+    void setReplayGainAnalyzerVersion(int value);
+    bool getReplayGainReanalyze() const;
     void setReplayGainReanalyze(bool value);
 
   private:

@@ -34,7 +34,7 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     // Determines whether or not to gray out the preferences
     void loadSettings();
     void setLabelCurrentReplayGainBoost(int value);
-    bool isReplayGainAnalyserEnabled() const;
+    bool isReplayGainAnalyzerEnabled() const;
     int getReplayGainVersion() const;
 
     ReplayGainSettings m_rgSettings;

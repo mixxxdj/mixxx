@@ -27,7 +27,7 @@ ReplayGainSettings::ReplayGainSettings(UserSettingsPointer pConfig)
     : m_pConfig(pConfig) {
 }
 
-int ReplayGainSettings::getInitialReplayGainBoost() {
+int ReplayGainSettings::getInitialReplayGainBoost() const {
     return m_pConfig->getValueString(
             ConfigKey(kConfigKey, kInitialReplayGainBoost), "0").toInt();
 }
@@ -37,7 +37,7 @@ void ReplayGainSettings::setInitialReplayGainBoost(int value) {
             ConfigValue(value));
 }
 
-int ReplayGainSettings::getInitialDefaultBoost() {
+int ReplayGainSettings::getInitialDefaultBoost() const {
     return m_pConfig->getValueString(ConfigKey(kConfigKey, kInitialDefaultBoost),
             kInitialDefaultBoostDefault).toInt();
 }
@@ -47,7 +47,7 @@ void ReplayGainSettings::setInitialDefaultBoost(int value) {
                 ConfigValue(value));
 }
 
-bool ReplayGainSettings::getReplayGainEnabled() {
+bool ReplayGainSettings::getReplayGainEnabled() const {
     return m_pConfig->getValueString(
         ConfigKey(kConfigKey, kReplayGainEnabled), "1").toInt() == 1;
 }
@@ -60,27 +60,27 @@ void ReplayGainSettings::setReplayGainEnabled(bool value) {
     }
 }
 
-bool ReplayGainSettings::getReplayGainAnalyserEnabled() {
+bool ReplayGainSettings::getReplayGainAnalyzerEnabled() const {
     return m_pConfig->getValueString(
         ConfigKey(kConfigKey, kReplayGainAnalyzerEnabled), "1").toInt();
 }
 
-void ReplayGainSettings::setReplayGainAnalyserEnabled(bool value) {
+void ReplayGainSettings::setReplayGainAnalyzerEnabled(bool value) {
     m_pConfig->set(ConfigKey(kConfigKey, kReplayGainAnalyzerEnabled),
                 ConfigValue(value));
 }
 
-int ReplayGainSettings::getReplayGainAnalyserVersion() {
+int ReplayGainSettings::getReplayGainAnalyzerVersion() const {
     return m_pConfig->getValueString(
             ConfigKey(kConfigKey, kReplayGainAnalyzerVersion), "2").toInt();
 }
 
-void ReplayGainSettings::setReplayGainAnalyserVersion(int value) {
+void ReplayGainSettings::setReplayGainAnalyzerVersion(int value) {
     m_pConfig->set(ConfigKey(kConfigKey, kReplayGainAnalyzerVersion),
             ConfigValue(value));
 }
 
-bool ReplayGainSettings::getReplayGainReanalyze() {
+bool ReplayGainSettings::getReplayGainReanalyze() const {
     return m_pConfig->getValueString(
         ConfigKey(kConfigKey, kReplayGainReanalyze)).toInt() > 0;
 }

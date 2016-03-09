@@ -9,7 +9,7 @@
 #define ANALYZER_ANALYZERGAIN_H
 
 #include "analyzer/analyzer.h"
-#include "preferences/usersettings.h"
+#include "preferences/replaygainsettings.h"
 
 class ReplayGain;
 
@@ -26,7 +26,7 @@ class AnalyzerGain : public Analyzer {
 
   private:
     bool m_initalized;
-    UserSettingsPointer m_pConfig;
+    ReplayGainSettings m_rgSettings;
     CSAMPLE* m_pLeftTempBuffer;
     CSAMPLE* m_pRightTempBuffer;
     ReplayGain* m_pReplayGain;

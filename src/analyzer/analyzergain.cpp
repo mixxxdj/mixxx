@@ -7,12 +7,12 @@
 #include "util/sample.h"
 #include "util/timer.h"
 
-AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig) {
-    m_pConfig = pConfig;
-    m_initalized = false;
-    m_pLeftTempBuffer = NULL;
-    m_pRightTempBuffer = NULL;
-    m_iBufferSize = 0;
+AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig)
+    : m_initalized(false),
+      m_rgSettings(pConfig),
+      m_pLeftTempBuffer(NULL),
+      m_pRightTempBuffer(NULL),
+      m_iBufferSize(0) {
     m_pReplayGain = new ReplayGain();
 }
 
@@ -32,15 +32,10 @@ bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples
 }
 
 bool AnalyzerGain::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    // WARNING: Do not fix the "analyser" spelling here since user config files
-    // contain these strings.
-    int version = m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainAnalyserVersion"), "2").toInt();
-    bool analyzerEnabled = ((bool)m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainAnalyserEnabled"), "1").toInt()) &&
+    int version = m_rgSettings.getReplayGainAnalyzerVersion();
+    bool analyzerEnabled = m_rgSettings.getReplayGainAnalyzerEnabled() &&
             (version == 1);
-    bool reanalyze = m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainReanalyze")).toInt();
+    bool reanalyze = m_rgSettings.getReplayGainReanalyze();
 
     if (analyzerEnabled) {
         if (reanalyze) {

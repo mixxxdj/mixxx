@@ -11,7 +11,7 @@ const double kReplayGain2ReferenceLUFS = -18;
 } // anonymous namespace
 
 AnalyzerEbur128::AnalyzerEbur128(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
+        : m_rgSettings(pConfig),
           m_initalized(false),
           m_iBufferSize(0),
           m_pState(nullptr) {
@@ -35,15 +35,10 @@ bool AnalyzerEbur128::initialize(TrackPointer tio,
 }
 
 bool AnalyzerEbur128::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    // WARNING: Do not fix the "analyser" spelling here since user config files
-    // contain these strings.
-    int version = m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainAnalyserVersion"), "2").toInt();
-    bool analyzerEnabled = ((bool)m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainAnalyserEnabled"), "1").toInt()) &&
+    int version = m_rgSettings.getReplayGainAnalyzerVersion();
+    bool analyzerEnabled = m_rgSettings.getReplayGainAnalyzerEnabled() &&
             (version == 2);
-    bool reanalyse = m_pConfig->getValueString(
-            ConfigKey("[ReplayGain]", "ReplayGainReanalyze")).toInt();
+    bool reanalyse = m_rgSettings.getReplayGainReanalyze();
 
     if (analyzerEnabled) {
         if (reanalyse) {

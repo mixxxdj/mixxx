@@ -58,8 +58,8 @@ void DlgPrefReplayGain::loadSettings() {
     bool gainEnabled = m_rgSettings.getReplayGainEnabled();
     EnableGain->setChecked(gainEnabled);
 
-    bool analyzerEnabled = m_rgSettings.getReplayGainAnalyserEnabled();
-    int version = m_rgSettings.getReplayGainAnalyserVersion();
+    bool analyzerEnabled = m_rgSettings.getReplayGainAnalyzerEnabled();
+    int version = m_rgSettings.getReplayGainAnalyzerVersion();
 
     if (!analyzerEnabled) {
         radioButtonDisable->setChecked(true);
@@ -107,7 +107,7 @@ void DlgPrefReplayGain::slotSetRGEnabled() {
     slotApply();
 }
 
-bool DlgPrefReplayGain::isReplayGainAnalyserEnabled() const {
+bool DlgPrefReplayGain::isReplayGainAnalyzerEnabled() const {
     return !radioButtonDisable->isChecked();
 }
 
@@ -119,9 +119,9 @@ int DlgPrefReplayGain::getReplayGainVersion() const {
 }
 
 void DlgPrefReplayGain::slotSetRGAnalyzerChanged() {
-    m_rgSettings.setReplayGainAnalyserEnabled(isReplayGainAnalyserEnabled());
-    checkBoxReanalyze->setEnabled(isReplayGainAnalyserEnabled());
-    m_rgSettings.setReplayGainAnalyserVersion(getReplayGainVersion());
+    m_rgSettings.setReplayGainAnalyzerEnabled(isReplayGainAnalyzerEnabled());
+    checkBoxReanalyze->setEnabled(isReplayGainAnalyzerEnabled());
+    m_rgSettings.setReplayGainAnalyzerVersion(getReplayGainVersion());
     slotApply();
 }
 

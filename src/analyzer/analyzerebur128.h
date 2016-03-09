@@ -4,7 +4,7 @@
 #include <ebur128.h>
 
 #include "analyzer/analyzer.h"
-#include "preferences/usersettings.h"
+#include "preferences/replaygainsettings.h"
 
 class AnalyzerEbur128 : public Analyzer {
   public:
@@ -18,7 +18,7 @@ class AnalyzerEbur128 : public Analyzer {
     void finalize(TrackPointer tio) override;
 
   private:
-    UserSettingsPointer m_pConfig;
+    ReplayGainSettings m_rgSettings;
     bool m_initalized;
     CSAMPLE* m_pTempBuffer[2];
     int m_iBufferSize;
