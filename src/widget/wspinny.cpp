@@ -241,8 +241,9 @@ void WSpinny::slotLoadTrack(TrackPointer pTrack) {
     slotTrackCoverArtUpdated();
 }
 
-void WSpinny::slotReset() {
-    if (m_loadedTrack) {
+void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    if (m_loadedTrack && pOldTrack == m_loadedTrack) {
         disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }

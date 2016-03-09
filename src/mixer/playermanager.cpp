@@ -22,6 +22,7 @@
 #include "trackinfoobject.h"
 #include "util/assert.h"
 #include "util/stat.h"
+#include "util/sleepableqthread.h"
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
@@ -571,6 +572,9 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
         if (playControl && playControl->get() != 1.) {
             locker.unlock();
             pDeck->slotLoadTrack(pTrack, false);
+            // Test for a fixed race condition with fast loads
+            //SleepableQThread::sleep(1);
+            //pDeck->slotLoadTrack(TrackPointer(), false);
             return;
         }
         ++it;

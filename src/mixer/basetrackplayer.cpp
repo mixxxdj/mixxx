@@ -104,7 +104,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     if (m_pLoadedTrack) {
-        emit(unloadingTrack(m_pLoadedTrack));
+        emit(loadingTrack(TrackPointer(), m_pLoadedTrack));
         disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
         disconnect(m_pLoadedTrack.data(), 0, this, 0);
         disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
@@ -116,13 +116,16 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     delete m_pEndOfTrack;
 }
 
-void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
+void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
+    qDebug() << "BaseTrackPlayerImpl::slotLoadTrack";
     // Before loading the track, ensure we have access. This uses lazy
     // evaluation to make sure track isn't NULL before we dereference it.
-    if (!track.isNull() && !Sandbox::askForAccess(track->getCanonicalLocation())) {
+    if (!pNewTrack.isNull() && !Sandbox::askForAccess(pNewTrack->getCanonicalLocation())) {
         // We don't have access.
         return;
     }
+
+    TrackPointer pOldTrack = m_pLoadedTrack;
 
     // Disconnect the old track's signals.
     if (m_pLoadedTrack) {
@@ -157,13 +160,10 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
         disconnect(m_pLoadedTrack.data(), 0, this, 0);
         disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
 
-        m_pReplayGain->set(0);
-
-        // Causes the track's data to be saved back to the library database.
-        emit(unloadingTrack(m_pLoadedTrack));
+        setReplayGain(0);
     }
 
-    m_pLoadedTrack = track;
+    m_pLoadedTrack = pNewTrack;
     if (m_pLoadedTrack) {
         // Listen for updates to the file's BPM
         connect(m_pLoadedTrack.data(), SIGNAL(bpmUpdated(double)),
@@ -177,17 +177,26 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
                 this, SLOT(slotSetReplayGain(Mixxx::ReplayGain)));
     }
 
-    // Request a new track from EngineBuffer
+    // Request a new track from EngineBuffer and wait for slotTrackLoaded()
+    // call.
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
-    pEngineBuffer->loadTrack(track, bPlay);
+    pEngineBuffer->loadTrack(pNewTrack, bPlay);
+    // Causes the track's data to be saved back to the library database and
+    // for all the widgets to change the track and update themselves.
+    emit(loadingTrack(pNewTrack, pOldTrack));
 }
 
 void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer track, QString reason) {
-    // This slot can be delayed until a new  track is already loaded
-    // We must not unload the track here
-    if (track != NULL) {
+    // Note: This slot can be a load failure from the current track or a
+    // a delayed signal from a previous load.
+    // We have probably received a slotTrackLoaded signal, of an old track that
+    // was loaded before. Here we must unload the
+    // We must unload the track m_pLoadedTrack as well
+    if (track == m_pLoadedTrack) {
         qDebug() << "Failed to load track" << track->getLocation() << reason;
-        emit(loadTrackFailed(track));
+        slotTrackLoaded(TrackPointer(), track);
+    } else if (!track.isNull()) {
+        qDebug() << "Stray failed to load track" << track->getLocation() << reason;
     } else {
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }
@@ -197,48 +206,40 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer track, QString reason) {
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                                           TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
-    m_replaygainPending = false;
+    qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded";
+    if (pNewTrack.isNull() && 
+            !pOldTrack.isNull() &&
+            pOldTrack == m_pLoadedTrack) {
+        // eject Track
+        // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
+        // relies on signals and slots to get tons of things done. Don't
+        // randomly disconnect things.
+        // m_pLoadedTrack->disconnect();
+        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.data(), 0, this, 0);
+        disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
 
-    // Reset the loop points.
-    m_pLoopInPoint->set(-1);
-    m_pLoopOutPoint->set(-1);
-
-    if (pNewTrack.isNull()) {
-        // Unload track 
-        if (m_pLoadedTrack) {
-            // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
-            // relies on signals and slots to get tons of things done. Don't
-            // randomly disconnect things.
-            // m_pLoadedTrack->disconnect();
-            disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
-            disconnect(m_pLoadedTrack.data(), 0, this, 0);
-            disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
-
-            // Causes the track's data to be saved back to the library database and
-            // for all the widgets to unload the track and blank themselves.
-            emit(unloadingTrack(m_pLoadedTrack));
-        }
+        // Causes the track's data to be saved back to the library database and
+        // for all the widgets to change the track and update themselves.
+        emit(loadingTrack(pNewTrack, pOldTrack));
         m_pDuration->set(0);
         m_pBPM->set(0);
         m_pKey->set(0);
-        m_pReplayGain->set(0);
+        setReplayGain(0);
         m_pLoopInPoint->set(-1);
         m_pLoopOutPoint->set(-1);
         m_pLoadedTrack.clear();
-    } else {
-        DEBUG_ASSERT(m_pLoadedTrack == pNewTrack);
-
+        emit(playerEmpty());
+    } else if (!pNewTrack.isNull() && pNewTrack == m_pLoadedTrack) {
+        // Successful loaded a new track
         // Reload metadata from file, but only if required
         SoundSourceProxy(m_pLoadedTrack).loadTrackMetadata();
-
-        // m_pLoadedTrack->setPlayedAndUpdatePlayCount(); // Actually the song is loaded but not played
 
         // Update the BPM and duration values that are stored in ControlObjects
         m_pDuration->set(m_pLoadedTrack->getDuration());
         m_pBPM->set(m_pLoadedTrack->getBpm());
         m_pKey->set(m_pLoadedTrack->getKey());
-        m_pReplayGain->set(m_pLoadedTrack->getReplayGain().getRatio());
+        setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
 
         const QList<CuePointer> trackCues(pNewTrack->getCuePoints());
         QListIterator<CuePointer> it(trackCues);
@@ -298,7 +299,13 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             break;
         }
         emit(newTrackLoaded(m_pLoadedTrack));
+    } else {
+        // this is the result from an outdated load or unload signal
+        // A new load is already pending
+        // Ignore this signal and wait for the new one
+        qDebug() << "stray BaseTrackPlayerImpl::slotTrackLoaded()";
     }
+
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
@@ -312,7 +319,7 @@ void BaseTrackPlayerImpl::slotSetReplayGain(Mixxx::ReplayGain replayGain) {
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change
     if (m_pPlay->get() == 0.0) {
-        m_pReplayGain->set(replayGain.getRatio());
+        setReplayGain(replayGain.getRatio());
     } else {
         m_replaygainPending = true;
     }
@@ -320,8 +327,7 @@ void BaseTrackPlayerImpl::slotSetReplayGain(Mixxx::ReplayGain replayGain) {
 
 void BaseTrackPlayerImpl::slotPlayToggled(double v) {
     if (!v && m_replaygainPending) {
-        m_pReplayGain->set(m_pLoadedTrack->getReplayGain().getRatio());
-        m_replaygainPending = false;
+        setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
     }
 }
 
@@ -366,4 +372,9 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
         emit(noVinylControlInputConfigured());
     }
 #endif
+}
+
+void BaseTrackPlayerImpl::setReplayGain(double value) {
+    m_pReplayGain->set(value);
+    m_replaygainPending = false;
 }

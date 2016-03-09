@@ -34,7 +34,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
   public slots:
     void slotLoadTrack(TrackPointer);
-    void slotReset();
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void updateVinylControlSpeed(double rpm);
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);

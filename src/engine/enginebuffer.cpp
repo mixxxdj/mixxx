@@ -548,6 +548,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     m_iTrackLoading = 0;
+    // Loading of a new track failed.
+    // eject the currently loaded track (the old Track) as well
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -558,6 +560,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 
 void EngineBuffer::ejectTrack() {
     // clear track values in any case, this may fix Bug #1450424
+    //qDebug() << "EngineBuffer::ejectTrack()";
     m_pause.lock();
     m_iTrackLoading = 0;
     m_pTrackSamples->set(0);
@@ -1306,10 +1309,15 @@ void EngineBuffer::hintReader(const double dRate) {
 
 // WARNING: This method runs in the GUI thread
 void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
-    // Signal to the reader to load the track. The reader will respond with
-    // trackLoading and then either with trackLoaded or trackLoadFailed signals.
-    m_bPlayAfterLoading = play;
-    m_pReader->newTrack(pTrack);
+    if (pTrack.isNull()) {
+        // Loading a null track means "eject" 
+        ejectTrack();
+    } else {
+        // Signal to the reader to load the track. The reader will respond with
+        // trackLoading and then either with trackLoaded or trackLoadFailed signals.
+        m_bPlayAfterLoading = play;
+        m_pReader->newTrack(pTrack);
+    }
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {

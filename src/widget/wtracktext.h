@@ -20,7 +20,7 @@ class WTrackText : public WLabel {
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
-    void slotTrackUnloaded(TrackPointer track);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private slots:
     void updateLabel(TrackInfoObject*);

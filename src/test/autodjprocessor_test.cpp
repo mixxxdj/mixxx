@@ -54,13 +54,13 @@ class FakeDeck : public BaseTrackPlayer {
         // of controls (play, track_samples, track_samplerate, playposition,
         // etc.).
         fakeUnloadingTrackEvent(pTrack);
-        emit(loadTrackFailed(pTrack));
     }
 
     void fakeUnloadingTrackEvent(TrackPointer pTrack) {
         play.set(0.0);
-        emit(unloadingTrack(pTrack));
+        emit(loadingTrack(TrackPointer(), pTrack));
         loadedTrack.clear();
+        emit(playerEmpty());
     }
 
     TrackPointer getLoadedTrack() const {
