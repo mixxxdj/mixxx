@@ -90,5 +90,21 @@ void ReplayGainSettings::setReplayGainReanalyze(bool value) {
                 ConfigValue(value));
 }
 
+bool ReplayGainSettings::isAnalyzerDisabled(int version, TrackPointer tio) const {
+    int prefversion = getReplayGainAnalyzerVersion();
+    bool analyzerEnabled = getReplayGainAnalyzerEnabled() && (version == prefversion);
+    bool reanalyze = getReplayGainReanalyze();
+
+    if (analyzerEnabled) {
+        if (reanalyze) {
+            // ignore stored replay gain
+            return false;
+        }
+        return tio->getReplayGain().hasRatio();
+    }
+    // not enabled, pretend we have already a stored value.
+    return true;
+}
+
 
 

@@ -35,18 +35,7 @@ bool AnalyzerEbur128::initialize(TrackPointer tio,
 }
 
 bool AnalyzerEbur128::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    int version = m_rgSettings.getReplayGainAnalyzerVersion();
-    bool analyzerEnabled = m_rgSettings.getReplayGainAnalyzerEnabled() &&
-            (version == 2);
-    bool reanalyse = m_rgSettings.getReplayGainReanalyze();
-
-    if (analyzerEnabled) {
-        if (reanalyse) {
-            return false;
-        }
-        return tio->getReplayGain().hasRatio();
-    }
-    return true;
+    return m_rgSettings.isAnalyzerDisabled(2, tio);
 }
 
 void AnalyzerEbur128::cleanup(TrackPointer tio) {

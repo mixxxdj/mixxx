@@ -32,20 +32,7 @@ bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples
 }
 
 bool AnalyzerGain::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    int version = m_rgSettings.getReplayGainAnalyzerVersion();
-    bool analyzerEnabled = m_rgSettings.getReplayGainAnalyzerEnabled() &&
-            (version == 1);
-    bool reanalyze = m_rgSettings.getReplayGainReanalyze();
-
-    if (analyzerEnabled) {
-        if (reanalyze) {
-            // ignore stored replay gain
-            return false;
-        }
-        return tio->getReplayGain().hasRatio();
-    }
-    // not enabled, pretend we have already a stored value.
-    return true;
+    return m_rgSettings.isAnalyzerDisabled(1, tio);
 }
 
 void AnalyzerGain::cleanup(TrackPointer tio) {

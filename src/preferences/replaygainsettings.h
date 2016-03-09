@@ -2,6 +2,7 @@
 #define PREFERENCES_REPLAYGAINSETTINGS_H
 
 #include "preferences/usersettings.h"
+#include "trackinfoobject.h"
 
 class ReplayGainSettings {
   public:
@@ -19,6 +20,8 @@ class ReplayGainSettings {
     void setReplayGainAnalyzerVersion(int value);
     bool getReplayGainReanalyze() const;
     void setReplayGainReanalyze(bool value);
+
+    bool isAnalyzerDisabled(int version, TrackPointer tio) const;
 
   private:
     // Pointer to config object
