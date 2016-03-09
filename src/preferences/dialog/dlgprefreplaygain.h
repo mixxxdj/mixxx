@@ -4,7 +4,7 @@
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefreplaygaindlg.h"
-#include "preferences/usersettings.h"
+#include "preferences/replaygainsettings.h"
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -37,9 +37,7 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     bool isReplayGainAnalyserEnabled() const;
     int getReplayGainVersion() const;
 
-    // Pointer to config object
-    UserSettingsPointer m_pConfig;
-
+    ReplayGainSettings m_rgSettings;
     ControlObjectSlave m_replayGainBoost;
     ControlObjectSlave m_defaultBoost;
     ControlObjectSlave m_enabled;

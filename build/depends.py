@@ -605,8 +605,10 @@ class MixxxCore(Feature):
                    "preferences/dialog/dlgprefsounditem.cpp",
                    "preferences/dialog/dlgprefwaveform.cpp",
                    "preferences/settingsmanager.cpp",
+                   "preferences/replaygainsettings.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
+                    
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",

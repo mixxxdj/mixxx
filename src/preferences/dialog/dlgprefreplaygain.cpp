@@ -8,19 +8,12 @@ const char* kConfigKey = "[ReplayGain]";
 const char* kReplayGainBoost = "ReplayGainBoost";
 const char* kDefaultBoost = "DefaultBoost";
 const char* kReplayGainEnabled = "ReplayGainEnabled";
-const char* kInitialReplayGainBoost = "InitialReplayGainBoost";
-const char* kInitialDefaultBoost = "InitialDefaultBoost";
-const char* kReplayGainAnalyserEnabled = "ReplayGainAnalyserEnabled";
-const char* kReplayGainAnalyserVersion = "ReplayGainAnalyserVersion";
-const char* kReplayGainReanalyze = "ReplayGainReanalyze";
-
 const int kReplayGainReferenceLUFS = -18;
-const char* kInitialDefaultBoostDefault = "-6";
 } // anonymous namespace
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_pConfig(pConfig),
+          m_rgSettings(pConfig),
           m_replayGainBoost(kConfigKey, kReplayGainBoost),
           m_defaultBoost(kConfigKey, kDefaultBoost),
           m_enabled(kConfigKey, kReplayGainEnabled) {
@@ -52,29 +45,21 @@ DlgPrefReplayGain::~DlgPrefReplayGain() {
 }
 
 void DlgPrefReplayGain::loadSettings() {
-    int iReplayGainBoost = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kInitialReplayGainBoost), "0").toInt();
+    int iReplayGainBoost = m_rgSettings.getInitialReplayGainBoost();
     SliderReplayGainBoost->setValue(iReplayGainBoost);
     setLabelCurrentReplayGainBoost(iReplayGainBoost);
 
 
-    int iDefaultBoost = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kInitialDefaultBoost), kInitialDefaultBoostDefault).toInt();
+    int iDefaultBoost = m_rgSettings.getInitialDefaultBoost();
     SliderDefaultBoost->setValue(iDefaultBoost);
     LabelCurrentDefaultBoost->setText(
             QString("%1 dB").arg(iDefaultBoost));
 
-    bool gainEnabled = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kReplayGainEnabled), "1").toInt() == 1;
+    bool gainEnabled = m_rgSettings.getReplayGainEnabled();
     EnableGain->setChecked(gainEnabled);
 
-    // WARNING: Do not fix the "analyser" spelling here since user config files
-    // contain these strings.
-    bool analyzerEnabled = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kReplayGainAnalyserEnabled), "1").toInt();
-
-    int version = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kReplayGainAnalyserVersion), "2").toInt();
+    bool analyzerEnabled = m_rgSettings.getReplayGainAnalyserEnabled();
+    int version = m_rgSettings.getReplayGainAnalyserVersion();
 
     if (!analyzerEnabled) {
         radioButtonDisable->setChecked(true);
@@ -86,8 +71,7 @@ void DlgPrefReplayGain::loadSettings() {
 
     checkBoxReanalyze->setEnabled(analyzerEnabled);
 
-    bool reanalyse = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kReplayGainReanalyze)).toInt();
+    bool reanalyse = m_rgSettings.getReplayGainReanalyze();
     checkBoxReanalyze->setChecked(reanalyse);
 
     slotUpdate();
@@ -107,8 +91,7 @@ void DlgPrefReplayGain::slotResetToDefaults() {
     SliderDefaultBoost->setValue(-6);
     LabelCurrentDefaultBoost->setText("-6 dB");
 
-    int iDefaultBoost = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, "InitialDefaultBoost"), "-6").toInt();
+    int iDefaultBoost = m_rgSettings.getInitialDefaultBoost();
     SliderDefaultBoost->setValue(iDefaultBoost);
     LabelCurrentDefaultBoost->setText(
             QString("%1 dB").arg(iDefaultBoost));
@@ -119,11 +102,7 @@ void DlgPrefReplayGain::slotResetToDefaults() {
 }
 
 void DlgPrefReplayGain::slotSetRGEnabled() {
-    if (EnableGain->isChecked()) {
-        m_pConfig->set(ConfigKey(kConfigKey, kReplayGainEnabled), ConfigValue(1));
-    } else {
-        m_pConfig->set(ConfigKey(kConfigKey, kReplayGainEnabled), ConfigValue(0));
-    }
+    m_rgSettings.setReplayGainEnabled(EnableGain->isChecked());
     slotUpdate();
     slotApply();
 }
@@ -140,21 +119,15 @@ int DlgPrefReplayGain::getReplayGainVersion() const {
 }
 
 void DlgPrefReplayGain::slotSetRGAnalyzerChanged() {
-    // WARNING: Do not fix the "analyser" spelling here since user config files
-    // contain these strings.
-    m_pConfig->set(ConfigKey(kConfigKey, kReplayGainAnalyserEnabled),
-                ConfigValue(isReplayGainAnalyserEnabled()));
+    m_rgSettings.setReplayGainAnalyserEnabled(isReplayGainAnalyserEnabled());
     checkBoxReanalyze->setEnabled(isReplayGainAnalyserEnabled());
-    m_pConfig->set(ConfigKey(kConfigKey, kReplayGainAnalyserVersion),
-                ConfigValue(getReplayGainVersion()));
-
+    m_rgSettings.setReplayGainAnalyserVersion(getReplayGainVersion());
     slotApply();
 }
 
 void DlgPrefReplayGain::slotUpdateReplayGainBoost() {
     int value = SliderReplayGainBoost->value();
-    m_pConfig->set(ConfigKey(kConfigKey, kInitialReplayGainBoost),
-                ConfigValue(value));
+    m_rgSettings.setInitialReplayGainBoost(value);
     setLabelCurrentReplayGainBoost(value);
     slotApply();
 }
@@ -167,16 +140,14 @@ void DlgPrefReplayGain::setLabelCurrentReplayGainBoost(int value) {
 
 void DlgPrefReplayGain::slotUpdateDefaultBoost() {
     int value = SliderDefaultBoost->value();
-    m_pConfig->set(ConfigKey(kConfigKey, kInitialDefaultBoost),
-                ConfigValue(value));
+    m_rgSettings.setInitialDefaultBoost(value);
     LabelCurrentDefaultBoost->setText(
             QString("%1 dB").arg(value));
     slotApply();
 }
 
 void DlgPrefReplayGain::slotUpdate() {
-    if (m_pConfig->getValueString(
-            ConfigKey(kConfigKey,kReplayGainEnabled)).toInt() == 1) {
+    if (m_rgSettings.getReplayGainEnabled()) {
         SliderReplayGainBoost->setEnabled(true);
         SliderDefaultBoost->setEnabled(true);
     } else {
@@ -195,8 +166,7 @@ void DlgPrefReplayGain::slotApply() {
 
 void DlgPrefReplayGain::slotSetReanalyze() {
     bool checked = checkBoxReanalyze->isChecked();
-    m_pConfig->set(ConfigKey(kConfigKey, kReplayGainReanalyze),
-                ConfigValue(checked));
+    m_rgSettings.setReplayGainReanalyze(checked);
     slotApply();
 }
 
