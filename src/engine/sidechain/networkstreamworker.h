@@ -63,6 +63,13 @@ class NetworkStreamWorker {
     static int getRunCount() {
         return s_runCount;
     }
+    static void debugState() {
+        qDebug() << "NetworkStreamWorker state:"
+                 << s_networkStreamWorkerState
+                 << s_functionCode
+                 << s_runCount;
+    }
+
 protected:
     void setState(int state) {
         s_networkStreamWorkerState = state;

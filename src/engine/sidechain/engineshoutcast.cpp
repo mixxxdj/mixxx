@@ -145,6 +145,7 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
+    NetworkStreamWorker::debugState();
 
     double dStatus = m_pStatusCO->get();
     if (dStatus == STATUSCO_CONNECTED ||
@@ -449,6 +450,7 @@ bool EngineShoutcast::processConnect() {
                 m_pShoutcastEnabled->toBool()) {
             setState(NETWORKSTREAMWORKER_STATE_WAITING);
             qDebug() << "Connection pending. Waiting...";
+            NetworkStreamWorker::debugState();
             m_iShoutStatus = shout_get_connected(m_pShout);
 
             if (m_iShoutStatus != SHOUTERR_BUSY &&
@@ -546,6 +548,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         ssize_t queuelen = shout_queuelen(m_pShout);
         if (queuelen > 0) {
             qDebug() << "shout_queuelen" << queuelen;
+            NetworkStreamWorker::debugState();
             if (queuelen > kMaxNetworkCache) {
                 m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
                 processDisconnect();
@@ -567,6 +570,7 @@ bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
         // in case of bussy, frames are queued and queue is checked below
         qDebug() << "EngineShoutcast::write() header error:"
                  << ret << shout_get_error(m_pShout);
+        NetworkStreamWorker::debugState();
         if (m_iShoutFailures > kMaxShoutFailures) {
             m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
             processDisconnect();
@@ -745,6 +749,7 @@ void EngineShoutcast::updateMetaData() {
 
 void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     qWarning() << "Streaming error: " << detailedError;
+    NetworkStreamWorker::debugState();
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Live broadcasting"));
@@ -767,6 +772,7 @@ void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
+    NetworkStreamWorker::debugState();
 }
 
 // Is called from the Mixxx engine thread
@@ -783,7 +789,7 @@ void EngineShoutcast::run() {
     unsigned static id = 0;
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
-
+    NetworkStreamWorker::debugState();
 #ifndef __WINDOWS__
     ignoreSigpipe();
 #endif
