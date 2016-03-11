@@ -141,7 +141,9 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
-    if(getState() == NETWORKSTREAMWORKER_STATE_CONNECTED) {
+    double dStatus = m_pStatusCO->get();
+    if (dStatus == STATUSCO_CONNECTED ||
+            dStatus == STATUSCO_CONNECTING) {
         qDebug() << "EngineShoutcast::updateFromPreferences: Can't edit preferences when playing";
         return;
     }
