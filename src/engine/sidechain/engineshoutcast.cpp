@@ -44,6 +44,10 @@ static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
 
+int NetworkStreamWorker::s_networkStreamWorkerState = NETWORKSTREAMWORKER_STATE_NEW;
+int NetworkStreamWorker::s_functionCode = 0;
+int NetworkStreamWorker::s_runCount = 0;
+
 EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
         : m_pTextCodec(NULL),
           m_pMetaData(),
@@ -90,6 +94,7 @@ EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
         errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_metadata_t"));
     }
 
+    setFunctionCode(14);
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
     }
@@ -521,6 +526,7 @@ void EngineShoutcast::processDisconnect() {
 
 void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
+    setFunctionCode(7);
     if (!m_pShout) {
         return;
     }
@@ -555,6 +561,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 
 bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
     // We are already synced by EngineNetworkstream
+    setFunctionCode(8);
     int ret = shout_send_raw(m_pShout, data, len);
     if (ret < SHOUTERR_SUCCESS && ret != SHOUTERR_BUSY) {
         // in case of bussy, frames are queued and queue is checked below
@@ -579,6 +586,7 @@ bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
 }
 
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
+    setFunctionCode(4);
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
     // If we are here then the user wants to be connected (shoutcast is enabled
@@ -590,6 +598,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
     // If we are connected, encode the samples.
     if (iBufferSize > 0 && m_encoder) {
+        setFunctionCode(6);
         m_encoder->encodeBuffer(pBuffer, iBufferSize);
         // the encoded frames are received by the write() callback.
     }
@@ -632,6 +641,7 @@ bool EngineShoutcast::metaDataHasChanged() {
 }
 
 void EngineShoutcast::updateMetaData() {
+    setFunctionCode(5);
     if (!m_pShout || !m_pShoutMetaData)
         return;
 
@@ -668,6 +678,7 @@ void EngineShoutcast::updateMetaData() {
             // Also I do not know about icecast1. To be safe, i stick to the
             // old way for those use cases.
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+                setFunctionCode(9);
                 shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
                 shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
             } else {
@@ -700,8 +711,10 @@ void EngineShoutcast::updateMetaData() {
                 } while (replaceIndex != -1);
 
                 QByteArray baSong = encodeString(metadataFinal);
+                setFunctionCode(10);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             }
+            setFunctionCode(11);
             shout_set_metadata(m_pShout, m_pShoutMetaData);
 
         }
@@ -712,6 +725,7 @@ void EngineShoutcast::updateMetaData() {
 
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+                setFunctionCode(12);
                 shout_metadata_add(
                         m_pShoutMetaData,"artist",encodeString(m_customArtist).constData());
 
@@ -722,6 +736,7 @@ void EngineShoutcast::updateMetaData() {
                 shout_metadata_add(m_pShoutMetaData, "song", baCustomSong.constData());
             }
 
+            setFunctionCode(13);
             shout_set_metadata(m_pShout, m_pShoutMetaData);
             m_firstCall = true;
         }
@@ -787,6 +802,8 @@ void EngineShoutcast::run() {
     }
 
     while(true) {
+        setFunctionCode(1);
+        incRunCount();
         m_readSema.acquire();
         // Check to see if Shoutcast is enabled, and pass the samples off to be
         // broadcast if necessary.
@@ -794,10 +811,12 @@ void EngineShoutcast::run() {
             m_threadWaiting = false;
             m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
             processDisconnect();
+            setFunctionCode(2);
             return;
         }
         int readAvailable = m_pOutputFifo->readAvailable();
         if (readAvailable) {
+            setFunctionCode(3);
             CSAMPLE* dataPtr1;
             ring_buffer_size_t size1;
             CSAMPLE* dataPtr2;
