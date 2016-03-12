@@ -100,6 +100,10 @@ QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
     supportedFileExtensions.append("aif");
     supportedFileExtensions.append("wav");
     supportedFileExtensions.append("flac");
+    supportedFileExtensions.append("ogg");
+    // ALAC/CAF will be supported starting with version 1.0.26
+    supportedFileExtensions.append("m4a");
+    supportedFileExtensions.append("caf");
     return supportedFileExtensions;
 }
 
