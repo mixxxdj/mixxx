@@ -2,6 +2,7 @@
 #define MIXER_BASETRACKPLAYER_H
 
 #include <QObject>
+#include <QScopedPointer>
 #include <QString>
 
 #include "preferences/usersettings.h"
@@ -37,10 +38,11 @@ class BaseTrackPlayer : public BasePlayer {
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay=false) = 0;
 
   signals:
-    void loadTrack(TrackPointer pTrack, bool bPlay=false);
-    void loadTrackFailed(TrackPointer pTrack);
     void newTrackLoaded(TrackPointer pLoadedTrack);
-    void unloadingTrack(TrackPointer pAboutToBeUnloaded);
+    void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void playerEmpty();
+    void noPassthroughInputConfigured();
+    void noVinylControlInputConfigured();
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -51,7 +53,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
                         EngineMaster* pMixingEngine,
                         EffectsManager* pEffectsManager,
                         EngineChannel::ChannelOrientation defaultOrientation,
-                        QString group,
+                        const QString& group,
                         bool defaultMaster,
                         bool defaultHeadphones);
     virtual ~BaseTrackPlayerImpl();
@@ -65,14 +67,19 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void setupEqControls();
 
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bPlay=false);
-    void slotFinishLoading(TrackPointer pTrackInfoObject);
+    void slotLoadTrack(TrackPointer track, bool bPlay) override;
+    void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
-    void slotUnloadTrack(TrackPointer track);
     void slotSetReplayGain(Mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 
+  private slots:
+    void slotPassthroughEnabled(double v);
+    void slotVinylControlEnabled(double v);
+
   private:
+    void setReplayGain(double value);
+
     UserSettingsPointer m_pConfig;
     TrackPointer m_pLoadedTrack;
 
@@ -98,8 +105,12 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     ControlObjectSlave* m_pMidFilterKill;
     ControlObjectSlave* m_pHighFilterKill;
     ControlObjectSlave* m_pPreGain;
-    ControlObjectSlave* m_pSpeed;
+    ControlObjectSlave* m_pRateSlider;
     ControlObjectSlave* m_pPitchAdjust;
+    QScopedPointer<ControlObjectSlave> m_pInputConfigured;
+    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
+    QScopedPointer<ControlObjectSlave> m_pVinylControlEnabled;
+    QScopedPointer<ControlObjectSlave> m_pVinylControlStatus;
     EngineDeck* m_pChannel;
 
     bool m_replaygainPending;

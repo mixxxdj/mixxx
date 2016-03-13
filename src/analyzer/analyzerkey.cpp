@@ -94,7 +94,7 @@ bool AnalyzerKey::loadStored(TrackPointer tio) const {
     if (pluginID.isEmpty() || pluginID.isNull())
         pluginID = VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID;
 
-    const Keys& keys = tio->getKeys();
+    const Keys keys(tio->getKeys());
     if (keys.isValid()) {
         QString version = keys.getVersion();
         QString subVersion = keys.getSubVersion();

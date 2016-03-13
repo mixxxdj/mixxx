@@ -117,6 +117,14 @@ void CachingReaderChunk::copySamples(
     SampleUtil::copy(sampleBuffer, m_sampleBuffer + sampleOffset, sampleCount);
 }
 
+void CachingReaderChunk::copySamplesReverse(
+        CSAMPLE* sampleBuffer, SINT sampleOffset, SINT sampleCount) const {
+    DEBUG_ASSERT(0 <= sampleOffset);
+    DEBUG_ASSERT(0 <= sampleCount);
+    DEBUG_ASSERT((sampleOffset + sampleCount) <= frames2samples(m_frameCount));
+    SampleUtil::copyReverse(sampleBuffer, m_sampleBuffer + sampleOffset, sampleCount);
+}
+
 CachingReaderChunkForOwner::CachingReaderChunkForOwner(
         CSAMPLE* sampleBuffer)
         : CachingReaderChunk(sampleBuffer),

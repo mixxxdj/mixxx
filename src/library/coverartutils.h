@@ -16,8 +16,9 @@ class CoverArtUtils {
     static QString defaultCoverLocation();
 
     // Extracts the first cover art image embedded within the file at
-    // fileInfo. You must provide a security token for accessing
-    // fileInfo.
+    // fileInfo. If no security token is provided a new one is created.
+    static QImage extractEmbeddedCover(
+            const QFileInfo& fileInfo);
     static QImage extractEmbeddedCover(
             const QFileInfo& fileInfo,
             SecurityTokenPointer pToken);

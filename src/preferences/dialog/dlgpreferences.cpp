@@ -21,6 +21,8 @@
 #include <QScrollArea>
 #include <QTabBar>
 #include <QTabWidget>
+#include <QMoveEvent>
+#include <QResizeEvent>
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -95,7 +97,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     m_wlibrary = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_wlibrary);
     connect(m_wlibrary, SIGNAL(scanLibrary()),
-            mixxx, SLOT(slotScanLibrary()));
+            pLibrary, SLOT(scan()));
     m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, m_pConfig);
     addPageWidget(m_wcontrols);
     m_wwaveform = new DlgPrefWaveform(this, mixxx, m_pConfig);

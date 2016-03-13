@@ -134,9 +134,11 @@ void DlgAnalysis::analysisActive(bool bActive) {
     if (bActive) {
         pushButtonAnalyze->setEnabled(true);
         pushButtonAnalyze->setText(tr("Stop Analysis"));
+        labelProgress->setEnabled(true);
     } else {
         pushButtonAnalyze->setText(tr("Analyze"));
         labelProgress->setText("");
+        labelProgress->setEnabled(false);
     }
 }
 

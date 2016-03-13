@@ -34,6 +34,7 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
         : EngineChannel(handle_group, defaultOrientation),
           m_pConfig(pConfig),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+          m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
@@ -42,6 +43,11 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
     if (pEffectsManager != NULL) {
         pEffectsManager->registerChannel(handle_group);
     }
+
+    // Make input_configured read-only.
+    m_pInputConfigured->connectValueChangeRequest(
+        this, SLOT(slotInputConfiguredChangeRequest(double)),
+        Qt::DirectConnection);
 
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -152,6 +158,7 @@ void EngineDeck::onInputConfigured(AudioInput input) {
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
+    m_pInputConfigured->setAndConfirm(1.0);
     m_sampleBuffer =  NULL;
 }
 
@@ -161,6 +168,7 @@ void EngineDeck::onInputUnconfigured(AudioInput input) {
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
+    m_pInputConfigured->setAndConfirm(0.0);
     m_sampleBuffer = NULL;
 }
 

@@ -27,7 +27,7 @@ class BeatMap : public QObject, public Beats {
     // zero then the track's sample rate will be used. If a byte array is
     // provided then the BeatMap will be deserialized from the byte array.
     BeatMap(TrackPointer pTrack, int iSampleRate,
-            const QByteArray* pByteArray=NULL);
+            const QByteArray* pByteArray = nullptr);
     // Construct a BeatMap. iSampleRate may be provided if a more accurate
     // sample rate is known than the one associated with the Track. If it is
     // zero then the track's sample rate will be used. A list of beat locations
@@ -44,7 +44,7 @@ class BeatMap : public QObject, public Beats {
                 BEATSCAP_MOVEBEAT;
     }
 
-    virtual QByteArray* toByteArray() const;
+    virtual QByteArray toByteArray() const;
     BeatsPointer clone() const;
     virtual QString getVersion() const;
     virtual QString getSubVersion() const;
@@ -61,7 +61,7 @@ class BeatMap : public QObject, public Beats {
                                    double* dpNextBeatSamples) const;
     virtual double findClosestBeat(double dSamples) const;
     virtual double findNthBeat(double dSamples, int n) const;
-    virtual BeatIterator* findBeats(double startSample, double stopSample) const;
+    virtual std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const;
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
 
     virtual double getBpm() const;
@@ -85,7 +85,7 @@ class BeatMap : public QObject, public Beats {
   private:
     BeatMap (const BeatMap& other);
     void initialize(TrackPointer pTrack, int iSampleRate);
-    void readByteArray(const QByteArray* pByteArray);
+    bool readByteArray(const QByteArray& byteArray);
     void createFromBeatVector(const QVector<double>& beats);
     void onBeatlistChanged();
 

@@ -46,6 +46,7 @@ class VinylControlXwax : public VinylControl {
     void enableConstantMode(double rate);
     bool uiUpdateTime(double time);
     void establishQuality(bool quality_sample);
+    double calcRateRatio() const;
 
     // Cache the position of the end of record
     unsigned int m_uiSafeZone;

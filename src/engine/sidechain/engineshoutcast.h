@@ -151,6 +151,7 @@ class EngineShoutcast :
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;
+    QString m_lastErrorStr;
 };
 
 #endif

@@ -40,9 +40,8 @@ class WOverview : public WWidget {
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue);
-    void slotLoadNewTrack(TrackPointer pTrack);
     void slotTrackLoaded(TrackPointer pTrack);
-    void slotUnloadTrack(TrackPointer pTrack);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   signals:
     void trackDropped(QString filename, QString group);
@@ -96,7 +95,7 @@ class WOverview : public WWidget {
     const QString m_group;
     UserSettingsPointer m_pConfig;
     ControlObjectSlave* m_endOfTrackControl;
-    double m_endOfTrack;
+    bool m_endOfTrack;
     ControlObjectSlave* m_trackSamplesControl;
     ControlObjectSlave* m_playControl;
 

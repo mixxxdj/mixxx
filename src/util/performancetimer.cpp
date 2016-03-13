@@ -92,9 +92,9 @@ mixxx::Duration PerformanceTimer::restart()
     return mixxx::Duration::fromNanos(absoluteToNSecs(t1-start));
 }
 
-mixxx::Duration PerformanceTimer::difference(PerformanceTimer* timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
-    return mixxx::Duration::fromNanos(absoluteToNSecs(t1 - timer->t1));
+    return mixxx::Duration::fromNanos(absoluteToNSecs(t1 - timer.t1));
 }
 
 ////////////////////////////// Symbian //////////////////////////////
@@ -127,9 +127,9 @@ mixxx::Duration PerformanceTimer::restart()
     return mixxx::Duration::fromNanos(getTimeFromTick(t1 - start));
 }
 
-mixxx::Duration PerformanceTimer::difference(PerformanceTimer* timer)
+mixxx::Duration PerformanceTimer::difference(const PerformanceTimer& timer) const
 {
-    return mixxx::Duration::fromNanos(getTimeFromTick(t1 - timer->t1));
+    return mixxx::Duration::fromNanos(getTimeFromTick(t1 - timer.t1));
 }
 
 ////////////////////////////// Unix //////////////////////////////

@@ -36,8 +36,8 @@ signals:
     void trackDropped(QString filename, QString group);
 
 public slots:
-    void onTrackLoaded(TrackPointer track);
-    void onTrackUnloaded(TrackPointer track);
+    void slotTrackLoaded(TrackPointer track);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
 protected:
     virtual void resizeEvent(QResizeEvent *event);

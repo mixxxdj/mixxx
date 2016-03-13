@@ -71,6 +71,8 @@ class TrackCollection : public QObject {
         return m_pConfig;
     }
 
+    void relocateDirectory(QString oldDir, QString newDir);
+
   protected:
 #ifdef __SQLITE3__
     void installSorting(QSqlDatabase &db);

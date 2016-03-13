@@ -63,8 +63,8 @@ BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
         : QObject(),
           m_mutex(QMutex::Recursive) {
     initialize(pTrack, iSampleRate);
-    if (pByteArray != NULL) {
-        readByteArray(pByteArray);
+    if (nullptr != pByteArray) {
+        readByteArray(*pByteArray);
     }
 }
 
@@ -104,7 +104,7 @@ BeatMap::BeatMap (const BeatMap& other)
 BeatMap::~BeatMap() {
 }
 
-QByteArray* BeatMap::toByteArray() const {
+QByteArray BeatMap::toByteArray() const {
     QMutexLocker locker(&m_mutex);
     // No guarantees BeatLists are made of a data type which located adjacent
     // items in adjacent memory locations.
@@ -116,8 +116,7 @@ QByteArray* BeatMap::toByteArray() const {
 
     std::string output;
     map.SerializeToString(&output);
-    QByteArray* pByteArray = new QByteArray(output.data(), output.length());
-    return pByteArray;
+    return QByteArray(output.data(), output.length());
 }
 
 BeatsPointer BeatMap::clone() const {
@@ -126,18 +125,19 @@ BeatsPointer BeatMap::clone() const {
     return other;
 }
 
-void BeatMap::readByteArray(const QByteArray* pByteArray) {
+bool BeatMap::readByteArray(const QByteArray& byteArray) {
     mixxx::track::io::BeatMap map;
-    if (!map.ParseFromArray(pByteArray->constData(), pByteArray->size())) {
+    if (!map.ParseFromArray(byteArray.constData(), byteArray.size())) {
         qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
-                << pByteArray->size();
-        return;
+                << byteArray.size();
+        return false;
     }
     for (int i = 0; i < map.beat_size(); ++i) {
         const Beat& beat = map.beat(i);
         m_beats.append(beat);
     }
     onBeatlistChanged();
+    return true;
 }
 
 void BeatMap::createFromBeatVector(const QVector<double>& beats) {
@@ -379,12 +379,12 @@ bool BeatMap::findPrevNextBeats(double dSamples,
     return *dpPrevBeatSamples != -1 && *dpNextBeatSamples != -1;
 }
 
-BeatIterator* BeatMap::findBeats(double startSample, double stopSample) const {
+std::unique_ptr<BeatIterator> BeatMap::findBeats(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
     //startSample and stopSample are sample offsets, converting them to
     //frames
     if (!isValid() || startSample > stopSample) {
-        return NULL;
+        return std::unique_ptr<BeatIterator>();
     }
 
     Beat startBeat, stopBeat;
@@ -400,9 +400,9 @@ BeatIterator* BeatMap::findBeats(double startSample, double stopSample) const {
                         stopBeat, BeatLessThan);
 
     if (curBeat >= lastBeat) {
-        return NULL;
+        return std::unique_ptr<BeatIterator>();
     }
-    return new BeatMapIterator(curBeat, lastBeat);
+    return std::make_unique<BeatMapIterator>(curBeat, lastBeat);
 }
 
 bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {

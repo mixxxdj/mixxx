@@ -147,36 +147,36 @@ void DlgTrackInfo::cueDelete() {
     }
 }
 
-void DlgTrackInfo::populateFields(TrackPointer pTrack) {
-    setWindowTitle(pTrack->getArtist() % " - " % pTrack->getTitle());
+void DlgTrackInfo::populateFields(const TrackInfoObject& track) {
+    setWindowTitle(track.getArtist() % " - " % track.getTitle());
 
     // Editable fields
-    txtTrackName->setText(pTrack->getTitle());
-    txtArtist->setText(pTrack->getArtist());
-    txtAlbum->setText(pTrack->getAlbum());
-    txtAlbumArtist->setText(pTrack->getAlbumArtist());
-    txtGenre->setText(pTrack->getGenre());
-    txtComposer->setText(pTrack->getComposer());
-    txtGrouping->setText(pTrack->getGrouping());
-    txtYear->setText(pTrack->getYear());
-    txtTrackNumber->setText(pTrack->getTrackNumber());
-    txtComment->setPlainText(pTrack->getComment());
+    txtTrackName->setText(track.getTitle());
+    txtArtist->setText(track.getArtist());
+    txtAlbum->setText(track.getAlbum());
+    txtAlbumArtist->setText(track.getAlbumArtist());
+    txtGenre->setText(track.getGenre());
+    txtComposer->setText(track.getComposer());
+    txtGrouping->setText(track.getGrouping());
+    txtYear->setText(track.getYear());
+    txtTrackNumber->setText(track.getTrackNumber());
+    txtComment->setPlainText(track.getComment());
 
     // Non-editable fields
-    txtDuration->setText(pTrack->getDurationText());
-    txtLocation->setPlainText(pTrack->getLocation());
-    txtType->setText(pTrack->getType());
-    txtBitrate->setText(QString(pTrack->getBitrateText()) + (" ") + tr("kbps"));
-    txtBpm->setText(pTrack->getBpmText());
-    txtKey->setText(pTrack->getKeyText());
-    const Mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+    txtDuration->setText(track.getDurationText());
+    txtLocation->setPlainText(track.getLocation());
+    txtType->setText(track.getType());
+    txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr("kbps"));
+    txtBpm->setText(track.getBpmText());
+    txtKey->setText(track.getKeyText());
+    const Mixxx::ReplayGain replayGain(track.getReplayGain());
     txtReplayGain->setText(Mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
 
-    reloadTrackBeats(pTrack);
+    reloadTrackBeats(track);
 
-    m_loadedCoverInfo = pTrack->getCoverInfo();
-    int reference = pTrack->getId().toInt();
-    m_loadedCoverInfo.trackLocation = pTrack->getLocation();
+    m_loadedCoverInfo = track.getCoverInfo();
+    int reference = track.getId().toInt();
+    m_loadedCoverInfo.trackLocation = track.getLocation();
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo.trackLocation, m_loadedCoverInfo, QPixmap());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
@@ -184,8 +184,8 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     }
 }
 
-void DlgTrackInfo::reloadTrackBeats(TrackPointer pTrack) {
-    BeatsPointer pBeats = pTrack->getBeats();
+void DlgTrackInfo::reloadTrackBeats(const TrackInfoObject& track) {
+    BeatsPointer pBeats = track.getBeats();
     if (pBeats) {
         spinBpm->setValue(pBeats->getBpm());
         m_pBeatsClone = pBeats->clone();
@@ -209,7 +209,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     m_pLoadedTrack = pTrack;
 
-    populateFields(m_pLoadedTrack);
+    populateFields(*m_pLoadedTrack);
     populateCues(m_pLoadedTrack);
 
     // We already listen to changed() so we don't need to listen to individual
@@ -365,7 +365,7 @@ void DlgTrackInfo::saveTrack() {
 
     if (!m_pLoadedTrack->isBpmLocked()) {
         m_pLoadedTrack->setBeats(m_pBeatsClone);
-        reloadTrackBeats(m_pLoadedTrack);
+        reloadTrackBeats(*m_pLoadedTrack);
     }
 
     QSet<int> updatedRows;
@@ -525,7 +525,7 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
         bpmTap->setEnabled(true);
     } else {
         // try to reload BeatMap from the Track
-        reloadTrackBeats(m_pLoadedTrack);
+        reloadTrackBeats(*m_pLoadedTrack);
     }
 }
 
@@ -574,16 +574,19 @@ void DlgTrackInfo::reloadTrackMetadata() {
         // We cannot reuse m_pLoadedTrack, because it might already been
         // modified and we want to read fresh metadata directly from the
         // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
-                                                m_pLoadedTrack->getSecurityToken()));
+        TrackPointer pTrack(TrackInfoObject::newTemporary(
+                m_pLoadedTrack->getFileInfo(),
+                m_pLoadedTrack->getSecurityToken()));
         SoundSourceProxy(pTrack).loadTrackMetadata();
-        populateFields(pTrack);
+        if (!pTrack.isNull()) {
+            populateFields(*pTrack);
+        }
     }
 }
 
 void DlgTrackInfo::updateTrackMetadata() {
-    if (m_pLoadedTrack) {
-        populateFields(m_pLoadedTrack);
+    if (!m_pLoadedTrack.isNull()) {
+        populateFields(*m_pLoadedTrack);
     }
 }
 

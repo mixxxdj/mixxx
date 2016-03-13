@@ -183,22 +183,55 @@ void CueControl::detachCue(int hotCue) {
     pControl->getEnabled()->set(0);
 }
 
-void CueControl::trackLoaded(TrackPointer pTrack) {
+void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     QMutexLocker lock(&m_mutex);
-    if (m_pLoadedTrack)
-        trackUnloaded(m_pLoadedTrack);
 
-    if (!pTrack) {
+    if (m_pLoadedTrack) {
+        disconnect(m_pLoadedTrack.data(), 0, this, 0);
+        for (int i = 0; i < m_iNumHotCues; ++i) {
+            detachCue(i);
+        }
+
+        // Store the cue point in a load cue.
+        double cuePoint = m_pCuePoint->get();
+
+        if (cuePoint != -1 && cuePoint != 0.0) {
+            CuePointer loadCue;
+            const QList<CuePointer> cuePoints(m_pLoadedTrack->getCuePoints());
+            QListIterator<CuePointer> it(cuePoints);
+            while (it.hasNext()) {
+                CuePointer pCue(it.next());
+                if (pCue->getType() == Cue::LOAD) {
+                    loadCue = pCue;
+                    break;
+                }
+            }
+            if (!loadCue) {
+                loadCue = m_pLoadedTrack->addCue();
+                loadCue->setType(Cue::LOAD);
+                loadCue->setLength(0);
+            }
+            loadCue->setPosition(cuePoint);
+        }
+
+        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+        m_pCuePoint->set(-1.0);
+        m_pLoadedTrack.clear();
+    }
+
+
+    if (pNewTrack.isNull()) {
         return;
     }
 
-    m_pLoadedTrack = pTrack;
-    connect(pTrack.data(), SIGNAL(cuesUpdated()),
+    m_pLoadedTrack = pNewTrack;
+    connect(pNewTrack.data(), SIGNAL(cuesUpdated()),
             this, SLOT(trackCuesUpdated()),
             Qt::DirectConnection);
 
     CuePointer loadCue;
-    const QList<CuePointer> cuePoints(pTrack->getCuePoints());
+    const QList<CuePointer> cuePoints(pNewTrack->getCuePoints());
     QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
         CuePointer pCue(it.next());
@@ -240,40 +273,6 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
         // load tracks and have the needle-drop be maintained.
         seekExact(0.0);
     }
-}
-
-void CueControl::trackUnloaded(TrackPointer pTrack) {
-    QMutexLocker lock(&m_mutex);
-    disconnect(pTrack.data(), 0, this, 0);
-    for (int i = 0; i < m_iNumHotCues; ++i) {
-        detachCue(i);
-    }
-
-    // Store the cue point in a load cue.
-    double cuePoint = m_pCuePoint->get();
-
-    if (cuePoint != -1 && cuePoint != 0.0) {
-        CuePointer loadCue;
-        const QList<CuePointer> cuePoints(pTrack->getCuePoints());
-        QListIterator<CuePointer> it(cuePoints);
-        while (it.hasNext()) {
-            CuePointer pCue(it.next());
-            if (pCue->getType() == Cue::LOAD) {
-                loadCue = pCue;
-                break;
-            }
-        }
-        if (!loadCue) {
-            loadCue = pTrack->addCue();
-            loadCue->setType(Cue::LOAD);
-            loadCue->setLength(0);
-        }
-        loadCue->setPosition(cuePoint);
-    }
-
-    m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
-    m_pCuePoint->set(-1.0);
-    m_pLoadedTrack.clear();
 }
 
 void CueControl::cueUpdated() {
@@ -351,7 +350,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
         return;
 
     int hotcue = pControl->getHotcueNumber();
-    detachCue(hotcue);
+    hotcueClear(pControl, v);
     CuePointer pCue(m_pLoadedTrack->addCue());
     double cuePosition =
             (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?

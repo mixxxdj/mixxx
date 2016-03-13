@@ -6,6 +6,7 @@
 #include <QtDebug>
 
 #include "preferences/usersettings.h"
+#include "control/control.h"
 #include "controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
@@ -16,13 +17,20 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
         : EngineChannel(handle_group, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_vuMeter(getGroup()),
-          m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
+          m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
         pEffectsManager->registerChannel(handle_group);
     }
+
+    // Make input_configured read-only.
+    m_pInputConfigured->connectValueChangeRequest(
+        this, SLOT(slotInputConfiguredChangeRequest(double)),
+        Qt::DirectConnection);
+    ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
+                                      ConfigKey(getGroup(), "input_configured"));
 
     setMaster(false); // Use "talkover" button to enable microphones
 
@@ -31,12 +39,11 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
 
 EngineMicrophone::~EngineMicrophone() {
     delete m_pSampleRate;
-    delete m_pEnabled;
     delete m_pPregain;
 }
 
 bool EngineMicrophone::isActive() {
-    bool enabled = m_pEnabled->get() > 0.0;
+    bool enabled = m_pInputConfigured->toBool();
     if (enabled && m_sampleBuffer) {
         m_wasActive = true;
     } else if (m_wasActive) {
@@ -53,7 +60,7 @@ void EngineMicrophone::onInputConfigured(AudioInput input) {
         return;
     }
     m_sampleBuffer = NULL;
-    m_pEnabled->set(1.0);
+    m_pInputConfigured->setAndConfirm(1.0);
 }
 
 void EngineMicrophone::onInputUnconfigured(AudioInput input) {
@@ -63,7 +70,7 @@ void EngineMicrophone::onInputUnconfigured(AudioInput input) {
         return;
     }
     m_sampleBuffer = NULL;
-    m_pEnabled->set(0.0);
+    m_pInputConfigured->setAndConfirm(0.0);
 }
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,

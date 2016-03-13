@@ -33,13 +33,15 @@ QuantizeControl::~QuantizeControl() {
     delete m_pCOClosestBeat;
 }
 
-void QuantizeControl::trackLoaded(TrackPointer pTrack) {
+void QuantizeControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (m_pTrack) {
-        trackUnloaded(m_pTrack);
+        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                       this, SLOT(slotBeatsUpdated()));
     }
 
-    if (pTrack) {
-        m_pTrack = pTrack;
+    if (pNewTrack) {
+        m_pTrack = pNewTrack;
         m_pBeats = m_pTrack->getBeats();
         connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotBeatsUpdated()));
@@ -47,20 +49,13 @@ void QuantizeControl::trackLoaded(TrackPointer pTrack) {
         // If there is a cue point, the value will be updated.
         lookupBeatPositions(0.0);
         updateClosestBeat(0.0);
+    } else {
+        m_pTrack.clear();
+        m_pBeats.clear();
+        m_pCOPrevBeat->set(-1);
+        m_pCONextBeat->set(-1);
+        m_pCOClosestBeat->set(-1);
     }
-}
-
-void QuantizeControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
-    if (m_pTrack) {
-        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
-                   this, SLOT(slotBeatsUpdated()));
-    }
-    m_pTrack.clear();
-    m_pBeats.clear();
-    m_pCOPrevBeat->set(-1);
-    m_pCONextBeat->set(-1);
-    m_pCOClosestBeat->set(-1);
 }
 
 void QuantizeControl::slotBeatsUpdated() {
