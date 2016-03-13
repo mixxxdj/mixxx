@@ -47,9 +47,9 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>3</number>
      </property>
-     <widget class="QWidget" name="tab_1">
+     <widget class="QWidget" name="tabSummary">
       <attribute name="title">
        <string>Summary</string>
       </attribute>
@@ -681,7 +681,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_4">
+     <widget class="QWidget" name="tabComments">
       <attribute name="title">
        <string>Comments</string>
       </attribute>
@@ -691,7 +691,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tabBPM">
       <attribute name="title">
        <string>BPM</string>
       </attribute>
@@ -869,7 +869,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="tabCuepoints">
       <attribute name="title">
        <string>Cuepoints</string>
       </attribute>
