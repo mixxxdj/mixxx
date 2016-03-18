@@ -372,16 +372,9 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
-void RateControl::trackLoaded(TrackPointer pTrack) {
-    if (m_pTrack) {
-        trackUnloaded(m_pTrack);
-    }
-    m_pTrack = pTrack;
-}
-
-void RateControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
-    m_pTrack.clear();
+void RateControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
+    m_pTrack = pNewTrack;
 }
 
 double RateControl::calcRateRatio() const {

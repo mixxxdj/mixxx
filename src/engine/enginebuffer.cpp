@@ -499,7 +499,7 @@ void EngineBuffer::slotTrackLoading() {
 }
 
 TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
-    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    TrackPointer pTrack(TrackInfoObject::newTemporary());
     pTrack->setSampleRate(44100);
     // 10 seconds
     pTrack->setDuration(10);
@@ -510,7 +510,7 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
     }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
     m_pSyncControl->setLocalBpm(filebpm);
-    m_pSyncControl->trackLoaded(pTrack);
+    m_pSyncControl->trackLoaded(pTrack, TrackPointer());
     return pTrack;
 }
 
@@ -519,6 +519,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
     //qDebug() << getGroup() << "EngineBuffer::slotTrackLoaded";
+    TrackPointer pOldTrack = m_pCurrentTrack;
+
     m_pause.lock();
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
@@ -536,7 +538,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pause.unlock();
 
     // All EngineControls are connected directly
-    emit(trackLoaded(pTrack));
+    emit(trackLoaded(pTrack, pOldTrack));
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
     m_iTrackLoading = 0;
@@ -546,6 +548,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     m_iTrackLoading = 0;
+    // Loading of a new track failed.
+    // eject the currently loaded track (the old Track) as well
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -556,6 +560,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 
 void EngineBuffer::ejectTrack() {
     // clear track values in any case, this may fix Bug #1450424
+    //qDebug() << "EngineBuffer::ejectTrack()";
     m_pause.lock();
     m_iTrackLoading = 0;
     m_pTrackSamples->set(0);
@@ -571,7 +576,7 @@ void EngineBuffer::ejectTrack() {
     m_pause.unlock();
 
     if (pTrack) {
-        emit(trackUnloaded(pTrack));
+        emit(trackLoaded(TrackPointer(), pTrack));
     }
 }
 
@@ -1303,22 +1308,24 @@ void EngineBuffer::hintReader(const double dRate) {
 }
 
 // WARNING: This method runs in the GUI thread
-void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
-    // Signal to the reader to load the track. The reader will respond with
-    // trackLoading and then either with trackLoaded or trackLoadFailed signals.
-    m_bPlayAfterLoading = play;
-    m_pReader->newTrack(pTrack);
+void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
+    if (pTrack.isNull()) {
+        // Loading a null track means "eject" 
+        ejectTrack();
+    } else {
+        // Signal to the reader to load the track. The reader will respond with
+        // trackLoading and then either with trackLoaded or trackLoadFailed signals.
+        m_bPlayAfterLoading = play;
+        m_pReader->newTrack(pTrack);
+    }
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
     m_engineControls.push_back(pControl);
     pControl->setEngineBuffer(this);
-    connect(this, SIGNAL(trackLoaded(TrackPointer)),
-            pControl, SLOT(trackLoaded(TrackPointer)),
-            Qt::DirectConnection);
-    connect(this, SIGNAL(trackUnloaded(TrackPointer)),
-            pControl, SLOT(trackUnloaded(TrackPointer)),
+    connect(this, SIGNAL(trackLoaded(TrackPointer, TrackPointer)),
+            pControl, SLOT(trackLoaded(TrackPointer, TrackPointer)),
             Qt::DirectConnection);
 }
 

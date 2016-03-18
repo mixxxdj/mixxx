@@ -22,8 +22,7 @@ class ClockControl: public EngineControl {
                    const double totalSamples, const int iBufferSize);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
     void slotBeatsUpdated();
 
   private:

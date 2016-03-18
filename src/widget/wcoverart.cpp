@@ -104,8 +104,13 @@ void WCoverArt::slotEnable(bool enable) {
     if (wasDisabled) {
         slotLoadTrack(m_loadedTrack);
     }
-
     update();
+}
+
+void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
+    slotReset();
 }
 
 void WCoverArt::slotReset() {

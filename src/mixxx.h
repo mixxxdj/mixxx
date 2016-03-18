@@ -37,7 +37,6 @@ class EngineMaster;
 class GuiTick;
 class LaunchImage;
 class Library;
-class LibraryScanner;
 class MixxxKeyboard;
 class PlayerManager;
 class RecordingManager;
@@ -84,8 +83,6 @@ class MixxxMainWindow : public QMainWindow {
     void slotOptionsPreferences();
     // shows an about dlg
     void slotHelpAbout();
-    // Scan or rescan the music library directory
-    void slotScanLibrary();
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
     // Open the developer tools dialog.
@@ -103,8 +100,6 @@ class MixxxMainWindow : public QMainWindow {
 
   signals:
     void newSkinLoaded();
-    void libraryScanStarted();
-    void libraryScanFinished();
     // used to uncheck the menu when the dialog of develeoper tools is closed
     void developerToolsDlgClosed(int r);
     void closeDeveloperToolsDlgChecked(int r);
@@ -160,8 +155,6 @@ class MixxxMainWindow : public QMainWindow {
     VinylControlManager* m_pVCManager;
 
     MixxxKeyboard* m_pKeyboard;
-    // Library scanner object
-    LibraryScanner* m_pLibraryScanner;
     // The library management object
     Library* m_pLibrary;
 

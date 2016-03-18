@@ -23,13 +23,14 @@
 #include <QList>
 #include <QString>
 #include <QList>
-#include <QWidget>
+#include <QObject>
 #include <QSqlDatabase>
 #include <QStringList>
 #include <QRegExp>
 #include <QFileInfo>
 #include <QLinkedList>
 #include <QSemaphore>
+#include <QScopedPointer>
 
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -44,14 +45,14 @@
 #include "trackinfoobject.h"
 #include <gtest/gtest.h>
 
+class LibraryScannerDlg;
 class TrackCollection;
 
 class LibraryScanner : public QThread {
     FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);
     Q_OBJECT
   public:
-    LibraryScanner(QWidget* pParent,
-                   TrackCollection* collection,
+    LibraryScanner(TrackCollection* collection,
                    UserSettingsPointer pConfig);
     virtual ~LibraryScanner();
 
@@ -149,6 +150,7 @@ class LibraryScanner : public QThread {
     volatile ScannerState m_state;
 
     QStringList m_libraryRootDirs;
+    QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
 };
 
 #endif

@@ -59,8 +59,7 @@ class SyncControl : public EngineControl, public Syncable {
     void reportPlayerSpeed(double speed, bool scratching);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
     // Fired by changes in play.

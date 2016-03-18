@@ -94,8 +94,7 @@ class CueControl : public EngineControl {
     bool getPlayFlashingAtPause();
 
   public slots:
-    void trackLoaded(TrackPointer pTrack);
-    void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
     void cueUpdated();

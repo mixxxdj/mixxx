@@ -41,8 +41,7 @@ enum NetworkStreamWorkerStates {
 
 class NetworkStreamWorker {
   public:
-    NetworkStreamWorker()
-          : m_networkStreamWorkerState(NETWORKSTREAMWORKER_STATE_NEW) {
+    NetworkStreamWorker() {
     }
     virtual ~NetworkStreamWorker() { }
     virtual void process(const CSAMPLE* pBuffer, const int iBufferSize) = 0;
@@ -55,15 +54,37 @@ class NetworkStreamWorker {
     virtual bool threadWaiting() {
         return false;
     }
-    virtual int getState() {
-        return m_networkStreamWorkerState;
+    static int getState() {
+        return s_networkStreamWorkerState;
     }
+    static int getFunctionCode() {
+        return s_functionCode;
+    }
+    static int getRunCount() {
+        return s_runCount;
+    }
+    static void debugState() {
+        qDebug() << "NetworkStreamWorker state:"
+                 << s_networkStreamWorkerState
+                 << s_functionCode
+                 << s_runCount;
+    }
+
 protected:
-    virtual void setState(int state) {
-        m_networkStreamWorkerState = state;
+    void setState(int state) {
+        s_networkStreamWorkerState = state;
+    }
+    void setFunctionCode(int code) {
+        s_functionCode = code;
+    }
+    void incRunCount() {
+        s_runCount++;
     }
 private:
-    int m_networkStreamWorkerState;
+    static int s_networkStreamWorkerState;
+    static int s_functionCode;
+    static int s_runCount;
 };
+
 
 #endif /* NETWORKSTREAMWORKER_H */

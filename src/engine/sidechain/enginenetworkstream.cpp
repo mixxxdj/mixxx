@@ -105,6 +105,7 @@ void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
     int writeRequired = frames * m_numOutputChannels;
     if (writeAvailable < writeRequired) {
         qDebug() << "EngineNetworkStream::write() buffer full, loosing samples";
+        NetworkStreamWorker::debugState();
         m_writeOverflowCount++;
     }
     int copyCount = math_min(writeAvailable, writeRequired);
@@ -134,6 +135,7 @@ void EngineNetworkStream::writeSilence(int frames) {
     int writeRequired = frames * m_numOutputChannels;
     if (writeAvailable < writeRequired) {
         qDebug() << "EngineNetworkStream::writeSilence() buffer full";
+        NetworkStreamWorker::debugState();
     }
     int clearCount = math_min(writeAvailable, writeRequired);
     if (clearCount > 0) {

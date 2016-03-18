@@ -38,10 +38,9 @@ class BaseTrackPlayer : public BasePlayer {
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay=false) = 0;
 
   signals:
-    void loadTrack(TrackPointer pTrack, bool bPlay=false);
-    void loadTrackFailed(TrackPointer pTrack);
     void newTrackLoaded(TrackPointer pLoadedTrack);
-    void unloadingTrack(TrackPointer pAboutToBeUnloaded);
+    void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void playerEmpty();
     void noPassthroughInputConfigured();
     void noVinylControlInputConfigured();
 };
@@ -68,10 +67,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void setupEqControls();
 
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bPlay=false);
-    void slotFinishLoading(TrackPointer pTrackInfoObject);
+    void slotLoadTrack(TrackPointer track, bool bPlay) override;
+    void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
-    void slotUnloadTrack(TrackPointer track);
     void slotSetReplayGain(Mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 
@@ -80,6 +78,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotVinylControlEnabled(double v);
 
   private:
+    void setReplayGain(double value);
+
     UserSettingsPointer m_pConfig;
     TrackPointer m_pLoadedTrack;
 

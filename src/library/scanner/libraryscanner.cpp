@@ -33,8 +33,7 @@
 // TODO(rryan) make configurable
 const int kScannerThreadPoolSize = 1;
 
-LibraryScanner::LibraryScanner(QWidget* pParentWidget,
-                               TrackCollection* collection,
+LibraryScanner::LibraryScanner(TrackCollection* collection,
                                UserSettingsPointer pConfig)
               : m_pCollection(collection),
                 m_libraryHashDao(m_database),
@@ -82,22 +81,21 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget,
                 dao, SLOT(databaseTracksChanged(QSet<TrackId>)));
     }
 
-    // Parented to pParentWidget so we don't need to delete it.
-    LibraryScannerDlg* pProgress = new LibraryScannerDlg(pParentWidget);
+    m_pProgressDlg.reset(new LibraryScannerDlg());
     connect(this, SIGNAL(progressLoading(QString)),
-            pProgress, SLOT(slotUpdate(QString)));
+            m_pProgressDlg.data(), SLOT(slotUpdate(QString)));
     connect(this, SIGNAL(progressHashing(QString)),
-            pProgress, SLOT(slotUpdate(QString)));
+            m_pProgressDlg.data(), SLOT(slotUpdate(QString)));
     connect(this, SIGNAL(scanStarted()),
-            pProgress, SLOT(slotScanStarted()));
+            m_pProgressDlg.data(), SLOT(slotScanStarted()));
     connect(this, SIGNAL(scanFinished()),
-            pProgress, SLOT(slotScanFinished()));
-    connect(pProgress, SIGNAL(scanCancelled()),
+            m_pProgressDlg.data(), SLOT(slotScanFinished()));
+    connect(m_pProgressDlg.data(), SIGNAL(scanCancelled()),
             this, SLOT(slotCancel()));
     connect(&m_trackDao, SIGNAL(progressVerifyTracksOutside(QString)),
-            pProgress, SLOT(slotUpdate(QString)));
+            m_pProgressDlg.data(), SLOT(slotUpdate(QString)));
     connect(&m_trackDao, SIGNAL(progressCoverArt(QString)),
-            pProgress, SLOT(slotUpdateCover(QString)));
+            m_pProgressDlg.data(), SLOT(slotUpdateCover(QString)));
 
     start();
 }

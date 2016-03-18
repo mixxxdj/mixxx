@@ -77,8 +77,7 @@ class BpmControl : public EngineControl {
                                            const double& target_percentage);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
     void slotSetEngineBpm(double);

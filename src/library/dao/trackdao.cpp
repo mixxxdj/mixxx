@@ -475,7 +475,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":replaygain_peak", track.getReplayGain().getPeak());
         pTrackLibraryQuery->bindValue(":channels", track.getChannels());
 
-        pTrackLibraryQuery->bindValue(":header_parsed", track.getHeaderParsed() ? 1 : 0);
+        pTrackLibraryQuery->bindValue(":header_parsed", track.isHeaderParsed() ? 1 : 0);
 
         const PlayCounter playCounter(track.getPlayCounter());
         pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
@@ -684,7 +684,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
 
 TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove) {
     // TODO(uklotzde): Resolve TrackInfoObject through TrackCache
-    TrackPointer pTrack(new TrackInfoObject(fileInfo));
+    TrackPointer pTrack(TrackInfoObject::newTemporary(fileInfo));
 
     // Check that track is a supported extension.
     // TODO(uklotzde): The following check can be skipped if
@@ -703,7 +703,7 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
     // the track is already in the library. A refactoring is
     // needed to detect this before calling addTracksAddTrack().
     SoundSourceProxy(pTrack).loadTrackMetadata();
-    if (!pTrack->getHeaderParsed()) {
+    if (!pTrack->isHeaderParsed()) {
         qWarning() << "TrackDAO::addTracksAddFile:"
                 << "Failed to parse track metadata from file"
                 << pTrack->getLocation();
@@ -1351,9 +1351,8 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
 
     // TODO(uklotzde): Resolve through TrackCache
     TrackPointer pTrack(
-            new TrackInfoObject(fileInfo),
+            new TrackInfoObject(fileInfo, SecurityTokenPointer(), trackId),
             TrackInfoObject::onTrackReferenceExpired);
-    pTrack->setId(trackId);
 
     // TIO already stats the file to see if it exists, what its length is,
     // etc. So don't bother setting it.
@@ -1380,16 +1379,16 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
         // here, otherwise the track's metadata in the library
         // would be overwritten.
         const TrackPointer pTempTrack(
-                new TrackInfoObject(
+                TrackInfoObject::newTemporary(
                         pTrack->getFileInfo(),
                         pTrack->getSecurityToken()));
         SoundSourceProxy proxy(pTempTrack);
         // The metadata for the newly created track object has
         // not been parsed from the file, until we explicitly
         // (re-)load it through the SoundSourceProxy.
-        DEBUG_ASSERT(!pTempTrack->getHeaderParsed());
+        DEBUG_ASSERT(!pTempTrack->isHeaderParsed());
         proxy.loadTrackMetadata();
-        if (pTempTrack->getHeaderParsed()) {
+        if (pTempTrack->isHeaderParsed()) {
             // Copy the track total from the temporary track object
             pTrack->setTrackTotal(pTempTrack->getTrackTotal());
             // Also set the track number if it is still empty due
@@ -1458,7 +1457,7 @@ TrackPointer TrackDAO::getTrackFromDB(TrackId trackId) const {
     // We could (re-)load the metadata here, but this would risk to
     // overwrite the metadata that is currently stored in the library.
     // Instead prefer to log an informational warning for the user.
-    if (!pTrack->getHeaderParsed()) {
+    if (!pTrack->isHeaderParsed()) {
         qWarning() << "Metadata of the track" << pTrack->getLocation()
                 << "has never been loaded from this file."
                 << "Please consider reloading it manually if you prefer"

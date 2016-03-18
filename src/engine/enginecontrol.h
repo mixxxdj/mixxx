@@ -81,8 +81,7 @@ class EngineControl : public QObject {
     virtual void notifySeek(double dNewPlaypo);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   protected:
     void seek(double fractionalPosition);
