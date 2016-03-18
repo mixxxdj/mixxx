@@ -401,7 +401,7 @@ void EngineMaster::process(const int iBufferSize) {
     double c1_gain, c2_gain;
     EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
                                 m_pXFaderCalibration->get(),
-                                m_pXFaderMode->get() == MIXXX_XFADER_CONSTPWR,
+                                m_pXFaderMode->get(),
                                 m_pXFaderReverse->toBool(),
                                 &c1_gain, &c2_gain);
 

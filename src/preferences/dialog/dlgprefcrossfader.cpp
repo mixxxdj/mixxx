@@ -161,7 +161,7 @@ void DlgPrefCrossfader::drawXfaderDisplay()
         double gain1, gain2;
         EngineXfader::getXfadeGains((-1. + (xfadeStep * i)),
                                     m_transform, m_cal,
-                                    (m_xFaderMode == MIXXX_XFADER_CONSTPWR),
+                                    m_xFaderMode,
                                     checkBoxReverse->isChecked(),
                                     &gain1, &gain2);
 
