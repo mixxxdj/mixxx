@@ -165,28 +165,22 @@ void DlgPrefCrossfader::drawXfaderDisplay()
                                     checkBoxReverse->isChecked(),
                                     &gain1, &gain2);
 
-        double sum = gain1 + gain2;
+        double gain = sqrt(gain1 * gain1 + gain2 * gain2);
         // scale for graph
-        gain1 *= 0.80;
-        gain2 *= 0.80;
-        sum *= 0.80;
+        gain1 *= 0.71;
+        gain2 *= 0.71;
+        gain *= 0.71;
 
         // draw it
-        pointTotal = QPointF(i + 1, (1. - sum) * (sizeY) - 3);
+        pointTotal = QPointF(i + 1, (1. - gain) * (sizeY) - 3);
         point1 = QPointF(i + 1, (1. - gain1) * (sizeY) - 3);
         point2 = QPointF(i + 1, (1. - gain2) * (sizeY) - 3);
 
-        if(i == 0) {
-            pointTotalPrev = pointTotal;
-            point1Prev = point1;
-            point2Prev = point2;
-        }
-
-        if(pointTotal != point1)
+        if (i > 0) {
+            m_pxfScene->addLine(QLineF(pointTotal, pointTotalPrev), QPen(Qt::red));
             m_pxfScene->addLine(QLineF(point1, point1Prev), graphLinePen);
-        if(pointTotal != point2)
             m_pxfScene->addLine(QLineF(point2, point2Prev), graphLinePen);
-        m_pxfScene->addLine(QLineF(pointTotal, pointTotalPrev), QPen(Qt::red));
+        }
 
         // Save old values
         pointTotalPrev = pointTotal;
