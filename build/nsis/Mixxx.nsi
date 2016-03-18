@@ -546,6 +546,9 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Wireless-DJ-scripts.js"
   Delete "$INSTDIR\controllers\Xone K2.midi.xml"
   Delete "$INSTDIR\controllers\Xone-K2-scripts.js"
+  Delete "$INSTDIR\controllers\Numark-Mixtrack-3.midi.xml"
+  Delete "$INSTDIR\controllers\Numark-Mixtrack-3-scripts.js"
+	
   ;Delete $INSTDIR\controllers\*.* ; Avoid this since it will delete customized files too
   RMDir "$INSTDIR\controllers"
 
