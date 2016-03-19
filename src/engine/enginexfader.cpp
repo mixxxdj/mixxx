@@ -58,7 +58,14 @@ void EngineXfader::getXfadeGains(
             *gain1 = 1 - *gain2;
         }
 
-        // normalize the gain
+        // The resulting power at the crossover point depends on the correlation of the input signals
+        // In theory the gain ratio varies from 0.5 for two equal signals to sqrt(0.5) = 0.707 for totally
+        // uncorrelated signals.
+        // Since the underlying requirement for this curve is constant loudness, we did a test with 30 s
+        // snippets of various genres and ReplayGain 2.0 analysis. Allmost all results where near 0.707 
+        // with one exception of mixing two parts of the same track, which resulted in 0.66.
+        // Based on the testing, we normalize the gain as if the signals were uncorrelated. The
+        // correction on the following lines ensures that  gain1^2 + gain2^2 == 1.
         double gain = sqrt(*gain1 * *gain1 + *gain2 * *gain2);
         *gain1 = *gain1 / gain;
         *gain2 = *gain2 / gain;
