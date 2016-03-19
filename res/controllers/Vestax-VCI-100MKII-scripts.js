@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2016-3-1
+// description: 2016-4-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -15,17 +15,15 @@ VCI102.fx34 = ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
 VCI102.fx = VCI102.fx12.concat(VCI102.fx34);
 
 VCI102.fxButton = [VCI102.fx12, VCI102.fx12];
-
-VCI102.fxKnob = [
-    ["super1", "mix"],
-    ["super1", "mix"]
-];
+VCI102.fxKnob = [["super1", "mix"], ["super1", "mix"]];
+VCI102.brake = [0, 0];
 
 VCI102.shift = function(ch, midino, value, status, group) {
     var i, j, enabled;
     ch = VCI102.deck.indexOf(group);  // override channel by group
     VCI102.fxButton[ch] = value ? VCI102.fx34 : VCI102.fx12;
     VCI102.fxKnob[ch].reverse();
+    VCI102.brake[ch] = value;
     for (i = ch; i < 4; i += 2) {
         enabled = "group_" + VCI102.deck[i] + "_enable";
         for (j = 0; j < 2; j++) {
@@ -66,7 +64,8 @@ VCI102.SelectNextTrack = function(ch, midino, value, status, group) {
 };
 
 VCI102.slip = function(value, group, key) {
-    if (!value) {
+    // resume after the effect when the track is [re]played
+    if (key == "play" ? value : !value && engine.getValue(group, "play")) {
         if (engine.getValue(group, "slip_enabled")) {
             engine.setValue(group, "slip_enabled", 0);
             engine.beginTimer(40, function() {
@@ -80,26 +79,31 @@ VCI102.scratchTimer = [0, 0, 0, 0];
 
 VCI102.scratchEnable = function(ch, midino, value, status, group) {
     var deck = ch + 1;
-    if (value) {
-        if (VCI102.scratchTimer[ch]) {
-            engine.stopTimer(VCI102.scratchTimer[ch]);
-            VCI102.scratchTimer[ch] = 0;
-        } else {
-            engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
-        }
+    if (VCI102.brake[ch % 2]) {
+        engine.brake(deck, value > 0);
+        VCI102.slip(value, group);
     } else {
-        VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
-            var vel = Math.abs(engine.getValue(group, "scratch2"));
-            if (vel < 1 && (vel < 1e-9 || engine.getValue(group, "play"))) {
-                if (VCI102.scratchTimer[ch]) {
-                    engine.stopTimer(VCI102.scratchTimer[ch]);
-                    VCI102.scratchTimer[ch] = 0;
-                    engine.scratchDisable(
-                        deck, !engine.getValue(group, "slip_enabled"));
-                    VCI102.slip(value, group);
-                }
+        if (value) {
+            if (VCI102.scratchTimer[ch]) {
+                engine.stopTimer(VCI102.scratchTimer[ch]);
+                VCI102.scratchTimer[ch] = 0;
+            } else {
+                engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
             }
-        });
+        } else {
+            VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
+                var vel = Math.abs(engine.getValue(group, "scratch2"));
+                if (vel < 1 && (vel < 1e-9 || engine.getValue(group, "play"))) {
+                    if (VCI102.scratchTimer[ch]) {
+                        engine.stopTimer(VCI102.scratchTimer[ch]);
+                        VCI102.scratchTimer[ch] = 0;
+                        engine.scratchDisable(
+                            deck, !engine.getValue(group, "slip_enabled"));
+                        VCI102.slip(value, group);
+                    }
+                }
+            });
+        }
     }
 };
 
@@ -314,6 +318,8 @@ VCI102.init = function(id, debug) {
 
     for (i = 0; i < 4; i++) {
         engine.connectControl(VCI102.deck[i], "loop_enabled", VCI102.slip);
+        engine.connectControl(VCI102.deck[i], "reverse", VCI102.slip);
+        engine.connectControl(VCI102.deck[i], "play", VCI102.slip);
         engine.connectControl(VCI102.deck[i], "pfl", headMix);
         enabled = "group_" + VCI102.deck[i] + "_enable";
         for (j = 0; j < 2; j++) {
