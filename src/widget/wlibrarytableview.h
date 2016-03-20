@@ -38,6 +38,9 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
 
+protected:
+    void setVScrollBarPosState(int position);
+
   private:
     void loadVScrollBarPosState();
     void saveVScrollBarPosState();

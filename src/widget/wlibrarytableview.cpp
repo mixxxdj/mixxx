@@ -66,7 +66,13 @@ void WLibraryTableView::restoreVScrollBarPos() {
     //Restore the scrollbar's position (scroll to that spot)
     //when the search has been cleared
     updateGeometries();
+    qDebug() << "WLibraryTableView::restoring position " << m_iSavedVScrollBarPos;
     verticalScrollBar()->setValue(m_iSavedVScrollBarPos);
+}
+
+void WLibraryTableView::setVScrollBarPosState(int position){
+  updateGeometries();
+  verticalScrollBar()->setValue(position);
 }
 
 void WLibraryTableView::saveVScrollBarPos() {
@@ -79,6 +85,7 @@ void WLibraryTableView::saveVScrollBarPos() {
 void WLibraryTableView::saveVScrollBarPosState() {
     //Save the vertical scrollbar position.
     int scrollbarPosition = verticalScrollBar()->value();
+    //qDebug() << "saving pos " << scrollbarPosition;
     m_pConfig->set(m_vScrollBarPosKey, ConfigValue(scrollbarPosition));
 }
 
