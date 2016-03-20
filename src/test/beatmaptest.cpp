@@ -56,12 +56,17 @@ TEST_F(BeatMapTest, Scale) {
     BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
 
     EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
-    pMap->scale(2);
+    pMap->scale(Beats::DOUBLE);
     EXPECT_DOUBLE_EQ(2 * bpm, pMap->getBpm());
-    pMap->scale(0.5);
+
+    pMap->scale(Beats::HALVE);
     EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
-    pMap->scale(0.25);
-    EXPECT_DOUBLE_EQ(0.25 * bpm, pMap->getBpm());
+
+    pMap->scale(Beats::TWOTHIRDS);
+    EXPECT_DOUBLE_EQ(bpm * 2 / 3, pMap->getBpm());
+
+    pMap->scale(Beats::THREEFOURTHS);
+    EXPECT_DOUBLE_EQ(bpm / 2, pMap->getBpm());
 }
 
 TEST_F(BeatMapTest, TestNthBeat) {
