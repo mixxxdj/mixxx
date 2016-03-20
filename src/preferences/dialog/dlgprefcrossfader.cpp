@@ -12,7 +12,7 @@ DlgPrefCrossfader::DlgPrefCrossfader(
           m_config(config),
           m_pxfScene(NULL),
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
-          m_transform(EngineXfader::kTransformMin),
+          m_transform(EngineXfader::kTransformDefault),
           m_cal(0.0),
           m_mode(EngineXfader::kXfaderConfigKey, "xFaderMode"),
           m_curve(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
@@ -53,12 +53,13 @@ DlgPrefCrossfader::~DlgPrefCrossfader() {
 void DlgPrefCrossfader::loadSettings() {
     // Range xFaderCurve EngineXfader::kTransformMin .. EngineXfader::kTransformMax
     m_transform = m_config->getValueString(
-            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve")).toDouble();
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
+            QString::number(EngineXfader::kTransformDefault)).toDouble();
 
     // Range SliderXFader 0 .. 100
     double sliderVal = RescalerUtils::oneByXToLinear(
-            m_transform,
-            EngineXfader::kTransformMax,
+            m_transform - EngineXfader::kTransformMin + 1,
+            EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
             SliderXFader->minimum(),
             SliderXFader->maximum());
     SliderXFader->setValue(sliderVal);
@@ -82,7 +83,13 @@ void DlgPrefCrossfader::loadSettings() {
 
 // Set the default values for all the widgets
 void DlgPrefCrossfader::slotResetToDefaults() {
-    SliderXFader->setValue(0);
+    double sliderVal = RescalerUtils::oneByXToLinear(
+            EngineXfader::kTransformDefault - EngineXfader::kTransformMin + 1,
+            EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
+            SliderXFader->minimum(),
+            SliderXFader->maximum());
+    SliderXFader->setValue(sliderVal);
+
     m_xFaderMode = MIXXX_XFADER_ADDITIVE;
     radioButtonAdditive->setChecked(true);
     checkBoxReverse->setChecked(false);
@@ -200,7 +207,7 @@ void DlgPrefCrossfader::slotUpdateXFader() {
             SliderXFader->value(),
             SliderXFader->minimum(),
             SliderXFader->maximum(),
-            EngineXfader::kTransformMax);
+            EngineXfader::kTransformMax) - 1 + EngineXfader::kTransformMin;
     m_cal = EngineXfader::getPowerCalibration(m_transform);
     m_config->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"),
             ConfigValue(m_xFaderMode));

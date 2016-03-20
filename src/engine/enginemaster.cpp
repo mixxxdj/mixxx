@@ -145,7 +145,7 @@ EngineMaster::EngineMaster(UserSettingsPointer _config,
             EngineXfader::kTransformMin, EngineXfader::kTransformMax);
     m_pXFaderCalibration = new ControlPotmeter(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCalibration"),
-            0.5, 1.);
+            0.3, 1., true);
     m_pXFaderReverse = new ControlPushButton(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"));
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);

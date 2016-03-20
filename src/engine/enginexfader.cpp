@@ -4,8 +4,9 @@
 
 //static
 const char* EngineXfader::kXfaderConfigKey = "[Mixer Profile]";
+const double EngineXfader::kTransformDefault = 1.0;
 const double EngineXfader::kTransformMax = 1000.0;
-const double EngineXfader::kTransformMin = 1.0;
+const double EngineXfader::kTransformMin = 0.6;
 
 double EngineXfader::getPowerCalibration(double transform) {
     // get the transform_root of -3db (.5)
