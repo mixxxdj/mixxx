@@ -6,7 +6,7 @@
 #include "widget/wstarrating.h"
 
 WStarRating::WStarRating(QString group, QWidget* pParent)
-        : WBaseWidget(pParent),
+        : WWidget(pParent),
           m_starRating(0,5),
           m_pGroup(group),
           m_focused(false) {
@@ -117,4 +117,17 @@ void WStarRating::mouseReleaseEvent(QMouseEvent*) {
         return;
 
     m_pCurrentTrack->setRating(m_starRating.starCount());
+}
+
+void WStarRating::fillDebugTooltip(QStringList* debug) {
+    WWidget::fillDebugTooltip(debug);
+
+    QString currentRating = "-";
+    QString maximumRating = QString::number(m_starRating.maxStarCount());
+
+    if (m_pCurrentTrack) {
+        currentRating.setNum(m_pCurrentTrack->getRating());
+    }
+
+    *debug << QString("Rating: %1/%2").arg(currentRating, maximumRating);
 }

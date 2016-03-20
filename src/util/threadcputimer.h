@@ -1,17 +1,17 @@
-#ifndef THREADCPUTIMER_H
-#define THREADCPUTIMER_H
+#ifndef UTIL_THREADCPUTIMER_H
+#define UTIL_THREADCPUTIMER_H
 
+#include "util/duration.h"
 #include "util/performancetimer.h"
 
-class ThreadCpuTimer
-{
-public:
+class ThreadCpuTimer {
+  public:
     void start();
-    qint64 elapsed() const;
-    qint64 restart();
-private:
+    mixxx::Duration elapsed() const;
+    mixxx::Duration restart();
+  private:
     qint64 t1;
     qint64 t2;
 };
 
-#endif // THREADCPUTIMER_H
+#endif // UTIL_THREADCPUTIMER_H

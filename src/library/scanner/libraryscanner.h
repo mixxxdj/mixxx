@@ -23,13 +23,14 @@
 #include <QList>
 #include <QString>
 #include <QList>
-#include <QWidget>
+#include <QObject>
 #include <QSqlDatabase>
 #include <QStringList>
 #include <QRegExp>
 #include <QFileInfo>
 #include <QLinkedList>
 #include <QSemaphore>
+#include <QScopedPointer>
 
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -44,24 +45,22 @@
 #include "trackinfoobject.h"
 #include <gtest/gtest.h>
 
+class LibraryScannerDlg;
 class TrackCollection;
 
 class LibraryScanner : public QThread {
     FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);
     Q_OBJECT
   public:
-    LibraryScanner(QWidget* pParent,
-                   TrackCollection* collection,
-                   ConfigObject<ConfigValue>* pConfig);
+    LibraryScanner(TrackCollection* collection,
+                   UserSettingsPointer pConfig);
     virtual ~LibraryScanner();
 
+  public slots:
     // Call from any thread to start a scan. Does nothing if a scan is already
     // in progress.
     void scan();
 
-
-
-  public slots:
     // Call from any thread to cancel the scan.
     void slotCancel();
 
@@ -95,7 +94,7 @@ class LibraryScanner : public QThread {
                                    bool newDirectory, int hash);
     void slotDirectoryUnchanged(const QString& directoryPath);
     void slotTrackExists(const QString& trackPath);
-    void slotAddNewTrack(TrackPointer pTrack);
+    void slotAddNewTrack(const QString& trackPath);
 
   private:
     enum ScannerState {
@@ -151,6 +150,7 @@ class LibraryScanner : public QThread {
     volatile ScannerState m_state;
 
     QStringList m_libraryRootDirs;
+    QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
 };
 
 #endif

@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QSignalMapper>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class ControlPickerMenu : public QMenu {
     Q_OBJECT

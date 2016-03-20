@@ -100,7 +100,7 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(),
             m_fileBuf.length());
     if (m_pModFile == NULL) {
-        // an error occured
+        // an error occurred
         t.cancel();
         qDebug() << "[ModPlug] Could not load module file: " << fileName;
         return ERR;

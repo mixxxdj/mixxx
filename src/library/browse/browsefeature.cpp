@@ -23,7 +23,7 @@
 const QString kQuickLinksSeparator = "-+-";
 
 BrowseFeature::BrowseFeature(QObject* parent,
-                             ConfigObject<ConfigValue>* pConfig,
+                             UserSettingsPointer pConfig,
                              TrackCollection* pTrackCollection,
                              RecordingManager* pRecordingManager)
         : LibraryFeature(parent),
@@ -79,7 +79,7 @@ BrowseFeature::BrowseFeature(QObject* parent,
         // QDir::drives(). See Qt's QDir code, especially qdir.cpp
         QString display_path = drive.filePath();
         if (display_path.endsWith("/")) {
-            display_path.chop(1); 
+            display_path.chop(1);
         }
         TreeItem* driveLetter = new TreeItem(
             display_path,  // Displays C:
@@ -324,7 +324,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             // shorten the delay
             QString display_path = drive.filePath();
             if (display_path.endsWith("/")) {
-                display_path.chop(1); 
+                display_path.chop(1);
             }
             TreeItem* driveLetter = new TreeItem(
                 display_path, // Displays C:

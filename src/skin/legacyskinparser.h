@@ -7,7 +7,7 @@
 #include <QDomElement>
 #include <QMutex>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skinparser.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/tooltips.h"
@@ -28,7 +28,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
     LegacySkinParser();
-    LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
+    LegacySkinParser(UserSettingsPointer pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
                      Library* pLibrary, VinylControlManager* pVCMan,
@@ -53,10 +53,6 @@ class LegacySkinParser : public QObject, public SkinParser {
     static QDomElement openSkin(QString skinPath);
 
     QList<QWidget*> parseNode(QDomElement node);
-
-    // Support for various legacy behavior
-    void parseColorSchemes(QDomElement node);
-    bool compareConfigKeys(QDomNode node, QString key);
 
     // Load the given template from file and return its document element.
     QDomElement loadTemplate(const QString& path);
@@ -123,13 +119,13 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     QString lookupNodeGroup(QDomElement node);
     static const char* safeChannelString(QString channelStr);
-    ControlObject* controlFromConfigNode(QDomElement element,
+    ControlObject* controlFromConfigNode(const QDomElement& element,
                                          const QString& nodeName,
                                          bool* created);
 
     QString parseLaunchImageStyle(QDomNode node);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     ControllerManager* m_pControllerManager;

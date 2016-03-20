@@ -33,16 +33,15 @@ class Waveform;
 class WOverview : public WWidget {
     Q_OBJECT
   public:
-    WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent=NULL);
+    WOverview(const char* pGroup, UserSettingsPointer pConfig, QWidget* parent=NULL);
     virtual ~WOverview();
 
     void setup(QDomNode node, const SkinContext& context);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue);
-    void slotLoadNewTrack(TrackPointer pTrack);
     void slotTrackLoaded(TrackPointer pTrack);
-    void slotUnloadTrack(TrackPointer pTrack);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   signals:
     void trackDropped(QString filename, QString group);
@@ -94,9 +93,9 @@ class WOverview : public WWidget {
     }
 
     const QString m_group;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     ControlObjectSlave* m_endOfTrackControl;
-    double m_endOfTrack;
+    bool m_endOfTrack;
     ControlObjectSlave* m_trackSamplesControl;
     ControlObjectSlave* m_playControl;
 

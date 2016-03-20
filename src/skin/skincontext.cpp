@@ -8,13 +8,13 @@
 #include "skin/svgparser.h"
 #include "util/cmdlineargs.h"
 
-SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
+SkinContext::SkinContext(UserSettingsPointer pConfig,
                          const QString& xmlPath)
         : m_xmlPath(xmlPath),
           m_pConfig(pConfig),
           m_pScriptEngine(new QScriptEngine()),
           m_pScriptDebugger(new QScriptEngineDebugger()),
-          m_pSingletons(new SingletonMap) {
+          m_pSingletons(new SingletonMap()) {
     enableDebugger(true);
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.
@@ -32,7 +32,6 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_pScriptDebugger(parent.m_pScriptDebugger),
           m_parentGlobal(m_pScriptEngine->globalObject()),
           m_pSingletons(parent.m_pSingletons) {
-
     // we generate a new global object to preserve the scope between
     // a context and its children
     QScriptValue context = m_pScriptEngine->pushContext()->activationObject();
@@ -51,8 +50,11 @@ SkinContext::SkinContext(const SkinContext& parent)
 }
 
 SkinContext::~SkinContext() {
-    m_pScriptEngine->popContext();
-    m_pScriptEngine->setGlobalObject(m_parentGlobal);
+    // Pop the context only if we're a child.
+    if (!isRoot()) {
+        m_pScriptEngine->popContext();
+        m_pScriptEngine->setGlobalObject(m_parentGlobal);
+    }
 }
 
 QString SkinContext::variable(const QString& name) const {

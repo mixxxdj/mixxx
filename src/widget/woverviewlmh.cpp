@@ -9,7 +9,7 @@
 #include "waveform/waveform.h"
 
 WOverviewLMH::WOverviewLMH(const char *pGroup,
-                           ConfigObject<ConfigValue>* pConfig, QWidget * parent)
+                           UserSettingsPointer pConfig, QWidget * parent)
         : WOverview(pGroup, pConfig, parent)  {
 }
 

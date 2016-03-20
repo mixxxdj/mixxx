@@ -435,7 +435,7 @@ void AnalyzerQueue::queueAnalyseTrack(TrackPointer tio) {
 
 // static
 AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
-        ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
+        UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
     ret->addAnalyzer(new AnalyzerWaveform(pConfig));
@@ -452,7 +452,7 @@ AnalyzerQueue* AnalyzerQueue::createDefaultAnalyzerQueue(
 
 // static
 AnalyzerQueue* AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(
-        ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
+        UserSettingsPointer pConfig, TrackCollection* pTrackCollection) {
     AnalyzerQueue* ret = new AnalyzerQueue(pTrackCollection);
 
     ret->addAnalyzer(new AnalyzerGain(pConfig));

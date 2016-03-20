@@ -2,7 +2,7 @@
 #include "controlobjectslave.h"
 #include "controlobject.h"
 
-VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
+VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
         : m_pConfig(pConfig),
           m_group(group),
           m_iLeadInTime(m_pConfig->getValueString(
@@ -32,9 +32,9 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
             group, "vinylcontrol_wantenabled", this);
     cueing = new ControlObjectSlave(group, "vinylcontrol_cueing", this);
     scratching = new ControlObjectSlave(group, "vinylcontrol_scratching", this);
-    rateRange = new ControlObjectSlave(group, "rateRange", this);
+    m_pRateRange = new ControlObjectSlave(group, "rateRange", this);
     vinylStatus = new ControlObjectSlave(group, "vinylcontrol_status", this);
-    rateDir = new ControlObjectSlave(group, "rate_dir", this);
+    m_pRateDir = new ControlObjectSlave(group, "rate_dir", this);
     loopEnabled = new ControlObjectSlave(group, "loop_enabled", this);
     signalenabled = new ControlObjectSlave(
             group, "vinylcontrol_signal_enabled", this);

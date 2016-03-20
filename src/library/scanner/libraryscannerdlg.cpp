@@ -54,8 +54,8 @@ LibraryScannerDlg::~LibraryScannerDlg() {
 }
 
 void LibraryScannerDlg::slotUpdate(QString path) {
-    //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
-    if (!m_bCancelled && m_timer.elapsed() > 2000) {
+    //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed().formatMillisWithUnit() << path;
+    if (!m_bCancelled && m_timer.elapsed() > mixxx::Duration::fromSeconds(2)) {
        setVisible(true);
     }
 
@@ -67,7 +67,7 @@ void LibraryScannerDlg::slotUpdate(QString path) {
 
 void LibraryScannerDlg::slotUpdateCover(QString path) {
     //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
-    if (!m_bCancelled && m_timer.elapsed() > 2000) {
+    if (!m_bCancelled && m_timer.elapsed() > mixxx::Duration::fromSeconds(2)) {
        setVisible(true);
     }
 

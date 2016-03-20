@@ -30,11 +30,12 @@ void WaveformWidgetAbstract::preRender(VSyncThread* vsyncThread) {
     WaveformWidgetRenderer::onPreRender(vsyncThread);
 }
 
-int WaveformWidgetAbstract::render() {
+mixxx::Duration WaveformWidgetAbstract::render() {
     if (m_widget) {
         m_widget->repaint(); // Repaints the widget directly by calling paintEvent()
     }
-    return 0; // Time for Painter setup, unknown in this case
+    // Time for Painter setup, unknown in this case
+    return mixxx::Duration();
 }
 
 void WaveformWidgetAbstract::resize(int width, int height) {

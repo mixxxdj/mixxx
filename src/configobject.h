@@ -40,6 +40,10 @@ class ConfigKey {
     ConfigKey(const QString& g, const QString& i);
     static ConfigKey parseCommaSeparated(const QString& key);
 
+    inline bool isEmpty() const {
+        return group.isEmpty() && item.isEmpty();
+    }
+
     inline bool isNull() const {
         return group.isNull() && item.isNull();
     }

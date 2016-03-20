@@ -6,18 +6,19 @@
 #include <QMouseEvent>
 #include <QWidget>
 
-#include "configobject.h"
-#include "dlgcoverartfullsize.h"
+#include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
 
+class DlgCoverArtFullSize;
+
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    WCoverArt(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+    WCoverArt(QWidget* parent, UserSettingsPointer pConfig,
               const QString& group);
     virtual ~WCoverArt();
 
@@ -25,6 +26,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
 
   public slots:
     void slotLoadTrack(TrackPointer);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotReset();
     void slotEnable(bool);
 
@@ -52,7 +54,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap scaledCoverArt(const QPixmap& normal);
 
     QString m_group;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     bool m_bEnable;
     WCoverArtMenu* m_pMenu;
     TrackPointer m_loadedTrack;

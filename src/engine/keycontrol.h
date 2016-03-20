@@ -24,7 +24,7 @@ class KeyControl : public EngineControl {
         bool keylock;
     };
 
-    KeyControl(QString group, ConfigObject<ConfigValue>* pConfig);
+    KeyControl(QString group, UserSettingsPointer pConfig);
     virtual ~KeyControl();
 
     // Returns a struct, with the results of the last pitch and tempo calculations

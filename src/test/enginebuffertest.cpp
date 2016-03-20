@@ -6,7 +6,7 @@
 #include <QTest>
 
 #include "mixer/basetrackplayer.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"

@@ -7,7 +7,7 @@
 #include <QtDebug>
 #include <QTest>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "mixer/deck.h"
 #include "effects/effectsmanager.h"
@@ -32,7 +32,7 @@ using ::testing::_;
 // for comparison.
 class TestEngineMaster : public EngineMaster {
   public:
-    TestEngineMaster(ConfigObject<ConfigValue>* _config,
+    TestEngineMaster(UserSettingsPointer _config,
                      const char* group,
                      EffectsManager* pEffectsManager,
                      bool bEnableSidechain,
@@ -52,22 +52,22 @@ class SignalPathTest : public MixxxTest {
     virtual void SetUp() {
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config());
-        m_pEngineMaster = new TestEngineMaster(m_pConfig.data(), "[Master]",
+        m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
                                                m_pEffectsManager, false, false);
 
         m_pChannel1 = new EngineDeck(
                 m_pEngineMaster->registerChannelGroup(m_sGroup1),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+                m_pConfig, m_pEngineMaster, m_pEffectsManager,
                 EngineChannel::CENTER);
         m_pChannel2 = new EngineDeck(
                 m_pEngineMaster->registerChannelGroup(m_sGroup2),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+                m_pConfig, m_pEngineMaster, m_pEffectsManager,
                 EngineChannel::CENTER);
         m_pChannel3 = new EngineDeck(
                 m_pEngineMaster->registerChannelGroup(m_sGroup3),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+                m_pConfig, m_pEngineMaster, m_pEffectsManager,
                 EngineChannel::CENTER);
-        m_pPreview1 = new PreviewDeck(NULL, m_pConfig.data(),
+        m_pPreview1 = new PreviewDeck(NULL, m_pConfig,
                                      m_pEngineMaster, m_pEffectsManager,
                                      EngineChannel::CENTER, m_sPreviewGroup);
         ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
@@ -98,8 +98,8 @@ class SignalPathTest : public MixxxTest {
 
     void loadTrack(EngineDeck* pDeck, QString path) {
         const QString kTrackLocationTest(path);
-        TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-        pDeck->getEngineBuffer()->slotLoadTrack(pTrack, true);
+        TrackPointer pTrack(TrackInfoObject::newTemporary(kTrackLocationTest));
+        pDeck->getEngineBuffer()->loadTrack(pTrack, true);
 
         // Wait for the track to load.
         ProcessBuffer();

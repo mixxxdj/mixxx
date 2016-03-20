@@ -1,11 +1,11 @@
 #include "mixer/deck.h"
 
 Deck::Deck(QObject* pParent,
-           ConfigObject<ConfigValue>* pConfig,
+           UserSettingsPointer pConfig,
            EngineMaster* pMixingEngine,
            EffectsManager* pEffectsManager,
            EngineChannel::ChannelOrientation defaultOrientation,
-           QString group) :
+           const QString& group) :
         BaseTrackPlayerImpl(pParent, pConfig, pMixingEngine, pEffectsManager,
                             defaultOrientation, group, true, false) {
 }

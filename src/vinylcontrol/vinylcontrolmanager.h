@@ -8,11 +8,12 @@
 #define VINYLCONTROLMANAGER_H
 
 #include <QObject>
+#include <QSignalMapper>
 #include <QString>
 #include <QTimerEvent>
 
 #include "soundio/soundmanagerutil.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "vinylcontrol/vinylsignalquality.h"
 
 class ControlObjectSlave;
@@ -37,7 +38,7 @@ const int kMaxNumberOfDecks = 4; // set to 4 because it will ideally not be more
 class VinylControlManager : public QObject {
     Q_OBJECT;
   public:
-    VinylControlManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig,
+    VinylControlManager(QObject* pParent, UserSettingsPointer pConfig,
                         SoundManager* pSoundManager);
     virtual ~VinylControlManager();
 
@@ -55,18 +56,24 @@ class VinylControlManager : public QObject {
 
   public slots:
     void requestReloadConfig();
+    void toggleVinylControl(int deck);
+
+  signals:
+    void vinylControlDeckEnabled(int deck, bool enabled);
 
   private slots:
     void slotNumDecksChanged(double);
+    void slotVinylControlEnabledChanged(int deck);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QSet<VinylSignalQualityListener*> m_listeners;
     VinylControlProcessor* m_pProcessor;
     int m_iTimerId;
     QList<ControlObjectSlave*> m_pVcEnabled;
     ControlObjectSlave* m_pNumDecks;
     int m_iNumConfiguredDecks;
+    QSignalMapper m_vinylControlEnabledMapper;
 };
 
 #endif // VINYLCONTROLMANAGER_H

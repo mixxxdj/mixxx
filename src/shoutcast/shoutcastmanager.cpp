@@ -6,7 +6,7 @@
 #include "engine/enginemaster.h"
 #include "soundio/soundmanager.h"
 
-ShoutcastManager::ShoutcastManager(ConfigObject<ConfigValue>* pConfig,
+ShoutcastManager::ShoutcastManager(UserSettingsPointer pConfig,
                                    SoundManager* pSoundManager)
         : m_pConfig(pConfig) {
     QSharedPointer<EngineNetworkStream> pNetworkStream =
@@ -18,6 +18,7 @@ ShoutcastManager::ShoutcastManager(ConfigObject<ConfigValue>* pConfig,
     }
     m_pShoutcastEnabled = new ControlObjectSlave(
             SHOUTCAST_PREF_KEY, "enabled", this);
+    m_pShoutcastEnabled->connectValueChanged(SLOT(slotControlEnabled(double)));
 }
 
 ShoutcastManager::~ShoutcastManager() {
@@ -31,4 +32,8 @@ void ShoutcastManager::setEnabled(bool value) {
 
 bool ShoutcastManager::isEnabled() {
     return m_pShoutcastEnabled->toBool();
+}
+
+void ShoutcastManager::slotControlEnabled(double v) {
+    emit(shoutcastEnabled(v > 0.0));
 }
