@@ -383,6 +383,11 @@ bool EngineShoutcast::serverConnect() {
 }
 
 bool EngineShoutcast::processConnect() {
+    // Make sure that we call updateFromPreferences always
+    if (m_encoder == NULL) {
+        updateFromPreferences();
+    }
+
     m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
     m_iShoutFailures = 0;
     m_lastErrorStr.clear();
@@ -396,11 +401,6 @@ bool EngineShoutcast::processConnect() {
     }
     //If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
-
-    // Make sure that we call updateFromPreferences always
-    if (m_encoder == NULL) {
-        updateFromPreferences();
-    }
 
     while (m_iShoutFailures < kMaxShoutFailures) {
         shout_close(m_pShout);
