@@ -17,7 +17,7 @@ class LibraryTableModel : public BaseSqlTableModel {
     TrackModel::CapabilitiesFlags getCapabilities() const;
     static const QString DEFAULT_LIBRARYFILTER;
 
-    void setSort(int column, Qt::SortOrder order);
+    void setSort(int column, Qt::SortOrder order) override;
 };
 
 #endif

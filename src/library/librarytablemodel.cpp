@@ -106,12 +106,11 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RESETPLAYED;
 }
 
-void LibraryTableModel::setSort(int column, Qt::SortOrder order)
-{
+void LibraryTableModel::setSort(int column, Qt::SortOrder order) {
     BaseSqlTableModel::setSort(column, order);
 
     // Random sort easter egg, only in library view
-    if (column == 1) {
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         m_tableOrderBy = "ORDER BY RANDOM()";
     }
 }
