@@ -158,6 +158,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     qRegisterMetaType<TrackPointer>("TrackPointer");
     qRegisterMetaType<Mixxx::ReplayGain>("Mixxx::ReplayGain");
     qRegisterMetaType<Mixxx::Bpm>("Mixxx::Bpm");
+    qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
