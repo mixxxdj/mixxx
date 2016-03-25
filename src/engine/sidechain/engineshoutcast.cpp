@@ -43,11 +43,6 @@ static const int kConnectRetries = 10;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
-
-int NetworkStreamWorker::s_networkStreamWorkerState = NETWORKSTREAMWORKER_STATE_NEW;
-int NetworkStreamWorker::s_functionCode = 0;
-int NetworkStreamWorker::s_runCount = 0;
-
 EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
         : m_pTextCodec(NULL),
           m_pMetaData(),

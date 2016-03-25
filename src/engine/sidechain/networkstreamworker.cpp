@@ -1,8 +1,8 @@
 #include "networkstreamworker.h"
 
-int NetworkStreamWorker::s_networkStreamWorkerState;
-int NetworkStreamWorker::s_functionCode;
-int NetworkStreamWorker::s_runCount;
+int NetworkStreamWorker::s_networkStreamWorkerState = NETWORKSTREAMWORKER_STATE_NEW;
+int NetworkStreamWorker::s_functionCode = 0;
+int NetworkStreamWorker::s_runCount = 0;
 
 NetworkStreamWorker::NetworkStreamWorker() {
 }
