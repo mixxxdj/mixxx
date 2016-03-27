@@ -658,14 +658,12 @@ ConstWaveformPointer TrackInfoObject::getWaveform() {
 }
 
 void TrackInfoObject::setWaveform(ConstWaveformPointer pWaveform) {
-    if (m_pWaveform == pWaveform) {
-        return;
-    }
-
     QMutexLocker lock(&m_qMutex);
-    m_pWaveform = pWaveform;
-    markDirtyAndUnlock(&lock);
-    emit(waveformUpdated());
+    if (m_pWaveform != pWaveform) {
+        m_pWaveform = pWaveform;
+        markDirtyAndUnlock(&lock);
+        emit(waveformUpdated());
+    }
 }
 
 ConstWaveformPointer TrackInfoObject::getWaveformSummary() const {
@@ -673,14 +671,12 @@ ConstWaveformPointer TrackInfoObject::getWaveformSummary() const {
 }
 
 void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
-    if (m_pWaveformSummary == pWaveform) {
-        return;
-    }
-
     QMutexLocker lock(&m_qMutex);
-    m_pWaveformSummary = pWaveform;
-    markDirtyAndUnlock(&lock);
-    emit(waveformSummaryUpdated());
+    if (m_pWaveformSummary != pWaveform) {
+        m_pWaveformSummary = pWaveform;
+        markDirtyAndUnlock(&lock);
+        emit(waveformSummaryUpdated());
+    }
 }
 
 bool TrackInfoObject::isClearWaveformRequested() const {
