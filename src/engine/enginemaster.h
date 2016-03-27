@@ -53,7 +53,7 @@ static const int kPreallocatedChannels = 64;
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
-    EngineMaster(ConfigObject<ConfigValue>* pConfig,
+    EngineMaster(UserSettingsPointer pConfig,
                  const char* pGroup,
                  EffectsManager* pEffectsManager,
                  bool bEnableSidechain,
@@ -303,7 +303,6 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pMasterLatency;
     ControlObject* m_pMasterAudioBufferSize;
     ControlObject* m_pAudioLatencyOverloadCount;
-    ControlPotmeter* m_pMasterRate;
     ControlPotmeter* m_pAudioLatencyUsage;
     ControlPotmeter* m_pAudioLatencyOverload;
     EngineTalkoverDucking* m_pTalkoverDucking;

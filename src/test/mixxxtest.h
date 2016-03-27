@@ -9,9 +9,9 @@
 
 #include "mixxxapplication.h"
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 
 #define EXPECT_QSTRING_EQ(expected, test) EXPECT_STREQ(qPrintable(expected), qPrintable(test))
 #define ASSERT_QSTRING_EQ(expected, test) ASSERT_STREQ(qPrintable(expected), qPrintable(test))
@@ -40,12 +40,12 @@ class MixxxTest : public testing::Test {
         return s_pApplication.data();
     }
 
-    ConfigObject<ConfigValue>* config() {
-        return m_pConfig.data();
+    UserSettingsPointer config() {
+        return m_pConfig;
     }
 
-    ControlObjectThread* getControlObjectThread(const ConfigKey& key) {
-        return new ControlObjectThread(key);
+    ControlObjectSlave* getControlObjectSlave(const ConfigKey& key) {
+        return new ControlObjectSlave(key);
     }
 
     QTemporaryFile* makeTemporaryFile(const QString contents) {
@@ -64,8 +64,7 @@ class MixxxTest : public testing::Test {
     const QString m_testDataCfg;
 
   protected:
-    const QScopedPointer<ConfigObject<ConfigValue> > m_pConfig;
-
+    const UserSettingsPointer m_pConfig;
 };
 
 

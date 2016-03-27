@@ -1,9 +1,10 @@
 # 
 # Translators:
+# Sébastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2016-01-08 23:18+0000\n"
+"PO-Revision-Date: 2016-01-09 20:22+0000\n"
 "Last-Translator: Sébastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: French (France) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/fr_FR/)\n"
 "MIME-Version: 1.0\n"
@@ -11,14 +12,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
-#.  This contains the LangID and should be translated to reflect the correct
-#. LangID.
-#.         Supported language and codepage codes can be found here:
-#.         http://www.science.co.il/Language/Locale-codes.asp
-msgctxt "Language"
-msgid "1033"
-msgstr "1036"
 
 #.  Programm informations
 msgctxt "ApplicationName"
@@ -31,7 +24,7 @@ msgstr "Mixxx"
 
 msgctxt "ManufacturerFullName"
 msgid "The Mixxx Development Team"
-msgstr "The Mixxx Development Team"
+msgstr "L'équipe de développement de Mixxx"
 
 msgctxt "ProductDescription"
 msgid "Open-source Digital DJ software"

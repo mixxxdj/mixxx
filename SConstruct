@@ -103,15 +103,5 @@ mixxxminimal_plugins = SConscript(
 SConscript(File('src/SConscript'), variant_dir=Dir(build.build_dir), duplicate=0,
            exports=['build', 'sources', 'soundsource_plugins', 'mixxxminimal_plugins'])
 
-# For convenience, copy the Mixxx binary out of the build directory to the
-# root. Don't do it on windows because the binary can't run on its own and needs
-# the DLLs present with it.
-if build.platform_is_osx:
-    Command("mixxx", os.path.join(build.build_dir, "Mixxx"), Copy("$TARGET", "$SOURCE"))
-elif not build.platform_is_windows:
-    Command("mixxx", os.path.join(build.build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
-
-
-
 #On OS X, if the bundle has been built, copy it up:
 #Command("Mixxx.app", os.path.join(build.build_dir, "Mixxx.app"), Copy("$TARGET", "$SOURCE"))

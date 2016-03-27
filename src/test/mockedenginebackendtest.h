@@ -6,7 +6,7 @@
 
 #include <QtDebug>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "mixer/deck.h"
 #include "effects/effectsmanager.h"
@@ -33,15 +33,14 @@ class MockScaler : public EngineBufferScale {
             : EngineBufferScale(),
               m_processedTempo(-1),
               m_processedPitch(-1) {
-        SampleUtil::clear(m_buffer, MAX_BUFFER_LEN);
     }
     void clear() { }
-    CSAMPLE *getScaled(unsigned long buf_size) {
+    double getScaled(CSAMPLE* pOutput, const int buf_size) {
+        Q_UNUSED(pOutput);
         m_processedTempo = m_dTempoRatio;
         m_processedPitch = m_dPitchRatio;
-        m_samplesRead = round(buf_size * m_dTempoRatio);
-        if (static_cast<int>(m_samplesRead) % 2) { m_samplesRead--; }
-        return m_buffer;
+        double samplesRead = round(buf_size * m_dTempoRatio);
+        return samplesRead;
     }
 
     double getProcessedTempo() {
@@ -63,28 +62,28 @@ class MockedEngineBackendTest : public MixxxTest {
     virtual void SetUp() {
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config());
-        m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]",
+        m_pEngineMaster = new EngineMaster(m_pConfig, "[Master]",
                                            m_pEffectsManager, false, false);
 
         m_pChannel1 = new EngineDeck(
                 m_pEngineMaster->registerChannelGroup(m_sGroup1),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+                m_pConfig, m_pEngineMaster, m_pEffectsManager,
                 EngineChannel::CENTER);
         m_pChannel2 = new EngineDeck(
                 m_pEngineMaster->registerChannelGroup(m_sGroup2),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+                m_pConfig, m_pEngineMaster, m_pEffectsManager,
                 EngineChannel::CENTER);
         m_pChannel3 = new EngineDeck(
                 m_pEngineMaster->registerChannelGroup(m_sGroup3),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+                m_pConfig, m_pEngineMaster, m_pEffectsManager,
                 EngineChannel::CENTER);
-        m_pPreview1 = new PreviewDeck(NULL, m_pConfig.data(),
+        m_pPreview1 = new PreviewDeck(NULL, m_pConfig,
                                      m_pEngineMaster, m_pEffectsManager,
                                      EngineChannel::CENTER, m_sPreviewGroup);
         ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
         // to this sampler.  FIX IT!
-//        m_pSampler1 = new Sampler(NULL, m_pConfig.data(),
+//        m_pSampler1 = new Sampler(NULL, m_pConfig,
 //                                  m_pEngineMaster, m_pEffectsManager,
 //                                  EngineChannel::CENTER, m_sSamplerGroup);
 //        ControlObject::getControl(ConfigKey(m_sSamplerGroup, "file_bpm"))->set(2.0);

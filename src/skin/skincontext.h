@@ -10,7 +10,7 @@
 #include <QScriptEngineDebugger>
 #include <QtDebug>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
 #include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
@@ -22,7 +22,7 @@
 // evaluate skin XML nodes while loading the skin.
 class SkinContext {
   public:
-    SkinContext(ConfigObject<ConfigValue>* pConfig, const QString& xmlPath);
+    SkinContext(UserSettingsPointer pConfig, const QString& xmlPath);
     SkinContext(const SkinContext& parent);
     virtual ~SkinContext();
 
@@ -89,11 +89,15 @@ class SkinContext {
     }
 
   private:
+    // If our parent global isValid() then we were constructed with a
+    // parent. Otherwise we are a root SkinContext.
+    bool isRoot() const { return !m_parentGlobal.isValid(); }
+
     QString variableNodeToText(const QDomElement& element) const;
 
     QString m_xmlPath;
     QString m_skinBasePath;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
 
     QHash<QString, QString> m_variables;
     QSharedPointer<QScriptEngine> m_pScriptEngine;

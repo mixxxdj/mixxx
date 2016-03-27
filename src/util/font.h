@@ -13,7 +13,7 @@ class FontUtils {
     static void initializeFonts(const QString& resourcePath) {
         QDir fontsDir(resourcePath);
         if (!fontsDir.cd("fonts")) {
-            qWarning("MixxxMainWindow::initializeFonts: cd fonts failed");
+            qWarning("FontUtils::initializeFonts: cd fonts failed");
             return;
         }
 

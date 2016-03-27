@@ -33,21 +33,19 @@ const int kiLinearScaleReadAheadLength = 10240;
 class EngineBufferScaleLinear : public EngineBufferScale  {
   public:
     EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager);
-    virtual ~EngineBufferScaleLinear();
+    ~EngineBufferScaleLinear() override;
 
-    CSAMPLE* getScaled(unsigned long buf_size);
-    void clear();
+    double getScaled(CSAMPLE* pOutput, const int iBufferSize) override;
+    void clear() override;
 
-    virtual void setScaleParameters(double base_rate,
-                                    double* pTempoRatio,
-                                    double* pPitchRatio);
+    void setScaleParameters(double base_rate,
+                            double* pTempoRatio,
+                             double* pPitchRatio) override;
 
   private:
-    CSAMPLE* do_scale(CSAMPLE* buf, int buf_size,
-                      int *samples_read);
+    int do_scale(CSAMPLE* buf, const int buf_size);
+    int do_copy(CSAMPLE* buf, const int buf_size);
 
-    /** Holds playback direction */
-    bool m_bBackwards;
     bool m_bClear;
     double m_dRate;
     double m_dOldRate;

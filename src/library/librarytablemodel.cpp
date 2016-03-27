@@ -46,6 +46,10 @@ void LibraryTableModel::setTableModel(int id) {
              m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+
+    // Set tooltip for random sorting
+    int fi = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    setHeaderData(fi, Qt::Horizontal, tr("Sort items randomly"), Qt::ToolTipRole);
 }
 
 
@@ -56,7 +60,7 @@ int LibraryTableModel::addTracks(const QModelIndex& index,
     foreach (QString fileLocation, locations) {
         fileInfoList.append(QFileInfo(fileLocation));
     }
-    QList<TrackId> trackIds = m_trackDAO.addTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_trackDAO.addMultipleTracks(fileInfoList, true);
     select();
     return trackIds.size();
 }
@@ -100,4 +104,13 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_MANIPULATEBEATS
             | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
+}
+
+void LibraryTableModel::setSort(int column, Qt::SortOrder order) {
+    BaseSqlTableModel::setSort(column, order);
+
+    // Random sort easter egg, only in library view
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+        m_tableOrderBy = "ORDER BY RANDOM()";
+    }
 }

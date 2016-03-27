@@ -15,18 +15,18 @@
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "widget/wtracktableview.h"
-#include "dlgtrackinfo.h"
+#include "library/dlgtrackinfo.h"
 #include "soundsourceproxy.h"
 #include "mixer/playermanager.h"
 #include "util/dnd.h"
 #include "util/time.h"
-#include "dlgpreflibrary.h"
+#include "preferences/dialog/dlgpreflibrary.h"
 #include "waveform/guitick.h"
 #include "widget/wcoverartmenu.h"
 #include "util/assert.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
-                                 ConfigObject<ConfigValue> * pConfig,
+                                 UserSettingsPointer pConfig,
                                  TrackCollection* pTrackCollection, bool sorting)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
@@ -40,7 +40,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
-          m_lastUserActionNanos(0),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
     // Give a NULL parent because otherwise it inherits our style which can make
@@ -119,7 +118,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 }
 
 WTrackTableView::~WTrackTableView() {
-    qDebug() << "~WTrackTableView()";
     WTrackTableViewHeader* pHeader =
             dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {
@@ -160,7 +158,7 @@ void WTrackTableView::enableCachedOnly() {
         emit(onlyCachedCoverArt(true));
         m_loadCachedOnly = true;
     }
-    m_lastUserActionNanos = Time::elapsed();
+    m_lastUserAction = Time::elapsed();
 }
 
 void WTrackTableView::slotScrollValueChanged(int) {
@@ -177,8 +175,8 @@ void WTrackTableView::selectionChanged(const QItemSelection& selected,
 void WTrackTableView::slotGuiTick50ms(double) {
     // if the user is stopped in the same row for more than 0.1 s,
     // we load un-cached cover arts as well.
-    qint64 timeDeltaNanos = Time::elapsed() - m_lastUserActionNanos;
-    if (m_loadCachedOnly && timeDeltaNanos > 100000000) {
+    mixxx::Duration timeDelta = Time::elapsed() - m_lastUserAction;
+    if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
 
         // Show the currently selected track in the large cover art view. Doing
         // this in selectionChanged slows down scrolling performance so we wait
@@ -433,10 +431,10 @@ void WTrackTableView::createActions() {
     m_pBpmTwoThirdsAction = new QAction(tr("2/3 BPM"), this);
     m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), this);
 
-    m_BpmMapper.setMapping(m_pBpmDoubleAction, DOUBLE);
-    m_BpmMapper.setMapping(m_pBpmHalveAction, HALVE);
-    m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, TWOTHIRDS);
-    m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, THREEFOURTHS);
+    m_BpmMapper.setMapping(m_pBpmDoubleAction, Beats::DOUBLE);
+    m_BpmMapper.setMapping(m_pBpmHalveAction, Beats::HALVE);
+    m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, Beats::TWOTHIRDS);
+    m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, Beats::THREEFOURTHS);
 
     connect(m_pBpmDoubleAction, SIGNAL(triggered()),
             &m_BpmMapper, SLOT(map()));
@@ -1175,7 +1173,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         QList<QString> fileLocationList;
         foreach (const QFileInfo& fileInfo, fileList) {
-            fileLocationList.append(fileInfo.canonicalFilePath());
+            // TODO(uklotzde): Replace with TrackRef::location()
+            fileLocationList.append(fileInfo.absoluteFilePath());
         }
 
         // Drag-and-drop from an external application
@@ -1323,7 +1322,7 @@ void WTrackTableView::slotReloadTrackMetadata() {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->parse(false);
+            SoundSourceProxy(pTrack).loadTrackMetadata(true);
         }
     }
 }
@@ -1546,24 +1545,14 @@ void WTrackTableView::slotScaleBpm(int scale) {
         return;
     }
 
-    double scalingFactor=1;
-    if (scale == DOUBLE)
-        scalingFactor = 2;
-    else if (scale == HALVE)
-        scalingFactor = 0.5;
-    else if (scale == TWOTHIRDS)
-        scalingFactor = 2./3.;
-    else if (scale == THREEFOURTHS)
-        scalingFactor = 3./4.;
-
     QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        if (!track->isBpmLocked()) { //bpm is not locked
+        if (!track->isBpmLocked()) { // bpm is not locked
             BeatsPointer beats = track->getBeats();
             if (beats != NULL) {
-                beats->scale(scalingFactor);
+                beats->scale((Beats::BPMScale)scale);
             } else {
                 continue;
             }

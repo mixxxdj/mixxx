@@ -17,7 +17,7 @@
 
 #include "engine/sidechain/enginerecord.h"
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "encoder/encoder.h"
@@ -37,7 +37,7 @@
 
 const int kMetaDataLifeTimeout = 16;
 
-EngineRecord::EngineRecord(ConfigObject<ConfigValue>* _config)
+EngineRecord::EngineRecord(UserSettingsPointer _config)
         : m_pConfig(_config),
           m_pEncoder(NULL),
           m_pSndfile(NULL),

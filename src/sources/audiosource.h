@@ -3,8 +3,8 @@
 
 #include <QSharedPointer>
 
-#include "audiosignal.h"
 #include "sources/urlresource.h"
+#include "util/audiosignal.h"
 #include "util/result.h"
 #include "util/samplebuffer.h"
 

@@ -2,7 +2,7 @@
 #include "widget/wanalysislibrarytableview.h"
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(QWidget* parent,
-                                                   ConfigObject<ConfigValue>* pConfig,
+                                                   UserSettingsPointer pConfig,
                                                    TrackCollection* pTrackCollection)
         : WTrackTableView(parent, pConfig, pTrackCollection) {
     setDragDropMode(QAbstractItemView::DragOnly);
@@ -21,4 +21,3 @@ void WAnalysisLibraryTableView::onSearchCleared() {
 void WAnalysisLibraryTableView::onSearch(const QString& text) {
     Q_UNUSED(text);
 }
-

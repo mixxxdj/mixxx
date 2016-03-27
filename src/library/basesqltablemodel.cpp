@@ -2,7 +2,6 @@
 
 #include <QtAlgorithms>
 #include <QtDebug>
-#include <QTime>
 #include <QUrl>
 
 #include "library/basesqltablemodel.h"
@@ -20,6 +19,7 @@
 #include "util/time.h"
 #include "util/dnd.h"
 #include "util/assert.h"
+#include "util/performancetimer.h"
 
 static const bool sDebug = false;
 
@@ -163,6 +163,9 @@ QVariant BaseSqlTableModel::headerData(int section, Qt::Orientation orientation,
         return widthValue;
     } else if (role == TrackModel::kHeaderNameRole && orientation == Qt::Horizontal) {
         return m_headerInfo.value(section).value(role);
+    } else if (role == Qt::ToolTipRole && orientation == Qt::Horizontal) {
+        QVariant tooltip = m_headerInfo.value(section).value(role);
+        if (tooltip.isValid()) return tooltip;
     }
     return QAbstractTableModel::headerData(section, orientation, role);
 }
@@ -200,7 +203,7 @@ void BaseSqlTableModel::select() {
         qDebug() << this << "select()";
     }
 
-    QTime time;
+    PerformanceTimer time;
     time.start();
 
     // Prepare query for id and all columns not in m_trackSource
@@ -310,8 +313,8 @@ void BaseSqlTableModel::select() {
         endInsertRows();
     }
 
-    int elapsed = time.elapsed();
-    qDebug() << this << "select() took" << elapsed << "ms" << rowInfo.size();
+    qDebug() << this << "select() took" << time.elapsed().debugMillisWithUnit()
+             << rowInfo.size();
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,
@@ -697,7 +700,6 @@ bool BaseSqlTableModel::setData(
     // Do not save the track here. Changing the track dirties it and the caching
     // system will automatically save the track once it is unloaded from
     // memory. rryan 10/2010
-    //m_trackDAO.saveTrack(pTrack);
 
     return true;
 }

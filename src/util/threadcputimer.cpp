@@ -79,17 +79,17 @@ void ThreadCpuTimer::start()
     do_gettime(&t1, &t2);
 }
 
-qint64 ThreadCpuTimer::elapsed() const
+mixxx::Duration ThreadCpuTimer::elapsed() const
 {
     qint64 sec, frac;
     do_gettime(&sec, &frac);
     sec = sec - t1;
     frac = frac - t2;
 
-    return sec * Q_INT64_C(1000000000) + frac;
+    return mixxx::Duration::fromNanos(sec * Q_INT64_C(1000000000) + frac);
 }
 
-qint64 ThreadCpuTimer::restart()
+mixxx::Duration ThreadCpuTimer::restart()
 {
     qint64 sec, frac;
     sec = t1;
@@ -97,7 +97,7 @@ qint64 ThreadCpuTimer::restart()
     do_gettime(&t1, &t2);
     sec = t1 - sec;
     frac = t2 - frac;
-    return sec * Q_INT64_C(1000000000) + frac;
+    return mixxx::Duration::fromNanos(sec * Q_INT64_C(1000000000) + frac);
 }
 
 ////////////////////////////// Default //////////////////////////////
@@ -108,14 +108,14 @@ void ThreadCpuTimer::start()
 {
 }
 
-qint64 ThreadCpuTimer::elapsed() const
+mixxx::Duration ThreadCpuTimer::elapsed() const
 {
-    return 0;
+    return mixxx::Duration::fromNanos(0);
 }
 
-qint64 ThreadCpuTimer::restart()
+mixxx::Duration ThreadCpuTimer::restart()
 {
-    return 0;
+    return mixxx::Duration::fromNanos(0);
 }
 
 #endif

@@ -9,13 +9,13 @@
 #define ANALYZER_ANALYZERGAIN_H
 
 #include "analyzer/analyzer.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class ReplayGain;
 
 class AnalyzerGain : public Analyzer {
   public:
-    AnalyzerGain(ConfigObject<ConfigValue> *_config);
+    AnalyzerGain(UserSettingsPointer _config);
     virtual ~AnalyzerGain();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
@@ -26,7 +26,7 @@ class AnalyzerGain : public Analyzer {
 
   private:
     bool m_bStepControl;
-    ConfigObject<ConfigValue> *m_pConfigReplayGain;
+    UserSettingsPointer m_pConfigReplayGain;
     CSAMPLE* m_pLeftTempBuffer;
     CSAMPLE* m_pRightTempBuffer;
     ReplayGain* m_pReplayGain;

@@ -22,7 +22,7 @@
 #include <QEvent>
 #include <QString>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "widget/wbasewidget.h"
 
 class ControlObjectSlave;

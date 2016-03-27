@@ -6,7 +6,7 @@
 
 #include <QObject>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
 
@@ -31,7 +31,7 @@ class PositionScratchController;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(QString group, ConfigObject<ConfigValue>* _config);
+    RateControl(QString group, UserSettingsPointer _config);
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
@@ -47,7 +47,7 @@ public:
     double calculateSpeed(double baserate, double speed, bool paused,
                          int iSamplesPerBuffer, bool* pReportScratching,
                          bool* pReportReverse);
-    double getRawRate() const;
+    double calcRateRatio() const;
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -75,8 +75,7 @@ public:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private:
     double getJogFactor() const;

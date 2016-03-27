@@ -12,12 +12,13 @@
 #include <QAbstractItemModel>
 #include <QFont>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
 #include "library/setlogfeature.h"
+#include "library/scanner/libraryscanner.h"
 
 class TrackModel;
 class TrackCollection;
@@ -38,7 +39,7 @@ class Library : public QObject {
     Q_OBJECT
 public:
     Library(QObject* parent,
-            ConfigObject<ConfigValue>* pConfig,
+            UserSettingsPointer pConfig,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
@@ -93,6 +94,10 @@ public:
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
 
+    void scan() {
+        m_scanner.scan();
+    }
+
   signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
@@ -109,8 +114,12 @@ public:
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
 
+    // Emitted when a library scan starts and finishes.
+    void scanStarted();
+    void scanFinished();
+
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
     QList<LibraryFeature*> m_features;
@@ -122,6 +131,7 @@ public:
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
+    LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
 };

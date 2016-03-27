@@ -6,8 +6,6 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
-#include <QDateTime>
-
 #include "controllers/softtakeover.h"
 #include "controlpotmeter.h"
 #include "util/math.h"
@@ -18,6 +16,8 @@
 //  slow-refresh controllers.
 const double SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
 
+const mixxx::Duration SoftTakeover::kSubsequentValueOverrideTime =
+        mixxx::Duration::fromMillis(50);
 
 SoftTakeoverCtrl::SoftTakeoverCtrl() {
 
@@ -70,7 +70,7 @@ void SoftTakeoverCtrl::ignoreNext(ControlObject* control) {
     if (control == NULL) {
         return;
     }
-    
+
     SoftTakeover* pSt = m_softTakeoverHash.value(control);
     if (pSt == NULL) {
         return;
@@ -80,8 +80,7 @@ void SoftTakeoverCtrl::ignoreNext(ControlObject* control) {
 }
 
 SoftTakeover::SoftTakeover()
-    : m_time(0),
-      m_prevParameter(0),
+    : m_prevParameter(0),
       m_dThreshold(kDefaultTakeoverThreshold) {
 }
 
@@ -91,7 +90,7 @@ void SoftTakeover::setThreshold(double threshold) {
 
 bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
     bool ignore = false;
-    /* 
+    /*
      * We only want to ignore the controller when:
      * - its new value is far away from the current value of the ControlObject
      * AND either of the following:
@@ -104,29 +103,29 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
      *          (regardless of the new value's arrival time)
      *      - the new value arrives awhile after the previous one
      *          (regardless of what the previous value was)
-     * 
+     *
      * Sheesh, this is much easier to show in a truth table!
-     * 
+     *
      * Sides    prev distance   new distance    new value arrives   Ignore
      * opposite close           far             later               TRUE
      * opposite far             far             later               TRUE
      * same     close           far             later               TRUE
      * same     far             far             soon                TRUE
      * same     far             far             later               TRUE
-     * 
+     *
      *      Don't ignore in every other case.
      */
 
-    qint64 currentTime = Time::elapsedMsecs();
+    mixxx::Duration currentTime = Time::elapsed();
     // We will get a sudden jump if we don't ignore the first value.
-    if (m_time == 0) {
+    if (m_time == mixxx::Duration::fromMillis(0)) {
         ignore = true;
         // Change the stored time (but keep it far away from the current time)
         //  so this block doesn't run again.
-        m_time = 1;
+        m_time = mixxx::Duration::fromMillis(1);
 //         qDebug() << "SoftTakeover::ignore: ignoring the first value"
 //                  << newParameter;
-    } else if ((currentTime - m_time) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
+    } else if (currentTime - m_time > kSubsequentValueOverrideTime) {
         // don't ignore value if a previous one was not ignored in time
         const double currentParameter = control->getParameter();
         const double difference = currentParameter - newParameter;
@@ -154,5 +153,5 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
 }
 
 void SoftTakeover::ignoreNext() {
-    m_time = 0;
+    m_time = mixxx::Duration::fromMillis(0);
 }

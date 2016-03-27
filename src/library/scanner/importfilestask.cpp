@@ -1,7 +1,6 @@
 #include "library/scanner/importfilestask.h"
 
 #include "library/scanner/libraryscanner.h"
-#include "library/coverartutils.h"
 #include "util/timer.h"
 
 ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
@@ -23,14 +22,14 @@ ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
 
 void ImportFilesTask::run() {
     ScopedTimer timer("ImportFilesTask::run");
-    foreach (const QFileInfo& file, m_filesToImport) {
+    for (const QFileInfo& fileInfo: m_filesToImport) {
         // If a flag was raised telling us to cancel the library scan then stop.
         if (m_scannerGlobal->shouldCancel()) {
             setSuccess(false);
             return;
         }
 
-        QString filePath = file.filePath();
+        const QString filePath(fileInfo.filePath());
         //qDebug() << "ImportFilesTask::run" << filePath;
 
         // If the file does not exist in the database then add it. If it
@@ -43,25 +42,14 @@ void ImportFilesTask::run() {
             // directory hash has changed).
             emit(trackExists(filePath));
         } else {
-            // Parse the track including cover art from metadata. This is a new
-            // (never before seen) track so it is safe to parse cover art
-            // without checking if we have cover art that is USER_SELECTED. If
-            // this changes in the future you MUST check that the cover art is
-            // not USER_SELECTED first.
-            TrackPointer pTrack = TrackPointer(
-                new TrackInfoObject(filePath, m_pToken, true, true));
-
-            // If cover art is not found in the track metadata, populate from
-            // possibleCovers.
-            if (pTrack->getCoverArt().image.isNull()) {
-                CoverArt art = CoverArtUtils::selectCoverArtForTrack(
-                    pTrack.data(), m_possibleCovers);
-                if (!art.image.isNull()) {
-                    pTrack->setCoverArt(art);
-                }
+            if (!fileInfo.exists()) {
+                qWarning() << "ImportFilesTask: Skipping inaccessible file"
+                        << filePath;
+                continue;
             }
+            qDebug() << "Importing track" << filePath;
 
-            emit(addNewTrack(pTrack));
+            emit(addNewTrack(filePath));
         }
     }
     // Insert or update the hash in the database.

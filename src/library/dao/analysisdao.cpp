@@ -1,12 +1,12 @@
 #include <QSqlQuery>
 #include <QSqlResult>
 #include <QSqlError>
-#include <QTime>
 #include <QtDebug>
 
 #include "waveform/waveform.h"
 #include "library/dao/analysisdao.h"
 #include "library/queryutil.h"
+#include "util/performancetimer.h"
 
 const QString AnalysisDao::s_analysisTableName = "track_analysis";
 
@@ -16,7 +16,7 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 // CPU time so I think we should stick with the default. rryan 4/3/2012
 const int kCompressionLevel = -1;
 
-AnalysisDao::AnalysisDao(QSqlDatabase& database, ConfigObject<ConfigValue>* pConfig)
+AnalysisDao::AnalysisDao(QSqlDatabase& database, UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_db(database) {
     QDir storagePath = getAnalysisStoragePath();
@@ -67,7 +67,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trackId, QSqlQuery* query) {
     QList<AnalysisDao::AnalysisInfo> analyses;
-    QTime time;
+    PerformanceTimer time;
     time.start();
 
     if (!query->exec()) {
@@ -107,7 +107,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
     }
     qDebug() << "AnalysisDAO fetched" << analyses.size() << "analyses,"
              << bytes << "bytes for track"
-             << trackId << "in" << time.elapsed() << "ms";
+             << trackId << "in" << time.elapsed().debugMillisWithUnit();
     return analyses;
 }
 
@@ -120,7 +120,7 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
         qDebug() << "Can't save analysis since trackId is invalid.";
         return false;
     }
-    QTime time;
+    PerformanceTimer time;
     time.start();
 
     QByteArray compressedData = qCompress(info->data, kCompressionLevel);
@@ -180,7 +180,7 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
              << QString("%1 (%2 compressed)").arg(QString::number(info->data.length()),
                                                   QString::number(compressedData.length()))
              << "bytes for track"
-             << info->trackId << "in" << time.elapsed() << "ms";
+             << info->trackId << "in" << time.elapsed().debugMillisWithUnit();
     return true;
 }
 

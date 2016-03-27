@@ -16,7 +16,7 @@ const double SyncControl::kBpmUnity = 1.0;
 const double SyncControl::kBpmHalve = 0.5;
 const double SyncControl::kBpmDouble = 2.0;
 
-SyncControl::SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfig,
+SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
                          EngineChannel* pChannel, SyncableListener* pEngineSync)
         : EngineControl(group, pConfig),
           m_sGroup(group),
@@ -149,9 +149,9 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     if (mode == SYNC_MASTER) {
         // Make sure all the slaves update based on our current rate.
         slotRateChanged();
-        double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
+        double rateRatio = calcRateRatio();
         m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
-        m_pBpm->set(m_pLocalBpm->get() * dRate);
+        m_pBpm->set(m_pLocalBpm->get() * rateRatio);
     }
 }
 
@@ -232,8 +232,9 @@ void SyncControl::setMasterBpm(double bpm) {
 
     double localBpm = m_pLocalBpm->get();
     if (localBpm > 0.0) {
-        double newRate = (bpm * m_masterBpmAdjustFactor / m_pLocalBpm->get() - 1.0)
-                / m_pRateDirection->get() / m_pRateRange->get();
+        double newRate = m_pRateDirection->get() *
+                ((bpm * m_masterBpmAdjustFactor / localBpm) - 1.0) /
+                m_pRateRange->get();
         m_pRateSlider->set(newRate);
     } else {
         m_pRateSlider->set(0);
@@ -306,34 +307,27 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     }
 }
 
-void SyncControl::trackLoaded(TrackPointer pTrack) {
+void SyncControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     //qDebug() << getGroup() << "SyncControl::trackLoaded";
-    Q_UNUSED(pTrack);
-    m_masterBpmAdjustFactor = kBpmUnity;
     if (getSyncMode() == SYNC_MASTER) {
-        // If we loaded a new track while master, hand off.
+        // If we change or remove a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
-
-    if (getSyncMode() != SYNC_NONE) {
-        // Because of the order signals get processed, the file/local_bpm COs and
-        // rate slider are not updated as soon as we need them, so do that now.
-        m_pFileBpm->set(pTrack->getBpm());
-        m_pLocalBpm->set(pTrack->getBpm());
-        double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
-        // We used to set the m_pBpm here, but that causes a signal loop whereby
-        // that was interpretted as a rate slider tweak, and the master bpm
-        // was changed.  Instead, now we pass the suggested bpm to enginesync
-        // explicitly, and it can decide what to do with it.
-        m_pEngineSync->notifyTrackLoaded(this, m_pLocalBpm->get() * dRate);
-    }
-}
-
-void SyncControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
-    if (getSyncMode() == SYNC_MASTER) {
-        // If we unloaded a new track while master, hand off.
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
+    if (!pNewTrack.isNull()) {
+        m_masterBpmAdjustFactor = kBpmUnity;
+        if (getSyncMode() != SYNC_NONE) {
+            // Because of the order signals get processed, the file/local_bpm COs and
+            // rate slider are not updated as soon as we need them, so do that now.
+            m_pFileBpm->set(pNewTrack->getBpm());
+            m_pLocalBpm->set(pNewTrack->getBpm());
+            double dRate = calcRateRatio();
+            // We used to set the m_pBpm here, but that causes a signal loop whereby
+            // that was interpretted as a rate slider tweak, and the master bpm
+            // was changed.  Instead, now we pass the suggested bpm to enginesync
+            // explicitly, and it can decide what to do with it.
+            m_pEngineSync->notifyTrackLoaded(this, m_pLocalBpm->get() * dRate);
+        }
     }
 }
 
@@ -424,8 +418,8 @@ void SyncControl::setLocalBpm(double local_bpm) {
     m_prevLocalBpm = local_bpm;
 
     // FIXME: This recalculating of the rate is duplicated in bpmcontrol.
-    const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
-    double bpm = local_bpm * rate;
+    const double rateRatio = calcRateRatio();
+    double bpm = local_bpm * rateRatio;
     m_pBpm->set(bpm);
     m_pEngineSync->notifyBpmChanged(this, bpm, true);
 }
@@ -438,8 +432,8 @@ void SyncControl::slotFileBpmChanged() {
 
 void SyncControl::slotRateChanged() {
     // This slot is fired by rate, rate_dir, and rateRange changes.
-    const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
-    double bpm = m_pLocalBpm ? m_pLocalBpm->get() * rate : 0.0;
+    const double rateRatio = calcRateRatio();
+    double bpm = m_pLocalBpm ? m_pLocalBpm->get() * rateRatio : 0.0;
     //qDebug() << getGroup() << "SyncControl::slotRateChanged" << rate << bpm;
     if (bpm > 0) {
         // When reporting our bpm, remove the multiplier so the masters all
@@ -459,4 +453,10 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
     // think the followers have the same bpm.
     double instantaneous_bpm = m_pLocalBpm->get() * speed / m_masterBpmAdjustFactor;
     m_pEngineSync->notifyInstantaneousBpmChanged(this, instantaneous_bpm);
+}
+
+double SyncControl::calcRateRatio() {
+    double rateRatio = 1.0 + m_pRateDirection->get() * m_pRateRange->get() *
+            m_pRateSlider->get();
+    return rateRatio;
 }

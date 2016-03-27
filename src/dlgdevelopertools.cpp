@@ -8,7 +8,7 @@
 
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
-                                     ConfigObject<ConfigValue>* pConfig)
+                                     UserSettingsPointer pConfig)
         : QDialog(pParent) {
     Q_UNUSED(pConfig);
     setupUi(this);
@@ -154,5 +154,3 @@ void DlgDeveloperTools::slotLogSearch() {
     m_logCursor = logTextView->document()->find(textToFind, m_logCursor);
     logTextView->setTextCursor(m_logCursor);
 }
-
-

@@ -19,7 +19,6 @@
 #include <QMutexLocker>
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
 #include "engine/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
@@ -28,7 +27,7 @@ static const int kPlayingDeckUpdateIntervalMillis = 2000;
 static PlayerInfo* m_pPlayerInfo = NULL;
 
 PlayerInfo::PlayerInfo()
-        : m_pCOxfader(new ControlObjectThread("[Master]","crossfader")),
+        : m_pCOxfader(new ControlObjectSlave("[Master]","crossfader", this)),
           m_currentlyPlayingDeck(-1) {
     startTimer(kPlayingDeckUpdateIntervalMillis);
 }
@@ -36,7 +35,6 @@ PlayerInfo::PlayerInfo()
 PlayerInfo::~PlayerInfo() {
     m_loadedTrackMap.clear();
     clearControlCache();
-    delete m_pCOxfader;
 }
 
 // static
@@ -131,7 +129,9 @@ void PlayerInfo::updateCurrentPlayingDeck() {
         }
 
         double xfl, xfr;
-        EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, false, false,
+        // TODO: supply correct parameters to the function. If the hamster style
+        // for the crossfader is enabled, the result is currently wrong.
+        EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, MIXXX_XFADER_ADDITIVE, false,
                                     &xfl, &xfr);
 
         int orient = pDc->m_orientation.get();

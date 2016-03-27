@@ -5,13 +5,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#.  This contains the LangID and should be translated to reflect the correct LangID.
-#.         Supported language and codepage codes can be found here: 
-#.         http://www.science.co.il/Language/Locale-codes.asp 
-msgctxt "Language"
-msgid "1033"
-msgstr ""
-
 #.  Programm informations 
 msgctxt "ApplicationName"
 msgid "Mixxx"
