@@ -332,12 +332,12 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
     unsigned int index(xml.attribute("index", "0").toUInt());
     unsigned int channel(xml.attribute("channel", "0").toUInt());
     unsigned int channels(xml.attribute("channel_count", "0").toUInt());
-    // In Mixxx <1.12.0 we didn't save channels to file since they directly
+    // In Mixxx < 1.12.0 we didn't save channels to file since they directly
     // corresponded to the type. To migrate users over, use mono for all
     // microphones and stereo for everything else since previously microphone
     // inputs were the only mono AudioPath.
     if (channels == 0) {
-        channels = type == MICROPHONE ? 1 : 2;
+        channels = 2;
     }
     return AudioOutput(type, channel, channels, index);
 }
