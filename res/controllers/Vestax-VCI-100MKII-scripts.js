@@ -15,27 +15,19 @@ VCI102.fx34 = ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
 VCI102.fx = VCI102.fx12.concat(VCI102.fx34);
 
 VCI102.fxButton = [VCI102.fx12, VCI102.fx12];
-VCI102.fxKnob = [["super1", "mix"], ["super1", "mix"]];
-VCI102.brake = [0, 0];
+VCI102.shift = [0, 0];
 
-VCI102.shift = function(ch, midino, value, status, group) {
+VCI102.setShift = function(ch, midino, value, status, group) {
     var i, j, enabled;
     ch = VCI102.deck.indexOf(group);  // override channel by group
     VCI102.fxButton[ch] = value ? VCI102.fx34 : VCI102.fx12;
-    VCI102.fxKnob[ch].reverse();
-    VCI102.brake[ch] = value;
     for (i = ch; i < 4; i += 2) {
         enabled = "group_" + VCI102.deck[i] + "_enable";
         for (j = 0; j < 2; j++) {
             engine.trigger(VCI102.fxButton[ch][j], enabled);
         }
     }
-};
-
-VCI102.super_mix = function(ch, midino, value, status, group) {
-    // if shift is pressed then "mix" else "super1" with soft takeover
-    engine.setValue(group, VCI102.fxKnob[ch % 2][0], value / 127);
-    engine.softTakeoverIgnoreNextValue(group, VCI102.fxKnob[ch % 2][1]);
+    VCI102.shift[ch] = value;
 };
 
 VCI102.selectTimer = 0;
@@ -79,7 +71,7 @@ VCI102.scratchTimer = [0, 0, 0, 0];
 
 VCI102.scratchEnable = function(ch, midino, value, status, group) {
     var deck = ch + 1;
-    if (VCI102.brake[ch % 2]) {
+    if (VCI102.shift[ch % 2]) {
         engine.brake(deck, value > 0);
         VCI102.slip(value, group);
     } else {
@@ -162,6 +154,31 @@ VCI102.rateQuantizedLSB = function(ch, midino, value, status, group) {
 
 VCI102.pitch = function(ch, midino, value, status, group) {
     engine.setValue(group, "pitch", Math.round((value - 64) * 3 / 32));
+};
+
+["parameter1", "parameter2", "parameter3"].forEach(function(key) {
+    VCI102[key] = function(ch, midino, value, status, group) {
+        if (VCI102.shift[ch % 2]) {
+            // link to super1, inverse variants -> none -> direct variants
+            if (engine.getValue(group, key + "_loaded")) {
+                value = Math.round(value / 16) - 4;
+                engine.setValue(group, key + "_link_type", Math.abs(value));
+                engine.setValue(group, key + "_link_inverse", value < 0);
+            }
+        } else {
+            engine.setParameter(group, key, value / 127);
+        }
+    };
+});
+
+VCI102.super1 = function(ch, midino, value, status, group) {
+    if (VCI102.shift[ch % 2]) {
+        engine.setValue(group, "mix", value / 127);
+        engine.softTakeoverIgnoreNextValue(group, "super1");
+    } else {
+        engine.setValue(group, "super1", value / 127);
+        engine.softTakeoverIgnoreNextValue(group, "mix");
+    }
 };
 
 VCI102.loopLength = [4, 4, 4, 4];

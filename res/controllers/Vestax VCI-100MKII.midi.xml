@@ -55,7 +55,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VCI102.shift</key>
+        <key>VCI102.setShift</key>
         <status>0x94</status>
         <midino>0x24</midino>
         <options>
@@ -64,7 +64,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VCI102.shift</key>
+        <key>VCI102.setShift</key>
         <status>0x94</status>
         <midino>0x34</midino>
         <options>
@@ -541,115 +541,115 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>parameter1</key>
+        <key>VCI102.parameter1</key>
         <status>0xB0</status>
         <midino>0x16</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>parameter1</key>
+        <key>VCI102.parameter1</key>
         <status>0xB1</status>
         <midino>0x17</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
-        <key>parameter1</key>
+        <key>VCI102.parameter1</key>
         <status>0xB2</status>
         <midino>0x16</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
-        <key>parameter1</key>
+        <key>VCI102.parameter1</key>
         <status>0xB3</status>
         <midino>0x17</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>parameter2</key>
+        <key>VCI102.parameter2</key>
         <status>0xB0</status>
         <midino>0x17</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>parameter2</key>
+        <key>VCI102.parameter2</key>
         <status>0xB1</status>
         <midino>0x18</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
-        <key>parameter2</key>
+        <key>VCI102.parameter2</key>
         <status>0xB2</status>
         <midino>0x17</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
-        <key>parameter2</key>
+        <key>VCI102.parameter2</key>
         <status>0xB3</status>
         <midino>0x18</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>parameter3</key>
+        <key>VCI102.parameter3</key>
         <status>0xB0</status>
         <midino>0x18</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>parameter3</key>
+        <key>VCI102.parameter3</key>
         <status>0xB1</status>
         <midino>0x19</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
-        <key>parameter3</key>
+        <key>VCI102.parameter3</key>
         <status>0xB2</status>
         <midino>0x18</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
-        <key>parameter3</key>
+        <key>VCI102.parameter3</key>
         <status>0xB3</status>
         <midino>0x19</midino>
         <options>
-          <soft-takeover/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>VCI102.super_mix</key>
+        <key>VCI102.super1</key>
         <status>0xB0</status>
         <midino>0x19</midino>
         <options>
@@ -658,7 +658,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>VCI102.super_mix</key>
+        <key>VCI102.super1</key>
         <status>0xB1</status>
         <midino>0x1A</midino>
         <options>
@@ -667,7 +667,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>VCI102.super_mix</key>
+        <key>VCI102.super1</key>
         <status>0xB2</status>
         <midino>0x19</midino>
         <options>
@@ -676,7 +676,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4]</group>
-        <key>VCI102.super_mix</key>
+        <key>VCI102.super1</key>
         <status>0xB3</status>
         <midino>0x1A</midino>
         <options>
