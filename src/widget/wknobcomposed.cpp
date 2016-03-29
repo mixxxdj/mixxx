@@ -14,7 +14,8 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dKnobCenterYOffset(0),
           m_dMaskXOffset(0.0),
           m_dMaskYOffset(0.0),
-          m_dRingMinSpan(0.0) {
+          m_dRingMinSpan(0.0),
+          m_dRingSpanOffset(0.0) {
     m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * 0.5;
 }
 
@@ -79,6 +80,13 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     }
     if (m_dRingMinSpan < 0) {
         m_dRingMinSpan = 0;
+    }
+
+    if (context.hasNode(node, "RingSpanOffset")) {
+        m_dRingSpanOffset = context.selectDouble(node, "RingSpanOffset");
+    }
+    if (m_dRingSpanOffset < 0) {
+        m_dRingSpanOffset = 0;
     }
 }
 
@@ -165,15 +173,15 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         QRectF rectangle = QRectF((w-d)/2.0,(h-d)/2.0,d,d);
         // We do all calculations with Mixxx angles
         double dScaleStartAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * m_dScaleStartParameter;
-        double dInitialAngle = 0;
-        double dSpan = 0;
+        double dInitialAngle;
+        double dSpan;
 
-        if (m_dCurrentAngle < dScaleStartAngle || dScaleStartAngle > 0.5) {
-            dInitialAngle = math_clamp(dScaleStartAngle + m_dRingMinSpan, m_dMinAngle, m_dMaxAngle);
-            dSpan = math_min(m_dCurrentAngle - dInitialAngle, -2*m_dRingMinSpan);
+        if (m_dCurrentAngle < dScaleStartAngle) {
+            dInitialAngle = math_max(dScaleStartAngle + m_dRingSpanOffset, dScaleStartAngle + m_dRingMinSpan);
+            dSpan = math_min(m_dCurrentAngle - dInitialAngle - m_dRingSpanOffset, -2*m_dRingMinSpan);
         } else {
-            dInitialAngle = math_clamp(dScaleStartAngle - m_dRingMinSpan, m_dMinAngle, m_dMaxAngle);
-            dSpan = math_max(m_dCurrentAngle - dInitialAngle, 2*m_dRingMinSpan);
+            dInitialAngle = math_min(dScaleStartAngle - m_dRingSpanOffset, dScaleStartAngle - m_dRingMinSpan);
+            dSpan = math_max(m_dCurrentAngle - dInitialAngle + m_dRingSpanOffset, 2*m_dRingMinSpan);
         }
         // Here we convert to Qt angles
         path.arcTo(rectangle, 90 - dInitialAngle, -dSpan);
