@@ -148,9 +148,13 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     p.setRenderHint(QPainter::SmoothPixmapTransform);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
+    if (m_pPixmapBack) {
+        m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
+    }
     ControlParameterWidgetConnection* defaultConnection;
     if (!m_connections.isEmpty()){
         defaultConnection = m_connections.at(0);
+
         if (defaultConnection) {
             m_dScaleStartParameter = defaultConnection->scaleStartParameter();
         }
@@ -164,10 +168,10 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     // In Mixxx we measure angles also in degrees but from 12 o'clock clockwise.
     // So: QtAngle = 90 - MixxxAngle
     if (m_pRing) {
-        QPainterPath ringMaskPath;
+        QPainterPath path;
         int w = width();
         int h = height();
-        ringMaskPath.moveTo(w/2.0 + m_dMaskXOffset, h/2.0 + m_dMaskYOffset);
+        path.moveTo(w/2.0 + m_dMaskXOffset, h/2.0 + m_dMaskYOffset);
         double d = sqrt(pow(w+abs(m_dMaskXOffset),2) + pow(h+abs(m_dMaskYOffset),2));
         QRectF rectangle = QRectF((w-d)/2.0,(h-d)/2.0,d,d);
         // We do all calculations with Mixxx angles
@@ -183,26 +187,13 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
             dSpan = math_max(m_dCurrentAngle - dInitialAngle + m_dRingSpanOffset, 2*m_dRingMinSpan);
         }
         // Here we convert to Qt angles
-        ringMaskPath.arcTo(rectangle, 90 - dInitialAngle, -dSpan);
-        ringMaskPath.closeSubpath();
+        path.arcTo(rectangle, 90 - dInitialAngle, -dSpan);
 
-        QPainterPath canvasPath;
-        canvasPath.addRect(0,0,w,h);
-        // The fill area of backMaskPath is the complementary of canvasPath.
-        QPainterPath backMaskPath = canvasPath.subtracted(ringMaskPath);
-
+        path.closeSubpath();
         p.save();
-        // Do not paint the background pixmap where the ring will be painted.
-        // It greatly improves the render quality if the ring and the background
-        // have the same shape and position (for example in Shade).
-        p.setClipPath(backMaskPath);
-        if(m_pPixmapBack) m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
-
-        p.setClipPath(ringMaskPath);
+        p.setClipPath(path);
         m_pRing->draw(rect(), &p, m_pRing->rect());
         p.restore();
-    } else if (m_pPixmapBack) {
-        m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
     }
 
     QTransform transform;
