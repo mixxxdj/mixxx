@@ -25,8 +25,10 @@ class SoftTakeoverTest : public MixxxTest {
 
 TEST_F(SoftTakeoverTest, DoesntIgnoreDisabledControl) {
     // Range -1.0 to 1.0
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-1.0);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -1.0, 1.0));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     SoftTakeoverCtrl st_control;
     EXPECT_FALSE(st_control.ignore(co.data(), co->get()));
@@ -46,8 +48,10 @@ TEST_F(SoftTakeoverTest, DoesntIgnoreNonPotmeter) {
 
 TEST_F(SoftTakeoverTest, IgnoresFirstValue) {
     // Range -1.0 to 1.0
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-1.0);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -1.0, 1.0));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     SoftTakeoverCtrl st_control;
     st_control.enable(co.data());
@@ -56,8 +60,10 @@ TEST_F(SoftTakeoverTest, IgnoresFirstValue) {
 
 TEST_F(SoftTakeoverTest, DoesntIgnoreSameValue) {
     // Range -1.0 to 1.0
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-1.0);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -1.0, 1.0));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(0.6);
     SoftTakeoverCtrl st_control;
@@ -70,8 +76,11 @@ TEST_F(SoftTakeoverTest, DoesntIgnoreSameValue) {
 // These are corner cases that allow for quickly flicking/whipping controls
 //  from a standstill when the previous knob value matches the current CO value
 TEST_F(SoftTakeoverTest, SuperFastPrevEqCurrent) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     // From the bottom
     co->set(-250);
@@ -95,8 +104,11 @@ TEST_F(SoftTakeoverTest, SuperFastPrevEqCurrent) {
 // But when they don't match, this type of thing should be ignored!
 //  FIXME: This fails on the st::ignore() implementation in 2.0.0-rc1
 TEST_F(SoftTakeoverTest, DISABLED_SuperFastNotSame) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(250);
     SoftTakeoverCtrl st_control;
@@ -124,8 +136,11 @@ TEST_F(SoftTakeoverTest, DISABLED_SuperFastNotSame) {
 // ---- Previous Near & less than current
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewNearLess_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -137,8 +152,11 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearLess_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewNearMore_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -150,8 +168,11 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearMore_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewFarLess_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -163,8 +184,11 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewFarLess_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewFarMore_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -176,8 +200,11 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewFarMore_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewNearLess_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -190,8 +217,11 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearLess_Late) {
 }
 
 TEST_F(SoftTakeoverTest, PrevNearLess_NewNearMore_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -208,8 +238,11 @@ TEST_F(SoftTakeoverTest, PrevNearLess_NewNearMore_Late) {
 //  same     close           far             later               TRUE
 //  FIXME: This fails on the st::ignore() implementation in 2.0.0-rc1
 TEST_F(SoftTakeoverTest, DISABLED_PrevNearLess_NewFarLess_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -226,8 +259,11 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevNearLess_NewFarLess_Late) {
 //  opposite close           far             later               TRUE
 //  FIXME: This fails on the st::ignore() implementation in 2.0.0-rc1
 TEST_F(SoftTakeoverTest, DISABLED_PrevNearLess_NewFarMore_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -242,8 +278,11 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevNearLess_NewFarMore_Late) {
 // ---- Previous Near & greater than current
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewNearLess_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -255,8 +294,11 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearLess_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewNearMore_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -268,8 +310,11 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearMore_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewFarLess_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -281,8 +326,11 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewFarLess_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewFarMore_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -294,8 +342,11 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewFarMore_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewNearLess_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -308,8 +359,11 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearLess_Late) {
 }
 
 TEST_F(SoftTakeoverTest, PrevNearMore_NewNearMore_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -326,8 +380,11 @@ TEST_F(SoftTakeoverTest, PrevNearMore_NewNearMore_Late) {
 //  opposite close           far             later               TRUE
 //  FIXME: This fails on the st::ignore() implementation in 2.0.0-rc1
 TEST_F(SoftTakeoverTest, DISABLED_PrevNearMore_NewFarLess_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -344,8 +401,11 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevNearMore_NewFarLess_Late) {
 //  same     close           far             later               TRUE
 //  FIXME: This fails on the st::ignore() implementation in 2.0.0-rc1
 TEST_F(SoftTakeoverTest, DISABLED_PrevNearMore_NewFarMore_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -360,8 +420,11 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevNearMore_NewFarMore_Late) {
 // ---- Previous Far & less than current
 
 TEST_F(SoftTakeoverTest, PrevFarLess_NewNearLess_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -373,8 +436,11 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearLess_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -390,8 +456,11 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Soon) {
 //  same     far             far             soon                TRUE
 //  FIXME: This fails on the st::ignore() implementation in 2.0.0-rc1
 TEST_F(SoftTakeoverTest, DISABLED_PrevFarLess_NewFarLess_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -403,8 +472,11 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevFarLess_NewFarLess_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevFarLess_NewFarMore_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -416,8 +488,11 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewFarMore_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevFarLess_NewNearLess_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -430,8 +505,11 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearLess_Late) {
 }
 
 TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -447,8 +525,11 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewNearMore_Late) {
 //  Sides    prev distance   new distance    new value arrives   Ignore
 //  same     far             far             later               TRUE
 TEST_F(SoftTakeoverTest, PrevFarLess_NewFarLess_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -465,8 +546,11 @@ TEST_F(SoftTakeoverTest, PrevFarLess_NewFarLess_Late) {
 //  opposite far             far             later               TRUE
 //  FIXME: This fails on the st::ignore() implementation in 2.0.0-rc1
 TEST_F(SoftTakeoverTest, DISABLED_PrevFarLess_NewFarMore_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -481,8 +565,11 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevFarLess_NewFarMore_Late) {
 // ---- Previous Far & greater than current
 
 TEST_F(SoftTakeoverTest, PrevFarMore_NewNearLess_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -494,8 +581,11 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearLess_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevFarMore_NewNearMore_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -507,8 +597,11 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearMore_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevFarMore_NewFarLess_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -524,8 +617,11 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewFarLess_Soon) {
 //  same     far             far             soon                TRUE
 //  FIXME: This fails on the st::ignore() implementation in 2.0.0-rc1
 TEST_F(SoftTakeoverTest, DISABLED_PrevFarMore_NewFarMore_Soon) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -537,8 +633,11 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevFarMore_NewFarMore_Soon) {
 }
 
 TEST_F(SoftTakeoverTest, PrevFarMore_NewNearLess_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -551,8 +650,11 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearLess_Late) {
 }
 
 TEST_F(SoftTakeoverTest, PrevFarMore_NewNearMore_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -569,8 +671,11 @@ TEST_F(SoftTakeoverTest, PrevFarMore_NewNearMore_Late) {
 //  opposite far             far             later               TRUE
 //  FIXME: This fails on the st::ignore() implementation in 2.0.0-rc1
 TEST_F(SoftTakeoverTest, DISABLED_PrevFarMore_NewFarLess_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
@@ -586,8 +691,11 @@ TEST_F(SoftTakeoverTest, DISABLED_PrevFarMore_NewFarLess_Late) {
 //  Sides    prev distance   new distance    new value arrives   Ignore
 //  same     far             far             later               TRUE
 TEST_F(SoftTakeoverTest, PrevFarMore_NewFarMore_Late) {
+    PotmeterParameters coParameters;
+    coParameters.setMinValue(-250);
+    coParameters.setMaxValue(250);
     QScopedPointer<ControlPotmeter> co(new ControlPotmeter(
-        ConfigKey("[Channel1]", "test_pot"), -250, 250));
+        ConfigKey("[Channel1]", "test_pot"), coParameters));
 
     co->set(50);
     SoftTakeoverCtrl st_control;
