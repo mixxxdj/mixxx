@@ -148,9 +148,12 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     p.setRenderHint(QPainter::SmoothPixmapTransform);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
-    ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
-    if (defaultConnection) {
-        m_dScaleStartParameter = defaultConnection->scaleStartParameter();
+    ControlParameterWidgetConnection* defaultConnection;
+    if (!m_connections.isEmpty()){
+        defaultConnection = m_connections.at(0);
+        if (defaultConnection) {
+            m_dScaleStartParameter = defaultConnection->scaleStartParameter();
+        }
     }
 
     // We update m_dCurrentAngle since onConnectedControlChanged uses it for
