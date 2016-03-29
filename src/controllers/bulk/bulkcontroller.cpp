@@ -10,8 +10,10 @@
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/controllerdebug.h"
 #include "util/compatibility.h"
 #include "util/trace.h"
+#include "util/time.h"
 
 BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
         : QThread(),
@@ -51,7 +53,7 @@ void BulkReader::run() {
             Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData((char*)data, transferred);
-            emit(incomingData(outData));
+            emit(incomingData(outData, Time::elapsed()));
         }
     }
     qDebug() << "Stopped Reader";
@@ -93,7 +95,9 @@ BulkController::BulkController(libusb_context* context,
 }
 
 BulkController::~BulkController() {
-    close();
+    if (isOpen()) {
+        close();
+    }
 }
 
 QString BulkController::presetExtension() {
@@ -183,8 +187,8 @@ int BulkController::open() {
         m_pReader = new BulkReader(m_phandle, in_epaddr);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
-        connect(m_pReader, SIGNAL(incomingData(QByteArray)),
-                this, SLOT(receive(QByteArray)));
+        connect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
+                this, SLOT(receive(QByteArray, mixxx::Duration)));
 
         // Controller input needs to be prioritized since it can affect the
         // audio directly, like when scratching
@@ -207,10 +211,10 @@ int BulkController::close() {
         qWarning() << "BulkReader not present for" << getName()
                    << "yet the device is open!";
     } else {
-        disconnect(m_pReader, SIGNAL(incomingData(QByteArray)),
-                   this, SLOT(receive(QByteArray)));
+        disconnect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
+                   this, SLOT(receive(QByteArray, mixxx::Duration)));
         m_pReader->stop();
-        if (debugging()) qDebug() << "  Waiting on reader to finish";
+        controllerDebug("  Waiting on reader to finish");
         m_pReader->wait();
         delete m_pReader;
         m_pReader = NULL;
@@ -221,9 +225,7 @@ int BulkController::close() {
     stopEngine();
 
     // Close device
-    if (debugging()) {
-        qDebug() << "  Closing device";
-    }
+    controllerDebug("  Closing device");
     libusb_close(m_phandle);
     m_phandle = NULL;
     setOpen(false);
@@ -251,8 +253,8 @@ void BulkController::send(QByteArray data) {
     if (ret < 0) {
         qWarning() << "Unable to send data to" << getName()
                    << "serial #" << m_sUID;
-    } else if (debugging()) {
-        qDebug() << ret << "bytes sent to" << getName()
-                 << "serial #" << m_sUID;
+    } else {
+        controllerDebug(ret << "bytes sent to" << getName()
+                 << "serial #" << m_sUID);
     }
 }

@@ -15,6 +15,7 @@
 #include "controllers/controller.h"
 #include "controllers/hid/hidcontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "util/duration.h"
 
 class HidReader : public QThread {
     Q_OBJECT
@@ -27,7 +28,7 @@ class HidReader : public QThread {
     }
 
   signals:
-    void incomingData(QByteArray data);
+    void incomingData(QByteArray data, mixxx::Duration timestamp);
 
   protected:
     void run();
@@ -69,6 +70,8 @@ class HidController : public Controller {
     virtual bool matchPreset(const PresetInfo& preset);
     virtual bool matchProductInfo(QHash <QString,QString >);
     virtual void guessDeviceCategory();
+
+    static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);
 
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);

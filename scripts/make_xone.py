@@ -148,6 +148,9 @@ for cc in cc_controls:
 ########### Actual stuff you can edit! ###########
 ##################################################
 
+# Note that EQ control objects are munged in code to produce the correct control objects as of
+# Mixxx 2.0.
+
 cc_mapping = {'spinknob':['XoneK2.encoderJog','<Script-Binding/>'],
               'eq1':['filterHigh','<normal/>'],
               'eq2':['filterMid','<normal/>'],
@@ -254,15 +257,6 @@ if MASTER_SYNC_LAYOUT:
             </control>
             <control>
                 <group>[Master]</group>
-                <key>sync_master</key>
-                <status>0x9F</status>
-                <midino>0x0D</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
                 <key>XoneK2.leftBottomKnob</key>
                 <status>0xBF</status>
                 <midino>0x14</midino>
@@ -330,62 +324,92 @@ xml.append("<!-- CC Controls (knobs and sliders) -->")
 ########################################
 # ok back to boilerplate...
 
+def get_group_name(channel, key):
+  """Optionally munge group name if an EQ"""
+  if "filter" in key:
+    return "[EqualizerRack1_[Channel%d]_Effect1]" % channel
+  else:
+    return "[Channel%d]" % channel
+
+def get_key_name(key):
+  """Optionally munge key name if an EQ"""
+  if key == "filterLow":
+    return "parameter1"
+  elif key == "filterMid":
+    return "parameter2"
+  elif key == "filterHigh":
+    return "parameter3"
+  elif key == "filterLowKill":
+    return "button_parameter1"
+  elif key == "filterMidKill":
+    return "button_parameter2"
+  elif key == "filterLowKill":
+    return "button_parameter3"
+  else:
+    return key
+
+
 #cc controls (no latching needed)
 for i, channel in enumerate(DECK_ORDER):
     for cc in cc_mapping:
         xml.append("""            <control>
-                <group>[Channel%i]</group>
+                <group>%s</group>
                 <key>%s</key>
                 <status>0xBF</status>
                 <midino>%s</midino>
                 <options>
                     %s
                 </options>
-            </control>""" % (channel+1, cc_mapping[cc][0], midi_cc[cc][i], cc_mapping[cc][1]))
+            </control>""" % (get_group_name(channel+1, cc_mapping[cc][0]),
+                             get_key_name(cc_mapping[cc][0]), midi_cc[cc][i], cc_mapping[cc][1]))
 
 #Spin Knob buttons (no latching needed)
 for i, channel in enumerate(DECK_ORDER):
     xml.append("""            <control>
-                <group>[Channel%i]</group>
+                <group>%s</group>
                 <key>%s</key>
                 <status>0x9F</status>
                 <midino>%s</midino>
                 <options>
                     %s
                 </options>
-            </control>""" % (channel+1, button_mapping['spinknob'][0], midi['spinknob'][i]['red'], button_mapping['spinknob'][1]))
+            </control>""" % (get_group_name(channel+1, button_mapping['spinknob'][0]),
+                             get_key_name(button_mapping['spinknob'][0]), midi['spinknob'][i]['red'], button_mapping['spinknob'][1]))
     xml.append("""            <control>
-                <group>[Channel%i]</group>
+                <group>%s</group>
                 <key>%s</key>
                 <status>0x8F</status>
                 <midino>%s</midino>
                 <options>
                     %s
                 </options>
-            </control>""" % (channel+1, button_mapping['spinknob'][0], midi['spinknob'][i]['red'], button_mapping['spinknob'][1]))
+            </control>""" % (get_group_name(channel+1, button_mapping['spinknob'][0]),
+                             get_key_name(button_mapping['spinknob'][0]), midi['spinknob'][i]['red'], button_mapping['spinknob'][1]))
 
 xml.append("<!-- Upper Buttons -->")
 #knoblight buttons (no latching)
 for j, channel in enumerate(DECK_ORDER):
     for knob in ['knoblight%i' % i for i in range(1,4)]:
         xml.append("""            <control>
-                <group>[Channel%i]</group>
+                <group>%s</group>
                 <key>%s</key>
                 <status>0x9F</status>
                 <midino>%s</midino>
                 <options>
                     %s
                 </options>
-            </control>""" % (channel+1, button_mapping[knob][0], midi[knob][j]['red'], button_mapping[knob][1]))
+            </control>""" % (get_group_name(channel+1, button_mapping[knob][0]),
+                             get_key_name(button_mapping[knob][0]), midi[knob][j]['red'], button_mapping[knob][1]))
         xml.append("""            <control>
-                <group>[Channel%i]</group>
+                <group>%s</group>
                 <key>%s</key>
                 <status>0x8F</status>
                 <midino>%s</midino>
                 <options>
                     %s
                 </options>
-            </control>""" % (channel+1, button_mapping[knob][0], midi[knob][j]['red'], button_mapping[knob][1]))
+            </control>""" % (get_group_name(channel+1, button_mapping[knob][0]),
+                             get_key_name(button_mapping[knob][0]), midi[knob][j]['red'], button_mapping[knob][1]))
 
 xml.append("<!-- Lower Button Grid -->")
 
@@ -394,23 +418,25 @@ for j, channel in enumerate(DECK_ORDER):
     for latch in ['red','orange','green']:
         for button in ['button%i' % i for i in range(1,5)]:
             xml.append("""            <control>
-                <group>[Channel%i]</group>
+                <group>%s</group>
                 <key>%s</key>
                 <status>0x9F</status>
                 <midino>%s</midino>
                 <options>
                     %s
                 </options>
-            </control>""" % (channel+1, button_mapping[button][latch][0], midi[button][j][latch], button_mapping[button][latch][1]))
+            </control>""" % (get_group_name(channel+1, button_mapping[button][latch][0]),
+                             get_key_name(button_mapping[button][latch][0]), midi[button][j][latch], button_mapping[button][latch][1]))
             xml.append("""            <control>
-                <group>[Channel%i]</group>
+                <group>%s</group>
                 <key>%s</key>
                 <status>0x8F</status>
                 <midino>%s</midino>
                 <options>
                     %s
                 </options>
-            </control>""" % (channel+1, button_mapping[button][latch][0], midi[button][j][latch], button_mapping[button][latch][1]))
+            </control>""" % (get_group_name(channel+1, button_mapping[button][latch][0]),
+                             get_key_name(button_mapping[button][latch][0]), midi[button][j][latch], button_mapping[button][latch][1]))
 
 xml.append("<!-- Special Case Knobs / buttons -->")
 # a couple custom entries:
@@ -426,12 +452,13 @@ xml.append("""        </controls>
 if 'spinknob' in light_mapping:
     for i, channel in enumerate(DECK_ORDER):
         xml.append("""            <output>
-                    <group>[Channel%i]</group>
+                    <group>%s</group>
                     <key>%s</key>
                     <status>0x9F</status>
                     <midino>%s</midino>
                     <minimum>0.5</minimum>
-                </output>""" % (channel+1, mapping['spinknob'], midi['spinknob'][i]['red']))
+                </output>""" % (get_group_name(channel+1, mapping['spinknob']),
+                                get_key_name(mapping['spinknob']), midi['spinknob'][i]['red']))
 
 
 xml.append("<!-- Knob lights -->")
@@ -439,12 +466,13 @@ xml.append("<!-- Knob lights -->")
 for j, channel in enumerate(DECK_ORDER):
     for knob in ['knoblight%i' % i for i in range(1,4)]:
         xml.append("""            <output>
-                <group>[Channel%i]</group>
+                <group>%s</group>
                 <key>%s</key>
                 <status>0x9F</status>
                 <midino>%s</midino>
                 <minimum>0.5</minimum>
-            </output>""" % (channel+1, light_mapping[knob], midi[knob][j]['red']))
+            </output>""" % (get_group_name(channel+1, light_mapping[knob]),
+                            get_key_name(light_mapping[knob]), midi[knob][j]['red']))
 
 xml.append("<!-- Button lights -->")
 #buttons (latched)
@@ -452,12 +480,13 @@ for j, channel in enumerate(DECK_ORDER):
     for latch in ['red','orange','green']:
         for button in ['button%i' % i for i in range(1,5)]:
             xml.append("""            <output>
-                <group>[Channel%i]</group>
+                <group>%s</group>
                 <key>%s</key>
                 <status>0x9F</status>
                 <midino>%s</midino>
                 <minimum>0.5</minimum>
-            </output>""" % (channel+1, light_mapping[button][latch], midi[button][j][latch]))
+            </output>""" % (get_group_name(channel+1, light_mapping[button][latch]),
+                            get_key_name(light_mapping[button][latch]), midi[button][j][latch]))
 
 xml.append("""        </outputs>
     </controller>

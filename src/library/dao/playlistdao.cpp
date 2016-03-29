@@ -19,18 +19,14 @@ void PlaylistDAO::initialize() {
 }
 
 void PlaylistDAO::populatePlaylistMembershipCache() {
-    // get the count to allocate HashMap
-    int tracksInPlaylistsCount = 0;
+    // Minor optimization: reserve space in m_playlistsTrackIsIn.
     QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(*) from " PLAYLIST_TRACKS_TABLE);
-
-    if (!query.exec()) {
+    if (query.exec() && query.next()) {
+        m_playlistsTrackIsIn.reserve(query.value(0).toInt());
+    } else {
         LOG_FAILED_QUERY(query);
     }
-
-    tracksInPlaylistsCount = query.value(0).toInt();
-
-    m_playlistsTrackIsIn.reserve(tracksInPlaylistsCount);
 
     // now fetch all Tracks from all playlists and insert them into the hashmap
     query.prepare("SELECT track_id, playlist_id from " PLAYLIST_TRACKS_TABLE);

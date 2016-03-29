@@ -1,10 +1,10 @@
 #ifndef MIXXX_METADATASOURCE_H
 #define MIXXX_METADATASOURCE_H
 
-#include "metadata/trackmetadata.h"
-#include "util/defs.h" // Result
-
 #include <QImage>
+
+#include "track/trackmetadata.h"
+#include "util/result.h"
 
 namespace Mixxx {
 
@@ -18,6 +18,10 @@ public:
     virtual Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const = 0;
+
+    // Update track metadata of the source.
+    virtual Result writeTrackMetadata(
+            const TrackMetadata& trackMetadata) const = 0;
 
 protected:
     virtual ~MetadataSource() {}

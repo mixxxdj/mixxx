@@ -53,7 +53,7 @@ class MixxxBuild(object):
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
                                    'powerpc64', 'powerpcspe', 's390x',
                                    'amd64', 'em64t', 'intel64', 'arm64',
-                                   'ppc64el']:
+                                   'ppc64el', 'm68k', 'mips64', 'mips64el', 'mipsn32', 'mipsn32el']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -321,8 +321,8 @@ class MixxxBuild(object):
             print 'Automatically detecting Mac OS X SDK.'
 
             # SDK versions in order of precedence.
-            sdk_versions = ( '10.9', '10.8', '10.7', '10.6', '10.5', )
-            clang_sdk_versions = ( '10.9', '10.8', '10.7', )
+            sdk_versions = ( '10.11', '10.10', '10.9', '10.8', '10.7', '10.6', '10.5', )
+            clang_sdk_versions = ( '10.11', '10.10', '10.9', '10.8', '10.7', )
             valid_cpp_lib_versions = ( 'libstdc++', 'libc++', )
 
             # By default use old gcc C++ library version

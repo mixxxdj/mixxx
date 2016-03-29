@@ -3,10 +3,10 @@
 
 #include <QObject>
 
-#include "configobject.h"
-#include "trackinfoobject.h"
+#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
-#include "util.h"
+#include "trackinfoobject.h"
+#include "util/class.h"
 
 class QSqlDatabase;
 class TrackDAO;
@@ -28,7 +28,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     AutoDJCratesDAO(QSqlDatabase& a_rDatabase, TrackDAO& a_rTrackDAO,
                     CrateDAO& a_rCrateDAO, PlaylistDAO &a_rPlaylistDAO,
-                    ConfigObject<ConfigValue>* a_pConfig);
+                    UserSettingsPointer a_pConfig);
     virtual ~AutoDJCratesDAO();
 
     // A pure virtual method from the subclass.
@@ -127,7 +127,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     PlaylistDAO& m_rPlaylistDAO;
 
     // The source of our configuration.
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
 
     // The ID of every set-log playlist.
     QList<int> m_lstSetLogPlaylistIds;

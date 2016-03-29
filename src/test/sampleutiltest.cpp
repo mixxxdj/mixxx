@@ -1,11 +1,12 @@
+#include <benchmark/benchmark.h>
 #include <gtest/gtest.h>
 
 #include <QtDebug>
 #include <QList>
 #include <QPair>
 
+#include "util/sample.h"
 #include "util/timer.h"
-#include "sampleutil.h"
 
 namespace {
 
@@ -387,93 +388,103 @@ TEST_F(SampleUtilTest, deinterleaveBuffer) {
     }
 }
 
-/*
-// deactivated since it is benchmark only and cannot fail
-// Note: the order of the calls matters
-TEST_F(SampleUtilTest, memcpyspeed) {
-    CSAMPLE* buffer = buffers[0];
+TEST_F(SampleUtilTest, reverse) {
+    if (buffers.size() > 0 && sizes[0] > 10) {
+        CSAMPLE* buffer = buffers[1];
+        for (int i = 0; i < 10; ++i) {
+            buffer[i] = i * 0.1;
+        }
 
-    int size = sizes[0] - (rand() % 2) * 8; // preven predicting loop size
-    FillBuffer(buffer, 0.0f, size);
-    CSAMPLE* buffer2 = SampleUtil::alloc(size);
-    FillBuffer(buffer2, 0.0f, size);
-    CSAMPLE* buffer3 = SampleUtil::alloc(size*2);
-    FillBuffer(buffer3, 1.0f, size*2);
-    for (int j = 0; j < size; j++) {
-        buffer3[j*2] = j;
-        buffer3[j*2+1] = -j;
+        SampleUtil::reverse(buffer, 10);
+
+        // check if right channel remains at odd index
+        EXPECT_FLOAT_EQ(buffer[0], 0.8);
+        EXPECT_FLOAT_EQ(buffer[1], 0.9);
+        EXPECT_FLOAT_EQ(buffer[2], 0.6);
+        EXPECT_FLOAT_EQ(buffer[3], 0.7);
+        EXPECT_FLOAT_EQ(buffer[4], 0.4);
+        EXPECT_FLOAT_EQ(buffer[5], 0.5);
+        EXPECT_FLOAT_EQ(buffer[6], 0.2);
+        EXPECT_FLOAT_EQ(buffer[7], 0.3);
+        EXPECT_FLOAT_EQ(buffer[8], 0.0);
+        EXPECT_FLOAT_EQ(buffer[9], 0.1);
     }
-
-    // For ensure data is cached and equal start conditions
-    SampleUtil::copy(buffer, buffer2, size);
-
-    qint64 elapsed;
-    Timer t("");
-    t.start();
-
-    memcpy(buffer, buffer2, size * sizeof(CSAMPLE));
-
-    elapsed = t.elapsed("");
-    qDebug() << "memcpy" << elapsed << "ns" << size;
-
-//#########
-
-    t.start();
-
-    std::copy(buffer2, buffer2 + size, buffer);
-
-    elapsed = t.elapsed("");
-    qDebug() << "std::copy" << elapsed << "ns" << size;
-
-//############
-
-    t.start();
-
-    SampleUtil::copy(buffer, buffer2, size);
-
-    elapsed = t.elapsed("");
-    qDebug() << "SampleUtil::copy" << elapsed << "ns" << size;
-
-//############
-
-    // Smallest Mixxx audio buffer
-    size = 64 - (rand() % 2) * 8; // preven predicting loop size
-
-    // For ensure data is cached and equal start conditions
-    SampleUtil::copy(buffer, buffer2, size);
-
-//############
-
-    t.start();
-
-    SampleUtil::copy(buffer, buffer2, size);
-
-    elapsed = t.elapsed("");
-    qDebug() << "SampleUtil::copy" << elapsed << "ns" << size;
-
-//############
-
-    t.start();
-
-    memcpy(buffer, buffer2, size * sizeof(CSAMPLE));
-
-    elapsed = t.elapsed("");
-    qDebug() << "memcpy" << elapsed << "ns" << size;
-
-//#########
-
-    t.start();
-
-    std::copy(buffer2, buffer2 + size, buffer);
-
-    elapsed = t.elapsed("");
-    qDebug() << "std::copy" << elapsed << "ns" << size;
-
-
-    SampleUtil::free(buffer2);
-    SampleUtil::free(buffer3);
 }
 
+TEST_F(SampleUtilTest, copyReverse) {
+    if (buffers.size() > 1 && sizes[0] > 10 && sizes[1] > 10)  {
+        CSAMPLE* source = buffers[0];
+        CSAMPLE* destination = buffers[1];
+        for (int i = 0; i < 10; ++i) {
+            source[i] = i * 0.1;
+        }
+
+        SampleUtil::copyReverse(destination, source, 10);
+
+        // check if right channel remains at odd index
+        EXPECT_FLOAT_EQ(destination[0], 0.8);
+        EXPECT_FLOAT_EQ(destination[1], 0.9);
+        EXPECT_FLOAT_EQ(destination[2], 0.6);
+        EXPECT_FLOAT_EQ(destination[3], 0.7);
+        EXPECT_FLOAT_EQ(destination[4], 0.4);
+        EXPECT_FLOAT_EQ(destination[5], 0.5);
+        EXPECT_FLOAT_EQ(destination[6], 0.2);
+        EXPECT_FLOAT_EQ(destination[7], 0.3);
+        EXPECT_FLOAT_EQ(destination[8], 0.0);
+        EXPECT_FLOAT_EQ(destination[9], 0.1);
+    }
+}
+
+static void BM_MemCpy(benchmark::State& state) {
+    size_t size = state.range_x();
+    CSAMPLE* buffer = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer, 0.0f, size);
+    CSAMPLE* buffer2 = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer2, 0.0f, size);
+
+    while(state.KeepRunning()) {
+        memcpy(buffer, buffer2, size * sizeof(CSAMPLE));
+    }
+
+    SampleUtil::free(buffer);
+    SampleUtil::free(buffer2);
+}
+BENCHMARK(BM_MemCpy)->Range(64, 4096);
+
+static void BM_StdCpy(benchmark::State& state) {
+    size_t size = state.range_x();
+    CSAMPLE* buffer = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer, 0.0f, size);
+    CSAMPLE* buffer2 = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer2, 0.0f, size);
+
+    while(state.KeepRunning()) {
+        std::copy(buffer2, buffer2 + size, buffer);
+    }
+
+    SampleUtil::free(buffer);
+    SampleUtil::free(buffer2);
+}
+BENCHMARK(BM_StdCpy)->Range(64, 4096);
+
+static void BM_SampleUtilCopy(benchmark::State& state) {
+    size_t size = state.range_x();
+    CSAMPLE* buffer = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer, 0.0f, size);
+    CSAMPLE* buffer2 = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer2, 0.0f, size);
+
+    while(state.KeepRunning()) {
+        SampleUtil::copy(buffer, buffer2, size);
+    }
+
+    SampleUtil::free(buffer);
+    SampleUtil::free(buffer2);
+}
+BENCHMARK(BM_SampleUtilCopy)->Range(64, 4096);
+
+
+/*
 TEST_F(SampleUtilTest, copy3WithGainSpeed) {
     CSAMPLE* buffer = buffers[0];
 
@@ -571,64 +582,46 @@ TEST_F(SampleUtilTest, copy3WithGainSpeed) {
 }
 */
 
-TEST_F(SampleUtilTest, copy3WithRampingGainSpeed) {
-    CSAMPLE* buffer = buffers[0];
-
-    int size = sizes[0] - (rand() % 2) * 8; // preven predicting loop size
-    FillBuffer(buffer, 0.0f, size);
+static void BM_Copy2WithGain(benchmark::State& state) {
+    size_t size = state.range_x();
+    CSAMPLE* buffer = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
-    FillBuffer(buffer2, 0.0f, size);
-    CSAMPLE* buffer3 = SampleUtil::alloc(size*2);
-    FillBuffer(buffer3, 1.0f, size*2);
-    for (int j = 0; j < size; j++) {
-        buffer3[j*2] = j;
-        buffer3[j*2+1] = -j;
+    SampleUtil::fill(buffer2, 0.0f, size);
+    CSAMPLE* buffer3 = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer3, 0.0f, size);
+
+    while(state.KeepRunning()) {
+        SampleUtil::copy2WithGain(buffer, buffer2, 1.1f, buffer3, 1.1f, size);
     }
 
-    // For ensure data is cached and equal start conditions
-    SampleUtil::copy(buffer, buffer2, size);
-    SampleUtil::copy2WithGain(buffer, buffer2, 1.1f, buffer3, 1.1f, size);
-
-    qint64 elapsed;
-    Timer t("");
-    t.start();
-
-    SampleUtil::copy2WithGain(buffer, buffer2, 1.1f, buffer3, 1.1f, size);
-
-    elapsed = t.elapsed("");
-    qDebug() << "copy2WithGain" << elapsed << "ns" << size;
-
-//#########
-
-    t.start();
-
-    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size);
-
-    elapsed = t.elapsed("");
-    qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
-
-//#########
-
-    t.start();
-
-    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size);
-
-    elapsed = t.elapsed("");
-    qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
-
-//#########
-
-    t.start();
-
-    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size);
-
-    elapsed = t.elapsed("");
-    qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
-
-
-
+    SampleUtil::free(buffer);
     SampleUtil::free(buffer2);
     SampleUtil::free(buffer3);
 }
+BENCHMARK(BM_Copy2WithGain)->Range(64, 4096);
+
+static void BM_Copy2WithRampingGain(benchmark::State& state) {
+    size_t size = state.range_x();
+    CSAMPLE* buffer = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer, 0.0f, size);
+    CSAMPLE* buffer2 = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer2, 0.0f, size);
+    CSAMPLE* buffer3 = SampleUtil::alloc(size);
+    SampleUtil::fill(buffer3, 0.0f, size);
+
+    while(state.KeepRunning()) {
+        SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3,
+                                         1.1f, 1.2f, size);
+    }
+
+    SampleUtil::free(buffer);
+    SampleUtil::free(buffer2);
+    SampleUtil::free(buffer3);
+}
+BENCHMARK(BM_Copy2WithRampingGain)->Range(64, 4096);
+
+
+
 
 }

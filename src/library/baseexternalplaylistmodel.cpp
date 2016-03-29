@@ -1,7 +1,7 @@
 #include "library/baseexternalplaylistmodel.h"
 
 #include "library/queryutil.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
                                                      TrackCollection* pTrackCollection,

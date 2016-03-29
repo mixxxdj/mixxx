@@ -7,7 +7,7 @@
 #include "library/cratetablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollection* pTrackCollection)
@@ -70,30 +70,43 @@ void CrateTableModel::setTableModel(int crateId) {
 
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     Q_UNUSED(index);
-    // If a track is dropped but it isn't in the library, then add it because
-    // the user probably dropped a file from outside Mixxx into this playlist.
+
+    // This will only succeed if the file actually exist.
     QFileInfo fileInfo(location);
     if (!fileInfo.exists()) {
+        qDebug() << "CrateTableModel::addTrack:"
+                << "File"
+                << location
+                << "not found";
         return false;
     }
 
     TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    TrackId trackId(trackDao.addTrack(fileInfo, true));
-
-    bool success = false;
-    if (trackId.isValid()) {
-        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(trackId, m_iCrateId);
+    // If a track is dropped but it isn't in the library, then add it because
+    // the user probably dropped a file from outside Mixxx into this crate.
+    // If the track is already contained in the library it will not insert
+    // a duplicate. It also handles unremoving logic if the track has been
+    // removed from the library recently and re-adds it.
+    const TrackPointer pTrack(trackDao.addSingleTrack(fileInfo, true));
+    if (pTrack.isNull()) {
+        qDebug() << "CrateTableModel::addTrack:"
+                << "Failed to add track"
+                << location
+                << "to library";
+        return false;
     }
 
-    if (success) {
+    const TrackId trackId(pTrack->getId());
+    if (m_pTrackCollection->getCrateDAO().addTrackToCrate(trackId, m_iCrateId)) {
         // TODO(rryan) just add the track dont select
         select();
         return true;
     } else {
-        qDebug() << "CrateTableModel::addTrack could not add track"
-                 << fileInfo.absoluteFilePath() << "to crate" << m_iCrateId;
+        qDebug() << "CrateTableModel::addTrack:"
+                << "Failed to add track"
+                << location
+                << "to crate"
+                << m_iCrateId;
         return false;
     }
 }
@@ -111,7 +124,7 @@ int CrateTableModel::addTracks(const QModelIndex& index,
         }
     }
 
-    QList<TrackId> trackIds(m_trackDAO.addTracks(fileInfoList, true));
+    QList<TrackId> trackIds(m_trackDAO.addMultipleTracks(fileInfoList, true));
 
     int tracksAdded = m_crateDAO.addTracksToCrate(m_iCrateId, &trackIds);
     if (tracksAdded > 0) {

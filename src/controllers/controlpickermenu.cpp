@@ -1,7 +1,7 @@
 #include "controllers/controlpickermenu.h"
 
 #include "vinylcontrol/defs_vinylcontrol.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "engine/cuecontrol.h"
 #include "engine/loopingcontrol.h"
 #include "effects/effectrack.h"
@@ -203,7 +203,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("cue_default", tr("Cue"), tr("Cue button"), cueMenu);
     addDeckControl("cue_set", tr("Set Cue"), tr("Set cue point"), cueMenu);
     addDeckControl("cue_goto", tr("Go-To Cue"), tr("Go to cue point"), cueMenu);
-    addDeckControl("cue_gotoandplay", tr("Go-To Cue And Play"),
+    addDeckAndSamplerAndPreviewDeckControl("cue_gotoandplay", tr("Go-To Cue And Play"),
                    tr("Go to cue point and play"), cueMenu);
     addDeckControl("cue_gotoandstop", tr("Go-To Cue And Stop"),
                    tr("Go to cue point and stop"), cueMenu);
@@ -448,11 +448,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                effectUnitMenu);
             addPrefixedControl(effectUnitGroup, "enabled",
                                tr("Toggle Unit"),
-                               tr("Toggle effect unit"), descriptionPrefix,
+                               tr("Enable or disable effect processing"), descriptionPrefix,
                                effectUnitMenu, false);
             addPrefixedControl(effectUnitGroup, "mix",
                                tr("Dry/Wet"),
-                               tr("Dry/Wet"), descriptionPrefix,
+                               tr("Adjust the balance between the original (dry) and processed (wet) signal."), descriptionPrefix,
                                effectUnitMenu, true);
             addPrefixedControl(effectUnitGroup, "super1",
                                tr("Super Knob"),
@@ -529,10 +529,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 ConfigKey("[Master]", "num_microphones"));
             for (int iMicrophoneNumber = 1; iMicrophoneNumber <= iNumMicrophones;
                  ++iMicrophoneNumber) {
-                QString micGroup = "[Microphone]";
-                if (iMicrophoneNumber > 1) {
-                    micGroup = QString("[Microphone%1]").arg(iMicrophoneNumber);
-                }
+                QString micGroup = PlayerManager::groupForMicrophone(iMicrophoneNumber - 1);
                 // TODO(owen): Fix bad i18n here.
                 addPrefixedControl(effectUnitGroup,
                                    QString("group_%1_enable").arg(micGroup),
@@ -546,7 +543,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                     ConfigKey("[Master]", "num_auxiliaries"));
             for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
                  ++iAuxiliaryNumber) {
-                QString auxGroup = QString("[Auxiliary%1]").arg(iAuxiliaryNumber);
+                QString auxGroup = PlayerManager::groupForAuxiliary(iAuxiliaryNumber - 1);
                 // TODO(owen): Fix bad i18n here.
                 addPrefixedControl(effectUnitGroup,
                                    QString("group_%1_enable").arg(auxGroup),
@@ -623,7 +620,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
                     addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
                                        tr("Super Knob Mode"),
-                                       tr("3-state Super Knob Link Toggle (unlinked, linear, inverse)"),
+                                       tr("Set how linked effect parameters change when turning the Super Knob."),
                                        parameterDescriptionPrefix,
                                        parameterSlotMenu);
 
@@ -886,7 +883,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
                                                    QString controlTitle,
                                                    QString controlDescription,
                                                    QMenu* pMenu,
-                                                   bool microhoneControls,
+                                                   bool microphoneControls,
                                                    bool auxControls,
                                                    bool addReset) {
     QMenu* controlMenu = new QMenu(controlTitle, pMenu);
@@ -900,14 +897,10 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
         pMenu->addMenu(resetControlMenu);
     }
 
-    if (microhoneControls) {
+    if (microphoneControls) {
         const int kNumMicrophones = ControlObject::get(ConfigKey("[Master]", "num_microphones"));
         for (int i = 1; i <= kNumMicrophones; ++i) {
-            QString group = "[Microphone]";
-            if (i > 1) {
-                group = QString("[Microphone%1]").arg(i);
-            }
-
+            QString group = PlayerManager::groupForMicrophone(i - 1);
             QString title = QString("%1: %2").arg(
                 m_microphoneStr.arg(QString::number(i)), controlTitle);
             QString description = QString("%1: %2").arg(
@@ -931,7 +924,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
     const int kNumAuxiliaries = ControlObject::get(ConfigKey("[Master]", "num_auxiliaries"));
     if (auxControls) {
         for (int i = 1; i <= kNumAuxiliaries; ++i) {
-            QString group = QString("[Auxiliary%1]").arg(i);
+            QString group = PlayerManager::groupForAuxiliary(i - 1);
             QString title = QString("%1: %2").arg(
                 m_auxStr.arg(QString::number(i)), controlTitle);
             QString description = QString("%1: %2").arg(

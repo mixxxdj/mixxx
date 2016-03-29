@@ -2,12 +2,13 @@
 // Created 8/2/2009 by RJ Ryan (rryan@mit.edu)
 
 #include "engine/readaheadmanager.h"
-#include "sampleutil.h"
-#include "util/math.h"
-#include "util/defs.h"
+
+#include "cachingreader.h"
 #include "engine/loopingcontrol.h"
 #include "engine/ratecontrol.h"
-#include "cachingreader.h"
+#include "util/defs.h"
+#include "util/math.h"
+#include "util/sample.h"
 
 ReadAheadManager::ReadAheadManager()
         : m_pLoopingControl(NULL),
@@ -18,8 +19,8 @@ ReadAheadManager::ReadAheadManager()
     // For testing only: ReadAheadManagerMock
 }
 
-ReadAheadManager::ReadAheadManager(CachingReader* pReader, 
-                                   LoopingControl* pLoopingControl) 
+ReadAheadManager::ReadAheadManager(CachingReader* pReader,
+                                   LoopingControl* pLoopingControl)
         : m_pLoopingControl(pLoopingControl),
           m_pRateControl(NULL),
           m_iCurrentPosition(0),
@@ -75,7 +76,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         return 0;
     }
 
-    int samples_read = m_pReader->read(start_sample, samples_needed,
+    int samples_read = m_pReader->read(start_sample, in_reverse, samples_needed,
                                        base_buffer);
 
     if (samples_read != samples_needed) {
@@ -105,7 +106,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                     (in_reverse ? preloop_samples : -preloop_samples);
 
             int looping_samples_read = m_pReader->read(
-                    loop_read_position, samples_read, m_pCrossFadeBuffer);
+                    loop_read_position, in_reverse, samples_read, m_pCrossFadeBuffer);
 
             if (looping_samples_read != samples_read) {
                 qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
@@ -116,11 +117,6 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                 SampleUtil::linearCrossfadeBuffers(base_buffer, base_buffer, m_pCrossFadeBuffer, samples_read);
             }
         }
-    }
-
-    // Reverse the samples in-place
-    if (in_reverse) {
-        SampleUtil::reverse(base_buffer, samples_read);
     }
 
     //qDebug() << "read" << m_iCurrentPosition << samples_read;

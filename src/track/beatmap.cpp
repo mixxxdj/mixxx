@@ -63,8 +63,8 @@ BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
         : QObject(),
           m_mutex(QMutex::Recursive) {
     initialize(pTrack, iSampleRate);
-    if (pByteArray != NULL) {
-        readByteArray(pByteArray);
+    if (nullptr != pByteArray) {
+        readByteArray(*pByteArray);
     }
 }
 
@@ -90,10 +90,21 @@ void BeatMap::initialize(TrackPointer pTrack, int iSampleRate) {
     }
 }
 
+BeatMap::BeatMap (const BeatMap& other)
+        : QObject(),
+          m_mutex(QMutex::Recursive) {
+    m_iSampleRate = other.m_iSampleRate;
+    m_dCachedBpm = other.m_dCachedBpm;
+    m_dLastFrame = other.m_dLastFrame;
+    moveToThread(other.thread());
+    m_subVersion = other.m_subVersion;
+    m_beats = other.m_beats;
+}
+
 BeatMap::~BeatMap() {
 }
 
-QByteArray* BeatMap::toByteArray() const {
+QByteArray BeatMap::toByteArray() const {
     QMutexLocker locker(&m_mutex);
     // No guarantees BeatLists are made of a data type which located adjacent
     // items in adjacent memory locations.
@@ -105,22 +116,28 @@ QByteArray* BeatMap::toByteArray() const {
 
     std::string output;
     map.SerializeToString(&output);
-    QByteArray* pByteArray = new QByteArray(output.data(), output.length());
-    return pByteArray;
+    return QByteArray(output.data(), output.length());
 }
 
-void BeatMap::readByteArray(const QByteArray* pByteArray) {
+BeatsPointer BeatMap::clone() const {
+    QMutexLocker locker(&m_mutex);
+    BeatsPointer other(new BeatMap(*this));
+    return other;
+}
+
+bool BeatMap::readByteArray(const QByteArray& byteArray) {
     mixxx::track::io::BeatMap map;
-    if (!map.ParseFromArray(pByteArray->constData(), pByteArray->size())) {
+    if (!map.ParseFromArray(byteArray.constData(), byteArray.size())) {
         qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
-                << pByteArray->size();
-        return;
+                << byteArray.size();
+        return false;
     }
     for (int i = 0; i < map.beat_size(); ++i) {
         const Beat& beat = map.beat(i);
         m_beats.append(beat);
     }
     onBeatlistChanged();
+    return true;
 }
 
 void BeatMap::createFromBeatVector(const QVector<double>& beats) {
@@ -362,12 +379,12 @@ bool BeatMap::findPrevNextBeats(double dSamples,
     return *dpPrevBeatSamples != -1 && *dpNextBeatSamples != -1;
 }
 
-BeatIterator* BeatMap::findBeats(double startSample, double stopSample) const {
+std::unique_ptr<BeatIterator> BeatMap::findBeats(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
     //startSample and stopSample are sample offsets, converting them to
     //frames
     if (!isValid() || startSample > stopSample) {
-        return NULL;
+        return std::unique_ptr<BeatIterator>();
     }
 
     Beat startBeat, stopBeat;
@@ -383,9 +400,9 @@ BeatIterator* BeatMap::findBeats(double startSample, double stopSample) const {
                         stopBeat, BeatLessThan);
 
     if (curBeat >= lastBeat) {
-        return NULL;
+        return std::unique_ptr<BeatIterator>();
     }
-    return new BeatMapIterator(curBeat, lastBeat);
+    return std::make_unique<BeatMapIterator>(curBeat, lastBeat);
 }
 
 bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {
@@ -537,30 +554,127 @@ void BeatMap::translate(double dNumSamples) {
     emit(updated());
 }
 
-void BeatMap::scale(double dScalePercentage) {
+void BeatMap::scale(enum BPMScale scale) {
+
     QMutexLocker locker(&m_mutex);
-    if (!isValid() || dScalePercentage <= 0.0 || m_beats.isEmpty()) {
+    if (!isValid() || m_beats.isEmpty()) {
         return;
     }
 
-    // Scale the distance between every beat by 1/dScalePercentage to scale the
-    // BPM by dScalePercentage.
-    const double kScaleBeatDistance = 1.0 / dScalePercentage;
-    Beat prevBeat = m_beats.first();
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        // Need to not accrue fractional frames.
-        double newFrame = floor(
-                (1 - kScaleBeatDistance) * prevBeat.frame_position() +
-                kScaleBeatDistance * it->frame_position());
-        it->set_frame_position(newFrame);
+    switch (scale) {
+    case DOUBLE:
+        if (getBpm() * 2 > getMaxBpm()) {
+            return;
+        }
+        // introduce a new beat into every gap
+        scaleDouble();
+        break;
+    case HALVE:
+        // remove every second beat
+        scaleHalve();
+        break;
+    case TWOTHIRDS:
+        // introduce a new beat into every gap
+        scaleDouble();
+        // remove every second and third beat
+        scaleThird();
+        break;
+    case THREEFOURTHS:
+        // introduce two beats into every gap
+        scaleTriple();
+        // remove every second third and forth beat
+        scaleFourth();
+        break;
+    default:
+        DEBUG_ASSERT(!"scale value invalid");
+        return;
     }
     onBeatlistChanged();
     locker.unlock();
     emit(updated());
 }
 
+void BeatMap::scaleDouble() {
+    Beat prevBeat = m_beats.first();
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = m_beats.begin() + 1;
+    for (; it != m_beats.end(); ++it) {
+        // Need to not accrue fractional frames.
+        int distance = it->frame_position() - prevBeat.frame_position();
+        Beat beat;
+        beat.set_frame_position(prevBeat.frame_position() + distance / 2);
+        it = m_beats.insert(it, beat);
+        prevBeat = (++it)[0];
+    }
+}
+
+void BeatMap::scaleTriple() {
+    Beat prevBeat = m_beats.first();
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = m_beats.begin() + 1;
+    for (; it != m_beats.end(); ++it) {
+        // Need to not accrue fractional frames.
+        int distance = it->frame_position() - prevBeat.frame_position();
+        Beat beat;
+        beat.set_frame_position(prevBeat.frame_position() + distance / 3);
+        it = m_beats.insert(it, beat);
+        ++it;
+        beat.set_frame_position(prevBeat.frame_position() + distance * 2 / 3);
+        it = m_beats.insert(it, beat);
+        prevBeat = (++it)[0];
+    }
+}
+
+void BeatMap::scaleHalve() {
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = m_beats.begin() + 1;
+    for (; it != m_beats.end(); ++it) {
+        it = m_beats.erase(it);
+        if (it == m_beats.end()) {
+            break;
+        }
+    }
+}
+
+void BeatMap::scaleThird() {
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = m_beats.begin() + 1;
+    for (; it != m_beats.end(); ++it) {
+        it = m_beats.erase(it);
+        if (it == m_beats.end()) {
+            break;
+        }
+        it = m_beats.erase(it);
+        if (it == m_beats.end()) {
+            break;
+        }
+    }
+}
+
+void BeatMap::scaleFourth() {
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = m_beats.begin() + 1;
+    for (; it != m_beats.end(); ++it) {
+        it = m_beats.erase(it);
+        if (it == m_beats.end()) {
+            break;
+        }
+        it = m_beats.erase(it);
+        if (it == m_beats.end()) {
+            break;
+        }
+        it = m_beats.erase(it);
+        if (it == m_beats.end()) {
+            break;
+        }
+    }
+}
+
 void BeatMap::setBpm(double dBpm) {
+    Q_UNUSED(dBpm);
+    DEBUG_ASSERT(!"BeatMap::setBpm() not implemented");
+    return;
+
     /*
      * One of the problems of beattracking algorithms is the so called "octave error"
      * that is, calculated bpm is a power-of-two fraction of the bpm of the track.
@@ -579,23 +693,11 @@ void BeatMap::setBpm(double dBpm) {
      * If the new provided bpm is not a power-of-two fraction, we assume that the algorithm failed
      * at all to guess the bpm. I have no idea on how to deal with this.
      * If we assume that bpm does not change along the track, i.e. if we use
-     * fixed tempo approximation (see analyserbeat.*), this should coincide with the
+     * fixed tempo approximation (see analyzerbeat.*), this should coincide with the
      * method in beatgrid.cpp.
      *
      * - vittorio.
      */
-    QMutexLocker locker(&m_mutex);
-
-    // Ignore sets of 0 since we can't scale by that.
-    if (!isValid() || dBpm <= 0.0)
-        return;
-
-    // This problem is so complicated that for now we are just going to bail and
-    // scale the beatgrid exactly by the ratio indicated by the desired
-    // BPM. This is a downside of using a BeatMap over a BeatGrid. rryan 4/2012
-    double ratio = m_dCachedBpm / dBpm;
-    locker.unlock();
-    scale(ratio);
 }
 
 void BeatMap::onBeatlistChanged() {

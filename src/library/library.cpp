@@ -6,7 +6,7 @@
 #include <QTranslator>
 #include <QDir>
 
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryfeature.h"
@@ -42,15 +42,24 @@ const QString Library::m_sTrackViewName = QString("WTrackTableView");
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+Library::Library(QObject* parent, UserSettingsPointer pConfig,
                  PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl(this)),
-        m_pRecordingManager(pRecordingManager) {
+        m_pRecordingManager(pRecordingManager),
+        m_scanner(m_pTrackCollection, pConfig) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
+
+    connect(&m_scanner, SIGNAL(scanStarted()),
+            this, SIGNAL(scanStarted()));
+    connect(&m_scanner, SIGNAL(scanFinished()),
+            this, SIGNAL(scanFinished()));
+    // Refresh the library models when the library (re)scan is finished.
+    connect(&m_scanner, SIGNAL(scanFinished()),
+            this, SLOT(slotRefreshLibraryModels()));
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -65,11 +74,12 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     BrowseFeature* browseFeature = new BrowseFeature(
         this, pConfig, m_pTrackCollection, m_pRecordingManager);
     connect(browseFeature, SIGNAL(scanLibrary()),
-            parent, SLOT(slotScanLibrary()));
-    connect(parent, SIGNAL(libraryScanStarted()),
+            &m_scanner, SLOT(scan()));
+    connect(&m_scanner, SIGNAL(scanStarted()),
             browseFeature, SLOT(slotLibraryScanStarted()));
-    connect(parent, SIGNAL(libraryScanFinished()),
+    connect(&m_scanner, SIGNAL(scanFinished()),
             browseFeature, SLOT(slotLibraryScanFinished()));
+
     addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
@@ -253,7 +263,9 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
     TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
             .getOrAddTrack(location, true, NULL);
-    emit(loadTrackToPlayer(pTrack, group));
+    if (!pTrack.isNull()) {
+        emit(loadTrackToPlayer(pTrack, group));
+    }
 }
 
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
@@ -342,20 +354,8 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
 }
 
 void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
-    // We only call this method if the user has picked a relocated directory via
-    // a file dialog. This means the system sandboxer (if we are sandboxed) has
-    // granted us permission to this folder. Create a security bookmark while we
-    // have permission so that we can access the folder on future runs. We need
-    // to canonicalize the path so we first wrap the directory string with a
-    // QDir.
-    QDir directory(newDir);
-    Sandbox::createSecurityToken(directory);
+    m_pTrackCollection->relocateDirectory(oldDir, newDir);
 
-    QSet<TrackId> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir, newDir);
-
-    // Clear cache to that all TIO with the old dir information get updated
-    m_pTrackCollection->getTrackDAO().clearCache();
-    m_pTrackCollection->getTrackDAO().databaseTracksMoved(movedIds, QSet<TrackId>());
     // also update the config file if necessary so that downgrading is still
     // possible
     QString conDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);

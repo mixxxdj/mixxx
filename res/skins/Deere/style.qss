@@ -135,11 +135,6 @@ QTableView::indicator {
   height: 12px;
 }
 
-QTableView::item:selected {
-  color: #1A1A1A;
-  background-color: #D6D6D6;
-}
-
 QTableView::indicator:checked {
   background: url(skin:/image/style_checkbox_checked.png);
 }
@@ -282,46 +277,41 @@ QTreeView::branch:open:has-children:has-siblings {
   border-image: none; image: url(skin:/image/style_branch_open.png);
 }
 
-QTreeView::item:selected {
-  color: #1A1A1A;
-  background-color: #D6D6D6;
-}
-
 /* QSplitter between LibrarySidebar and Library */
-QSplitter#LibrarySplitter::handle {
+#LibrarySplitter::handle {
   image: url(skin:/image/style_handle_horizontal_unchecked.svg);
   background: none;
 }
 
-QSplitter#LibrarySplitter::handle:pressed {
+#LibrarySplitter::handle:pressed {
   image: url(skin:/image/style_handle_horizontal_checked.svg);
   background: none;
 }
 
-QSplitter#LibrarySplitter::handle:horizontal {
+#LibrarySplitter::handle:horizontal {
   width: 6px;
 }
 
-QSplitter#LibrarySplitter::handle:vertical {
+#LibrarySplitter::handle:vertical {
   height: 6px;
 }
 
 /* QSplitter between LibrarySidebar and CoverArt */
-QSplitter#LibraryCoverArtSplitter::handle {
+#LibraryCoverArtSplitter::handle {
   image: url(skin:/image/style_handle_vertical_unchecked.svg);
   background: none;
 }
 
-QSplitter#LibraryCoverArtSplitter::handle:pressed {
+#LibraryCoverArtSplitter::handle:pressed {
   image: url(skin:/image/style_handle_vertical_checked.svg);
   background: none;
 }
 
-QSplitter#LibraryCoverArtSplitter::handle:horizontal {
+#LibraryCoverArtSplitter::handle:horizontal {
   width: 6px;
 }
 
-QSplitter#LibraryCoverArtSplitter::handle:vertical {
+#LibraryCoverArtSplitter::handle:vertical {
   height: 6px;
 }
 
@@ -348,13 +338,18 @@ WLibrary QSpinBox:editable {
 WLibrary QLabel, WLibrary QRadioButton {
   /* same as QTreeview */
   color: #d2d2d2;
-  margin: 0px 10px 0px 0px;
+  margin: 9px 10px 6px 0px;
 }
 
 WLibrary QRadioButton::indicator {
   margin: 0px 5px 0px 2px;
   width: 18px;
   height: 18px;
+}
+
+/* Additional space for the first QRadionButton in the row */
+WLibrary QRadioButton#radioButtonRecentlyAdded {
+  margin: 9px 10px 6px 14px;
 }
 
 WLibrary QRadioButton::indicator:checked {
@@ -371,6 +366,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #D2D2D2;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -387,6 +383,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAnalysis > QPushButton:!enabled {
   /* buttons in "disabled" (not click-able) state. They are nearly invisible
      by default QT palette, so style accordingly */
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #808080; /* Default #A3A3A3 -90L HSL*/
   background-color: qlineargradient(spread:pad,
@@ -404,6 +401,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton:hover,
 #DlgRecording > QPushButton:hover,
 #DlgAnalysis > QPushButton:hover {
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #D2D2D2;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -418,6 +416,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgRecording > QPushButton:checked,
 #DlgAnalysis > QPushButton:checked {
   /* checkbuttons in active state */
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -432,6 +431,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgRecording > QPushButton:checked:hover,
 #DlgAnalysis > QPushButton:checked:hover {
   /* checkbuttons hovered over in "active" state */
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -447,6 +447,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton:pressed,
 #DlgAnalysis > QPushButton:pressed {
   /* pushbuttons in "down" state */
+  margin: 9px 3px 6px 3px;
   padding: 4px;
   color: #FDFDFD;
   background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
@@ -457,54 +458,65 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
+/* Additional space for the first and the last QPushButton in the row */
+#DlgMissing > QPushButton#btnPurge,
+#DlgHidden > QPushButton#btnUnhide,
+#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
+#DlgRecording > QPushButton#pushButtonRecording,
+#DlgAnalysis > QPushButton#pushButtonAnalyze {
+  margin: 9px 12px 6px 3px;
+}
+
+#DlgAutoDJ > QPushButton#pushButtonShuffle {
+  margin: 9px 3px 6px 12px;
+}
+
 
 /* Scroll bars */
 QScrollBar:horizontal {
-  border: 1px solid #585858;
+  border-top: 1px solid #141414;
   min-width: 12px;
   height: 15px;
-  background: #1A1A1A;
-  border-radius: 3px;
-  padding: 1px;
+  background: #222222;
+  padding: 3px;
 }
 QScrollBar:vertical {
-  border: 1px solid #585858;
+  border-left: 1px solid #141414;
   min-height: 12px;
   width: 15px;
-  background: #1A1A1A;
-  border-radius: 3px;
-  padding: 1px;
+  background: #222222;
+  padding: 3px;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 QScrollBar::add-page, QScrollBar::sub-page {
-  min-width: 15px;
-  min-height: 15px;
-  border: 2px;
-  background-color: #1A1A1A;
-  border-radius: 3px;
+  background: none;
 }
 QScrollBar::handle:horizontal {
   min-width: 25px;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #085172, stop:1 #042E41);
+  background: #5F5F5F;
   border-radius: 3px;
-  border: 1px solid #085172;
+  border: none;
 }
 QScrollBar::handle:vertical {
   min-height: 25px;
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #085172, stop:1 #042E41);
+  background: #5F5F5F;
   border-radius: 3px;
-  border: 1px solid #085172;
+  border: none;
 }
+QScrollBar::handle:horizontal:hover, QScrollBar::handle:vertical:hover {
+  background: #B3B3B3;
+}
+
 /* Turn off buttons */
 QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
   width: 0px;
   height: 0px;
-  border: 0px solid white;
+  border: none;
 }
 QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
-  border: 0px solid white;
+  border: none;
 }
 
 /*******************************************************************************
@@ -521,17 +533,13 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
 }
 
 #SkinSettingsTop {
-  background-color: rgba(17.3%, 17.3%, 17.3%, 100%);
-  margin: 5px;
-  margin-top: 6px;
-  margin-right: 4px;
+  margin: 7px 4px 6px 6px;
 }
 
 #SkinSettingsTop > #h1 {
   font: 16px/18px;
   text-align: left;
   text-transform: uppercase;
-  padding: 0;
   background: none;
 }
 
@@ -549,32 +557,19 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   font: 12px/14px;
   background-color: none;
   text-align: left;
-  margin: 0.5em 0.5em 0.5em 0.5em;
+  margin: 0.5em;
 }
 
-#SkinSettings WPushButton {
+#SkinSettings > #h3 WPushButton {
   font: 12px/14px;
   background-color: none;
   text-transform: none;
   border: none;
 }
 
-#SkinSettings WPushButton:hover {
+#SkinSettings > #h3 WPushButton:hover {
   background: #222222;
 }
-
-#SkinSettingsTop #SidebarShowHideSkinSettingsButton {
-  background-color: #0a0a0a;
-  border-radius: 2px;
-  border: 1px solid #ddd;
-}
-
-#SkinSettingsTop #SidebarShowHideSkinSettingsButton:hover {
-  background-color: #333;
-  border-radius: 2px;
-  border: 1px solid #ddd;
-}
-
 
 /*******************************************************************************
  ** END SKIN SETTINGS **********************************************************
@@ -1193,6 +1188,101 @@ WPushButton[value="2"]:hover {
     border: 0px solid #0080BE;
 }
 
+/* Special case link_type button for effect parameters
+  0 -- not linked / default (off)
+  1 -- linked (on)
+  2 -- split linked left (on)
+  3 -- split linked right (on)
+  4 -- split linked left/right (on)
+
+  We define only those values (2-4) that are not covered by the existing
+  standard button definitions.
+  Note: EQ Gain effects cannot be used in split mode (= can be 0 or 1 only)
+*/
+#EffectSlotParameterLinkTypeButton {
+    margin: 0 4px 0 4px;
+}
+
+#EffectSlotParameterLinkTypeButton[value="2"] {
+    color: none;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                      stop: 0 #006596,
+                                      stop: 0.33 #006596,
+                                      stop: 0.34 #4B4B4B,
+                                      stop: 0.66 #4B4B4B,
+                                      stop: 0.67 #4B4B4B,
+                                      stop: 1 #4B4B4B);
+
+    border: 0px solid #006596;
+}
+
+#EffectSlotParameterLinkTypeButton[value="2"]:hover {
+    color: none;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                      stop: 0 #0080BE,
+                                      stop: 0.33 #0080BE,
+                                      stop: 0.34 #5F5F5F,
+                                      stop: 0.66 #5F5F5F,
+                                      stop: 0.67 #5F5F5F,
+                                      stop: 1 #5F5F5F);
+
+    border: 0px solid #0080BE;
+}
+
+#EffectSlotParameterLinkTypeButton[value="3"] {
+    color: none;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                      stop: 0 #4B4B4B,
+                                      stop: 0.33 #4B4B4B,
+                                      stop: 0.34 #4B4B4B,
+                                      stop: 0.66 #4B4B4B,
+                                      stop: 0.67 #006596,
+                                      stop: 1 #006596);
+
+    border: 0px solid #006596;
+}
+
+
+#EffectSlotParameterLinkTypeButton[value="3"]:hover {
+    color: none;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                      stop: 0 #5F5F5F,
+                                      stop: 0.33 #5F5F5F,
+                                      stop: 0.34 #5F5F5F,
+                                      stop: 0.66 #5F5F5F,
+                                      stop: 0.67 #0080BE,
+                                      stop: 1 #0080BE);
+
+    border: 0px solid #0080BE;
+}
+
+#EffectSlotParameterLinkTypeButton[value="4"] {
+    color: none;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                      stop: 0 #006596,
+                                      stop: 0.330000 #006596,
+                                      stop: 0.340000 #4B4B4B,
+                                      stop: 0.660000 #4B4B4B,
+                                      stop: 0.670000 #006596,
+                                      stop: 1 #006596);
+
+    border: 0px solid #006596;
+}
+
+
+#EffectSlotParameterLinkTypeButton[value="4"]:hover {
+    color: none;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                      stop: 0 #0080BE,
+                                      stop: 0.330000 #0080BE,
+                                      stop: 0.340000 #5F5F5F,
+                                      stop: 0.660000 #5F5F5F,
+                                      stop: 0.670000 #0080BE,
+                                      stop: 1 #0080BE);
+
+    border: 0px solid #0080BE;
+}
+
 /* Special case "hide/show" button
    The button unfolds/folds widgets. We display different icons per state, but
    do not want an active or active:hover color like with the other buttons.
@@ -1235,7 +1325,7 @@ WPushButton[value="2"]:hover {
   font: bold 10px;
 }
 
-#BeatJumpNext, #BeatLoopButton, #LoopMoveNext, #HotcueButton {
+#BeatJumpValue, #BeatLoopButton, #LoopMoveValue, #HotcueButton {
   font: bold 9px;
 }
 

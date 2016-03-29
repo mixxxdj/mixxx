@@ -6,7 +6,7 @@
 
 #include <QtSql>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/dao/settingsdao.h"
 
 class SchemaManager {

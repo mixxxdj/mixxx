@@ -18,7 +18,7 @@
 #include <QHash>
 #include <QDomElement>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetfilehandler.h"
 

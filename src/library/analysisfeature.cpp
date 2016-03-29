@@ -7,10 +7,10 @@
 #include "library/analysisfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
-#include "dlganalysis.h"
+#include "library/dlganalysis.h"
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
-#include "analyserqueue.h"
+#include "analyzer/analyzerqueue.h"
 #include "soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/debug.h"
@@ -18,12 +18,12 @@
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
 AnalysisFeature::AnalysisFeature(QObject* parent,
-                               ConfigObject<ConfigValue>* pConfig,
+                               UserSettingsPointer pConfig,
                                TrackCollection* pTrackCollection) :
         LibraryFeature(parent),
         m_pConfig(pConfig),
         m_pTrackCollection(pTrackCollection),
-        m_pAnalyserQueue(NULL),
+        m_pAnalyzerQueue(NULL),
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(NULL) {
@@ -33,7 +33,7 @@ AnalysisFeature::AnalysisFeature(QObject* parent,
 AnalysisFeature::~AnalysisFeature() {
     // TODO(XXX) delete these
     //delete m_pLibraryTableModel;
-    cleanupAnalyser();
+    cleanupAnalyzer();
 }
 
 
@@ -83,7 +83,7 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
     m_pAnalysisView->installEventFilter(keyboard);
 
     // Let the DlgAnalysis know whether or not analysis is active.
-    bool bAnalysisActive = m_pAnalyserQueue != NULL;
+    bool bAnalysisActive = m_pAnalyzerQueue != NULL;
     emit(analysisActive(bAnalysisActive));
 
     libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
@@ -109,24 +109,24 @@ void AnalysisFeature::activate() {
 }
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
-    if (m_pAnalyserQueue == NULL) {
+    if (m_pAnalyzerQueue == NULL) {
         // Save the old BPM detection prefs setting (on or off)
         m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
         // Force BPM detection to be on.
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
-        // Note: this sucks... we should refactor the prefs/analyser to fix this hacky bit ^^^^.
+        // Note: this sucks... we should refactor the prefs/analyzer to fix this hacky bit ^^^^.
 
-        m_pAnalyserQueue = AnalyserQueue::createAnalysisFeatureAnalyserQueue(m_pConfig, m_pTrackCollection);
+        m_pAnalyzerQueue = AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(m_pConfig, m_pTrackCollection);
 
-        connect(m_pAnalyserQueue, SIGNAL(trackProgress(int)),
+        connect(m_pAnalyzerQueue, SIGNAL(trackProgress(int)),
                 m_pAnalysisView, SLOT(trackAnalysisProgress(int)));
-        connect(m_pAnalyserQueue, SIGNAL(trackFinished(int)),
+        connect(m_pAnalyzerQueue, SIGNAL(trackFinished(int)),
                 this, SLOT(slotProgressUpdate(int)));
-        connect(m_pAnalyserQueue, SIGNAL(trackFinished(int)),
+        connect(m_pAnalyzerQueue, SIGNAL(trackFinished(int)),
                 m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
 
-        connect(m_pAnalyserQueue, SIGNAL(queueEmpty()),
-                this, SLOT(cleanupAnalyser()));
+        connect(m_pAnalyzerQueue, SIGNAL(queueEmpty()),
+                this, SLOT(cleanupAnalyzer()));
         emit(analysisActive(true));
     }
 
@@ -134,7 +134,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
         TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
         if (pTrack) {
             //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
-            m_pAnalyserQueue->queueAnalyseTrack(pTrack);
+            m_pAnalyzerQueue->queueAnalyseTrack(pTrack);
         }
     }
     if (trackIds.size() > 0) {
@@ -153,18 +153,18 @@ void AnalysisFeature::slotProgressUpdate(int num_left) {
 
 void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
-    if (m_pAnalyserQueue != NULL) {
-        m_pAnalyserQueue->stop();
+    if (m_pAnalyzerQueue != NULL) {
+        m_pAnalyzerQueue->stop();
     }
 }
 
-void AnalysisFeature::cleanupAnalyser() {
+void AnalysisFeature::cleanupAnalyzer() {
     setTitleDefault();
     emit(analysisActive(false));
-    if (m_pAnalyserQueue != NULL) {
-        m_pAnalyserQueue->stop();
-        m_pAnalyserQueue->deleteLater();
-        m_pAnalyserQueue = NULL;
+    if (m_pAnalyzerQueue != NULL) {
+        m_pAnalyzerQueue->stop();
+        m_pAnalyzerQueue->deleteLater();
+        m_pAnalyzerQueue = NULL;
         // Restore old BPM detection setting for preferences...
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
     }
@@ -174,7 +174,7 @@ bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
     QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    QList<TrackId> trackIds = m_pTrackCollection->getTrackDAO().addMultipleTracks(files, true);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }

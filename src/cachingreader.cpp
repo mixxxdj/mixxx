@@ -1,15 +1,13 @@
 #include <QtDebug>
 #include <QFileInfo>
 
-#include "controlobject.h"
-#include "controlobjectthread.h"
-
 #include "cachingreader.h"
+#include "controlobject.h"
 #include "trackinfoobject.h"
-#include "sampleutil.h"
+#include "util/assert.h"
 #include "util/counter.h"
 #include "util/math.h"
-#include "util/assert.h"
+#include "util/sample.h"
 
 namespace {
 
@@ -34,7 +32,7 @@ const SINT kDefaultHintSamples = 1024 * CachingReaderChunk::kChannels;
 const int CachingReader::maximumCachingReaderChunksInMemory = 80;
 
 CachingReader::CachingReader(QString group,
-                             ConfigObject<ConfigValue>* config)
+                             UserSettingsPointer config)
         : m_pConfig(config),
           m_chunkReadRequestFIFO(1024),
           m_readerStatusFIFO(1024),
@@ -215,7 +213,7 @@ void CachingReader::process() {
     }
 }
 
-int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
+int CachingReader::read(int sample, bool reverse, int numSamples, CSAMPLE* buffer) {
     // Check for bad inputs
     DEBUG_ASSERT_AND_HANDLE(sample % CachingReaderChunk::kChannels == 0) {
         // This problem is easy to fix, but this type of call should be
@@ -255,8 +253,13 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
         const SINT prerollFrames = math_min(numFrames,
                 Mixxx::AudioSource::getMinFrameIndex() - frameIndex);
         const SINT prerollSamples = CachingReaderChunk::frames2samples(prerollFrames);
-        SampleUtil::clear(buffer, prerollSamples);
-        buffer += prerollSamples;
+        if (reverse) {
+            SampleUtil::clear(&buffer[numSamples - prerollSamples], prerollSamples);
+        } else {
+            SampleUtil::clear(buffer, prerollSamples);
+            buffer += prerollSamples;
+        }
+
         samplesRead += prerollSamples;
         frameIndex += prerollFrames;
         numFrames -= prerollFrames;
@@ -322,8 +325,13 @@ int CachingReader::read(int sample, int numSamples, CSAMPLE* buffer) {
                 DEBUG_ASSERT(framesToCopy >= 0);
                 const SINT chunkSampleOffset = CachingReaderChunk::frames2samples(chunkFrameOffset);
                 const SINT samplesToCopy = CachingReaderChunk::frames2samples(framesToCopy);
-                pChunk->copySamples(buffer, chunkSampleOffset, samplesToCopy);
-                buffer += samplesToCopy;
+                
+                if (reverse) {
+                    pChunk->copySamplesReverse(&buffer[numSamples - samplesRead - samplesToCopy], chunkSampleOffset, samplesToCopy);
+                } else {
+                    pChunk->copySamples(buffer, chunkSampleOffset, samplesToCopy);
+                    buffer += samplesToCopy;
+                }
                 samplesRead += samplesToCopy;
                 frameIndex += framesToCopy;
             }

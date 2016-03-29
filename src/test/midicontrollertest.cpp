@@ -8,6 +8,7 @@
 #include "controllers/midi/midimessage.h"
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
+#include "util/time.h"
 
 class MockMidiController : public MidiController {
   public:
@@ -40,7 +41,8 @@ class MidiControllerTest : public MixxxTest {
 
     void receive(unsigned char status, unsigned char control,
                  unsigned char value) {
-        m_pController->receive(status, control, value);
+        // TODO(rryan): This test doesn't care about timestamps.
+        m_pController->receive(status, control, value, Time::elapsed());
     }
 
     MidiControllerPreset m_preset;

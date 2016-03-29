@@ -343,7 +343,7 @@
                                   </Template>
 
                                   <Template src="skin:left_right_1state_button.xml">
-                                    <SetVariable name="TooltipId">beats_translate_alignment</SetVariable>
+                                    <SetVariable name="TooltipId">beats_translate_match_alignment</SetVariable>
                                     <SetVariable name="ObjectName">BeatsTranslateAlignmentButton</SetVariable>
                                     <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                                     <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -351,7 +351,7 @@
                                     <SetVariable name="state_0_text"></SetVariable>
                                     <SetVariable name="state_0_pressed">icon/ic_beats_translate_alignment_48px.svg</SetVariable>
                                     <SetVariable name="state_0_unpressed">icon/ic_beats_translate_alignment_48px.svg</SetVariable>
-                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_alignment</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
                                   </Template>
 
 

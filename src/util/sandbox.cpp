@@ -21,13 +21,14 @@ const bool sDebug = false;
 
 QMutex Sandbox::s_mutex(QMutex::Recursive);
 bool Sandbox::s_bInSandbox = false;
-ConfigObject<ConfigValue>* Sandbox::s_pSandboxPermissions = NULL;
+QSharedPointer<ConfigObject<ConfigValue>> Sandbox::s_pSandboxPermissions;
 QHash<QString, SecurityTokenWeakPointer> Sandbox::s_activeTokens;
 
 // static
 void Sandbox::initialize(const QString& permissionsFile) {
     QMutexLocker locker(&s_mutex);
-    s_pSandboxPermissions = new ConfigObject<ConfigValue>(permissionsFile);
+    s_pSandboxPermissions = QSharedPointer<ConfigObject<ConfigValue>>(
+        new ConfigObject<ConfigValue>(permissionsFile));
 
 #ifdef Q_OS_MAC
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
@@ -56,11 +57,10 @@ void Sandbox::initialize(const QString& permissionsFile) {
 // static
 void Sandbox::shutdown() {
     QMutexLocker locker(&s_mutex);
-    ConfigObject<ConfigValue>* pSandboxPermissions = s_pSandboxPermissions;
-    s_pSandboxPermissions = NULL;
+    QSharedPointer<ConfigObject<ConfigValue>> pSandboxPermissions = s_pSandboxPermissions;
+    s_pSandboxPermissions.clear();
     if (pSandboxPermissions) {
-        pSandboxPermissions->Save();
-        delete pSandboxPermissions;
+        pSandboxPermissions->save();
     }
 }
 
@@ -272,7 +272,7 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
     }
 
     QMutexLocker locker(&s_mutex);
-    if (s_pSandboxPermissions == NULL) {
+    if (s_pSandboxPermissions.isNull()) {
         return SecurityTokenPointer();
     }
 

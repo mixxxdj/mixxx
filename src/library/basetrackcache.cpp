@@ -8,6 +8,7 @@
 #include "library/trackcollection.h"
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
+#include "util/performancetimer.h"
 
 namespace {
 
@@ -150,7 +151,7 @@ TrackPointer BaseTrackCache::lookupCachedTrack(TrackId trackId) const {
 
 bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
     if (sDebug) {
-        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getFilename();
+        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getLocation();
     }
 
     if (pTrack.isNull()) {
@@ -174,7 +175,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
 }
 
 bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
-    QTime timer;
+    PerformanceTimer timer;
     timer.start();
 
     if (sDebug) {
@@ -208,7 +209,7 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         }
     }
 
-    qDebug() << this << "updateIndexWithQuery took" << timer.elapsed() << "ms";
+    qDebug() << this << "updateIndexWithQuery took" << timer.elapsed().debugMillisWithUnit();
     return true;
 }
 
@@ -307,10 +308,12 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getBitrate());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
         trackValue.setValue(pTrack->getBpm());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) == column) {
+        trackValue.setValue(pTrack->getReplayGain().getRatio());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
-        trackValue.setValue(pTrack->getPlayed());
+        trackValue.setValue(pTrack->getPlayCounter().isPlayed());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) == column) {
-        trackValue.setValue(pTrack->getTimesPlayed());
+        trackValue.setValue(pTrack->getPlayCounter().getTimesPlayed());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
         trackValue.setValue(pTrack->getRating());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
@@ -318,7 +321,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) == column) {
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
-        trackValue.setValue(pTrack->hasBpmLock());
+        trackValue.setValue(pTrack->isBpmLocked());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
@@ -589,7 +592,8 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) ||
-            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 

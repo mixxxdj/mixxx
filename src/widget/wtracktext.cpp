@@ -6,7 +6,7 @@
 #include "widget/wtracktext.h"
 #include "util/dnd.h"
 
-WTrackText::WTrackText(const char *group, ConfigObject<ConfigValue> *pConfig, QWidget* pParent)
+WTrackText::WTrackText(const char *group, UserSettingsPointer pConfig, QWidget* pParent)
         : WLabel(pParent),
           m_pGroup(group),
           m_pConfig(pConfig) {
@@ -25,8 +25,9 @@ void WTrackText::slotTrackLoaded(TrackPointer track) {
     }
 }
 
-void WTrackText::slotTrackUnloaded(TrackPointer track) {
-    Q_UNUSED(track);
+void WTrackText::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), 0, this, 0);
     }

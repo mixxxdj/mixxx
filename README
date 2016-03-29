@@ -1,17 +1,17 @@
-Mixxx 1.12.0
+Mixxx 2.1
 
 * HOMEPAGE *************************************************
+
 http://www.mixxx.org
 
-
 * ABOUT ****************************************************
-Mixxx is open source software for DJ'ing. You can perform
-live beatmixes with MP3s, OGGs, and other formats. Mixxx
-also supports a number of DJ MIDI controllers.
-Mixxx works on Linux, Windows and MacOS X.
+
+Mixxx is open source DJ software that gives you everything
+you need to perform live DJ mixes. Mixxx works on GNU/Linux,
+Windows and Mac OS X.
 
 Mixxx is released under GPL v2. See LICENSE file in this
-directory for a copy of the licence.
+directory for a copy of the license.
 
 * NEWS *****************************************************
 
@@ -31,6 +31,7 @@ You can delete it by running:
 
 
 * INSTALL **************************************************
+
 Mixxx has the following dependencies:
 - libid3tag
 - libmad
@@ -39,6 +40,7 @@ Mixxx has the following dependencies:
 - libvorbisfile
 - libsndfile
 - libflac
+- libopus
 - libshout
 - libhss1394
 - taglib
@@ -52,6 +54,7 @@ Mixxx has the following dependencies:
 - libfaad (optional, m4a support)
 - vamp-plugin-sdk (optional, internal version included)
 - libchromaprint
+- librubberband
 
 NOTE: If you want JACK support in Mixxx, make sure you
 compile PortAudio-v19 with JACK support first.
@@ -108,7 +111,7 @@ or
 Please see the manual, included in this directory,
 Mixxx-Manual.pdf or at:
 
-    http://www.mixxx.org/manual
+    http://www.mixxx.org/manual/latest
 
 * CONTACT **************************************************
 To contact the lead developer, send an email to

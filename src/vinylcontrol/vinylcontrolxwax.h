@@ -3,7 +3,7 @@
 
 #include <QTime>
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/steadypitch.h"
 #include "util/types.h"
@@ -22,7 +22,7 @@ extern "C" {
 
 class VinylControlXwax : public VinylControl {
   public:
-    VinylControlXwax(ConfigObject<ConfigValue> *pConfig, QString group);
+    VinylControlXwax(UserSettingsPointer pConfig, QString group);
     virtual ~VinylControlXwax();
 
     static void freeLUTs();
@@ -46,6 +46,7 @@ class VinylControlXwax : public VinylControl {
     void enableConstantMode(double rate);
     bool uiUpdateTime(double time);
     void establishQuality(bool quality_sample);
+    double calcRateRatio() const;
 
     // Cache the position of the end of record
     unsigned int m_uiSafeZone;
@@ -116,8 +117,8 @@ class VinylControlXwax : public VinylControl {
     bool m_bTrackSelectMode;
 
     // Controls for manipulating the library.
-    ControlObjectThread* m_pControlTrackSelector;
-    ControlObjectThread* m_pControlTrackLoader;
+    ControlObjectSlave* m_pControlTrackSelector;
+    ControlObjectSlave* m_pControlTrackLoader;
 
     // The previous and current track select position. Used for track selection
     // using the control region.

@@ -7,11 +7,10 @@
 
 #include "controlobject.h"
 #include "controlpotmeter.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controllers/controllerengine.h"
+#include "controllers/controllerdebug.h"
 #include "test/mixxxtest.h"
-
-namespace {
 
 class ControllerEngineTest : public MixxxTest {
   protected:
@@ -20,10 +19,9 @@ class ControllerEngineTest : public MixxxTest {
         QThread::currentThread()->setObjectName("Main");
         PotmeterParameters potmeterParameters;
         potmeterParameters.setMinValue(-1.);
-        new ControlPotmeter(ConfigKey("[Test]", "potmeter"), potmeterParameters);
-        Controller* pController = NULL;
-        cEngine = new ControllerEngine(pController);
-        cEngine->setDebug(true);
+        new ControlPotmeter(ConfigKey("[Test]", "potmeter"),potmeterParameters);
+        cEngine = new ControllerEngine(nullptr);
+        ControllerDebug::setEnabled(true);
         cEngine->setPopups(false);
     }
 
@@ -31,6 +29,12 @@ class ControllerEngineTest : public MixxxTest {
         qDebug() << "TearDown";
         cEngine->gracefulShutdown();
         delete cEngine;
+    }
+
+    bool execute(const QString& functionName) {
+        QScriptValue function = cEngine->resolveFunction(functionName);
+        return cEngine->internalExecute(QScriptValue(), function,
+                                        QScriptValueList());
     }
 
     ControllerEngine *cEngine;
@@ -51,7 +55,7 @@ TEST_F(ControllerEngineTest, scriptSetValue) {
 
     ControlObject *co = new ControlObject(ConfigKey("[Channel1]", "co"));
     co->set(0.0);
-    cEngine->execute("setValue");
+    execute("setValue");
     EXPECT_DOUBLE_EQ(co->get(), 1.0);
 
     delete co;
@@ -66,7 +70,7 @@ TEST_F(ControllerEngineTest, scriptGetSetValue) {
 
     ScopedControl co(new ControlObject(ConfigKey("[Channel1]", "co")));
     co->set(0.0);
-    cEngine->execute("getSetValue");
+    execute("getSetValue");
     EXPECT_DOUBLE_EQ(co->get(), 1.0);
 }
 
@@ -94,11 +98,11 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlNamedFunction) {
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
-    EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
+    EXPECT_TRUE(execute("testConnectDisconnectControl"));
     // trigger() calls are processed via QueuedConnection. Use processEvents()
     // to cause Qt to deliver them.
     application()->processEvents();
-    EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
+    EXPECT_TRUE(execute("checkConnectDisconnectControl"));
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlClosure) {
@@ -123,11 +127,11 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlClosure) {
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
-    EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
+    EXPECT_TRUE(execute("testConnectDisconnectControl"));
     // trigger() calls are processed via QueuedConnection. Use processEvents()
     // to cause Qt to deliver them.
     application()->processEvents();
-    EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
+    EXPECT_TRUE(execute("checkConnectDisconnectControl"));
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnected) {
@@ -154,11 +158,11 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnected) {
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
-    EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
+    EXPECT_TRUE(execute("testConnectDisconnectControl"));
     // trigger() calls are processed via QueuedConnection. Use processEvents()
     // to cause Qt to deliver them.
     application()->processEvents();
-    EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
+    EXPECT_TRUE(execute("checkConnectDisconnectControl"));
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByName) {
@@ -184,8 +188,8 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByName)
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
-    EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
-    EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
+    EXPECT_TRUE(execute("testConnectDisconnectControl"));
+    EXPECT_TRUE(execute("checkConnectDisconnectControl"));
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByObject) {
@@ -212,11 +216,11 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByObjec
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
-    EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
+    EXPECT_TRUE(execute("testConnectDisconnectControl"));
     // trigger() calls are processed via QueuedConnection. Use processEvents()
     // to cause Qt to deliver them.
     application()->processEvents();
-    EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
+    EXPECT_TRUE(execute("checkConnectDisconnectControl"));
 }
 
 TEST_F(ControllerEngineTest, setInvalidControlObject) {
@@ -226,7 +230,7 @@ TEST_F(ControllerEngineTest, setInvalidControlObject) {
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
-    EXPECT_TRUE(cEngine->execute("setValue"));
+    EXPECT_TRUE(execute("setValue"));
 }
 
 TEST_F(ControllerEngineTest, getInvalidControlObject) {
@@ -236,7 +240,7 @@ TEST_F(ControllerEngineTest, getInvalidControlObject) {
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
-    EXPECT_TRUE(cEngine->execute("getValue"));
+    EXPECT_TRUE(execute("getValue"));
 }
 
 TEST_F(ControllerEngineTest, automaticReaction) {
@@ -251,12 +255,10 @@ TEST_F(ControllerEngineTest, automaticReaction) {
 
     ScopedControl co(new ControlObject(ConfigKey("[Channel1]", "co")));
     co->set(0.0);
-    EXPECT_TRUE(cEngine->execute("setUp"));
+    EXPECT_TRUE(execute("setUp"));
 
     // The actual test
     //  TODO: Have the JS call a function in this test class so the test framework
     //  can tell if it actually passed or not
     co->set(2.5);
-}
-
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="de-de" Codepage="1252"
+                 xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+  <!-- .................................................... -->
+  <!-- This wxl file has been auto generated from a po file -->
+  <!-- using https://github.com/sblaisot/wxl-po-tools       -->
+  <!-- Source File: po/de-DE.po                             -->
+  <!-- .................................................... -->
+
+  <!-- This contains the LangID and should be translated to reflect the correct LangID. -->
+  <!-- Supported language and codepage codes can be found here: https://msdn.microsoft.com/en-us/goglobal/bb964664.aspx -->
+  <String Id="Language">1031</String>
+
+
+  <!-- Programm informations -->
+  <String Id="ApplicationName">Mixxx</String>
+  <String Id="ManufacturerName">Mixxx</String>
+  <String Id="ManufacturerFullName">Das Mixxx-Entwicklungsteam</String>
+  <String Id="ProductDescription">Open-Source Digital DJ-Software</String>
+  <String Id="Comments">Installiert Mixxx</String>
+
+  <!-- Error messages -->
+  <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
+  <String Id="OS2Old">Dieses Produkt erfordert Windows XP oder höher.</String>
+  <String Id="NewerInstalled">Die gleiche oder eine neuere Version dieses Produkts ist bereits installiert.</String>
+  <String Id="x64VersionRequired">Sie müssen die 64-Bit-Version dieses Produkts auf 64-Bit-Windows installieren.</String>
+  <String Id="x86VersionRequired">Sie müssen die 32-Bit-Version dieses Produkts auf 32-Bit-Windows installieren.</String>
+  <String Id="x86VersionWarning">Sie sind dabei, die 32-Bit-Version auf einem 64-Bit-Betriebssystem zu installieren.&#13;&#10;Wir empfehlen mit der 64-Bit-Version für bessere Performance.&#13;&#10;Sie können das der 64-Bit-Installationspaket von http://mixxx.org/download/ herunterladen.</String>
+  <String Id="XPWarning">Sie installieren Mixxx auf einem veralteten Betriebssystem. Einige Funktionen arbeiten möglicherweise nicht korrekt oder überhaupt nicht. Wir empfehlen die Aktualisierung Ihres Betriebssystems.</String>
+  <String Id="bitWidthMismatch32">Sie sind dabei, die 32-Bit-Version zu installieren, aber eine 64-Bit-Version ist bereits installiert. Dies kann zu unerwünschtem Verhalten führen. Bitte deinstallieren Sie zuerst die vorhandene Mixxx Version oder laden Sie das 64-Bit-Installationspaket zum Aktualisieren (es sei denn, Sie wissen genau was Sie tun.)</String>
+  <String Id="bitWidthMismatch64">Sie sind dabei, die 64-Bit-Version zu installieren, aber eine 32-Bit-Version ist bereits installiert. Dies kann zu unerwünschtem Verhalten führen. Bitte deinstallieren Sie zuerst die vorhandene Mixxx Version oder laden Sie das 32-Bit-Installationspaket zum Aktualisieren (es sei denn, Sie wissen genau was Sie tun.)</String>
+  <String Id="OlderVersionFound">Eine ältere Version von Mixxx wurde erkannt. Da wir die Installer-Software geändert haben, können wir nicht problemlos aktualisieren. Bitte deinstallieren Sie ältere Version vor der Installation dieser neuen Version.</String>
+
+  <!-- Custom Warning Dialog -->
+  <String Id="WarningDlgTitle">{\WixUI_Font_Title}Warnung</String>
+
+  <!-- Features translations -->
+  <String Id="FeatureCompleteDescription">Das Komplettpaket.</String>
+  <String Id="FeatureMainProgramTitle">Kernanwendung</String>
+  <String Id="FeatureMainProgramDescription">Die Mixxx Kernanwendung einschließlich Controller-Voreinstellungen.</String>
+  <String Id="FeatureDesktopShortcutTitle">Desktop-Verknüpfung</String>
+  <String Id="FeatureDesktopShortcutDescription">Auf Ihrem Desktop eine Verknüpfung zu Mixxx hinzufügen</String>
+  <String Id="FeatureManualTitle">Benutzerhandbuch</String>
+  <String Id="FeatureManualDescription">Das Mixxx Benutzerhandbuch im PDF-Format, auch verfügbar auf http://mixxx.org/manual/</String>
+  <String Id="FeatureTranslationsTitle">Übersetzungen</String>
+  <String Id="FeatureTranslationsDescription">Ressource-Dateien um Mixxx außer in US-Englisch in alternativen Sprachen anzeigen lassen</String>
+</WixLocalization>

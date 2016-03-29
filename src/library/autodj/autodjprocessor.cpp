@@ -4,8 +4,8 @@
 #include "controlpushbutton.h"
 #include "controlobjectslave.h"
 #include "util/math.h"
-#include "playermanager.h"
-#include "basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "mixer/basetrackplayer.h"
 
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
@@ -27,10 +27,10 @@ DeckAttributes::DeckAttributes(int index,
           m_pPlayer(pPlayer) {
     connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             this, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(m_pPlayer, SIGNAL(loadTrackFailed(TrackPointer)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer)));
-    connect(m_pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-            this, SLOT(slotTrackUnloaded(TrackPointer)));
+    connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+            this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+    connect(m_pPlayer, SIGNAL(playerEmpty()),
+            this, SLOT(slotPlayerEmpty()));
     m_playPos.connectValueChanged(this, SLOT(slotPlayPosChanged(double)));
     m_play.connectValueChanged(this, SLOT(slotPlayChanged(double)));
 }
@@ -50,12 +50,13 @@ void DeckAttributes::slotTrackLoaded(TrackPointer pTrack) {
     emit(trackLoaded(this, pTrack));
 }
 
-void DeckAttributes::slotTrackLoadFailed(TrackPointer pTrack) {
-    emit(trackLoadFailed(this, pTrack));
+void DeckAttributes::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    //qDebug() << "DeckAttributes::slotLoadingTrack";
+    emit(loadingTrack(this, pNewTrack, pOldTrack));
 }
 
-void DeckAttributes::slotTrackUnloaded(TrackPointer pTrack) {
-    emit(trackUnloaded(this, pTrack));
+void DeckAttributes::slotPlayerEmpty() {
+    emit(playerEmpty(this));
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
@@ -63,7 +64,7 @@ TrackPointer DeckAttributes::getLoadedTrack() const {
 }
 
 AutoDJProcessor::AutoDJProcessor(QObject* pParent,
-                                 ConfigObject<ConfigValue>* pConfig,
+                                 UserSettingsPointer pConfig,
                                  PlayerManagerInterface* pPlayerManager,
                                  int iAutoDJPlaylistId,
                                  TrackCollection* pTrackCollection)
@@ -298,16 +299,15 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         connect(&rightDeck, SIGNAL(trackLoaded(DeckAttributes*, TrackPointer)),
                 this, SLOT(playerTrackLoaded(DeckAttributes*, TrackPointer)));
 
-        connect(&leftDeck, SIGNAL(trackUnloaded(DeckAttributes*, TrackPointer)),
-                this, SLOT(playerTrackUnloaded(DeckAttributes*, TrackPointer)));
-        connect(&rightDeck, SIGNAL(trackUnloaded(DeckAttributes*, TrackPointer)),
-                this, SLOT(playerTrackUnloaded(DeckAttributes*, TrackPointer)));
+        connect(&leftDeck, SIGNAL(loadingTrack(DeckAttributes*, TrackPointer, TrackPointer)),
+                this, SLOT(playerLoadingTrack(DeckAttributes*, TrackPointer, TrackPointer)));
+        connect(&rightDeck, SIGNAL(loadingTrack(DeckAttributes*, TrackPointer, TrackPointer)),
+                this, SLOT(playerLoadingTrack(DeckAttributes*, TrackPointer, TrackPointer)));
 
-        connect(&leftDeck, SIGNAL(trackLoadFailed(DeckAttributes*, TrackPointer)),
-                this, SLOT(playerTrackLoadFailed(DeckAttributes*, TrackPointer)));
-        connect(&rightDeck, SIGNAL(trackLoadFailed(DeckAttributes*, TrackPointer)),
-                this, SLOT(playerTrackLoadFailed(DeckAttributes*, TrackPointer)));
-
+        connect(&leftDeck, SIGNAL(playerEmpty(DeckAttributes*)),
+                this, SLOT(playerEmpty(DeckAttributes*)));
+        connect(&rightDeck, SIGNAL(playerEmpty(DeckAttributes*)),
+                this, SLOT(playerEmpty(DeckAttributes*)));
 
         if (!deck1Playing && !deck2Playing) {
             // Both decks are stopped. Load a track into deck 1 and start it
@@ -567,7 +567,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     int minAutoDJCrateTracks = m_pConfig->getValueString(
                 ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
-    // Incase we start off with < minimum tracks
+    // In case we start off with < minimum tracks
     if (randomQueueEnabled && (tracksToAdd > 0)) {
         emit(randomTrackRequested(tracksToAdd));
     }
@@ -766,11 +766,15 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     }
 }
 
-void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer pTrack) {
+void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
+        TrackPointer pNewTrack, TrackPointer pOldTrack) {
     if (sDebug) {
-        qDebug() << this << "playerTrackLoadFailed" << pDeck->group
-                 << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
+        qDebug() << this << "playerLoadingTrack" << pDeck->group
+                 << "new:"<< (pNewTrack.isNull() ? "(null)" : pNewTrack->getLocation())
+                 << "old:"<< (pOldTrack.isNull() ? "(null)" : pOldTrack->getLocation());
     }
+
+    // The Deck is loading an new track
 
     // There are four conditions under which we load a track.
     // 1) We are enabling AutoDJ and no decks are playing. Mode is
@@ -779,24 +783,32 @@ void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer 
     // 3) We are enabling AutoDJ and a single deck is playing. Mode is ADJ_IDLE.
     // 4) We have just completed fading from one deck to another. Mode is
     //    ADJ_IDLE.
-    // In all of these cases, it should be safe to skip the bad track in the
-    // queue and re-request a track load for the next track. The only case where
+
+    if (pNewTrack.isNull()) {
+        // If a track is ejected because of a manual eject command or a load failure
+        // this track seams to be undesired. Remove the bad track from the queue.
+        removeTrackFromTopOfQueue(pOldTrack);
+
+        // wait until the track is fully unloaded and the playerEmpty()
+        // slot is called before load an alternative track.
+    }
+}
+
+void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
+    if (sDebug) {
+        qDebug() << this << "playerEmpty()" << pDeck->group;
+    }
+
+    // The Deck has ejected a track and no new one is loaded 
+    // This happens if loading fails or the user manually ejected the track
+    // and would normally stopp the AutoDJ flow, which is not desired.
+    // It should be safe to load a load a new track from the queue. The only case where
     // we request a load-and-play is case #1 currently so we can easily test for
     // this based on the mode.
-
-    // Remove the bad track from the queue.
-    removeTrackFromTopOfQueue(pTrack);
 
     // Load the next track. If we are the first AutoDJ track
     // (ADJ_ENABLE_P1LOADED state) then play the track.
     loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
-}
-
-void AutoDJProcessor::playerTrackUnloaded(DeckAttributes* pDeck, TrackPointer pTrack) {
-    if (sDebug) {
-        qDebug() << this << "playerTrackUnloaded" << pDeck->group
-                 << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
-    }
 }
 
 void AutoDJProcessor::setTransitionTime(int time) {

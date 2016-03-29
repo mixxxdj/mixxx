@@ -1,6 +1,6 @@
 #include "sources/soundsource.h"
 
-#include "metadata/trackmetadatataglib.h"
+#include "track/trackmetadatataglib.h"
 
 namespace Mixxx {
 
@@ -40,6 +40,11 @@ Result SoundSource::parseTrackMetadataAndCoverArt(
         TrackMetadata* pTrackMetadata,
         QImage* pCoverArt) const {
     return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt, getLocalFileName());
+}
+
+Result SoundSource::writeTrackMetadata(
+        const TrackMetadata& trackMetadata) const {
+    return writeTrackMetadataIntoFile(trackMetadata, getLocalFileName());
 }
 
 } //namespace Mixxx

@@ -2,19 +2,19 @@
 
 #include "vinylcontrol/vinylcontrolprocessor.h"
 
+#include "controlpushbutton.h"
+#include "util/defs.h"
+#include "util/event.h"
+#include "util/sample.h"
+#include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolxwax.h"
-#include "util/defs.h"
-#include "controlpushbutton.h"
-#include "util/timer.h"
-#include "util/event.h"
-#include "sampleutil.h"
 
 #define SIGNAL_QUALITY_FIFO_SIZE 256
 #define SAMPLE_PIPE_FIFO_SIZE 65536
 
-VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<ConfigValue> *pConfig)
+VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPointer pConfig)
         : QThread(pParent),
           m_pConfig(pConfig),
           m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),

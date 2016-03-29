@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
 
-#include "metadata/trackmetadatataglib.h"
-#include "util/math.h"
+#include "track/trackmetadatataglib.h"
 
 #include <QtDebug>
 
 namespace {
+
+const double kBpmValueMax = 300.0;
 
 class MetadataTest : public testing::Test {
   protected:
@@ -23,32 +24,24 @@ class MetadataTest : public testing::Test {
         //qDebug() << "parseBpm" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
-        const double actualValue = Mixxx::TrackMetadata::parseBpm(inputValue, &actualResult);
+        const double actualValue = Mixxx::Bpm::valueFromString(inputValue, &actualResult);
 
         EXPECT_EQ(expectedResult, actualResult);
         EXPECT_DOUBLE_EQ(expectedValue, actualValue);
 
 //        if (actualResult) {
-//            qDebug() << "BPM:" << inputValue << "->" << Mixxx::TrackMetadata::formatBpm(actualValue);
+//            qDebug() << "BPM:" << inputValue << "->" << Mixxx::Bpm::valueToString(actualValue);
 //        }
 
         return actualResult;
     }
 
-    double parseReplayGain(QString inputValue, bool expectedResult, float expectedValue) {
-        //qDebug() << "parseReplayGain" << inputValue << expectedResult << expectedValue;
-
-        bool actualResult;
-        const double actualValue = Mixxx::TrackMetadata::parseReplayGain(inputValue, &actualResult);
-
-        EXPECT_EQ(expectedResult, actualResult);
-        EXPECT_FLOAT_EQ(expectedValue, actualValue);
-
-//        if (actualResult) {
-//            qDebug() << "ReplayGain:" << inputValue << "->" << Mixxx::TrackMetadata::formatReplayGain(actualValue);
-//        }
-
-        return actualResult;
+    void normalizeBpm(double normalizedValue) {
+        Mixxx::Bpm normalizedBpm(normalizedValue);
+        normalizedBpm.normalizeValue(); // re-normalize
+        // Expected: Re-normalization does not change the value
+        // that should already be normalized.
+        EXPECT_EQ(normalizedBpm.getValue(), normalizedValue);
     }
 };
 
@@ -57,7 +50,7 @@ TEST_F(MetadataTest, ParseBpmPrecision) {
 }
 
 TEST_F(MetadataTest, ParseBpmValidRange) {
-    for (int bpm100 = int(Mixxx::TrackMetadata::kBpmMin) * 100; int(Mixxx::TrackMetadata::kBpmMax) * 100 >= bpm100; ++bpm100) {
+    for (int bpm100 = int(Mixxx::Bpm::kValueMin) * 100; kBpmValueMax * 100 >= bpm100; ++bpm100) {
         const double expectedValue = bpm100 / 100.0;
         const QString inputValues[] = {
                 QString("%1").arg(expectedValue),
@@ -69,46 +62,22 @@ TEST_F(MetadataTest, ParseBpmValidRange) {
     }
 }
 
-TEST_F(MetadataTest, ParseBpmDecimalScaling) {
-    parseBpm("345678", true, 34.5678);
-    parseBpm("2345678", true, 234.5678);
-}
-
 TEST_F(MetadataTest, ParseBpmInvalid) {
-    parseBpm("", false, Mixxx::TrackMetadata::kBpmUndefined);
-    parseBpm("abcde", false, Mixxx::TrackMetadata::kBpmUndefined);
-    parseBpm("0 dBA", false, Mixxx::TrackMetadata::kBpmUndefined);
+    parseBpm("", false, Mixxx::Bpm::kValueUndefined);
+    parseBpm("abcde", false, Mixxx::Bpm::kValueUndefined);
+    parseBpm("0 dBA", false, Mixxx::Bpm::kValueUndefined);
 }
 
-TEST_F(MetadataTest, ParseReplayGainDbValidRange) {
-    for (int replayGainDb = -100; 100 >= replayGainDb; ++replayGainDb) {
-        const QString inputValues[] = {
-                QString("%1 ").arg(replayGainDb),
-                QString("  %1dB ").arg(replayGainDb),
-                QString("  %1 DB ").arg(replayGainDb),
-                QString("  %1db ").arg(replayGainDb)
-        };
-        float expectedValue;
-        if (0 != replayGainDb) {
-            // regular case
-            expectedValue = db2ratio(double(replayGainDb));
-        } else {
-            // special case: 0 dB -> undefined
-            expectedValue = Mixxx::TrackMetadata::kReplayGainUndefined;
-        }
-        for (size_t i = 0; i < sizeof(inputValues) / sizeof(inputValues[0]); ++i) {
-            parseReplayGain(inputValues[i], true, expectedValue);
-            if (0 <= replayGainDb) {
-                parseReplayGain(QString("  + ") + inputValues[i], true, expectedValue);
-            }
-        }
-    }
-}
-
-TEST_F(MetadataTest, ParseReplayGainDbInvalid) {
-    parseReplayGain("", false, Mixxx::TrackMetadata::kReplayGainUndefined);
-    parseReplayGain("abcde", false, Mixxx::TrackMetadata::kReplayGainUndefined);
-    parseReplayGain("0 dBA", false, Mixxx::TrackMetadata::kReplayGainUndefined);
+TEST_F(MetadataTest, NormalizeBpm) {
+    normalizeBpm(Mixxx::Bpm::kValueUndefined);
+    normalizeBpm(Mixxx::Bpm::kValueMin);
+    normalizeBpm(Mixxx::Bpm::kValueMin - 1.0);
+    normalizeBpm(Mixxx::Bpm::kValueMin + 1.0);
+    normalizeBpm(-Mixxx::Bpm::kValueMin);
+    normalizeBpm(kBpmValueMax);
+    normalizeBpm(kBpmValueMax - 1.0);
+    normalizeBpm(kBpmValueMax + 1.0);
+    normalizeBpm(-kBpmValueMax);
 }
 
 TEST_F(MetadataTest, ID3v2Year) {

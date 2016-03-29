@@ -1,866 +1,940 @@
-/****************************************************************/
-/*      Stanton SCS.3m MIDI controller script v1.05             */
-/*          Copyright (C) 2010-11, Sean M. Pappalardo           */
-/*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.9.x                                 */
-/****************************************************************/
+"use strict";
+////////////////////////////////////////////////////////////////////////
+// JSHint configuration                                               //
+////////////////////////////////////////////////////////////////////////
+/* global engine                                                      */
+/* global print                                                       */
+/* global midi                                                        */
+/* global SCS3M:true                                                  */
+/* jshint -W097                                                       */
+/* jshint -W084                                                       */
+/* jshint laxbreak: true                                              */
+////////////////////////////////////////////////////////////////////////
 
-function StantonSCS3m() {}
+// manually test messages
+// amidi -p hw:1 -S F00001601501F7 # flat mode
+// amidi -p hw:1 -S 900302 # 90: note on, 03: id of a touch button, 02: red LED
 
-//      See http://mixxx.org/wiki/doku.php/stanton_scs.3m_mixxx_user_guide  for details
+SCS3M = {
+    // The device remembers the selected EQ/FX mode per deck
+    // and switches to that mode on deck-switch. Set this to
+    // false if you prefer the mode to stay the same on
+    // deck-switch.
+    eqModePerDeck: true,
+};
 
-// ----------   Other global variables    ----------
-StantonSCS3m.debug = false;  // Enable/disable debugging messages to the console
-StantonSCS3m.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
-StantonSCS3m.channel = 0;   // MIDI channel the device is on
-StantonSCS3m.sysex = [0xF0, 0x00, 0x01, 0x60];    // Preamble for all SysEx messages for this device
-StantonSCS3m.modifier = { };    // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
-StantonSCS3m.mode_store = { "[Channel1]":"fx", "[Channel2]":"fx", "Master":"alt" };   // Set to opposite default on both
+SCS3M.init = function(id) {
+    this.device = this.Device();
+    this.agent = this.Agent(this.device);
+    this.agent.start();
+};
 
-// Signals to (dis)connect by mode: Group, Key, Function name
-StantonSCS3m.modeSignals = {"fx":[ ["[Flanger]", "lfoDepth", "StantonSCS3m.FXDepthLEDs"],
-                                   ["[Flanger]", "lfoDelay", "StantonSCS3m.FXDelayLEDs"],
-                                   ["[Flanger]", "lfoPeriod", "StantonSCS3m.FXPeriodLEDs"] ],
-                            "eq":[ ["CurrentChannel", "filterLow", "StantonSCS3m.EQLowLEDs"],
-                                   ["CurrentChannel", "filterMid", "StantonSCS3m.EQMidLEDs"],
-                                   ["CurrentChannel", "filterHigh", "StantonSCS3m.EQHighLEDs"] ],
-                            "none":[]  // To avoid an error on forced mode changes
-                            };
-StantonSCS3m.masterSignals = {  "main":[ ["CurrentChannel", "rate", "StantonSCS3m.pitchLEDs"],
-                                         ["CurrentChannel", "volume", "StantonSCS3m.volumeLEDs"],
-                                         ["CurrentChannel", "VuMeter", "StantonSCS3m.Vu"] ],
-                                "alt":[  ["[Master]","VuMeterL","StantonSCS3m.VuL"],
-                                         ["[Master]","VuMeterR","StantonSCS3m.VuR"],
-                                         ["[Master]","headMix","StantonSCS3m.pitchLEDsL"],
-                                         ["[Master]","headVolume","StantonSCS3m.masterVolumeLEDsL"],
-                                         ["[Master]","balance","StantonSCS3m.pitchLEDsR"],
-                                         ["[Master]","volume","StantonSCS3m.masterVolumeLEDsR"] ]
-                            };
+SCS3M.shutdown = function() {
+    SCS3M.agent.stop();
+};
 
-StantonSCS3m.masterSliders = {  "slider":[ 0x00, 0x01, 0x02, 0x04, 0x06, 0x03, 0x05, 0x07, 0x08, 0x09, 0x0A ],
-                                "main":  [ 0x71, 0x71, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70 ],
-                                "alt":   [ 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x70, 0x71, 0x71, 0x70 ]
-};  // 0x70 = absolute, 0x71 = relative
+SCS3M.receive = function(channel, control, value, status) {
+    SCS3M.agent.receive(status, control, value);
+};
 
-// ----------   Functions   ----------
+/* Midi map of the SCS.3m device
+ *
+ * Thanks to Sean M. Pappalardo for the original SCS3 mappings.
+ */
+SCS3M.Device = function() {
+    var NoteOn = 0x90;
+    var NoteOff = 0x80;
+    var CC = 0xB0;
+    var CM = 0xBF; /* this is used for slider mode changes (absolute/relative, sending a control change on channel 16!?) */
 
-StantonSCS3m.init = function (id) {
-    
-    StantonSCS3m.id = id;   // Store the ID of this device for later use
-    
-    // Set the device to flat mode
-    midi.sendSysexMsg(StantonSCS3m.sysex.concat([0x15, 0x01, 0xF7]),7);
-    
-    var CC = 0xB0 + StantonSCS3m.channel;
-    var No = 0x90 + StantonSCS3m.channel;
-//     midi.sendShortMsg(CC,0x7B,0x00);  // Extinguish all LEDs
+    var black = 0x00;
+    var blue = 0x01;
+    var red = 0x02;
+    var purple = blue | red;
 
-    // Connect cross-fader LEDs & light them
-    StantonSCS3m.doConnectSignal("[Master]","crossfader","StantonSCS3m.crossfaderLEDs");
-
-    // Connect master signals
-    // Hack: Have to register a down press first to get LEDs to light correctly
-    StantonSCS3m.Master(StantonSCS3m.channel, 0x0E, 0, 0x90+StantonSCS3m.channel);
-    StantonSCS3m.Master(StantonSCS3m.channel, 0x0E, 0, 0x80+StantonSCS3m.channel);
-
-    // Force change to EQ mode on both sides
-    // Hack: Have to force FX mode first to get LEDs to light correctly
-    StantonSCS3m.FXL(StantonSCS3m.channel, 0x0C, 0, 0x80+StantonSCS3m.channel);
-    StantonSCS3m.FXR(StantonSCS3m.channel, 0x0D, 0, 0x80+StantonSCS3m.channel);
-    // ----
-    StantonSCS3m.EQL(StantonSCS3m.channel, 0x0C, 0, 0x80+StantonSCS3m.channel);
-    StantonSCS3m.EQR(StantonSCS3m.channel, 0x0D, 0, 0x80+StantonSCS3m.channel);
-
-    print ("Stanton SCS.3m: \""+StantonSCS3m.id+"\" on MIDI channel "+(StantonSCS3m.channel+1)+" initialized.");
-}
-
-StantonSCS3m.shutdown = function () {
-    var CC = 0xB0 + StantonSCS3m.channel;
-    var No = 0x90 + StantonSCS3m.channel;
-
-    midi.sendShortMsg(CC,0x7B,0x00);  // Extinguish all LEDs
-    midi.sendShortMsg(No,0x69,0x01);  // Light the Stanton LED so you know it's still on
-    
-    print ("Stanton SCS.3m: \""+StantonSCS3m.id+"\" on MIDI channel "+(StantonSCS3m.channel+1)+" shut down.");
-}
-
-// (Dis)connects the appropriate Mixxx control signals to/from functions based on what mode the controller section is in
-StantonSCS3m.connectModeSignals = function (midiChannel, side, disconnect) {
-    var deck = StantonSCS3m.SideToDeck(side);
-    var signalList = StantonSCS3m.modeSignals[StantonSCS3m.mode_store["[Channel"+deck+"]"]];
-    for (i=0; i<signalList.length; i++) {
-        var group = signalList[i][0];
-        var calledFunction = signalList[i][2]+side;
-        if (group=="CurrentChannel") group = "[Channel"+deck+"]";
-        StantonSCS3m.doConnectSignal(group,signalList[i][1],calledFunction,disconnect);
+    function Logo() {
+        var id = 0x69;
+        return {
+            on: [NoteOn, id, 0x01],
+            off: [NoteOn, id, 0x00]
+        };
     }
-    // If disconnecting signals, darken the LEDs on the controls
-    if (disconnect) {
-        var CC = 0xB0 + midiChannel;
-        switch (side) {
-            case "L":
-                midi.sendShortMsg(CC,0x02,0x00);  // S3 LEDs off
-                midi.sendShortMsg(CC,0x04,0x00);  // S4 LEDs off
-                midi.sendShortMsg(CC,0x06,0x00);  // S5 LEDs off
-                break;
-            case "R":
-                midi.sendShortMsg(CC,0x03,0x00);  // S6 LEDs off
-                midi.sendShortMsg(CC,0x05,0x00);  // S7 LEDs off
-                midi.sendShortMsg(CC,0x07,0x00);  // S8 LEDs off
-                break;
+
+    function Meter(id, lights) {
+        function plain(value) {
+            if (value <= 0.0) return 1;
+            if (value >= 1.0) return lights;
+            return 1 + Math.round(value * (lights - 1));
+        }
+
+        function clamped(value) {
+            if (value <= 0.0) return 1;
+            if (value >= 1.0) return lights;
+            return Math.round(value * (lights - 2) + 1.5);
+        }
+
+        function zeroclamped(value) {
+            if (value <= 0.0) return 0;
+            if (value >= 1.0) return lights;
+            return Math.round(value * (lights - 1) + 0.5);
+        }
+        return {
+            needle: function(value) {
+                return [CC, id, plain(value)];
+            },
+            centerbar: function(value) {
+                return [CC, id, 0x14 + clamped(value)];
+            },
+            bar: function(value) {
+                return [CC, id, 0x28 + zeroclamped(value)];
+            },
+            expand: function(value) {
+                return [CC, id, 0x3C + zeroclamped(value)];
+            },
+        };
+    }
+
+    function Slider(id, lights, fields) {
+        var touchfields = {};
+        for (var fieldn in fields) {
+            touchfields[fieldn] = {
+                touch: [NoteOn, fields[fieldn]],
+                release: [NoteOff, fields[fieldn]],
+            };
+        }
+        return {
+            meter: Meter(id, lights),
+            slide: [CC, id],
+            mode: {
+                absolute: [[CM, id, 0x70], [CM, id, 0x7F]],
+                relative: [[CM, id, 0x71], [CM, id, 0x7F]],
+            },
+            field: touchfields,
+        };
+    }
+
+    function Light(id) {
+        return {
+            black: [NoteOn, id, black],
+            blue: [NoteOn, id, blue],
+            red: [NoteOn, id, red],
+            purple: [NoteOn, id, purple],
+        };
+    }
+
+    function Touch(id) {
+        return {
+            light: Light(id),
+            touch: [NoteOn, id],
+            release: [NoteOff, id]
+        };
+    }
+
+    function Side(side) {
+        function either(left, right) {
+            return ('left' === side) ? left : right;
+        }
+
+        function Deck() {
+            // The left deck button has a higher address than the right button,
+            // for all the other controls the left one has a lower address.
+            // I wonder why.
+            var id = either(0x10, 0x0F);
+            return {
+                light: function(bits) {
+                    return [NoteOn, id, (bits[0] ? 1 : 0) | (bits[1] ? 2 : 0)];
+                },
+                touch: [NoteOn, id],
+                release: [NoteOff, id]
+            };
+        }
+
+        function Pitch() {
+            return Slider(either(0x00, 0x01), 7, {
+                left:   either(0x51, 0x54),
+                middle: either(0x52, 0x55),
+                right:  either(0x53, 0x56),
+            });
+        }
+
+        function Eq() {
+            return {
+                low: Slider(either(0x02, 0x03), 7),
+                mid: Slider(either(0x04, 0x05), 7),
+                high: Slider(either(0x06, 0x07), 7),
+            };
+        }
+
+        function Modes() {
+            return {
+                fx: Touch(either(0x0A, 0x0B)),
+                eq: Touch(either(0x0C, 0x0D))
+            };
+        }
+
+        function Gain() {
+            return Slider(either(0x08, 0x09), 7);
+        }
+
+        function Touches() {
+            return [
+                Touch(either(0x00, 0x01)),
+                Touch(either(0x02, 0x03)),
+                Touch(either(0x04, 0x05)),
+                Touch(either(0x06, 0x07)),
+            ];
+        }
+
+        function Phones() {
+            return Touch(either(0x08, 0x09));
+        }
+
+        return {
+            deck: Deck(),
+            pitch: Pitch(),
+            eq: Eq(),
+            modes: Modes(),
+            gain: Gain(),
+            touches: Touches(),
+            phones: Phones(),
+            meter: Meter(either(0x0C, 0x0D), 7)
+        };
+    }
+
+    return {
+        factory: [0xF0, 0x00, 0x01, 0x60, 0x40, 0xF7],
+        flat: [0xF0, 0x00, 0x01, 0x60, 0x15, 0x01, 0xF7],
+        lightsoff: [CC, 0x7B, 0x00],
+        logo: Logo(),
+        left: Side('left'),
+        right: Side('right'),
+        master: Touch(0x0E),
+        crossfader: Slider(0x0A, 11)
+    };
+};
+
+// debugging helper
+var printmess = function(message, text) {
+    var i;
+    var s = '';
+
+    for (i in message) {
+        s = s + ('0' + message[i].toString(16)).slice(-2);
+    }
+    print("Midi " + s + (text ? ' ' + text : ''));
+};
+
+SCS3M.Agent = function(device) {
+    // Cache last sent bytes to avoid sending duplicates.
+    // The second byte of each message (controller id) is used as key to hold
+    // the last sent message for each controller.
+    var last = {};
+
+    // Queue of messages to send delayed after modeset()
+    var loading = false;
+    var throttling = false;
+    var pipe = [];
+
+    // Handlers for received messages
+    var receivers = {};
+
+    // Connected engine controls
+    var watched = {};
+
+    function clear() {
+        receivers = {};
+        pipe = [];
+
+        // I'd like to disconnect everything on clear, but that doesn't work when using closure callbacks, I guess I'd have to pass the callback function as string name
+        // I'd have to invent function names for all handlers
+        // Instead I'm not gonna bother and just let the callbacks do nothing
+        for (var ctrl in watched) {
+            if (watched.hasOwnProperty(ctrl)) {
+                watched[ctrl] = [];
+            }
         }
     }
-}
 
-// (Dis)connects the appropriate Mixxx Master control signals to/from functions
-StantonSCS3m.connectMasterSignals = function (midiChannel, disconnect) {
-    
-    var signalList = StantonSCS3m.masterSignals[StantonSCS3m.mode_store["Master"]];
-    for (i=0; i<signalList.length; i++) {
-        var group = signalList[i][0];
-        var calledFunction = signalList[i][2];
-        if (group=="CurrentChannel") {
-            var sides = ["L","R"];
-            var side, deck;
-            for (j=0; j<2; j++) {
-                side=sides[j];
-                switch (side) {
-                    case "L":
-                        deck=1; break;
-                    case "R":
-                        deck=2; break;
+    // This function receives Midi messages from the SCS.3m
+    // See the XML mapping for all the messages caught
+    function receive(type, control, value) {
+        var address = (type << 8) + control;
+        var handler = receivers[address];
+        if (handler) {
+            handler(value);
+        }
+    }
+
+    // Register a handler to listen for messages
+    // control: an array with at least two message bytes (type and control id)
+    // handler: callback function that will be called each time a value is received
+    function expect(control, handler) {
+        var address = (control[0] << 8) + control[1];
+        receivers[address] = handler;
+    }
+
+    function watchRegister(channel, control, handler) {
+        // Indirection through a registry that keeps all watched controls
+        var ctrl = channel + control;
+
+        if (!watched[ctrl]) {
+            watched[ctrl] = [];
+            engine.connectControl(channel, control, function(value, group, control) {
+                var handlers = watched[ctrl];
+                for (var i in handlers) {
+                    handlers[i]();
                 }
-                group = "[Channel"+deck+"]";
-                calledFunction = signalList[i][2]+side;
-                StantonSCS3m.doConnectSignal(group,signalList[i][1],calledFunction,disconnect);
-            }
+            });
         }
-        else StantonSCS3m.doConnectSignal(group,signalList[i][1],calledFunction,disconnect);
-    }
-    // If disconnecting signals, darken the LEDs on the controls
-    if (disconnect) {
-        var CC = 0xB0 + midiChannel;
-        midi.sendShortMsg(CC,0x00,0x00);  // S1 LEDs off
-        midi.sendShortMsg(CC,0x08,0x00);  // S9 LEDs off
-        midi.sendShortMsg(CC,0x0C,0x00);  // V1 LEDs off
-        midi.sendShortMsg(CC,0x01,0x00);  // S2 LEDs off
-        midi.sendShortMsg(CC,0x09,0x00);  // S10 LEDs off
-        midi.sendShortMsg(CC,0x0D,0x00);  // V2 LEDs off
-    }
-}
 
-StantonSCS3m.doConnectSignal = function (group, key, calledFunction, disconnect) {
-    engine.connectControl(group,key,calledFunction,disconnect);
-
-    // If connecting a signal, cause it to fire (by setting it to the same value) to update the LEDs
-//     if (!disconnect) engine.trigger(group,key);  // Commented because there's no sense in wasting queue length
-    // Alternate method:
-    if (!disconnect) {
-        var command = calledFunction+"("+engine.getValue(group,key)+")";
-//         if (StantonSCS3m.debug) print("Stanton SCS.3m: command="+command);
-        eval(command);
+        watched[ctrl].push(handler);
     }
-    if (StantonSCS3m.debug) {
-        if (disconnect) print("Stanton SCS.3m: "+group+","+key+" disconnected from "+calledFunction);
-        else print("Stanton SCS.3m: "+group+","+key+" connected to "+calledFunction);
-    }
-}
 
-StantonSCS3m.SideToDeck = function (side) { // For future n-deck support
-    var deck;
-    switch (side) {
-        case "L":
-            deck=1; break;
-        case "R":
-            deck=2; break;
-    }
-    return deck;
-}
+    // Register a handler for changes in engine values
+    // This is an abstraction over engine.getParameter()
+    function watch(channel, control, handler) {
+        watchRegister(channel, control, function() {
+            handler(engine.getParameter(channel, control));
+        });
 
-StantonSCS3m.sliderMode = function (control,value) {
-    // FIXME: This is a hack, present due to the fact that the SCS.3m
-    // wasn't designed to have its slider modes changed quickly on-the-fly
-    // It needs about 10ms between slider change commands
-    midi.sendShortMsg(0xBF,control,value);
-    
-    // 10ms pause - TODO: This needs a timer in 1.8
-    var date = new Date();
-    var curDate = null;
-    
-    do { curDate = new Date(); }
-    while(curDate-date < 10);
-}
-
-// ------------------- Surface Controls -----------------------
-
-StantonSCS3m.Deck = function (channel, control, value, status) {
-    if (StantonSCS3m.modifier["Master"]) return;    // Ignore if MASTER is held down
-    var decks = { 0x10:1, 0x0F:2 };
-    var deck = decks[control];
-    
-    var sides = { 0x10:"L", 0x0F:"R" };
-    var side = sides[control];
-    
-    var volsliders = { 0x10:0x08, 0x0F:0x09 };
-    var volslider = volsliders[control];
-    
-    var byte1 = 0x90 + channel;
-    if ((status & 0xF0) == 0x90) {   // If button down
-        midi.sendShortMsg(byte1,control,3); // Light up C/D too
-        StantonSCS3m.modifier["Deck"+side] = true;
-        // Use the sliders for other functions, so disconnect previous ones
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]", "volume", "StantonSCS3m.volumeLEDs"+side, true);
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]", "volume", "StantonSCS3m.volumeLEDs"+side, true);
-        StantonSCS3m.doConnectSignal("[Master]","crossfader","StantonSCS3m.crossfaderLEDs",true);
-        // Connect new ones
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]", "pregain", "StantonSCS3m.gainLEDs"+side);
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]", "playposition", "StantonSCS3m.needleDropLEDs");
-        // Change the slider mode - 0x70 = absolute, 0x71 = relative
-        StantonSCS3m.sliderMode(volslider,0x71);  // Relative gain control
-        StantonSCS3m.sliderMode(0,0x7F);    // End of sequence
-        // Use the mode buttons for other functions
-        //  so connect applicable signals
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]","beatsync","StantonSCS3m.EQ"+side+"ButtonLED");
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]","flanger","StantonSCS3m.FX"+side+"ButtonLED");
-    }
-    else {
-        // Disconnect special signals
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]","beatsync","StantonSCS3m.EQ"+side+"ButtonLED",true);
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]","flanger","StantonSCS3m.FX"+side+"ButtonLED",true);
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]", "pregain", "StantonSCS3m.gainLEDs"+side, true);
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]", "playposition", "StantonSCS3m.needleDropLEDs", true);
-        // Reconnect original ones & trigger
-        StantonSCS3m.doConnectSignal("[Channel"+deck+"]", "volume", "StantonSCS3m.volumeLEDs"+side);
-        StantonSCS3m.doConnectSignal("[Master]","crossfader","StantonSCS3m.crossfaderLEDs");
-        // Change the slider mode - 0x70 = absolute, 0x71 = relative
-        StantonSCS3m.sliderMode(volslider,0x70);  // Absolute volume control
-        StantonSCS3m.sliderMode(0,0x7F);    // End of sequence
-        // Restore the button LEDs
-        var fx = { "L":0x0A, "R":0x0B };
-        var eq = { "L":0x0C, "R":0x0D };
-        var currentMode = StantonSCS3m.mode_store["[Channel"+deck+"]"];
-        StantonSCS3m.modifier["Deck"+side] = false;
-        switch (currentMode) {
-            case "fx": StantonSCS3m.modeButton(channel, fx[side], 0x80+channel, "fx", side); break;
-            case "eq": StantonSCS3m.modeButton(channel, eq[side], 0x80+channel, "eq", side); break;
+        if (loading) {
+            // ugly UGLY workaround
+            // The device does not light meters again if they haven't changed from last value before resetting flat mode
+            // so we send each control some bullshit values which causes awful flicker during startup
+            // The trigger will then set things straight
+            handler(100);
+            handler(-100);
         }
-        midi.sendShortMsg(byte1,control,1); // Light just A/B
-    }
-}
 
-StantonSCS3m.Master = function (channel, control, value, status) {
-    var byte1 = 0x90 + channel;
-    if ((status & 0xF0) == 0x90) {   // If button down
-        midi.sendShortMsg(byte1,control,2); // Make it red
-        StantonSCS3m.modifier["Master"] = true;
-        StantonSCS3m.connectMasterSignals(channel,true);    // Disconnect previous signals
-        StantonSCS3m.mode_store["Master"]="alt";
-        StantonSCS3m.connectMasterSignals(channel); // Connect new ones
+        engine.trigger(channel, control);
     }
-    else {
-        StantonSCS3m.connectMasterSignals(channel,true);    // Disconnect previous signals
-        StantonSCS3m.mode_store["Master"]="main";
-        StantonSCS3m.connectMasterSignals(channel); // Connect new ones
-        StantonSCS3m.modifier["Master"] = false;
-        midi.sendShortMsg(byte1,control,1); // Make it blue
-    }
-    // Set the sliders to abs/rel mode as needed
-    var sliderList = StantonSCS3m.masterSliders["slider"];
-    var sliderValues = StantonSCS3m.masterSliders[StantonSCS3m.mode_store["Master"]];
-    for (i=0; i<sliderList.length; i++) {
-//         print("Stanton SCS.3m: slider number="+sliderList[i]+", value="+sliderValues[i]);
-        StantonSCS3m.sliderMode(sliderList[i],sliderValues[i]);
-    }
-    StantonSCS3m.sliderMode(0,0x7F);    // End of sequence
-}
 
-StantonSCS3m.PitchL = function (channel, control, value, status) {
-    var deck = StantonSCS3m.SideToDeck("L");
-    var currentMode = StantonSCS3m.mode_store["[Channel"+deck+"]"];
-    // If the current mode button is held down, reset the control to center
-    if (StantonSCS3m.modifier[currentMode+"L"]) {
-        switch (StantonSCS3m.mode_store["Master"]) {
-            case "main": engine.setValue("[Channel"+deck+"]","rate",0); break;
-            case "alt": engine.setValue("[Master]","headMix",0); break;
+    // Register a handler for multiple engine values. It will be called
+    // everytime one of the values changes.
+    // controls: list of channel/control pairs to watch
+    // handler: will receive list of control values as parameter in same order
+    function watchmulti(controls, handler) {
+        var values = [];
+        var watchControl = function(controlpos, controlgroup) {
+            var channel = controlgroup[0];
+            var control = controlgroup[1];
+            values[controlpos] = engine.getParameter(channel, control);
+            watchRegister(channel, control, function() {
+                values[controlpos] = engine.getParameter(channel, control);
+                handler(values);
+            });
+        };
+
+        for (var i in controls) {
+            watchControl(i, controls[i]);
         }
+        handler(values);
     }
-    else switch (StantonSCS3m.mode_store["Master"]) {
-        case "main": StantonSCS3m.PitchRel(1,value,"L"); break;
-        case "alt": engine.setValue("[Master]","headMix",(value-64)/64); break;
-    }
-}
 
-StantonSCS3m.PitchR = function (channel, control, value, status) {
-    var deck = StantonSCS3m.SideToDeck("R");
-    var currentMode = StantonSCS3m.mode_store["[Channel"+deck+"]"];
-    // If the current mode button is held down, reset the control to center
-    if (StantonSCS3m.modifier[currentMode+"R"]) {
-        switch (StantonSCS3m.mode_store["Master"]) {
-            case "main": engine.setValue("[Channel"+deck+"]","rate",0); break;
-            case "alt": engine.setValue("[Master]","balance",0); break;
+
+    // Send MIDI message to device
+    // Param message: list of three MIDI bytes
+    // Param force: send value regardless of last recorded state
+    // Param extra: do not record message as last state
+    // Returns whether the massage was sent
+    // False is returned if the mesage was sent before.
+    function send(message, force, extra) {
+        if (!message){
+            print("SCS3 warning: send function received invalid message");
+            return; // :-(
         }
-    }
-    else switch (StantonSCS3m.mode_store["Master"]) {
-        case "main": StantonSCS3m.PitchRel(2,value,"R"); break;
-        case "alt": engine.setValue("[Master]","balance",(value-64)/64); break;
-    }
-}
 
-StantonSCS3m.PitchRel = function (deck, value, side) {
-    var currentValue = engine.getValue("[Channel"+deck+"]","rate");
-    var newValue;
-    if (StantonSCS3m.modifier["Deck"+side])
-        newValue = currentValue+(value-64)/1024;    // Fine pitch adjust
-    else newValue = currentValue+(value-64)/256;
-    if (newValue<-1) newValue=-1.0;
-    if (newValue>1) newValue=1.0;
-    engine.setValue("[Channel"+deck+"]","rate",newValue);
-}
+        var address = (message[0] << 8) + message[1];
 
-StantonSCS3m.PitchLbL = function (channel, control, value, status) {
-    StantonSCS3m.PitchBendButton(status,"L",-1);
-}
-
-StantonSCS3m.PitchLbR = function (channel, control, value, status) {
-    StantonSCS3m.PitchBendButton(status,"L",1);
-}
-
-StantonSCS3m.PitchRbL = function (channel, control, value, status) {
-    StantonSCS3m.PitchBendButton(status,"R",-1);
-}
-
-StantonSCS3m.PitchRbR = function (channel, control, value, status) {
-    StantonSCS3m.PitchBendButton(status,"R",1);
-}
-
-StantonSCS3m.PitchBendButton = function (status, side, comp) {
-    // Skip if Master button is held or fine-tuning the pitch
-    if (StantonSCS3m.modifier["Master"] || StantonSCS3m.modifier["Deck"+side]) return;
-    var deck = StantonSCS3m.SideToDeck(side);
-    if (engine.getValue("[Channel"+deck+"]","rate_dir") == comp) {   // Go in the appropriate direction
-        if ((status & 0xF0) == 0x90)    // If button down
-            engine.setValue("[Channel"+deck+"]","rate_temp_up",1);
-        else 
-            engine.setValue("[Channel"+deck+"]","rate_temp_up",0);
-    }
-    else {
-        if ((status & 0xF0) == 0x90)    // If button down
-            engine.setValue("[Channel"+deck+"]","rate_temp_down",1);
-        else 
-            engine.setValue("[Channel"+deck+"]","rate_temp_down",0);
-    }
-}
-
-
-// Multi-function sliders
-
-//      Function select buttons
-StantonSCS3m.FXL = function (channel, control, value, status) {
-    StantonSCS3m.modeButton(channel, control, status, "fx", "L");
-}
-
-StantonSCS3m.FXR = function (channel, control, value, status) {
-    StantonSCS3m.modeButton(channel, control, status, "fx", "R");
-}
-
-StantonSCS3m.EQL = function (channel, control, value, status) {
-    StantonSCS3m.modeButton(channel, control, status, "eq", "L");
-}
-
-StantonSCS3m.EQR = function (channel, control, value, status) {
-    StantonSCS3m.modeButton(channel, control, status, "eq", "R");
-}
-
-//      Actual sliders
-StantonSCS3m.TripleL1 = function (channel, control, value, status) {
-    StantonSCS3m.Triple1(channel, control, value, status, "L");
-}
-
-StantonSCS3m.TripleL2 = function (channel, control, value, status) {
-    StantonSCS3m.Triple2(channel, control, value, status, "L");
-}
-
-StantonSCS3m.TripleL3 = function (channel, control, value, status) {
-    StantonSCS3m.Triple3(channel, control, value, status, "L");
-}
-
-StantonSCS3m.TripleR1 = function (channel, control, value, status) {
-    StantonSCS3m.Triple1(channel, control, value, status, "R");
-}
-
-StantonSCS3m.TripleR2 = function (channel, control, value, status) {
-    StantonSCS3m.Triple2(channel, control, value, status, "R");
-}
-
-StantonSCS3m.TripleR3 = function (channel, control, value, status) {
-    StantonSCS3m.Triple3(channel, control, value, status, "R");
-}
-
-//      Work functions
-StantonSCS3m.Triple1 = function (channel, control, value, status, side) {
-    var deck = StantonSCS3m.SideToDeck(side);
-    var currentMode = StantonSCS3m.mode_store["[Channel"+deck+"]"];
-    // If mode button is held down, reset the control to center
-    if (StantonSCS3m.modifier[currentMode+side]) {
-        switch (currentMode) {
-            case "fx": engine.setValue("[Flanger]","lfoDepth",0.5); break;
-            case "eq": engine.setValue("[Channel"+deck+"]","filterLow",1); break;
+        if (!force && last[address] === message[2]) {
+            return false; // Not repeating same message
         }
-    }
-    else switch (currentMode) {
-        case "fx": script.absoluteSlider("[Flanger]","lfoDepth",value,0,1); break;
-        case "eq": engine.setValue("[Channel"+deck+"]","filterLow",script.absoluteNonLin(value,0,1,4)); break;
-    }
-}
 
-StantonSCS3m.Triple2 = function (channel, control, value, status, side) {
-    var deck = StantonSCS3m.SideToDeck(side);
-    var currentMode = StantonSCS3m.mode_store["[Channel"+deck+"]"];
-    // If mode button is held down, reset the control to center
-    if (StantonSCS3m.modifier[currentMode+side]) {
-        switch (currentMode) {
-            case "fx": engine.setValue("[Flanger]","lfoDelay",4950); break; // reset the control to center
-            case "eq": engine.setValue("[Channel"+deck+"]","filterMid",1); break;  // reset the control to center
+        midi.sendShortMsg(message[0], message[1], message[2]);
+
+        // Record message as sent, unless it as was a mode setting termination message
+        if (!extra) {
+            last[address] = message[2];
         }
+        return true;
     }
-    else switch (currentMode) {
-        case "fx": script.absoluteSlider("[Flanger]","lfoDelay",value,50,10000); break;
-        case "eq": engine.setValue("[Channel"+deck+"]","filterMid",script.absoluteNonLin(value,0,1,4)); break;
-    }
-}
 
-StantonSCS3m.Triple3 = function (channel, control, value, status, side) {
-    var deck = StantonSCS3m.SideToDeck(side);
-    var currentMode = StantonSCS3m.mode_store["[Channel"+deck+"]"];
-    // If mode button is held down, reset the control to center
-    if (StantonSCS3m.modifier[currentMode+side]) {
-        switch (currentMode) {
-            case "fx": engine.setValue("[Flanger]","lfoPeriod",1025000); break;
-            case "eq": engine.setValue("[Channel"+deck+"]","filterHigh",1); break;
-        }
-    }
-    else switch (currentMode) {
-        case "fx": script.absoluteSlider("[Flanger]","lfoPeriod",value,50000,2000000); break;
-        case "eq": engine.setValue("[Channel"+deck+"]","filterHigh",script.absoluteNonLin(value,0,1,4)); break;
-    }
-}
-
-
-StantonSCS3m.modeButton = function (channel, control, status, modeName, side) {
-    var deck = StantonSCS3m.SideToDeck(side);
-    var currentMode = StantonSCS3m.mode_store["[Channel"+deck+"]"];
-    var byte1 = 0x90 + channel;
-    if ((status & 0xF0) == 0x90) {    // If button down
-        // If the deck change button for the side in question is held down,
-        //  do special functions
-        if (StantonSCS3m.modifier["Deck"+side]) {
-            switch (modeName) {
-                case "fx": engine.setValue("[Channel"+deck+"]","flanger",!engine.getValue("[Channel"+deck+"]","flanger")); break;
-                case "eq": engine.setValue("[Channel"+deck+"]","beatsync",1); break;
-            }
+    // Wrapper function for send() that delays messages after modesetting
+    function tell(message) {
+        if (throttling) {
+            pipe.push(message);
             return;
         }
-        midi.sendShortMsg(byte1,control,0x03); // Make button purple
-        StantonSCS3m.modifier[modeName+side]=true;   // Set mode modifier flag
-        if (currentMode == modeName) {
-            StantonSCS3m.modifier["time"+modeName+side] = new Date();  // Store the current time in milliseconds
-        }
-        else StantonSCS3m.modifier["time"+modeName+side] = 0.0;
-        return;
-    }
-    
-    // If button up
-    
-    // If the deck change button for the side in question is held down,
-    //  do special functions
-    if (StantonSCS3m.modifier["Deck"+side]) {
-        switch (modeName) {
-            case "eq": engine.setValue("[Channel"+deck+"]","beatsync",0); break;
-        }
-        return;
-    }
-    
-    StantonSCS3m.modifier[currentMode+side] = StantonSCS3m.modifier[modeName+side] = 0;   // Clear mode modifier flags
-    switch (side) { // Make both mode buttons blue on that side
-        case "L":
-            midi.sendShortMsg(byte1,0x0A,0x01);
-            midi.sendShortMsg(byte1,0x0C,0x01);
-            break;
-        case "R":
-            midi.sendShortMsg(byte1,0x0B,0x01);
-            midi.sendShortMsg(byte1,0x0D,0x01);
-            break;
-    }
-    // If trying to switch to the same mode, or the same physical button was held down for over 1/3 of a second, stay in the current mode
-    if (currentMode == modeName || (StantonSCS3m.modifier["time"+modeName+side] != 0.0 && 
-        ((new Date() - StantonSCS3m.modifier["time"+modeName+side])>300))) {
-        switch (currentMode.charAt(currentMode.length-1)) {   // Return the button to its original color
-            case "2": midi.sendShortMsg(byte1,control,0x03); break; // Make button purple
-            case "3": midi.sendShortMsg(byte1,control,0x00); break; // Make button black
-            default:  midi.sendShortMsg(byte1,control,0x02); break; // Make button red
-        }
-        // Re-trigger signals
-        var signalList = StantonSCS3m.modeSignals[StantonSCS3m.mode_store["[Channel"+deck+"]"]];
-        for (i=0; i<signalList.length; i++) {
-            var group = signalList[i][0];
-            var calledFunction = signalList[i][2]+side;
-            if (group=="CurrentChannel") group = "[Channel"+deck+"]";
-            engine.trigger(group,signalList[i][1]);
-        }
-        return;
-    }
-    
-    if (StantonSCS3m.debug) print("Stanton SCS.3m: Switching to "+modeName.toUpperCase()+" mode on the "+side+" side");
-    switch (modeName.charAt(modeName.length-1)) {   // Set the button to its new color
-        case "2": midi.sendShortMsg(byte1,control,0x03); break;   // Make button purple
-        case "3": midi.sendShortMsg(byte1,control,0x00); break;   // Make button black
-        default:  midi.sendShortMsg(byte1,control,0x02); break;  // Make button red
-    }
-    StantonSCS3m.connectModeSignals(channel,side,true);  // Disconnect previous ones
-    StantonSCS3m.mode_store["[Channel"+deck+"]"] = modeName;
-    StantonSCS3m.connectModeSignals(channel,side);  // Connect new ones
-}
 
-StantonSCS3m.VolumeL = function (channel, control, value, status) {
-    var deck = StantonSCS3m.SideToDeck("L");
-    switch (StantonSCS3m.mode_store["Master"]) {
-        case "main": 
-            if (StantonSCS3m.modifier["DeckL"]) {    // Adjust gain
-                var newValue = engine.getValue("[Channel"+deck+"]","pregain")+(value-64)/128;
-                if (newValue<0.0) newValue=0.0;
-                if (newValue>4.0) newValue=4.0;
-                engine.setValue("[Channel"+deck+"]","pregain",newValue);
+        send(message);
+    }
+
+    // Send modeset messages to the device
+    //
+    // messages: list of one or two messages to send
+    //
+    // Either provide a pair of messages to set a slider to a different
+    // mode, or send just one long message in the list. Transmission of
+    // subsequent messages will be delayed to give the device some time to apply
+    // the changes.
+    function modeset(messages) {
+        var sent = true;
+
+        // Modeset messages are comprised of the actual modeset message and
+        // a termination message that must be sent after.
+        var message = messages[0];
+
+        if (message) {
+            if (message.length > 3) {
+                midi.sendSysexMsg(message, message.length);
+            } else {
+                sent = send(message);
+                if (sent && messages[1]) {
+                    // Only send termination message when modeset message was sent
+                    send(messages[1], true, true);
+                }
             }
-            else engine.setValue("[Channel"+deck+"]","volume",value/127);
-            break;
-        case "alt":
-            var newValue = engine.getValue("[Master]","headVolume")+(value-64)/128;
-            if (newValue<0.0) newValue=0.0;
-            if (newValue>5.0) newValue=5.0;
-            engine.setValue("[Master]","headVolume",newValue);
-            break;
-    }
-}
+        }
 
-StantonSCS3m.VolumeR = function (channel, control, value, status) {
-    var deck = StantonSCS3m.SideToDeck("R");
-    switch (StantonSCS3m.mode_store["Master"]) {
-        case "main": 
-            if (StantonSCS3m.modifier["DeckR"]) {    // Adjust gain
-                var newValue = engine.getValue("[Channel"+deck+"]","pregain")+(value-64)/128;
-                if (newValue<0.0) newValue=0.0;
-                if (newValue>4.0) newValue=4.0;
-                engine.setValue("[Channel"+deck+"]","pregain",newValue);
+        if (sent) {
+            // after modesetting, we have to wait for the device to settle
+            if (!throttling) {
+                throttling = engine.beginTimer(20, flushModeset);
             }
-            else engine.setValue("[Channel"+deck+"]","volume",value/127);
-            break;
-        case "alt": 
-            var newValue = engine.getValue("[Master]","volume")+(value-64)/128;
-            if (newValue<0.0) newValue=0.0;
-            if (newValue>5.0) newValue=5.0;
-            engine.setValue("[Master]","volume",newValue);
-            break;
+        }
     }
-}
 
-StantonSCS3m.crossfader = function (channel, control, value) {
-    var deck;
-    // Needle dropping a la Numark's "Strip Search"
-    if (StantonSCS3m.modifier["DeckL"]) deck = StantonSCS3m.SideToDeck("L");
-    if (StantonSCS3m.modifier["DeckR"]) deck = StantonSCS3m.SideToDeck("R");
-    if (deck) {
-        engine.setValue("[Channel"+deck+"]","playposition",value/127);
-        return;
+    var flushModeset = function() {
+        var message;
+
+        // Now we can flush the rest of the messages.
+        // On init, some controls are left unlit if the messages are sent
+        // without delay. The causes are unclear. Sending only a few messages
+        // per tick seems to work ok.
+        var limit = 5; // Determined experimentally
+        while (pipe.length) {
+            message = pipe.shift();
+            send(message);
+            if (loading && limit-- < 1) return;
+        }
+
+        if (throttling) engine.stopTimer(throttling);
+        throttling = false;
+        loading = false;
+    };
+
+    // Map engine values in the range [0..1] to lights
+    // translator maps from [0..1] to a midi message (three bytes)
+    function patch(translator) {
+        return function(value) {
+            tell(translator(value));
+        };
     }
-    // Otherwise regular cross-fader
-    engine.setValue("[Master]","crossfader",(value-64)/63);
-}
 
-StantonSCS3m.cueL = function (channel, control, value, status) {
-    StantonSCS3m.cue(status,"L");
-}
-
-StantonSCS3m.cueR = function (channel, control, value, status) {
-    StantonSCS3m.cue(status,"R");
-}
-
-StantonSCS3m.cue = function (status, side) {
-    var deck = StantonSCS3m.SideToDeck(side);
-    if ((status & 0xF0) == 0x90) {  // If button down
-        StantonSCS3m.modifier["cue"+side] = true;   // Set button modifier flag
-        engine.setValue("[Channel"+deck+"]","cue_default",1);
+    // Cut off at 0.01 because it drops off very slowly
+    function vupatch(translator) {
+        return function(value) {
+            value = value * 1.01 - 0.01;
+            tell(translator(value));
+        };
     }
-    else {
-        StantonSCS3m.modifier["cue"+side] = false;
-        engine.setValue("[Channel"+deck+"]","cue_default",0);
+
+    // accelerate away from 0.5 so that small changes become visible faster
+    function offcenter(translator) {
+        return function(value) {
+            // If you want to adjust it, fiddle with the exponent (second argument to pow())
+            return translator(Math.pow(Math.abs(value - 0.5) * 2, 0.6) / (value < 0.5 ? -2 : 2) + 0.5);
+        };
     }
-}
 
-
-StantonSCS3m.playL = function (channel, control, value, status) {
-    StantonSCS3m.play(status,"L");
-}
-
-StantonSCS3m.playR = function (channel, control, value, status) {
-    StantonSCS3m.play(status,"R");
-}
-
-StantonSCS3m.play = function (status, side) {
-    var deck = StantonSCS3m.SideToDeck(side);
-    if ((status & 0xF0) == 0x90) {  // If button down
-        StantonSCS3m.modifier["play"+side]=true;
-        var currentlyPlaying = engine.getValue("[Channel"+deck+"]","play");
-        engine.setValue("[Channel"+deck+"]","play", !currentlyPlaying);
-        return;
+    function binarylight(off, on) {
+        return function(value) {
+            tell(value ? on : off);
+        };
     }
-    StantonSCS3m.modifier["play"+side]=false;
-}
 
-// ------------------- Slot Functions -----------------------
-
-StantonSCS3m.crossfaderLEDs = function (value) {
-    var add = StantonSCS3m.BoostCut(11, value, -1, 0, 1, 5, 5);
-    var byte1 = 0xB0 + StantonSCS3m.channel;
-    midi.sendShortMsg(byte1,0x0A,0x15+add);
-}
-
-StantonSCS3m.needleDropLEDs = function (value) {
-    var add = StantonSCS3m.Peak(10,value,0,1);
-    var byte1 = 0xB0 + StantonSCS3m.channel;
-    midi.sendShortMsg(byte1,0x0A,1+add);
-}
-
-StantonSCS3m.buttonLED = function (value, note, on, off) {
-    var byte1 = 0x90 + StantonSCS3m.channel;
-    if (value>0) midi.sendShortMsg(byte1,note,on);
-    else midi.sendShortMsg(byte1,note,off);
-}
-
-StantonSCS3m.EQLButtonLED = function(value) {
-    StantonSCS3m.buttonLED(value, 0x0C, 0x02, 0x00);
-}
-
-StantonSCS3m.EQRButtonLED = function(value) {
-    StantonSCS3m.buttonLED(value, 0x0D, 0x02, 0x00);
-}
-
-StantonSCS3m.FXLButtonLED = function(value) {
-    StantonSCS3m.buttonLED(value, 0x0A, 0x02, 0x00);
-}
-
-StantonSCS3m.FXRButtonLED = function(value) {
-    StantonSCS3m.buttonLED(value, 0x0B, 0x02, 0x00);
-}
-
-StantonSCS3m.EQLowLEDsL = function (value) {
-    StantonSCS3m.EQLowLEDs(value,"L");
-}
-
-StantonSCS3m.EQLowLEDsR = function (value) {
-    StantonSCS3m.EQLowLEDs(value,"R");
-}
-
-StantonSCS3m.EQLowLEDs = function (value, side) {
-    var add = StantonSCS3m.BoostCut(7,value, 0, 1, 4, 3, 3);
-    var byte1 = 0xB0 + StantonSCS3m.channel;
-    switch (side) {
-        case "L": midi.sendShortMsg(byte1,0x02,0x15+add); break;
-        case "R": midi.sendShortMsg(byte1,0x03,0x15+add); break;
+    // absolute control
+    function set(channel, control) {
+        return function(value) {
+            engine.setParameter(channel, control,
+                value / 127
+            );
+        };
     }
-}
 
-StantonSCS3m.EQMidLEDsL = function (value) {
-    StantonSCS3m.EQMidLEDs(value,"L");
-}
-
-StantonSCS3m.EQMidLEDsR = function (value) {
-    StantonSCS3m.EQMidLEDs(value,"R");
-}
-
-StantonSCS3m.EQMidLEDs = function (value, side) {
-    var add = StantonSCS3m.BoostCut(7,value, 0, 1, 4, 3, 3);
-    var byte1 = 0xB0 + StantonSCS3m.channel;
-    switch (side) {
-        case "L": midi.sendShortMsg(byte1,0x04,0x15+add); break;
-        case "R": midi.sendShortMsg(byte1,0x05,0x15+add); break;
+    function setconst(channel, control, value) {
+        return function() {
+            engine.setParameter(channel, control, value);
+        };
     }
-}
 
-StantonSCS3m.EQHighLEDsL = function (value) {
-    StantonSCS3m.EQHighLEDs(value,"L");
-}
-
-StantonSCS3m.EQHighLEDsR = function (value) {
-    StantonSCS3m.EQHighLEDs(value,"R");
-}
-
-StantonSCS3m.EQHighLEDs = function (value, side) {
-    var add = StantonSCS3m.BoostCut(7,value, 0, 1, 4, 3, 3);
-    var byte1 = 0xB0 + StantonSCS3m.channel;
-    switch (side) {
-        case "L": midi.sendShortMsg(byte1,0x06,0x15+add); break;
-        case "R": midi.sendShortMsg(byte1,0x07,0x15+add); break;
+    function reset(channel, control) {
+        return function() {
+            engine.reset(channel, control);
+        };
     }
-}
 
-StantonSCS3m.FXDepthLEDsL = function (value) {
-    StantonSCS3m.FXDepthLEDs(value,"L");
-}
+    // relative control
+    function budge(channel, control, factor) {
+        if (factor === undefined) factor = 1;
+        var mult = factor / 128;
 
-StantonSCS3m.FXDepthLEDsR = function (value) {
-    StantonSCS3m.FXDepthLEDs(value,"R");
-}
-
-StantonSCS3m.FXDepthLEDs = function (value, side) {
-    var add = StantonSCS3m.Peak(7,value,0,1);
-    var byte1 = 0xB0 + StantonSCS3m.channel;
-    switch (side) {
-        case "L": midi.sendShortMsg(byte1,0x02,0x28+add); break;
-        case "R": midi.sendShortMsg(byte1,0x03,0x28+add); break;
+        return function(offset) {
+            engine.setValue(channel, control,
+                engine.getValue(channel, control) + (offset - 64) * mult
+            );
+        };
     }
-}
 
-StantonSCS3m.FXDelayLEDsL = function (value) {
-    StantonSCS3m.FXDelayLEDs(value,"L");
-}
-
-StantonSCS3m.FXDelayLEDsR = function (value) {
-    StantonSCS3m.FXDelayLEDs(value,"R");
-}
-
-StantonSCS3m.FXDelayLEDs = function (value, side) {
-    var add = StantonSCS3m.Peak(7,value,50,10000);
-    var byte1 = 0xB0 + StantonSCS3m.channel;
-    switch (side) {
-        case "L": midi.sendShortMsg(byte1,0x04,0x28+add); break;
-        case "R": midi.sendShortMsg(byte1,0x05,0x28+add); break;
+    // switch
+    function toggle(channel, control) {
+        return function() {
+            engine.setValue(channel, control, !engine.getValue(channel, control));
+        };
     }
-}
 
-StantonSCS3m.FXPeriodLEDsL = function (value) {
-    StantonSCS3m.FXPeriodLEDs(value,"L");
-}
+    function Switch() {
+        var engaged = false;
 
-StantonSCS3m.FXPeriodLEDsR = function (value) {
-    StantonSCS3m.FXPeriodLEDs(value,"R");
-}
-
-StantonSCS3m.FXPeriodLEDs = function (value, side) {
-    var add = StantonSCS3m.Peak(7,value,50000,2000000);
-    var byte1 = 0xB0 + StantonSCS3m.channel;
-    switch (side) {
-        case "L": midi.sendShortMsg(byte1,0x06,0x28+add); break;
-        case "R": midi.sendShortMsg(byte1,0x07,0x28+add); break;
+        return {
+            'change': function(state) {
+                state = !!(state);
+                var changed = engaged !== state;
+                engaged = state;
+                return changed;
+            },
+            'engage': function() {
+                engaged = true;
+            },
+            'cancel': function() {
+                engaged = false;
+            },
+            'toggle': function() {
+                engaged = !engaged;
+            },
+            'engaged': function() {
+                return engaged;
+            },
+            'choose': function(off, on) {
+                return engaged ? on : off;
+            }
+        };
     }
-}
 
-StantonSCS3m.pitchLEDsL = function (value) {
-    StantonSCS3m.pitchLEDs(value,"L");
-}
+    function HoldLimit(limit) {
+        var start = false;
 
-StantonSCS3m.pitchLEDsR = function (value) {
-    StantonSCS3m.pitchLEDs(value,"R");
-}
+        var early = function() {
+            return limit > new Date() - start;
+        };
 
-StantonSCS3m.pitchLEDs = function (value, side) {
-    var add = StantonSCS3m.BoostCut(7, value, -1, 0, 1, 3, 3);
-    var byte1 = 0xB0 + StantonSCS3m.channel;
-    switch (side) {
-        case "L": midi.sendShortMsg(byte1,0x00,0x15+add); break;
-        case "R": midi.sendShortMsg(byte1,0x01,0x15+add); break;
+        return {
+            'hold': function() {
+                start = new Date();
+            },
+
+            'releaseTrigger': function(onEarly) {
+                return function() {
+                    if (!start) return;
+                    if (early()) {
+                        onEarly();
+                    }
+                    start = false;
+                };
+            },
+
+            'early': function() {
+                if (!start) return;
+                return early();
+            },
+
+            'late': function() {
+                if (!start) return;
+                return early();
+            },
+
+            'held': function() {
+                return !!start;
+            },
+
+            'choose': function(normalVal, heldVal) {
+                return start ? heldVal : normalVal;
+            }
+        };
     }
-}
 
-StantonSCS3m.gainLEDsL = function (value) {
-    StantonSCS3m.gainLEDs(value,0x08);
-}
+    // HoldDelayedSwitches can be engaged, and they can be held.
+    // A switch that is held for less than 200 ms will toggle.
+    // After 200ms it will enter held-mode.
+    function HoldDelayedSwitch() {
+        var sw = Switch();
 
-StantonSCS3m.gainLEDsR = function (value) {
-    StantonSCS3m.gainLEDs(value,0x09);
-}
+        var held = false;
+        var heldBegin = false;
 
-StantonSCS3m.gainLEDs = function (value, CC) {
-    var add = StantonSCS3m.BoostCut(7, value, 0.0, 1.0, 4.0, 3, 3);
-    midi.sendShortMsg(0xB0 + StantonSCS3m.channel,CC,0x15+add);
-}
+        sw.hold = function(onHeld) {
+            return function() {
+                heldBegin = true;
+                var switchExpire = engine.beginTimer(200, function() {
+                    engine.stopTimer(switchExpire);
+                    if (heldBegin) {
+                        heldBegin = false;
+                        held = true;
+                        if (onHeld) onHeld();
+                    }
+                });
+            };
+        };
 
-StantonSCS3m.volumeLEDsL = function (value) {
-    StantonSCS3m.volumeLEDs(value,0x08);
-}
+        sw.release = function() {
+            if (heldBegin) sw.toggle();
+            held = false;
+            heldBegin = false;
+        };
 
-StantonSCS3m.volumeLEDsR = function (value) {
-    StantonSCS3m.volumeLEDs(value,0x09);
-}
+        sw.held = function() {
+            return held;
+        };
 
-StantonSCS3m.VuL = function (value) {
-    StantonSCS3m.volumeLEDs(value,0x0C);
-}
+        return sw;
+    }
 
-StantonSCS3m.VuR = function (value) {
-    StantonSCS3m.volumeLEDs(value,0x0D);
-}
+    function Multiswitch(preset, initialSubMode) {
+        var engaged = preset;
+        var subMode = initialSubMode;
+        return {
+            'engage': function(pos) {
+                engaged = pos;
+                if (engaged !== preset) {
+                    subMode = pos;
+                }
+            },
+            'engageSub': function() {
+                engaged = subMode;
+            },
+            'cancel': function() {
+                engaged = preset;
+            },
+            'engaged': function(pos) {
+                return engaged === pos;
+            },
+            'choose': function(pos, off, on) {
+                return (engaged === pos) ? on : off;
+            }
+        };
+    }
 
-StantonSCS3m.volumeLEDs = function (value, CC) {
-    var add = StantonSCS3m.Peak(7, value, 0, 1);
-    midi.sendShortMsg(0xB0 + StantonSCS3m.channel,CC,0x28+add);
-}
+    var master = Switch(); // Whether master key is held
+    var deck = {
+        left: HoldDelayedSwitch(), // off: channel1, on: channel3
+        right: HoldDelayedSwitch() // off: channel2, on: channel4
+    };
 
-StantonSCS3m.masterVolumeLEDsL = function (value) {
-    StantonSCS3m.masterVolumeLEDs(value,0x08);
-}
+    var overlayA = Multiswitch('eq', 0);
+    var overlayB = Multiswitch('eq', SCS3M.eqModePerDeck ? 1 : 0);
+    var overlayC;
+    var overlayD;
+    if (SCS3M.eqModePerDeck) {
+        overlayC = Multiswitch('eq', 2);
+        overlayD = Multiswitch('eq', 3);
+    } else {
+        overlayC = overlayA;
+        overlayD = overlayB;
+    }
 
-StantonSCS3m.masterVolumeLEDsR = function (value) {
-    StantonSCS3m.masterVolumeLEDs(value,0x09);
-}
+    var overlay = {
+        left: [overlayA, overlayC],
+        right: [overlayB, overlayD],
+    };
 
-StantonSCS3m.masterVolumeLEDs = function (value, CC) {
-    var add = StantonSCS3m.BoostCut(7, value, 0.0, 1.0, 5.0, 3, 3);
-    var byte1 = 0xB0 + StantonSCS3m.channel;
-    midi.sendShortMsg(byte1,CC,0x15+add);
-}
+    var eqheld = {
+        left: Switch(),
+        right: Switch()
+    };
 
-StantonSCS3m.BoostCut = function (numberLights, value, low, mid, high, lowMidSteps, midHighSteps) {
-    var LEDs = 0;
-    var lowMidInterval = (mid-low)/(lowMidSteps*2);     // Half the actual interval so the LEDs light in the middle of the interval
-    var midHighInterval = (high-mid)/(midHighSteps*2);  // Half the actual interval so the LEDs light in the middle of the interval
-    value=value.toFixed(4);
-    if (value>low) LEDs++;
-    if (value>low+lowMidInterval) LEDs++;
-    if (value>low+lowMidInterval*3) LEDs++;
-    if (numberLights>=9 && value>low+lowMidInterval*5) LEDs++;
-    if (numberLights>=11 && value>low+lowMidInterval*7) LEDs++;
-    if (value>mid+midHighInterval) LEDs++;
-    if (value>mid+midHighInterval*3) LEDs++;
-    if (numberLights>=9 && value>mid+midHighInterval*5) LEDs++;
-    if (numberLights>=11 && value>mid+midHighInterval*7) LEDs++;
-    if (value>=high) LEDs++;
-    return LEDs;
-}
+    var fxHeld = {
+        left: HoldLimit(200),
+        right: HoldLimit(200)
+    };
 
-StantonSCS3m.Peak = function (numberLights, value, low, high) {
-    var LEDs = 0;
-    var halfInterval = (high-low)/((numberLights-1)*2);    // Half the actual interval so the LEDs light in the middle of the interval
-    value=value.toFixed(4);
-    if (value>low) LEDs++;
-    if (value>low+halfInterval) LEDs++;
-    if (value>low+halfInterval*3) LEDs++;
-    if (value>low+halfInterval*5) LEDs++;
-    if (value>low+halfInterval*7) LEDs++;
-    if (value>low+halfInterval*9) LEDs++;
-    if (numberLights>=8 && value>low+halfInterval*11) LEDs++;
-    if (numberLights>=9 && value>low+halfInterval*13) LEDs++;
-    if (numberLights>=10 && value>low+halfInterval*15) LEDs++;
-    if (numberLights>=11 && value>low+halfInterval*17) LEDs++;
-    if (value>=high) LEDs++;
-    return LEDs;
-}
+    var touchheld = {
+        left: Multiswitch('none'),
+        right: Multiswitch('none')
+    };
 
-/*
-Possibly add:
-- (Deck + Play = Reverse?)
-- Reset Master & head vols?
+    function remap() {
+        clear();
+        patchage();
+    }
 
-TODO:
-- Rework slider mode changes to use presets or timers
-- Don't use the hardware buttons for pitch bending. Switch the sliders to absolute mode & use the formula from the SCS.3d script.
-*/
+    // Remap for chainig with handlers
+    function repatch(handler) {
+        return function(value) {
+            var ret = handler(value);
+            remap();
+            return ret;
+        };
+    }
+
+    function patchage() {
+
+        function Side(side) {
+            var part = device[side];
+            var deckside = deck[side];
+
+            // Switch deck/channel when button is touched
+            expect(part.deck.touch, deckside.hold(remap));
+            expect(part.deck.release, repatch(deckside.release));
+
+            function either(left, right) {
+                return (side === 'left') ? left : right;
+            }
+
+            var channelno = deck[side].choose(either(1, 2), either(3, 4));
+            var channel = '[Channel' + channelno + ']';
+            var effectchannel = '[QuickEffectRack1_' + channel + ']';
+            var eqsideheld = eqheld[side];
+            var touchsideheld = touchheld[side];
+            var sideoverlay = overlay[side][deckside.choose(0, 1)];
+
+            // Light the corresponding deck (channel 1: A, channel 2: B, channel 3: C, channel 4: D)
+            // Make the lights blink on each beat
+            function beatlight(translator, activepos, held) {
+                return function(bits) {
+                    bits = bits.slice(); // clone
+                    if (held) {
+                        // When the switch his held, light both LED
+                        // turn them off when beat is active
+                        bits[0] = !bits[0];
+                        bits[1] = !bits[1];
+                    } else {
+                        // Invert the bit for the light that should be on
+                        bits[activepos] = !bits[activepos];
+                    }
+                    return translator(bits);
+                };
+            }
+            watchmulti([
+                ['[Channel' + either(1, 2) + ']', 'beat_active'],
+                ['[Channel' + either(3, 4) + ']', 'beat_active'],
+            ], patch(beatlight(part.deck.light, deckside.choose(0, 1), deckside.held())));
+
+            if (!master.engaged()) {
+                if (sideoverlay.engaged('eq')) {
+                    modeset(part.pitch.mode.relative);
+                    expect(part.pitch.slide, eqsideheld.choose(
+                        budge(effectchannel, 'super1', 0.5),
+                        reset(effectchannel, 'super1')
+                    ));
+                    watch(effectchannel, 'super1', offcenter(patch(part.pitch.meter.centerbar)));
+                }
+            }
+
+            if (sideoverlay.engaged('eq')) {
+                var eff = "[EqualizerRack1_" + channel + "_Effect1]";
+                var op = eqsideheld.choose(set, reset);
+                expect(part.eq.low.slide, op(eff, 'parameter1'));
+                expect(part.eq.mid.slide, op(eff, 'parameter2'));
+                expect(part.eq.high.slide, op(eff, 'parameter3'));
+
+                watch(eff, 'parameter1', patch(offcenter(part.eq.low.meter.centerbar)));
+                watch(eff, 'parameter2', patch(offcenter(part.eq.mid.meter.centerbar)));
+                watch(eff, 'parameter3', patch(offcenter(part.eq.high.meter.centerbar)));
+            }
+
+            expect(part.modes.eq.touch, repatch(function() {
+                eqsideheld.engage();
+                sideoverlay.cancel();
+            }));
+            expect(part.modes.eq.release, repatch(eqsideheld.cancel));
+            tell(part.modes.eq.light[eqsideheld.choose(sideoverlay.choose('eq', 'blue', 'red'), 'purple')]);
+
+            var fxHeldSide = fxHeld[side];
+
+            var fxMap = function(tnr) {
+                var softbutton = part.touches[tnr];
+                var fxchannel = channel;
+                if (master.engaged()) {
+                    fxchannel = either('[Headphone]', '[Master]');
+                }
+                var effectunit = '[EffectRack1_EffectUnit' + (tnr + 1) + ']';
+                var effectunit_enable = 'group_' + fxchannel + '_enable';
+                var effectunit_effect = '[EffectRack1_EffectUnit' + (tnr + 1) + '_Effect1]';
+
+                if (fxHeldSide.held() || master.engaged()) {
+                    expect(softbutton.touch, toggle(effectunit, effectunit_enable));
+                } else {
+                    expect(softbutton.touch, repatch(function() {
+                        sideoverlay.engage(tnr);
+                        touchsideheld.engage(tnr);
+                    }));
+                }
+                expect(softbutton.release, repatch(touchsideheld.cancel));
+
+                if (sideoverlay.engaged(tnr)) {
+                    watch(effectunit, effectunit_enable, binarylight(
+                        softbutton.light.blue,
+                        softbutton.light.purple)
+                    );
+                } else {
+                    watch(effectunit, effectunit_enable, binarylight(
+                        softbutton.light.black,
+                        softbutton.light.red)
+                    );
+                }
+
+                if (sideoverlay.engaged(tnr)) {
+                    // Select effect by touching top slider when button is held
+                    // Otherwise the top slider controls effect wet/dry
+                    if (touchsideheld.engaged(tnr)) {
+                        tell(part.pitch.meter.expand(0.3));
+                        expect(
+                            part.pitch.field.left.touch,
+                            setconst(effectunit, 'chain_selector', 1)
+                        );
+                        expect(
+                            part.pitch.field.right.touch,
+                            setconst(effectunit, 'chain_selector', -1)
+                        );
+                    } else {
+                        modeset(part.pitch.mode.absolute);
+                        expect(part.pitch.slide, eqsideheld.choose(
+                            set(effectunit, 'mix'),
+                            reset(effectunit, 'mix')
+                        ));
+                        watch(effectunit, 'mix', patch(part.pitch.meter.bar));
+                    }
+
+                    expect(part.eq.high.slide, fxHeldSide.choose(
+                        set(effectunit_effect, 'parameter3'),
+                        reset(effectunit_effect, 'parameter3')
+                    ));
+                    expect(part.eq.mid.slide, fxHeldSide.choose(
+                        set(effectunit_effect, 'parameter2'),
+                        reset(effectunit_effect, 'parameter2')
+                    ));
+                    expect(part.eq.low.slide, fxHeldSide.choose(
+                        set(effectunit_effect, 'parameter1'),
+                        reset(effectunit_effect, 'parameter1')
+                    ));
+                    watch(effectunit_effect, 'parameter3', patch(part.eq.high.meter.needle));
+                    watch(effectunit_effect, 'parameter2', patch(part.eq.mid.meter.needle));
+                    watch(effectunit_effect, 'parameter1', patch(part.eq.low.meter.needle));
+                }
+            };
+
+            for (var tnr = 0; tnr < 4; tnr++) {
+                fxMap(tnr);
+            }
+
+            expect(part.modes.fx.touch,
+                repatch(fxHeldSide.hold)
+            );
+            expect(part.modes.fx.release,
+                repatch(fxHeldSide.releaseTrigger(sideoverlay.engageSub))
+            );
+            tell(part.modes.fx.light[fxHeldSide.choose(
+                sideoverlay.choose('eq', 'red', 'blue'),
+                'purple'
+            )]);
+
+
+            if (!master.engaged()) {
+                if (deckside.held()) {
+                    modeset(part.gain.mode.relative);
+                    expect(part.gain.slide, eqsideheld.choose(
+                        budge(channel, 'pregain'),
+                        reset(channel, 'pregain')
+                    ));
+                    watch(channel, 'pregain', patch(offcenter(part.gain.meter.needle)));
+                } else {
+                    modeset(part.gain.mode.absolute);
+                    expect(part.gain.slide, set(channel, 'volume'));
+                    watch(channel, 'volume', patch(part.gain.meter.bar));
+                }
+            }
+
+            watch(channel, 'pfl', binarylight(part.phones.light.blue, part.phones.light.red));
+            expect(part.phones.touch, toggle(channel, 'pfl'));
+
+            if (deckside.held()) {
+                expect(device.crossfader.slide, set(channel, "playposition"));
+                watch(channel, "playposition", patch(device.crossfader.meter.needle));
+            }
+
+            if (!master.engaged()) {
+                watch(channel, 'VuMeter', vupatch(part.meter.bar));
+            }
+        }
+
+        // Light the logo and let it go out to signal an overload
+        watch("[Master]", 'audio_latency_overload', binarylight(
+            device.logo.on,
+            device.logo.off
+        ));
+
+        Side('left');
+        Side('right');
+
+        tell(device.master.light[master.choose('blue', 'purple')]);
+        expect(device.master.touch, repatch(master.engage));
+        expect(device.master.release, repatch(master.cancel));
+        if (master.engaged()) {
+            modeset(device.left.pitch.mode.absolute);
+            watch("[Master]", "headMix", patch(device.left.pitch.meter.centerbar));
+            expect(device.left.pitch.slide,
+                eqheld.left.engaged() ? reset('[Master]', 'headMix') : set('[Master]', 'headMix')
+            );
+
+            modeset(device.right.pitch.mode.absolute);
+            watch("[Master]", "balance", patch(device.right.pitch.meter.centerbar));
+            expect(device.right.pitch.slide,
+                eqheld.right.engaged() ? reset('[Master]', 'balance') : set('[Master]', 'balance')
+            );
+
+            modeset(device.left.gain.mode.relative);
+            watch("[Master]", "headVolume", patch(device.left.gain.meter.centerbar));
+            expect(device.left.gain.slide, budge('[Master]', 'headVolume'));
+
+            modeset(device.right.gain.mode.relative);
+            watch("[Master]", "volume", patch(device.right.gain.meter.centerbar));
+            expect(device.right.gain.slide, budge('[Master]', 'volume'));
+
+            watch("[Master]", "VuMeterL", vupatch(device.left.meter.bar));
+            watch("[Master]", "VuMeterR", vupatch(device.right.meter.bar));
+        }
+
+        if (deck.left.held() || deck.right.held()) {
+            // Needledrop handled in Side()
+        } else {
+            expect(device.crossfader.slide, set("[Master]", "crossfader"));
+            watch("[Master]", "crossfader", patch(device.crossfader.meter.centerbar));
+        }
+
+        // Communicate currently selected channel of each deck so SCS3d can read it
+        // THIS USES A CONTROL FOR ULTERIOR PURPOSES AND IS VERY NAUGHTY INDEED
+        engine.setValue('[PreviewDeck1]', 'quantize',
+            0x4 // Setting bit three communicates that we're sending deck state
+            | deck.left.engaged() // left side is in bit one
+            | deck.right.engaged() << 1 // right side bit two
+        );
+        watch('[PreviewDeck1]', 'quantize', function(deckState) {
+            var changed = deck.left.change(deckState & 1) || deck.right.change(deckState & 2);
+            if (changed) repatch(function() {})();
+        });
+    }
+
+    return {
+        start: function() {
+            loading = true;
+            modeset([device.flat]);
+            patchage();
+        },
+        receive: receive,
+        stop: function() {
+            clear();
+            tell(device.lightsoff);
+            send(device.logo.on, true);
+        }
+    };
+};

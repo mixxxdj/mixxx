@@ -5,12 +5,12 @@
 #include <QSharedPointer>
 #include <QString>
 
-#include "util.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "effects/effect.h"
 #include "effects/effectparameterslot.h"
 #include "effects/effectbuttonparameterslot.h"
+#include "util/class.h"
 
 class EffectSlot;
 class ControlObjectSlave;

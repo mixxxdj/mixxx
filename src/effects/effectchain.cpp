@@ -1,10 +1,11 @@
 #include "effects/effectchain.h"
-#include "effects/effectsmanager.h"
+
 #include "effects/effectchainmanager.h"
-#include "engine/effects/message.h"
-#include "engine/effects/engineeffectrack.h"
+#include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectchain.h"
-#include "sampleutil.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/message.h"
+#include "util/sample.h"
 #include "util/xml.h"
 
 EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,

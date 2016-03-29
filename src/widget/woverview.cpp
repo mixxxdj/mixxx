@@ -21,7 +21,7 @@
 #include <QMimeData>
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
@@ -33,7 +33,7 @@
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
-WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
+WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent) :
         WWidget(parent),
         m_pWaveformSourceImage(NULL),
         m_actualCompletion(0),
@@ -42,13 +42,13 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_diffGain(0),
         m_group(pGroup),
         m_pConfig(pConfig),
-        m_endOfTrack(0),
+        m_endOfTrack(false),
         m_bDrag(false),
         m_iPos(0),
         m_a(1.0),
         m_b(0.0),
-        m_dAnalyserProgress(-1.0),
-        m_bAnalyserFinalizing(false),
+        m_dAnalyzerProgress(1.0),
+        m_bAnalyzerFinalizing(false),
         m_trackLoaded(false) {
     m_endOfTrackControl = new ControlObjectSlave(
             m_group, "end_of_track", this);
@@ -89,14 +89,14 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     palette.setColor(this->backgroundRole(), m_qColorBackground);
     setPalette(palette);
 
-    //setup hotcues and cue and loop(s)
+    // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
-        if (mark.m_pointControl) {
-            connect(mark.m_pointControl, SIGNAL(valueChanged(double)),
-                    this, SLOT(onMarkChanged(double)));
+        if (mark.m_pPointCos) {
+            mark.m_pPointCos->connectValueChanged(this,
+                    SLOT(onMarkChanged(double)));
         }
     }
 
@@ -108,15 +108,15 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
             markRange.setup(m_group, child, context, m_signalColors);
 
             if (markRange.m_markEnabledControl) {
-                connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
+                markRange.m_markEnabledControl->connectValueChanged(
                         this, SLOT(onMarkRangeChange(double)));
             }
             if (markRange.m_markStartPointControl) {
-                connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
+                markRange.m_markStartPointControl->connectValueChanged(
                         this, SLOT(onMarkRangeChange(double)));
             }
             if (markRange.m_markEndPointControl) {
-                connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
+                markRange.m_markEndPointControl->connectValueChanged(
                         this, SLOT(onMarkRangeChange(double)));
             }
         }
@@ -170,53 +170,20 @@ void WOverview::slotWaveformSummaryUpdated() {
     }
 }
 
-void WOverview::slotAnalyserProgress(int progress) {
+void WOverview::slotAnalyzerProgress(int progress) {
     if (!m_pCurrentTrack) {
         return;
     }
 
-    double analyserProgress = progress / 1000.0;
+    double analyzerProgress = progress / 1000.0;
     bool finalizing = progress == 999;
 
     bool updateNeeded = drawNextPixmapPart();
     // progress 0 .. 1000
-    if (updateNeeded || (m_dAnalyserProgress != analyserProgress)) {
-        m_dAnalyserProgress = analyserProgress;
-        m_bAnalyserFinalizing = finalizing;
+    if (updateNeeded || (m_dAnalyzerProgress != analyzerProgress)) {
+        m_dAnalyzerProgress = analyzerProgress;
+        m_bAnalyzerFinalizing = finalizing;
         update();
-    }
-}
-
-void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
-    // qDebug() << "WOverview::slotLoadNewTrack(TrackPointer pTrack)";
-    if (m_pCurrentTrack) {
-        disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
-                   this, SLOT(slotWaveformSummaryUpdated()));
-        disconnect(m_pCurrentTrack.data(), SIGNAL(analyserProgress(int)),
-                   this, SLOT(slotAnalyzerProgress(int)));
-    }
-
-    if (m_pWaveformSourceImage) {
-        delete m_pWaveformSourceImage;
-        m_pWaveformSourceImage = NULL;
-    }
-
-    m_dAnalyserProgress = -1;
-    m_actualCompletion = 0;
-    m_waveformPeak = -1.0;
-    m_pixmapDone = false;
-    m_trackLoaded = false;
-
-    if (pTrack) {
-        m_pCurrentTrack = pTrack;
-        m_pWaveform = pTrack->getWaveformSummary();
-
-        connect(pTrack.data(), SIGNAL(waveformSummaryUpdated()),
-                this, SLOT(slotWaveformSummaryUpdated()));
-        connect(pTrack.data(), SIGNAL(analyserProgress(int)),
-                this, SLOT(slotAnalyserProgress(int)));
-
-        slotAnalyserProgress(pTrack->getAnalyserProgress());
     }
 }
 
@@ -227,29 +194,47 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
     }
 }
 
-void WOverview::slotUnloadTrack(TrackPointer pTrack) {
-    // it may happen that this call is a delayed call
-    // of a track that was already replaced
-    //qDebug() << "WOverview::slotUnloadTrack(TrackPointer pTrack)";
-    if (pTrack != NULL && pTrack == m_pCurrentTrack) {
+void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    qDebug() << "WOverview::slotLoadingTrack" << pNewTrack << pOldTrack;
+    if (m_pCurrentTrack != NULL && pOldTrack == m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
-        disconnect(m_pCurrentTrack.data(), SIGNAL(analyserProgress(int)),
-                   this, SLOT(slotAnalyserProgress(int)));
+        disconnect(m_pCurrentTrack.data(), SIGNAL(analyzerProgress(int)),
+                   this, SLOT(slotAnalyzerProgress(int)));
+    }
 
+    if (m_pWaveformSourceImage) {
+        delete m_pWaveformSourceImage;
+        m_pWaveformSourceImage = NULL;
+    }
+
+    m_dAnalyzerProgress = 1.0;
+    m_actualCompletion = 0;
+    m_waveformPeak = -1.0;
+    m_pixmapDone = false;
+    m_trackLoaded = false;
+    m_endOfTrack = false;
+
+    if (pNewTrack) {
+        m_pCurrentTrack = pNewTrack;
+        m_pWaveform = pNewTrack->getWaveformSummary();
+
+        connect(pNewTrack.data(), SIGNAL(waveformSummaryUpdated()),
+                this, SLOT(slotWaveformSummaryUpdated()));
+        connect(pNewTrack.data(), SIGNAL(analyzerProgress(int)),
+                this, SLOT(slotAnalyzerProgress(int)));
+
+        slotAnalyzerProgress(pNewTrack->getAnalyzerProgress());
+    } else {
         m_pCurrentTrack.clear();
         m_pWaveform.clear();
-        m_actualCompletion = 0;
-        m_waveformPeak = -1.0;
-        m_pixmapDone = false;
-        m_trackLoaded = false;
-        update();
     }
+    update();
 }
 
 void WOverview::onEndOfTrackChange(double v) {
     //qDebug() << "WOverview::onEndOfTrackChange()" << v;
-    m_endOfTrack = v > 0.5;
+    m_endOfTrack = v > 0.0;
     update();
 }
 
@@ -285,6 +270,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
 }
 
 void WOverview::paintEvent(QPaintEvent *) {
+    //qDebug() << "WOverview::paintEvent";
     ScopedTimer t("WOverview::paintEvent");
 
     QPainter painter(this);
@@ -293,25 +279,25 @@ void WOverview::paintEvent(QPaintEvent *) {
         painter.drawPixmap(rect(), m_backgroundPixmap);
     }
 
-    //Display viewer contour if end of track
-    if (m_endOfTrack) {
-        painter.setOpacity(0.8);
-        painter.setPen(QPen(QBrush(m_endOfTrackColor),1.5));
-        painter.setBrush(QColor(0,0,0,0));
-        painter.drawRect(rect().adjusted(0,0,-1,-1));
-        painter.setOpacity(0.3);
-        painter.setBrush(m_endOfTrackColor);
-        painter.drawRect(rect().adjusted(1,1,-2,-2));
-        painter.setOpacity(1);
-    }
+    if (m_pCurrentTrack) {
+        // Display viewer contour if end of track
+        if (m_endOfTrack) {
+            painter.setOpacity(0.8);
+            painter.setPen(QPen(QBrush(m_endOfTrackColor),1.5));
+            painter.setBrush(QColor(0,0,0,0));
+            painter.drawRect(rect().adjusted(0,0,-1,-1));
+            painter.setOpacity(0.3);
+            painter.setBrush(m_endOfTrackColor);
+            painter.drawRect(rect().adjusted(1,1,-2,-2));
+            painter.setOpacity(1);
+        }
 
-    //Draw waveform pixmap
-    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
-    if (m_pWaveform) {
         // Draw Axis
         painter.setPen(QPen(m_signalColors.getAxesColor(), 1));
         painter.drawLine(0, height()/2, width(), height()/2);
 
+        // Draw waveform pixmap
+        WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
         if (m_pWaveformSourceImage) {
             int diffGain;
             bool normalize = widgetFactory->isOverviewNormalized();
@@ -333,14 +319,14 @@ void WOverview::paintEvent(QPaintEvent *) {
             painter.drawImage(rect(), m_waveformImageScaled);
         }
 
-        if (m_dAnalyserProgress != 1.0) {
+        if (m_dAnalyzerProgress < 1.0) {
             // Paint analyzer Progress
             painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
-            painter.drawLine(m_dAnalyserProgress * width(), height()/2,
-                             width(), height()/2);
+            painter.drawLine(m_dAnalyzerProgress * width(), height() / 2,
+                             width(), height() / 2);
         }
 
-        if (m_dAnalyserProgress <= 0.5) { // remove text after progress by wf is recognizable
+        if (m_dAnalyzerProgress <= 0.5) { // remove text after progress by wf is recognizable
             if (m_trackLoaded) {
                 //: Text on waveform overview when file is cached from source
                 paintText(tr("Ready to play, analyzing .."), &painter);
@@ -348,118 +334,119 @@ void WOverview::paintEvent(QPaintEvent *) {
                 //: Text on waveform overview when file is playable but no waveform is visible
                 paintText(tr("Loading track .."), &painter);
             }
-        } else if (m_bAnalyserFinalizing) {
+        } else if (m_bAnalyzerFinalizing) {
             //: Text on waveform overview during finalizing of waveform analysis
             paintText(tr("Finalizing .."), &painter);
         }
-    }
 
-    double trackSamples = m_trackSamplesControl->get();
-    if (trackSamples > 0) {
-        const float offset = 1.0f;
-        const float gain = (float)(width()-2) / trackSamples;
+        double trackSamples = m_trackSamplesControl->get();
+        if (m_trackLoaded && trackSamples > 0) {
+            //qDebug() << "WOverview::paintEvent trackSamples > 0";
+            const float offset = 1.0f;
+            const float gain = (float)(width()-2) / trackSamples;
 
-        // Draw range (loop)
-        for (unsigned int i = 0; i < m_markRanges.size(); ++i) {
-            WaveformMarkRange& currentMarkRange = m_markRanges[i];
+            // Draw range (loop)
+            for (unsigned int i = 0; i < m_markRanges.size(); ++i) {
+                WaveformMarkRange& currentMarkRange = m_markRanges[i];
 
-            // If the mark range is not active we should not draw it.
-            if (!currentMarkRange.active()) {
-                continue;
+                // If the mark range is not active we should not draw it.
+                if (!currentMarkRange.active()) {
+                    continue;
+                }
+
+                // Active mark ranges by definition have starts/ends that are not
+                // disabled.
+                const double startValue = currentMarkRange.start();
+                const double endValue = currentMarkRange.end();
+
+                const float startPosition = offset + startValue * gain;
+                const float endPosition = offset + endValue * gain;
+
+                if (startPosition < 0.0 && endPosition < 0.0) {
+                    continue;
+                }
+
+                if (currentMarkRange.enabled()) {
+                    painter.setOpacity(0.4);
+                    painter.setPen(currentMarkRange.m_activeColor);
+                    painter.setBrush(currentMarkRange.m_activeColor);
+                } else {
+                    painter.setOpacity(0.2);
+                    painter.setPen(currentMarkRange.m_disabledColor);
+                    painter.setBrush(currentMarkRange.m_disabledColor);
+                }
+
+                // let top and bottom of the rect out of the widget
+                painter.drawRect(QRectF(QPointF(startPosition, -2.0),
+                                        QPointF(endPosition,height() + 1.0)));
             }
 
-            // Active mark ranges by definition have starts/ends that are not
-            // disabled.
-            const double startValue = currentMarkRange.start();
-            const double endValue = currentMarkRange.end();
+            // Draw markers (Cue & hotcues)
+            QPen shadowPen(QBrush(m_qColorBackground), 2.5);
 
-            const float startPosition = offset + startValue * gain;
-            const float endPosition = offset + endValue * gain;
+            QFont markerFont = painter.font();
+            markerFont.setPixelSize(10);
 
-            if (startPosition < 0.0 && endPosition < 0.0) {
-                continue;
-            }
+            QFont shadowFont = painter.font();
+            shadowFont.setWeight(99);
+            shadowFont.setPixelSize(10);
 
-            if (currentMarkRange.enabled()) {
-                painter.setOpacity(0.4);
-                painter.setPen(currentMarkRange.m_activeColor);
-                painter.setBrush(currentMarkRange.m_activeColor);
-            } else {
-                painter.setOpacity(0.2);
-                painter.setPen(currentMarkRange.m_disabledColor);
-                painter.setBrush(currentMarkRange.m_disabledColor);
-            }
+            painter.setOpacity(0.9);
 
-            //let top and bottom of the rect out of the widget
-            painter.drawRect(QRectF(QPointF(startPosition, -2.0),
-                                    QPointF(endPosition,height() + 1.0)));
-        }
+            for (int i = 0; i < m_marks.size(); ++i) {
+                WaveformMark& currentMark = m_marks[i];
+                if (currentMark.m_pPointCos && currentMark.m_pPointCos->get() >= 0.0) {
+                    //const float markPosition = 1.0 +
+                    //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
+                    const float markPosition = offset + currentMark.m_pPointCos->get() * gain;
 
-        //Draw markers (Cue & hotcues)
-        QPen shadowPen(QBrush(m_qColorBackground), 2.5);
-
-        QFont markerFont = painter.font();
-        markerFont.setPixelSize(10);
-
-        QFont shadowFont = painter.font();
-        shadowFont.setWeight(99);
-        shadowFont.setPixelSize(10);
-
-        painter.setOpacity(0.9);
-
-        for (int i = 0; i < m_marks.size(); ++i) {
-            WaveformMark& currentMark = m_marks[i];
-            if (currentMark.m_pointControl && currentMark.m_pointControl->get() >= 0.0) {
-                //const float markPosition = 1.0 +
-                //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
-                const float markPosition = offset + currentMark.m_pointControl->get() * gain;
-
-                const QLineF line(markPosition, 0.0, markPosition, (float)height());
-                painter.setPen(shadowPen);
-                painter.drawLine(line);
-
-                painter.setPen(currentMark.m_color);
-                painter.drawLine(line);
-
-                if (!currentMark.m_text.isEmpty()) {
-                    QPointF textPoint;
-                    textPoint.setX(markPosition+0.5f);
-
-                    if (currentMark.m_align == Qt::AlignTop) {
-                        QFontMetricsF metric(markerFont);
-                        textPoint.setY(metric.tightBoundingRect(currentMark.m_text).height()+0.5f);
-                    } else {
-                        textPoint.setY(float(height())-0.5f);
-                    }
-
+                    const QLineF line(markPosition, 0.0, markPosition, (float)height());
                     painter.setPen(shadowPen);
-                    painter.setFont(shadowFont);
-                    painter.drawText(textPoint,currentMark.m_text);
+                    painter.drawLine(line);
 
-                    painter.setPen(currentMark.m_textColor);
-                    painter.setFont(markerFont);
-                    painter.drawText(textPoint,currentMark.m_text);
+                    painter.setPen(currentMark.m_color);
+                    painter.drawLine(line);
+
+                    if (!currentMark.m_text.isEmpty()) {
+                        QPointF textPoint;
+                        textPoint.setX(markPosition + 0.5f);
+
+                        if (currentMark.m_align == Qt::AlignTop) {
+                            QFontMetricsF metric(markerFont);
+                            textPoint.setY(metric.tightBoundingRect(currentMark.m_text).height()+0.5f);
+                        } else {
+                            textPoint.setY(float(height())-0.5f);
+                        }
+
+                        painter.setPen(shadowPen);
+                        painter.setFont(shadowFont);
+                        painter.drawText(textPoint,currentMark.m_text);
+
+                        painter.setPen(currentMark.m_textColor);
+                        painter.setFont(markerFont);
+                        painter.drawText(textPoint,currentMark.m_text);
+                    }
                 }
             }
+
+            // draw current position
+            painter.setPen(QPen(QBrush(m_qColorBackground),1));
+            painter.setOpacity(0.5);
+            painter.drawLine(m_iPos + 1, 0, m_iPos + 1, height());
+            painter.drawLine(m_iPos - 1, 0, m_iPos - 1, height());
+
+            painter.setPen(QPen(m_signalColors.getPlayPosColor(),1));
+            painter.setOpacity(1.0);
+            painter.drawLine(m_iPos, 0, m_iPos, height());
+
+            painter.drawLine(m_iPos - 2, 0, m_iPos, 2);
+            painter.drawLine(m_iPos, 2, m_iPos + 2, 0);
+            painter.drawLine(m_iPos - 2, 0, m_iPos + 2, 0);
+
+            painter.drawLine(m_iPos - 2, height() - 1, m_iPos, height() - 3);
+            painter.drawLine(m_iPos, height() - 3, m_iPos + 2, height() - 1);
+            painter.drawLine(m_iPos - 2, height() - 1, m_iPos + 2, height() - 1);
         }
-
-        //draw current position
-        painter.setPen(QPen(QBrush(m_qColorBackground),1));
-        painter.setOpacity(0.5);
-        painter.drawLine(m_iPos + 1, 0, m_iPos + 1, height());
-        painter.drawLine(m_iPos - 1, 0, m_iPos - 1, height());
-
-        painter.setPen(QPen(m_signalColors.getPlayPosColor(),1));
-        painter.setOpacity(1.0);
-        painter.drawLine(m_iPos, 0, m_iPos, height());
-
-        painter.drawLine(m_iPos - 2, 0, m_iPos, 2);
-        painter.drawLine(m_iPos, 2, m_iPos + 2, 0);
-        painter.drawLine(m_iPos - 2, 0, m_iPos + 2, 0);
-
-        painter.drawLine(m_iPos - 2, height() - 1, m_iPos, height() - 3);
-        painter.drawLine(m_iPos, height() - 3, m_iPos + 2, height() - 1);
-        painter.drawLine(m_iPos - 2, height() - 1, m_iPos + 2, height() - 1);
     }
     painter.end();
 }

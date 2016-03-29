@@ -9,6 +9,7 @@
 #include <QScriptValue>
 
 #include "controllers/controller.h"
+#include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 
 Controller::Controller()
@@ -17,12 +18,7 @@ Controller::Controller()
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
-          m_bDebug(false),
           m_bLearning(false) {
-    // Get --controllerDebug command line option
-    QStringList commandLineArgs = QApplication::arguments();
-    m_bDebug = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive) ||
-            commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
 }
 
 Controller::~Controller() {
@@ -32,9 +28,7 @@ Controller::~Controller() {
 
 void Controller::startEngine()
 {
-    if (debugging()) {
-        qDebug() << "  Starting engine";
-    }
+    controllerDebug("  Starting engine");
     if (m_pEngine != NULL) {
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
@@ -43,9 +37,7 @@ void Controller::startEngine()
 }
 
 void Controller::stopEngine() {
-    if (debugging()) {
-        qDebug() << "  Shutting down engine";
-    }
+    controllerDebug("  Shutting down engine");
     if (m_pEngine == NULL) {
         qWarning() << "Controller::stopEngine(): No engine exists!";
         return;
@@ -55,7 +47,7 @@ void Controller::stopEngine() {
     m_pEngine = NULL;
 }
 
-void Controller::applyPreset(QList<QString> scriptPaths) {
+bool Controller::applyPreset(QList<QString> scriptPaths, bool initializeScripts) {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
@@ -63,16 +55,19 @@ void Controller::applyPreset(QList<QString> scriptPaths) {
     // Load the script code into the engine
     if (m_pEngine == NULL) {
         qWarning() << "Controller::applyPreset(): No engine exists!";
-        return;
+        return false;
     }
 
     if (pPreset->scripts.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
-        return;
+        return true;
     }
 
-    m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
-    m_pEngine->initializeScripts(pPreset->scripts);
+    bool success = m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
+    if (initializeScripts) {
+        m_pEngine->initializeScripts(pPreset->scripts);
+    }
+    return success;
 }
 
 void Controller::startLearning() {
@@ -97,7 +92,7 @@ void Controller::send(QList<int> data, unsigned int length) {
     send(msg);
 }
 
-void Controller::receive(const QByteArray data) {
+void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
     if (m_pEngine == NULL) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
@@ -106,9 +101,10 @@ void Controller::receive(const QByteArray data) {
     }
 
     int length = data.size();
-    if (debugging()) {
+    if (ControllerDebug::enabled()) {
         // Formatted packet display
-        QString message = QString("%1: %2 bytes:\n").arg(m_sDeviceName).arg(length);
+        QString message = QString("%1: t:%2, %3 bytes:\n")
+                .arg(m_sDeviceName).arg(timestamp.formatMillisWithUnit()).arg(length);
         for(int i=0; i<length; i++) {
             QString spacer=" ";
             if ((i+1) % 4 == 0) spacer="  ";
@@ -117,7 +113,7 @@ void Controller::receive(const QByteArray data) {
                         .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
                         .arg(spacer);
         }
-        qDebug() << message;
+        controllerDebug(message);
     }
 
     foreach (QString function, m_pEngine->getScriptFunctionPrefixes()) {
@@ -125,8 +121,8 @@ void Controller::receive(const QByteArray data) {
             continue;
         }
         function.append(".incomingData");
-        QScriptValue incomingData = m_pEngine->resolveFunction(function, true);
-        if (!m_pEngine->execute(incomingData, data)) {
+        QScriptValue incomingData = m_pEngine->resolveFunction(function);
+        if (!m_pEngine->execute(incomingData, data, timestamp)) {
             qWarning() << "Controller: Invalid script function" << function;
         }
     }

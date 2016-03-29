@@ -15,14 +15,22 @@ public:
         return m_type;
     }
 
+    // Default implementations for reading/writing track metadata.
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override;
+    Result writeTrackMetadata(
+            const TrackMetadata& trackMetadata) const override;
 
     // Opens the AudioSource for reading audio data.
     //
     // Since reopening is not supported close() will be called
     // implicitly before the AudioSource is actually opened.
+    //
+    // Optionally the caller may provide the desired properties
+    // of the decoded audio signal. Some decoders are able to reduce
+    // the number of channels or do resampling on the fly while decoding
+    // the input data.
     Result open(const AudioSourceConfig& audioSrcCfg = AudioSourceConfig());
 
     // Closes the AudioSource and frees all resources.

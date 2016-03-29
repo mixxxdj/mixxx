@@ -1,8 +1,8 @@
 #ifndef WAVEFORMRENDERERRGB_H
 #define WAVEFORMRENDERERRGB_H
 
+#include "util/class.h"
 #include "waveformrenderersignalbase.h"
-#include "util.h"
 
 class WaveformRendererRGB : public WaveformRendererSignalBase {
   public:

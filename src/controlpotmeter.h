@@ -18,7 +18,7 @@
 #ifndef CONTROLPOTMETER_H
 #define CONTROLPOTMETER_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "potmeterparameters.h"
 
@@ -27,7 +27,7 @@
   */
 
 class ControlPushButton;
-class ControlObjectThread;
+class ControlObjectSlave;
 
 class PotmeterControls : public QObject {
     Q_OBJECT
@@ -66,7 +66,7 @@ class PotmeterControls : public QObject {
     void toggleMinusValue(double);
 
   private:
-    ControlObjectThread* m_pControl;
+    ControlObjectSlave* m_pControl;
     int m_stepCount;
     double m_smallStepCount;
 };

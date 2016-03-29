@@ -17,12 +17,12 @@
 #include "soundsourceproxy.h"
 #include "widget/wlibrary.h"
 #include "util/dnd.h"
-#include "dlghidden.h"
-#include "dlgmissing.h"
+#include "library/dlghidden.h"
+#include "library/dlgmissing.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          TrackCollection* pTrackCollection,
-                                         ConfigObject<ConfigValue>* pConfig)
+                                         UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
@@ -53,6 +53,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_BPM_LOCK
             << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_BITRATE
+            << "library." + LIBRARYTABLE_REPLAYGAIN
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_DATETIMEADDED
             << "track_locations.location"
@@ -180,7 +181,7 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
         QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
         // Adds track, does not insert duplicates, handles unremoving logic.
-        QList<TrackId> trackIds = m_trackDao.addTracks(files, true);
+        QList<TrackId> trackIds = m_trackDao.addMultipleTracks(files, true);
         return trackIds.size() > 0;
     }
 }

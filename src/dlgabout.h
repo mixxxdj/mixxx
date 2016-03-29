@@ -19,7 +19,7 @@
 #define DLGABOUT_H
 
 #include "ui_dlgaboutdlg.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class QWidget;
 /**
@@ -28,7 +28,7 @@ class QWidget;
 
 class DlgAbout : public QDialog, public Ui::DlgAboutDlg  {
     Q_OBJECT
-public: 
+public:
     DlgAbout(QWidget *parent);
     ~DlgAbout();
 public slots:
@@ -40,7 +40,7 @@ signals:
     void apply(const QString &);
 private:
     /** Pointer to config object */
-    //ConfigObject<ConfigValue> *config;
+    //UserSettingsPointer config;
 };
 
 #endif

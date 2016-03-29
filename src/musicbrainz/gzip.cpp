@@ -2,8 +2,8 @@
  * Author: Lukáš Lalinský <info@acoustid.org>                                *
  *****************************************************************************/
 
-#include "crc.h"
-#include "gzip.h"
+#include "musicbrainz/crc.h"
+#include "musicbrainz/gzip.h"
 
 inline QByteArray render32BitInt(unsigned long value)
 {

@@ -8,6 +8,7 @@
 -->
 <Template>
   <Template src="skin:left_2state_button.xml">
+    <SetVariable name="TooltipId">EffectUnit_group_enabled</SetVariable>
     <SetVariable name="ObjectName">EffectChainGroupControlButton</SetVariable>
     <SetVariable name="MinimumSize"><Variable name="SmallWideButtonMinimumSize"/></SetVariable>
     <SetVariable name="MaximumSize"><Variable name="SmallWideButtonMaximumSize"/></SetVariable>

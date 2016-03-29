@@ -12,18 +12,18 @@
 # no thanks dpkg-buildpackage, we will handle our own C++ optimizations
 DEB_BUILD_OPTIONS= noopt
 
-# optimize=portable 
+# optimize=portable
 # for sse2 CPUs (>= Pentium 4) which is the minimum requiremnt for using Mixxx
 # this will set CCFLAGS=-mtune=generic -msse2 -mfpmath=sse
-# If you need a pure i386 code which is the Debian standard use 
-# optimize=legacy (not recomended) 
-# this sets CCFLAGS=-mtune=generic only 
-# virtualize=0 switches of keeping build files in the cache folder 
-MIXXX_SCONS_FLAGS = optimize=portable virtualize=0
+# If you need a pure i386 code which is the Debian standard use
+# optimize=legacy (not recomended)
+# this sets CCFLAGS=-mtune=generic only
+# virtualize=0 switches of keeping build files in the cache folder
+MIXXX_SCONS_FLAGS = optimize=portable virtualize=0 mad=1 localecompare=1 qt_sqlite_plugin=0 build=$(MIXXX_BUILD)
 
 # If ARCH is set to a different architecture when running pbuilder, pbuilder
-# will be set to create an environment to build packages for the architecture 
-# specified in ARCH. 
+# will be set to create an environment to build packages for the architecture
+# specified in ARCH.
 ifneq (,$(findstring i386,$(ARCH)))
 	MIXXX_SCONS_FLAGS += machine=x86
 endif
@@ -105,6 +105,8 @@ binary-arch: build install
 	dh_installchangelogs
 	dh_installdocs
 	dh_installexamples
+        # Install mixxx.mixxx-usb.udev.
+	dh_installudev --name=mixxx-usb
 #	dh_install
 	dh_installmenu
 	dh_desktop

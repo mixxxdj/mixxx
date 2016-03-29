@@ -6,11 +6,11 @@
 #include <QList>
 #include <QSignalMapper>
 
-#include "util.h"
 #include "effects/effect.h"
 #include "effects/effectslot.h"
 #include "effects/effectchain.h"
 #include "engine/channelhandle.h"
+#include "util/class.h"
 
 class ControlObject;
 class ControlPushButton;

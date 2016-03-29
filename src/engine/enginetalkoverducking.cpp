@@ -4,7 +4,7 @@
 #define DUCK_THRESHOLD 0.1
 
 EngineTalkoverDucking::EngineTalkoverDucking(
-        ConfigObject<ConfigValue>* pConfig, const char* group)
+        UserSettingsPointer pConfig, const char* group)
     : EngineSideChainCompressor(group),
       m_pConfig(pConfig),
       m_group(group) {

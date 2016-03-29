@@ -78,7 +78,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
 
     // create the output format
     const UInt32 numChannels =
-            isValidChannelCount(audioSrcCfg.channelCountHint) ? audioSrcCfg.channelCountHint : 2;
+            audioSrcCfg.hasChannelCount() ? audioSrcCfg.getChannelCount() : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 
@@ -125,7 +125,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     }
 
     setChannelCount(m_outputFormat.NumberChannels());
-    setFrameRate(m_inputFormat.mSampleRate);
+    setSamplingRate(m_inputFormat.mSampleRate);
     // NOTE(uklotzde): This is what I found when migrating
     // the code from SoundSource (sample-oriented) to the new
     // AudioSource (frame-oriented) API. It is not documented
@@ -133,7 +133,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     setFrameCount(totalFrameCount/* - m_headerFrames*/);
 
     //Seek to position 0, which forces us to skip over all the header frames.
-    //This makes sure we're ready to just let the Analyser rip and it'll
+    //This makes sure we're ready to just let the Analyzer rip and it'll
     //get the number of samples it expects (ie. no header frames).
     seekSampleFrame(0);
 

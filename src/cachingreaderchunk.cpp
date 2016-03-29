@@ -1,10 +1,9 @@
-#include <QtDebug>
-
 #include "cachingreaderchunk.h"
 
-#include "sampleutil.h"
-#include "util/math.h"
+#include <QtDebug>
 
+#include "util/math.h"
+#include "util/sample.h"
 
 const SINT CachingReaderChunk::kInvalidIndex = -1;
 
@@ -116,6 +115,14 @@ void CachingReaderChunk::copySamples(
     DEBUG_ASSERT(0 <= sampleCount);
     DEBUG_ASSERT((sampleOffset + sampleCount) <= frames2samples(m_frameCount));
     SampleUtil::copy(sampleBuffer, m_sampleBuffer + sampleOffset, sampleCount);
+}
+
+void CachingReaderChunk::copySamplesReverse(
+        CSAMPLE* sampleBuffer, SINT sampleOffset, SINT sampleCount) const {
+    DEBUG_ASSERT(0 <= sampleOffset);
+    DEBUG_ASSERT(0 <= sampleCount);
+    DEBUG_ASSERT((sampleOffset + sampleCount) <= frames2samples(m_frameCount));
+    SampleUtil::copyReverse(sampleBuffer, m_sampleBuffer + sampleOffset, sampleCount);
 }
 
 CachingReaderChunkForOwner::CachingReaderChunkForOwner(

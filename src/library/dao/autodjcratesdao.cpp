@@ -1,8 +1,8 @@
 #include <QtDebug>
 #include <QtSql>
 
-#include "playerinfo.h"
-#include "playermanager.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/settingsdao.h"
 #include "library/dao/trackdao.h"
@@ -16,7 +16,7 @@ static const int kLeastPreferredPercent = 15;
 AutoDJCratesDAO::AutoDJCratesDAO(QSqlDatabase& a_rDatabase,
                                  TrackDAO& a_rTrackDAO, CrateDAO& a_rCrateDAO,
                                  PlaylistDAO &a_rPlaylistDAO,
-                                 ConfigObject<ConfigValue>* a_pConfig)
+                                 UserSettingsPointer a_pConfig)
         : m_rDatabase(a_rDatabase),
           m_rTrackDAO(a_rTrackDAO),
           m_rCrateDAO(a_rCrateDAO),
@@ -521,8 +521,8 @@ void AutoDJCratesDAO::slotTrackDirty(TrackId trackId) {
     if (pTrack == NULL) {
         return;
     }
-    int iPlayed = pTrack->getTimesPlayed();
-    if (iPlayed == 0) {
+    const PlayCounter playCounter(pTrack->getPlayCounter());
+    if (playCounter.getTimesPlayed() == 0) {
         return;
     }
 
@@ -534,8 +534,8 @@ void AutoDJCratesDAO::slotTrackDirty(TrackId trackId) {
             AUTODJCRATESTABLE_TRACKID " = :track_id AND "
             AUTODJCRATESTABLE_TIMESPLAYED " = :oldplayed");
     oQuery.bindValue(":track_id", trackId.toVariant());
-    oQuery.bindValue(":oldplayed", iPlayed - 1);
-    oQuery.bindValue(":newplayed", iPlayed);
+    oQuery.bindValue(":oldplayed", playCounter.getTimesPlayed() - 1);
+    oQuery.bindValue(":newplayed", playCounter.getTimesPlayed());
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
         return;
@@ -982,4 +982,3 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(const int iPlaylistId) {
     }
     return iTrackId;
 }
-

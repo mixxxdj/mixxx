@@ -27,15 +27,21 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
-        const QString& trackLocation,
+        const QFileInfo& fileInfo) {
+    SecurityTokenPointer pToken(Sandbox::openSecurityToken(
+        QFileInfo(fileInfo), true));
+    return extractEmbeddedCover(fileInfo, pToken);
+}
+
+//static
+QImage CoverArtUtils::extractEmbeddedCover(
+        const QFileInfo& fileInfo,
         SecurityTokenPointer pToken) {
-    SoundSourceProxy proxy(trackLocation, pToken);
-    QImage coverArt;
-    if (OK == proxy.parseTrackMetadataAndCoverArt(nullptr, &coverArt)) {
-        return coverArt;
-    } else {
-        return QImage();
-    }
+    // TODO(uklotzde): Resolve the TrackPointer from the track cache
+    // to avoid accessing reading the file while it is written.
+    TrackPointer pTrack(
+            TrackInfoObject::newTemporary(fileInfo, pToken));
+    return SoundSourceProxy(pTrack).parseCoverImage();
 }
 
 //static
@@ -45,10 +51,8 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
             qDebug() << "CoverArtUtils::loadCover METADATA cover with empty trackLocation.";
             return QImage();
         }
-        SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-            QFileInfo(info.trackLocation), true);
-        return CoverArtUtils::extractEmbeddedCover(info.trackLocation,
-                                                   pToken);
+        const QFileInfo fileInfo(info.trackLocation);
+        return CoverArtUtils::extractEmbeddedCover(fileInfo);
     } else if (info.type == CoverInfo::FILE) {
         if (info.trackLocation.isEmpty()) {
             qDebug() << "CoverArtUtils::loadCover FILE cover with empty trackLocation."
@@ -70,8 +74,11 @@ QImage CoverArtUtils::loadCover(const CoverInfo& info) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(
             cover, true);
         return QImage(coverPath);
+    } else if (info.type == CoverInfo::NONE) {
+        return QImage();
     } else {
-        qDebug() << "CoverArtUtils::loadCover bad type";
+        qDebug() << "CoverArtUtils::loadCover unhandled type";
+        DEBUG_ASSERT(false);
         return QImage();
     }
 }
@@ -85,10 +92,8 @@ CoverArt CoverArtUtils::guessCoverArt(TrackPointer pTrack) {
         return art;
     }
 
-    const QFileInfo trackInfo = pTrack->getFileInfo();
-    const QString trackLocation = trackInfo.absoluteFilePath();
-
-    art.image = extractEmbeddedCover(trackLocation, pTrack->getSecurityToken());
+    const QFileInfo fileInfo(pTrack->getFileInfo());
+    art.image = extractEmbeddedCover(fileInfo, pTrack->getSecurityToken());
     if (!art.image.isNull()) {
         art.info.hash = calculateHash(art.image);
         art.info.coverLocation = QString();
@@ -98,7 +103,7 @@ CoverArt CoverArtUtils::guessCoverArt(TrackPointer pTrack) {
     }
 
     QLinkedList<QFileInfo> possibleCovers = findPossibleCoversInFolder(
-        trackInfo.absolutePath());
+            fileInfo.absolutePath());
     art = selectCoverArtForTrack(pTrack.data(), possibleCovers);
     if (art.info.type == CoverInfo::FILE) {
         qDebug() << "CoverArtUtils::guessCoverArt found file art" << art;

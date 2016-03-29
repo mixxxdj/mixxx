@@ -5,10 +5,11 @@
 #include <QTime>
 //#include <QLinearGradient>
 
-#include "util.h"
-#include "waveformrendererabstract.h"
 #include "skin/skincontext.h"
+#include "util/class.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "util/performancetimer.h"
 
 class ControlObject;
 class ControlObjectSlave;
@@ -33,7 +34,7 @@ class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
     ControlObjectSlave* m_pLoopControl;
 
     QColor m_color;
-    QTime m_timer;
+    PerformanceTimer m_timer;
     int m_remainingTimeTriggerSeconds;
     int m_blinkingPeriodMillis;
 

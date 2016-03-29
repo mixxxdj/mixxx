@@ -2,7 +2,6 @@
 
 #include <QtAlgorithms>
 #include <QtDebug>
-#include <QTime>
 #include <QUrl>
 
 #include "library/basesqltablemodel.h"
@@ -13,13 +12,14 @@
 #include "library/bpmdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "library/queryutil.h"
-#include "playermanager.h"
-#include "playerinfo.h"
+#include "mixer/playermanager.h"
+#include "mixer/playerinfo.h"
 #include "track/keyutils.h"
-#include "metadata/trackmetadata.h"
+#include "track/trackmetadata.h"
 #include "util/time.h"
 #include "util/dnd.h"
 #include "util/assert.h"
+#include "util/performancetimer.h"
 
 static const bool sDebug = false;
 
@@ -105,6 +105,8 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Preview"), 50);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_COVERART,
                         tr("Cover Art"), 90);
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
+                        tr("Replay Gain"), 50);
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -161,6 +163,9 @@ QVariant BaseSqlTableModel::headerData(int section, Qt::Orientation orientation,
         return widthValue;
     } else if (role == TrackModel::kHeaderNameRole && orientation == Qt::Horizontal) {
         return m_headerInfo.value(section).value(role);
+    } else if (role == Qt::ToolTipRole && orientation == Qt::Horizontal) {
+        QVariant tooltip = m_headerInfo.value(section).value(role);
+        if (tooltip.isValid()) return tooltip;
     }
     return QAbstractTableModel::headerData(section, orientation, role);
 }
@@ -172,7 +177,8 @@ bool BaseSqlTableModel::isColumnHiddenByDefault(int column) {
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION)) ||
-            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST))) {
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN))) {
         return true;
     }
     return false;
@@ -197,7 +203,7 @@ void BaseSqlTableModel::select() {
         qDebug() << this << "select()";
     }
 
-    QTime time;
+    PerformanceTimer time;
     time.start();
 
     // Prepare query for id and all columns not in m_trackSource
@@ -307,8 +313,8 @@ void BaseSqlTableModel::select() {
         endInsertRows();
     }
 
-    int elapsed = time.elapsed();
-    qDebug() << this << "select() took" << elapsed << "ms" << rowInfo.size();
+    qDebug() << this << "select() took" << time.elapsed().debugMillisWithUnit()
+             << rowInfo.size();
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,
@@ -559,7 +565,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = Time::formatSeconds(duration, false);
+                    value = Time::formatSeconds(duration);
                 } else {
                     value = QString();
                 }
@@ -582,9 +588,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
-                if (Qt::DisplayRole == role) {
-                    value = Mixxx::TrackMetadata::formatCalendarYear(value.toString());
-                }
+                value = Mixxx::TrackMetadata::formatCalendarYear(value.toString());
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
                 int track_number = value.toInt();
                 if (track_number <= 0) {
@@ -613,8 +617,9 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                         value = KeyUtils::keyToString(key);
                     }
                 }
-                // Otherwise, just use the column value.
-            }
+            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
+                value = Mixxx::ReplayGain::ratioToString(value.toDouble());
+            } // Otherwise, just use the column value.
 
             break;
         case Qt::EditRole:
@@ -695,7 +700,6 @@ bool BaseSqlTableModel::setData(
     // Do not save the track here. Changing the track dirties it and the caching
     // system will automatically save the track once it is unloaded from
     // memory. rryan 10/2010
-    //m_trackDAO.saveTrack(pTrack);
 
     return true;
 }
@@ -722,7 +726,8 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
         return defaultFlags;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
@@ -837,25 +842,27 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setComposer(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) == column) {
         pTrack->setGrouping(value.toString());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) == column) {
-        pTrack->setType(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) == column) {
         pTrack->setTrackNumber(value.toString());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION) == column) {
-        pTrack->setLocation(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
         pTrack->setComment(value.toString());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) == column) {
-        pTrack->setDuration(value.toInt());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) == column) {
-        pTrack->setBitrate(value.toInt());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
         // QVariant::toFloat needs >= QT 4.6.x
         pTrack->setBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
-        pTrack->setPlayedAndUpdatePlaycount(value.toBool());
+        // Update both the played flag and the number of times played
+        pTrack->updatePlayCounter(value.toBool());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) == column) {
-        pTrack->setTimesPlayed(value.toInt());
+        const int timesPlayed = value.toInt();
+        if (0 < timesPlayed) {
+            // Preserve the played flag and only set the number of times played
+            PlayCounter playCounter(pTrack->getPlayCounter());
+            playCounter.setTimesPlayed(timesPlayed);
+            pTrack->setPlayCounter(playCounter);
+        } else {
+            // Reset both the played flag and the number of times played
+            pTrack->resetPlayCounter();
+        }
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
         StarRating starRating = qVariantValue<StarRating>(value);
         pTrack->setRating(starRating.starCount());
@@ -863,7 +870,14 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setKeyText(value.toString(),
                            mixxx::track::io::key::USER);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
-        pTrack->setBpmLock(value.toBool());
+        pTrack->setBpmLocked(value.toBool());
+    } else {
+        // We never should get up to this point!
+        DEBUG_ASSERT_AND_HANDLE(false) {
+            qWarning() << "Column"
+                    << m_tableColumnCache.columnNameForFieldIndex(column)
+                    << "is not editable!";
+        }
     }
 }
 

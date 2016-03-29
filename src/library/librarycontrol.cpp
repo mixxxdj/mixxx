@@ -8,7 +8,7 @@
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "library/library.h"
@@ -52,19 +52,16 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_pLibrary(pLibrary),
           m_pLibraryWidget(NULL),
           m_pSidebarWidget(NULL),
-          m_numDecks("[Master]", "num_decks"),
-          m_numSamplers("[Master]", "num_samplers"),
-          m_numPreviewDecks("[Master]", "num_preview_decks") {
+          m_numDecks("[Master]", "num_decks", this),
+          m_numSamplers("[Master]", "num_samplers", this),
+          m_numPreviewDecks("[Master]", "num_preview_decks", this) {
 
     slotNumDecksChanged(m_numDecks.get());
     slotNumSamplersChanged(m_numSamplers.get());
     slotNumPreviewDecksChanged(m_numPreviewDecks.get());
-    connect(&m_numDecks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumDecksChanged(double)));
-    connect(&m_numSamplers, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumSamplersChanged(double)));
-    connect(&m_numPreviewDecks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumPreviewDecksChanged(double)));
+    m_numDecks.connectValueChanged(SLOT(slotNumDecksChanged(double)));
+    m_numSamplers.connectValueChanged(SLOT(slotNumSamplersChanged(double)));
+    m_numPreviewDecks.connectValueChanged(SLOT(slotNumPreviewDecksChanged(double)));
 
     // Make controls for library navigation and track loading.
 

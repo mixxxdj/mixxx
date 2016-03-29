@@ -5,9 +5,8 @@
 #include <QObject>
 #include <QString>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
-#include "controlobjectthread.h"
 #include "recording/defs_recording.h"
 
 //
@@ -23,12 +22,13 @@
 
 class EngineMaster;
 class ControlPushButton;
+class ControlObjectSlave;
 
 class RecordingManager : public QObject
 {
     Q_OBJECT
   public:
-    RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine);
+    RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine);
     virtual ~RecordingManager();
 
 
@@ -65,13 +65,13 @@ class RecordingManager : public QObject
 
   private:
     QString formatDateTimeForFilename(QDateTime dateTime) const;
-    ControlObjectThread* m_recReady;
+    ControlObjectSlave* m_recReady;
     ControlObject* m_recReadyCO;
     ControlPushButton* m_pToggleRecording;
 
     long getFileSplitSize();
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QString m_recordingDir;
     // the base file
     QString m_recording_base_file;

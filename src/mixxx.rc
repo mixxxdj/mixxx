@@ -59,10 +59,10 @@ BEGIN
         END
     END
 
-    //BLOCK "VarFileInfo"
-    //BEGIN
-        // English language (0x409) Unicode (1200).
-    //    VALUE "Translation", 0x409, 1200
+    BLOCK "VarFileInfo"
+    BEGIN
+        // Neutral Language (0x0) Unicode (1200).
+        VALUE "Translation", 0x0, 1200
 
-    //END
+    END
 END
