@@ -1,6 +1,6 @@
 /**
  * Hercules P32 DJ controller script for Mixxx 2.0
- * Thanks to Hercules by supporting the development of this mapping by donating a controller
+ * Thanks to Hercules by supporting the development of this mapping by providing a controller
  * See http://mixxx.org/wiki/doku.php/hercules_p32_dj for instructions on how to use this mapping
  * 
  * Copyright (C) 2016 Be <be.0@gmx.com>
