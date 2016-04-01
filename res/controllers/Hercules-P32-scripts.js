@@ -20,18 +20,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-Control = function (signals, group, inOptions, outOptions) {
+var Control = function (signals, deck, inOptions, outOptions) {
     var that = this;
     this.midi = {status: signals[0], note: signals[1]};
-    this.group = group;
+    this.deck = deck;
     
     this.setup = function (inOptions, outOptions) { that.inSetup(inOptions); that.outSetup(outOptions) };
-    this.outConnect = function () { engine.connectControl(that.group, that.outCo, that.output); };
-    this.outDisconnect = function () { engine.connectControl(that.group, that.outCo, that.output, true); };
-    this.outTrigger = function() { engine.trigger(that.group, that.outCo); };
-    this.send = function (value) { midi.sendShortMsg(that.midi.status, that.midi.note, value) };
     
     this.inSetup = function (inOptions) {
+        if (inOptions === null) {
+            print("Control.inSetup() called with null argument.");
+            return;
+        }
         this.inCo = inOptions[0];
         var inFunc = inOptions[1];
         if (inFunc === undefined) {inFunc = function (value) {return value}};
@@ -43,12 +43,12 @@ Control = function (signals, group, inOptions, outOptions) {
             if (onlyOnPress) {
                 this.input = function (channel, control, value, status, group) {
                     if (value) {
-                        engine.setValue(that.group, that.inCo, inFunc.call(that, value));
+                        engine.setValue(that.deck.currentDeck, that.inCo, inFunc.call(that, value));
                     }
                 }
             } else {
                 this.input = function (channel, control, value, status, group) {
-                    engine.setValue(that.group, that.inCo, inFunc.call(that, value));
+                    engine.setValue(that.deck.currentDeck, that.inCo, inFunc.call(that, value));
                 }
             }
         }
@@ -56,7 +56,24 @@ Control = function (signals, group, inOptions, outOptions) {
     this.inSetup(inOptions);
     this.previousInput = null;
     
+   var outConnection;
+   this.outConnect = function () {
+      outConnection = engine.connectControl(that.deck.currentDeck, that.outCo, that.output);
+   };
+   this.outDisconnect = function () { outConnection.disconnect(); };
+//  this.outTrigger = function() { outConnection.trigger(); };
+//     this.outConnect = function () { engine.connectControl(that.deck.currentDeck, that.outCo, that.output); };
+//     this.outDisconnect = function () {
+//         print('disconnecting: ' + that.deck.currentDeck + ' , ' + that.outCo + ' , ' + that.output);
+//         engine.connectControl(that.deck.currentDeck, that.outCo, that.output, true);};
+    this.outTrigger = function() { engine.trigger(that.deck.currentDeck, that.outCo); };
+    this.send = function (value) { midi.sendShortMsg(that.midi.status, that.midi.note, value) };
+    
     this.outSetup = function (outOptions) {
+        if (outOptions === null) {
+            print("Control.outSetup() called with null argument.");
+            return;
+        }
         this.outCo = outOptions[0];
         var outFunc = outOptions[1];
         var connect = outOptions[2];
@@ -71,46 +88,52 @@ Control = function (signals, group, inOptions, outOptions) {
                 that.send(outFunc.call(that, value));
             }
         }
-        if (connect) { this.outDisconnect(); this.outConnect() };
+        if (connect) { this.outConnect() };
         if (trigger) { this.outTrigger() };
     }
     this.outSetup(outOptions);
     this.previousOutput = null;
 }
 
-// for COs that only get set to 1
-ActionButton = function (signals, group, inCo) {
-    var that = this;
-    Control.call(this, signals, group,
-                [inCo, function () { return 1; }],
-                null);
-}
-
 // for buttons that toggle a binary CO
-ToggleButton = function (signals, group, co, on, off, onlyOnPress) {
+ToggleButton = function (signals, deck, co, on, off, onlyOnPress) {
     var that = this;
-    if (onlyOnPress === undefined) {onlyOnPress = true};
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
-    Control.call(this, signals, group,
-                [co, function () { return ! engine.getValue(this.group, this.inCo) }, onlyOnPress],
-                [co, function () { return (engine.getValue(this.group, this.outCo)) ? on : off }]);
+    Control.call(this, signals, deck,
+                [co, function () { return ! engine.getValue(this.deck.currentDeck, this.inCo) }, onlyOnPress],
+                [co, function () { return (engine.getValue(this.deck.currentDeck, this.outCo)) ? on : off }]);
 }
+ToggleButton.prototype = Object.create(Control.prototype);
+ToggleButton.prototype.constructor = ToggleButton;
 
-KnobLin = function (signals, group, co, low, high, min, max) {
+// for COs that only get set to 1
+ActionButton = function (signals, deck, inCo, onlyOnPress) {
     var that = this;
-    Controll.call(this, signals, group,
+    Control.call(this, signals, deck,
+                [inCo, function () { return 1; }, onlyOnPress],
+                null);
+}
+ActionButton.prototype = Object.create(Control.prototype);
+ActionButton.prototype.constructor = ActionButton;
+
+KnobLin = function (signals, deck, co, low, high, min, max) {
+    var that = this;
+    Controll.call(this, signals, deck,
                 [co, function (value) { script.absoluteLin(value, low, high, min, max) }, false],
                 null);
 }
+KnobLin.prototype = Object.create(Control.prototype);
+KnobLin.prototype.constructor = KnobLin;
 
-KnobNonLin = function (signals, group, co, low, mid, high, min, max) {
+KnobNonLin = function (signals, deck, co, low, mid, high, min, max) {
     var that = this;
-    Controll.call(this, signals, group,
+    Controll.call(this, signals, deck,
                 [co, function (value) { script.absoluteNonLin(value, low, mid, high, min, max) }, false],
                 null);
 }
-
+KnobNonLin.prototype = Object.create(Control.prototype);
+KnobNonLin.prototype.constructor = KnobNonLin;
 
 script.samplerRegEx = /\[Sampler(\d+)\]/
 script.channelRegEx = /\[Channel(\d+)\]/
@@ -138,20 +161,48 @@ P32.browse = function (channel, control, value, status, group) {
 
 P32.Deck = function (deckNumbers, channel) {
     var that = this;
+    var t = this;
     var loopSize = 4;
     this.shift = false;
     this.currentDeck = "[Channel" + deckNumbers[0] + "]";
     this.deckToggle = function () {
-        print(that.currentDeck);
-        var index = deckNumbers.indexOf(parseInt(script.channelRegEx.exec(that.currentDeck)[1]));
+        
+        var index = deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
         if (index === (deckNumbers.length - 1)) {
             index = 0;
         } else {
             index += 1;
         }
-        that.currentDeck = "[Channel" + deckNumbers[index] + "]";
-        print(that.currentDeck);
+        this.currentDeck = "[Channel" + deckNumbers[index] + "]";
+        
+        for (c in this) {
+            if (this.hasOwnProperty(c)) {
+                if (this[c] instanceof Control) {
+                    this[c].outConnect();
+                    this[c].outTrigger();
+                }
+            }
+        }
+        print("Switched to deck: " + this.currentDeck);
     }
+    
+    
+    this.sync = new ToggleButton([0x90 + channel, 0x08], this, 'sync_enabled');
+    this.cue = new Control([0x90 + channel, 0x09], this,
+                           ['cue_default', function (val) { return val / 127 }, false],
+                           ['cue_indicator', function (val) { return val * 127 }]);
+    this.play = new Control([0x90 + channel, 0x0A], this,
+                            ['play', function () { return ! engine.getValue(this.deck.currentDeck, this.inCo) }],
+                            ['play_indicator', function (val) { return val * 127 }]);
+    
+    this.keylock = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x08], this, 'keylock'); // sync shifted
+    this.quantize = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x09], this, 'quantize'); // cue shifted
+    this.playShifted = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this,
+                            ['play', function () { return ! engine.getValue(this.deck.currentDeck, this.inCo) }],
+                            ['play_indicator', function (val) { return val * 127 }]);
+    
+    
+    this.pfl = new ToggleButton([0x90 + channel, 0x10], this, 'pfl');
     
     this.eqKnob = function (channel, control, value, status, group) {
         engine.setParameter('[EqualizerRack1_' + that.currentDeck + '_Effect1]',
@@ -168,6 +219,7 @@ P32.Deck = function (deckNumbers, channel) {
             engine.setValue(that.currentDeck, 'LoadSelectedTrack', 1);
         }
     }
+//     this.loadTrack = new ActionButton([0x90 + channel, 0x0F], this, 'LoadSelectedTrack');
     
     this.ejectTrack = function (channel, control, value, status, group) {
         if (value) {
@@ -215,6 +267,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.tempoReset = function (channel, control, value, status, group) {
         if (value) {
             engine.setValue(that.currentDeck, 'rate', 0);
+//             that.deckToggle();
         }
     }
     
@@ -233,21 +286,4 @@ P32.Deck = function (deckNumbers, channel) {
             engine.setValue(that.currentDeck, 'loop_move', 1 * direction);
         }
     }
-
-    this.sync = new ToggleButton([0x90 + channel, 0x08], this.currentDeck, 'sync_enabled');
-    this.cue = new Control([0x90 + channel, 0x09], this.currentDeck,
-                           ['cue_default', function (val) { return val / 127 }, false],
-                           ['cue_indicator', function (val) { return val * 127 }]);
-    this.play = new Control([0x90 + channel, 0x0A], that.currentDeck,
-                            ['play', function () { print(that.currentDeck); return ! engine.getValue(this.group, this.inCo) }],
-                            ['play_indicator', function (val) { return val * 127 }]);
-    
-    this.keylock = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'keylock'); // sync shifted
-    this.quantize = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'quantize'); // cue shifted
-    this.playShifted = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck,
-                            ['play', function () { return ! engine.getValue(this.group, this.inCo) }],
-                            ['play_indicator', function (val) { return val * 127 }]);
-    
-    this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
-
 }
