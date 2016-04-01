@@ -147,6 +147,19 @@ P32.init = function () {
     // set loop sizes to 4
     midi.sendShortMsg(0xB1, 0x1B, 7);
     midi.sendShortMsg(0xB2, 0x1B, 7);
+    
+    for (var i = 1; i <= 4; i++) {
+        engine.softTakeover('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter1', true);
+        engine.softTakeover('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter2', true);
+        engine.softTakeover('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter3', true);
+        engine.softTakeover('[Channel'+i+']', 'volume', true);
+        if (i > 2) {
+            engine.softTakeoverIgnoreNextValue('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter1', true);
+            engine.softTakeoverIgnoreNextValue('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter2', true);
+            engine.softTakeoverIgnoreNextValue('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter3', true);
+            engine.softTakeoverIgnoreNextValue('[Channel'+i+']', 'volume', true);
+        }
+    }
 }
 
 P32.shutdown = function () {};
@@ -166,6 +179,17 @@ P32.Deck = function (deckNumbers, channel) {
     this.shift = false;
     this.currentDeck = "[Channel" + deckNumbers[0] + "]";
     this.deckToggle = function () {
+        engine.softTakeoverIgnoreNextValue('[EqualizerRack1_' + this.currentDeck + '_Effect1]', 'parameter1', true);
+        engine.softTakeoverIgnoreNextValue('[EqualizerRack1_' + this.currentDeck + '_Effect1]', 'parameter2', true);
+        engine.softTakeoverIgnoreNextValue('[EqualizerRack1_' + this.currentDeck + '_Effect1]', 'parameter3', true);
+        engine.softTakeoverIgnoreNextValue(this.currentDeck, 'volume');
+        for (var c in this) {
+            if (this.hasOwnProperty(c)) {
+                if (this[c] instanceof Control) {
+                    this[c].outDisconnect();
+                }
+            }
+        }
         
         var index = deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
         if (index === (deckNumbers.length - 1)) {
@@ -205,15 +229,15 @@ P32.Deck = function (deckNumbers, channel) {
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this, 'pfl');
     
     this.eqKnob = function (channel, control, value, status, group) {
-        engine.setParameter('[EqualizerRack1_' + that.currentDeck + '_Effect1]',
+        engine.setValue('[EqualizerRack1_' + that.currentDeck + '_Effect1]',
                         'parameter' + (control - 1),
-                        script.absoluteLin(value, 0, 1));
+                        script.absoluteNonLin(value, 0, 1, 4));
     }
     
     this.volume = function (channel, control, value, status, group) {
-        engine.setParameter(that.currentDeck, 'volume', script.absoluteLin(value, 0, 1));
+        engine.setValue(that.currentDeck, 'volume', script.absoluteNonLin(value, 0, 1, 5));
     }
-    
+
     this.loadTrack = function (channel, control, value, status, group) {
         if (value) {
             engine.setValue(that.currentDeck, 'LoadSelectedTrack', 1);
