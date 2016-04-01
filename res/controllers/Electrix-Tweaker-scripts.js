@@ -282,6 +282,7 @@ ElectrixTweaker.connectDeckControls = function (group, remove) {
         'track_samples': 'ElectrixTweaker.playButtonLED',
         'play': 'ElectrixTweaker.playButtonLED',
         'playposition': 'ElectrixTweaker.playButtonLED',
+        'cue_indicator': 'ElectrixTweaker.playButtonLED',
         'sync_enabled': 'ElectrixTweaker.syncLED',
         'keylock': 'ElectrixTweaker.keylockLED',
         'quantize': 'ElectrixTweaker.quantizeLED'
@@ -879,20 +880,24 @@ ElectrixTweaker.playButton = function (channel, control, value, status, group) {
     }
 }
 ElectrixTweaker.playButtonLED = function (value, group, control) {
-    if (engine.getValue(group, 'play')) {
-        if (
-            (control != 'playposition') // do not spam MIDI signals with each update in playposition while playing
-            && (
-                (! ElectrixTweaker.hotcuesPressed[group])
-                || ElectrixTweaker.playPressedWhileCueJuggling[group]
-            )
-        ) {
-            midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['green'])
-        }
-    } else if (engine.getValue(group, 'track_samples')) {
-        midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['red'])
+    if (control == 'cue_indicator' && value == 1) {
+        midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['yellow'])
     } else {
-        midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['off'])
+        if (engine.getValue(group, 'play')) {
+            if (
+                (control != 'playposition') // do not spam MIDI signals with each update in playposition while playing
+                && (
+                    (! ElectrixTweaker.hotcuesPressed[group])
+                    || ElectrixTweaker.playPressedWhileCueJuggling[group]
+                )
+            ) {
+                midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['green'])
+            }
+        } else if (engine.getValue(group, 'track_samples')) {
+            midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['red'])
+        } else {
+            midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['off'])
+        }
     }
 }
 
