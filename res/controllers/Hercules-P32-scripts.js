@@ -235,7 +235,7 @@ P32.Deck = function (deckNumbers, channel) {
     }
     
     this.volume = function (channel, control, value, status, group) {
-        engine.setValue(that.currentDeck, 'volume', script.absoluteNonLin(value, 0, 1, 5));
+        engine.setValue(that.currentDeck, 'volume', script.absoluteNonLin(value, 0, .25, 1));
     }
 
     this.loadTrack = function (channel, control, value, status, group) {
