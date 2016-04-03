@@ -230,7 +230,7 @@ void WMainMenuBar::initialize() {
     pViewShowEffects->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowEffects"),
-                                                  tr("Ctrl+5", "Menubar|View|Show Effect Rack"))));
+                                                  tr("Ctrl+3", "Menubar|View|Show Effect Rack"))));
     pViewShowEffects->setStatusTip(showEffectsText);
     pViewShowEffects->setWhatsThis(buildWhatsThis(showEffectsTitle, showEffectsText));
     createVisibilityControl(pViewShowEffects, ConfigKey("[EffectRack1]", "show"));
@@ -245,7 +245,7 @@ void WMainMenuBar::initialize() {
     pViewShowSamplers->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowSamplers"),
-                                                  tr("Ctrl+1", "Menubar|View|Show Samplers"))));
+                                                  tr("Ctrl+4", "Menubar|View|Show Samplers"))));
     pViewShowSamplers->setStatusTip(showSamplersText);
     pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
     createVisibilityControl(pViewShowSamplers, ConfigKey("[Samplers]", "show_samplers"));
@@ -263,7 +263,7 @@ void WMainMenuBar::initialize() {
     pViewShow4Decks->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_Show4Decks"),
-                                                  tr("Ctrl+1", "Menubar|View|Show 4 Decks"))));
+                                                  tr("Ctrl+5", "Menubar|View|Show 4 Decks"))));
     pViewShow4Decks->setStatusTip(show4DecksText);
     pViewShow4Decks->setWhatsThis(buildWhatsThis(show4DecksTitle, show4DecksText));
     connect(pViewShow4Decks, SIGNAL(toggled(bool)),
@@ -282,7 +282,7 @@ void WMainMenuBar::initialize() {
     pViewVinylControl->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(
             ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowVinylControl"),
-            tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"))));
+            tr("Ctrl+6", "Menubar|View|Show Vinyl Control Section"))));
     pViewVinylControl->setStatusTip(showVinylControlText);
     pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
     createVisibilityControl(pViewVinylControl, ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
@@ -298,7 +298,7 @@ void WMainMenuBar::initialize() {
     pViewShowMixer->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowMixer"),
-                                                  tr("Ctrl+1", "Menubar|View|Show Mixer"))));
+                                                  tr("Ctrl+7", "Menubar|View|Show Mixer"))));
     pViewShowMixer->setStatusTip(showMixerText);
     pViewShowMixer->setWhatsThis(buildWhatsThis(showMixerTitle, showMixerText));
     createVisibilityControl(pViewShowMixer, ConfigKey("[Master]", "show_mixer"));
@@ -313,7 +313,7 @@ void WMainMenuBar::initialize() {
     pViewShowEqs->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowEqs"),
-                                                  tr("Ctrl+1", "Menubar|View|Show Eqs"))));
+                                                  tr("Ctrl+8", "Menubar|View|Show Eqs"))));
     pViewShowEqs->setStatusTip(showEqsText);
     pViewShowEqs->setWhatsThis(buildWhatsThis(showEqsTitle, showEqsText));
     createVisibilityControl(pViewShowEqs, ConfigKey("[Master]", "show_eqs"));
@@ -328,7 +328,7 @@ void WMainMenuBar::initialize() {
     m_pViewShowXFader->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowXFader"),
-                                                  tr("Ctrl+1", "Menubar|View|Show Crossfader"))));
+                                                  tr("Ctrl+9", "Menubar|View|Show Crossfader"))));
     m_pViewShowXFader->setStatusTip(showXFaderText);
     m_pViewShowXFader->setWhatsThis(buildWhatsThis(showXFaderTitle, showXFaderText));
     createVisibilityControl(m_pViewShowXFader, ConfigKey("[Master]", "show_xfader"));
@@ -344,7 +344,7 @@ void WMainMenuBar::initialize() {
     pViewShowPreviewDeck->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowPreviewDeck"),
-                                                  tr("Ctrl+4", "Menubar|View|Show Preview Deck"))));
+                                                  tr("Ctrl+0", "Menubar|View|Show Preview Deck"))));
     pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
@@ -359,7 +359,7 @@ void WMainMenuBar::initialize() {
     pViewShowCoverArt->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowCoverArt"),
-                                                  tr("Ctrl+6", "Menubar|View|Show Cover Art"))));
+                                                  tr("Ctrl+'", "Menubar|View|Show Cover Art"))));
     pViewShowCoverArt->setStatusTip(showCoverArtText);
     pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
     createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
