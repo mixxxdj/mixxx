@@ -191,6 +191,22 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
+
+    QString showLibraryTitle = tr("Show Library");
+    QString showLibraryText = tr("Show the library of the Mixxx interfce.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShowLibrary = new QAction(showLibraryTitle, this);
+    pViewShowLibrary->setCheckable(true);
+    pViewShowLibrary->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowLibrary"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Library"))));
+    pViewShowLibrary->setStatusTip(showLibraryText);
+    pViewShowLibrary->setWhatsThis(buildWhatsThis(showLibraryTitle, showLibraryText));
+    createVisibilityControl(pViewShowLibrary, ConfigKey("[Library]", "show_library"));
+    pViewMenu->addAction(pViewShowLibrary);
+
+
     QString showMicrophoneTitle = tr("Show Microphone Section");
     QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
             " " + mayNotBeSupported;
