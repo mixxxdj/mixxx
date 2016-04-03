@@ -320,6 +320,22 @@ void WMainMenuBar::initialize() {
     pViewMenu->addAction(pViewShowEqs);
 
 
+    QString showXFaderTitle = tr("Show Crossfader");
+    QString showXFaderText = tr("Show the crossfader on the mixer section.") +
+            " " + mayNotBeSupported;
+    QAction* m_pViewShowXFader = new QAction(showXFaderTitle, this);
+    m_pViewShowXFader->setCheckable(true);
+    m_pViewShowXFader->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowXFader"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Crossfader"))));
+    m_pViewShowXFader->setStatusTip(showXFaderText);
+    m_pViewShowXFader->setWhatsThis(buildWhatsThis(showXFaderTitle, showXFaderText));
+    createVisibilityControl(m_pViewShowXFader, ConfigKey("[Master]", "show_xfader"));
+    pViewMenu->addAction(m_pViewShowXFader);
+
+
+
     QString showPreviewDeckTitle = tr("Show Preview Deck");
     QString showPreviewDeckText = tr("Show the preview deck in the Mixxx interface.") +
             " " + mayNotBeSupported;

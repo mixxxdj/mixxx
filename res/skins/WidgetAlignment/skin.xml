@@ -1,0 +1,43 @@
+<!DOCTYPE skin>
+<skin>
+  <manifest>
+    <title>WidgetAlignment</title>
+    <author>Ferran Pujol Camins</author>
+    <version>1.12.0.01</version>
+    <description>An example skin showing how to properly align widgets.</description>
+    <language>en</language>
+    <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+    <attributes>
+      <attribute config_key="[Master],num_decks">2</attribute>
+    </attributes>
+  </manifest>
+
+  <ObjectName>Mixxx</ObjectName>
+  <Style src="skin:style.qss"/>
+
+  <MinimumSize>500,200</MinimumSize>
+  <SizePolicy>me,me</SizePolicy>
+  <Layout>horizontal</Layout>
+
+  <Children>
+    <WidgetGroup>
+      <ObjectName>SkinStuff</ObjectName>
+      <Size>200,10me</Size>
+      <Children></Children>
+    </WidgetGroup>
+<!--
+    <WidgetGroup>
+        <ObjectName>aaa</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+-->
+            <Time>
+              <ObjectName>Clock</ObjectName>
+              <SizePolicy>min,min</SizePolicy>
+            </Time>
+<!--
+        </Children>
+    </WidgetGroup>
+-->
+  </Children>
+</skin>

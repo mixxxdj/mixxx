@@ -1,0 +1,14 @@
+#Mixxx {
+  background-color: #000000;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#SkinStuff {
+  background-color: #100030;
+}
+
+#Clock {
+  font: bold 23px;
+  color: #FFFFFF;
+  background-color: #300010;
+}

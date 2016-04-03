@@ -197,6 +197,10 @@
 											</Connection>
 										</SliderComposed>
 									</Children>
+	      	                      <Connection>
+									<ConfigKey>[Master],show_xfader</ConfigKey>
+									<BindProperty>visible</BindProperty>
+								  </Connection>
 								</WidgetGroup>
         					</Children>
         				  </WidgetGroup>
