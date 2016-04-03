@@ -176,19 +176,20 @@ void WMainMenuBar::initialize() {
     QMenu* pViewMenu = new QMenu(tr("&View"));
 
     QString mayNotBeSupported = tr("May not be supported on all skins.");
-    QString showSamplersTitle = tr("Show Samplers");
-    QString showSamplersText = tr("Show the sample deck section of the Mixxx interface.") +
+
+    QString maximizeLibraryTitle = tr("Maximize Library");
+    QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
             " " + mayNotBeSupported;
-    QAction* pViewShowSamplers = new QAction(showSamplersTitle, this);
-    pViewShowSamplers->setCheckable(true);
-    pViewShowSamplers->setShortcut(
+    QAction* pViewMaximizeLibrary = new QAction(maximizeLibraryTitle, this);
+    pViewMaximizeLibrary->setCheckable(true);
+    pViewMaximizeLibrary->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "ViewMenu_ShowSamplers"),
-                                                  tr("Ctrl+1", "Menubar|View|Show Samplers"))));
-    pViewShowSamplers->setStatusTip(showSamplersText);
-    pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
-    createVisibilityControl(pViewShowSamplers, ConfigKey("[Samplers]", "show_samplers"));
-    pViewMenu->addAction(pViewShowSamplers);
+                                                  "ViewMenu_MaximizeLibrary"),
+                                                  tr("Space", "Menubar|View|Maximize Library"))));
+    pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
+    pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
+    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
+    pViewMenu->addAction(pViewMaximizeLibrary);
 
     QString showMicrophoneTitle = tr("Show Microphone Section");
     QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
@@ -203,6 +204,40 @@ void WMainMenuBar::initialize() {
     pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
     createVisibilityControl(pViewShowMicrophone, ConfigKey("[Microphone]", "show_microphone"));
     pViewMenu->addAction(pViewShowMicrophone);
+
+
+    QString showEffectsTitle = tr("Show Effect Rack");
+    QString showEffectsText = tr("Show the effect rack in the Mixxx interface.") +
+    " " + mayNotBeSupported;
+    QAction* pViewShowEffects = new QAction(showEffectsTitle, this);
+    pViewShowEffects->setCheckable(true);
+    pViewShowEffects->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowEffects"),
+                                                  tr("Ctrl+5", "Menubar|View|Show Effect Rack"))));
+    pViewShowEffects->setStatusTip(showEffectsText);
+    pViewShowEffects->setWhatsThis(buildWhatsThis(showEffectsTitle, showEffectsText));
+    createVisibilityControl(pViewShowEffects, ConfigKey("[EffectRack1]", "show"));
+    pViewMenu->addAction(pViewShowEffects);
+
+
+    QString showSamplersTitle = tr("Show Samplers");
+    QString showSamplersText = tr("Show the sample deck section of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShowSamplers = new QAction(showSamplersTitle, this);
+    pViewShowSamplers->setCheckable(true);
+    pViewShowSamplers->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowSamplers"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Samplers"))));
+    pViewShowSamplers->setStatusTip(showSamplersText);
+    pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
+    createVisibilityControl(pViewShowSamplers, ConfigKey("[Samplers]", "show_samplers"));
+    pViewMenu->addAction(pViewShowSamplers);
+
+
+    pViewMenu->addSeparator();
+
 
 #ifdef __VINYLCONTROL__
     QString showVinylControlTitle = tr("Show Vinyl Control Section");
@@ -220,6 +255,7 @@ void WMainMenuBar::initialize() {
     pViewMenu->addAction(pViewVinylControl);
 #endif
 
+
     QString showPreviewDeckTitle = tr("Show Preview Deck");
     QString showPreviewDeckText = tr("Show the preview deck in the Mixxx interface.") +
             " " + mayNotBeSupported;
@@ -233,20 +269,6 @@ void WMainMenuBar::initialize() {
     pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
     pViewMenu->addAction(pViewShowPreviewDeck);
-
-    QString showEffectsTitle = tr("Show Effect Rack");
-    QString showEffectsText = tr("Show the effect rack in the Mixxx interface.") +
-    " " + mayNotBeSupported;
-    QAction* pViewShowEffects = new QAction(showEffectsTitle, this);
-    pViewShowEffects->setCheckable(true);
-    pViewShowEffects->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "ViewMenu_ShowEffects"),
-                                                  tr("Ctrl+5", "Menubar|View|Show Effect Rack"))));
-    pViewShowEffects->setStatusTip(showEffectsText);
-    pViewShowEffects->setWhatsThis(buildWhatsThis(showEffectsTitle, showEffectsText));
-    createVisibilityControl(pViewShowEffects, ConfigKey("[EffectRack1]", "show"));
-    pViewMenu->addAction(pViewShowEffects);
 
 
     QString showCoverArtTitle = tr("Show Cover Art");
@@ -262,21 +284,6 @@ void WMainMenuBar::initialize() {
     pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
     createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
     pViewMenu->addAction(pViewShowCoverArt);
-
-
-    QString maximizeLibraryTitle = tr("Maximize Library");
-    QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
-            " " + mayNotBeSupported;
-    QAction* pViewMaximizeLibrary = new QAction(maximizeLibraryTitle, this);
-    pViewMaximizeLibrary->setCheckable(true);
-    pViewMaximizeLibrary->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "ViewMenu_MaximizeLibrary"),
-                                                  tr("Space", "Menubar|View|Maximize Library"))));
-    pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
-    pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
-    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
-    pViewMenu->addAction(pViewMaximizeLibrary);
 
 
     pViewMenu->addSeparator();
@@ -301,6 +308,7 @@ void WMainMenuBar::initialize() {
     pViewMenu->addAction(pViewFullScreen);
 
     addMenu(pViewMenu);
+
 
     // OPTIONS MENU
     QMenu* pOptionsMenu = new QMenu(tr("&Options"));
