@@ -13,6 +13,15 @@
         <controls>
             <control>
                 <group>[Master]</group>
+                <key>maximize_library</key>
+                <status>0x90</status>1
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
                 <key>headSplit</key>
                 <status>0x93</status>1
                 <midino>0x01</midino>
