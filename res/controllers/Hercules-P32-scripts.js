@@ -295,6 +295,15 @@ P32.Deck = function (deckNumbers, channel) {
         midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(loopSize) / Math.log(2));
     }
     
+    this.loopMoveEncoder = function (channel, control, value, status, group) {
+        var direction = (value === 127) ? -1 : 1;
+        if (loopSize < 1) {
+            engine.setValue(that.currentDeck, 'loop_move', loopSize * direction);
+        } else {
+            engine.setValue(that.currentDeck, 'loop_move', 1 * direction);
+        }
+    }
+    
     this.loopActive = function (channel, control, value, status, group) {
         if (value) {
             if (engine.getValue(that.currentDeck, 'loop_enabled')) {
@@ -305,7 +314,7 @@ P32.Deck = function (deckNumbers, channel) {
         }
     }
     
-    this.tempo = function (channel, control, value, status, group) {
+    this.tempoEncoder = function (channel, control, value, status, group) {
         var direction = (value === 127) ? -1 : 1;
         engine.setValue(that.currentDeck, 'rate', engine.getValue(that.currentDeck, 'rate') + (.01 * direction));
     }
@@ -320,16 +329,15 @@ P32.Deck = function (deckNumbers, channel) {
     this.filter = function (channel, control, value, status, group) {
         // TODO: Make this smoother?
         var direction = (value === 127) ? -1 : 1;
-        engine.setValue('[QuickEffectRack1_'+ that.currentDeck +']', 'super1',
-                        engine.getValue('[QuickEffectRack1_'+ that.currentDeck +']', 'super1') + (.05 * direction));
+//         if (that.filterEncoderPressed) {
+//             engine.setValue(that.currentDeck, 'beatjump', direction);
+//         } else {
+            engine.setValue('[QuickEffectRack1_'+ that.currentDeck +']', 'super1',
+                            engine.getValue('[QuickEffectRack1_'+ that.currentDeck +']', 'super1') + (.05 * direction));
     }
     
-    this.loopMove = function (channel, control, value, status, group) {
-        var direction = (value === 127) ? -1 : 1;
-        if (loopSize < 1) {
-            engine.setValue(that.currentDeck, 'loop_move', loopSize * direction);
-        } else {
-            engine.setValue(that.currentDeck, 'loop_move', 1 * direction);
-        }
+    this.filterPress = function (channel, control, value, status, group) {
+//         that.filterEncoderPressed = (value === 127) ? true : false;
+        return;
     }
 }

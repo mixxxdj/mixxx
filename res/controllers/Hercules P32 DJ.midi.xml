@@ -13,7 +13,6 @@
         <controls>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.tempo</key>
                 <key>P32.leftDeck.hotcueButton1.input</key>
                 <status>0x91</status>1
                 <midino>0x60</midino>
@@ -299,6 +298,10 @@
                 <options>
                     <script-binding/>
                 </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>P32.leftDeck.loopMoveEncoder</key>
                 <status>0xB4</status>
                 <midino>0x0A</midino>
                 <options>
@@ -388,7 +391,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopMove</key>
+                <key>P32.leftDeck.tempoEncoder</key>
                 <status>0xB4</status>
                 <midino>0x05</midino>
                 <options>
@@ -532,7 +535,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopMovePress</key>
+                <key>P32.leftDeck.tempoReset</key>
                 <status>0x94</status>
                 <midino>0x02</midino>
                 <options>
@@ -541,7 +544,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.tempoReset</key>
+                <key>P32.leftDeck.loopActive</key>
                 <status>0x94</status>
                 <midino>0x01</midino>
                 <options>
@@ -557,10 +560,9 @@
                     <script-binding/>
                 </options>
             </control>
-            
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.tempo</key>
+                <key>P32.rightDeck.loopMoveEncoder</key>
                 <status>0xB5</status>
                 <midino>0x0A</midino>
                 <options>
@@ -650,7 +652,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopMove</key>
+                <key>P32.rightDeck.tempoEncoder</key>
                 <status>0xB5</status>
                 <midino>0x05</midino>
                 <options>
@@ -794,7 +796,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopMovePress</key>
+                <key>P32.rightDeck.tempoReset</key>
                 <status>0x95</status>
                 <midino>0x02</midino>
                 <options>
@@ -803,7 +805,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.tempoReset</key>
+                <key>P32.rightDeck.loopActive</key>
                 <status>0x95</status>
                 <midino>0x01</midino>
                 <options>
