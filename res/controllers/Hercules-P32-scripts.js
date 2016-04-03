@@ -164,6 +164,20 @@ P32.init = function () {
 
 P32.shutdown = function () {};
 
+P32.padColors = {
+    red: 125,
+    blue: 126,
+    purple: 127
+}
+
+P32.PadNumToMIDIControl = function (PadNum) {
+    // The MIDI control numbers for the pad grid are numbered bottom to top, so
+    // this returns the MIDI control numbers for the pads numbered top to bottom
+    PadNum -= 1;
+    var midiRow = 3 - Math.floor(PadNum/4);
+    return 0x54 + midiRow*4 + PadNum%4;
+}
+
 P32.browse = function (channel, control, value, status, group) {
     if (value === 127) {
         engine.setValue('[Playlist]', 'SelectPrevTrack', 1);
@@ -225,6 +239,14 @@ P32.Deck = function (deckNumbers, channel) {
                             ['play', function () { return ! engine.getValue(this.deck.currentDeck, this.inCo) }],
                             ['play_indicator', function (val) { return val * 127 }]);
     
+    for (var i = 1; i <= 16; i++) {
+        this['hotcueButton' + i] = new Control([0x90 + channel, P32.PadNumToMIDIControl(i)], this,
+                                            ['hotcue_'+i+'_activate', function (value) {return value/127}, false],
+                                            ['hotcue_'+i+'_enabled', function (val) { return val * P32.padColors.red }]);
+        this['hotcueButtonShift' + i] = new Control([0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i)], this,
+                                            ['hotcue_'+i+'_clear', function (value) {return 1}],
+                                            ['hotcue_'+i+'_enabled', function (val) { return val * P32.padColors.red }]);
+    }
     
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this, 'pfl');
     
