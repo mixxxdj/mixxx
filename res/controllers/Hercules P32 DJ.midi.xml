@@ -346,7 +346,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.quantize.input</key>
+                <key>P32.leftDeck.keylock.input</key>
                 <status>0x94</status>
                 <midino>0x09</midino>
                 <options>
@@ -355,7 +355,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.keylock.input</key>
+                <key>P32.leftDeck.quantize.input</key>
                 <status>0x94</status>
                 <midino>0x08</midino>
                 <options>
@@ -607,7 +607,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.quantize.input</key>
+                <key>P32.rightDeck.keylock.input</key>
                 <status>0x95</status>
                 <midino>0x09</midino>
                 <options>
@@ -616,7 +616,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.keylock.input</key>
+                <key>P32.rightDeck.quantize.input</key>
                 <status>0x95</status>
                 <midino>0x08</midino>
                 <options>
