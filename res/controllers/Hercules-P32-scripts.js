@@ -290,6 +290,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.ejectTrack = function (channel, control, value, status, group) {
         if (value) {
             engine.setValue(that.currentDeck, 'eject', 1);
+            engine.beginTimer(250, 'engine.setValue("'+that.currentDeck+'", "eject", 0)', true);
         }
     }
     
@@ -302,7 +303,7 @@ P32.Deck = function (deckNumbers, channel) {
             **/
             loopSize /= 2;
             engine.setValue(that.currentDeck, 'loop_halve', 1);
-            engine.setValue(that.currentDeck, 'loop_halve', 0);
+            engine.beginTimer(400, 'engine.setValue("'+that.currentDeck+'", "loop_halve", 0)', true);
         } else if (value === 1 && loopSize < 64) { // turn right
             /**
                 Mixxx supports loops longer than 64 beats, but the loop size LED
@@ -310,7 +311,7 @@ P32.Deck = function (deckNumbers, channel) {
             **/
             loopSize *= 2;
             engine.setValue(that.currentDeck, 'loop_double', 1);
-            engine.setValue(that.currentDeck, 'loop_double', 0);
+            engine.beginTimer(400, 'engine.setValue("'+that.currentDeck+'", "loop_double", 0)', true);
         }
         midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(loopSize) / Math.log(2));
     }
