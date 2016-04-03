@@ -137,6 +137,10 @@
 								<ConfigKey>[Master],crossfader</ConfigKey>
 								<EmitOnDownPress>false</EmitOnDownPress>
 							</Connection>
+                            <Connection>
+                                <ConfigKey>[Master],show_xfader</ConfigKey>
+                                <BindProperty>visible</BindProperty>
+                            </Connection>
 						</SliderComposed>
 
 						<!--
