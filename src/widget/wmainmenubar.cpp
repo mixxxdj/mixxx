@@ -255,6 +255,24 @@ void WMainMenuBar::initialize() {
     pViewMenu->addSeparator();
 
 
+    QString show4DecksTitle = tr("Show 4 Decks");
+    QString show4DecksText = tr("Show 4 Decks on the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShow4Decks = new QAction(show4DecksTitle, this);
+    pViewShow4Decks->setCheckable(true);
+    pViewShow4Decks->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_Show4Decks"),
+                                                  tr("Ctrl+1", "Menubar|View|Show 4 Decks"))));
+    pViewShow4Decks->setStatusTip(show4DecksText);
+    pViewShow4Decks->setWhatsThis(buildWhatsThis(show4DecksTitle, show4DecksText));
+    connect(pViewShow4Decks, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShow4Decks(bool)));
+    createVisibilityControl(pViewShow4Decks, ConfigKey("[Master]", "show_4decks"));
+    pViewMenu->addAction(pViewShow4Decks);
+
+
+
 #ifdef __VINYLCONTROL__
     QString showVinylControlTitle = tr("Show Vinyl Control Section");
     QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
