@@ -272,6 +272,21 @@ void WMainMenuBar::initialize() {
 #endif
 
 
+    QString showEqsTitle = tr("Show Eqs");
+    QString showEqsText = tr("Show the equalizers on the mixer section.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShowEqs = new QAction(showEqsTitle, this);
+    pViewShowEqs->setCheckable(true);
+    pViewShowEqs->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowEqs"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Eqs"))));
+    pViewShowEqs->setStatusTip(showEqsText);
+    pViewShowEqs->setWhatsThis(buildWhatsThis(showEqsTitle, showEqsText));
+    createVisibilityControl(pViewShowEqs, ConfigKey("[Master]", "show_eqs"));
+    pViewMenu->addAction(pViewShowEqs);
+
+
     QString showPreviewDeckTitle = tr("Show Preview Deck");
     QString showPreviewDeckText = tr("Show the preview deck in the Mixxx interface.") +
             " " + mayNotBeSupported;
