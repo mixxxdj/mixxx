@@ -290,6 +290,22 @@ void WMainMenuBar::initialize() {
 #endif
 
 
+    QString showSpinniesTitle = tr("Show Spinning Vinyl");
+    QString showSpinniesText = tr("Show the spinnining vinyl widget on the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    QAction* m_pViewShowSpinnies = new QAction(showSpinniesTitle, this);
+    m_pViewShowSpinnies->setCheckable(true);
+    m_pViewShowSpinnies->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowSpinnies"),
+                                                  tr("Ctrl+5", "Menubar|View|Show Spinning Vinyl"))));
+    m_pViewShowSpinnies->setStatusTip(showSpinniesText);
+    m_pViewShowSpinnies->setWhatsThis(buildWhatsThis(showSpinniesTitle, showSpinniesText));
+    createVisibilityControl(m_pViewShowSpinnies, ConfigKey("[Spinny]", "show_spinnies"));
+    pViewMenu->addAction(m_pViewShowSpinnies);
+
+
+
     QString showMixerTitle = tr("Show Mixer");
     QString showMixerText = tr("Show the mixer section.") +
             " " + mayNotBeSupported;
