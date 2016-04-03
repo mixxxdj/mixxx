@@ -191,6 +191,18 @@ P32.headMix = function (channel, control, value, status, group) {
     engine.setValue('[Master]', 'headMix', engine.getValue('[Master]', 'headMix') + (.25 * direction));
 }
 
+P32.record = new Control([0x90, 0x02], {currentDeck: '[Recording]'},
+                         ['toggle_recording', function (val) {
+                             if (P32.leftDeck.shift) {
+                                 P32.leftDeck.deckToggle();
+                             } else if (P32.rightDeck.shift) {
+                                 P32.rightDeck.deckToggle();
+                             } else {
+                                return val / 127;
+                            }
+                         }],
+                         ['status', function (val) {return val * 127}]);
+
 P32.Deck = function (deckNumbers, channel) {
     var that = this;
     var t = this;
@@ -229,6 +241,9 @@ P32.Deck = function (deckNumbers, channel) {
         print("Switched to deck: " + this.currentDeck);
     }
     
+    this.shiftButton = function (channel, control, value, status, group) {
+        that.shift = (value === 127) ? true : false;
+    }
     
     this.sync = new ToggleButton([0x90 + channel, 0x08], this, 'sync_enabled');
     this.cue = new Control([0x90 + channel, 0x09], this,
@@ -327,7 +342,6 @@ P32.Deck = function (deckNumbers, channel) {
     this.tempoReset = function (channel, control, value, status, group) {
         if (value) {
             engine.setValue(that.currentDeck, 'rate', 0);
-//             that.deckToggle();
         }
     }
     
