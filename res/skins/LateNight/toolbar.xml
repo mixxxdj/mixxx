@@ -218,7 +218,7 @@
               <Children>
                 <WidgetGroup> <!-- Spacer -->
                   <Layout>horizontal</Layout>
-                  <Size>197f,min</Size>
+                  <Size>364f,min</Size>
                   <Children/>
                 </WidgetGroup>
                 <Template src="skin:vumeter_latency.xml">
