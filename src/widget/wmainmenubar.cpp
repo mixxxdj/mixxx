@@ -192,6 +192,44 @@ void WMainMenuBar::initialize() {
     pViewMenu->addAction(pViewMaximizeLibrary);
 
 
+    pViewMenu->addSeparator();
+
+
+    QString show4DecksTitle = tr("Show 4 Decks");
+    QString show4DecksText = tr("Show 4 Decks on the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShow4Decks = new QAction(show4DecksTitle, this);
+    pViewShow4Decks->setCheckable(true);
+    pViewShow4Decks->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_Show4Decks"),
+                                                  tr("Ctrl+5", "Menubar|View|Show 4 Decks"))));
+    pViewShow4Decks->setStatusTip(show4DecksText);
+    pViewShow4Decks->setWhatsThis(buildWhatsThis(show4DecksTitle, show4DecksText));
+    connect(pViewShow4Decks, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShow4Decks(bool)));
+    createVisibilityControl(pViewShow4Decks, ConfigKey("[Master]", "show_4decks"));
+    pViewMenu->addAction(pViewShow4Decks);
+
+
+    QString showPreviewDeckTitle = tr("Show Preview Deck");
+    QString showPreviewDeckText = tr("Show the preview deck in the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
+    pViewShowPreviewDeck->setCheckable(true);
+    pViewShowPreviewDeck->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowPreviewDeck"),
+                                                  tr("Ctrl+0", "Menubar|View|Show Preview Deck"))));
+    pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
+    pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
+    createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
+    pViewMenu->addAction(pViewShowPreviewDeck);
+
+
+    pViewMenu->addSeparator();
+
+
     QString showLibraryTitle = tr("Show Library");
     QString showLibraryText = tr("Show the library of the Mixxx interfce.") +
             " " + mayNotBeSupported;
@@ -253,24 +291,6 @@ void WMainMenuBar::initialize() {
 
 
     pViewMenu->addSeparator();
-
-
-    QString show4DecksTitle = tr("Show 4 Decks");
-    QString show4DecksText = tr("Show 4 Decks on the Mixxx interface.") +
-            " " + mayNotBeSupported;
-    QAction* pViewShow4Decks = new QAction(show4DecksTitle, this);
-    pViewShow4Decks->setCheckable(true);
-    pViewShow4Decks->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "ViewMenu_Show4Decks"),
-                                                  tr("Ctrl+5", "Menubar|View|Show 4 Decks"))));
-    pViewShow4Decks->setStatusTip(show4DecksText);
-    pViewShow4Decks->setWhatsThis(buildWhatsThis(show4DecksTitle, show4DecksText));
-    connect(pViewShow4Decks, SIGNAL(toggled(bool)),
-            this, SLOT(slotViewShow4Decks(bool)));
-    createVisibilityControl(pViewShow4Decks, ConfigKey("[Master]", "show_4decks"));
-    pViewMenu->addAction(pViewShow4Decks);
-
 
 
 #ifdef __VINYLCONTROL__
@@ -349,22 +369,6 @@ void WMainMenuBar::initialize() {
     m_pViewShowXFader->setWhatsThis(buildWhatsThis(showXFaderTitle, showXFaderText));
     createVisibilityControl(m_pViewShowXFader, ConfigKey("[Master]", "show_xfader"));
     pViewMenu->addAction(m_pViewShowXFader);
-
-
-
-    QString showPreviewDeckTitle = tr("Show Preview Deck");
-    QString showPreviewDeckText = tr("Show the preview deck in the Mixxx interface.") +
-            " " + mayNotBeSupported;
-    QAction* pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
-    pViewShowPreviewDeck->setCheckable(true);
-    pViewShowPreviewDeck->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "ViewMenu_ShowPreviewDeck"),
-                                                  tr("Ctrl+0", "Menubar|View|Show Preview Deck"))));
-    pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
-    pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
-    createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
-    pViewMenu->addAction(pViewShowPreviewDeck);
 
 
     QString showCoverArtTitle = tr("Show Cover Art");
