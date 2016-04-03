@@ -255,7 +255,7 @@ P32.Deck = function (deckNumbers, channel) {
     
     this.quantize = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x08], this, 'quantize'); // sync shifted
     this.keylock = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x09], this, 'keylock'); // cue shifted
-    this.playShifted = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this,
+    this.playShift = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this,
                             ['play', function () { return ! engine.getValue(this.deck.currentDeck, this.inCo) }],
                             ['play_indicator', function (val) { return val * 127 }]);
     
