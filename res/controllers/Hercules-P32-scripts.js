@@ -186,6 +186,11 @@ P32.browse = function (channel, control, value, status, group) {
     }
 }
 
+P32.headMix = function (channel, control, value, status, group) {
+    var direction = (value === 127) ? -1 : 1;
+    engine.setValue('[Master]', 'headMix', engine.getValue('[Master]', 'headMix') + (.25 * direction));
+}
+
 P32.Deck = function (deckNumbers, channel) {
     var that = this;
     var t = this;

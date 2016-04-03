@@ -12,6 +12,24 @@
         </scriptfiles>
         <controls>
             <control>
+                <group>[Master]</group>
+                <key>headSplit</key>
+                <status>0x93</status>1
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>P32.headMix</key>
+                <status>0xB3</status>1
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>P32.leftDeck.hotcueButton1.input</key>
                 <status>0x91</status>1
