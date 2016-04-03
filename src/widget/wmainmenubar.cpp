@@ -272,6 +272,21 @@ void WMainMenuBar::initialize() {
 #endif
 
 
+    QString showMixerTitle = tr("Show Mixer");
+    QString showMixerText = tr("Show the mixer section.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShowMixer = new QAction(showMixerTitle, this);
+    pViewShowMixer->setCheckable(true);
+    pViewShowMixer->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowMixer"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Mixer"))));
+    pViewShowMixer->setStatusTip(showMixerText);
+    pViewShowMixer->setWhatsThis(buildWhatsThis(showMixerTitle, showMixerText));
+    createVisibilityControl(pViewShowMixer, ConfigKey("[Master]", "show_mixer"));
+    pViewMenu->addAction(pViewShowMixer);
+
+
     QString showEqsTitle = tr("Show Eqs");
     QString showEqsText = tr("Show the equalizers on the mixer section.") +
             " " + mayNotBeSupported;
