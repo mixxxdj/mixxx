@@ -160,7 +160,7 @@
 }
 
 #PrimaryMixer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 0px;
   margin: 0px;
   border: 1px solid #585858;
