@@ -152,6 +152,7 @@ void CachingReaderChunkForOwner::insertIntoListBefore(
         CachingReaderChunkForOwner* pBefore) {
     DEBUG_ASSERT(nullptr == m_pNext);
     DEBUG_ASSERT(nullptr == m_pPrev);
+    DEBUG_ASSERT(READ_PENDING != m_state); // Is not accessed by a worker!
 
     m_pNext = pBefore;
     if (pBefore) {

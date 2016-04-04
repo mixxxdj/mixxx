@@ -78,8 +78,8 @@ CachingReader::~CachingReader() {
     qDeleteAll(m_chunks);
 }
 
-
 void CachingReader::freeChunk(CachingReaderChunkForOwner* pChunk) {
+    DEBUG_ASSERT(nullptr != pChunk);
     DEBUG_ASSERT(pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING);
 
     const int removed = m_allocatedCachingReaderChunks.remove(pChunk->getIndex());
@@ -123,18 +123,6 @@ CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
     //qDebug() << "Allocating chunk" << pChunk << pChunk->getIndex();
     m_allocatedCachingReaderChunks.insert(chunkIndex, pChunk);
 
-    // Adjust the least-recently-used item before inserting the
-    // chunk as the new most-recently-used item.
-    if (nullptr == m_lruCachingReaderChunk) {
-        if (nullptr == m_mruCachingReaderChunk) {
-            m_lruCachingReaderChunk = pChunk;
-        } else {
-            m_lruCachingReaderChunk = m_mruCachingReaderChunk;
-        }
-    }
-    // Insert the chunk as the new most-recently-used item.
-    pChunk->insertIntoListBefore(m_mruCachingReaderChunk);
-
     return pChunk;
 }
 
@@ -163,14 +151,31 @@ CachingReaderChunkForOwner* CachingReader::lookupChunk(SINT chunkIndex) {
 }
 
 void CachingReader::freshenChunk(CachingReaderChunkForOwner* pChunk) {
+    DEBUG_ASSERT(nullptr != pChunk);
+    DEBUG_ASSERT(pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING);
+
+    // Remove the chunk from the LRU list
     pChunk->removeFromList(&m_mruCachingReaderChunk, &m_lruCachingReaderChunk);
+
+    // Adjust the least-recently-used item before inserting the
+    // chunk as the new most-recently-used item.
+    if (nullptr == m_lruCachingReaderChunk) {
+        if (nullptr == m_mruCachingReaderChunk) {
+            m_lruCachingReaderChunk = pChunk;
+        } else {
+            m_lruCachingReaderChunk = m_mruCachingReaderChunk;
+        }
+    }
+
+    // Insert the chunk as the new most-recently-used item.
     pChunk->insertIntoListBefore(m_mruCachingReaderChunk);
     m_mruCachingReaderChunk = pChunk;
 }
 
 CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex) {
     CachingReaderChunkForOwner* pChunk = lookupChunk(chunkIndex);
-    if (pChunk != nullptr) {
+    if ((pChunk != nullptr) &&
+            (pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING)) {
         freshenChunk(pChunk);
     }
     return pChunk;
