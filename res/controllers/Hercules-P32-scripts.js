@@ -332,6 +332,10 @@ P32.Deck = function (deckNumbers, channel) {
             } else {
                 engine.setValue(that.currentDeck, 'beatloop_' + loopSize + '_activate', 1);
             }
+        } else {
+            if (loopSize <= 1 && engine.getValue(that.currentDeck, 'loop_enabled')) {
+                engine.setValue(that.currentDeck, 'reloop_exit', 1);
+            }
         }
     }
     
