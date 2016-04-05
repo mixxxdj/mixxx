@@ -79,7 +79,7 @@ CachingReader::~CachingReader() {
 }
 
 void CachingReader::freeChunk(CachingReaderChunkForOwner* pChunk) {
-    DEBUG_ASSERT(nullptr != pChunk);
+    DEBUG_ASSERT(pChunk != nullptr);
     DEBUG_ASSERT(pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING);
 
     const int removed = m_allocatedCachingReaderChunks.remove(pChunk->getIndex());
@@ -151,7 +151,7 @@ CachingReaderChunkForOwner* CachingReader::lookupChunk(SINT chunkIndex) {
 }
 
 void CachingReader::freshenChunk(CachingReaderChunkForOwner* pChunk) {
-    DEBUG_ASSERT(nullptr != pChunk);
+    DEBUG_ASSERT(pChunk != nullptr);
     DEBUG_ASSERT(pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING);
 
     // Remove the chunk from the LRU list
@@ -159,8 +159,8 @@ void CachingReader::freshenChunk(CachingReaderChunkForOwner* pChunk) {
 
     // Adjust the least-recently-used item before inserting the
     // chunk as the new most-recently-used item.
-    if (nullptr == m_lruCachingReaderChunk) {
-        if (nullptr == m_mruCachingReaderChunk) {
+    if (m_lruCachingReaderChunk == nullptr) {
+        if (m_mruCachingReaderChunk == nullptr) {
             m_lruCachingReaderChunk = pChunk;
         } else {
             m_lruCachingReaderChunk = m_mruCachingReaderChunk;
