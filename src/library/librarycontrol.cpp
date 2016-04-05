@@ -262,7 +262,7 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
         if (!activeView) {
             return;
         }
-        activeView->slotSendToAutoDJ();
+        activeView->slotSendToAutoDJBottom();
     }
 }
 

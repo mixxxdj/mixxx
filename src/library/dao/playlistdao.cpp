@@ -244,6 +244,26 @@ bool PlaylistDAO::isPlaylistLocked(const int playlistId) const {
     return false;
 }
 
+// TODO: Deduplicate with deletePlaylist?
+bool PlaylistDAO::clearPlaylist(const int playlistId) {
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM PlaylistTracks WHERE playlist_id = :id");
+    query.bindValue(":id", playlistId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    transaction.commit();
+    emit(changed(playlistId));
+    return true;
+}
+
+bool PlaylistDAO::replaceTracksInPlaylist(const QList<TrackId>& trackIds, const int playlistId) {
+    return clearPlaylist(playlistId)
+        && appendTracksToPlaylist(trackIds, playlistId);
+}
+
 bool PlaylistDAO::appendTracksToPlaylist(const QList<TrackId>& trackIds, const int playlistId) {
     // qDebug() << "PlaylistDAO::appendTracksToPlaylist"
     //          << QThread::currentThread() << m_database.connectionName();
