@@ -198,6 +198,10 @@ void CachingReader::process() {
             if (status.status != CHUNK_READ_SUCCESS) {
                 // Discard chunks that are empty (EOF) or invalid
                 freeChunk(pChunk);
+            } else {
+                // Insert or freshen the chunk in the MRU/LRU list after
+                // obtaining ownership from the worker.
+                freshenChunk(pChunk);
             }
         }
         if (status.status == TRACK_NOT_LOADED) {
@@ -402,6 +406,8 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                     qDebug() << "ERROR: Couldn't allocate spare CachingReaderChunk to make CachingReaderChunkReadRequest.";
                     continue;
                 }
+                // Do not insert the allocated chunk into the MRU/LRU list,
+                // because it will be handed over to the worker immediately
                 CachingReaderChunkReadRequest request(pChunk);
                 pChunk->giveToWorker();
                 // qDebug() << "Requesting read of chunk" << current << "into" << pChunk;
@@ -409,6 +415,7 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                 if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
                     qWarning() << "ERROR: Could not submit read request for "
                              << chunkIndex;
+                    // Revoke the chunk from the worker and free it
                     pChunk->takeFromWorker();
                     freeChunk(pChunk);
                 }
