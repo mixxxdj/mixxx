@@ -32,7 +32,7 @@
                                         <Children>
                                             <CoverArt>
                                                 <SizePolicy>me,me</SizePolicy>
-                                                <MinimumSize>45,40</MinimumSize>
+                                                <MinimumSize>40,40</MinimumSize>
                                                 <Connection>
                                                     <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
                                                     <BindProperty>visible</BindProperty>
