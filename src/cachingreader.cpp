@@ -130,7 +130,7 @@ CachingReaderChunkForOwner* CachingReader::allocateChunkExpireLRU(SINT chunkInde
     CachingReaderChunkForOwner* pChunk = allocateChunk(chunkIndex);
     if (pChunk == nullptr) {
         if (m_lruCachingReaderChunk == nullptr) {
-            qDebug() << "ERROR: No LRU chunk to free in allocateChunkExpireLRU.";
+            qWarning() << "ERROR: No LRU chunk to free in allocateChunkExpireLRU.";
             return nullptr;
         }
         freeChunk(m_lruCachingReaderChunk);
