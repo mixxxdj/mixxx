@@ -23,23 +23,30 @@
 								<Children>
 									<!--Search Input Field-->
 									<SearchBox></SearchBox>
-									<!--Library Tree View-->
-									<LibrarySidebar></LibrarySidebar>
-									<!--Cover Art-->
-                                    <WidgetGroup>
-                                        <ObjectName>CoverArtContainer</ObjectName>
-                                        <Layout>vertical</Layout>
+                                    <Splitter>
+                                        <Size>me,me</Size>
+                                        <SplitSizes>1,1</SplitSizes>
+                                        <Orientation>vertical</Orientation>
                                         <Children>
-                                            <CoverArt>
-                                                <SizePolicy>me,me</SizePolicy>
-                                                <MinimumSize>40,40</MinimumSize>
-                                                <Connection>
-                                                    <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                                                    <BindProperty>visible</BindProperty>
-                                                </Connection>
-                                            </CoverArt>
+                                            <!--Library Tree View-->
+                                            <LibrarySidebar></LibrarySidebar>
+                                            <!--Cover Art-->
+                                            <WidgetGroup>
+                                                <ObjectName>CoverArtContainer</ObjectName>
+                                                <Layout>vertical</Layout>
+                                                <Children>
+                                                    <CoverArt>
+                                                        <SizePolicy>me,me</SizePolicy>
+                                                        <MinimumSize>40,40</MinimumSize>
+                                                        <Connection>
+                                                            <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                                                            <BindProperty>visible</BindProperty>
+                                                        </Connection>
+                                                    </CoverArt>
+                                                </Children>
+                                            </WidgetGroup>
                                         </Children>
-                                    </WidgetGroup>
+                                    </Splitter>
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>
