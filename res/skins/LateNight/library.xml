@@ -27,6 +27,7 @@
                                         <Size>me,me</Size>
                                         <SplitSizes>1,1</SplitSizes>
                                         <Orientation>vertical</Orientation>
+                                        <Collapsible>0,1</Collapsible>
                                         <Children>
                                             <!--Library Tree View-->
                                             <LibrarySidebar></LibrarySidebar>
