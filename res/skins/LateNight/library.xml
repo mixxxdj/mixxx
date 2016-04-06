@@ -17,6 +17,7 @@
                         <ObjectName>LibrarySplitter</ObjectName>
 						<Size>me,me</Size>
 						<SplitSizes>1,12</SplitSizes>
+                        <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
 						<Children>
 							<WidgetGroup>
 								<Style>QGroupBox {}</Style>
@@ -28,6 +29,7 @@
                                         <ObjectName>CoverArtSplitter</ObjectName>
                                         <Size>me,me</Size>
                                         <SplitSizes>1,1</SplitSizes>
+                                        <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
                                         <Orientation>vertical</Orientation>
                                         <Collapsible>0,1</Collapsible>
                                         <Children>
