@@ -26,14 +26,20 @@
 									<!--Library Tree View-->
 									<LibrarySidebar></LibrarySidebar>
 									<!--Cover Art-->
-									<CoverArt>
-										<SizePolicy>me,me</SizePolicy>
-										<MinimumSize>100,100</MinimumSize>
-										<Connection>
-											<ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-											<BindProperty>visible</BindProperty>
-										</Connection>
-									</CoverArt>
+                                    <WidgetGroup>
+                                        <ObjectName>CoverArtContainer</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <Children>
+                                            <CoverArt>
+                                                <SizePolicy>me,me</SizePolicy>
+                                                <MinimumSize>45,40</MinimumSize>
+                                                <Connection>
+                                                    <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                                                    <BindProperty>visible</BindProperty>
+                                                </Connection>
+                                            </CoverArt>
+                                        </Children>
+                                    </WidgetGroup>
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>
