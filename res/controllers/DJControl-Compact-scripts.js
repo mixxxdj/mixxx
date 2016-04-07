@@ -1,13 +1,6 @@
 // Mode button does give out midi, but the selection itself is done inside the
 // controller -- no control over which mode is selected for instance.
 
-// TODO: 
-//   * bindings for shift keys in XML
-//   * fx :(
-//   * rec
-//   * "automix"
-//   * turn off lights when done.
-
 HercDJCompact = new function() {
    this.group = "[Master]";
 }
@@ -16,9 +9,23 @@ HercDJCompact.init = function(id) {
 	scratch = false;
 	scratch_timer = [];
 	scratch_timer_on = [];
+	
+	engine.connectControl("[Recording]", "status", 
+			"HercDJCompact.OnRecordingStatusChange");
+	
+	// Tell controller to send midi to update knob and slider positions. 
+	midi.sendShortMsg(0xB0, 0x7F, 0x7F);
+	
+	// But the rate values get messed up, so reset them
+	engine.setValue("[Channel1]", "rate_set_default", 1.0);
+	engine.setValue("[Channel2]", "rate_set_default", 1.0);
 };
 
 HercDJCompact.shutdown = function() {
+	// toggle all lights off.
+	for (i = 0x01; i < 0x57; i++) {
+		midi.sendShortMsg(0x90, i, 0x00);
+	}
 };
 
 HercDJCompact.controls = {
@@ -92,4 +99,15 @@ HercDJCompact.pitch = function (group, control, value, status) {
 		pitch = -1.0;
 	}
 	engine.setValue(input.group, "rate", pitch);
+};
+
+HercDJCompact.OnRecordingStatusChange = function(value, group, control) {
+	// Not sure why this doesn't work with a regular midi output in the xml.
+	if (value == 2) {
+		midi.sendShortMsg(0x90, 0x2B, 0x7F);
+		midi.sendShortMsg(0x90, 0x2C, 0x7F);
+	} else {
+		midi.sendShortMsg(0x90, 0x2B, 0x0);
+		midi.sendShortMsg(0x90, 0x2C, 0x0);
+	}
 };

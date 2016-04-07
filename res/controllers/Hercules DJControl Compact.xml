@@ -13,6 +13,26 @@
         <controls>
             <control>
                 <group>[Channel2]</group>
+                <key>beatlooproll_0.5_activate</key>
+                <description>MIDI Learned from 14 messages.</description>
+                <status>0x90</status>
+                <midino>0x4F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>MIDI Learned from 8 messages.</description>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
                 <key>hotcue_3_activate</key>
                 <description>MIDI Learned from 14 messages.</description>
                 <status>0x90</status>
@@ -52,8 +72,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.125_activate</key>
-                <description>MIDI Learned from 10 messages.</description>
+                <key>reloop_exit</key>
                 <status>0x90</status>
                 <midino>0x49</midino>
                 <options>
@@ -70,6 +89,15 @@
                 </options>
             </control>
             <control>
+                <group>[AutoDJ]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x2D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Sampler1]</group>
                 <key>cue_gotoandplay</key>
                 <description>MIDI Learned from 2 messages.</description>
@@ -81,8 +109,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_1_activate</key>
-                <description>MIDI Learned from 6 messages.</description>
+                <key>loop_double</key>
                 <status>0x90</status>
                 <midino>0x1C</midino>
                 <options>
@@ -105,6 +132,26 @@
                 <description>MIDI Learned from 950 messages.</description>
                 <status>0xB0</status>
                 <midino>0x40</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatlooproll_0.25_activate</key>
+                <description>MIDI Learned from 12 messages.</description>
+                <status>0x90</status>
+                <midino>0x4E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>MIDI Learned from 6 messages.</description>
+                <status>0x90</status>
+                <midino>0x0B</midino>
                 <options>
                     <normal/>
                 </options>
@@ -141,8 +188,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.5_activate</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <key>loop_halve</key>
                 <status>0x90</status>
                 <midino>0x1B</midino>
                 <options>
@@ -171,10 +217,40 @@
             </control>
             <control>
                 <group>[Channel2]</group>
+                <key>beatlooproll_0.125_activate</key>
+                <description>MIDI Learned from 10 messages.</description>
+                <status>0x90</status>
+                <midino>0x4D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>MIDI Learned from 4 messages.</description>
+                <status>0x90</status>
+                <midino>0x0A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
                 <key>hotcue_1_activate</key>
                 <description>MIDI Learned from 10 messages.</description>
                 <status>0x90</status>
                 <midino>0x31</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>MIDI Learned from 16 messages.</description>
+                <status>0x90</status>
+                <midino>0x3C</midino>
                 <options>
                     <normal/>
                 </options>
@@ -191,10 +267,29 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>beatlooproll_1_activate</key>
+                <description>MIDI Learned from 6 messages.</description>
+                <status>0x90</status>
+                <midino>0x20</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>hotcue_4_activate</key>
                 <description>MIDI Learned from 8 messages.</description>
                 <status>0x90</status>
                 <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Recording]</group>
+                <key>toggle_recording</key>
+                <status>0x90</status>
+                <midino>0x2B</midino>
                 <options>
                     <normal/>
                 </options>
@@ -211,8 +306,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.25_activate</key>
-                <description>MIDI Learned from 10 messages.</description>
+                <key>beatloop_8_activate</key>
                 <status>0x90</status>
                 <midino>0x1A</midino>
                 <options>
@@ -231,10 +325,19 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_1_activate</key>
-                <description>MIDI Learned from 16 messages.</description>
+                <key>loop_double</key>
                 <status>0x90</status>
                 <midino>0x4C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x90</status>
+                <midino>0x09</midino>
                 <options>
                     <normal/>
                 </options>
@@ -259,12 +362,32 @@
                 </options>
             </control>
             <control>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>MIDI Learned from 14 messages.</description>
+                <status>0x90</status>
+                <midino>0x3B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel2]</group>
                 <key>HercDJCompact.pitch</key>
                 <status>0xB0</status>
                 <midino>0x38</midino>
                 <options>
                     <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.5_activate</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x90</status>
+                <midino>0x1F</midino>
+                <options>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -289,8 +412,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.125_activate</key>
-                <description>MIDI Learned from 8 messages.</description>
+                <key>reloop_exit</key>
                 <status>0x90</status>
                 <midino>0x19</midino>
                 <options>
@@ -309,20 +431,9 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.5_activate</key>
-                <description>MIDI Learned from 14 messages.</description>
+                <key>loop_halve</key>
                 <status>0x90</status>
                 <midino>0x4B</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>reloop_exit</key>
-                <description>MIDI Learned from 16 messages.</description>
-                <status>0x90</status>
-                <midino>0x2F</midino>
                 <options>
                     <normal/>
                 </options>
@@ -338,6 +449,16 @@
                 </options>
             </control>
             <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>MIDI Learned from 12 messages.</description>
+                <status>0x90</status>
+                <midino>0x3A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>HercDJCompact.pitch</key>
                 <status>0xB0</status>
@@ -348,10 +469,30 @@
             </control>
             <control>
                 <group>[Channel1]</group>
+                <key>beatlooproll_0.25_activate</key>
+                <description>MIDI Learned from 10 messages.</description>
+                <status>0x90</status>
+                <midino>0x1E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
                 <key>hotcue_2_activate</key>
                 <description>MIDI Learned from 4 messages.</description>
                 <status>0x90</status>
                 <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatlooproll_1_activate</key>
+                <description>MIDI Learned from 16 messages.</description>
+                <status>0x90</status>
+                <midino>0x50</midino>
                 <options>
                     <normal/>
                 </options>
@@ -397,8 +538,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.25_activate</key>
-                <description>MIDI Learned from 12 messages.</description>
+                <key>beatloop_8_activate</key>
                 <status>0x90</status>
                 <midino>0x4A</midino>
                 <options>
@@ -411,6 +551,26 @@
                 <description>MIDI Learned from 6 messages.</description>
                 <status>0x90</status>
                 <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>MIDI Learned from 10 messages.</description>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatlooproll_0.125_activate</key>
+                <description>MIDI Learned from 8 messages.</description>
+                <status>0x90</status>
+                <midino>0x1D</midino>
                 <options>
                     <normal/>
                 </options>
@@ -445,13 +605,204 @@
                     <normal/>
                 </options>
             </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>cue_gotoandstop</key>
+                <status>0x90</status>
+                <midino>0x15</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>cue_gotoandstop</key>
+                <status>0x90</status>
+                <midino>0x16</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler3]</group>
+                <key>cue_gotoandstop</key>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler4]</group>
+                <key>cue_gotoandstop</key>
+                <status>0x90</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>cue_gotoandstop</key>
+                <status>0x90</status>
+                <midino>0x45</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>cue_gotoandstop</key>
+                <status>0x90</status>
+                <midino>0x46</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler3]</group>
+                <key>cue_gotoandstop</key>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler4]</group>
+                <key>cue_gotoandstop</key>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
         </controls>
         <outputs>
             <output>
-                <group>[Channel2]</group>
-                <key>cue_indicator</key>
+                <group>[Sampler4]</group>
+                <key>play_indicator</key>
                 <status>0x90</status>
-                <midino>0x52</midino>
+                <midino>0x14</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler4]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x44</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler4]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x18</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler4]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x90</status>
+                <midino>0x3A</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x90</status>
+                <midino>0x3E</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <status>0x90</status>
+                <midino>0x53</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <status>0x90</status>
+                <midino>0x56</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_4_enabled</key>
+                <status>0x90</status>
+                <midino>0x04</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_4_enabled</key>
+                <status>0x90</status>
+                <midino>0x08</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x90</status>
+                <midino>0x3B</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x90</status>
+                <midino>0x3C</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x90</status>
+                <midino>0x40</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler1]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler1]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler1]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x15</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler1]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x45</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -463,9 +814,233 @@
             </output>
             <output>
                 <group>[Channel1]</group>
+                <key>cue_indicator</key>
+                <status>0x90</status>
+                <midino>0x25</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
                 <key>sync_enabled</key>
                 <status>0x90</status>
                 <midino>0x23</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <status>0x90</status>
+                <midino>0x26</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_1_enabled</key>
+                <status>0x90</status>
+                <midino>0x31</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_1_enabled</key>
+                <status>0x90</status>
+                <midino>0x35</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <status>0x90</status>
+                <midino>0x49</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <status>0x90</status>
+                <midino>0x4D</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler2]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x12</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler2]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x42</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler2]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x16</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler2]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x46</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_indicator</key>
+                <status>0x90</status>
+                <midino>0x52</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_indicator</key>
+                <status>0x90</status>
+                <midino>0x55</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[AutoDJ]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x2D</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[AutoDJ]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x2E</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_1_enabled</key>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_1_enabled</key>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_1_enabled</key>
+                <status>0x90</status>
+                <midino>0x05</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <status>0x90</status>
+                <midino>0x19</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <status>0x90</status>
+                <midino>0x1D</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_2_enabled</key>
+                <status>0x90</status>
+                <midino>0x32</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_2_enabled</key>
+                <status>0x90</status>
+                <midino>0x36</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x21</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x24</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_double</key>
+                <status>0x90</status>
+                <midino>0x1C</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_double</key>
+                <status>0x90</status>
+                <midino>0x20</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_2_enabled</key>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_2_enabled</key>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_2_enabled</key>
+                <status>0x90</status>
+                <midino>0x06</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_3_enabled</key>
+                <status>0x90</status>
+                <midino>0x33</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_3_enabled</key>
+                <status>0x90</status>
+                <midino>0x37</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_double</key>
+                <status>0x90</status>
+                <midino>0x4C</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_double</key>
+                <status>0x90</status>
+                <midino>0x50</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -477,16 +1052,170 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>sync_enabled</key>
+                <key>play_indicator</key>
                 <status>0x90</status>
-                <midino>0x53</midino>
+                <midino>0x54</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x90</status>
+                <midino>0x09</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x90</status>
+                <midino>0x0D</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
+                <key>loop_halve</key>
+                <status>0x90</status>
+                <midino>0x1B</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_halve</key>
+                <status>0x90</status>
+                <midino>0x1F</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x90</status>
+                <midino>0x0A</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x90</status>
+                <midino>0x0E</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_3_enabled</key>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_3_enabled</key>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_3_enabled</key>
+                <status>0x90</status>
+                <midino>0x07</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler3]</group>
                 <key>play_indicator</key>
                 <status>0x90</status>
-                <midino>0x21</midino>
+                <midino>0x13</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler3]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x43</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler3]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Sampler3]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x90</status>
+                <midino>0x0B</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_halve</key>
+                <status>0x90</status>
+                <midino>0x4B</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_halve</key>
+                <status>0x90</status>
+                <midino>0x4F</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_4_enabled</key>
+                <status>0x90</status>
+                <midino>0x34</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_4_enabled</key>
+                <status>0x90</status>
+                <midino>0x34</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>group_[Channel1]_enable</key>
+                <status>0x90</status>
+                <midino>0x3D</midino>
                 <minimum>0.5</minimum>
             </output>
         </outputs>
