@@ -379,6 +379,7 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject, QScriptValue fun
 }
 
 bool ControllerEngine::execute(QScriptValue functionObject,
+                               QScriptValue thisObject,
                                unsigned char channel,
                                unsigned char control,
                                unsigned char value,
@@ -395,7 +396,7 @@ bool ControllerEngine::execute(QScriptValue functionObject,
     args << QScriptValue(value);
     args << QScriptValue(status);
     args << QScriptValue(group);
-    return internalExecute(m_pEngine->globalObject(), functionObject, args);
+    return internalExecute(thisObject, functionObject, args);
 }
 
 bool ControllerEngine::execute(QScriptValue function, const QByteArray data,

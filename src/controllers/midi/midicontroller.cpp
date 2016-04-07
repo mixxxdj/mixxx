@@ -289,7 +289,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         }
 
         QScriptValue function = pEngine->resolveFunction(mapping.control.item);
-        if (!pEngine->execute(function, channel, control, value, status,
+        QScriptValue thisObject = pEngine->resolveFunction(mapping.control.item.section(".", 0, -2));
+        if (!pEngine->execute(function, thisObject, channel, control, value, status,
                               mapping.control.group, timestamp)) {
             qDebug() << "MidiController: Invalid script function"
                      << mapping.control.item;
