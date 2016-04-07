@@ -31,7 +31,7 @@
                                         <SplitSizes>1,1</SplitSizes>
                                         <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
                                         <Orientation>vertical</Orientation>
-                                        <Collapsible>0,1</Collapsible>
+                                        <Collapsible>0,0</Collapsible>
                                         <Children>
                                             <!--Library Tree View-->
                                             <LibrarySidebar></LibrarySidebar>
