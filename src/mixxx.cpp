@@ -120,6 +120,11 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
 
     initializeKeyboard();
+
+    // Menubar depends on translations.
+    mixxx::Translations::initializeTranslations(
+        m_pSettingsManager->settings(), pApp, args.getLocale());
+
     createMenuBar();
 
     initializeWindow();
@@ -165,9 +170,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     Sandbox::initialize(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
     QString resourcePath = pConfig->getResourcePath();
-
-    mixxx::Translations::initializeTranslations(
-        pConfig, pApp, args.getLocale());
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
 
