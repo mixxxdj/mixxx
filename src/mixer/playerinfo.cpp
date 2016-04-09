@@ -129,7 +129,9 @@ void PlayerInfo::updateCurrentPlayingDeck() {
         }
 
         double xfl, xfr;
-        EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, false, false,
+        // TODO: supply correct parameters to the function. If the hamster style
+        // for the crossfader is enabled, the result is currently wrong.
+        EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, MIXXX_XFADER_ADDITIVE, false,
                                     &xfl, &xfr);
 
         int orient = pDc->m_orientation.get();

@@ -1,7 +1,8 @@
-#include <QtDebug>
-
 #include "widget/wcoverartlabel.h"
 
+#include <QtDebug>
+
+#include "library/dlgcoverartfullsize.h"
 #include "library/coverartutils.h"
 
 static const QSize s_labelDisplaySize = QSize(100, 100);

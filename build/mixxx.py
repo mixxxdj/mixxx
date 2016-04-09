@@ -53,7 +53,7 @@ class MixxxBuild(object):
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
                                    'powerpc64', 'powerpcspe', 's390x',
                                    'amd64', 'em64t', 'intel64', 'arm64',
-                                   'ppc64el']:
+                                   'ppc64el', 'm68k', 'mips64', 'mips64el', 'mipsn32', 'mipsn32el']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:

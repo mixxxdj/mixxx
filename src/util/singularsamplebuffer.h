@@ -12,11 +12,10 @@
 // This class is not thread-safe and not intended to be used from multiple
 // threads!
 class SingularSampleBuffer {
-    Q_DISABLE_COPY(SingularSampleBuffer);
-
   public:
     SingularSampleBuffer();
     explicit SingularSampleBuffer(SINT capacity);
+    SingularSampleBuffer(const SingularSampleBuffer&) = delete;
     virtual ~SingularSampleBuffer() {}
 
     // The initial/total capacity of the buffer.

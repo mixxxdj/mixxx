@@ -5,7 +5,7 @@
 #include <QImage>
 #include <QColor>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 
 class ControlObjectSlave;
@@ -22,7 +22,7 @@ class WaveformMark {
     void setKeyAndIndex(const ConfigKey& key, int i);
 
   private:
-    ControlObjectSlave* m_pointControl;
+    ControlObjectSlave* m_pPointCos;
 
     QColor m_color;
     QColor m_textColor;

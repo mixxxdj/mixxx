@@ -2,6 +2,7 @@
 #include <QStringBuilder>
 #include <QFileInfo>
 
+#include "soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/trackcollection.h"
@@ -50,39 +51,39 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
 	
     SecurityTokenPointer pToken;
     // aiff
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.aiff",
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.aiff",
                                                 pToken);
     EXPECT_FALSE(cover.isNull());
     EXPECT_EQ(referencePNGImage, cover);
     // flac
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.flac",
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.flac",
                                                 pToken);
     EXPECT_FALSE(cover.isNull());
     EXPECT_EQ(referencePNGImage, cover);
     // mp3 - PNG
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test-png.mp3",
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test-png.mp3",
                                                 pToken);
     EXPECT_FALSE(cover.isNull());
     EXPECT_EQ(referencePNGImage, cover);
     // mp3 - JPEG
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test-jpg.mp3",
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test-jpg.mp3",
                                                 pToken);
     EXPECT_FALSE(cover.isNull());
     EXPECT_EQ(referenceJPGImage, cover);
     // ogg
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.ogg",
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.ogg",
                                                 pToken);
     EXPECT_FALSE(cover.isNull());
     EXPECT_EQ(referencePNGImage, cover);
     // wav
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.wav",
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.wav",
                                                 pToken);
     EXPECT_FALSE(cover.isNull());
     EXPECT_EQ(referencePNGImage, cover);
 
 #ifdef __OPUS__
     // opus
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.opus",
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath + "cover-test.opus",
                                                 pToken);
     EXPECT_FALSE(cover.isNull());
     EXPECT_EQ(referencePNGImage, cover);
@@ -95,7 +96,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
     ASSERT_FALSE(QDir().exists(trackdir)); // it must start empty
     ASSERT_TRUE(QDir().mkpath(trackdir));
 
-    TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
+    TrackPointer pTrack(TrackInfoObject::newTemporary(kTrackLocationTest));
+    SoundSourceProxy(pTrack).loadTrackMetadata();
     QLinkedList<QFileInfo> covers;
     CoverArt res;
     // looking for cover in an empty directory
@@ -105,9 +107,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
     EXPECT_EQ(expected, res);
 
     // Looking for a track with embedded cover.
-    pTrack = TrackPointer(new TrackInfoObject(kTrackLocationTest,
-                                              SecurityTokenPointer(),
-                                              true, true));
+    pTrack = TrackPointer(TrackInfoObject::newTemporary(kTrackLocationTest));
+    SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
     expected = CoverArt();
     expected.image = pTrack->getCoverArt().image;
     expected.info.type = CoverInfo::METADATA;

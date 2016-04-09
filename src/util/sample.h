@@ -251,6 +251,11 @@ class SampleUtil {
     // reverses stereo sample in place
     static void reverse(CSAMPLE* pBuffer, int iNumSamples);
 
+    // copy pSrc to pDest and reverses stereo sample order (backward)
+    static void copyReverse(CSAMPLE* _RESTRICT pDest,
+            const CSAMPLE* _RESTRICT pSrc, int iNumSamples);
+
+
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
     // etc.)
 #include "util/sample_autogen.h"

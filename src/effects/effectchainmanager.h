@@ -5,7 +5,7 @@
 #include <QList>
 #include <QHash>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "effects/effectchain.h"
 #include "effects/effectrack.h"
 #include "engine/channelhandle.h"
@@ -19,7 +19,7 @@ class EffectsManager;
 class EffectChainManager : public QObject {
     Q_OBJECT
   public:
-    EffectChainManager(ConfigObject<ConfigValue>* pConfig,
+    EffectChainManager(UserSettingsPointer pConfig,
                        EffectsManager* pEffectsManager);
     virtual ~EffectChainManager();
 
@@ -57,7 +57,7 @@ class EffectChainManager : public QObject {
         return "EffectChainManager";
     }
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
     QList<StandardEffectRackPointer> m_standardEffectRacks;
     QList<EqualizerRackPointer> m_equalizerEffectRacks;

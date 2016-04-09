@@ -20,10 +20,10 @@ class BansheePlaylistModel;
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig);
+    BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, UserSettingsPointer pConfig);
     virtual ~BansheeFeature();
     static bool isSupported();
-    static void prepareDbPath(ConfigObject<ConfigValue>* pConfig);
+    static void prepareDbPath(UserSettingsPointer pConfig);
 
     virtual QVariant title();
     virtual QIcon getIcon();

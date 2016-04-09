@@ -19,11 +19,10 @@ SettingsManager::SettingsManager(QObject* pParent,
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
-    UserSettings* pSettings = upgrader.versionUpgrade(settingsPath);
-    DEBUG_ASSERT_AND_HANDLE(pSettings != nullptr) {
-        pSettings = new UserSettings("");
+    m_pSettings = upgrader.versionUpgrade(settingsPath);
+    DEBUG_ASSERT_AND_HANDLE(!m_pSettings.isNull()) {
+        m_pSettings = UserSettingsPointer(new UserSettings(""));
     }
-    m_pSettings = UserSettingsPointer(pSettings);
     m_bShouldRescanLibrary = upgrader.rescanLibrary();
     ControlDoublePrivate::setUserConfig(m_pSettings);
 }

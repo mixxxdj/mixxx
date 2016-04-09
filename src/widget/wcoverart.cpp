@@ -11,11 +11,12 @@
 #include "widget/wskincolor.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dlgcoverartfullsize.h"
 #include "util/math.h"
 #include "util/dnd.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
-                     ConfigObject<ConfigValue>* pConfig,
+                     UserSettingsPointer pConfig,
                      const QString& group)
         : QWidget(parent),
           WBaseWidget(this),
@@ -103,8 +104,13 @@ void WCoverArt::slotEnable(bool enable) {
     if (wasDisabled) {
         slotLoadTrack(m_loadedTrack);
     }
-
     update();
+}
+
+void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
+    slotReset();
 }
 
 void WCoverArt::slotReset() {

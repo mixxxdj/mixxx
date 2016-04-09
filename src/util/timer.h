@@ -1,5 +1,5 @@
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef UTIL_TIMER_H
+#define UTIL_TIMER_H
 
 #include <QObject>
 #include <QScopedPointer>
@@ -22,14 +22,14 @@ class Timer {
           Stat::ComputeFlags compute = kDefaultComputeFlags);
     void start();
 
-    // Restart the timer returning the nanoseconds since it was last
+    // Restart the timer returning the time duration since it was last
     // started/restarted. If report is true, reports the elapsed time to the
     // associated Stat key.
-    qint64 restart(bool report);
+    mixxx::Duration restart(bool report);
 
-    // Returns nanoseconds since start/restart was called. If report is true,
+    // Returns time duration since start/restart was called. If report is true,
     // reports the elapsed time to the associated Stat key.
-    qint64 elapsed(bool report);
+    mixxx::Duration elapsed(bool report);
 
   protected:
     QString m_key;
@@ -43,12 +43,12 @@ class SuspendableTimer : public Timer {
     SuspendableTimer(const QString& key,
             Stat::ComputeFlags compute = kDefaultComputeFlags);
     void start();
-    qint64 suspend();
+    mixxx::Duration suspend();
     void go();
-    qint64 elapsed(bool report);
+    mixxx::Duration elapsed(bool report);
 
   private:
-    qint64 m_leapTime;
+    mixxx::Duration m_leapTime;
 };
 
 class ScopedTimer {
@@ -134,4 +134,4 @@ class GuiTickTimer : public QObject {
     bool m_bActive;
 };
 
-#endif /* TIMER_H */
+#endif /* UTIL_TIMER_H */

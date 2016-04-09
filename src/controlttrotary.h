@@ -17,7 +17,7 @@
 #ifndef CONTROLTTROTARY_H
 #define CONTROLTTROTARY_H
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 
 class ControlTTRotary : public ControlObject {

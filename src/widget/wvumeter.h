@@ -43,7 +43,7 @@ class WVuMeter : public WWidget  {
     void onConnectedControlChanged(double dParameter, double dValue);
 
   protected slots:
-    void updateState(double msecsElapsed);
+    void updateState(mixxx::Duration elapsed);
     void maybeUpdate();
 
   private:

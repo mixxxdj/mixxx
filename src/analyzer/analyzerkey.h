@@ -6,12 +6,12 @@
 
 #include "analyzer/analyzer.h"
 #include "analyzer/vamp/vampanalyzer.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 
 class AnalyzerKey : public Analyzer {
   public:
-    AnalyzerKey(ConfigObject<ConfigValue>* pConfig);
+    AnalyzerKey(UserSettingsPointer pConfig);
     virtual ~AnalyzerKey();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
@@ -24,7 +24,7 @@ class AnalyzerKey : public Analyzer {
     static QHash<QString, QString> getExtraVersionInfo(
         QString pluginId, bool bPreferencesFastAnalysis);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     VampAnalyzer* m_pVamp;
     QString m_pluginId;
     int m_iSampleRate;

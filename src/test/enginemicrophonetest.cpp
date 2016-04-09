@@ -2,7 +2,7 @@
 
 #include <QtDebug>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "engine/enginemicrophone.h"
 #include "soundio/soundmanagerutil.h"

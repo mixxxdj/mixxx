@@ -23,7 +23,7 @@
 #include "controllers/midi/midimessage.h"
 #include "controllers/controller.h"
 #include "controllers/controllervisitor.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class ControllerPreset;
 

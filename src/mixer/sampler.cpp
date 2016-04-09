@@ -3,7 +3,7 @@
 #include "controlobject.h"
 
 Sampler::Sampler(QObject* pParent,
-                 ConfigObject<ConfigValue>* pConfig,
+                 UserSettingsPointer pConfig,
                  EngineMaster* pMixingEngine,
                  EffectsManager* pEffectsManager,
                  EngineChannel::ChannelOrientation defaultOrientation,

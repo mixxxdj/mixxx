@@ -8,7 +8,7 @@
 #include <QMutex>
 
 #include "engine/enginecontrol.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlobjectslave.h"
 #include "trackinfoobject.h"
 
@@ -84,7 +84,7 @@ class CueControl : public EngineControl {
     Q_OBJECT
   public:
     CueControl(QString group,
-               ConfigObject<ConfigValue>* _config);
+               UserSettingsPointer _config);
     virtual ~CueControl();
 
     virtual void hintReader(HintVector* pHintList);
@@ -94,8 +94,7 @@ class CueControl : public EngineControl {
     bool getPlayFlashingAtPause();
 
   public slots:
-    void trackLoaded(TrackPointer pTrack);
-    void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
     void cueUpdated();

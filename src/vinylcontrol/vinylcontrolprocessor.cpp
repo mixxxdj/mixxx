@@ -14,7 +14,7 @@
 #define SIGNAL_QUALITY_FIFO_SIZE 256
 #define SAMPLE_PIPE_FIFO_SIZE 65536
 
-VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<ConfigValue> *pConfig)
+VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPointer pConfig)
         : QThread(pParent),
           m_pConfig(pConfig),
           m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),

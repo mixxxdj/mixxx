@@ -4,14 +4,14 @@
 #include <QString>
 
 #include "util/types.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "vinylcontrol/vinylsignalquality.h"
 
 class ControlObjectSlave;
 
 class VinylControl : public QObject {
   public:
-    VinylControl(ConfigObject<ConfigValue> *pConfig, QString group);
+    VinylControl(UserSettingsPointer pConfig, QString group);
     virtual ~VinylControl();
 
     virtual void toggleVinylControl(bool enable);
@@ -22,7 +22,7 @@ class VinylControl : public QObject {
   protected:
     virtual float getAngle() = 0;
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QString m_group;
 
     // The VC input gain preference.
@@ -59,10 +59,10 @@ class VinylControl : public QObject {
     // Is pitch changing very quickly?
     ControlObjectSlave* scratching;
     // The ControlObject used to the get the pitch range from the prefs.
-    ControlObjectSlave* rateRange;
+    ControlObjectSlave* m_pRateRange;
     ControlObjectSlave* vinylStatus;
     // direction of rate
-    ControlObjectSlave* rateDir;
+    ControlObjectSlave* m_pRateDir;
     // looping enabled?
     ControlObjectSlave* loopEnabled;
     // show the signal in the skin?

@@ -103,7 +103,7 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         const ConfigKey& key, bool warn, ControlObject* pCreatorCO,
         bool bIgnoreNops, bool bTrack, bool bPersist) {
-    if (key.isNull()) {
+    if (key.isEmpty()) {
         if (warn) {
             qWarning() << "ControlDoublePrivate::getControl returning NULL"
                        << "for empty ConfigKey.";

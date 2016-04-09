@@ -105,6 +105,7 @@ void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
     int writeRequired = frames * m_numOutputChannels;
     if (writeAvailable < writeRequired) {
         qDebug() << "EngineNetworkStream::write() buffer full, loosing samples";
+        NetworkStreamWorker::debugState();
         m_writeOverflowCount++;
     }
     int copyCount = math_min(writeAvailable, writeRequired);
@@ -134,6 +135,7 @@ void EngineNetworkStream::writeSilence(int frames) {
     int writeRequired = frames * m_numOutputChannels;
     if (writeAvailable < writeRequired) {
         qDebug() << "EngineNetworkStream::writeSilence() buffer full";
+        NetworkStreamWorker::debugState();
     }
     int clearCount = math_min(writeAvailable, writeRequired);
     if (clearCount > 0) {
@@ -213,12 +215,12 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
         static PerformanceTimer timerSinceInc;
         GetSystemTimeAsFileTime(&ft);
         qint64 now = ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
-        if(now == oldNow) {
+        if (now == oldNow) {
             // timer was not incremented since last call (< 15 ms)
             // Add time since last function call after last increment
             // This reduces the jitter < one call cycle which is sufficient
             LARGE_INTEGER li;
-            now += timerSinceInc.elapsed() / 1000;
+            now += timerSinceInc.elapsed().toIntegerMicros();
         } else {
             // timer was incremented
             LARGE_INTEGER li;

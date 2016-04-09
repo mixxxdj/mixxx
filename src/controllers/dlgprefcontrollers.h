@@ -4,7 +4,7 @@
 #include <QTreeWidgetItem>
 #include <QSignalMapper>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -16,7 +16,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     Q_OBJECT
   public:
     DlgPrefControllers(DlgPreferences* pDlgPreferences,
-                       ConfigObject<ConfigValue>* pConfig,
+                       UserSettingsPointer pConfig,
                        ControllerManager* pControllerManager,
                        QTreeWidgetItem* pControllerTreeItem);
     virtual ~DlgPrefControllers();
@@ -38,7 +38,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     void setupControllerWidgets();
 
     DlgPreferences* m_pDlgPreferences;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     ControllerManager* m_pControllerManager;
     QTreeWidgetItem* m_pControllerTreeItem;
     QList<DlgPrefController*> m_controllerWindows;

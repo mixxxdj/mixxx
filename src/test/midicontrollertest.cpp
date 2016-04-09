@@ -42,7 +42,7 @@ class MidiControllerTest : public MixxxTest {
     void receive(unsigned char status, unsigned char control,
                  unsigned char value) {
         // TODO(rryan): This test doesn't care about timestamps.
-        m_pController->receive(status, control, value, Time::elapsedDuration());
+        m_pController->receive(status, control, value, Time::elapsed());
     }
 
     MidiControllerPreset m_preset;

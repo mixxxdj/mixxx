@@ -21,7 +21,6 @@
 // see API-KEY site here http://acoustid.org/application/496
 // I registered the KEY for version 1.12 -- kain88 (may 2013)
 const QString CLIENT_APIKEY = "czKxnkyO";
-const QString CLIENT_NAME = "Mixxx1.12";
 const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
 const int AcoustidClient::m_DefaultTimeout = 5000; // msec
 
@@ -47,7 +46,6 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     QNetworkRequest req(QUrl::fromEncoded(ACOUSTID_URL.toAscii()));
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
-    req.setRawHeader("User-Agent", CLIENT_NAME.toAscii());
 
     qDebug() << "AcoustIdClient POST request:" << ACOUSTID_URL
              << "body:" << body;

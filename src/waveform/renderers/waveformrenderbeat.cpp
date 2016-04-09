@@ -5,7 +5,6 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
 #include "track/beats.h"
 #include "trackinfoobject.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -50,7 +49,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     //          << "firstDisplayedPosition" << firstDisplayedPosition
     //          << "lastDisplayedPosition" << lastDisplayedPosition;
 
-    QScopedPointer<BeatIterator> it(trackBeats->findBeats(
+    std::unique_ptr<BeatIterator> it(trackBeats->findBeats(
             firstDisplayedPosition * trackSamples, lastDisplayedPosition * trackSamples));
 
     // if no beat do not waste time saving/restoring painter

@@ -17,7 +17,7 @@ class AnalyzerWaveformTest: public MixxxTest {
   protected:
     virtual void SetUp() {
         aw = new AnalyzerWaveform(config());
-        tio = TrackPointer(new TrackInfoObject(QFileInfo("foo")));
+        tio = TrackInfoObject::newTemporary();
         tio->setSampleRate(44100);
 
         bigbuf = new CSAMPLE[BIGBUF_SIZE];
