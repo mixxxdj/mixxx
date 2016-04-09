@@ -33,7 +33,8 @@ Build-Depends: debhelper (>= 4.0.0),
                libopusfile-dev,
                libsqlite3-dev,
                libsoundtouch-dev,
-               libhidapi-dev
+               libhidapi-dev,
+               libupower-glib-dev
 Standards-Version: 3.7.3
 Homepage: http://www.mixxx.org/
 
