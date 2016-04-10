@@ -1269,7 +1269,6 @@ WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; background: #0f
 
 /* cover art */
 WCoverArt { background: transparent; color: #ACACAC; }
-#CoverArtContainer { margin: 4px 0px 0px 0px; }
 
 /* splitter between treeview and library */
 #LibrarySplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background-color: #1e1e1e; }
