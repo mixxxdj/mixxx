@@ -121,7 +121,6 @@ class ControllerEngine : public QObject {
 
     // Execute a basic MIDI message callback.
     bool execute(QScriptValue function,
-                 QScriptValue thisObject,
                  unsigned char channel,
                  unsigned char control,
                  unsigned char value,
