@@ -5,7 +5,7 @@
 		<SizePolicy>me,min</SizePolicy>
         <!-- The waveform is at least 50px tall, but the spinnies or the spinny
         margins can make them larger -->
-		<MinimumSize>200,50</MinimumSize>
+		<MinimumSize>200,48</MinimumSize>
 		<Children>
 			<!--If you want the waveforms center to adjust when resizing in a collapsing widget
 			(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
