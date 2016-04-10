@@ -1,6 +1,7 @@
 #ifndef KEYUTILS_H
 #define KEYUTILS_H
 
+#include <QMutex>
 #include <QString>
 #include <QList>
 

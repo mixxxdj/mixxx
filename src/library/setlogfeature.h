@@ -8,7 +8,7 @@
 #include <QAction>
 
 #include "library/baseplaylistfeature.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class TrackCollection;
 class TreeItem;
@@ -16,7 +16,7 @@ class TreeItem;
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
 public:
-    SetlogFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+    SetlogFeature(QObject* parent, UserSettingsPointer pConfig,
                   TrackCollection* pTrackCollection);
     virtual ~SetlogFeature();
 

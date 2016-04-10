@@ -28,13 +28,13 @@
 //     SampleBuffer(newSize).swap(sampleBuffer);
 //
 class SampleBuffer {
-    Q_DISABLE_COPY(SampleBuffer);
   public:
     SampleBuffer()
             : m_data(nullptr),
               m_size(0) {
     }
     explicit SampleBuffer(SINT size);
+    SampleBuffer(SampleBuffer& other) = delete;
     SampleBuffer(SampleBuffer&& other)
         : m_data(other.m_data),
           m_size(other.m_size) {

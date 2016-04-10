@@ -10,7 +10,6 @@
 
 QString CFStringToQString(CFStringRef str);
 CFStringRef QStringToCFString(const QString& str);
-
 #endif
 
 #endif /* MAC_H */

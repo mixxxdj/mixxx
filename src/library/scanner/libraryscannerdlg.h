@@ -22,7 +22,8 @@
 #include <QThread>
 #include <QWidget>
 #include <QString>
-#include <QTime>
+
+#include "util/performancetimer.h"
 
 class LibraryScannerDlg : public QWidget {
     Q_OBJECT
@@ -42,7 +43,7 @@ class LibraryScannerDlg : public QWidget {
     void progress(QString);
 
   private:
-    QTime m_timer;
+    PerformanceTimer m_timer;
     bool m_bCancelled;
 };
 

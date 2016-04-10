@@ -2,7 +2,7 @@
 
 #include "widget/wsplitter.h"
 
-WSplitter::WSplitter(QWidget* pParent, ConfigObject<ConfigValue> *pConfig)
+WSplitter::WSplitter(QWidget* pParent, UserSettingsPointer pConfig)
         : QSplitter(pParent),
           WBaseWidget(this),
           m_pConfig(pConfig) {

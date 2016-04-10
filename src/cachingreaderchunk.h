@@ -80,6 +80,13 @@ public:
             SINT sampleOffset,
             SINT sampleCount) const;
 
+    // Copy sampleCount samples in reverse order starting at sampleOffset from
+    // the chunk's internal buffer into sampleBuffer.
+    void copySamplesReverse(
+            CSAMPLE* sampleBuffer,
+            SINT sampleOffset,
+            SINT sampleCount) const;
+
 protected:
     explicit CachingReaderChunk(CSAMPLE* sampleBuffer);
     virtual ~CachingReaderChunk();

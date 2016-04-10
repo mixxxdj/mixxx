@@ -10,7 +10,7 @@
 #include "waveform/sharedglcontext.h"
 #include "util/dnd.h"
 #include "util/math.h"
-#include "visualplayposition.h"
+#include "waveform/visualplayposition.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "widget/wspinny.h"
@@ -18,7 +18,7 @@
 
 // The SampleBuffers format enables antialiasing.
 WSpinny::WSpinny(QWidget* parent, const QString& group,
-                 ConfigObject<ConfigValue>* pConfig,
+                 UserSettingsPointer pConfig,
                  VinylControlManager* pVCMan)
         : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, SharedGLContext::getWidget()),
           WBaseWidget(this),
@@ -241,8 +241,9 @@ void WSpinny::slotLoadTrack(TrackPointer pTrack) {
     slotTrackCoverArtUpdated();
 }
 
-void WSpinny::slotReset() {
-    if (m_loadedTrack) {
+void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    if (m_loadedTrack && pOldTrack == m_loadedTrack) {
         disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }

@@ -16,7 +16,7 @@
 #include "util/dnd.h"
 #include "util/math.h"
 
-WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
+WWaveformViewer::WWaveformViewer(const char *group, UserSettingsPointer pConfig, QWidget * parent)
         : WWidget(parent),
           m_pGroup(group),
           m_pConfig(pConfig),
@@ -163,13 +163,15 @@ void WWaveformViewer::dropEvent(QDropEvent* event) {
     event->ignore();
 }
 
-void WWaveformViewer::onTrackLoaded(TrackPointer track) {
+void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
     }
 }
 
-void WWaveformViewer::onTrackUnloaded(TrackPointer /*track*/) {
+void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(TrackPointer());
     }

@@ -90,6 +90,22 @@ class CoreServices(Dependence):
         build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework CoreServices')
 
+class IOKit(Dependence):
+    """IOKit is used to get battery measurements on OS X and iOS."""
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(
+            CPPPATH='/Library/Frameworks/IOKit.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework IOKit')
+
+class UPower(Dependence):
+    """UPower is used to get battery measurements on Linux."""
+    def configure(self, build, conf):
+        if not build.platform_is_linux:
+            return
+        build.env.ParseConfig(
+                'pkg-config upower-glib --silence-errors --cflags --libs')
 
 class OggVorbis(Dependence):
 
@@ -405,43 +421,56 @@ class ReplayGain(Dependence):
 
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_PATH = 'soundtouch-1.8.0'
+    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-1.8.0'
+    INTERNAL_LINK = True
 
     def sources(self, build):
-        return ['engine/enginebufferscalest.cpp',
-                '#lib/%s/AAFilter.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/InterpolateCubic.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/InterpolateLinear.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/InterpolateShannon.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/RateTransposer.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/SoundTouch.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/TDStretch.cpp' % self.SOUNDTOUCH_PATH,
-                # SoundTouch CPU optimizations are only for x86
-                # architectures. SoundTouch automatically ignores these files
-                # when it is not being built for an architecture that supports
-                # them.
-                '#lib/%s/cpu_detect_x86.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH]
+        if self.INTERNAL_LINK:
+            return ['engine/enginebufferscalest.cpp',
+                    '%s/AAFilter.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/BPMDetect.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/FIRFilter.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/InterpolateCubic.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/InterpolateLinear.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/InterpolateShannon.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/PeakFinder.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/RateTransposer.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/SoundTouch.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/TDStretch.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    # SoundTouch CPU optimizations are only for x86
+                    # architectures. SoundTouch automatically ignores these files
+                    # when it is not being built for an architecture that supports
+                    # them.
+                    '%s/cpu_detect_x86.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/mmx_optimized.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/sse_optimized.cpp' % self.SOUNDTOUCH_INTERNAL_PATH]
+        else:
+            return ['engine/enginebufferscalest.cpp']
 
     def configure(self, build, conf, env=None):
         if env is None:
             env = build.env
-        env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
 
-        # Prevents circular import.
-        from features import Optimize
+        if build.platform_is_linux:
+            # Try using system lib
+            if conf.CheckForPKG('soundtouch', '1.8.0'):
+                # No System Lib found
+                build.env.ParseConfig('pkg-config soundtouch --silence-errors \
+                                      --cflags --libs')
+                self.INTERNAL_LINK = False
 
-        # If we do not want optimizations then disable them.
-        optimize = (build.flags['optimize'] if 'optimize' in build.flags
-                    else Optimize.get_optimization_level(build))
-        if optimize == Optimize.LEVEL_OFF:
-            env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
+        if self.INTERNAL_LINK:
+            env.Append(CPPPATH=[self.SOUNDTOUCH_INTERNAL_PATH])
 
+            # Prevents circular import.
+            from features import Optimize
+
+            # If we do not want optimizations then disable them.
+            optimize = (build.flags['optimize'] if 'optimize' in build.flags
+                        else Optimize.get_optimization_level(build))
+            if optimize == Optimize.LEVEL_OFF:
+                env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
 
 class RubberBand(Dependence):
     def sources(self, build):
@@ -546,6 +575,7 @@ class MixxxCore(Feature):
                    "control/controlmodel.cpp",
                    "controlobject.cpp",
                    "controlobjectslave.cpp",
+                   "controlobjectscript.cpp",
                    "controlaudiotaperpot.cpp",
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
@@ -555,33 +585,28 @@ class MixxxCore(Feature):
                    "controlindicator.cpp",
                    "controlttrotary.cpp",
 
-                   "preferences/dlgpreferencepage.cpp",
+                   "controllers/dlgcontrollerlearning.cpp",
+                   "controllers/dlgprefcontroller.cpp",
+                   "controllers/dlgprefcontrollers.cpp",
+                   "dlgabout.cpp",
+                   "dlgdevelopertools.cpp",
+
+                   "preferences/dialog/dlgprefautodj.cpp",
+                   "preferences/dialog/dlgprefcontrols.cpp",
+                   "preferences/dialog/dlgprefcrossfader.cpp",
+                   "preferences/dialog/dlgprefeffects.cpp",
+                   "preferences/dialog/dlgprefeq.cpp",
+                   "preferences/dialog/dlgpreferences.cpp",
+                   "preferences/dialog/dlgpreflibrary.cpp",
+                   "preferences/dialog/dlgprefnovinyl.cpp",
+                   "preferences/dialog/dlgprefrecord.cpp",
+                   "preferences/dialog/dlgprefreplaygain.cpp",
+                   "preferences/dialog/dlgprefsound.cpp",
+                   "preferences/dialog/dlgprefsounditem.cpp",
+                   "preferences/dialog/dlgprefwaveform.cpp",
                    "preferences/settingsmanager.cpp",
                    "preferences/upgrade.cpp",
-                   "dlgpreferences.cpp",
-                   "dlgprefsound.cpp",
-                   "dlgprefsounditem.cpp",
-                   "controllers/dlgprefcontroller.cpp",
-                   "controllers/dlgcontrollerlearning.cpp",
-                   "controllers/dlgprefcontrollers.cpp",
-                   "dlgpreflibrary.cpp",
-                   "dlgprefcontrols.cpp",
-                   "dlgprefwaveform.cpp",
-                   "dlgprefautodj.cpp",
-                   "dlgprefreplaygain.cpp",
-                   "dlgprefnovinyl.cpp",
-                   "dlgabout.cpp",
-                   "dlgprefeq.cpp",
-                   "dlgprefeffects.cpp",
-                   "dlgprefcrossfader.cpp",
-                   "dlgtagfetcher.cpp",
-                   "dlgtrackinfo.cpp",
-                   "dlganalysis.cpp",
-                   "dlgautodj.cpp",
-                   "dlghidden.cpp",
-                   "dlgmissing.cpp",
-                   "dlgdevelopertools.cpp",
-                   "dlgcoverartfullsize.cpp",
+                   "preferences/dlgpreferencepage.cpp",
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -647,6 +672,7 @@ class MixxxCore(Feature):
                    "engine/enginevumeter.cpp",
                    "engine/enginesidechaincompressor.cpp",
                    "engine/sidechain/enginesidechain.cpp",
+                   "engine/sidechain/networkstreamworker.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
@@ -748,12 +774,14 @@ class MixxxCore(Feature):
                    "widget/weffectparameterbase.cpp",
                    "widget/wtime.cpp",
                    "widget/wkey.cpp",
+                   "widget/wbattery.cpp",
                    "widget/wcombobox.cpp",
                    "widget/wsplitter.cpp",
                    "widget/wcoverart.cpp",
                    "widget/wcoverartlabel.cpp",
                    "widget/wcoverartmenu.cpp",
                    "widget/wsingletoncontainer.cpp",
+                   "widget/wmainmenubar.cpp",
 
                    "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",
@@ -795,14 +823,25 @@ class MixxxCore(Feature):
                    "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
                    "library/setlogfeature.cpp",
+                   "library/autodj/dlgautodj.cpp",
+                   "library/dlganalysis.cpp",
+                   "library/dlgcoverartfullsize.cpp",
+                   "library/dlghidden.cpp",
+                   "library/dlgmissing.cpp",
+                   "library/dlgtagfetcher.cpp",
+                   "library/dlgtrackinfo.cpp",
 
                    "library/browse/browsetablemodel.cpp",
                    "library/browse/browsethread.cpp",
                    "library/browse/browsefeature.cpp",
                    "library/browse/foldertreemodel.cpp",
 
+                   "library/export/trackexportdlg.cpp",
+                   "library/export/trackexportwizard.cpp",
+                   "library/export/trackexportworker.cpp",
+
                    "library/recording/recordingfeature.cpp",
-                   "dlgrecording.cpp",
+                   "library/recording/dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
                    "engine/sidechain/enginerecord.cpp",
 
@@ -867,6 +906,7 @@ class MixxxCore(Feature):
                    "waveform/waveformwidgetfactory.cpp",
                    "waveform/vsyncthread.cpp",
                    "waveform/guitick.cpp",
+                   "waveform/visualplayposition.cpp",
                    "waveform/renderers/waveformwidgetrenderer.cpp",
                    "waveform/renderers/waveformrendererabstract.cpp",
                    "waveform/renderers/waveformrenderbackground.cpp",
@@ -935,7 +975,6 @@ class MixxxCore(Feature):
                    "track/tracknumbers.cpp",
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
-                   "track/audiotagger.cpp",
 
                    "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",
@@ -954,8 +993,6 @@ class MixxxCore(Feature):
                    "soundio/soundmanager.cpp",
                    "soundio/soundmanagerconfig.cpp",
                    "soundio/soundmanagerutil.cpp",
-                   "dlgprefrecord.cpp",
-                   "visualplayposition.cpp",
 
                    "encoder/encoder.cpp",
                    "encoder/encodermp3.cpp",
@@ -972,6 +1009,7 @@ class MixxxCore(Feature):
                    "util/threadcputimer.cpp",
                    "util/version.cpp",
                    "util/rlimit.cpp",
+                   "util/battery/battery.cpp",
                    "util/valuetransformer.cpp",
                    "util/sandbox.cpp",
                    "util/file.cpp",
@@ -1013,35 +1051,37 @@ class MixxxCore(Feature):
             'controllers/dlgprefcontrollerdlg.ui',
             'controllers/dlgprefcontrollersdlg.ui',
             'dlgaboutdlg.ui',
-            'dlganalysis.ui',
-            'dlgautodj.ui',
-            'dlgcoverartfullsize.ui',
             'dlgdevelopertoolsdlg.ui',
-            'dlghidden.ui',
-            'dlgmissing.ui',
-            'dlgprefbeatsdlg.ui',
-            'dlgprefcontrolsdlg.ui',
-            'dlgprefwaveformdlg.ui',
-            'dlgprefautodjdlg.ui',
-            'dlgprefcrossfaderdlg.ui',
-            'dlgprefkeydlg.ui',
-            'dlgprefeqdlg.ui',
-            'dlgprefeffectsdlg.ui',
-            'dlgpreferencesdlg.ui',
-            'dlgprefnovinyldlg.ui',
-            'dlgpreflibrarydlg.ui',
-            'dlgprefrecorddlg.ui',
-            'dlgprefreplaygaindlg.ui',
-            'dlgprefsounddlg.ui',
-            'dlgprefsounditem.ui',
-            'dlgprefvinyldlg.ui',
-            'dlgrecording.ui',
-            'dlgtagfetcher.ui',
-            'dlgtrackinfo.ui',
+            'library/autodj/dlgautodj.ui',
+            'library/dlganalysis.ui',
+            'library/dlgcoverartfullsize.ui',
+            'library/dlghidden.ui',
+            'library/dlgmissing.ui',
+            'library/dlgtagfetcher.ui',
+            'library/dlgtrackinfo.ui',
+            'library/export/dlgtrackexport.ui',
+            'library/recording/dlgrecording.ui',
+            'preferences/dialog/dlgprefautodjdlg.ui',
+            'preferences/dialog/dlgprefbeatsdlg.ui',
+            'preferences/dialog/dlgprefcontrolsdlg.ui',
+            'preferences/dialog/dlgprefcrossfaderdlg.ui',
+            'preferences/dialog/dlgprefeffectsdlg.ui',
+            'preferences/dialog/dlgprefeqdlg.ui',
+            'preferences/dialog/dlgpreferencesdlg.ui',
+            'preferences/dialog/dlgprefkeydlg.ui',
+            'preferences/dialog/dlgpreflibrarydlg.ui',
+            'preferences/dialog/dlgprefnovinyldlg.ui',
+            'preferences/dialog/dlgprefrecorddlg.ui',
+            'preferences/dialog/dlgprefreplaygaindlg.ui',
+            'preferences/dialog/dlgprefsounddlg.ui',
+            'preferences/dialog/dlgprefsounditem.ui',
+            'preferences/dialog/dlgprefvinyldlg.ui',
+            'preferences/dialog/dlgprefwaveformdlg.ui',
         ]
         map(Qt.uic(build), ui_files)
 
         if build.platform_is_windows:
+            sources.append("util/battery/batterywindows.cpp")
             # Add Windows resource file with icons and such
             # force manifest file creation, apparently not necessary for all
             # people but necessary for this committers handicapped windows
@@ -1052,6 +1092,9 @@ class MixxxCore(Feature):
             # Need extra room for code signing (App Store)
             build.env.Append(LINKFLAGS="-Wl,-headerpad,ffff")
             build.env.Append(LINKFLAGS="-Wl,-headerpad_max_install_names")
+            sources.append("util/battery/batterymac.cpp")
+        elif build.platform_is_linux:
+            sources.append("util/battery/batterylinux.cpp")
 
         return sources
 
@@ -1085,6 +1128,10 @@ class MixxxCore(Feature):
             # Default GNU Options
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
+            # Quiet down Clang warnings about inconsistent use of override
+            # keyword until Qt fixes qt_metacall.
+            if build.compiler_is_clang:
+                build.env.Append(CCFLAGS='-Wno-inconsistent-missing-override')
             build.env.Append(CCFLAGS='-Wextra')
 
             # Always generate debugging info.
@@ -1250,7 +1297,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
-                QtScriptByteArray, Reverb, FpClassify]
+                QtScriptByteArray, Reverb, FpClassify, IOKit, UPower]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

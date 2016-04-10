@@ -17,7 +17,7 @@
 #include "library/libraryfeature.h"
 #include "library/dao/trackdao.h"
 #include "treeitemmodel.h"
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class DlgHidden;
 class DlgMissing;
@@ -31,7 +31,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     public:
     MixxxLibraryFeature(Library* pLibrary,
                         TrackCollection* pTrackCollection,
-                        ConfigObject<ConfigValue>* pConfig);
+                        UserSettingsPointer pConfig);
     virtual ~MixxxLibraryFeature();
 
     QVariant title();
@@ -57,7 +57,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     DlgHidden* m_pHiddenView;
     TreeItemModel m_childModel;
     TrackDAO& m_trackDao;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
 };
 

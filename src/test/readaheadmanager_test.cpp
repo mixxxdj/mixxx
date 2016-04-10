@@ -15,10 +15,12 @@
 class StubReader : public CachingReader {
   public:
     StubReader()
-        : CachingReader("[test]", NULL) { }
+            : CachingReader("[test]", UserSettingsPointer()) { }
 
-    virtual int read(int sample, int num_samples, CSAMPLE* buffer) {
+    int read(int sample, bool reverse, int num_samples,
+             CSAMPLE* buffer) override {
         Q_UNUSED(sample);
+        Q_UNUSED(reverse);
         SampleUtil::clear(buffer, num_samples);
         return num_samples;
     }
@@ -27,7 +29,7 @@ class StubReader : public CachingReader {
 class StubLoopControl : public LoopingControl {
   public:
     StubLoopControl()
-        : LoopingControl("[test]", NULL) { }
+            : LoopingControl("[test]", UserSettingsPointer()) { }
 
     void pushTriggerReturnValue(double value) {
         m_triggerReturnValues.push_back(value);
@@ -37,10 +39,10 @@ class StubLoopControl : public LoopingControl {
         m_processReturnValues.push_back(value);
     }
 
-    virtual double nextTrigger(const double dRate,
+    double nextTrigger(const double dRate,
                        const double currentSample,
                        const double totalSamples,
-                       const int iBufferSize) {
+                       const int iBufferSize) override {
         Q_UNUSED(dRate);
         Q_UNUSED(currentSample);
         Q_UNUSED(totalSamples);
@@ -49,10 +51,10 @@ class StubLoopControl : public LoopingControl {
         return m_triggerReturnValues.takeFirst();
     }
 
-    virtual double process(const double dRate,
-                           const double dCurrentSample,
-                           const double dTotalSamples,
-                           const int iBufferSize) {
+    double process(const double dRate,
+                   const double dCurrentSample,
+                   const double dTotalSamples,
+                   const int iBufferSize) override {
         Q_UNUSED(dRate);
         Q_UNUSED(dCurrentSample);
         Q_UNUSED(dTotalSamples);
@@ -63,10 +65,10 @@ class StubLoopControl : public LoopingControl {
 
     // getTrigger returns the sample that the engine will next be triggered to
     // loop to, given the value of currentSample and dRate.
-    virtual double getTrigger(const double dRate,
+    double getTrigger(const double dRate,
                       const double currentSample,
                       const double totalSamples,
-                      const int iBufferSize) {
+                      const int iBufferSize) override {
         Q_UNUSED(dRate);
         Q_UNUSED(currentSample);
         Q_UNUSED(totalSamples);
@@ -75,20 +77,18 @@ class StubLoopControl : public LoopingControl {
     }
 
     // hintReader has no effect in this stubbed class
-    virtual void hintReader(HintVector* pHintList) {
+    void hintReader(HintVector* pHintList) override {
         Q_UNUSED(pHintList);
     }
 
-    virtual void notifySeek(double dNewPlaypos) {
+    void notifySeek(double dNewPlaypos) {
         Q_UNUSED(dNewPlaypos);
     }
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack) {
+    void trackLoaded(TrackPointer pTrack, TrackPointer pOldTrack) override {
         Q_UNUSED(pTrack);
-    }
-    virtual void trackUnloaded(TrackPointer pTrack) {
-        Q_UNUSED(pTrack);
+        Q_UNUSED(pOldTrack);
     }
 
   protected:

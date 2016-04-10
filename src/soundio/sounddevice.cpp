@@ -26,7 +26,7 @@
 #include "util/defs.h"
 #include "util/sample.h"
 
-SoundDevice::SoundDevice(ConfigObject<ConfigValue>* config, SoundManager* sm)
+SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
         : m_pConfig(config),
           m_pSoundManager(sm),
           m_strInternalName("Unknown Soundcard"),

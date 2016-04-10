@@ -22,8 +22,8 @@
 #include "waveform/widgets/glvsynctestwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
+#include "waveform/guitick.h"
 #include "waveform/vsyncthread.h"
-
 #include "util/cmdlineargs.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
@@ -41,7 +41,7 @@ WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
 WaveformWidgetHolder::WaveformWidgetHolder()
     : m_waveformWidget(NULL),
       m_waveformViewer(NULL),
-      m_skinContextCache(NULL, QString()) {
+      m_skinContextCache(UserSettingsPointer(), QString()) {
 }
 
 WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
@@ -182,7 +182,7 @@ WaveformWidgetFactory::~WaveformWidgetFactory() {
     }
 }
 
-bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config) {
+bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     m_config = config;
     if (!m_config) {
         return false;
@@ -497,10 +497,10 @@ void WaveformWidgetFactory::render() {
         //qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
 
         m_frameCnt += 1.0;
-        int timeCnt = m_time.elapsed();
-        if (timeCnt > 1000) {
+        mixxx::Duration timeCnt = m_time.elapsed();
+        if (timeCnt > mixxx::Duration::fromSeconds(1)) {
             m_time.start();
-            m_frameCnt = m_frameCnt * 1000 / timeCnt; // latency correction
+            m_frameCnt = m_frameCnt * 1000 / timeCnt.toIntegerMillis(); // latency correction
             emit(waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames()));
             m_frameCnt = 0.0;
         }
@@ -738,8 +738,8 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     return -1;
 }
 
-void WaveformWidgetFactory::startVSync(MixxxMainWindow* mixxxMainWindow) {
-    m_vsyncThread = new VSyncThread(mixxxMainWindow);
+void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick) {
+    m_vsyncThread = new VSyncThread(this, pGuiTick);
     m_vsyncThread->start(QThread::NormalPriority);
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),

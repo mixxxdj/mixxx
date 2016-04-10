@@ -120,6 +120,14 @@ def get_mixxx_version():
         raise ValueError("Version not found")
 
     version = version.split()[-1].replace('"', '')
+
+    # Check if version respect constraints
+    # 3 numbers separated by a dot, then maybe a (dash or tilde) and some string
+    # See src/defs_version.h comment
+    versionMask = '^\d+\.\d+\.\d+([-~].+)?$'
+    if not re.match(versionMask, version):
+        raise ValueError("Version format mismatch. See src/defs_version.h comment")
+        
     return version
 
 
