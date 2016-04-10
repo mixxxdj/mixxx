@@ -120,6 +120,11 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
 
     initializeKeyboard();
+
+    // Menubar depends on translations.
+    mixxx::Translations::initializeTranslations(
+        m_pSettingsManager->settings(), pApp, args.getLocale());
+
     createMenuBar();
 
     initializeWindow();
@@ -165,9 +170,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     Sandbox::initialize(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
     QString resourcePath = pConfig->getResourcePath();
-
-    mixxx::Translations::initializeTranslations(
-        pConfig, pApp, args.getLocale());
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
 
@@ -445,6 +447,20 @@ void MixxxMainWindow::finalize() {
     t.start();
 
     setCentralWidget(NULL);
+
+    // TODO(rryan): WMainMenuBar holds references to COs so we need to delete it
+    // before MixxxMainWindow is destroyed. QMainWindow calls deleteLater() in
+    // setMenuBar() but we need to delete it now so we can ask for
+    // DeferredDelete events to be processed for it. Once Mixxx shutdown lives
+    // outside of MixxxMainWindow the parent relationship will directly destroy
+    // the WMainMenuBar and this will no longer be a problem.
+    QPointer<QWidget> pMenuBar(menuBar());
+    setMenuBar(new QMenuBar());
+    QCoreApplication::sendPostedEvents(pMenuBar, QEvent::DeferredDelete);
+    // Our main menu is now deleted.
+    DEBUG_ASSERT_AND_HANDLE(pMenuBar.isNull()) {
+        qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
+    }
 
     qDebug() << "Destroying MixxxMainWindow";
 
