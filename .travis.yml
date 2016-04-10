@@ -42,6 +42,9 @@ before_install:
   - export CXX=g++-4.8
   - export CC=gcc-4.8
 install:
-  - scons test=1 mad=1 localecompare=1
+  # TODO(rryan): libupower-glib-dev is currently not whitelisted by travis so we cannot
+  # test building with battery support.
+  # https://github.com/travis-ci/apt-package-whitelist/issues/2806
+  - scons test=1 mad=1 localecompare=1 battery=0
 script:
   - ./mixxx-test

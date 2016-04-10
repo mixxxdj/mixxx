@@ -1081,7 +1081,6 @@ class MixxxCore(Feature):
         map(Qt.uic(build), ui_files)
 
         if build.platform_is_windows:
-            sources.append("util/battery/batterywindows.cpp")
             # Add Windows resource file with icons and such
             # force manifest file creation, apparently not necessary for all
             # people but necessary for this committers handicapped windows
@@ -1092,9 +1091,6 @@ class MixxxCore(Feature):
             # Need extra room for code signing (App Store)
             build.env.Append(LINKFLAGS="-Wl,-headerpad,ffff")
             build.env.Append(LINKFLAGS="-Wl,-headerpad_max_install_names")
-            sources.append("util/battery/batterymac.cpp")
-        elif build.platform_is_linux:
-            sources.append("util/battery/batterylinux.cpp")
 
         return sources
 
@@ -1297,7 +1293,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
-                QtScriptByteArray, Reverb, FpClassify, IOKit, UPower]
+                QtScriptByteArray, Reverb, FpClassify]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

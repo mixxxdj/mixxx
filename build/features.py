@@ -82,7 +82,7 @@ class HID(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
- 
+
         if build.platform_is_linux:
             # Try using system lib
             if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
@@ -1251,3 +1251,36 @@ class LocaleCompare(Feature):
         if not conf.CheckLib(['sqlite3']):
             raise Exception('Missing libsqlite3 -- exiting!')
         build.env.Append(CPPDEFINES='__SQLITE3__')
+
+class Battery(Feature):
+    def description(self):
+        return "Battery meter support."
+
+    def enabled(self, build):
+        build.flags['battery'] = util.get_flags(build.env, 'battery', 1)
+        if int(build.flags['battery']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('battery',
+                 'Set to 1 to enable battery meter support.')
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.Append(CPPDEFINES='__BATTERY__')
+
+    def sources(self, build):
+        if build.platform_is_windows:
+            return ["util/battery/batterywindows.cpp"]
+        elif build.platform_is_osx:
+            return ["util/battery/batterymac.cpp"]
+        elif build.platform_is_linux:
+            return ["util/battery/batterylinux.cpp"]
+        else:
+            raise Exception('Battery support is not implemented for the target platform.')
+
+    def depends(self, build):
+        return [depends.IOKit, depends.UPower]
