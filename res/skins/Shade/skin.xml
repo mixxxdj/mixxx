@@ -472,7 +472,7 @@
 					#DlgHidden > QPushButton,
 					#DlgAutoDJ > QPushButton,
 					#DlgRecording > QPushButton,
-					#DlgAnalysis > QPushButton { 
+					#DlgAnalysis > QPushButton {
 					    margin: 9px 3px 6px 3px;
 					    padding: 3px 8px;
 					    min-width: 65px;
@@ -735,6 +735,7 @@
 											<Size>e,me</Size>
 											<Style></Style>
 											<SplitSizes>1,e</SplitSizes>
+                                            <Collapsible>0,0</Collapsible>
 											<Children>
 												<LibrarySidebar></LibrarySidebar>
 												<!--Cover Art-->
