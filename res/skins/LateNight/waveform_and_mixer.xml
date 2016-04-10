@@ -4,13 +4,6 @@
 		<Layout>vertical</Layout>
 		<SizePolicy>me,me</SizePolicy>
 		<Children>
-            <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <ObjectName>ToolbarTop</ObjectName>
-                <Size>me,12f</Size>
-                <Children>
-                </Children>
-            </WidgetGroup>
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
 				<SizePolicy>me,f</SizePolicy>
@@ -143,7 +136,7 @@
                         <Not/>
                     </Transform>
                 </Connection>
-            </WidgetGroup> 
+            </WidgetGroup>
 		</Children>
 	</WidgetGroup>
 </Template>
