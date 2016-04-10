@@ -1278,8 +1278,8 @@ WCoverArt { background: transparent; color: #ACACAC; }
 /* splitter between treeview and library */
 #LibrarySplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background-color: #1e1e1e; }
 #LibrarySplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background-color: #1e1e1e; }
-#LibrarySplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
-#LibrarySplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
+#LibrarySplitter::handle:horizontal { width: 5px; background-color: #0e0e0e;}
+#LibrarySplitter::handle:vertical { height: 5px; background-color: #0e0e0e;}
 
 /* splitter between treeview and coverart */
 #CoverArtSplitter::handle { image: url(skin:/style/style_handle_horizontal_unchecked.png); background-color: #1e1e1e; }
