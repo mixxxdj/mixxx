@@ -17,32 +17,24 @@ var fastSeekEnabled = true;
 //activate PFL of deck on track load
 var smartPFL = true; 
 
- //print comments on prompt screen in order to facilitate debugging
-var printComments = false;
-
 // use beatlooproll instead of beatloop
 var beatlooprollActivate = false; 
 
 // PAD Loop button behavior: "true": Loop stops when finger release. 
 //"false" will force start loop on press and stop on 2nd press
-var PADLoopButtonPressed = false; 
+var PADLoopButtonHold = false; 
 
 // PAD Sample button behavior:"true": Sampler stops when finger release. 
 //"false" will force start Sampler on press and stop on 2nd press
-var PADSampleButtonPressed = false; 
+var PADSampleButtonHold = false; 
 
 // LED Flash on Beat Active : "true": TAP LED will flash to the beat
 // if Shift Lock is enable TAP LED will remain ON
 var OnBeatActiveFlash = true; 
 
-// Use TAP button to expand Library view: 
-// If "true": TAP button will be used to expand/contract library view and  
-// Shift TAP will trigger TAP function; "false" will invert the  functionality 
-var TapExpandLibrary = true; 
-
 // Skin used: this is required for TapExpandLibrary option 
 // to work properly. Different code is required for each skin
-// 1 = "Deere"; 2 = "Late Night"; 3 = "Dark Metal" 
+// 1 = "Deere" or "Shade"; 2 = "Late Night"; 3 = "Dark Metal" 
 var skin = 1 ;
 
 // Use Beat knob to adjust Sampler Volume. 
@@ -52,7 +44,7 @@ var skin = 1 ;
 var BeatKnobAsSamplerVolume = true;
 
 //Disable Play on Sync button Double Press
-var noPlayOnSync = true; 
+var noPlayOnSyncDoublePress = false; 
 
 /**************************
  *  scriptpause
@@ -71,7 +63,6 @@ var intervalsPerRev = 1200,
     rpm = 33 + 1 / 3,  //Like a real vinyl !!! :)
     alpha = 1.0 / 8,   //Adjust to suit.
     beta = alpha / 32; //Adjust to suit.
-
 
 /************************  GPL v2 licence  *****************************
  * Numark Mixtrack Pro 3 controller script
@@ -143,10 +134,25 @@ var intervalsPerRev = 1200,
  *            - Fixed Super Effect button
  *            - Fixed Sampler Shift - Sync now removed if present
  *2016-03-07 (1.1 ) - Stéphane Morin
- * 			  - Corrected Pitch Bend rate of wheel for smoother operation
- *            - Add option to disable Play on Double press of Sync button
+ *            - Corrected Pitch Bend rate of wheel for smoother operation
+ *            - Add option (noPlayOnSyncDoublePress) to disable Play on Double press of Sync button
+ *2016-04-08 (1.2 ) - Stéphane Morin
+ *              Changes based on Pull Request feedback:
+ *            - Renamed user options: PADLoopButtonPressed to PADLoopButtonHold 
+ *            - Renamed user options: PADSampleButtonPressed to PADSampleButtonHold
+ *            - TapExpandLibrary moved from Tap button to Browse Button push
+ *            - Linked printComments to debug value of init function: The debugging parameter is set to 'true' 
+ *              if the user specified the --mididebug parameter on the command line 
+ *            - Cleaned NumarkMixtrack3.shutdown function
+ *
  * To do - (maybe..)
  * ----------------
+ *            - Add script to control "volume","filterHigh","filterMid","filterLow" and"crossfader"
+ *              In order for engine.softTakeover to work for these controls
+ *            - Add configuration option: enable Samplers Sync by default (True/False) default: 
+ *              false
+ *            - Add brake effect when pausing track with Play button
+ *            - Add 4 deck support for script
  *            - Allow Beat knobs to control FX parameter; this button is Binary.
  *              knob has 20 notches - it sends only 1 or 127 as output.
  *              Note to developer: I considered hard using the beat knob to adjust parameterK 
@@ -155,8 +161,6 @@ var intervalsPerRev = 1200,
  *              but since all but one of the 8 effects have more than 2 parameters, 
  *              I could not convince myself of the added value, since you still 
  *              need to adjust effect on the GUI.
- *            - Add configuration option: enable Samplers Sync by default (True/False) default: 
- *              false
  *
  ***********************************************************************
  *                           GPL v2 licence
@@ -263,7 +267,7 @@ var PADcolors = {
 // =====================================================================
 
 function printInfo(string){
-    if(printComments) print(string);
+    if(NumarkMixtrack3.debug) print(string);
 }
 
 function pauseScript(ms) {
@@ -858,7 +862,7 @@ NumarkMixtrack3.SamplerBank.prototype.play = function(samplerindex,value) {
             if(deck.shiftKey){
                 //Shift is on, play sampler with no Sync
                 engine.setValue("[Sampler" + samplerindex + "]", "beatsync", 0);
-				engine.setValue("[Sampler" + samplerindex + "]", "cue_gotoandplay", 1);
+                engine.setValue("[Sampler" + samplerindex + "]", "cue_gotoandplay", 1);
                 deck.LEDs["PADsampler" + samplerindex].flashOn(300, PADcolors.purple, 300);             
             } else {
                 //play sampler with Sync
@@ -913,9 +917,9 @@ NumarkMixtrack3.deck.prototype.TrackIsLoaded = function() {
 };
 
 NumarkMixtrack3.deck.prototype.StripEffect = function(value, decknum) {
-	// var decknum = NumarkMixtrack3.deckFromGroup(group);
+    // var decknum = NumarkMixtrack3.deckFromGroup(group);
     // var deck = NumarkMixtrack3.decks["D" + decknum];
-	
+    
     if (decknum === 1) {
         engine.setValue("[EffectRack1_EffectUnit1]", "super1", value/127);
         engine.setValue("[EffectRack1_EffectUnit2]", "super1", value/127);
@@ -1032,14 +1036,18 @@ NumarkMixtrack3.initButtonsObjects = function() {
 
 // Called when the MIDI device is opened & set up
 NumarkMixtrack3.init = function(id,debug) { 
-    var i,j,k;
-    NumarkMixtrack3.id = id; // Store the ID of this device for later use
-    NumarkMixtrack3.debug = debug;
-    NumarkMixtrack3.libraryMode = false;
-    
     print("********* Initialisation process engaged *****************");
     print("   Mapping initialization");
     print("============================");
+
+    var i,j,k;
+    NumarkMixtrack3.id = id; // Store the ID of this device for later use
+    NumarkMixtrack3.debug = debug;
+    //print comments on prompt screen in order to facilitate debugging
+    print ("   Debug and printComments setting: " + NumarkMixtrack3.debug);
+
+    NumarkMixtrack3.libraryMode = false;
+
     print("   Init LEDs");
     NumarkMixtrack3.initLEDsObjects();
     print("   Init Buttons");
@@ -1087,23 +1095,27 @@ NumarkMixtrack3.init = function(id,debug) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
     // Set soft-takeover for all applicable Deck controls
+    // the following controls are mapped in the XML file, not by script
+    // therefore this is not required
+    
+    /*  
     for (i = engine.getValue("[Master]", "num_decks"); i >= 1; i--) {
         engine.softTakeover("[Channel" + i + "]", "volume", true);
         engine.softTakeover("[Channel" + i + "]", "filterHigh", true);
         engine.softTakeover("[Channel" + i + "]", "filterMid", true);
         engine.softTakeover("[Channel" + i + "]", "filterLow", true);
-    }
+    } 
 
     engine.softTakeover("[Master]", "crossfader", true);
-
+    */
     for (i = 1; i <= 4; i++) {
         engine.softTakeover("[EffectRack1_EffectUnit" + i + "]", "super1", true);
     }
     
-	for (i = 1; i <= 4; i++) {
+    for (i = 1; i <= 4; i++) {
         engine.softTakeover("[EffectRack1_EffectUnit" + i + "]", "mix", true);
     }
-	
+    
     print("   Init Connect controls");
     // Add event listeners
     engine.connectControl("[Channel1]", "hotcue_1_enabled", function(value, group, control) {
@@ -1233,39 +1245,12 @@ NumarkMixtrack3.init = function(id,debug) {
     print("********* End of Initialisation process *****************");
 };
 
-NumarkMixtrack3.shutdown = function(id) { // called when the MIDI device is closed
-    var i,j,k;
-    // First Remove event listeners
-    for (i = 1; i < 2; i++) {
-        for (j = 1; j < 4; j++) {
-            engine.disconnectControl("[Channel" + i + "]", "hotcue_" + j +
-                "_enabled", "NumarkMixtrack3.OnHotcueChange", true);
-        }        
-    }
+NumarkMixtrack3.shutdown = function() { 
+    print("********* Starting Controller Shutdown ********** ");
+    print("           Turning off LEDs");
+    NumarkMixtrack3.AllLeds.onOff(OFF);  
+    print("********* Controller shutdown completed********* ");
     
-    engine.disconnectControl("[Channel1]", "track_samples");
-    engine.disconnectControl("[Channel2]", "track_samples");
-    
-    engine.disconnectControl("[Channel1]", "VuMeter");
-    engine.disconnectControl("[Channel2]", "VuMeter");
-    engine.disconnectControl("[Channel1]", "playposition");
-    engine.disconnectControl("[Channel2]", "playposition");
-    engine.disconnectControl("[Channel1]", "volume");
-    engine.disconnectControl("[Channel2]", "volume");
-
-    // Turns all leds off
-    for(i=1;i<=2;i++) {
-        for(j=1;j<=4;j++) {
-            NumarkMixtrack3.decks["D"+i].LEDs["PADloop"+j].onOff(OFF);
-        }
-        NumarkMixtrack3.decks["D"+i].LEDs.jogWheelsInScratchMode.onOff(OFF);
-        
-    }
-    
-    for(k=1;k<=8;k++) {
-    NumarkMixtrack3.decks["D"+k].LEDs["PADsampler"+k].onOff(OFF);
-    }
-    NumarkMixtrack3.AllLeds.onOff(OFF);    
 };
 
 /******************     Shift Button :
@@ -1343,13 +1328,55 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
  * *********************************************************************/
 NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) {
     var shifted  = NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D1.shiftKey;
+    var maxview = !NumarkMixtrack3.libraryMode;
+    var LibraryCommand;
+    var LibraryGroup;
+    var expand;
+    var contract;
 
+    switch (skin){
+    case 1: // Deere or Shade
+    LibraryGroup = "[Master]";
+    LibraryCommand = "maximize_library";
+    expand = 1;
+    contract = 0;
+    break;
+
+    case 2: // LateNight
+    LibraryGroup = "[Master]";
+    LibraryCommand = "maximize_library";
+    expand = 1;
+    contract = 0;
+    break;
+
+    case 3: //Dark Metal
+    LibraryGroup = "[Hifi]";
+    LibraryCommand = "show";
+    expand = 0;
+    contract = 1;
+    break;  
+
+    default : 
+    LibraryGroup ="[Master]";
+    LibraryCommand = "maximize_library";
+    }
+    
     if (shifted) {
         // SHIFT+ BROWSE push : directory mode -- > Open/Close selected side bar item
         engine.setValue(group, "ToggleSelectedSidebarItem", true);
     } else {
-        // Browse push : track list mode --> Load Selected track into first stopped deck
-        engine.setValue(group, "LoadSelectedIntoFirstStopped" ,true);
+        // Browse push : maximize/minimize library view
+        if (value === ON){
+            
+            NumarkMixtrack3.libraryMode = !NumarkMixtrack3.libraryMode;         
+            if (maxview){
+                engine.setValue(LibraryGroup,LibraryCommand,expand);
+                
+            } else {
+                engine.setValue(LibraryGroup,LibraryCommand,contract);
+                
+            }           
+        }       
     }
 };
 
@@ -1549,7 +1576,7 @@ NumarkMixtrack3.OnSyncButton = function(channel, control, value, status, group, 
             engine.setValue(group, 'sync_enabled', false);
             deck.LEDs.sync.onOff(OFF);
         } else {
-			if (eventkind === DOUBLE_PRESS && !noPlayOnSync) {
+            if (eventkind === DOUBLE_PRESS && !noPlayOnSyncDoublePress) {
                 // Double press : Sync and play (if the track was paused
                 // the playback starts, synchronized to the other track
                 engine.setValue(group, 'play', true);
@@ -1732,7 +1759,7 @@ NumarkMixtrack3.WheelTouch = function(channel, control, value, status, group) {
         var gammaInputRange = 13; // Max jog speed
         var maxOutFraction = 0.8; // Where on the curve it should peak; 0.5 is half-way
         var sensitivity = 0.5; // Adjustment gamma
-		var gammaOutputRange = .75; // Max rate change
+        var gammaOutputRange = .75; // Max rate change
 
         adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(
                 adjustedJog) / (gammaInputRange * maxOutFraction),
@@ -1787,7 +1814,7 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
         NumarkMixtrack3.samplers.play(padindex,true);
     }
     
-    if (value === OFF && PADSampleButtonPressed){
+    if (value === OFF && PADSampleButtonHold){
     NumarkMixtrack3.samplers.play(padindex,false);
     }   
 };
@@ -1844,7 +1871,7 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
         }   
     }
     
-    if (value === OFF && PADLoopButtonPressed) { 
+    if (value === OFF && PADLoopButtonHold) { 
         engine.setValue(group,loopCommand2,false); 
         deck.LEDs["PADloop" + padindex].onOff(PADcolors.yellow);    
     }
@@ -2092,86 +2119,12 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
 NumarkMixtrack3.bpmTap  = function(channel, control, value, status, group) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
-    var maxview = !NumarkMixtrack3.libraryMode;
-    var LibraryCommand;
-    var LibraryGroup;
-    var expand;
-    var contract;
 
-    switch (skin){
-    case 1: // Deere
-    LibraryGroup = "[Master]";
-    LibraryCommand = "maximize_library";
-    expand = 1;
-    contract = 0;
-    break;
-
-    case 2: // LateNight
-    LibraryGroup = "[Master]";
-    LibraryCommand = "maximize_library";
-    expand = 1;
-    contract = 0;
-    break;
-
-    case 3: //Dark Metal
-    LibraryGroup = "[Hifi]";
-    LibraryCommand = "show";
-    expand = 0;
-    contract = 1;
-    break;  
-
-    default : 
-    LibraryGroup ="[Master]";
-    LibraryCommand = "maximize_library";
-    }
-
-    if (TapExpandLibrary) {
-    // Option is set to true, expand library on Tap, tempo on shift
-        if (deck.shiftKey) { 
-        // Shift key is active; TAP button
-            if(value===DOWN){
-                engine.setValue(group, "bpm_tap", true);
-            } else{
-                engine.setValue(group, "bpm_tap", false);
-            }
-        } else {
-        // Use TAP button to expand/contract Library
-            if(value===DOWN){
-                NumarkMixtrack3.libraryMode = !NumarkMixtrack3.libraryMode;
-                    
-                if (maxview){
-                    engine.setValue(LibraryGroup,LibraryCommand,expand);
-                } else {
-                    engine.setValue(LibraryGroup,LibraryCommand,contract);
-                }
-            }
-        }       
-    
-    } else {    
-    // Option is set to false, TAP tempo on Tap
-        if (!deck.shiftKey) { 
-        // Shift key is not active; TAP button
-            if(value===DOWN){
-                engine.setValue(group, "bpm_tap", true);
-            }else{
-                engine.setValue(group, "bpm_tap", false);
-            }
-        } else {
-        // Use TAP button to expand/contract Library
-
-            if(value===DOWN){
-                NumarkMixtrack3.libraryMode = !NumarkMixtrack3.libraryMode;
-                    
-                if (maxview){
-                    engine.setValue(LibraryGroup,LibraryCommand,expand);
-                } else {
-                    engine.setValue(LibraryGroup,LibraryCommand,contract);
-                }
-            }
-        
-        }
-    }
-    
+    if(value===DOWN){
+        engine.setValue(group, "bpm_tap", true);
+    } else {
+        engine.setValue(group, "bpm_tap", false);
+    }   
 };
 
 // ************************ Connected controls
