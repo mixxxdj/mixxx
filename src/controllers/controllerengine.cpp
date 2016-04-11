@@ -120,13 +120,9 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
     } else {
         QScriptValue function = m_pEngine->evaluate(codeSnippet);
         if (!syntaxIsValid(codeSnippet)) {
-            wrappedFunction = m_pEngine->evaluate(
-                "(function () { print('Syntax error in: "
-                + codeSnippet + "'); })");
+            wrappedFunction = m_scriptEvaluationException;
         } else if (checkException()) {
-            wrappedFunction = m_pEngine->evaluate(
-                "(function () { print('Exception occured evaluating: "
-                + codeSnippet + "'); })");
+            wrappedFunction = m_scriptEvaluationException;
         } else {
             QStringList wrapperArgList;
             for (int i = 1; i <= numberOfArgs; i++) {
@@ -315,7 +311,6 @@ bool ControllerEngine::evaluate(const QString& filepath) {
     return ret;
 }
 
-
 bool ControllerEngine::syntaxIsValid(const QString& scriptCode) {
     if (m_pEngine == nullptr) {
         return false;
@@ -341,7 +336,15 @@ bool ControllerEngine::syntaxIsValid(const QString& scriptCode) {
                      scriptCode);
 
         scriptErrorDialog(error);
-        m_pEngine->clearExceptions();
+
+        if (m_pEngine->hasUncaughtException()) {
+            // The error message in the Error object is a generic
+            // "Parse error", so replace it with the more helpful
+            // error constructed here.
+            m_scriptEvaluationException = m_pEngine->uncaughtException();
+            m_scriptEvaluationException.setProperty("message", error);
+            m_pEngine->clearExceptions();
+        }
         return false;
     }
     return true;
@@ -356,8 +359,9 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject,
                                        const QString& scriptCode) {
     // A special version of safeExecute since we're evaluating strings, not actual functions
     //  (execute() would print an error that it's not a function every time a timer fires.)
-    if (m_pEngine == nullptr)
+    if (m_pEngine == nullptr) {
         return false;
+    }
 
     if (!syntaxIsValid(scriptCode)) {
         return false;
@@ -387,6 +391,12 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject, QScriptValue fun
                                        QScriptValueList args) {
     if (m_pEngine == nullptr) {
         qDebug() << "ControllerEngine::execute: No script engine exists!";
+        return false;
+    }
+
+    if (functionObject.isError()) {
+        qDebug() << "ControllerEngine::internalExecute:"
+                 << functionObject.toString();
         return false;
     }
 
@@ -471,6 +481,8 @@ bool ControllerEngine::checkException() {
         scriptErrorDialog(ControllerDebug::enabled() ?
                 QString("%1\nBacktrace:\n%2")
                 .arg(errorText, backtrace.join("\n")) : errorText);
+
+        m_scriptEvaluationException = exception;
         m_pEngine->clearExceptions();
         return true;
     }

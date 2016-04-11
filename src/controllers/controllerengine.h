@@ -195,6 +195,7 @@ class ControllerEngine : public QObject {
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
     QHash<int, int> m_scratchTimers;
     QHash<QString, QScriptValue> m_scriptWrappedFunctionCache;
+    QScriptValue m_scriptEvaluationException;
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
     QList<QString> m_lastScriptPaths;
