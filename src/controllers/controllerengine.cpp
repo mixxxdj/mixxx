@@ -104,10 +104,12 @@ Purpose: Turn a snippet of JS into a QScriptValue function.
          evaluates to a function to be used in MIDI mapping XML files
          and ensures the function is executed with the correct
          'this' object.
-Input:   QString snippet of JS that evaluates to a function
+Input:   QString snippet of JS that evaluates to a function,
+         int number of arguments that the function takes
 Output:  QScriptValue of JS snippet wrapped in an anonymous function
 ------------------------------------------------------------------- */
-QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet) {
+QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
+                                                int numberOfArgs) {
     QScriptValue wrappedFunction;
 
     QHash<QString, QScriptValue>::const_iterator i =
@@ -116,16 +118,21 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet) {
     if (i != m_scriptWrappedFunctionCache.end()) {
         wrappedFunction = i.value();
     } else {
-        QScriptValue function = m_pEngine->evaluate(codeSnippet);
         if (!syntaxIsValid(codeSnippet)) {
             return m_pEngine->evaluate("(function () {})");
         }
+        QScriptValue function = m_pEngine->evaluate(codeSnippet);
         if (checkException()) {
             return m_pEngine->evaluate("(function () {})");
         }
 
-        QString wrappedCode = "(function (channel, control, value, status, group) { (" +
-                              codeSnippet + ")(channel, control, value, status, group); })";
+        QStringList wrapperArgList;
+        for (int i = 1; i <= numberOfArgs; i++) {
+            wrapperArgList << QString("arg%1").arg(i);
+        }
+        QString wrapperArgs = wrapperArgList.join(",");
+        QString wrappedCode = "(function (" + wrapperArgs + ") { (" +
+                              codeSnippet + ")(" + wrapperArgs + "); })";
         wrappedFunction = m_pEngine->evaluate(wrappedCode);
 
         if (checkException()) {
