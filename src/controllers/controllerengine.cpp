@@ -98,30 +98,44 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
     }
 }
 
-/* -------- ------------------------------------------------------
-Purpose: Resolves a function name to a QScriptValue including
-            OBJECT.Function calls
-Input:   -
-Output:  -
--------- ------------------------------------------------------ */
-QScriptValue ControllerEngine::resolveFunction(const QString& function) const {
+/* ------------------------------------------------------------------
+Purpose: Turn a snippet of JS into a QScriptValue function.
+         Wrapping it in an anonymous function allows any JS that
+         evaluates to a function to be used in MIDI mapping XML files
+         and ensures the function is executed with the correct
+         'this' object.
+Input:   QString snippet of JS that evaluates to a function
+Output:  QScriptValue of JS snippet wrapped in an anonymous function
+------------------------------------------------------------------- */
+QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet) {
+    QScriptValue wrappedFunction;
+
     QHash<QString, QScriptValue>::const_iterator i =
-            m_scriptValueCache.find(function);
-    if (i != m_scriptValueCache.end()) {
-        return i.value();
-    }
+            m_scriptWrappedFunctionCache.find(codeSnippet);
 
-    QScriptValue object = m_pEngine->globalObject();
-    QStringList parts = function.split(".");
-
-    for (int i = 0; i < parts.size(); i++) {
-        object = object.property(parts.at(i));
-        if (!object.isValid()) {
-            break;
+    if (i != m_scriptWrappedFunctionCache.end()) {
+        wrappedFunction = i.value();
+    } else {
+        QScriptValue function = m_pEngine->evaluate(codeSnippet);
+        if (!syntaxIsValid(codeSnippet)) {
+            return m_pEngine->evaluate("(function () {})");
         }
+        if (checkException()) {
+            return m_pEngine->evaluate("(function () {})");
+        }
+
+        QString wrappedCode = "(function (channel, control, value, status, group) { (" +
+                              codeSnippet + ")(channel, control, value, status, group); })";
+        wrappedFunction = m_pEngine->evaluate(wrappedCode);
+
+        if (checkException()) {
+            // There will be an exception if the codeSnippet didn't evaluate to a function
+            return m_pEngine->evaluate("(function () {})");
+        }
+
+        m_scriptWrappedFunctionCache[codeSnippet] = wrappedFunction;
     }
-    m_scriptValueCache[function] = object;
-    return object;
+    return wrappedFunction;
 }
 
 /* -------- ------------------------------------------------------
@@ -158,8 +172,8 @@ void ControllerEngine::gracefulShutdown() {
         }
     }
 
-    // Clear the Script Value cache
-    m_scriptValueCache.clear();
+    // Clear the cache of function wrappers
+    m_scriptWrappedFunctionCache.clear();
 
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
@@ -297,19 +311,12 @@ bool ControllerEngine::evaluate(const QString& filepath) {
     return ret;
 }
 
-/* -------- ------------------------------------------------------
-Purpose: Evaluate & run script code
-Input:   'this' object if applicable, Code string
-Output:  false if an exception
--------- ------------------------------------------------------ */
-bool ControllerEngine::internalExecute(QScriptValue thisObject,
-                                       const QString& scriptCode) {
-    // A special version of safeExecute since we're evaluating strings, not actual functions
-    //  (execute() would print an error that it's not a function every time a timer fires.)
-    if (m_pEngine == nullptr)
-        return false;
 
-    // Check syntax
+bool ControllerEngine::syntaxIsValid(const QString& scriptCode) {
+    if (m_pEngine == nullptr) {
+        return false;
+    }
+
     QScriptSyntaxCheckResult result = m_pEngine->checkSyntax(scriptCode);
     QString error = "";
     switch (result.state()) {
@@ -330,6 +337,25 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject,
                      scriptCode);
 
         scriptErrorDialog(error);
+        m_pEngine->clearExceptions();
+        return false;
+    }
+    return true;
+}
+
+/* -------- ------------------------------------------------------
+Purpose: Evaluate & run script code
+Input:   'this' object if applicable, Code string
+Output:  false if an exception
+-------- ------------------------------------------------------ */
+bool ControllerEngine::internalExecute(QScriptValue thisObject,
+                                       const QString& scriptCode) {
+    // A special version of safeExecute since we're evaluating strings, not actual functions
+    //  (execute() would print an error that it's not a function every time a timer fires.)
+    if (m_pEngine == nullptr)
+        return false;
+
+    if (!syntaxIsValid(scriptCode)) {
         return false;
     }
 
@@ -441,6 +467,7 @@ bool ControllerEngine::checkException() {
         scriptErrorDialog(ControllerDebug::enabled() ?
                 QString("%1\nBacktrace:\n%2")
                 .arg(errorText, backtrace.join("\n")) : errorText);
+        m_pEngine->clearExceptions();
         return true;
     }
     return false;
