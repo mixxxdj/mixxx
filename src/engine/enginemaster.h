@@ -26,7 +26,7 @@
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "engine/channelhandle.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 #include "recording/recordingmanager.h"
 
 class EngineWorkerScheduler;
@@ -53,7 +53,7 @@ static const int kPreallocatedChannels = 64;
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
-    EngineMaster(ConfigObject<ConfigValue>* pConfig,
+    EngineMaster(UserSettingsPointer pConfig,
                  const char* pGroup,
                  EffectsManager* pEffectsManager,
                  bool bEnableSidechain,
@@ -129,9 +129,10 @@ class EngineMaster : public QObject, public AudioSource {
     const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
     const CSAMPLE* getChannelBuffer(QString name) const;
+    const CSAMPLE* getSidechainBuffer() const;
 
     EngineSideChain* getSideChain() const {
-        return m_pSideChain;
+        return m_pEngineSideChain;
     }
 
     struct ChannelInfo {
@@ -291,6 +292,8 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE* m_pHead;
     CSAMPLE* m_pTalkover;
 
+    CSAMPLE** m_ppSidechain; // points to master or to talkover buffer
+
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
 
@@ -300,7 +303,6 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pMasterLatency;
     ControlObject* m_pMasterAudioBufferSize;
     ControlObject* m_pAudioLatencyOverloadCount;
-    ControlPotmeter* m_pMasterRate;
     ControlPotmeter* m_pAudioLatencyUsage;
     ControlPotmeter* m_pAudioLatencyOverload;
     EngineTalkoverDucking* m_pTalkoverDucking;
@@ -308,7 +310,7 @@ class EngineMaster : public QObject, public AudioSource {
     EngineDelay* m_pHeadDelay;
 
     EngineVuMeter* m_pVumeter;
-    EngineSideChain* m_pSideChain;
+    EngineSideChain* m_pEngineSideChain;
 
     ControlPotmeter* m_pCrossfader;
     ControlPotmeter* m_pHeadMix;

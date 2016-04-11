@@ -1,68 +1,50 @@
-/***************************************************************************
-                          enginebuffer.cpp  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+#include "engine/enginebuffer.h"
 
 #include <QtDebug>
 
-#include "engine/enginebuffer.h"
 #include "cachingreader.h"
-#include "sampleutil.h"
-
-#include "controlpushbutton.h"
+#include "preferences/usersettings.h"
 #include "controlindicator.h"
-#include "configobject.h"
-#include "controlpotmeter.h"
 #include "controllinpotmeter.h"
-#include "engine/enginechannel.h"
-#include "engine/enginebufferscalest.h"
-#include "engine/enginebufferscalerubberband.h"
-#include "engine/enginebufferscalelinear.h"
-#include "engine/sync/enginesync.h"
-#include "engine/engineworkerscheduler.h"
-#include "engine/readaheadmanager.h"
-#include "engine/enginecontrol.h"
-#include "engine/loopingcontrol.h"
-#include "engine/ratecontrol.h"
+#include "controlobjectslave.h"
+#include "controlpotmeter.h"
+#include "controlpushbutton.h"
 #include "engine/bpmcontrol.h"
-#include "engine/keycontrol.h"
-#include "engine/sync/synccontrol.h"
-#include "engine/quantizecontrol.h"
-#include "visualplayposition.h"
-#include "engine/cuecontrol.h"
 #include "engine/clockcontrol.h"
+#include "engine/cuecontrol.h"
+#include "engine/enginebufferscalelinear.h"
+#include "engine/enginebufferscalerubberband.h"
+#include "engine/enginebufferscalest.h"
+#include "engine/enginechannel.h"
+#include "engine/enginecontrol.h"
 #include "engine/enginemaster.h"
-#include "util/timer.h"
-#include "util/math.h"
-#include "util/defs.h"
+#include "engine/engineworkerscheduler.h"
+#include "engine/keycontrol.h"
+#include "engine/loopingcontrol.h"
+#include "engine/quantizecontrol.h"
+#include "engine/ratecontrol.h"
+#include "engine/readaheadmanager.h"
+#include "engine/sync/enginesync.h"
+#include "engine/sync/synccontrol.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
-#include "controlobjectslave.h"
-#include "util/compatibility.h"
+#include "trackinfoobject.h"
 #include "util/assert.h"
+#include "util/compatibility.h"
+#include "util/defs.h"
+#include "util/math.h"
+#include "util/sample.h"
+#include "util/timer.h"
+#include "waveform/visualplayposition.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
 #endif
 
-#include "trackinfoobject.h"
-
 const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 const int kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
-EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
+EngineBuffer::EngineBuffer(QString group, UserSettingsPointer _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
         : m_group(group),
           m_pConfig(_config),
@@ -93,7 +75,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_startButton(NULL),
           m_endButton(NULL),
           m_bScalerOverride(false),
-          m_iSeekQueued(NO_SEEK),
+          m_iSeekQueued(SEEK_NONE),
+          m_iSeekPhaseQueued(0),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(SYNC_INVALID),
           m_bLastBufferPaused(true),
@@ -200,8 +183,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
 
     m_pKeylockEngine = new ControlObjectSlave("[Master]", "keylock_engine", this);
-    m_pKeylockEngine->connectValueChanged(this,
-                                          SLOT(slotKeylockEngineChanged(double)),
+    m_pKeylockEngine->connectValueChanged(SLOT(slotKeylockEngineChanged(double)),
                                           Qt::DirectConnection);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
@@ -282,11 +264,10 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pScale->clear();
     m_bScalerChanged = true;
 
-    m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
-    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
+    m_pPassthroughEnabled = new ControlObjectSlave(group, "passthrough", this);
+    m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
-    //m_iRampIter = 0;
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
     df.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -402,12 +383,19 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
     // Write the position before the seek type, to reduce a possible race
     // condition effect
-    m_queuedPosition.setValue(newpos);
+    DEBUG_ASSERT_AND_HANDLE(seekType != SEEK_PHASE) {
+        // SEEK_PHASE with a position is not supported
+        // use SEEK_STANDARD for that
+        seekType = SEEK_STANDARD;
+    }
+    m_queuedSeekPosition.setValue(newpos);
+    // set m_queuedPosition valid
     m_iSeekQueued = seekType;
 }
 
 void EngineBuffer::requestSyncPhase() {
-    m_iSeekQueued = SEEK_PHASE;
+    // Don't overwrite m_iSeekQueued
+    m_iSeekPhaseQueued = 1;
 }
 
 void EngineBuffer::requestEnableSync(bool enabled) {
@@ -445,13 +433,14 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
 }
 
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
-    CSAMPLE* fadeout = m_pScale->getScaled(iBufferSize);
-    SampleUtil::copy(m_pCrossfadeBuffer, fadeout, iBufferSize);
-
-    // Restore the original position that was lost due to getScaled() above
-    m_pReadAheadManager->notifySeek(m_filepos_play);
-
-    m_bCrossfadeReady = true;
+    if (!m_bCrossfadeReady) {
+        // Read buffer, as if there where no parameter change
+        // (Must be called only once per callback)
+        m_pScale->getScaled(m_pCrossfadeBuffer, iBufferSize);
+        // Restore the original position that was lost due to getScaled() above
+        m_pReadAheadManager->notifySeek(m_filepos_play);
+        m_bCrossfadeReady = true;
+     }
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -483,14 +472,16 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     verifyPlay(); // verify or update play button and indicator
 }
 
-QString EngineBuffer::getGroup()
-{
+QString EngineBuffer::getGroup() {
     return m_group;
 }
 
-double EngineBuffer::getSpeed()
-{
+double EngineBuffer::getSpeed() {
     return m_speed_old;
+}
+
+bool EngineBuffer::getScratching() {
+    return m_scratching_old;
 }
 
 // WARNING: Always called from the EngineWorker thread pool
@@ -508,18 +499,18 @@ void EngineBuffer::slotTrackLoading() {
 }
 
 TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
-    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    TrackPointer pTrack(TrackInfoObject::newTemporary());
     pTrack->setSampleRate(44100);
     // 10 seconds
     pTrack->setDuration(10);
     if (filebpm > 0) {
-        pTrack->setBpm(filebpm);
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), filebpm, 0.0);
+        double bpm = pTrack->setBpm(filebpm);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), bpm, 0.0);
         pTrack->setBeats(pBeats);
     }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
     m_pSyncControl->setLocalBpm(filebpm);
-    m_pSyncControl->trackLoaded(pTrack);
+    m_pSyncControl->trackLoaded(pTrack, TrackPointer());
     return pTrack;
 }
 
@@ -528,6 +519,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
     //qDebug() << getGroup() << "EngineBuffer::slotTrackLoaded";
+    TrackPointer pOldTrack = m_pCurrentTrack;
+
     m_pause.lock();
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
@@ -535,11 +528,17 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_trackSamplesOld = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
+    // Reset slip mode
+    m_pSlipButton->set(0);
+    m_slipEnabled = 0;
+    m_bSlipEnabledProcessing = false;
+    m_dSlipPosition = 0.;
+    m_dSlipRate = 0;
     // Reset the pitch value for the new track.
     m_pause.unlock();
 
     // All EngineControls are connected directly
-    emit(trackLoaded(pTrack));
+    emit(trackLoaded(pTrack, pOldTrack));
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
     m_iTrackLoading = 0;
@@ -549,6 +548,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     m_iTrackLoading = 0;
+    // Loading of a new track failed.
+    // eject the currently loaded track (the old Track) as well
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -559,6 +560,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 
 void EngineBuffer::ejectTrack() {
     // clear track values in any case, this may fix Bug #1450424
+    //qDebug() << "EngineBuffer::ejectTrack()";
     m_pause.lock();
     m_iTrackLoading = 0;
     m_pTrackSamples->set(0);
@@ -574,7 +576,7 @@ void EngineBuffer::ejectTrack() {
     m_pause.unlock();
 
     if (pTrack) {
-        emit(trackUnloaded(pTrack));
+        emit(trackLoaded(TrackPointer(), pTrack));
     }
 }
 
@@ -632,7 +634,7 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     queueNewPlaypos(new_playpos, seekType);
 }
 
-double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
+bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
@@ -645,21 +647,21 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
         playPossible = false;
     }
 
-    return m_pCueControl->updateIndicatorsAndModifyPlay(v, playPossible);
+    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, playPossible);
 }
 
 void EngineBuffer::verifyPlay() {
-    double play = m_playButton->get();
-    double verifiedPlay = updateIndicatorsAndModifyPlay(play);
+    bool play = m_playButton->toBool();
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(play);
     if (play != verifiedPlay) {
-        m_playButton->setAndConfirm(verifiedPlay);
+        m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
     }
 }
 
 void EngineBuffer::slotControlPlayRequest(double v) {
-    double verifiedPlay = updateIndicatorsAndModifyPlay(v);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
     // set and confirm must be called here in any case to update the widget toggle state
-    m_playButton->setAndConfirm(verifiedPlay);
+    m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
 }
 
 void EngineBuffer::slotControlStart(double v)
@@ -758,7 +760,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         }
 
         // Note: play is also active during cue preview
-        bool paused = m_playButton->get() == 0.0;
+        bool paused = !m_playButton->toBool();
         KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
 
         // The pitch adjustment in Ratio (1.0 being normal
@@ -773,7 +775,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
         processSyncRequests();
-        processSeek();
+
+        // Note: This may effects the m_filepos_play, play, scaler and crossfade buffer
+        processSeek(paused);
 
         // speed is the ratio between track-time and real-time
         // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
@@ -862,7 +866,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // the speedSliderPitchRatio is not reseted when keylock is enabled.
         // This mode allows to enable keylock
         // while the track is already played. You can reset to the tracks
-        // original pitch by reseting the pitch knob to center. When disabling
+        // original pitch by resetting the pitch knob to center. When disabling
         // keylock the pitch is reset to the linear vinyl pitch.
 
         // The Pitch knob turns if the speed slider is moved without keylock.
@@ -886,6 +890,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // master.
         if (m_scratching_old && !is_scratching && m_pQuantize->get() > 0.0
                 && m_pSyncControl->getSyncMode() == SYNC_FOLLOWER && !paused) {
+            // TODO() The resulting seek is processed in the following callback
+            // That is to late
             requestSyncPhase();
         }
 
@@ -974,17 +980,13 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
 
             // Perform scaling of Reader buffer into buffer.
-            CSAMPLE* output = m_pScale->getScaled(iBufferSize);
-            double samplesRead = m_pScale->getSamplesRead();
+            double samplesRead = m_pScale->getScaled(pOutput, iBufferSize);
 
             //qDebug() << "sourceSamples used " << iSourceSamples
             //         <<" samplesRead " << samplesRead
             //         << ", buffer pos " << iBufferStartSample
             //         << ", play " << filepos_play
             //         << " bufferlen " << iBufferSize;
-
-            // Copy scaled audio into pOutput
-            SampleUtil::copy(pOutput, output, iBufferSize);
 
             if (m_bScalerOverride) {
                 // If testing, we don't have a real log so we fake the position.
@@ -1179,47 +1181,46 @@ void EngineBuffer::processSyncRequests() {
     }
 }
 
-void EngineBuffer::processSeek() {
-    // We need to read position just after reading seekType, to ensure that we read
-    // the matching poition to seek_typ or a position from a new seek just queued from an other thread
-    // the later case is ok, because we will process the new seek in the next call anyway.
-    SeekRequest seekType =
-            static_cast<SeekRequest>(m_iSeekQueued.fetchAndStoreRelease(NO_SEEK));
-    double position = m_queuedPosition.getValue();
+void EngineBuffer::processSeek(bool paused) {
+    // We need to read position just after reading seekType, to ensure that we
+    // read the matching position to seek_typ or a position from a new (second)
+    // seek just queued from an other thread
+    // The later case is ok, because we will process the new seek in the next
+    // call anyway again.
+
+    SeekRequests seekType = static_cast<SeekRequest>(
+            m_iSeekQueued.fetchAndStoreRelease(SEEK_NONE));
+    double position = m_queuedSeekPosition.getValue();
+
+    // Add SEEK_PHASE bit, if any
+    if (m_iSeekPhaseQueued.fetchAndStoreRelease(0)) {
+        seekType |= SEEK_PHASE;
+    }
+
     switch (seekType) {
-        case NO_SEEK:
+        case SEEK_NONE:
             return;
-        case SEEK_EXACT: {
-            double newPlayFrame = position / kSamplesPerFrame;
-            position = round(newPlayFrame) * kSamplesPerFrame;
-            setNewPlaypos(position);
+        case SEEK_PHASE:
+            // only adjust phase
+            position = m_filepos_play;
             break;
-        }
-        case SEEK_STANDARD: {
-            bool paused = m_playButton->get() == 0.0;
-            // If we are playing and quantize is on, match phase when seeking.
-            if (!paused && m_pQuantize->get() > 0.0) {
-                position += m_pBpmControl->getPhaseOffset(position);
-                double newPlayFrame = position / kSamplesPerFrame;
-                position = round(newPlayFrame) * kSamplesPerFrame;
-            }
-            setNewPlaypos(position);
+        case SEEK_EXACT:
+        case SEEK_STANDARD: // = SEEK_EXACT | SEEK_PHASE
+            // new position was already set above
             break;
-        }
-        case SEEK_PHASE: {
-            // XXX: syncPhase is private in bpmcontrol, so we seek directly.
-            double dThisPosition = m_pBpmControl->getCurrentSample();
-            double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
-            if (offset != 0.0) {
-                double newPlayFrame = (dThisPosition + offset) / kSamplesPerFrame;
-                double dNewPlaypos = round(newPlayFrame) * kSamplesPerFrame;
-                setNewPlaypos(dNewPlaypos);
-            }
-            break;
-        }
         default:
             qWarning() << "Unhandled seek request type: " << seekType;
             return;
+    }
+
+    if ((seekType & SEEK_PHASE) && !paused && m_pQuantize->toBool()) {
+        position += m_pBpmControl->getPhaseOffset(position);
+    }
+
+    double newPlayFrame = position / kSamplesPerFrame;
+    position = round(newPlayFrame) * kSamplesPerFrame;
+    if (position != m_filepos_play) {
+        setNewPlaypos(position);
     }
 }
 
@@ -1307,22 +1308,24 @@ void EngineBuffer::hintReader(const double dRate) {
 }
 
 // WARNING: This method runs in the GUI thread
-void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
-    // Signal to the reader to load the track. The reader will respond with
-    // trackLoading and then either with trackLoaded or trackLoadFailed signals.
-    m_bPlayAfterLoading = play;
-    m_pReader->newTrack(pTrack);
+void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
+    if (pTrack.isNull()) {
+        // Loading a null track means "eject" 
+        ejectTrack();
+    } else {
+        // Signal to the reader to load the track. The reader will respond with
+        // trackLoading and then either with trackLoaded or trackLoadFailed signals.
+        m_bPlayAfterLoading = play;
+        m_pReader->newTrack(pTrack);
+    }
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
     m_engineControls.push_back(pControl);
     pControl->setEngineBuffer(this);
-    connect(this, SIGNAL(trackLoaded(TrackPointer)),
-            pControl, SLOT(trackLoaded(TrackPointer)),
-            Qt::DirectConnection);
-    connect(this, SIGNAL(trackUnloaded(TrackPointer)),
-            pControl, SLOT(trackUnloaded(TrackPointer)),
+    connect(this, SIGNAL(trackLoaded(TrackPointer, TrackPointer)),
+            pControl, SLOT(trackLoaded(TrackPointer, TrackPointer)),
             Qt::DirectConnection);
 }
 

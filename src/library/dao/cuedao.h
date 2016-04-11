@@ -22,20 +22,20 @@ class CueDAO : public DAO {
 
     void initialize();
     int cueCount();
-    int numCuesForTrack(const int trackId);
-    QList<Cue*> getCuesForTrack(const int trackId) const;
-    bool deleteCuesForTrack(const int trackId);
-    bool deleteCuesForTracks(const QList<int>& ids);
+    int numCuesForTrack(TrackId trackId);
+    QList<CuePointer> getCuesForTrack(TrackId trackId) const;
+    bool deleteCuesForTrack(TrackId trackId);
+    bool deleteCuesForTracks(const QList<TrackId>& trackIds);
     bool saveCue(Cue* cue);
     bool deleteCue(Cue* cue);
     // TODO(XXX) once we refer to all tracks by their id and TIO has a getId()
     // method the first parameter here won't be necessary.
-    void saveTrackCues(const int trackId, TrackInfoObject*);
+    void saveTrackCues(TrackId trackId, TrackInfoObject*);
   private:
-    Cue* cueFromRow(const QSqlQuery& query) const;
+    CuePointer cueFromRow(const QSqlQuery& query) const;
 
     QSqlDatabase& m_database;
-    mutable QMap<int, Cue*> m_cues;
+    mutable QMap<int, CuePointer> m_cues;
 };
 
 #endif /* CUEDAO_H */

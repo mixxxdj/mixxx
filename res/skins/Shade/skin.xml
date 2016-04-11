@@ -130,6 +130,28 @@
 	<MinimumSize>1024,500</MinimumSize>
 	<SizePolicy>me,me</SizePolicy>
 	<Layout>vertical</Layout>
+    <LaunchImageStyle>
+    	LaunchImage { background-color: #202020; }
+        QLabel {
+        	image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+          	padding:0;
+            margin:0;
+            border:none;
+            min-width: 208px;
+            min-height: 48px;
+    	    max-width: 208px;
+            max-height: 48px;
+        }
+        QProgressBar {
+        	background-color: #202020;
+            border:none;
+            min-width: 208px;
+            min-height: 3px;
+            max-width: 208px;
+            max-height: 3px;
+        }
+        QProgressBar::chunk { background-color: #ec4522; }
+    </LaunchImageStyle>
 
 	<Children>
 		<WidgetGroup>
@@ -438,6 +460,33 @@
 						background: transparent;
 						color: #C1C1C1;}
 
+					<!--Additional space for QRadionButtons and QLabels-->
+					WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
+
+					<!--Additional space for the first QRadionButton in the row-->
+					WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
+
+					<!--Additional space for the QPushButtons-->
+					#DlgMissing > QPushButton,
+					#DlgHidden > QPushButton,
+					#DlgAutoDJ > QPushButton,
+					#DlgRecording > QPushButton,
+					#DlgAnalysis > QPushButton {
+					    margin: 9px 3px 6px 3px;
+					    padding: 3px 8px;
+					    min-width: 65px;
+					}
+
+					<!--Additional space for the first QPushButton in the row-->
+					#DlgMissing > QPushButton#btnPurge,
+					#DlgHidden > QPushButton#btnUnhide,
+					#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
+					#DlgRecording > QPushButton#pushButtonRecording,
+					#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
+
+					<!--Additional space for the last QPushButton in the row-->
+					#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
+
 					<!--Spacing between treeview and searchbar-->
 					QTreeView { margin: 0px 0px 0px 5px; }
 
@@ -622,7 +671,7 @@
 													**********************************************
 													-->
 													<StatusLight>
-														<TooltipId>PeakIndicator</TooltipId>
+														<TooltipId>preview_PeakIndicator</TooltipId>
 														<Style></Style>
 														<PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
 														<PathBack>btn_clipping_previewdeck.png</PathBack>
@@ -685,6 +734,7 @@
 											<Size>e,me</Size>
 											<Style></Style>
 											<SplitSizes>1,e</SplitSizes>
+                                            <Collapsible>0,0</Collapsible>
 											<Children>
 												<LibrarySidebar></LibrarySidebar>
 												<!--Cover Art-->

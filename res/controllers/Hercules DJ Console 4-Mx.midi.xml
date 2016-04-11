@@ -1,913 +1,2339 @@
-<MixxxMIDIPreset mixxxVersion="1.10.0+" schemaVersion="1">
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.0.0+" schemaVersion="1">
     <info>
-      <name>Hercules DJ Console 4-Mx</name>
-      <author>deusdiabolus</author>
-      <description>Mapping for Hercules DJ Console 4-Mx</description>
-      <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3693</forums>
+        <name>Hercules DJ Console 4-Mx (2.0)</name>
+        <author>josepma</author>
+        <description>Hercules DJ Console 4-Mx (2.0)</description>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3023</forums>
+        <wiki>http://mixxx.org/wiki/doku.php/hercules_dj_console_4-mx</wiki>
     </info>
-    <controller id="DJ Console 4-Mx MIDI">
+    <controller id="DJ">
         <scriptfiles>
-            <file functionprefix="HerculesMk4" filename="Hercules-DJ-Console-Mk4-scripts.js"/>
+            <file functionprefix="Hercules4Mx" filename="Hercules-DJ-Console-4-Mx-scripts.js"/>
         </scriptfiles>
         <controls>
             <control>
-                <status>0x80</status>
-                <midino>0x1</midino>
-                <group>[Channel1]</group>
-                <key>loop_in</key>
-                <description></description>
+                <group></group>
+                <key></key>
+                <description>Button Mic On/Off pressed</description>
+                <status>0x90</status>
+                <midino>0x53</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
-                <status>0x80</status>
-                <midino>0x2</midino>
-                <group>[Channel1]</group>
-                <key>loop_out</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x3</midino>
-                <group>[Channel1]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x21</midino>
-                <group>[Master]</group>
-                <key>volume</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x22</midino>
-                <group>[Master]</group>
-                <key>crossfader</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x23</midino>
-                <group>[Master]</group>
-                <key>headMix</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0xd</midino>
-                <group>[Channel1]</group>
-                <key>cue_default</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0xe</midino>
-                <group>[Channel1]</group>
-                <key>play</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0xf</midino>
-                <group>[Channel1]</group>
-                <key>pfl</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x11</midino>
-                <group>[Channel1]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x1f</midino>
-                <group>[Channel1]</group>
-                <key>back</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x20</midino>
-                <group>[Channel1]</group>
-                <key>fwd</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x21</midino>
                 <group>[Channel2]</group>
-                <key>loop_in</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x22</midino>
-                <group>[Channel2]</group>
-                <key>loop_out</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x23</midino>
-                <group>[Channel2]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
+                <key>LoadSelectedTrack</key>
+                <description>Button Load on Right Deck</description>
                 <status>0x90</status>
-                <midino>0x2</midino>
+                <midino>0x4B</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>LoadSelectedTrack</key>
+                <description>Button Load on Right Deck</description>
+                <status>0x91</status>
+                <midino>0x4B</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>loop_out</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
+                <key>LoadSelectedTrack</key>
+                <description>Button Load on Left Deck</description>
                 <status>0x90</status>
-                <midino>0x3</midino>
-                <group>[Channel1]</group>
-                <key>flanger</key>
-                <description></description>
+                <midino>0x4A</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
-                <status>0x80</status>
-                <midino>0x2d</midino>
-                <group>[Channel2]</group>
-                <key>cue_default</key>
-                <description></description>
+                <group>[Channel3]</group>
+                <key>LoadSelectedTrack</key>
+                <description>Button Load on Left Deck</description>
+                <status>0x91</status>
+                <midino>0x4A</midino>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
-                <status>0x80</status>
-                <midino>0x2e</midino>
-                <group>[Channel2]</group>
-                <key>play</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x2f</midino>
-                <group>[Channel2]</group>
-                <key>pfl</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
+                <group></group>
+                <key></key>
+                <description>Button Deck D (State)</description>
                 <status>0x90</status>
-                <midino>0xd</midino>
-                <group>[Channel1]</group>
-                <key>cue_default</key>
-                <description></description>
+                <midino>0x49</midino>
                 <options>
-                    <normal/>
+                    <switch/>
                 </options>
             </control>
             <control>
+                <group></group>
+                <key></key>
+                <description>Button Deck C (State)</description>
                 <status>0x90</status>
-                <midino>0xe</midino>
-                <group>[Channel1]</group>
-                <key>play</key>
-                <description></description>
+                <midino>0x48</midino>
                 <options>
-                    <normal/>
+                    <switch/>
                 </options>
             </control>
             <control>
-                <status>0x80</status>
-                <midino>0x31</midino>
-                <group>[Channel2]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0xf</midino>
-                <group>[Channel1]</group>
-                <key>pfl</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x11</midino>
-                <group>[Channel1]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x3e</midino>
-                <group>[Playlist]</group>
-                <key>SelectNextPlaylist</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x3f</midino>
-                <group>[Playlist]</group>
-                <key>SelectPrevPlaylist</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x40</midino>
-                <group>[Playlist]</group>
-                <key>SelectPrevTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x1d</midino>
-                <group>[Channel1]</group>
-                <key>rate_temp_down</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x41</midino>
-                <group>[Playlist]</group>
-                <key>SelectNextTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x1e</midino>
-                <group>[Channel1]</group>
-                <key>rate_temp_up</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x1f</midino>
-                <group>[Channel1]</group>
-                <key>back</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x20</midino>
-                <group>[Channel1]</group>
-                <key>fwd</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x21</midino>
-                <group>[Channel2]</group>
-                <key>loop_in</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x45</midino>
-                <group>[Channel2]</group>
-                <key>back</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x22</midino>
-                <group>[Channel2]</group>
-                <key>loop_out</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x46</midino>
-                <group>[Channel2]</group>
-                <key>fwd</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x23</midino>
-                <group>[Channel2]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x47</midino>
                 <group>[Microphone]</group>
                 <key>talkover</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x4a</midino>
-                <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x4b</midino>
-                <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x2d</midino>
-                <group>[Channel2]</group>
-                <key>cue_default</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x2e</midino>
-                <group>[Channel2]</group>
-                <key>play</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x2f</midino>
-                <group>[Channel2]</group>
-                <key>pfl</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x31</midino>
-                <group>[Channel2]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x3e</midino>
-                <group>[Playlist]</group>
-                <key>SelectNextPlaylist</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x3f</midino>
-                <group>[Playlist]</group>
-                <key>SelectPrevPlaylist</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x40</midino>
-                <group>[Playlist]</group>
-                <key>SelectPrevTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x41</midino>
-                <group>[Playlist]</group>
-                <key>SelectNextTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x43</midino>
-                <group>[Channel2]</group>
-                <key>rate_temp_down</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x44</midino>
-                <group>[Channel2]</group>
-                <key>rate_temp_up</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x45</midino>
-                <group>[Channel2]</group>
-                <key>back</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x46</midino>
-                <group>[Channel2]</group>
-                <key>fwd</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
+                <description>Button Mic On/Off (state)</description>
                 <status>0x90</status>
                 <midino>0x47</midino>
-                <group>[Microphone]</group>
-                <key>volume</key>
-                <description></description>
                 <options>
-                    <normal/>
+                    <switch/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x1</midino>
-                <group>[Channel1]</group>
-                <key>jog</key>
-                <description></description>
-                <options>
-                    <hercjog/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x2</midino>
-                <group>[Flanger]</group>
-                <key>lfoPeriod</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x3</midino>
-                <group>[Channel1]</group>
-                <key>volume</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
+                <group>[Channel2]</group>
+                <key>fwd</key>
+                <description>Right Forward</description>
                 <status>0x90</status>
-                <midino>0x4a</midino>
-                <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
+                <midino>0x46</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x4</midino>
-                <group>[Channel1]</group>
-                <key>pregain</key>
-                <description></description>
+                <group>[Channel4]</group>
+                <key>fwd</key>
+                <description>Right Forward</description>
+                <status>0x91</status>
+                <midino>0x46</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>back</key>
+                <description>Right Rewind</description>
                 <status>0x90</status>
-                <midino>0x4b</midino>
-                <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
+                <midino>0x45</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x5</midino>
+                <group>[Channel4]</group>
+                <key>back</key>
+                <description>Right Rewind</description>
+                <status>0x91</status>
+                <midino>0x45</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>rate_temp_up</key>
+                <description>Right P. Bend +</description>
+                <status>0x90</status>
+                <midino>0x44</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>rate_temp_down</key>
+                <description>Right P. Bend -</description>
+                <status>0x90</status>
+                <midino>0x43</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>rate_temp_up</key>
+                <description>Right P. Bend +</description>
+                <status>0x91</status>
+                <midino>0x44</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>rate_temp_down</key>
+                <description>Right P. Bend -</description>
+                <status>0x91</status>
+                <midino>0x43</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.pressEffectShift</key>
+                <description>Right button shift pressed</description>
+                <status>0x90</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.pressEffectShift</key>
+                <description>Right button shift pressed</description>
+                <status>0x91</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>Hercules4Mx.navigation</key>
+                <description>Button Nav Down</description>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>Hercules4Mx.navigation</key>
+                <description>Button Nav Up</description>
+                <status>0x90</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>Hercules4Mx.navigation</key>
+                <description>Button Nav Folder</description>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>Hercules4Mx.navigation</key>
+                <description>Button Nav Files</description>
+                <status>0x90</status>
+                <midino>0x3E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>Hercules4Mx.scratchButton</key>
+                <description>Button Scratch</description>
+                <status>0x90</status>
+                <midino>0x3D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[AutoDJ]</group>
+                <key>Hercules4Mx.autoDJButton</key>
+                <description>Button Auto (DJ)</description>
+                <status>0x90</status>
+                <midino>0x3C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.stateEffectShift</key>
+                <description>Right button shift State</description>
+                <status>0x90</status>
+                <midino>0x3B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.stateEffectShift</key>
+                <description>Right button shift State</description>
+                <status>0x91</status>
+                <midino>0x3B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.wheelTouch</key>
+                <description>Right Jog wheel pressed</description>
+                <status>0x90</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.wheelTouch</key>
+                <description>Right Jog wheel pressed</description>
+                <status>0x91</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Right Kill bass</description>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Right Kill bass</description>
+                <status>0x91</status>
+                <midino>0x39</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Right Kill mid</description>
+                <status>0x90</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Right Kill mid</description>
+                <status>0x91</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Right Kill treble</description>
+                <status>0x90</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Right Kill treble</description>
+                <status>0x91</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>passthrough</key>
+                <description>Button Source 2</description>
+                <status>0x90</status>
+                <midino>0x36</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>passthrough</key>
+                <description>Button Source 2</description>
+                <status>0x91</status>
+                <midino>0x36</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>reset_key</key>
+                <description>Right Pitch reset (press both pitch scale to send)</description>
+                <status>0x90</status>
+                <midino>0x35</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>reset_key</key>
+                <description>Right Pitch reset (press both pitch scale to send)</description>
+                <status>0x91</status>
+                <midino>0x35</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pitch_adjust_down_small</key>
+                <description>Right Pitch scale-</description>
+                <status>0x90</status>
+                <midino>0x34</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>pitch_adjust_down_small</key>
+                <description>Right Pitch scale-</description>
+                <status>0x91</status>
+                <midino>0x34</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pitch_adjust_up_small</key>
+                <description>Right Pitch scale+</description>
+                <status>0x90</status>
+                <midino>0x33</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>pitch_adjust_up_small</key>
+                <description>Right Pitch scale+</description>
+                <status>0x91</status>
+                <midino>0x33</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Button Deck D (pressed)</description>
+                <status>0x90</status>
+                <midino>0x32</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <description>Right Sync button</description>
+                <status>0x90</status>
+                <midino>0x31</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>sync_enabled</key>
+                <description>Right Sync button</description>
+                <status>0x91</status>
+                <midino>0x31</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.stopButton</key>
+                <description>Right Stop</description>
+                <status>0x90</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.stopButton</key>
+                <description>Right Stop</description>
+                <status>0x91</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <description>Right Cue Select Deck (PFL headphones)</description>
+                <status>0x90</status>
+                <midino>0x2F</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <description>Right Cue Select Deck (PFL headphones)</description>
+                <status>0x91</status>
+                <midino>0x2F</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>play</key>
+                <description>Right Play</description>
+                <status>0x90</status>
+                <midino>0x2E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>play</key>
+                <description>Right Play</description>
+                <status>0x91</status>
+                <midino>0x2E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <description>Right Cue</description>
+                <status>0x90</status>
+                <midino>0x2D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>cue_default</key>
+                <description>Right Cue</description>
+                <status>0x91</status>
+                <midino>0x2D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 12</description>
+                <status>0x90</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 12</description>
+                <status>0x91</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 11</description>
+                <status>0x90</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 11</description>
+                <status>0x91</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 10</description>
+                <status>0x90</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 10</description>
+                <status>0x91</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 9</description>
+                <status>0x90</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 9</description>
+                <status>0x91</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 8</description>
+                <status>0x90</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 8</description>
+                <status>0x91</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 7</description>
+                <status>0x90</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>Hercules4Mx.onSensitivityChange</key>
+                <description>Receives information about the sensitivity setting</description>
+                <status>0xB0</status>
+                <midino>0x46</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 7</description>
+                <status>0x91</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 6</description>
+                <status>0x90</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 6</description>
+                <status>0x91</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 5</description>
+                <status>0x90</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 5</description>
+                <status>0x91</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 4</description>
+                <status>0x90</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 4</description>
+                <status>0x91</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 3</description>
+                <status>0x90</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 3</description>
+                <status>0x91</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 2</description>
+                <status>0x90</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 2</description>
+                <status>0x91</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 1</description>
+                <status>0x90</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Right Effect button 1</description>
+                <status>0x91</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>rate</key>
-                <description></description>
+                <key>fwd</key>
+                <description>Left Forward</description>
+                <status>0x90</status>
+                <midino>0x20</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x6</midino>
+                <group>[Channel3]</group>
+                <key>fwd</key>
+                <description>Left Forward</description>
+                <status>0x91</status>
+                <midino>0x20</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>filterHigh</key>
-                <description></description>
+                <key>back</key>
+                <description>Left Rewind</description>
+                <status>0x90</status>
+                <midino>0x1F</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x7</midino>
+                <group>[Channel3]</group>
+                <key>back</key>
+                <description>Left Rewind</description>
+                <status>0x91</status>
+                <midino>0x1F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>filterMid</key>
-                <description></description>
+                <key>rate_temp_up</key>
+                <description>Left P.Bend +</description>
+                <status>0x90</status>
+                <midino>0x1E</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x8</midino>
+                <group>[Channel3]</group>
+                <key>rate_temp_up</key>
+                <description>Left P.Bend +</description>
+                <status>0x91</status>
+                <midino>0x1E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>filterLow</key>
-                <description></description>
+                <key>rate_temp_down</key>
+                <description>Left P.Bend -</description>
+                <status>0x90</status>
+                <midino>0x1D</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x9</midino>
-                <group>[Channel2]</group>
-                <key>jog</key>
-                <description></description>
-                <options>
-                    <hercjog/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0xa</midino>
-                <group>[Channel2]</group>
-                <key>loop_double</key>
-                <description></description>
+                <group>[Channel3]</group>
+                <key>rate_temp_down</key>
+                <description>Left P.Bend -</description>
+                <status>0x91</status>
+                <midino>0x1D</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xb</midino>
-                <group>[Channel2]</group>
-                <key>volume</key>
-                <description></description>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.pressEffectShift</key>
+                <description>Left button shift pressed</description>
+                <status>0x90</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.pressEffectShift</key>
+                <description>Left button shift pressed</description>
+                <status>0x91</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.stateEffectShift</key>
+                <description>Left button shift State</description>
+                <status>0x90</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.stateEffectShift</key>
+                <description>Left button shift State</description>
+                <status>0x91</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.wheelTouch</key>
+                <description>Left Jog wheel pressed</description>
+                <status>0x90</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.wheelTouch</key>
+                <description>Left Jog wheel pressed</description>
+                <status>0x91</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Left Kill bass</description>
+                <status>0x90</status>
+                <midino>0x19</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xc</midino>
-                <group>[Channel2]</group>
-                <key>pregain</key>
-                <description></description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Left Kill mid</description>
+                <status>0x90</status>
+                <midino>0x18</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xd</midino>
-                <group>[Channel2]</group>
-                <key>rate</key>
-                <description></description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Left Kill bass</description>
+                <status>0x91</status>
+                <midino>0x19</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xe</midino>
-                <group>[Channel2]</group>
-                <key>filterHigh</key>
-                <description></description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Left Kill mid</description>
+                <status>0x91</status>
+                <midino>0x18</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xf</midino>
-                <group>[Channel2]</group>
-                <key>filterMid</key>
-                <description></description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Left Kill treble</description>
+                <status>0x90</status>
+                <midino>0x17</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Left Kill treble</description>
+                <status>0x91</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>passthrough</key>
+                <description>Button Source 1</description>
+                <status>0x90</status>
+                <midino>0x16</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>passthrough</key>
+                <description>Button Source 1</description>
+                <status>0x91</status>
+                <midino>0x16</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>reset_key</key>
+                <description>Left Pitch reset (press both pitch scale to send)</description>
+                <status>0x90</status>
+                <midino>0x15</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>reset_key</key>
+                <description>Left Pitch reset (press both pitch scale to send)</description>
+                <status>0x91</status>
+                <midino>0x15</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pitch_adjust_down_small</key>
+                <description>Left Pitch scale-</description>
+                <status>0x90</status>
+                <midino>0x14</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>pitch_adjust_down_small</key>
+                <description>Left Pitch scale-</description>
+                <status>0x91</status>
+                <midino>0x14</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pitch_adjust_up_small</key>
+                <description>Left Pitch scale+</description>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>pitch_adjust_up_small</key>
+                <description>Left Pitch scale+</description>
+                <status>0x91</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Button Deck C (pressed)</description>
+                <status>0x90</status>
+                <midino>0x12</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <description>Left Sync button</description>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>sync_enabled</key>
+                <description>Left Sync button</description>
+                <status>0x91</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.stopButton</key>
+                <description>Left Stop</description>
+                <status>0x90</status>
                 <midino>0x10</midino>
-                <group>[Channel2]</group>
-                <key>filterLow</key>
-                <description></description>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.stopButton</key>
+                <description>Left Stop</description>
+                <status>0x91</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>Left Deck Cue Select (PFL headphones)</description>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <description>Left Deck Cue Select (PFL headphones)</description>
+                <status>0x91</status>
+                <midino>0x0F</midino>
+                <options>
+                    <button/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <description>Left Play</description>
+                <status>0x90</status>
+                <midino>0x0E</midino>
                 <options>
                     <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>play</key>
+                <description>Left Play</description>
+                <status>0x91</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>cue_default</key>
+                <description>Left Cue</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>cue_default</key>
+                <description>Left Cue</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 12</description>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.rateLsb</key>
+                <description>Right Pitch (14bits LSB).</description>
+                <status>0xB0</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 12</description>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 11</description>
+                <status>0x90</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.rateLsb</key>
+                <description>Left Pitch (14bits LSB).</description>
+                <status>0xB0</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 11</description>
+                <status>0x91</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 10</description>
+                <status>0x90</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.rateLsb</key>
+                <description>Right Pitch (14bits LSB).</description>
+                <status>0xB0</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 10</description>
+                <status>0x91</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 9</description>
+                <status>0x90</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.rateLsb</key>
+                <description>Right Pitch (14bits LSB).</description>
+                <status>0xB0</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 9</description>
+                <status>0x91</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 8</description>
+                <status>0x90</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.scratchWheel</key>
+                <description>Right Jog wheel moved with pressure</description>
+                <status>0xB0</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 8</description>
+                <status>0x91</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 7</description>
+                <status>0x90</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.scratchWheel</key>
+                <description>Left Jog wheel moved with pressure</description>
+                <status>0xB0</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 7</description>
+                <status>0x91</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 6</description>
+                <status>0x90</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.scratchWheel</key>
+                <description>Right Jog wheel moved with pressure</description>
+                <status>0xB0</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 6</description>
+                <status>0x91</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 5</description>
+                <status>0x90</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.scratchWheel</key>
+                <description>Left Jog wheel moved with pressure</description>
+                <status>0xB0</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 5</description>
+                <status>0x91</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 4</description>
+                <status>0x90</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 4</description>
+                <status>0x91</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 3</description>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <description>Heaphone Cue/Mix</description>
+                <status>0xB0</status>
+                <midino>0x23</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 2</description>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 3</description>
+                <status>0x91</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>Crossfader</description>
+                <status>0xB0</status>
+                <midino>0x22</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 2</description>
+                <status>0x91</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 1</description>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>volume</key>
+                <description>Vol Main</description>
+                <status>0xB0</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.FXButton</key>
+                <description>Left Effect button 1</description>
+                <status>0x91</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter1</key>
+                <description>Right Bass</description>
+                <status>0xB0</status>
+                <midino>0x20</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter2</key>
+                <description>Right Mid</description>
+                <status>0xB0</status>
+                <midino>0x1F</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter3</key>
+                <description>Right Treble</description>
+                <status>0xB0</status>
+                <midino>0x1E</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.rateMsb</key>
+                <description>Right Pitch (MSB)</description>
+                <status>0xB0</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>pregain</key>
+                <description>Right Gain</description>
+                <status>0xB0</status>
+                <midino>0x1C</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>volume</key>
+                <description>Right Volume Fader</description>
+                <status>0xB0</status>
+                <midino>0x1B</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel4]]</group>
+                <key>Hercules4Mx.effectKnob</key>
+                <description>Right effect knob</description>
+                <status>0xB0</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>Hercules4Mx.jogWheel</key>
+                <description>Right Jog wheel moved without pressure</description>
+                <status>0xB0</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter1</key>
+                <description>Left Bass</description>
+                <status>0xB0</status>
+                <midino>0x18</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter2</key>
+                <description>Left Mid</description>
+                <status>0xB0</status>
+                <midino>0x17</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter3</key>
+                <description>Left Treble</description>
+                <status>0xB0</status>
+                <midino>0x16</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.rateMsb</key>
+                <description>Left Pitch (MSB)</description>
+                <status>0xB0</status>
+                <midino>0x15</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>pregain</key>
+                <description>Left Gain</description>
+                <status>0xB0</status>
+                <midino>0x14</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>volume</key>
+                <description>Left Volume Fader</description>
+                <status>0xB0</status>
+                <midino>0x13</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel3]]</group>
+                <key>Hercules4Mx.effectKnob</key>
+                <description>Left effect knob</description>
+                <status>0xB0</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>Hercules4Mx.jogWheel</key>
+                <description>Left Jog wheel moved without pressure</description>
+                <status>0xB0</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <description>Right Bass</description>
+                <status>0xB0</status>
+                <midino>0x10</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
+                <description>Right Mid</description>
+                <status>0xB0</status>
+                <midino>0x0F</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <description>Right Treble</description>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.rateMsb</key>
+                <description>Right Pitch (MSB)</description>
+                <status>0xB0</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <description>Right Gain</description>
+                <status>0xB0</status>
+                <midino>0x0C</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <description>Right Volume Fader</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>Hercules4Mx.effectKnob</key>
+                <description>Right effect knob</description>
+                <status>0xB0</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Hercules4Mx.jogWheel</key>
+                <description>Right Jog wheel moved without pressure</description>
+                <status>0xB0</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <description>Left Bass</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
+                <description>Left Mid</description>
+                <status>0xB0</status>
+                <midino>0x07</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <description>Left Treble</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.rateMsb</key>
+                <description>Left Pitch (MSB)</description>
+                <status>0xB0</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pregain</key>
+                <description>Left Gain</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <description>Left Volume Fader</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>Hercules4Mx.effectKnob</key>
+                <description>Left effect knob</description>
+                <status>0xB0</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Hercules4Mx.jogWheel</key>
+                <description>Left Jog wheel moved without pressure</description>
+                <status>0xB0</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
         </controls>
         <outputs>
             <output>
                 <group>[Channel1]</group>
-                <key>playposition</key>
-                <description></description>
-                <minimum>0.8</minimum>
-                <maximum>0.99</maximum>
+                <key>cue_indicator</key>
+                <description>Left Cue button</description>
                 <status>0x90</status>
-                <midino>0x3f</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <midino>0x0D</midino>
+                <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel2]</group>
+                <group>[Channel4]</group>
                 <key>hotcue_4_enabled</key>
-                <description></description>
+                <description>Right Effect 10 led</description>
+                <status>0x91</status>
+                <midino>0x2A</midino>
                 <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x1c</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>pfl</key>
-                <description></description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
+                <key>hotcue_2_enabled</key>
+                <description>Left Effect 8 led</description>
                 <status>0x90</status>
+                <midino>0x08</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>play_indicator</key>
+                <description>Left Play button</description>
+                <status>0x91</status>
+                <midino>0x0E</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Right Effect 7 led</description>
+                <status>0x91</status>
+                <midino>0x27</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>stop</key>
+                <description>Left Stop button</description>
+                <status>0x91</status>
                 <midino>0x10</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_1_enabled</key>
-                <description></description>
                 <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x5</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>playposition</key>
-                <description></description>
-                <minimum>0.8</minimum>
-                <maximum>0.99</maximum>
-                <status>0x90</status>
-                <midino>0x53</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>pfl</key>
-                <description></description>
+                <group>[Channel4]</group>
+                <key>keylock</key>
+                <description>Right pitch reset led</description>
+                <status>0x91</status>
+                <midino>0x35</midino>
                 <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x24</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>hotcue_1_enabled</key>
-                <description></description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Left Kill Bass</description>
                 <status>0x90</status>
                 <midino>0x19</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_3_enabled</key>
-                <description></description>
                 <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x7</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>play</key>
-                <description></description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
+                <key>pfl</key>
+                <description>Right Deck Cue Select (PFL headphones)</description>
                 <status>0x90</status>
-                <midino>0x23</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <midino>0x2F</midino>
+                <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel1]</group>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Left Kill Treble</description>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
                 <key>hotcue_2_enabled</key>
-                <description></description>
+                <description>Right Effect 8 led</description>
+                <status>0x91</status>
+                <midino>0x28</midino>
                 <minimum>0.5</minimum>
-                <maximum>1</maximum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Left Kill Mid</description>
                 <status>0x90</status>
-                <midino>0x6</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <midino>0x18</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_3_enabled</key>
+                <description>Left Effect 9 led</description>
+                <status>0x91</status>
+                <midino>0x09</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>passthrough</key>
+                <description>Right Source 2 Button</description>
+                <status>0x90</status>
+                <midino>0x36</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>Right Effect 11 led</description>
+                <status>0x90</status>
+                <midino>0x2B</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_indicator</key>
+                <description>Right Cue button</description>
+                <status>0x90</status>
+                <midino>0x2D</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_4_enabled</key>
+                <description>Left Effect 10 led</description>
+                <status>0x91</status>
+                <midino>0x0A</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>play_indicator</key>
+                <description>Right Play button</description>
+                <status>0x91</status>
+                <midino>0x2E</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>Right Effect 11 led</description>
+                <status>0x91</status>
+                <midino>0x2B</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Left Effect 7 led</description>
+                <status>0x91</status>
+                <midino>0x07</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>stop</key>
+                <description>Right Stop button</description>
+                <status>0x91</status>
+                <midino>0x30</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>keylock</key>
+                <description>Left pitch reset led</description>
+                <status>0x91</status>
+                <midino>0x15</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <description>Left Deck Cue Select (PFL headphones)</description>
+                <status>0x91</status>
+                <midino>0x0F</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>hotcue_2_enabled</key>
+                <description>Left Effect 8 led</description>
+                <status>0x91</status>
+                <midino>0x08</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Right Kill Bass</description>
+                <status>0x91</status>
+                <midino>0x39</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>passthrough</key>
+                <description>Left Source 1 Button</description>
+                <status>0x90</status>
+                <midino>0x16</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>Right Effect 12 led</description>
+                <status>0x90</status>
+                <midino>0x2C</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Right Kill Treble</description>
+                <status>0x91</status>
+                <midino>0x37</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Right Kill Mid</description>
+                <status>0x91</status>
+                <midino>0x38</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>stop</key>
+                <description>Left Stop button</description>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>play_indicator</key>
+                <description>Left Play button</description>
+                <status>0x90</status>
+                <midino>0x0E</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>keylock</key>
+                <description>Right pitch reset led</description>
+                <status>0x90</status>
+                <midino>0x35</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>Left Effect 11 led</description>
+                <status>0x90</status>
+                <midino>0x0B</midino>
+                <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
                 <key>hotcue_3_enabled</key>
-                <description></description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
+                <description>Right Effect 9 led</description>
                 <status>0x90</status>
-                <midino>0x1b</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <midino>0x29</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel4]_enable</key>
+                <description>Right Effect 12 led</description>
+                <status>0x91</status>
+                <midino>0x2C</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>passthrough</key>
+                <description>Right Source 2 Button</description>
+                <status>0x91</status>
+                <midino>0x36</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <description>Right Deck Cue Select (PFL headphones)</description>
+                <status>0x91</status>
+                <midino>0x2F</midino>
+                <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>flanger</key>
-                <description></description>
+                <key>hotcue_4_enabled</key>
+                <description>Right Effect 10 led</description>
+                <status>0x90</status>
+                <midino>0x2A</midino>
                 <minimum>0.5</minimum>
-                <maximum>1</maximum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>cue_indicator</key>
+                <description>Left Cue button</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel3]_enable</key>
+                <description>Left Effect 11 led</description>
+                <status>0x91</status>
+                <midino>0x0B</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Right Effect 7 led</description>
                 <status>0x90</status>
                 <midino>0x27</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Left Kill Bass</description>
+                <status>0x91</status>
+                <midino>0x19</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>stop</key>
+                <description>Right Stop button</description>
+                <status>0x90</status>
+                <midino>0x30</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>play_indicator</key>
+                <description>Right Play button</description>
+                <status>0x90</status>
+                <midino>0x2E</midino>
+                <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>play</key>
-                <description></description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
+                <key>keylock</key>
+                <description>Left pitch reset led</description>
                 <status>0x90</status>
-                <midino>0xf</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <midino>0x15</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Left Kill Treble</description>
+                <status>0x91</status>
+                <midino>0x17</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>Left Effect 12 led</description>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
                 <key>hotcue_2_enabled</key>
-                <description></description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
+                <description>Right Effect 8 led</description>
                 <status>0x90</status>
-                <midino>0x1a</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <midino>0x28</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Left Kill Mid</description>
+                <status>0x91</status>
+                <midino>0x18</midino>
+                <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>flanger</key>
-                <description></description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
+                <key>hotcue_3_enabled</key>
+                <description>Left Effect 9 led</description>
                 <status>0x90</status>
-                <midino>0x13</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <midino>0x09</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>passthrough</key>
+                <description>Left Source 1 Button</description>
+                <status>0x91</status>
+                <midino>0x16</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>Right Kill Bass</description>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <minimum>0.5</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
                 <key>hotcue_4_enabled</key>
-                <description></description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
+                <description>Left Effect 10 led</description>
                 <status>0x90</status>
-                <midino>0x8</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
+                <midino>0x0A</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>Right Kill Treble</description>
+                <status>0x90</status>
+                <midino>0x37</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>Right Kill Mid</description>
+                <status>0x90</status>
+                <midino>0x38</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>cue_indicator</key>
+                <description>Right Cue button</description>
+                <status>0x91</status>
+                <midino>0x2D</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>Left Deck Cue Select (PFL headphones)</description>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel3]_enable</key>
+                <description>Left Effect 12 led</description>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>hotcue_3_enabled</key>
+                <description>Right Effect 9 led</description>
+                <status>0x91</status>
+                <midino>0x29</midino>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Left Effect 7 led</description>
+                <status>0x90</status>
+                <midino>0x07</midino>
+                <minimum>0.5</minimum>
             </output>
         </outputs>
     </controller>
-</MixxxMIDIPreset>
+</MixxxControllerPreset>

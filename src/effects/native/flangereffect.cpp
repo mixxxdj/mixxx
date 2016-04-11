@@ -1,9 +1,8 @@
-// THIS HAS TO BE THE FIRST INCLUDE!!! --kain88 (April 2013)
-// http://stackoverflow.com/a/6563891
-#include "util/math.h"
+#include "effects/native/flangereffect.h"
+
 #include <QtDebug>
 
-#include "effects/native/flangereffect.h"
+#include "util/math.h"
 
 const unsigned int kMaxDelay = 5000;
 const unsigned int kLfoAmplitude = 240;

@@ -23,7 +23,7 @@
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cratedao.h"
@@ -52,7 +52,7 @@ class TrackCollection : public QObject {
   public:
     static const int kRequiredSchemaVersion;
 
-    TrackCollection(ConfigObject<ConfigValue>* pConfig);
+    TrackCollection(UserSettingsPointer pConfig);
     virtual ~TrackCollection();
     bool checkForTables();
 
@@ -67,9 +67,11 @@ class TrackCollection : public QObject {
     void setTrackSource(QSharedPointer<BaseTrackCache> trackSource);
     void cancelLibraryScan();
 
-    ConfigObject<ConfigValue>* getConfig() {
+    UserSettingsPointer getConfig() {
         return m_pConfig;
     }
+
+    void relocateDirectory(QString oldDir, QString newDir);
 
   protected:
 #ifdef __SQLITE3__
@@ -94,7 +96,7 @@ class TrackCollection : public QObject {
 #endif // __SQLITE3__
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QSqlDatabase m_db;
     QSharedPointer<BaseTrackCache> m_defaultTrackSource;
     PlaylistDAO m_playlistDao;

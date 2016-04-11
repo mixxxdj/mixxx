@@ -19,7 +19,7 @@ class BpmControl : public EngineControl {
     Q_OBJECT
 
   public:
-    BpmControl(QString group, ConfigObject<ConfigValue>* _config);
+    BpmControl(QString group, UserSettingsPointer _config);
     virtual ~BpmControl();
 
     double getBpm() const;
@@ -77,8 +77,7 @@ class BpmControl : public EngineControl {
                                            const double& target_percentage);
 
   public slots:
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
     void slotSetEngineBpm(double);
@@ -104,6 +103,7 @@ class BpmControl : public EngineControl {
     }
     bool syncTempo();
     double calcSyncAdjustment(double my_percentage, bool userTweakingSync);
+    double calcRateRatio() const;
 
     friend class SyncControl;
 

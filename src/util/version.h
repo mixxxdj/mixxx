@@ -8,6 +8,9 @@ class Version {
     // Returns the current Mixxx version (e.g. 1.12.0-alpha)
     static QString version();
 
+    // Returns the application name. (e.g. "Mixxx")
+    static QString applicationName();
+
     // Returns the application title (e.g. "Mixxx x64" on Windows)
     static QString applicationTitle();
 
@@ -22,6 +25,12 @@ class Version {
     // Returns the build flags used to build Mixxx (e.g. "hid=1 modplug=0") or
     // the null string if the flags are unknown.
     static QString buildFlags();
+
+    // Returns a list of the version of each depenency:
+    static QStringList dependencyVersions();
+
+    // Prints out diagnostic information about this build.
+    static void logBuildDetails();
 };
 
 #endif /* VERSION_H */

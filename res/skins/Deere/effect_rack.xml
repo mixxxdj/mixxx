@@ -21,14 +21,20 @@
           <WidgetGroup>
             <ObjectName>EffectRackCollapsed</ObjectName>
             <Layout>horizontal</Layout>
-            <MinimumSize>-1,45</MinimumSize>
-            <MaximumSize>-1,45</MaximumSize>
-            <SizePolicy>me,min</SizePolicy>
+            <MinimumSize>-1,50</MinimumSize>
+            <MaximumSize>-1,50</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
             <Children>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">EffectRackToggle</SetVariable>
-                <SetVariable name="control">[EffectRack1],show</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <ObjectName>ShowHideToggle</ObjectName>
+                <Children>
+                  <Template src="skin:hide_show_button.xml">
+                    <SetVariable name="object_name">EffectRackToggle</SetVariable>
+                    <SetVariable name="control">[EffectRack1],show</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
               <Template src="skin:effect_chain_simple.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
@@ -58,10 +64,16 @@
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">EffectRackToggle</SetVariable>
-                <SetVariable name="control">[EffectRack1],show</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <ObjectName>ShowHideToggle</ObjectName>
+                <Children>
+                  <Template src="skin:hide_show_button.xml">
+                    <SetVariable name="object_name">EffectRackToggle</SetVariable>
+                    <SetVariable name="control">[EffectRack1],show</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
               <Template src="skin:effect_chain.xml">
                 <SetVariable name="EffectRack">1</SetVariable>

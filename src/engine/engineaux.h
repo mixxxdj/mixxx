@@ -5,12 +5,14 @@
 #ifndef ENGINEAUX_H
 #define ENGINEAUX_H
 
+#include <QScopedPointer>
+
 #include "controlobjectslave.h"
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
 #include "util/circularbuffer.h"
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class EffectsManager;
 class EngineEffectsManager;
@@ -46,10 +48,14 @@ class EngineAux : public EngineChannel, public AudioDestination {
     // a soundcard input.
     virtual void onInputUnconfigured(AudioInput input);
 
+  private slots:
+    // Reject all change requests for input configured.
+    void slotInputConfiguredChangeRequest(double) {}
+
   private:
     EngineEffectsManager* m_pEngineEffectsManager;
     EngineVuMeter m_vuMeter;
-    ControlObject* m_pEnabled;
+    QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
     ControlObjectSlave* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;

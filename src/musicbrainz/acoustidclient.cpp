@@ -10,16 +10,17 @@
 #include <QCoreApplication>
 #include <QNetworkReply>
 #include <QXmlStreamReader>
+#include <QTextStream>
 #include <QUrl>
+#include <QtDebug>
 
-#include "acoustidclient.h"
-#include "gzip.h"
-#include "network.h"
+#include "musicbrainz/acoustidclient.h"
+#include "musicbrainz/gzip.h"
+#include "musicbrainz/network.h"
 
 // see API-KEY site here http://acoustid.org/application/496
 // I registered the KEY for version 1.12 -- kain88 (may 2013)
 const QString CLIENT_APIKEY = "czKxnkyO";
-const QString CLIENT_NAME = "Mixxx1.12";
 const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
 const int AcoustidClient::m_DefaultTimeout = 5000; // msec
 
@@ -40,13 +41,16 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     url.addQueryItem("duration", QString::number(duration));
     url.addQueryItem("meta", "recordingids");
     url.addQueryItem("fingerprint", fingerprint);
+    QByteArray body = url.encodedQuery();
 
     QNetworkRequest req(QUrl::fromEncoded(ACOUSTID_URL.toAscii()));
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
-    req.setRawHeader("User-Agent", CLIENT_NAME.toAscii());
 
-    QNetworkReply* reply = m_network.post(req, gzipCompress(url.encodedQuery()));
+    qDebug() << "AcoustIdClient POST request:" << ACOUSTID_URL
+             << "body:" << body;
+
+    QNetworkReply* reply = m_network.post(req, gzipCompress(body));
     connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
     m_requests[reply] = id;
 
@@ -75,14 +79,22 @@ void AcoustidClient::requestFinished() {
 
     int id = m_requests.take(reply);
 
-    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if (status != 200) {
+        QTextStream body(reply);
+        qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body.readAll();
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
              "AcoustID"));
         return;
     }
 
-    QXmlStreamReader reader(reply);
+
+    QTextStream textReader(reply);
+    QString body = textReader.readAll();
+    qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body;
+
+    QXmlStreamReader reader(body);
     QString ID;
     while (!reader.atEnd()) {
         if (reader.readNext() == QXmlStreamReader::StartElement

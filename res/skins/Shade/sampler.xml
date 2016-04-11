@@ -10,10 +10,10 @@
 							<MaximumSize>251,100</MaximumSize>
 							<MinimumSize>251,100</MinimumSize>
   			                <SizePolicy>f,f</SizePolicy>
-							<Style>QGroupBox { 
-								border: 0px solid green;  
-								margin: 0px 0px 0px 0px;  
-							} 
+							<Style>QGroupBox {
+								border: 0px solid green;
+								margin: 0px 0px 0px 0px;
+							}
 							</Style>
 							<BackPath>style/style_bg_sampler.png</BackPath>
 							<Children>
@@ -27,8 +27,8 @@
 									<Style>QLabel { font: bold 12px/14px sans-serif;
 											font-family: "Open Sans";
 											background-color: transparent;
-											color: #191F24; 
-											text-align: left; 
+											color: #191F24;
+											text-align: left;
 											padding-left: 1px; }
 									</Style>
 									<Group>[Sampler<Variable name="samplernum"/>]</Group>
@@ -42,8 +42,8 @@
 									<Style>QLabel { font: bold 14px/16px sans-serif;
 											font-family: "Open Sans";
 											background-color: transparent;
-											color: #191F24; 
-											text-align: left; 
+											color: #191F24;
+											text-align: left;
 											padding-left: 1px; }
 									</Style>
 									<Property>title</Property>
@@ -53,7 +53,7 @@
 									<Elide>right</Elide>
 								</TrackProperty>
 								-->
-	
+
 								<!--
 								**********************************************
 								Text- BPM number display
@@ -64,7 +64,7 @@
 									<Style>QLabel { font: bold 12px/14px sans-serif;
 											font-family: "Open Sans";
 											background-color: transparent;
-											color: #191F24; 
+											color: #191F24;
 											text-align: left;
 											padding-left: 1px; }
 									</Style>
@@ -77,7 +77,7 @@
 										<ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
 									</Connection>
 								</NumberBpm>
-	
+
 								<!--
 								**********************************************
 								Button- BPM Tap
@@ -105,7 +105,7 @@
 										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									</Connection>
 								</PushButton>
-	
+
 								<!--
 								**********************************************
 								Visual- Waveform overview
@@ -134,7 +134,7 @@
 										<EmitOnDownPress>false</EmitOnDownPress>
 									</Connection>
 								</Overview>
-	
+
 								<!--
 								**********************************************
 								RotaryFader- Gain
@@ -150,14 +150,14 @@
 										<ConfigKey>[Sampler<Variable name="samplernum"/>],pregain</ConfigKey>
 									</Connection>
 								</Knob>
-	
+
 								<!--
 								**********************************************
 								Visual- Volume peak indicator
 								**********************************************
 								-->
 								<StatusLight>
-									<TooltipId>PeakIndicator</TooltipId>
+									<TooltipId>sampler_PeakIndicator</TooltipId>
 									<Style></Style>
 									<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 									<PathBack>btn_clipping_sampler.png</PathBack>
@@ -166,14 +166,14 @@
 										<ConfigKey>[Sampler<Variable name="samplernum"/>],PeakIndicator</ConfigKey>
 									</Connection>
 								</StatusLight>
-	
+
 								<!--
 								**********************************************
 								Visual - Volume level display
 								**********************************************
 								-->
 								<VuMeter>
-									<TooltipId>channel_VuMeter</TooltipId>
+									<TooltipId>sampler_VuMeter</TooltipId>
 									<Style></Style>
 									<PathVu>btn_volume_display_sampler_over.png</PathVu>
 									<PathBack>btn_volume_display_sampler.png</PathBack>
@@ -187,7 +187,7 @@
 										<ConfigKey>[Sampler<Variable name="samplernum"/>],VuMeter</ConfigKey>
 									</Connection>
 								</VuMeter>
-	
+
 								<!--
 								**********************************************
 								Slider- Pitch control
@@ -205,7 +205,7 @@
 										<EmitOnDownPress>false</EmitOnDownPress>
 									</Connection>
 								</SliderComposed>
-	
+
 								<!--
 								****************************************
 								 Button- Play
@@ -239,7 +239,7 @@
                                         <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
                                     </Connection>
 								</PushButton>
-	
+
 								<!--
 								**********************************************
 								Button- Beat sync
@@ -266,7 +266,7 @@
 										<ButtonState>RightButton</ButtonState>
 									</Connection>
 								</PushButton>
-	
+
 								<!--
 								**********************************************
 								Button- Hotcue
@@ -408,7 +408,7 @@
 										<ConnectValueFromWidget>false</ConnectValueFromWidget>
 									</Connection>
 								</PushButton>
-	
+
 								<!--
 								**********************************************
 								Button- Prelisten / Monitoring
@@ -433,7 +433,7 @@
 										<ConfigKey>[Sampler<Variable name="samplernum"/>],pfl</ConfigKey>
 									</Connection>
 								</PushButton>
-	
+
 								<!--
 								**********************************************
 								Button- Eject
@@ -456,7 +456,7 @@
 										<ConnectValueToWidget>false</ConnectValueToWidget>
 									</Connection>
 								</PushButton>
-	
+
 								<!--
 								**********************************************
 								Button- Repeat (End of track mode)
@@ -481,7 +481,7 @@
 										<ConfigKey>[Sampler<Variable name="samplernum"/>],repeat</ConfigKey>
 									</Connection>
 								</PushButton>
-	
+
 								<!--
 								**********************************************
 								Button- Mix Orientation (Routing)
@@ -513,7 +513,7 @@
 										<ButtonState>LeftButton</ButtonState>
 									</Connection>
 								</PushButton>
-	
+
 								<!--
 								**********************************************
 								Button- Key lock

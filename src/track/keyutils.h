@@ -1,6 +1,7 @@
 #ifndef KEYUTILS_H
 #define KEYUTILS_H
 
+#include <QMutex>
 #include <QString>
 #include <QList>
 
@@ -40,7 +41,11 @@ class KeyUtils {
     }
 
     static QString keyToString(mixxx::track::io::key::ChromaticKey key,
-                               KeyNotation notation=DEFAULT);
+                               KeyNotation notation = DEFAULT);
+
+    static QString getGlobalKeyText(
+            const Keys& keys,
+            KeyNotation notation = DEFAULT);
 
     static mixxx::track::io::key::ChromaticKey keyFromNumericValue(double value);
 

@@ -8,12 +8,16 @@
 #include "effects/effect.h"
 #include "mixxxtest.h"
 #include "test/baseeffecttest.h"
+#include "util/time.h"
+#include "controlobjectslave.h"
 
 class SuperLinkTest : public BaseEffectTest {
   protected:
     SuperLinkTest()
             : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
+        Time::setTestMode(true);
+        Time::setTestElapsedTime(mixxx::Duration::fromNanos(0));
         m_pEffectsManager->registerChannel(m_master);
         m_pEffectsManager->registerChannel(m_headphone);
         registerTestBackend();
@@ -59,12 +63,12 @@ class SuperLinkTest : public BaseEffectTest {
 
         QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
 
-        m_pControlValue.reset(new ControlObjectThread(group, itemPrefix));
+        m_pControlValue.reset(new ControlObjectSlave(group, itemPrefix));
 
-        m_pControlLinkType.reset(new ControlObjectThread(group,
+        m_pControlLinkType.reset(new ControlObjectSlave(group,
                 itemPrefix + QString("_link_type")));
 
-        m_pControlLinkInverse.reset(new ControlObjectThread(group,
+        m_pControlLinkInverse.reset(new ControlObjectSlave(group,
                 itemPrefix + QString("_link_inverse")));
     }
 
@@ -73,9 +77,9 @@ class SuperLinkTest : public BaseEffectTest {
     ChannelHandleAndGroup m_headphone;
 
     EffectSlotPointer m_pEffectSlot;
-    QScopedPointer<ControlObjectThread> m_pControlValue;
-    QScopedPointer<ControlObjectThread> m_pControlLinkType;
-    QScopedPointer<ControlObjectThread> m_pControlLinkInverse;
+    QScopedPointer<ControlObjectSlave> m_pControlValue;
+    QScopedPointer<ControlObjectSlave> m_pControlLinkType;
+    QScopedPointer<ControlObjectSlave> m_pControlLinkInverse;
 };
 
 TEST_F(SuperLinkTest, LinkDefault) {
@@ -111,9 +115,15 @@ TEST_F(SuperLinkTest, LinkLinkedInverse) {
 
 TEST_F(SuperLinkTest, Softtakeover) {
     m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
+    // Soft takeover always ignores the first change.
     m_pEffectSlot->onChainSuperParameterChanged(0.5);
     EXPECT_EQ(1.0, m_pControlValue->get());
     m_pControlValue->set(0.1);
+    // Let enough time pass by to exceed soft-takeover's override interval.
+    Time::setTestElapsedTime(SoftTakeover::TestAccess::getTimeThreshold() +
+                             mixxx::Duration::fromMillis(2));
+    // Ignored by SoftTakeover since it is too far from the current value of
+    // 0.1.
     m_pEffectSlot->onChainSuperParameterChanged(0.7);
     EXPECT_EQ(0.1, m_pControlValue->get());
 }
@@ -145,10 +155,10 @@ TEST_F(SuperLinkTest, HalfLinkTakeover) {
     EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
     m_pEffectSlot->loadEffect(pEffect);
     QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
-    m_pControlValue.reset(new ControlObjectThread(group, itemPrefix));
-    m_pControlLinkType.reset(new ControlObjectThread(group,
+    m_pControlValue.reset(new ControlObjectSlave(group, itemPrefix));
+    m_pControlLinkType.reset(new ControlObjectSlave(group,
             itemPrefix + QString("_link_type")));
-    m_pControlLinkInverse.reset(new ControlObjectThread(group,
+    m_pControlLinkInverse.reset(new ControlObjectSlave(group,
             itemPrefix + QString("_link_inverse")));
 
     // OK now the actual test.

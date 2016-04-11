@@ -1,78 +1,117 @@
-/***************************************************************************
-                          soundsourceproxy.h  -  description
-                             -------------------
-    begin                : Wed Oct 13 2004
-    copyright            : (C) 2004 by Tue Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef SOUNDSOURCEPROXY_H
 #define SOUNDSOURCEPROXY_H
 
-#include <QMap>
-#include <QMutex>
-#include <QString>
-#include <QLibrary>
-#include <QRegExp>
-
-#include "soundsource.h"
 #include "trackinfoobject.h"
-#include "util/sandbox.h"
 
-/**
-  *@author Tue Haste Andersen
-  */
+#include "sources/soundsourceproviderregistry.h"
 
-
-/**
- * Creates sound sources for filenames or tracks.
- */
-class SoundSourceProxy
-{
+// Creates sound sources for tracks. Only intended to be used
+// in a narrow scope and not sharable between multiple threads!
+class SoundSourceProxy {
 public:
+    // Initially registers all built-in SoundSource providers and
+    // loads all SoundSource plugins with additional providers. This
+    // function is not thread-safe and must be called only once
+    // upon startup of the application.
     static void loadPlugins();
 
-    static QStringList supportedFileExtensions();
-    static QStringList supportedFileExtensionsByPlugins();
-    static QString supportedFileExtensionsString();
-    static QString supportedFileExtensionsRegex();
-    static bool isFilenameSupported(QString filename);
-
-    SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken);
-    explicit SoundSourceProxy(TrackPointer pTrack);
-
-    const Mixxx::SoundSourcePointer& getSoundSource() const {
-        return m_pSoundSource;
+    static QStringList getSupportedFileExtensions() {
+        return s_soundSourceProviders.getRegisteredFileExtensions();
+    }
+    static QStringList getSupportedFileExtensionsByPlugins();
+    static const QStringList& getSupportedFileNamePatterns() {
+        return s_supportedFileNamePatterns;
+    }
+    static const QRegExp& getSupportedFileNamesRegex() {
+        return s_supportedFileNamesRegex;
     }
 
-    // Opens the audio data through the proxy will
+    static bool isUrlSupported(const QUrl& url);
+    static bool isFileSupported(const QFileInfo& fileInfo);
+    static bool isFileNameSupported(const QString& fileName);
+    static bool isFileExtensionSupported(const QString& fileExtension);
+
+    explicit SoundSourceProxy(const TrackPointer& pTrack);
+
+    const TrackPointer& getTrack() const {
+        return m_pTrack;
+    }
+
+    const QUrl& getUrl() const {
+        return m_url;
+    }
+
+    // Load track metadata and (optionally) cover art from the file
+    // if it has not already been parsed. With reloadFromFile = true
+    // metadata and cover art will be reloaded from the file regardless
+    // if it has already been parsed before or not.
+    void loadTrackMetadata(bool reloadFromFile = false) const {
+        return loadTrackMetadataAndCoverArt(false, reloadFromFile);
+    }
+    void loadTrackMetadataAndCoverArt(bool reloadFromFile = false) const {
+        return loadTrackMetadataAndCoverArt(true, reloadFromFile);
+    }
+
+    // Parse only the metadata from the file without modifying
+    // the referenced track.
+    Result parseTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata) const;
+
+    // Parse only the cover image from the file without modifying
+    // the referenced track.
+    QImage parseCoverImage() const;
+
+    enum class SaveTrackMetadataResult {
+        SUCCEEDED,
+        FAILED,
+        SKIPPED
+    };
+    static SaveTrackMetadataResult saveTrackMetadata(
+            const TrackInfoObject* pTrack,
+            bool evenIfNeverParsedFromFileBefore = false);
+
+    // Opening the audio data through the proxy will
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
-    Mixxx::SoundSourcePointer open() const;
+    Mixxx::AudioSourcePointer openAudioSource(
+            const Mixxx::AudioSourceConfig& audioSrcCfg = Mixxx::AudioSourceConfig());
+
+    void closeAudioSource();
 
 private:
-    static QRegExp m_supportedFileRegex;
-    static QMap<QString, QLibrary*> m_plugins;
-    static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
-    static QMutex m_extensionsMutex;
+    static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
+    static QStringList s_supportedFileNamePatterns;
+    static QRegExp s_supportedFileNamesRegex;
 
-    static QLibrary* getPlugin(QString lib_filename);
-
-    static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
+    // Special case: Construction from a plain TIO pointer is needed
+    // for writing metadata immediately before the TIO is destroyed.
+    explicit SoundSourceProxy(
+            const TrackInfoObject* pTrack);
 
     const TrackPointer m_pTrack;
-    const SecurityTokenPointer m_pSecurityToken;
 
-    const Mixxx::SoundSourcePointer m_pSoundSource;
+    const QUrl m_url;
+
+    static QList<Mixxx::SoundSourceProviderRegistration> findSoundSourceProviderRegistrations(const QUrl& url);
+
+    const QList<Mixxx::SoundSourceProviderRegistration> m_soundSourceProviderRegistrations;
+    int m_soundSourceProviderRegistrationIndex;
+
+    Mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;
+    void nextSoundSourceProvider();
+
+    void initSoundSource();
+
+    void loadTrackMetadataAndCoverArt(bool withCoverArt, bool reloadFromFile) const;
+
+    // This pointer must stay in this class together with
+    // the corresponding track pointer. Don't pass it around!!
+    Mixxx::SoundSourcePointer m_pSoundSource;
+
+    // Keeps track of opening and closing the corresponding
+    // SoundSource. This pointer can safely be passed around,
+    // because internally it contains a reference to the TIO
+    // that keeps it alive.
+    Mixxx::AudioSourcePointer m_pAudioSource;
 };
 
-#endif
+#endif // SOUNDSOURCEPROXY_H

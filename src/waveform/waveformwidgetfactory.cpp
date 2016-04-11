@@ -22,8 +22,8 @@
 #include "waveform/widgets/glvsynctestwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
+#include "waveform/guitick.h"
 #include "waveform/vsyncthread.h"
-
 #include "util/cmdlineargs.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
@@ -41,7 +41,7 @@ WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
 WaveformWidgetHolder::WaveformWidgetHolder()
     : m_waveformWidget(NULL),
       m_waveformViewer(NULL),
-      m_skinContextCache(NULL, QString()) {
+      m_skinContextCache(UserSettingsPointer(), QString()) {
 }
 
 WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
@@ -107,6 +107,33 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         int minorVersion = 0;
         if (version == QGLFormat::OpenGL_Version_None) {
             m_openGLVersion = "None";
+// Flags introduced in Qt 5.2.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+        } else if (version & QGLFormat::OpenGL_Version_4_3) {
+            majorVersion = 4;
+            minorVersion = 3;
+        } else if (version & QGLFormat::OpenGL_Version_4_2) {
+            majorVersion = 4;
+            minorVersion = 2;
+        } else if (version & QGLFormat::OpenGL_Version_4_1) {
+            majorVersion = 4;
+            minorVersion = 1;
+#endif
+// Flags introduced in Qt 4.7.
+#if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
+        } else if (version & QGLFormat::OpenGL_Version_4_0) {
+            majorVersion = 4;
+            minorVersion = 0;
+        } else if (version & QGLFormat::OpenGL_Version_3_3) {
+            majorVersion = 3;
+            minorVersion = 3;
+        } else if (version & QGLFormat::OpenGL_Version_3_2) {
+            majorVersion = 3;
+            minorVersion = 2;
+        } else if (version & QGLFormat::OpenGL_Version_3_1) {
+            majorVersion = 3;
+            minorVersion = 1;
+#endif
         } else if (version & QGLFormat::OpenGL_Version_3_0) {
             majorVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_2_1) {
@@ -155,7 +182,7 @@ WaveformWidgetFactory::~WaveformWidgetFactory() {
     }
 }
 
-bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config) {
+bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     m_config = config;
     if (!m_config) {
         return false;
@@ -470,10 +497,10 @@ void WaveformWidgetFactory::render() {
         //qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
 
         m_frameCnt += 1.0;
-        int timeCnt = m_time.elapsed();
-        if (timeCnt > 1000) {
+        mixxx::Duration timeCnt = m_time.elapsed();
+        if (timeCnt > mixxx::Duration::fromSeconds(1)) {
             m_time.start();
-            m_frameCnt = m_frameCnt * 1000 / timeCnt; // latency correction
+            m_frameCnt = m_frameCnt * 1000 / timeCnt.toIntegerMillis(); // latency correction
             emit(waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames()));
             m_frameCnt = 0.0;
         }
@@ -494,8 +521,12 @@ void WaveformWidgetFactory::swap() {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 if (pWaveformWidget->getWidth() > 0) {
                     QGLWidget* glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
-                    if (glw) {
-                        m_vsyncThread->swapGl(glw, i);
+                    // Don't swap invalid or invisible widgets. Prevents
+                    // continuous log spew of "QOpenGLContext::swapBuffers()
+                    // called with non-exposed window, behavior is undefined" on
+                    // Qt5.
+                    if (glw && glw->isValid() && glw->isVisible()) {
+                        VSyncThread::swapGl(glw, i);
                     }
                 }
 
@@ -707,8 +738,8 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     return -1;
 }
 
-void WaveformWidgetFactory::startVSync(MixxxMainWindow* mixxxMainWindow) {
-    m_vsyncThread = new VSyncThread(mixxxMainWindow);
+void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick) {
+    m_vsyncThread = new VSyncThread(this, pGuiTick);
     m_vsyncThread->start(QThread::NormalPriority);
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),

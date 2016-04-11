@@ -23,11 +23,9 @@ class ScannerTask : public QObject, public QRunnable {
     void queueTask(ScannerTask* pTask);
     void directoryHashedAndScanned(const QString& directoryPath,
                                    bool newDirectory, int hash);
-    void directoryHashed(const QString& directoryPath, bool newDirectory,
-                         int hash);
     void directoryUnchanged(const QString& directoryPath);
     void trackExists(const QString& filePath);
-    void addNewTrack(TrackPointer pTrack);
+    void addNewTrack(const QString& filePath);
 
     // Feedback to GUI
     void progressLoading(const QString& fileName);

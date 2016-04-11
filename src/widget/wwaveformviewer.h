@@ -19,7 +19,7 @@ class ControlPotmeter;
 class WWaveformViewer : public WWidget {
     Q_OBJECT
   public:
-    WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0);
+    WWaveformViewer(const char *group, UserSettingsPointer pConfig, QWidget *parent=0);
     virtual ~WWaveformViewer();
 
     const char* getGroup() const { return m_pGroup;}
@@ -36,8 +36,8 @@ signals:
     void trackDropped(QString filename, QString group);
 
 public slots:
-    void onTrackLoaded(TrackPointer track);
-    void onTrackUnloaded(TrackPointer track);
+    void slotTrackLoaded(TrackPointer track);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
 protected:
     virtual void resizeEvent(QResizeEvent *event);
@@ -59,7 +59,7 @@ private:
 
 private:
     const char* m_pGroup;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     int m_zoomZoneWidth;
     ControlObjectSlave* m_pZoom;
     ControlObjectSlave* m_pScratchPositionEnable;

@@ -18,14 +18,16 @@
 #ifndef ENGINEDECK_H
 #define ENGINEDECK_H
 
-#include "configobject.h"
+#include <QScopedPointer>
+
+#include "preferences/usersettings.h"
 #include "controlobjectslave.h"
 #include "controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "util/circularbuffer.h"
 
-#include "soundmanagerutil.h"
+#include "soundio/soundmanagerutil.h"
 
 class EngineBuffer;
 class EnginePregain;
@@ -39,7 +41,7 @@ class ControlPushButton;
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(const ChannelHandleAndGroup& handle_group, ConfigObject<ConfigValue>* pConfig,
+    EngineDeck(const ChannelHandleAndGroup& handle_group, UserSettingsPointer pConfig,
                EngineMaster* pMixingEngine, EffectsManager* pEffectsManager,
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();
@@ -74,8 +76,12 @@ class EngineDeck : public EngineChannel, public AudioDestination {
   public slots:
     void slotPassingToggle(double v);
 
+  private slots:
+    // Reject all change requests for input configured.
+    void slotInputConfiguredChangeRequest(double) {}
+
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     EngineBuffer* m_pBuffer;
     EnginePregain* m_pPregain;
     EngineVuMeter* m_pVUMeter;
@@ -83,10 +89,12 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     ControlObjectSlave* m_pSampleRate;
 
     // Begin vinyl passthrough fields
+    QScopedPointer<ControlObject> m_pInputConfigured;
     ControlPushButton* m_pPassing;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_bPassthroughIsActive;
     bool m_bPassthroughWasActive;
+    bool m_wasActive;
 };
 
 #endif

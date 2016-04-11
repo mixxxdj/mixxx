@@ -7,14 +7,14 @@
 #include <QHideEvent>
 #include <QEvent>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "widget/wbasewidget.h"
 #include "widget/wwidget.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 class VisualPlayPosition;
 class VinylControlManager;
 
@@ -22,7 +22,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     Q_OBJECT
   public:
     WSpinny(QWidget* parent, const QString& group,
-            ConfigObject<ConfigValue>* pConfig,
+            UserSettingsPointer pConfig,
             VinylControlManager* pVCMan);
     virtual ~WSpinny();
 
@@ -34,7 +34,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
   public slots:
     void slotLoadTrack(TrackPointer);
-    void slotReset();
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void updateVinylControlSpeed(double rpm);
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
@@ -68,24 +68,24 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
   private:
     QString m_group;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     QImage* m_pBgImage;
     QImage* m_pMaskImage;
     QImage* m_pFgImage;
     QImage m_fgImageScaled;
     QImage* m_pGhostImage;
     QImage m_ghostImageScaled;
-    ControlObjectThread* m_pPlay;
-    ControlObjectThread* m_pPlayPos;
+    ControlObjectSlave* m_pPlay;
+    ControlObjectSlave* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
-    ControlObjectThread* m_pTrackSamples;
-    ControlObjectThread* m_pTrackSampleRate;
-    ControlObjectThread* m_pScratchToggle;
-    ControlObjectThread* m_pScratchPos;
-    ControlObjectThread* m_pVinylControlSpeedType;
-    ControlObjectThread* m_pVinylControlEnabled;
-    ControlObjectThread* m_pSignalEnabled;
-    ControlObjectThread* m_pSlipEnabled;
+    ControlObjectSlave* m_pTrackSamples;
+    ControlObjectSlave* m_pTrackSampleRate;
+    ControlObjectSlave* m_pScratchToggle;
+    ControlObjectSlave* m_pScratchPos;
+    ControlObjectSlave* m_pVinylControlSpeedType;
+    ControlObjectSlave* m_pVinylControlEnabled;
+    ControlObjectSlave* m_pSignalEnabled;
+    ControlObjectSlave* m_pSlipEnabled;
 
     TrackPointer m_loadedTrack;
     QPixmap m_loadedCover;

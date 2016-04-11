@@ -359,7 +359,7 @@
 }
 
 #KnobLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 10px/12px;
   text-transform: uppercase;
   color: #585858;
@@ -378,7 +378,7 @@
 #GuiToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
@@ -387,7 +387,7 @@
 #GuiToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
@@ -396,7 +396,7 @@
 #GuiToggleButton[displayValue="2"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
@@ -405,7 +405,7 @@
 #GuiToggleButtonInverted[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
@@ -414,7 +414,7 @@
 #GuiToggleButtonInverted[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
@@ -424,7 +424,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
@@ -434,7 +434,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
@@ -444,7 +444,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
@@ -454,7 +454,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
@@ -464,7 +464,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #eece33;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
@@ -474,7 +474,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #ddd;
     background-color: #0e0e0e;
@@ -484,7 +484,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
@@ -494,7 +494,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
@@ -503,7 +503,7 @@
 #PitchTweakButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
@@ -513,7 +513,7 @@
 #PitchTweakButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px;
     color: #ddd;
     background-color: #c00a09;
@@ -521,7 +521,7 @@
 }
 
 #PitchLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 12px/14px;
   color: #585858;
   text-align: center;
@@ -533,7 +533,7 @@
 #SyncToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
@@ -543,7 +543,7 @@
 #SyncToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #c0c0c0;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
@@ -553,7 +553,7 @@
 #LoopToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
@@ -563,7 +563,7 @@
 #LoopToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #c0c0c0;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
@@ -573,7 +573,7 @@
 #CueToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
@@ -584,7 +584,7 @@
 #CueToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #c0c0c0;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
@@ -598,7 +598,7 @@
 
 #BpmTextColor1, #BpmTextColor2 {
   qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 16px/18px;
   background-color: transparent;
   text-align: center;
@@ -609,7 +609,7 @@
 
 #BpmTextColor3, #BpmTextColor4 {
   qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 16px/18px;
   background-color: transparent;
   text-align: center;
@@ -620,7 +620,7 @@
 
 #RateTextColor1, #RateTextColor2 {
   qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 12px/13px;
   background-color: transparent;
   text-align: center;
@@ -631,7 +631,7 @@
 
 #RateTextColor3, #RateTextColor4 {
   qproperty-alignment: 'AlignCenter';
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 12px/13px;
   background-color: transparent;
   text-align: center;
@@ -684,7 +684,7 @@
 
 #PreviewDeckText {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font-size: 10px/11px;
   padding: 0px;
   color: #cfb32c;
@@ -693,7 +693,7 @@
 
 #PreviewLabel {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
-  font: 13px/14px "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: 13px/14px "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   background-color: #1e1e1e;
   font-weight:bold;
   text-transform: uppercase;
@@ -740,7 +740,7 @@
 }
 
 #HideShowButton {
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: 14px/18px;
   padding:0px;
   margin:0px;
@@ -1007,7 +1007,7 @@
 }
 
 #TitleGutter WLabel, #EffectUnitNameContainer WLabel {
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 16px/19px;
   text-transform: none;
   text-align: left;
@@ -1039,7 +1039,7 @@
 }
 
 #EffectUnitButton {
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI Symbol", Arial, "Open Sans Light";
   font: bold 16px/19px;
   text-transform: none;
   color: #eece33;
@@ -1102,7 +1102,7 @@
 
 /* this is now inline in the pushbutton so we can change styles */
 /*#EffectUnitGroupControlButton {
-  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
   font: bold 11px/13px;
   text-transform: uppercase;
   color: #eece33;
@@ -1113,7 +1113,7 @@
 }*/
 
 #EffectUnitGroupControlButton[displayValue="0"] {
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 9px/11px;
     text-transform: uppercase;
     color: #585858;
@@ -1125,7 +1125,7 @@
 }
 
 #EffectUnitGroupControlButton[displayValue="1"] {
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 9px/11px;
     text-transform: uppercase;
     color: #0e0e0e;
@@ -1138,7 +1138,7 @@
 
 #EffectToggleButton[displayValue="0"] {
     border: 1px solid #585858;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #585858;
     background-color: #0e0e0e;
@@ -1147,7 +1147,7 @@
 
 #EffectToggleButton[displayValue="1"] {
     border: 1px solid #585858;
-    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font-family: "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
     font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
@@ -1271,13 +1271,42 @@ WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; background: #0f
 WCoverArt { background: transparent; color: #ACACAC; }
 
 /* splitter between treeview and library */
-QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background-color: #1e1e1e; }
-QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background-color: #1e1e1e; }
-QSplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
-QSplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
+#LibrarySplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background-color: #1e1e1e; }
+#LibrarySplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background-color: #1e1e1e; }
+#LibrarySplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
+#LibrarySplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
+
+/* splitter between treeview and coverart */
+#CoverArtSplitter::handle { image: url(skin:/style/style_handle_horizontal_unchecked.png); background-color: #1e1e1e; }
+#CoverArtSplitter::handle:pressed { image: url(skin:/style/style_handle_horizontal_checked.png); background-color: #1e1e1e; }
+#CoverArtSplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
+#CoverArtSplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
 
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
-QLabel, QRadioButton { background: transparent; color: #cfb32c;}
+QLabel, QRadioButton { background: transparent; color: #cfb32c; }
+
+/* Additional space for QRadionButtons and QLabels */
+WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
+
+/* Additional space for the first QRadionButton in the row */
+WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
+
+/* Additional space for the QPushButtons */
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton { margin: 9px 3px 6px 3px; padding: 3px 8px; min-width: 65px; }
+
+/* Additional space for the first QPushButton in the row */
+#DlgMissing > QPushButton#btnPurge,
+#DlgHidden > QPushButton#btnUnhide,
+#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
+#DlgRecording > QPushButton#pushButtonRecording,
+#DlgAnalysis > QPushButton#pushButtonAnalyze { margin: 9px 12px 6px 3px; }
+
+/* Additional space for the last QPushButton in the row */
+#DlgAutoDJ > QPushButton#pushButtonShuffle { margin: 9px 3px 6px 12px; }
 
 /* Spacing between treeview and searchbar */
 QTreeView { margin: 10px 0px 0px 0px; }

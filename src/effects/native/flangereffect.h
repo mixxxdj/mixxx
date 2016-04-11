@@ -3,13 +3,13 @@
 
 #include <QMap>
 
-#include "util.h"
-#include "util/defs.h"
-#include "util/types.h"
+#include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "effects/effectprocessor.h"
-#include "sampleutil.h"
+#include "util/class.h"
+#include "util/defs.h"
+#include "util/sample.h"
+#include "util/types.h"
 
 struct FlangerGroupState {
     FlangerGroupState()

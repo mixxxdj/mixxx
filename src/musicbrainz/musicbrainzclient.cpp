@@ -11,10 +11,13 @@
 #include <QNetworkReply>
 #include <QtNetwork>
 #include <QSet>
+#include <QTextStream>
 #include <QXmlStreamReader>
 #include <QUrl>
 
-#include "musicbrainzclient.h"
+#include "musicbrainz/musicbrainzclient.h"
+#include "util/version.h"
+#include "defs_urls.h"
 
 const QString MusicBrainzClient::m_TrackUrl = "http://musicbrainz.org/ws/2/recording/";
 const QString MusicBrainzClient::m_DateRegex = "^[12]\\d{3}";
@@ -34,8 +37,11 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
 
     QUrl url(m_TrackUrl + mbid);
     url.setQueryItems(parameters);
+    qDebug() << "MusicBrainzClient GET request:" << url.toString();
     QNetworkRequest req(url);
-
+    // http://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings
+    QString mixxxMusicBrainzId(Version::applicationName() + "/" + Version::version() + " ( " + MIXXX_WEBSITE_URL + " )");
+    req.setRawHeader("User-Agent", mixxxMusicBrainzId.toAscii());
     QNetworkReply* reply = m_network.get(req);
     connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
     m_requests[reply] = id;
@@ -54,6 +60,16 @@ void MusicBrainzClient::cancelAll() {
     m_requests.clear();
 }
 
+namespace {
+    QString decodeText(const QByteArray& data, const char* codecName) {
+        QTextStream textStream(data);
+        if ((nullptr != codecName) && (0 < strlen(codecName))) {
+            textStream.setCodec(codecName);
+        }
+        return textStream.readAll();
+    }
+} // anonymous namespace
+
 void MusicBrainzClient::requestFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply)
@@ -66,27 +82,63 @@ void MusicBrainzClient::requestFinished() {
     int id = m_requests.take(reply);
     ResultList ret;
 
-    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    qDebug() << "MusicBrainzClient GET reply status:" << status;
+
+    // MusicBrainz returns 404 when the MBID is not in their database. We treat
+    // a status of 404 the same as a 200 but it will produce an empty list of
+    // results.
+    if (status != 200 && status != 404) {
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "Musicbrainz"));
+             "MusicBrainz"));
         return;
     }
 
-    QXmlStreamReader reader(reply);
-    while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement
-            && reader.name() == "recording") {
+    const QByteArray body(reply->readAll());
 
-            ResultList tracks = parseTrack(reader);
-            foreach (const Result& track, tracks) {
-                if (!track.m_title.isEmpty()) {
-                    ret << track;
+    QXmlStreamReader reader(body);
+    QByteArray codecName;
+    while (!reader.atEnd()) {
+        switch (reader.readNext()) {
+        case QXmlStreamReader::Invalid:
+        {
+            qWarning() << "MusicBrainzClient GET reply body:"
+                    << decodeText(body, codecName.constData());
+            qWarning()
+                << "MusicBrainzClient GET decoding error:"
+                << reader.errorString();
+            break;
+        }
+        case QXmlStreamReader::StartDocument:
+        {
+            // The character encoding is always an ASCII string
+            codecName = reader.documentEncoding().toAscii();
+            qDebug() << "MusicBrainzClient GET reply codec:"
+                    << codecName.constData();
+            qDebug() << "MusicBrainzClient GET reply body:"
+                    << decodeText(body, codecName.constData());
+            break;
+        }
+        case QXmlStreamReader::StartElement:
+        {
+            if (reader.name() == "recording") {
+                ResultList tracks = parseTrack(reader);
+                for (const Result& track: tracks) {
+                    if (!track.m_title.isEmpty()) {
+                        ret << track;
+                    }
                 }
             }
+            break;
+        }
+        default:
+        {
+            // ignore any other token type
+        }
         }
     }
-    emit (finished(id, uniqueResults(ret)));
+    emit(finished(id, uniqueResults(ret)));
 }
 
 MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(QXmlStreamReader& reader) {

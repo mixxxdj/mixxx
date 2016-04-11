@@ -22,28 +22,29 @@
 // allows the next buffer to be filled while processing a buffer that's is
 // already full.)
 
+#include "engine/sidechain/enginesidechain.h"
+
 #include <QtDebug>
 #include <QMutexLocker>
 
-#include "engine/sidechain/enginesidechain.h"
 #include "engine/sidechain/sidechainworker.h"
-#include "util/timer.h"
 #include "util/counter.h"
 #include "util/event.h"
+#include "util/sample.h"
+#include "util/timer.h"
 #include "util/trace.h"
-#include "sampleutil.h"
 
 #define SIDECHAIN_BUFFER_SIZE 65536
 
-EngineSideChain::EngineSideChain(ConfigObject<ConfigValue>* pConfig)
+EngineSideChain::EngineSideChain(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_bStopThread(false),
           m_sampleFifo(SIDECHAIN_BUFFER_SIZE),
           m_pWorkBuffer(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)) {
     // We use HighPriority to prevent starvation by lower-priority processes (Qt
     // main thread, analysis, etc.). This used to be LowPriority but that is not
-    // a suitable choice since we do semi-realtime tasks (write to broadcast
-    // servers) in the sidechain thread. To get reliable timing, it's important
+    // a suitable choice since we do semi-realtime tasks
+    // in the sidechain thread. To get reliable timing, it's important
     // that this work be prioritized over the GUI and non-realtime tasks. See
     // discussion on Bug #1270583 and Bug #1194543.
     start(QThread::HighPriority);
@@ -82,7 +83,7 @@ void EngineSideChain::writeSamples(const CSAMPLE* newBuffer, int buffer_size) {
         Counter("EngineSideChain::writeSamples buffer overrun").increment();
     }
 
-    if (m_sampleFifo.writeAvailable() < SIDECHAIN_BUFFER_SIZE/5) {
+    if (m_sampleFifo.writeAvailable() < SIDECHAIN_BUFFER_SIZE / 5) {
         // Signal to the sidechain that samples are available.
         Trace wakeup("EngineSideChain::writeSamples wake up");
         m_waitForSamples.wakeAll();

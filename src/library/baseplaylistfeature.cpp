@@ -5,6 +5,8 @@
 #include <QFileInfo>
 #include <QDesktopServices>
 
+#include "library/export/trackexportwizard.h"
+#include "library/library.h"
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
@@ -18,7 +20,7 @@
 #include "util/assert.h"
 
 BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
-                                         ConfigObject<ConfigValue>* pConfig,
+                                         UserSettingsPointer pConfig,
                                          TrackCollection* pTrackCollection,
                                          QString rootViewName)
         : LibraryFeature(parent),
@@ -64,6 +66,10 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
 
+    m_pExportTrackFilesAction = new QAction(tr("Export Track Files"), this);
+    connect(m_pExportTrackFilesAction, SIGNAL(triggered()),
+            this, SLOT(slotExportTrackFiles()));
+
     m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
     connect(m_pAnalyzePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotAnalyzePlaylist()));
@@ -78,10 +84,16 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this, SLOT(slotPlaylistTableRenamed(int,QString)));
 
     connect(&m_playlistDao, SIGNAL(changed(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+            this, SLOT(slotPlaylistContentChanged(int)));
 
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
+
+    Library* pLibrary = static_cast<Library*>(parent);
+    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
+            this, SLOT(slotTrackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(switchToView(const QString&)),
+            this, SLOT(slotResetSelectedTrack()));
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -90,6 +102,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
     delete m_pExportPlaylistAction;
+    delete m_pExportTrackFilesAction;
     delete m_pDuplicatePlaylistAction;
     delete m_pAddToAutoDJAction;
     delete m_pAddToAutoDJTopAction;
@@ -471,6 +484,27 @@ void BasePlaylistFeature::slotExportPlaylist() {
     }
 }
 
+void BasePlaylistFeature::slotExportTrackFiles() {
+    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
+        new PlaylistTableModel(this, m_pTrackCollection,
+                               "mixxx.db.model.playlist_export"));
+
+    pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
+            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    pPlaylistTableModel->select();
+
+    int rows = pPlaylistTableModel->rowCount();
+    QList<TrackPointer> tracks;
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = pPlaylistTableModel->index(i, 0);
+        tracks.push_back(pPlaylistTableModel->getTrack(index));
+    }
+
+    TrackExportWizard track_export(nullptr, m_pConfig, tracks);
+    track_export.exportTracks();
+}
+
 void BasePlaylistFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     addToAutoDJ(false); // Top = True
@@ -496,7 +530,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
-            QList<int> ids = m_playlistDao.getTrackIds(playlistId);
+            QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
             emit(analyzeTracks(ids));
         }
     }
@@ -521,7 +555,7 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
     if (QString(link.path()) == "create") {
         slotCreatePlaylist();
     } else {
-        qDebug() << "Unknonw playlist link clicked" << link.path();
+        qDebug() << "Unknown playlist link clicked" << link.path();
     }
 }
 
@@ -551,6 +585,8 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 
         // Create the TreeItem whose parent is the invisible root item
         TreeItem* item = new TreeItem(playlist_name, QString::number(playlist_id), this, root);
+        item->setBold(m_playlistsSelectedTrackIsIn.contains(playlist_id));
+
         decorateChild(item, playlist_id);
         data_list.append(item);
     }
@@ -562,6 +598,26 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     }
     return m_childModel.index(selected_row, 0);
 }
+
+void BasePlaylistFeature::updateChildModel(int selected_id) {
+    buildPlaylistList();
+
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        int playlist_id = it->first;
+        QString playlist_name = it->second;
+
+        if (selected_id == playlist_id) {
+            TreeItem* item = m_childModel.getItem(indexFromPlaylistId(playlist_id));
+            item->setData(playlist_name, QString::number(playlist_id));
+            decorateChild(item, playlist_id);
+        }
+
+    }
+}
+
+
 
 /**
   * Clears the child model dynamically, but the invisible root item remains
@@ -582,4 +638,40 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
         }
     }
     return QModelIndex();
+}
+
+void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
+    m_pSelectedTrack = pTrack;
+    TrackId trackId;
+    if (!pTrack.isNull()) {
+        trackId = pTrack->getId();
+    }
+    m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);
+
+    TreeItem* rootItem = m_childModel.getItem(QModelIndex());
+    if (rootItem == nullptr) {
+        return;
+    }
+
+    // Set all playlists the track is in bold (or if there is no track selected,
+    // clear all the bolding).
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        TreeItem* playlist = rootItem->child(row);
+        if (playlist == nullptr) {
+            continue;
+        }
+
+        int playlistId = it->first;
+        bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
+        playlist->setBold(shouldBold);
+    }
+
+    m_childModel.triggerRepaint();
+}
+
+
+void BasePlaylistFeature::slotResetSelectedTrack() {
+    slotTrackSelected(TrackPointer());
 }

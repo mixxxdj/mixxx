@@ -8,19 +8,19 @@
 #include <QScopedPointer>
 #include <QPair>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
-#include "util.h"
-#include "util/fifo.h"
 #include "effects/effect.h"
-#include "effects/effectsbackend.h"
-#include "effects/effectchainslot.h"
 #include "effects/effectchain.h"
 #include "effects/effectchainmanager.h"
+#include "effects/effectchainslot.h"
 #include "effects/effectrack.h"
+#include "effects/effectsbackend.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
+#include "util/class.h"
+#include "util/fifo.h"
 
 class EngineEffectsManager;
 
@@ -29,7 +29,7 @@ class EffectsManager : public QObject {
   public:
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
 
-    EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig);
+    EffectsManager(QObject* pParent, UserSettingsPointer pConfig);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {

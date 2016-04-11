@@ -1,7 +1,7 @@
 /**
- * American Audio VMS4 controller script v1.10.0
+ * American Audio VMS4 controller script v2.0 for Mixxx v2.0
  * Copyright (C) 2010  Anders Gunnarsson
- * Copyright (C) 2011-2012  Sean M. Pappalardo
+ * Copyright (C) 2011-2015  Sean M. Pappalardo
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,7 @@ VMS4.hotCues = { 0x12:1, 0x13:2, 0x14:3, 0x15:4,
 
 VMS4.initControls = [   ["Channel", "hotcue_x_enabled"],
                         ["Channel", "quantize"],
-                        ["Channel", "beatsync"],
-                        ["Channel", "flanger"],
+                        ["Channel", "sync_enabled"],
                         ["Channel", "loop_in"],
                         ["Channel", "loop_out"],
                         ["Channel", "loop_enabled"],
@@ -56,23 +55,44 @@ VMS4.init = function (id) {    // called when the MIDI device is opened & set up
     // Enable soft-takeover for all direct hardware controls
     //  (Many of these are mapped in the XML directly so these have no effect.
     //  Here for completeness incase any eventually move to script.)
+    engine.softTakeover("[Master]","crossfader",true);
     engine.softTakeover("[Channel1]","rate",true);
     engine.softTakeover("[Channel1]","volume",true);
     engine.softTakeover("[Channel1]","pregain",true);
-    engine.softTakeover("[Channel1]","filterHigh",true);
-    engine.softTakeover("[Channel1]","filterMed",true);
-    engine.softTakeover("[Channel1]","filterLow",true);
-    engine.softTakeover("[Master]","crossfader",true);
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]","parameter3",true);
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]","parameter2",true);
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]","parameter1",true);
     engine.softTakeover("[Channel2]","rate",true);
     engine.softTakeover("[Channel2]","volume",true);
     engine.softTakeover("[Channel2]","pregain",true);
-    engine.softTakeover("[Channel2]","filterHigh",true);
-    engine.softTakeover("[Channel2]","filterMed",true);
-    engine.softTakeover("[Channel2]","filterLow",true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]","parameter3",true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]","parameter2",true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]","parameter1",true);
+    engine.softTakeover("[Channel3]","rate",true);
+    engine.softTakeover("[Channel3]","volume",true);
+    engine.softTakeover("[Channel3]","pregain",true);
+    engine.softTakeover("[EqualizerRack1_[Channel3]_Effect1]","parameter3",true);
+    engine.softTakeover("[EqualizerRack1_[Channel3]_Effect1]","parameter2",true);
+    engine.softTakeover("[EqualizerRack1_[Channel3]_Effect1]","parameter1",true);
+    engine.softTakeover("[Channel4]","rate",true);
+    engine.softTakeover("[Channel4]","volume",true);
+    engine.softTakeover("[Channel4]","pregain",true);
+    engine.softTakeover("[EqualizerRack1_[Channel4]_Effect1]","parameter3",true);
+    engine.softTakeover("[EqualizerRack1_[Channel4]_Effect1]","parameter2",true);
+    engine.softTakeover("[EqualizerRack1_[Channel4]_Effect1]","parameter1",true);
     engine.softTakeover("[Sampler1]","rate",true);
     engine.softTakeover("[Sampler1]","pregain",true);
     engine.softTakeover("[Sampler2]","rate",true);
     engine.softTakeover("[Sampler2]","pregain",true);
+    engine.softTakeover("[EffectRack1_EffectUnit1]","mix",true);
+    engine.softTakeover("[EffectRack1_EffectUnit1]","super1",true);
+    engine.softTakeover("[EffectRack1_EffectUnit2]","mix",true);
+    engine.softTakeover("[EffectRack1_EffectUnit2]","super1",true);
+    engine.softTakeover("[EffectRack1_EffectUnit3]","mix",true);
+    engine.softTakeover("[EffectRack1_EffectUnit4]","super1",true);
+    engine.softTakeover("[EffectRack1_EffectUnit4]","mix",true);
+    engine.softTakeover("[EffectRack1_EffectUnit4]","super1",true);
+    
 
     print("American Audio "+VMS4.id+" initialized.");
 }
@@ -101,6 +121,7 @@ VMS4.Deck.vinylButton = false;
 VMS4.Deck.cueButton = false;
 VMS4.Deck.hotCuePressed = false;
 VMS4.Deck.pitchLock = false;
+VMS4.Deck.controlEffectParameter = false;
 VMS4.Deck.effectSelect = -1;
 VMS4.Deck.sampleSelect = -1;
 
@@ -141,33 +162,6 @@ VMS4.Deck.prototype.pitchCenterHandler = function(value) {
     else {
         this.pitchLock=false;
     }
-}
-
-VMS4.Deck.prototype.effectSelectHandler = function(value) {
-    if (this.effectSelect == -1) this.effectSelect = value;
-    
-    // Control LFO period
-    var increment = 50000;
-    // Take wrap around into account
-    var wrapCount = 0;
-    if (value>=0 && value<10 && this.effectSelect>117 && this.effectSelect<=127) wrapCount+=1;
-    if (value>117 && value<=127 && this.effectSelect>=0 && this.effectSelect<10) wrapCount-=1;
-    
-    var diff = value - this.effectSelect;
-    this.effectSelect=value;
-    
-    diff += wrapCount*128;
-
-    var newValue = engine.getValue("[Flanger]","lfoPeriod")+(diff*increment);
-    if (newValue > 2000000) newValue = 2000000;
-    if (newValue < 50000) newValue = 50000;
-
-    engine.setValue("[Flanger]","lfoPeriod",newValue);
-}
-
-VMS4.Deck.prototype.effectSelectPressHandler = function(value) {
-    // Reset the effect only on press
-    if(value == ButtonState.pressed) engine.setValue("[Flanger]","lfoPeriod",1025000)
 }
 
 VMS4.Deck.prototype.jogTouchHandler = function(value) {
@@ -233,8 +227,23 @@ VMS4.Deck.prototype.keyLockButtonHandler = function(value) {
     }
 }
 
+VMS4.Deck.prototype.effectParamButtonHandler = function(value) {
+//     if(value == ButtonState.pressed) {
+//         this.controlEffectParameter=!this.controlEffectParameter;
+//         if (this.controlEffectParameter) {
+//             // Super knob
+//             this.Buttons.FXParam.setLed(LedState.on);
+//         }
+//         else {
+//             // Wet/dry
+//             this.Buttons.FXParam.setLed(LedState.off);
+//         }
+//     }
+}
+
 VMS4.Decks = {"Left":new VMS4.Deck(1,"[Channel1]"), "Right":new VMS4.Deck(2,"[Channel2]")};
 VMS4.GroupToDeck = {"[Channel1]":"Left", "[Channel2]":"Right"};
+VMS4.GroupToDeckNum = {"[Channel1]":1, "[Channel2]":2, "[Channel3]":3, "[Channel4]":4};
 
 VMS4.GetDeck = function(group) {
    try {
@@ -244,21 +253,27 @@ VMS4.GetDeck = function(group) {
    }
 }
 
+VMS4.GetDeckNum = function(group) {
+    try {
+        return VMS4.GroupToDeckNum[group];
+    } catch(ex) {
+        return null;
+    }
+}
+
 VMS4.Decks.Left.addButton("RateRange", new VMS4.Button(0x11), "rateRangeHandler");
 VMS4.Decks.Left.addButton("PitchCenter", new VMS4.Button(), "pitchCenterHandler");
 VMS4.Decks.Left.addButton("JogTouch", new VMS4.Button(), "jogTouchHandler");
-VMS4.Decks.Left.addButton("EffectSelect", new VMS4.Button(), "effectSelectHandler");
-VMS4.Decks.Left.addButton("EffectSelectPress", new VMS4.Button(), "effectSelectPressHandler");
 VMS4.Decks.Left.addButton("Vinyl", new VMS4.Button(), "vinylButtonHandler");
 VMS4.Decks.Left.addButton("KeyLock", new VMS4.Button(), "keyLockButtonHandler");
+VMS4.Decks.Left.addButton("FXParam", new VMS4.Button(0x1C), "effectParamButtonHandler");
 
 VMS4.Decks.Right.addButton("RateRange", new VMS4.Button(0x33), "rateRangeHandler");
 VMS4.Decks.Right.addButton("PitchCenter", new VMS4.Button(), "pitchCenterHandler");
 VMS4.Decks.Right.addButton("JogTouch", new VMS4.Button(), "jogTouchHandler");
-VMS4.Decks.Right.addButton("EffectSelect", new VMS4.Button(), "effectSelectHandler");
-VMS4.Decks.Right.addButton("EffectSelectPress", new VMS4.Button(), "effectSelectPressHandler");
 VMS4.Decks.Right.addButton("Vinyl", new VMS4.Button(), "vinylButtonHandler");
 VMS4.Decks.Right.addButton("KeyLock", new VMS4.Button(), "keyLockButtonHandler");
+VMS4.Decks.Right.addButton("FXParam", new VMS4.Button(0x3E), "effectParamButtonHandler");
 
 //Mapping functions
 VMS4.rate_range = function(channel, control, value, status, group) {
@@ -285,13 +300,65 @@ VMS4.pitchCenter = function(channel, control, value, status, group) {
 
 VMS4.effectSelect = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
-    deck.Buttons.EffectSelect.handleEvent(value);
+    
+    if (deck.effectSelect == -1 || isNaN(deck.effectSelect)) deck.effectSelect = value;
+    
+    // Take wrap around into account
+    var wrapCount = 0;
+    if (value>=0 && value<10 && deck.effectSelect>117 && deck.effectSelect<=127) wrapCount+=1;
+    if (value>117 && value<=127 && deck.effectSelect>=0 && deck.effectSelect<10) wrapCount-=1;
+    
+    var diff = value - deck.effectSelect;
+    deck.effectSelect=value;
+    
+    diff += wrapCount*128;
+    
+    engine.setValue("[EffectRack1_EffectUnit"+VMS4.GetDeckNum(group)+"]","chain_selector",diff);
 }
 
 VMS4.effectSelectPress = function(channel, control, value, status, group) {
-    var deck = VMS4.GetDeck(group);
-    deck.Buttons.EffectSelectPress.handleEvent(value);
+    var deckNum = VMS4.GetDeckNum(group);
+    if (value > 0x40) {
+        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"]","enabled",
+                        !engine.getValue("[EffectRack1_EffectUnit"+deckNum+"]","enabled")
+        );
+    }
 }
+
+VMS4.effectControl = function(channel, control, value, status, group) {
+    // If Parameter button is on, this becomes a super knob. Otherwise it controls wet/dry
+    var deck = VMS4.GetDeck(group);
+    var deckNum = VMS4.GetDeckNum(group);
+    if (deck.controlEffectParameter) {
+        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"]","super1",
+                        script.absoluteLin(value,0,1));
+    } else {
+        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"]","mix",
+                        script.absoluteLin(value,0,1));
+    }
+}
+
+VMS4.effectParameterButton = function(channel, control, value, status, group) {
+    var deck = VMS4.GetDeck(group);
+//     deck.Buttons.FXParam.handleEvent(group, value);
+    if(value > 0x40) {
+        var deckNum = VMS4.GetDeckNum(group);
+        deck.controlEffectParameter=!deck.controlEffectParameter;
+        if (deck.controlEffectParameter) {
+            // Super knob
+            deck.Buttons.FXParam.setLed(LedState.on);
+            // Ignore the next wet/dry value
+            engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit"+deckNum+"]","mix");
+        }
+        else {
+            // Wet/dry
+            deck.Buttons.FXParam.setLed(LedState.off);
+            // Ignore the next Super knob value
+            engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit"+deckNum+"]","super1");
+        }
+    }
+}
+
 
 VMS4.sampleSelect = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);

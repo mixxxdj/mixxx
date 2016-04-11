@@ -5,7 +5,7 @@
 #include <QList>
 #include <QDir>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 
 class MixxxKeyboard;
 class PlayerManager;
@@ -13,10 +13,11 @@ class ControllerManager;
 class Library;
 class VinylControlManager;
 class EffectsManager;
+class LaunchImage;
 
 class SkinLoader {
   public:
-    SkinLoader(ConfigObject<ConfigValue>* pConfig);
+    SkinLoader(UserSettingsPointer pConfig);
     virtual ~SkinLoader();
 
     QWidget* loadDefaultSkin(QWidget* pParent,
@@ -27,6 +28,8 @@ class SkinLoader {
                              VinylControlManager* pVCMan,
                              EffectsManager* pEffectsManager);
 
+    LaunchImage* loadLaunchImage(QWidget* pParent);
+
     QString getSkinPath();
     QList<QDir> getSkinSearchPaths();
 
@@ -36,7 +39,7 @@ class SkinLoader {
     QString getDefaultSkinPath();
     QString pickResizableSkin(QString oldSkin);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
 };
 
 

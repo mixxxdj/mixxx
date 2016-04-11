@@ -1,7 +1,7 @@
 
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
         "mixxx_deleted=0 AND fs_deleted=0";
@@ -46,6 +46,10 @@ void LibraryTableModel::setTableModel(int id) {
              m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+
+    // Set tooltip for random sorting
+    int fi = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    setHeaderData(fi, Qt::Horizontal, tr("Sort items randomly"), Qt::ToolTipRole);
 }
 
 
@@ -56,7 +60,7 @@ int LibraryTableModel::addTracks(const QModelIndex& index,
     foreach (QString fileLocation, locations) {
         fileInfoList.append(QFileInfo(fileLocation));
     }
-    QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
+    QList<TrackId> trackIds = m_trackDAO.addMultipleTracks(fileInfoList, true);
     select();
     return trackIds.size();
 }
@@ -65,7 +69,6 @@ bool LibraryTableModel::isColumnInternal(int column) {
     if ((column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_URL)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CUEPOINT)) ||
-            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED)) ||
@@ -101,4 +104,13 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_MANIPULATEBEATS
             | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
+}
+
+void LibraryTableModel::setSort(int column, Qt::SortOrder order) {
+    BaseSqlTableModel::setSort(column, order);
+
+    // Random sort easter egg, only in library view
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+        m_tableOrderBy = "ORDER BY RANDOM()";
+    }
 }

@@ -22,14 +22,14 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "util/types.h"
+#include "cachingreader.h"
+#include "preferences/usersettings.h"
+#include "control/controlvalue.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "trackinfoobject.h"
-#include "configobject.h"
-#include "rotary.h"
-#include "control/controlvalue.h"
-#include "cachingreader.h"
+#include "util/rotary.h"
+#include "util/types.h"
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -52,7 +52,6 @@ class ControlObject;
 class ControlObjectSlave;
 class ControlPushButton;
 class ControlIndicator;
-class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
@@ -104,11 +103,12 @@ class EngineBuffer : public EngineObject {
     };
   public:
     enum SeekRequest {
-        NO_SEEK,
-        SEEK_STANDARD,
-        SEEK_EXACT,
-        SEEK_PHASE
+        SEEK_NONE = 0x00,
+        SEEK_PHASE = 0x01,
+        SEEK_EXACT = 0x02,
+        SEEK_STANDARD = 0x03, // = (SEEK_EXACT | SEEK_PHASE)
     };
+    Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
     enum KeylockEngine {
         SOUNDTOUCH,
@@ -116,7 +116,7 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(QString _group, ConfigObject<ConfigValue>* _config,
+    EngineBuffer(QString _group, UserSettingsPointer _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
@@ -124,6 +124,7 @@ class EngineBuffer : public EngineObject {
 
     // Return the current rate (not thread-safe)
     double getSpeed();
+    bool getScratching();
     // Returns current bpm value (not thread-safe)
     double getBpm();
     // Returns the BPM of the loaded track around the current position (not thread-safe)
@@ -131,6 +132,7 @@ class EngineBuffer : public EngineObject {
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
+    // Queues a new seek position. Use SEEK_EXACT or SEEK_STANDARD as seekType
     void queueNewPlaypos(double newpos, enum SeekRequest seekType);
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
@@ -171,6 +173,11 @@ class EngineBuffer : public EngineObject {
         }
     }
 
+    // Request that the EngineBuffer load a track. Since the process is
+    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
+    // has completed.
+    void loadTrack(TrackPointer pTrack, bool play);
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -184,17 +191,11 @@ class EngineBuffer : public EngineObject {
     void slotControlSlip(double);
     void slotKeylockEngineChanged(double);
 
-    // Request that the EngineBuffer load a track. Since the process is
-    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
-    // has completed.
-    void slotLoadTrack(TrackPointer pTrack, bool play = false);
-
     void slotEjectTrack(double);
 
   signals:
-    void trackLoaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
-    void trackUnloaded(TrackPointer pTrack);
 
   private slots:
     void slotTrackLoading();
@@ -233,18 +234,19 @@ class EngineBuffer : public EngineObject {
     void setNewPlaypos(double playpos);
 
     void processSyncRequests();
-    void processSeek();
+    void processSeek(bool paused);
 
-    double updateIndicatorsAndModifyPlay(double v);
+    bool updateIndicatorsAndModifyPlay(bool newPlay);
     void verifyPlay();
 
     // Holds the name of the control group
     QString m_group;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
 
     LoopingControl* m_pLoopingControl;
     FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
+    FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
@@ -336,7 +338,11 @@ class EngineBuffer : public EngineObject {
     ControlObjectSlave* m_pSampleRate;
     ControlObjectSlave* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
-    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
+
+    // This ControlObjectSlaves is created as parent to this and deleted by
+    // the Qt object tree. This helps that they are deleted by the creating
+    // thread, which is required to avoid segfaults.
+    ControlObjectSlave* m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
 
@@ -371,9 +377,10 @@ class EngineBuffer : public EngineObject {
     bool m_bScalerOverride;
 
     QAtomicInt m_iSeekQueued;
+    QAtomicInt m_iSeekPhaseQueued;
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
-    ControlValueAtomic<double> m_queuedPosition;
+    ControlValueAtomic<double> m_queuedSeekPosition;
 
     // Holds the last sample value of the previous buffer. This is used when ramping to
     // zero in case of an immediate stop of the playback
@@ -404,5 +411,7 @@ class EngineBuffer : public EngineObject {
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(EngineBuffer::SeekRequests)
 
 #endif

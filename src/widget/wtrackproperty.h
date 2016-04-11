@@ -5,7 +5,7 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
 #include "widget/wlabel.h"
@@ -13,7 +13,7 @@
 class WTrackProperty : public WLabel {
     Q_OBJECT
   public:
-    WTrackProperty(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget* pParent);
+    WTrackProperty(const char* group, UserSettingsPointer pConfig, QWidget* pParent);
     virtual ~WTrackProperty();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -23,7 +23,7 @@ class WTrackProperty : public WLabel {
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
-    void slotTrackUnloaded(TrackPointer track);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private slots:
     void updateLabel(TrackInfoObject*);
@@ -34,7 +34,7 @@ class WTrackProperty : public WLabel {
     void mouseMoveEvent(QMouseEvent *event);
 
     const char* m_pGroup;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
     QString m_property;
 };

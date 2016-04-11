@@ -5,15 +5,14 @@
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
 #include "engine/sync/enginesync.h"
-#include "playermanager.h"
+#include "mixer/playermanager.h"
 
 EngineControl::EngineControl(QString group,
-                             ConfigObject<ConfigValue>* _config)
+                             UserSettingsPointer _config)
         : m_group(group),
           m_pConfig(_config),
           m_pEngineMaster(NULL),
-          m_pEngineBuffer(NULL),
-          m_numDecks(ConfigKey("[Master]", "num_decks")) {
+          m_pEngineBuffer(NULL) {
     setCurrentSample(0.0, 0.0);
 }
 
@@ -41,10 +40,9 @@ double EngineControl::getTrigger(const double,
     return kNoTrigger;
 }
 
-void EngineControl::trackLoaded(TrackPointer) {
-}
-
-void EngineControl::trackUnloaded(TrackPointer) {
+void EngineControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
 }
 
 void EngineControl::hintReader(HintVector*) {
@@ -82,7 +80,7 @@ QString EngineControl::getGroup() const {
     return m_group;
 }
 
-ConfigObject<ConfigValue>* EngineControl::getConfig() {
+UserSettingsPointer EngineControl::getConfig() {
     return m_pConfig;
 }
 

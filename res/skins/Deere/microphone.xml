@@ -12,23 +12,31 @@
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-
       <Template src="skin:microphone_talkover_button.xml">
         <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
-        <SetVariable name="talk_text">Talk<Variable name="i"/></SetVariable>
+        <SetVariable name="TooltipId">microphone_talkover</SetVariable>
+        <SetVariable name="talk_text">Talk <Variable name="i"/></SetVariable>
       </Template>
 
       <Template src="skin:vumeter.xml">
         <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
+        <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
         <SetVariable name="control">VuMeter</SetVariable>
       </Template>
 
       <Template src="skin:knob_with_button.xml">
+        <SetVariable name="TooltipId">microphone_pregain</SetVariable>
         <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
         <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="color">red</SetVariable>
+        <SetVariable name="button_TooltipId">mute</SetVariable>
         <SetVariable name="button_control">mute</SetVariable>
         <SetVariable name="label">Gain</SetVariable>
       </Template>
     </Children>
+    <Connection>
+      <ConfigKey>[Microphone<Variable name="i"/>],enabled</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

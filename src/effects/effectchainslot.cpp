@@ -1,7 +1,6 @@
 #include "effects/effectchainslot.h"
 
 #include "effects/effectrack.h"
-#include "sampleutil.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
 #include "util/math.h"

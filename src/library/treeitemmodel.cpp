@@ -45,20 +45,22 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole && role != Qt::UserRole)
+    if (role != Qt::DisplayRole && role != kDataPathRole && role != kBoldRole)
         return QVariant();
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
     // We use Qt::UserRole to ask for the datapath.
-    if (role == Qt::UserRole) {
+    if (role == kDataPathRole) {
         return item->dataPath();
+    } else if (role == kBoldRole) {
+        return item->isBold();
     }
     return item->data();
 }
 
-bool TreeItemModel::setData (const QModelIndex &a_rIndex,
-                             const QVariant &a_rValue, int a_iRole) {
+bool TreeItemModel::setData(const QModelIndex &a_rIndex,
+                            const QVariant &a_rValue, int a_iRole) {
     // Get the item referred to by this index.
     TreeItem *pItem = static_cast<TreeItem*>(a_rIndex.internalPointer());
     if (pItem == NULL) {
@@ -70,8 +72,11 @@ bool TreeItemModel::setData (const QModelIndex &a_rIndex,
     case Qt::DisplayRole:
         pItem->setData(a_rValue, pItem->dataPath());
         break;
-    case Qt::UserRole:
+    case kDataPathRole:
         pItem->setData(pItem->data(), a_rValue);
+        break;
+    case kBoldRole:
+        pItem->setBold(a_rValue.toBool());
         break;
     default:
         return false;
@@ -192,4 +197,10 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
         if (item) return item;
     }
     return m_pRootItem;
+}
+
+void TreeItemModel::triggerRepaint() {
+    QModelIndex left = index(0, 0);
+    QModelIndex right = index(rowCount() - 1, columnCount() - 1);
+    emit(dataChanged(left, right));
 }

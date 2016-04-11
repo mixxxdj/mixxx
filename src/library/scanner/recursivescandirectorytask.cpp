@@ -7,11 +7,12 @@
 #include "util/timer.h"
 
 RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
-    LibraryScanner* pScanner, const ScannerGlobalPointer scannerGlobal,
-    const QDir& dir, SecurityTokenPointer pToken)
+        LibraryScanner* pScanner, const ScannerGlobalPointer scannerGlobal,
+        const QDir& dir, SecurityTokenPointer pToken, bool scanUnhashed)
         : ScannerTask(pScanner, scannerGlobal),
           m_dir(dir),
-          m_pToken(pToken) {
+          m_pToken(pToken),
+          m_scanUnhashed(scanUnhashed) {
 }
 
 void RecursiveScanDirectoryTask::run() {
@@ -20,6 +21,10 @@ void RecursiveScanDirectoryTask::run() {
         setSuccess(false);
         return;
     }
+
+    // For making the scanner slow
+    //qDebug() << "Burn CPU";
+    //for (int i = 0;i < 1000000000; i++) asm("nop");
 
     // Note, we save on filesystem operations (and random work) by initializing
     // a QDirIterator with a QDir instead of a QString -- but it inherits its
@@ -55,12 +60,14 @@ void RecursiveScanDirectoryTask::run() {
                 possibleCovers.append(currentFileInfo);
             }
         } else {
-            // File is a directory. Add it to our list of directories to scan.
-            // Skip the iTunes Album Art Folder since it is probably a waste of
-            // time.
-            if (!m_scannerGlobal->directoryBlacklisted(currentFile)) {
-                dirsToScan.append(QDir(currentFile));
+            // File is a directory
+            if (m_scannerGlobal->directoryBlacklisted(currentFile)) {
+                // Skip blacklisted directories like the iTunes Album
+                // Art Folder since it is probably a waste of time.
+                continue;
             }
+            const QDir currentDir(currentFile);
+            dirsToScan.append(currentDir);
         }
     }
 
@@ -74,28 +81,37 @@ void RecursiveScanDirectoryTask::run() {
     int prevHash = m_scannerGlobal->directoryHashInDatabase(dirPath);
     bool prevHashExists = prevHash != -1;
 
-    // Compare the hashes, and if they don't match, rescan the files in that
-    // directory!
-    if (prevHash != newHash) {
-        // Rescan that mofo! If importing fails then the scan was cancelled so
-        // we return immediately.
-        if (!filesToImport.isEmpty()) {
-            m_pScanner->queueTask(new ImportFilesTask(m_pScanner, m_scannerGlobal,
-                                                    dirPath, newHash, prevHashExists,
-                                                    filesToImport, possibleCovers,
-                                                    m_pToken));
+    if (prevHashExists || m_scanUnhashed) {
+        // Compare the hashes, and if they don't match, rescan the files in that
+        // directory!
+        if (prevHash != newHash) {
+            // Rescan that mofo! If importing fails then the scan was cancelled so
+            // we return immediately.
+            if (!filesToImport.isEmpty()) {
+                m_pScanner->queueTask(
+                        new ImportFilesTask(m_pScanner, m_scannerGlobal, dirPath,
+                                            prevHashExists, newHash, filesToImport,
+                                            possibleCovers, m_pToken));
+            } else {
+                emit(directoryHashedAndScanned(dirPath, !prevHashExists, newHash));
+            }
         } else {
-            emit(directoryHashed(dirPath, !prevHashExists, newHash));
+            emit(directoryUnchanged(dirPath));
         }
     } else {
-        emit(directoryUnchanged(dirPath));
+        m_scannerGlobal->addUnhashedDir(m_dir, m_pToken);
     }
 
     // Process all of the sub-directories.
     foreach (const QDir& nextDir, dirsToScan) {
-        m_pScanner->queueTask(new RecursiveScanDirectoryTask(
-            m_pScanner, m_scannerGlobal, nextDir, m_pToken));
+        // Atomically test and mark the directory as scanned to avoid
+        // that the same directory is scanned multiple times by different
+        // tasks.
+        if (!m_scannerGlobal->testAndMarkDirectoryScanned(nextDir)) {
+            m_pScanner->queueTask(
+                    new RecursiveScanDirectoryTask(m_pScanner, m_scannerGlobal,
+                                                   nextDir, m_pToken, m_scanUnhashed));
+        }
     }
-
     setSuccess(true);
 }

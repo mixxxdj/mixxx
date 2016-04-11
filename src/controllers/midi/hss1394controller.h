@@ -17,6 +17,7 @@
 #include <hss1394/HSS1394.h>
 
 #include "controllers/midi/midicontroller.h"
+#include "util/duration.h"
 
 #define MIXXX_HSS1394_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/
 #define MIXXX_HSS1394_NO_DEVICE_STRING "None" /**String to display for no HSS1394 devices present */
@@ -32,8 +33,9 @@ class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
     void Disconnected();
     void Reconnected();
   signals:
-    void incomingData(unsigned char status, unsigned char control, unsigned char value);
-    void incomingData(QByteArray data);
+    void incomingData(unsigned char status, unsigned char control, unsigned char value,
+                      mixxx::Duration timestamp);
+    void incomingData(QByteArray data, mixxx::Duration timestamp);
   private:
     QString m_sName;
 };

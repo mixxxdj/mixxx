@@ -6,7 +6,7 @@
 
 #include <QObject>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
 
@@ -31,7 +31,7 @@ class PositionScratchController;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(QString group, ConfigObject<ConfigValue>* _config);
+    RateControl(QString group, UserSettingsPointer _config);
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
@@ -47,7 +47,7 @@ public:
     double calculateSpeed(double baserate, double speed, bool paused,
                          int iSamplesPerBuffer, bool* pReportScratching,
                          bool* pReportReverse);
-    double getRawRate() const;
+    double calcRateRatio() const;
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -75,26 +75,25 @@ public:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private:
     double getJogFactor() const;
     double getWheelFactor() const;
     SyncMode getSyncMode() const;
 
-    /** Set rate change of the temporary pitch rate */
+    // Set rate change of the temporary pitch rate
     void setRateTemp(double v);
-    /** Add a value to the temporary pitch rate */
+    // Add a value to the temporary pitch rate
     void addRateTemp(double v);
-    /** Subtract a value from the temporary pitch rate */
+    // Subtract a value from the temporary pitch rate
     void subRateTemp(double v);
-    /** Reset the temporary pitch rate */
+    // Reset the temporary pitch rate
     void resetRateTemp(void);
-    /** Get the 'Raw' Temp Rate */
+    // Get the 'Raw' Temp Rate
     double getTempRate(void);
 
-    /** Values used when temp and perm rate buttons are pressed */
+    // Values used when temp and perm rate buttons are pressed
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
 
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
@@ -181,7 +180,6 @@ public:
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     // Return speed for temporary rate change
     double m_dRateTempRampbackChange;
-    bool m_reverseChanged;
 };
 
 #endif /* RATECONTROL_H */

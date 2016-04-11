@@ -8,11 +8,13 @@
 #include <QAction>
 #include <QList>
 #include <QPair>
+#include <QSet>
 #include <QString>
 
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "trackinfoobject.h"
 
 class WLibrary;
 class MixxxKeyboard;
@@ -24,7 +26,7 @@ class BasePlaylistFeature : public LibraryFeature {
     Q_OBJECT
   public:
     BasePlaylistFeature(QObject* parent,
-                        ConfigObject<ConfigValue>* pConfig,
+                        UserSettingsPointer pConfig,
                         TrackCollection* pTrackCollection,
                         QString rootViewName);
     virtual ~BasePlaylistFeature();
@@ -36,7 +38,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
   signals:
     void showPage(const QUrl& page);
-    void analyzeTracks(QList<int>);
+    void analyzeTracks(QList<TrackId>);
 
   public slots:
     virtual void activate();
@@ -45,6 +47,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void htmlLinkClicked(const QUrl& link);
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
+    virtual void slotPlaylistContentChanged(int playlistId) = 0;
     virtual void slotPlaylistTableRenamed(int playlistId, QString a_strName) = 0;
     void slotCreatePlaylist();
 
@@ -57,10 +60,13 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
+    // Copy all of the tracks in a playlist to a new directory.
+    void slotExportTrackFiles();
     void slotAnalyzePlaylist();
 
   protected:
     virtual QModelIndex constructChildModel(int selected_id);
+    virtual void updateChildModel(int selected_id);
     virtual void clearChildModel();
     virtual void buildPlaylistList() = 0;
     virtual void decorateChild(TreeItem *pChild, int playlist_id) = 0;
@@ -71,7 +77,7 @@ class BasePlaylistFeature : public LibraryFeature {
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
@@ -84,15 +90,22 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pLockPlaylistAction;
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
+    QAction *m_pExportTrackFilesAction;
     QAction *m_pDuplicatePlaylistAction;
     QAction *m_pAnalyzePlaylistAction;
     QList<QPair<int, QString> > m_playlistList;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
+    TrackPointer m_pSelectedTrack;
+
+  private slots:
+    void slotTrackSelected(TrackPointer pTrack);
+    void slotResetSelectedTrack();
 
   private:
     virtual QString getRootViewHtml() const = 0;
 
+    QSet<int> m_playlistsSelectedTrackIsIn;
     QString m_rootViewName;
 };
 

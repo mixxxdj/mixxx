@@ -9,9 +9,10 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sidechain/enginerecord.h"
 #include "controlpushbutton.h"
+#include "controlobjectslave.h"
 #include "engine/enginemaster.h"
 
-RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine)
+RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
         : m_pConfig(pConfig),
           m_recordingDir(""),
           m_recording_base_file(""),
@@ -26,7 +27,7 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
     connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleRecording(double)));
     m_recReadyCO = new ControlObject(ConfigKey(RECORDING_PREF_KEY, "status"));
-    m_recReady = new ControlObjectThread(m_recReadyCO->getKey());
+    m_recReady = new ControlObjectSlave(m_recReadyCO->getKey(), this);
 
     m_split_size = getFileSplitSize();
 
@@ -45,11 +46,9 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
     }
 }
 
-RecordingManager::~RecordingManager()
-{
+RecordingManager::~RecordingManager() {
     qDebug() << "Delete RecordingManager";
 
-    delete m_recReady;
     delete m_recReadyCO;
     delete m_pToggleRecording;
 }
@@ -110,13 +109,13 @@ void RecordingManager::startRecording(bool generateFileName) {
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), new_base_filename +".cue");
         m_recordingFile = QFileInfo(m_recordingLocation).fileName();
     }
-    m_recReady->slotSet(RECORD_READY);
+    m_recReady->set(RECORD_READY);
 }
 
 void RecordingManager::stopRecording()
 {
     qDebug() << "Recording stopped";
-    m_recReady->slotSet(RECORD_OFF);
+    m_recReady->set(RECORD_OFF);
     m_recordingFile = "";
     m_recordingLocation = "";
     m_iNumberOfBytesRecorded = 0;

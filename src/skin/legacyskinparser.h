@@ -7,7 +7,7 @@
 #include <QDomElement>
 #include <QMutex>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "skin/skinparser.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/tooltips.h"
@@ -22,11 +22,13 @@ class ControllerManager;
 class SkinContext;
 class WLabel;
 class ControlObject;
+class LaunchImage;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
-    LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
+    LegacySkinParser();
+    LegacySkinParser(UserSettingsPointer pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
                      Library* pLibrary, VinylControlManager* pVCMan,
@@ -35,6 +37,8 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     virtual bool canParse(QString skinPath);
     virtual QWidget* parseSkin(QString skinPath, QWidget* pParent);
+
+    LaunchImage* parseLaunchImage(QString skinPath, QWidget* pParent);
 
     // Legacy support for looking up the scheme list.
     static QList<QString> getSchemeList(QString qSkinPath);
@@ -49,10 +53,6 @@ class LegacySkinParser : public QObject, public SkinParser {
     static QDomElement openSkin(QString skinPath);
 
     QList<QWidget*> parseNode(QDomElement node);
-
-    // Support for various legacy behavior
-    void parseColorSchemes(QDomElement node);
-    bool compareConfigKeys(QDomNode node, QString key);
 
     // Load the given template from file and return its document element.
     QDomElement loadTemplate(const QString& path);
@@ -100,6 +100,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseSearchBox(QDomElement node);
     QWidget* parseLibrary(QDomElement node);
     QWidget* parseLibrarySidebar(QDomElement node);
+    QWidget* parseBattery(QDomElement node);
     QWidget* parseCoverArt(QDomElement node);
 
     // Renders a template.
@@ -119,11 +120,13 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     QString lookupNodeGroup(QDomElement node);
     static const char* safeChannelString(QString channelStr);
-    ControlObject* controlFromConfigNode(QDomElement element,
+    ControlObject* controlFromConfigNode(const QDomElement& element,
                                          const QString& nodeName,
                                          bool* created);
 
-    ConfigObject<ConfigValue>* m_pConfig;
+    QString parseLaunchImageStyle(QDomNode node);
+
+    UserSettingsPointer m_pConfig;
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     ControllerManager* m_pControllerManager;

@@ -12,10 +12,11 @@
 #include <QCache>
 #include <QString>
 
-#include "configobject.h"
+#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
 #include "trackinfoobject.h"
-#include "util.h"
+#include "util/class.h"
+#include "util/memory.h"
 
 #define LIBRARY_TABLE "library"
 
@@ -79,13 +80,14 @@ class LibraryHashDAO;
 // TrackPointers themselves within the QCache by holding a strong reference to
 // TrackPointer (and thereby serving it out of the weak pointer track cache) up
 // until the track has been saved to the database.
-class TrackCacheItem : public QObject {
+class RecentTrackCacheItem : public QObject {
     Q_OBJECT
   public:
-    TrackCacheItem(TrackPointer pTrack);
-    virtual ~TrackCacheItem();
+    explicit RecentTrackCacheItem(
+            const TrackPointer& pTrack);
+    virtual ~RecentTrackCacheItem();
 
-    TrackPointer getTrack() {
+    const TrackPointer& getTrack() const {
         return m_pTrack;
     }
 
@@ -104,32 +106,38 @@ class TrackDAO : public QObject, public virtual DAO {
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
              AnalysisDao& analysisDao, LibraryHashDAO& libraryHashDao,
-             ConfigObject<ConfigValue>* pConfig = NULL);
+             UserSettingsPointer pConfig);
     virtual ~TrackDAO();
 
     void finish();
     void setDatabase(QSqlDatabase& database) { m_database = database; }
 
     void initialize();
-    int getTrackId(const QString& absoluteFilePath);
-    QList<int> getTrackIds(const QList<QFileInfo>& files);
+
+    TrackId getTrackId(const QString& absoluteFilePath);
+    QList<TrackId> getTrackIds(const QList<QFileInfo>& files);
+
     bool trackExistsInDatabase(const QString& absoluteFilePath);
-    // Returns a set of all track locations in the library.
-    QSet<QString> getTrackLocations();
-    QString getTrackLocation(const int id);
-    int addTrack(const QString& file, bool unremove);
-    int addTrack(const QFileInfo& fileInfo, bool unremove);
-    void addTracksPrepare();
-    bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
-    void addTracksFinish(bool rollback=false);
-    QList<int> addTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
-    void hideTracks(const QList<int>& ids);
-    void purgeTracks(const QList<int>& ids);
-    void purgeTracks(const QString& dir);
-    void unhideTracks(const QList<int>& ids);
 
     // WARNING: Only call this from the main thread instance of TrackDAO.
-    TrackPointer getTrack(const int id, const bool cacheOnly=false) const;
+    TrackPointer getTrack(TrackId trackId, const bool cacheOnly=false) const;
+
+    // Returns a set of all track locations in the library.
+    QSet<QString> getTrackLocations();
+    QString getTrackLocation(TrackId trackId);
+
+    TrackPointer addSingleTrack(const QFileInfo& fileInfo, bool unremove);
+    QList<TrackId> addMultipleTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
+
+    void addTracksPrepare();
+    TrackPointer addTracksAddFile(const QFileInfo& fileInfo, bool unremove);
+    TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
+    void addTracksFinish(bool rollback = false);
+
+    void hideTracks(const QList<TrackId>& trackIds);
+    void purgeTracks(const QList<TrackId>& trackIds);
+    void purgeTracks(const QString& dir);
+    void unhideTracks(const QList<TrackId>& trackIds);
 
     // Fetches trackLocation from the database or adds it. If searchForCoverArt
     // is true, searches the track and its directory for cover art via
@@ -141,7 +149,6 @@ class TrackDAO : public QObject, public virtual DAO {
                                bool processCoverArt,
                                bool* pAlreadyInLibrary);
 
-    bool isDirty(int trackId);
     void markTracksAsMixxxDeleted(const QString& dir);
 
     // Scanning related calls. Should be elsewhere or private somehow.
@@ -150,17 +157,23 @@ class TrackDAO : public QObject, public virtual DAO {
     void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);
-    void detectMovedFiles(QSet<int>* tracksMovedSetNew, QSet<int>* tracksMovedSetOld);
-    void verifyRemainingTracks();
+    bool detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
+                          QSet<TrackId>* pTracksMovedSetNew,
+                          const QStringList& addedTracks,
+                          volatile const bool* pCancel);
+
+    bool verifyRemainingTracks(
+            const QStringList& libraryRootDirs,
+            volatile const bool* pCancel);
     void detectCoverArtForUnknownTracks(volatile const bool* pCancel,
-                                        QSet<int>* pTracksChanged);
+                                        QSet<TrackId>* pTracksChanged);
 
   signals:
-    void trackDirty(int trackId) const;
-    void trackClean(int trackId);
-    void trackChanged(int trackId);
-    void tracksAdded(QSet<int> trackIds);
-    void tracksRemoved(QSet<int> trackIds);
+    void trackDirty(TrackId trackId) const;
+    void trackClean(TrackId trackId) const;
+    void trackChanged(TrackId trackId);
+    void tracksAdded(QSet<TrackId> trackIds);
+    void tracksRemoved(QSet<TrackId> trackIds);
     void dbTrackAdded(TrackPointer pTrack);
     void progressVerifyTracksOutside(QString path);
     void progressCoverArt(QString file);
@@ -180,8 +193,8 @@ class TrackDAO : public QObject, public virtual DAO {
     void clearCache();
 
     void databaseTrackAdded(TrackPointer pTrack);
-    void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
-    void databaseTracksChanged(QSet<int> tracksChanged);
+    void databaseTracksMoved(QSet<TrackId> tracksMovedSetOld, QSet<TrackId> tracksMovedSetNew);
+    void databaseTracksChanged(QSet<TrackId> tracksChanged);
 
   private slots:
     void slotTrackDirty(TrackInfoObject* pTrack);
@@ -190,17 +203,10 @@ class TrackDAO : public QObject, public virtual DAO {
     void slotTrackReferenceExpired(TrackInfoObject* pTrack);
 
   private:
-    bool isTrackFormatSupported(TrackInfoObject* pTrack) const;
+    TrackPointer getTrackFromDB(TrackId trackId) const;
+
     void saveTrack(TrackInfoObject* pTrack);
-    void updateTrack(TrackInfoObject* pTrack);
-    void addTrack(TrackInfoObject* pTrack, bool unremove);
-    TrackPointer getTrackFromDB(const int id) const;
-    QString absoluteFilePath(QString location);
-
-    void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack);
-    void bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocationId);
-
-    void writeAudioMetaData(TrackInfoObject* pTrack);
+    bool updateTrack(TrackInfoObject* pTrack);
 
     QSqlDatabase& m_database;
     CueDAO& m_cueDao;
@@ -208,11 +214,16 @@ class TrackDAO : public QObject, public virtual DAO {
     CrateDAO& m_crateDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
-    ConfigObject<ConfigValue>* m_pConfig;
+    UserSettingsPointer m_pConfig;
     // Mutex that protects m_sTracks.
     static QMutex m_sTracksMutex;
     // Weak pointer cache of active tracks.
-    static QHash<int, TrackWeakPointer> m_sTracks;
+    static QHash<TrackId, TrackWeakPointer> m_sTracks;
+
+    void cacheRecentTrack(
+            TrackId trackId,
+            const TrackPointer& pTrack) const;
+
     // "Recent tracks" cache -- holds strong references to recently used
     // tracks. When a track is expired, calls saveTrack(TrackPointer) without
     // dropping the strong reference to the track. This prevents a race
@@ -220,19 +231,19 @@ class TrackDAO : public QObject, public virtual DAO {
     // getTrack calls made by BaseSqlTableModel return null and serve stale
     // results from BaseTrackCache before the newly expired TrackPointer has
     // been saved to the database.
-    mutable QCache<int, TrackCacheItem> m_recentTracksCache;
+    mutable QCache<TrackId, RecentTrackCacheItem> m_recentTracksCache;
 
-    QSqlQuery* m_pQueryTrackLocationInsert;
-    QSqlQuery* m_pQueryTrackLocationSelect;
-    QSqlQuery* m_pQueryLibraryInsert;
-    QSqlQuery* m_pQueryLibraryUpdate;
-    QSqlQuery* m_pQueryLibrarySelect;
-    ScopedTransaction* m_pTransaction;
+    std::unique_ptr<QSqlQuery> m_pQueryTrackLocationInsert;
+    std::unique_ptr<QSqlQuery> m_pQueryTrackLocationSelect;
+    std::unique_ptr<QSqlQuery> m_pQueryLibraryInsert;
+    std::unique_ptr<QSqlQuery> m_pQueryLibraryUpdate;
+    std::unique_ptr<QSqlQuery> m_pQueryLibrarySelect;
+    std::unique_ptr<ScopedTransaction> m_pTransaction;
     int m_trackLocationIdColumn;
     int m_queryLibraryIdColumn;
     int m_queryLibraryMixxxDeletedColumn;
 
-    QSet<int> m_tracksAddedSet;
+    QSet<TrackId> m_tracksAddedSet;
 
     DISALLOW_COPY_AND_ASSIGN(TrackDAO);
 };

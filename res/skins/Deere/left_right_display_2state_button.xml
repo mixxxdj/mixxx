@@ -9,7 +9,12 @@
     state_X_text:
     state_X_pressed:
     state_X_unpressed:
-
+    LeftClickIsPushButton:  true / false
+                            Defines the button mode.
+                            true = PUSH button
+                            false = TOOGLE or TRIGGER, as automatically set by
+                            the control connected to the respective button.
+    RightClickIsPushButton: See above. true / false
 -->
 <Template>
   <PushButton>
@@ -19,19 +24,19 @@
     <MaximumSize><Variable name="MaximumSize"/></MaximumSize>
     <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
     <NumberStates>2</NumberStates>
-    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-    <RightClickIsPushButton>true</RightClickIsPushButton>
+    <LeftClickIsPushButton><Variable name="LeftClickIsPushButton"/></LeftClickIsPushButton>
+    <RightClickIsPushButton><Variable name="RightClickIsPushButton"/></RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
-      <Pressed><Variable name="state_0_pressed"/></Pressed>
-      <Unpressed><Variable name="state_0_pressed"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT"><Variable name="state_0_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"><Variable name="state_0_unpressed"/></Unpressed>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="state_1_text"/></Text>
-      <Pressed><Variable name="state_1_pressed"/></Pressed>
-      <Unpressed><Variable name="state_1_pressed"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT"><Variable name="state_1_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"><Variable name="state_1_unpressed"/></Unpressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="left_connection_control"/></ConfigKey>
