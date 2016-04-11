@@ -118,28 +118,25 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
     if (i != m_scriptWrappedFunctionCache.end()) {
         wrappedFunction = i.value();
     } else {
-        if (!syntaxIsValid(codeSnippet)) {
-            return m_pEngine->evaluate("(function () {})");
-        }
         QScriptValue function = m_pEngine->evaluate(codeSnippet);
-        if (checkException()) {
-            return m_pEngine->evaluate("(function () {})");
+        if (!syntaxIsValid(codeSnippet)) {
+            wrappedFunction = m_pEngine->evaluate(
+                "(function () { print('Syntax error in: "
+                + codeSnippet + "'); })");
+        } else if (checkException()) {
+            wrappedFunction = m_pEngine->evaluate(
+                "(function () { print('Exception occured evaluating: "
+                + codeSnippet + "'); })");
+        } else {
+            QStringList wrapperArgList;
+            for (int i = 1; i <= numberOfArgs; i++) {
+                wrapperArgList << QString("arg%1").arg(i);
+            }
+            QString wrapperArgs = wrapperArgList.join(",");
+            QString wrappedCode = "(function (" + wrapperArgs + ") { (" +
+                                codeSnippet + ")(" + wrapperArgs + "); })";
+            wrappedFunction = m_pEngine->evaluate(wrappedCode);
         }
-
-        QStringList wrapperArgList;
-        for (int i = 1; i <= numberOfArgs; i++) {
-            wrapperArgList << QString("arg%1").arg(i);
-        }
-        QString wrapperArgs = wrapperArgList.join(",");
-        QString wrappedCode = "(function (" + wrapperArgs + ") { (" +
-                              codeSnippet + ")(" + wrapperArgs + "); })";
-        wrappedFunction = m_pEngine->evaluate(wrappedCode);
-
-        if (checkException()) {
-            // There will be an exception if the codeSnippet didn't evaluate to a function
-            return m_pEngine->evaluate("(function () {})");
-        }
-
         m_scriptWrappedFunctionCache[codeSnippet] = wrappedFunction;
     }
     return wrappedFunction;
