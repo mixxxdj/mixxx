@@ -1272,6 +1272,10 @@ QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
 WSearchLineEdit { padding: 2px; border: 1px solid #656565; background: #181818; color: #cfb32c; }
 WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; background: #0f0f0f; color: #eece33;}
 
+#SidebarContainer{
+    margin-top: -5px;
+}
+
 /* cover art */
 WCoverArt { background: transparent; color: #ACACAC; }
 

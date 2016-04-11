@@ -35,6 +35,7 @@
                                         <Children>
                                             <!--Library Tree View-->
                                             <WidgetGroup>
+                                                <ObjectName>SidebarContainer</ObjectName>
                                                 <Size>1min,50min</Size>
                                                 <Layout>vertical</Layout>
                                                 <Children>
