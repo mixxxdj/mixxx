@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<!-- Numark Mixtrack 3 and Pro 3 MIDI preset v1.3 -->
+<!-- Numark Mixtrack (Pro) 3 MIDI preset v1.3 -->
 <MixxxControllerPreset mixxxVersion="1.12.0+" schemaVersion="1">
     <info>
-	<name>Numark Mixtrack Pro 3</name>
+	<name>Numark Mixtrack (Pro) 3</name>
 	<author>Stéphane Morin</author>
 	<description>The Numark Mixtrack 3 and Numark Mixtrack Pro 3 are the same controller except that the Pro version has an integrated sound card.</description>
         <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro_3</wiki>

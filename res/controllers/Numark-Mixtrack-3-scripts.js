@@ -145,7 +145,9 @@ var intervalsPerRev = 1200,
  *2016-04-08 (1.3 ) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/905
  *            - changed skin option to use boolean for 
  *              DarkMetalSkin. It requires different code to expand library view.
- *            - removed trailing empty lines at end of script              
+ *            - removed trailing empty lines at end of script
+ *            - line 1749, change .75 to 0.75 in var gammaOutputRange 
+ *            - added spacing in numerous place for easier reading
  *
  * To do - (maybe..)
  * ----------------
@@ -268,8 +270,8 @@ var PADcolors = {
 // Utilities
 // =====================================================================
 
-function printInfo(string){
-    if(NumarkMixtrack3.debug) print(string);
+function printInfo(string) {
+    if (NumarkMixtrack3.debug) print(string);
 }
 
 function pauseScript(ms) {
@@ -414,14 +416,14 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // so we don't need this part  if flashcount=1
         // permanent timer
         
-        this.flashTimer = engine.beginTimer( num_ms_on + num_ms_off, function(){ myself.flashOnceOn(false); } );
+        this.flashTimer = engine.beginTimer( num_ms_on + num_ms_off, function() { myself.flashOnceOn(false); } );
     }
     if (flashCount > 1) {
         // flashcount>0 , means temporary flash, first flash already done,
         // so we don't need this part  if flashcount=1
         // temporary timer. The end of this timer stops the permanent flashing
         
-        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, function(){ myself.Stopflash(relight); }, true);
+        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, function() { myself.Stopflash(relight); }, true);
     }
 };
 
@@ -476,7 +478,7 @@ LED.prototype.flashOnceOn = function(relight) {
     sendShortMsg(this.control, this.midino, this.valueon);
     pauseScript(scriptpause);
     this.flashOnceDuration = this.num_ms_on;        
-    this.flashOnceTimer = engine.beginTimer(this.num_ms_on - scriptpause, function(){ myself.flashOnceOff(relight); }, true);
+    this.flashOnceTimer = engine.beginTimer(this.num_ms_on - scriptpause, function() { myself.flashOnceOff(relight); }, true);
 };
 
 // private :call back function (called in flashOnceOn() )
@@ -539,7 +541,7 @@ SingleDoubleBtn.prototype.ButtonDown = function(channel, control, value, status,
     
         this.ButtonTimer =
             engine.beginTimer(this.DoublePressTimeOut,
-                              function(){ myself.ButtonDecide(); }, true);
+                              function() { myself.ButtonDecide(); }, true);
         this.ButtonCount = 1;
     } else { // 2nd press (before timer's out)
         engine.stopTimer(this.ButtonTimer);
@@ -612,7 +614,7 @@ LongShortBtn.prototype.ButtonDown = function(channel, control, value, status, gr
     this.status = status;
     this.group = group;
     this.ButtonLongPress = false;
-    this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold, function(){ myself.ButtonAssertLongPress(); }, true);
+    this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold, function() { myself.ButtonAssertLongPress(); }, true);
 };
 
 LongShortBtn.prototype.ButtonUp = function() {
@@ -712,11 +714,11 @@ LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value, stat
         this.ButtonLongPress = false;
         this.ButtonLongPressTimer =
             engine.beginTimer(this.LongPressThreshold,
-                              function(){ myself.ButtonAssertLongPress(); },
+                              function() { myself.ButtonAssertLongPress(); },
                               true);
         this.ButtonTimer =
             engine.beginTimer(this.DoublePressTimeOut,
-                              function(){ myself.ButtonAssert1Press(); },
+                              function() { myself.ButtonAssert1Press(); },
                               true);
     } else if (this.ButtonCount === 1) { // 2nd press (before short timer's out)
         // stop timers...           
@@ -861,7 +863,7 @@ NumarkMixtrack3.SamplerBank.prototype.play = function(samplerindex,value) {
     
     if (value) {
         if (!isplaying) {
-            if(deck.shiftKey){
+            if (deck.shiftKey) {
                 //Shift is on, play sampler with no Sync
                 engine.setValue("[Sampler" + samplerindex + "]", "beatsync", 0);
                 engine.setValue("[Sampler" + samplerindex + "]", "cue_gotoandplay", 1);
@@ -973,7 +975,7 @@ NumarkMixtrack3.initLEDsObjects = function() {
         new LED(0x92,leds.PADsampler8); 
         
         
-    for(i=1;i<=2;i++) {
+    for (i=1;i<=2;i++) {
         NumarkMixtrack3.decks["D"+i].LEDs.headphones =
             new LED(0x90+ledCategories.master,leds.headphones1-1+i);
         NumarkMixtrack3.decks["D"+i].LEDs.jogWheelsInScratchMode =
@@ -1024,7 +1026,7 @@ NumarkMixtrack3.initLEDsObjects = function() {
 
 NumarkMixtrack3.initButtonsObjects = function() {
     var i;
-    for(i=1;i<=2;i++) {
+    for (i=1;i<=2;i++) {
         NumarkMixtrack3.decks["D"+i].LoadButtonControl =
             new LongShortBtn(NumarkMixtrack3.OnLoadButton);
         NumarkMixtrack3.decks["D"+i].SyncButtonControl =
@@ -1058,11 +1060,11 @@ NumarkMixtrack3.init = function(id,debug) {
     // Turn ON all the lights: the only way PADMode Leds light up 
     NumarkMixtrack3.AllLeds.onOff(ON);
     // Initialise some others (PAD LEDs)
-    for(i=1;i<=2;i++) {
-        for(j=1;j<=4;j++) {
+    for (i=1;i<=2;i++) {
+        for (j=1;j<=4;j++) {
             NumarkMixtrack3.decks["D"+i].LEDs["PADloop"+j].onOff(PADcolors.black);
         }
-    for(k=1;k<=8;k++) { 
+    for (k=1;k<=8;k++) { 
         NumarkMixtrack3.decks["D"+k].LEDs["PADsampler"+k].onOff(PADcolors.black);
         }
         NumarkMixtrack3.decks["D"+i].LEDs.jogWheelsInScratchMode.onOff(OFF);
@@ -1177,11 +1179,11 @@ NumarkMixtrack3.init = function(id,debug) {
     
     var loopsize = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16];
     var l;
-        for(l=0;l<loopsize.length;l++) {  
+        for (l=0;l<loopsize.length;l++) {  
         engine.connectControl("[Channel1]", "beatloop_" + loopsize[l] + "_enabled", "NumarkMixtrack3.OnPADLoopButtonChange");
         } 
 
-        for(k=0;k<loopsize.length;k++) {  
+        for (k=0;k<loopsize.length;k++) {  
         engine.connectControl("[Channel2]", "beatloop_" + loopsize[k] + "_enabled", "NumarkMixtrack3.OnPADLoopButtonChange");
         }
     
@@ -1226,11 +1228,11 @@ NumarkMixtrack3.init = function(id,debug) {
     engine.trigger("[Recording]", "status");
 
     var m;
-        for(m=0;m<loopsize.length;m++) {  
+        for (m=0;m<loopsize.length;m++) {  
         engine.trigger("[Channel1]", "beatloop_" + loopsize[m] + "_enabled");
         }
     var n;
-        for(n=0;n<loopsize.length;n++) {  
+        for (n=0;n<loopsize.length;n++) {  
         engine.trigger("[Channel2]", "beatloop_" + loopsize[n] + "_enabled");
         }   
     
@@ -1336,27 +1338,27 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
     var expand;
     var contract;
 
-    if (DarkMetalSkin){
-		LibraryGroup = "[Hifi]";
-		LibraryCommand = "show";
-		expand = 0;
-		contract = 1;
-	} else {
-		LibraryGroup = "[Master]";
-		LibraryCommand = "maximize_library";
-		expand = 1;
-		contract = 0;	
-	}
+    if (DarkMetalSkin) {
+        LibraryGroup = "[Hifi]";
+        LibraryCommand = "show";
+        expand = 0;
+        contract = 1;
+    } else {
+        LibraryGroup = "[Master]";
+        LibraryCommand = "maximize_library";
+        expand = 1;
+        contract = 0;   
+    }
     
     if (shifted) {
         // SHIFT+ BROWSE push : directory mode -- > Open/Close selected side bar item
         engine.setValue(group, "ToggleSelectedSidebarItem", true);
     } else {
         // Browse push : maximize/minimize library view
-        if (value === ON){
+        if (value === ON) {
             
             NumarkMixtrack3.libraryMode = !NumarkMixtrack3.libraryMode;         
-            if (maxview){
+            if (maxview) {
                 engine.setValue(LibraryGroup,LibraryCommand,expand);
                 
             } else {
@@ -1375,9 +1377,9 @@ NumarkMixtrack3.PadModeButton = function(channel, control, value, status, group)
 
 NumarkMixtrack3.PadModeButton = !NumarkMixtrack3.PadModeButton;
     
-    if(value === DOWN) {
+    if (value === DOWN) {
         //ensure all LEDs are ON (default)
-        if (decknum === 1){
+        if (decknum === 1) {
             NumarkMixtrack3.decks["D1"].LEDs["PADsampler1"].onOff(PADcolors.purple);
             NumarkMixtrack3.decks["D2"].LEDs["PADsampler2"].onOff(PADcolors.purple);
             NumarkMixtrack3.decks["D3"].LEDs["PADsampler3"].onOff(PADcolors.purple);
@@ -1388,7 +1390,7 @@ NumarkMixtrack3.PadModeButton = !NumarkMixtrack3.PadModeButton;
             NumarkMixtrack3.decks["D1"].LEDs["PADloop4"].onOff(PADcolors.yellow);
         }
         
-        if (decknum === 2){
+        if (decknum === 2) {
             NumarkMixtrack3.decks["D5"].LEDs["PADsampler5"].onOff(PADcolors.purple);
             NumarkMixtrack3.decks["D6"].LEDs["PADsampler6"].onOff(PADcolors.purple);
             NumarkMixtrack3.decks["D7"].LEDs["PADsampler7"].onOff(PADcolors.purple);
@@ -1403,14 +1405,14 @@ NumarkMixtrack3.PadModeButton = !NumarkMixtrack3.PadModeButton;
     // Now check which one should be blinking
     // Need to check if loop is enabled; if yes, stop it , else start it 
     //Autoloop
-    if (value === DOWN){    
-        for(i=0;i<loopsize.length;i++){  
+    if (value === DOWN) {    
+        for (i=0;i<loopsize.length;i++) {  
             var index = i+1;
-            if (index >4){
+            if (index >4) {
                 index = index - 4;
             }
             
-            if(engine.getValue(group, "beatloop_" + loopsize[i] + "_enabled")){ 
+            if (engine.getValue(group, "beatloop_" + loopsize[i] + "_enabled")) { 
             deck.LEDs["PADloop" + index].flashOn(300, PADcolors.yellow, 300);
             }   
         }
@@ -1460,7 +1462,7 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
     //deck.faderstart = false;
     var groupOff;
     var deckOff;
-    if (decknum === 1){
+    if (decknum === 1) {
         groupOff = "[Channel2]";
         deckOff = NumarkMixtrack3.decks["D2"];
     }else{
@@ -1472,7 +1474,7 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
         deck.LEDs["headphones"].onOff(ON);
         deck.faderstart = false;
         
-        if(smartPFL){
+        if (smartPFL) {
             print("smartPFL" +smartPFL);
             engine.setValue(group, 'pfl', true);
             engine.setValue(groupOff, 'pfl', false);
@@ -1481,7 +1483,7 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
         }
         
                 
-        if (deck.shiftKey){
+        if (deck.shiftKey) {
             // SHIFT + Load = fader start activated
         
             deck.faderstart = true;
@@ -1660,13 +1662,13 @@ NumarkMixtrack3.WheelTouch = function(channel, control, value, status, group) {
     if (value === DOWN) {
         printInfo("   WheelTouch = DOWN (on) ");    
                 
-        if(deck.jogWheelsInScratchMode){
+        if (deck.jogWheelsInScratchMode) {
         
         engine.scratchEnable(decknum, intervalsPerRev, rpm, alpha, beta);
             
             // Wheel is On - test for Shift Key");
     
-            if(deck.shiftKey && iCutEnabled){ 
+            if (deck.shiftKey && iCutEnabled) { 
                 printInfo("   Wheel ON - Shift true - ICUT = true");
                 deck.iCutStatus = true;
                 deck.Jog.iCUT.On();
@@ -1716,23 +1718,23 @@ NumarkMixtrack3.WheelTouch = function(channel, control, value, status, group) {
     - Scratching = deck.touch = true */
     
 
-    if (deck.iCutStatus){
+    if (deck.iCutStatus) {
         printInfo("   WheelMove - ICUT = true - adjustedJog =" +adjustedJog +" value="+value);  
         deck.Jog.iCUT.On();
         deck.Jog.iCUT.FaderCut(adjustedJog);
     } 
     
     // the 2 conditions below may not be required as the simply default to 
-    if (deck.touch){
+    if (deck.touch) {
         printInfo("   WheelMove - Scratching = true - adjustedJog =" +adjustedJog+" value="+value);
         // scratch is enabled in wheel touch, we just record ticks
     } 
     
-    if (!deck.seekingfast && !deck.iCutStatus && !deck.touch){
+    if (!deck.seekingfast && !deck.iCutStatus && !deck.touch) {
         printInfo("   WheelMove - Jog / Pitch bend");
     }
     
-    if (deck.seekingfast){
+    if (deck.seekingfast) {
         printInfo("   WheelMove - seekingfast = true - adjustedJog =" +adjustedJog+" value="+value);
         engine.setValue(deck.Jog.group, "beatjump", adjustedJog * 2);
     }
@@ -1746,7 +1748,7 @@ NumarkMixtrack3.WheelTouch = function(channel, control, value, status, group) {
         var gammaInputRange = 13; // Max jog speed
         var maxOutFraction = 0.8; // Where on the curve it should peak; 0.5 is half-way
         var sensitivity = 0.5; // Adjustment gamma
-        var gammaOutputRange = .75; // Max rate change
+        var gammaOutputRange = 0.75; // Max rate change
 
         adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(
                 adjustedJog) / (gammaInputRange * maxOutFraction),
@@ -1797,11 +1799,11 @@ NumarkMixtrack3.SamplerButton = function(channel, control, value, status, group)
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var padindex = decknum;
 
-    if (value=== DOWN){
+    if (value=== DOWN) {
         NumarkMixtrack3.samplers.play(padindex,true);
     }
     
-    if (value === OFF && PADSampleButtonHold){
+    if (value === OFF && PADSampleButtonHold) {
     NumarkMixtrack3.samplers.play(padindex,false);
     }   
 };
@@ -1823,7 +1825,7 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
     var loopCommand2; //enable loop
     var loopCommand3; //stop loop
     
-    if (beatlooprollActivate){
+    if (beatlooprollActivate) {
         loopCommand1 = "beatlooproll_" + loopsize + "_activate";
         loopCommand2 = "beatlooproll_" + loopsize + "_activate";
         loopCommand3 = "beatlooproll_" + loopsize + "_activate";
@@ -1842,7 +1844,7 @@ NumarkMixtrack3.PADLoopButton = function(channel, control, value, status, group)
             deck.LEDs["PADloop3"].onOff(PADcolors.yellow);
             deck.LEDs["PADloop4"].onOff(PADcolors.yellow);  
             
-        if (engine.getValue(group,loopCommand1)){
+        if (engine.getValue(group,loopCommand1)) {
             // Loop is active, turn it off
             print("LED ON - loop OFF "+ padindex);
             engine.setValue(group,loopCommand3, trueFalse);
@@ -1988,9 +1990,9 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     var i,j;
     var knobValue;
     
-    if (!BeatKnobAsSamplerVolume){
+    if (!BeatKnobAsSamplerVolume) {
         // Default configuration option, use knob for Beatgrid only
-        if (value-64 > 0){
+        if (value-64 > 0) {
             knobValue = value-128;
         } else {
             knobValue = value;
@@ -2013,7 +2015,7 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
     } else {
         // Option: use BeatKnob to adjust Sampler volumes
         if (deck.shiftKey) {    
-            if (value-64 > 0){
+            if (value-64 > 0) {
                 knobValue = value-128;
             } else {
                 knobValue = value;
@@ -2028,11 +2030,11 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
             // Shift key is not used, we adjust Sampler volumes
             // Define new value of sampler pregain
             // Off = 1, centered = 1, max = 4
-            if(decknum === 1) {
+            if (decknum === 1) {
                 for (i = 1; i <= 4; i++) {
                     gainValue[i-1] = engine.getValue("[Sampler" + [i] + "]", "pregain");    
                     
-                    if(gainValue[i-1] <= 1){ 
+                    if (gainValue[i-1] <= 1) { 
                         // increment value between 0 and 1
                         gainIncrement = 1/20;  // 20 increments in one full knob turn   
                     }else{
@@ -2041,17 +2043,17 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
                     }
                     
                     // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
-                    if (value === 127){
+                    if (value === 127) {
                         gainIncrement = - gainIncrement;
                     }   
                                     
                     gainValue[i-1] = gainValue[i-1] + gainIncrement;
 
-                    if((gainValue[i-1] + gainIncrement) <0){
+                    if ((gainValue[i-1] + gainIncrement) <0) {
                         gainValue[i-1] = 0;
                     }
                     
-                    if((gainValue[i-1] + gainIncrement) >4){
+                    if ((gainValue[i-1] + gainIncrement) >4) {
                         gainValue[i-1] = 4;
                     }
                         
@@ -2060,7 +2062,7 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
                 for (j = 5; j <= 8; j++) {
                     gainValue[j-1] = engine.getValue("[Sampler" + [j] + "]", "pregain");    
                 
-                    if(gainValue[j-1] <= 1){ 
+                    if (gainValue[j-1] <= 1) { 
                         // increment value between 0 and 1
                         gainIncrement = 1/20;  // 20 increments in one full knob turn   
                     }else{
@@ -2069,32 +2071,32 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
                     }
                     
                     // beat knobs sends 1 or 127 as value. If value = 127, turn is counterclockwise, we reduce gain
-                    if (value === 127){
+                    if (value === 127) {
                         gainIncrement = - gainIncrement;
                     }   
                     
                     gainValue[j-1] = gainValue[j-1] + gainIncrement;
 
-                    if((gainValue[j-1] + gainIncrement) <0){
+                    if ((gainValue[j-1] + gainIncrement) <0) {
                         gainValue[j-1] = 0;
                     }
                     
-                    if((gainValue[j-1] + gainIncrement) >4){
+                    if ((gainValue[j-1] + gainIncrement) >4) {
                         gainValue[j-1] = 4;
                     }           
                 }   
             }
 
             // we adjust pregain with adjusted value
-            if(decknum === 1) {
+            if (decknum === 1) {
                 for (i = 1; i <= 4; i++) {  
-                    if(gainValue[i-1] >=0 && gainValue[i-1] <= 4){  
+                    if (gainValue[i-1] >=0 && gainValue[i-1] <= 4) {  
                         engine.setValue("[Sampler" + i + "]", "pregain", gainValue[i-1]);   
                     }
                 }
             } else {
                 for (i = 5; i <= 8; i++) {
-                    if(gainValue[i-1] >= 0 && gainValue[i-1] <= 4){ 
+                    if (gainValue[i-1] >= 0 && gainValue[i-1] <= 4) { 
                         engine.setValue("[Sampler" + i + "]", "pregain", gainValue[i-1]);   
                     }
                 }   
@@ -2107,7 +2109,7 @@ NumarkMixtrack3.bpmTap  = function(channel, control, value, status, group) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
 
-    if(value===DOWN){
+    if (value===DOWN) {
         engine.setValue(group, "bpm_tap", true);
     } else {
         engine.setValue(group, "bpm_tap", false);
@@ -2305,7 +2307,7 @@ NumarkMixtrack3.OnSamplePlayStop = function(value, group, control) {
     var decknum = NumarkMixtrack3.deckFromGroup(group);
     var deck = NumarkMixtrack3.decks["D" + decknum];
     
-    if (value === 1){   
+    if (value === 1) {   
     deck.LEDs["PADsampler" + decknum].flashOn(300, PADcolors.purple, 300);
     } else {
     deck.LEDs["PADsampler" + decknum].onOff(ON);
@@ -2319,12 +2321,12 @@ NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {
     var l;
     var index;
     
-    if (value === 1){   
-        for(l=0;l<loopsize.length;l++){  
+    if (value === 1) {   
+        for (l=0;l<loopsize.length;l++) {  
         
-            if(engine.getValue(group, "beatloop_" + loopsize[l] + "_enabled")){ 
+            if (engine.getValue(group, "beatloop_" + loopsize[l] + "_enabled")) { 
                 index = l+1;
-                if (index >4){
+                if (index >4) {
                     index = index - 4;
                 }
                     
@@ -2334,11 +2336,11 @@ NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {
         }
     } else {
         
-        for(l=0;l<loopsize.length;l++){  
+        for (l=0;l<loopsize.length;l++) {  
         
-            if(!engine.getValue(group, "beatloop_" + loopsize[l] + "_enabled")){    
+            if (!engine.getValue(group, "beatloop_" + loopsize[l] + "_enabled")) {    
                 index = l+1;
-                    if (index >4){
+                    if (index >4) {
                         index = index - 4;
                     }
                 
