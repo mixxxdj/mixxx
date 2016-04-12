@@ -12,17 +12,17 @@ var iCutEnabled = true;
 
 // fastSeekEnabled: enable fast seek with Jog Wheel with Wheel Off and Shift ON 
 // Shift can be locked or not
-var fastSeekEnabled = true;  
+var fastSeekEnabled = true;
 
 //activate PFL of deck on track load
-var smartPFL = true; 
+var smartPFL = true;
 
 // use beatlooproll instead of beatloop
-var beatlooprollActivate = false; 
+var beatlooprollActivate = false;
 
 // PAD Loop button behavior: "true": Loop stops when finger release. 
 //"false" will force start loop on press and stop on 2nd press
-var PADLoopButtonHold = false; 
+var PADLoopButtonHold = false;
 
 // PAD Sample button behavior:"true": Sampler stops when finger release. 
 //"false" will force start Sampler on press and stop on 2nd press
@@ -32,10 +32,9 @@ var PADSampleButtonHold = false;
 // if Shift Lock is enable TAP LED will remain ON
 var OnBeatActiveFlash = true; 
 
-// Skin used: this is required for TapExpandLibrary option 
-// to work properly. Different code is required for each skin
-// 1 = "Deere" or "Shade"; 2 = "Late Night"; 3 = "Dark Metal" 
-var skin = 1 ;
+// If Dark Metal Skin is used, set this to true: 
+// this is required to expand library view with DM skin.
+var DarkMetalSkin = false;
 
 // Use Beat knob to adjust Sampler Volume. 
 // If "true": Deck 1 adjusts Samplers 1-4 ; Deck 2 adjusts Samplers 5-8 
@@ -127,23 +126,26 @@ var intervalsPerRev = 1200,
  *              (NumarkMixtrack3.deckFromGroup)
  *              a portion of script.deckFromGroup is commented in the common file 
  *              and not usable for this script sampler implementation
- *2016-03-07 (1.0 ) - Stéphane Morin
+ *2016-03-07 (1.0 ) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/905
  *            - Code Clean up 
  *            - Add Maximize Library function to TAP button
  *            - Added function: Sampler + Shift Key: play sample with NO Sync
  *            - Fixed Super Effect button
  *            - Fixed Sampler Shift - Sync now removed if present
- *2016-03-07 (1.1 ) - Stéphane Morin
+ *2016-03-07 (1.1 ) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/905
  *            - Corrected Pitch Bend rate of wheel for smoother operation
  *            - Add option (noPlayOnSyncDoublePress) to disable Play on Double press of Sync button
- *2016-04-08 (1.2 ) - Stéphane Morin
- *              Changes based on Pull Request feedback:
+ *2016-04-08 (1.2 ) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/905
  *            - Renamed user options: PADLoopButtonPressed to PADLoopButtonHold 
  *            - Renamed user options: PADSampleButtonPressed to PADSampleButtonHold
  *            - TapExpandLibrary moved from Tap button to Browse Button push
  *            - Linked printComments to debug value of init function: The debugging parameter is set to 'true' 
  *              if the user specified the --mididebug parameter on the command line 
  *            - Cleaned NumarkMixtrack3.shutdown function
+ *2016-04-08 (1.3 ) - Stéphane Morin - https://github.com/mixxxdj/mixxx/pull/905
+ *            - changed skin option to use boolean for 
+ *              DarkMetalSkin. It requires different code to expand library view.
+ *            - removed trailing empty lines at end of script              
  *
  * To do - (maybe..)
  * ----------------
@@ -1334,32 +1336,17 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
     var expand;
     var contract;
 
-    switch (skin){
-    case 1: // Deere or Shade
-    LibraryGroup = "[Master]";
-    LibraryCommand = "maximize_library";
-    expand = 1;
-    contract = 0;
-    break;
-
-    case 2: // LateNight
-    LibraryGroup = "[Master]";
-    LibraryCommand = "maximize_library";
-    expand = 1;
-    contract = 0;
-    break;
-
-    case 3: //Dark Metal
-    LibraryGroup = "[Hifi]";
-    LibraryCommand = "show";
-    expand = 0;
-    contract = 1;
-    break;  
-
-    default : 
-    LibraryGroup ="[Master]";
-    LibraryCommand = "maximize_library";
-    }
+    if (DarkMetalSkin){
+		LibraryGroup = "[Hifi]";
+		LibraryCommand = "show";
+		expand = 0;
+		contract = 1;
+	} else {
+		LibraryGroup = "[Master]";
+		LibraryCommand = "maximize_library";
+		expand = 1;
+		contract = 0;	
+	}
     
     if (shifted) {
         // SHIFT+ BROWSE push : directory mode -- > Open/Close selected side bar item
@@ -2361,7 +2348,3 @@ NumarkMixtrack3.OnPADLoopButtonChange = function(value, group, control) {
     }
         
 };
-
-
-
-
