@@ -783,13 +783,14 @@ bool TrackInfoObject::isDirty() {
 
 int TrackInfoObject::getRating() const {
     QMutexLocker lock(&m_qMutex);
-    return m_iRating;
+    return m_metadata.getRating();
 }
 
 void TrackInfoObject::setRating (int rating) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_iRating, rating)) {
-        markDirtyAndUnlock(&lock);
+    if (m_metadata.getRating() != rating ) {
+      m_metadata.setRating(rating);
+      markDirtyAndUnlock(&lock);
     }
 }
 

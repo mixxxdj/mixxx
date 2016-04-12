@@ -91,7 +91,8 @@ bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
             (lhs.getBitrate() == rhs.getBitrate()) &&
             (lhs.getDuration() == rhs.getDuration()) &&
             (lhs.getBpm() == rhs.getBpm()) &&
-            (lhs.getReplayGain() == rhs.getReplayGain());
+            (lhs.getReplayGain() == rhs.getReplayGain()) &&
+            (lhs.getRating() == rhs.getRating());
 }
 
 } //namespace Mixxx

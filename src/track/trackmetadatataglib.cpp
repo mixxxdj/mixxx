@@ -838,6 +838,29 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
         parseTrackPeak(pTrackMetadata,
                 toQString(pTrackPeakFrame->fieldList()[1]));
     }
+    TagLib::ID3v2::FrameList ratingFrame = tag.frameListMap()["POPM"];
+    int rating = 0;
+    if(!ratingFrame.isEmpty()) {
+        // RatingString "traktor@native-instruments.de rating=255 counter=2"
+
+        QString sRating = TStringToQString(ratingFrame.front()->toString());
+        sRating = sRating.section("=",1,2).left(3);
+        float fRating = sRating.toInt();
+        rating = ceil(fRating/51);
+
+        // Calc rating
+        //
+        // NI - Rating
+        // 255 = 5 | 204 = 4 | 153 = 3 | 102 = 2 | 51 = 1 | 0 = 0
+        //
+        // Banshee - Rating
+        // 255 = 5 | 192 = 4 | 128 = 3 | 64 = 2 | 1 = 1
+        //
+        //  ==> Rating = ceil ( X / 51 )
+
+        qDebug() << "Final int() Rating" << rating;
+        pTrackMetadata->setRating(rating);
+     }
 }
 
 void readTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag) {

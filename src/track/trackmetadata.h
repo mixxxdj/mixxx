@@ -150,6 +150,14 @@ public:
         m_replayGain = ReplayGain();
     }
 
+    int getRating() const {
+       return m_iRating;
+    }
+
+    void setRating(int rating) {
+         m_iRating = rating;
+    }
+
     // Parse an format date/time values according to ISO 8601
     static QDate parseDate(QString str) {
         return QDate::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
@@ -194,6 +202,7 @@ private:
     int m_channels;
     int m_duration; // seconds
     int m_sampleRate; // Hz
+    int m_iRating;
 };
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs);
