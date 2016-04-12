@@ -56,6 +56,7 @@ TrackInfoObject::TrackInfoObject(
           m_dateAdded(QDateTime::currentDateTime()),
           m_bHeaderParsed(false),
           m_bBpmLocked(false),
+          m_bClearWaveformRequested(false),
           m_analyzerProgress(-1) {
 }
 
@@ -653,21 +654,45 @@ QString TrackInfoObject::getURL() const {
 }
 
 ConstWaveformPointer TrackInfoObject::getWaveform() {
-    return m_waveform;
+    return m_pWaveform;
 }
 
 void TrackInfoObject::setWaveform(ConstWaveformPointer pWaveform) {
-    m_waveform = pWaveform;
-    emit(waveformUpdated());
+    QMutexLocker lock(&m_qMutex);
+    if (m_pWaveform != pWaveform) {
+        m_pWaveform = pWaveform;
+        markDirtyAndUnlock(&lock);
+        emit(waveformUpdated());
+    }
 }
 
 ConstWaveformPointer TrackInfoObject::getWaveformSummary() const {
-    return m_waveformSummary;
+    return m_pWaveformSummary;
 }
 
 void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
-    m_waveformSummary = pWaveform;
-    emit(waveformSummaryUpdated());
+    QMutexLocker lock(&m_qMutex);
+    if (m_pWaveformSummary != pWaveform) {
+        m_pWaveformSummary = pWaveform;
+        markDirtyAndUnlock(&lock);
+        emit(waveformSummaryUpdated());
+    }
+}
+
+bool TrackInfoObject::isClearWaveformRequested() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_bClearWaveformRequested;
+}
+
+void TrackInfoObject::setClearWaveformRequested(bool requested) {
+    QMutexLocker lock(&m_qMutex);
+    m_bClearWaveformRequested = requested;
+}
+
+void TrackInfoObject::clearWaveform() {
+    setClearWaveformRequested(true);
+    setWaveform(WaveformPointer());
+    setWaveformSummary(WaveformPointer());
 }
 
 void TrackInfoObject::setAnalyzerProgress(int progress) {

@@ -104,12 +104,21 @@ bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSam
 }
 
 bool AnalyzerWaveform::loadStored(TrackPointer tio) const {
+    TrackId trackId = tio->getId();
+
+    if (tio->isClearWaveformRequested()) {
+        bool success = m_pAnalysisDao->deleteAnalysesForTrack(trackId);
+        qDebug() << (success ? "Successfully deleted" : "Failed to delete")
+                 << "waveform analysis for trackId" << trackId;
+        tio->setClearWaveformRequested(false);
+        return false;
+    }
+
     ConstWaveformPointer pTrackWaveform = tio->getWaveform();
     ConstWaveformPointer pTrackWaveformSummary = tio->getWaveformSummary();
     ConstWaveformPointer pLoadedTrackWaveform;
     ConstWaveformPointer pLoadedTrackWaveformSummary;
 
-    TrackId trackId = tio->getId();
     bool missingWaveform = pTrackWaveform.isNull();
     bool missingWavesummary = pTrackWaveformSummary.isNull();
 

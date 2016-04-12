@@ -323,13 +323,23 @@ void AnalysisDao::saveTrackAnalyses(TrackInfoObject* pTrack) {
     ConstWaveformPointer pWaveform = pTrack->getWaveform();
     ConstWaveformPointer pWaveSummary = pTrack->getWaveformSummary();
 
+    TrackId trackId(pTrack->getId());
+
+    // Delete waveform analysis if track was requested to have its waveform cleared.
+    if (pTrack->isClearWaveformRequested()) {
+        bool success = deleteAnalysesForTrack(trackId);
+        qDebug() << (success ? "Successfully deleted" : "Failed to delete")
+                 << "waveform analysis for trackId" << trackId;
+        // Clear flag
+        pTrack->setClearWaveformRequested(false);
+        return;
+    }
+
     // Don't try to save invalid or non-dirty waveforms.
     if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||
         !pWaveSummary || pWaveSummary->getDataSize() == 0 || !pWaveSummary->isDirty()) {
         return;
     }
-
-    TrackId trackId(pTrack->getId());
 
     AnalysisDao::AnalysisInfo analysis;
     analysis.trackId = trackId;

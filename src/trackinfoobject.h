@@ -222,6 +222,10 @@ class TrackInfoObject : public QObject {
     ConstWaveformPointer getWaveformSummary() const;
     void setWaveformSummary(ConstWaveformPointer pWaveform);
 
+    bool isClearWaveformRequested() const;
+    void setClearWaveformRequested(bool);
+    void clearWaveform();
+
     void setAnalyzerProgress(int progress);
     int getAnalyzerProgress() const;
 
@@ -378,9 +382,11 @@ class TrackInfoObject : public QObject {
     // Storage for the track's beats
     BeatsPointer m_pBeats;
 
-    //Visual waveform data
-    ConstWaveformPointer m_waveform;
-    ConstWaveformPointer m_waveformSummary;
+    // Visual waveform data
+    ConstWaveformPointer m_pWaveform;
+    ConstWaveformPointer m_pWaveformSummary;
+
+    bool m_bClearWaveformRequested;
 
     QAtomicInt m_analyzerProgress; // in 0.1%
 

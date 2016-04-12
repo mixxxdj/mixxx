@@ -449,6 +449,10 @@ void WTrackTableView::createActions() {
     connect(m_pClearBeatsAction, SIGNAL(triggered()),
             this, SLOT(slotClearBeats()));
 
+    m_pClearWaveformAction = new QAction(tr("Clear Waveform"), this);
+    connect(m_pClearWaveformAction, SIGNAL(triggered()),
+            this, SLOT(slotClearWaveform()));
+
     m_pReplayGainResetAction = new QAction(tr("Reset Replay Gain"), this);
     connect(m_pReplayGainResetAction, SIGNAL(triggered()),
             this, SLOT(slotReplayGainReset()));
@@ -872,6 +876,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pClearBeatsAction->setEnabled(allowClear);
         m_pBPMMenu->addAction(m_pClearBeatsAction);
     }
+
+    m_pMenu->addAction(m_pClearWaveformAction);
 
     m_pMenu->addAction(m_pReplayGainResetAction);
 
@@ -1582,6 +1588,21 @@ void WTrackTableView::slotClearBeats() {
         TrackPointer track = trackModel->getTrack(index);
         if (!track->isBpmLocked()) {
             track->setBeats(BeatsPointer());
+        }
+    }
+}
+
+void WTrackTableView::slotClearWaveform() {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == nullptr) {
+        return;
+    }
+
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
+    foreach (QModelIndex index, selectedIndices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->clearWaveform();
         }
     }
 }
