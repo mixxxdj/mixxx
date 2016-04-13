@@ -14,7 +14,7 @@ Microphone::Microphone(QObject* pParent, const QString& group, int index,
     EngineMicrophone* pMicrophone =
             new EngineMicrophone(channelGroup, pEffectsManager);
     pEngine->addChannel(pMicrophone);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0, index);
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 2, index);
     pSoundManager->registerInput(micInput, pMicrophone);
 
     m_pInputConfigured.reset(new ControlObjectSlave(group, "input_configured", this));

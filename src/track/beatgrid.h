@@ -33,10 +33,11 @@ class BeatGrid : public QObject, public virtual Beats {
     // comments in beats.h
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SET;
+        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SETBPM;
     }
 
     virtual QByteArray toByteArray() const;
+    virtual BeatsPointer clone() const;
     virtual QString getVersion() const;
     virtual QString getSubVersion() const;
     virtual void setSubVersion(QString subVersion);
@@ -66,13 +67,14 @@ class BeatGrid : public QObject, public virtual Beats {
     virtual void removeBeat(double dBeatSample);
     virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     virtual void translate(double dNumSamples);
-    virtual void scale(double dScalePercentage);
+    virtual void scale(enum BPMScale scale);
     virtual void setBpm(double dBpm);
 
   signals:
     void updated();
 
   private:
+    BeatGrid(const BeatGrid& other);
     double firstBeatSample() const;
     double bpm() const;
 

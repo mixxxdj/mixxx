@@ -431,10 +431,10 @@ void WTrackTableView::createActions() {
     m_pBpmTwoThirdsAction = new QAction(tr("2/3 BPM"), this);
     m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), this);
 
-    m_BpmMapper.setMapping(m_pBpmDoubleAction, DOUBLE);
-    m_BpmMapper.setMapping(m_pBpmHalveAction, HALVE);
-    m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, TWOTHIRDS);
-    m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, THREEFOURTHS);
+    m_BpmMapper.setMapping(m_pBpmDoubleAction, Beats::DOUBLE);
+    m_BpmMapper.setMapping(m_pBpmHalveAction, Beats::HALVE);
+    m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, Beats::TWOTHIRDS);
+    m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, Beats::THREEFOURTHS);
 
     connect(m_pBpmDoubleAction, SIGNAL(triggered()),
             &m_BpmMapper, SLOT(map()));
@@ -1539,24 +1539,14 @@ void WTrackTableView::slotScaleBpm(int scale) {
         return;
     }
 
-    double scalingFactor=1;
-    if (scale == DOUBLE)
-        scalingFactor = 2;
-    else if (scale == HALVE)
-        scalingFactor = 0.5;
-    else if (scale == TWOTHIRDS)
-        scalingFactor = 2./3.;
-    else if (scale == THREEFOURTHS)
-        scalingFactor = 3./4.;
-
     QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        if (!track->isBpmLocked()) { //bpm is not locked
+        if (!track->isBpmLocked()) { // bpm is not locked
             BeatsPointer beats = track->getBeats();
             if (beats != NULL) {
-                beats->scale(scalingFactor);
+                beats->scale((Beats::BPMScale)scale);
             } else {
                 continue;
             }

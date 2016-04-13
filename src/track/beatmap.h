@@ -34,16 +34,18 @@ class BeatMap : public QObject, public Beats {
     // in audio frames may be provided.
     BeatMap(TrackPointer pTrack, int iSampleRate,
             const QVector<double>& beats);
+
     virtual ~BeatMap();
 
     // See method comments in beats.h
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
-                BEATSCAP_MOVEBEAT | BEATSCAP_SET;
+                BEATSCAP_MOVEBEAT;
     }
 
     virtual QByteArray toByteArray() const;
+    BeatsPointer clone() const;
     virtual QString getVersion() const;
     virtual QString getSubVersion() const;
     virtual void setSubVersion(QString subVersion);
@@ -74,13 +76,14 @@ class BeatMap : public QObject, public Beats {
     virtual void removeBeat(double dBeatSample);
     virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     virtual void translate(double dNumSamples);
-    virtual void scale(double dScalePercentage);
+    virtual void scale(enum BPMScale scale);
     virtual void setBpm(double dBpm);
 
   signals:
     void updated();
 
   private:
+    BeatMap (const BeatMap& other);
     void initialize(TrackPointer pTrack, int iSampleRate);
     bool readByteArray(const QByteArray& byteArray);
     void createFromBeatVector(const QVector<double>& beats);
@@ -90,6 +93,12 @@ class BeatMap : public QObject, public Beats {
                         const mixxx::track::io::Beat& stopBeat) const;
     // For internal use only.
     bool isValid() const;
+
+    void scaleDouble();
+    void scaleTriple();
+    void scaleHalve();
+    void scaleThird();
+    void scaleFourth();
 
     mutable QMutex m_mutex;
     QString m_subVersion;

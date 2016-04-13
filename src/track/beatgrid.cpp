@@ -52,6 +52,16 @@ BeatGrid::BeatGrid(TrackInfoObject* pTrack, int iSampleRate,
     }
 }
 
+BeatGrid::BeatGrid(const BeatGrid& other)
+        : QObject(),
+          m_mutex(QMutex::Recursive) {
+    m_iSampleRate = other.m_iSampleRate;
+    m_dBeatLength = other.m_dBeatLength;
+    moveToThread(other.thread());
+    m_subVersion = other.m_subVersion;
+    m_grid = other.m_grid;
+}
+
 BeatGrid::~BeatGrid() {
 }
 
@@ -72,6 +82,12 @@ QByteArray BeatGrid::toByteArray() const {
     std::string output;
     m_grid.SerializeToString(&output);
     return QByteArray(output.data(), output.length());
+}
+
+BeatsPointer BeatGrid::clone() const {
+    QMutexLocker locker(&m_mutex);
+    BeatsPointer other(new BeatGrid(*this));
+    return other;
 }
 
 void BeatGrid::readByteArray(const QByteArray& byteArray) {
@@ -327,20 +343,34 @@ void BeatGrid::translate(double dNumSamples) {
     emit(updated());
 }
 
-void BeatGrid::scale(double dScalePercentage) {
-    QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
+void BeatGrid::scale(enum BPMScale scale) {
+    double bpm = getBpm();
+
+    switch (scale) {
+    case DOUBLE:
+        bpm *= 2;
+        break;
+    case HALVE:
+        bpm *= 1.0 / 2;
+        break;
+    case TWOTHIRDS:
+        bpm *= 2.0 / 3;
+        break;
+    case THREEFOURTHS:
+        bpm *= 3.0 / 4;
+        break;
+    default:
+        DEBUG_ASSERT(!"scale value invalid");
         return;
     }
-    double newBpm = bpm() * dScalePercentage;
-    m_grid.mutable_bpm()->set_bpm(newBpm);
-    m_dBeatLength = (60.0 * m_iSampleRate / newBpm) * kFrameSize;
-    locker.unlock();
-    emit(updated());
+    setBpm(bpm);
 }
 
 void BeatGrid::setBpm(double dBpm) {
     QMutexLocker locker(&m_mutex);
+    if (dBpm > getMaxBpm()) {
+        dBpm = getMaxBpm();
+    }
     m_grid.mutable_bpm()->set_bpm(dBpm);
     m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
     locker.unlock();

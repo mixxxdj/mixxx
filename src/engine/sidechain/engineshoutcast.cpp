@@ -43,11 +43,6 @@ static const int kConnectRetries = 10;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
-
-int NetworkStreamWorker::s_networkStreamWorkerState = NETWORKSTREAMWORKER_STATE_NEW;
-int NetworkStreamWorker::s_functionCode = 0;
-int NetworkStreamWorker::s_runCount = 0;
-
 EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
         : m_pTextCodec(NULL),
           m_pMetaData(),
@@ -383,6 +378,11 @@ bool EngineShoutcast::serverConnect() {
 }
 
 bool EngineShoutcast::processConnect() {
+    // Make sure that we call updateFromPreferences always
+    if (m_encoder == NULL) {
+        updateFromPreferences();
+    }
+
     m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
     m_iShoutFailures = 0;
     m_lastErrorStr.clear();
@@ -396,11 +396,6 @@ bool EngineShoutcast::processConnect() {
     }
     //If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
-
-    // Make sure that we call updateFromPreferences always
-    if (m_encoder == NULL) {
-        updateFromPreferences();
-    }
 
     while (m_iShoutFailures < kMaxShoutFailures) {
         shout_close(m_pShout);
