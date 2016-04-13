@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2015-12-1
+// description: 2016-4-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -10,35 +10,24 @@
 var VCI102 = {};
 
 VCI102.deck = ["[Channel1]", "[Channel2]", "[Channel3]", "[Channel4]"];
+VCI102.fx12 = ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
+VCI102.fx34 = ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
+VCI102.fx = VCI102.fx12.concat(VCI102.fx34);
 
-VCI102.fxButton = [
-    ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"],
-    ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"]
-];
+VCI102.fxButton = [VCI102.fx12, VCI102.fx12];
+VCI102.shift = [0, 0];
 
-VCI102.setFxButton = function(ch, value) {
+VCI102.setShift = function(ch, midino, value, status, group) {
     var i, j, enabled;
-    if (value) {
-        VCI102.fxButton[ch] =
-            ["[EffectRack1_EffectUnit3]", "[EffectRack1_EffectUnit4]"];
-    } else {
-        VCI102.fxButton[ch] =
-            ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
-    }
+    ch = VCI102.deck.indexOf(group);  // override channel by group
+    VCI102.fxButton[ch] = value ? VCI102.fx34 : VCI102.fx12;
     for (i = ch; i < 4; i += 2) {
         enabled = "group_" + VCI102.deck[i] + "_enable";
         for (j = 0; j < 2; j++) {
-            engine.trigger(VCI102.fxButton[ch % 2][j], enabled);
+            engine.trigger(VCI102.fxButton[ch][j], enabled);
         }
     }
-};
-
-VCI102.shiftL = function(ch, midino, value, status, group) {
-    VCI102.setFxButton(0, value);
-};
-
-VCI102.shiftR = function(ch, midino, value, status, group) {
-    VCI102.setFxButton(1, value);
+    VCI102.shift[ch] = value;
 };
 
 VCI102.selectTimer = 0;
@@ -67,7 +56,8 @@ VCI102.SelectNextTrack = function(ch, midino, value, status, group) {
 };
 
 VCI102.slip = function(value, group, key) {
-    if (!value) {
+    // resume after the effect when the track is [re]played
+    if (key == "play" ? value : !value && engine.getValue(group, "play")) {
         if (engine.getValue(group, "slip_enabled")) {
             engine.setValue(group, "slip_enabled", 0);
             engine.beginTimer(40, function() {
@@ -81,26 +71,31 @@ VCI102.scratchTimer = [0, 0, 0, 0];
 
 VCI102.scratchEnable = function(ch, midino, value, status, group) {
     var deck = ch + 1;
-    if (value) {
-        if (VCI102.scratchTimer[ch]) {
-            engine.stopTimer(VCI102.scratchTimer[ch]);
-            VCI102.scratchTimer[ch] = 0;
-        } else {
-            engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
-        }
+    if (VCI102.shift[ch % 2]) {
+        engine.brake(deck, value > 0);
+        VCI102.slip(value, group);
     } else {
-        VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
-            var vel = Math.abs(engine.getValue(group, "scratch2"));
-            if (vel < 1 && (vel < 1e-9 || engine.getValue(group, "play"))) {
-                if (VCI102.scratchTimer[ch]) {
-                    engine.stopTimer(VCI102.scratchTimer[ch]);
-                    VCI102.scratchTimer[ch] = 0;
-                    engine.scratchDisable(
-                        deck, !engine.getValue(group, "slip_enabled"));
-                    VCI102.slip(value, group);
-                }
+        if (value) {
+            if (VCI102.scratchTimer[ch]) {
+                engine.stopTimer(VCI102.scratchTimer[ch]);
+                VCI102.scratchTimer[ch] = 0;
+            } else {
+                engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
             }
-        });
+        } else {
+            VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
+                var vel = Math.abs(engine.getValue(group, "scratch2"));
+                if (vel < 1 && (vel < 1e-9 || engine.getValue(group, "play"))) {
+                    if (VCI102.scratchTimer[ch]) {
+                        engine.stopTimer(VCI102.scratchTimer[ch]);
+                        VCI102.scratchTimer[ch] = 0;
+                        engine.scratchDisable(
+                            deck, !engine.getValue(group, "slip_enabled"));
+                        VCI102.slip(value, group);
+                    }
+                }
+            });
+        }
     }
 };
 
@@ -161,6 +156,31 @@ VCI102.pitch = function(ch, midino, value, status, group) {
     engine.setValue(group, "pitch", Math.round((value - 64) * 3 / 32));
 };
 
+["parameter1", "parameter2", "parameter3"].forEach(function(key) {
+    VCI102[key] = function(ch, midino, value, status, group) {
+        if (VCI102.shift[ch % 2]) {
+            // link to super1, inverse variants -> none -> direct variants
+            if (engine.getValue(group, key + "_loaded")) {
+                value = Math.round(value / 16) - 4;
+                engine.setValue(group, key + "_link_type", Math.abs(value));
+                engine.setValue(group, key + "_link_inverse", value < 0);
+            }
+        } else {
+            engine.setParameter(group, key, value / 127);
+        }
+    };
+});
+
+VCI102.super1 = function(ch, midino, value, status, group) {
+    if (VCI102.shift[ch % 2]) {
+        engine.setValue(group, "mix", value / 127);
+        engine.softTakeoverIgnoreNextValue(group, "super1");
+    } else {
+        engine.setValue(group, "super1", value / 127);
+        engine.softTakeoverIgnoreNextValue(group, "mix");
+    }
+};
+
 VCI102.loopLength = [4, 4, 4, 4];
 
 VCI102.setLoopLength = function(ch, status, value) {
@@ -176,7 +196,7 @@ VCI102.setLoopLength = function(ch, status, value) {
     midi.sendShortMsg(status, LED[ch][1], (value > 4 || value * 4 < 1) * 127);
 };
 
-VCI102.beatloop_exit = function(ch, midino, value, status, group) {
+VCI102.loop = function(ch, midino, value, status, group) {
     if (value) {
         if (engine.getValue(group, "loop_enabled")) {
             engine.setValue(group, "reloop_exit", 1);
@@ -186,9 +206,9 @@ VCI102.beatloop_exit = function(ch, midino, value, status, group) {
     }
 };
 
-VCI102.reloop_out = function(ch, midino, value, status, group) {
+VCI102.reloop = function(ch, midino, value, status, group) {
     if (engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "loop_out", value);
+        engine.setValue(group, "loop_out", value / 127);
     } else {
         engine.setValue(group, "reloop_exit", 1);
     }
@@ -208,6 +228,31 @@ VCI102.loop_double = function(ch, midino, value, status, group) {
     } else if (value) {
         VCI102.setLoopLength(ch, status, VCI102.loopLength[ch] * 2);
     }
+};
+
+VCI102.move = function(ch, group, dir) {
+    if (dir) {
+        if (engine.getValue(group, "loop_enabled")) {
+            // move the loop by the current length
+            engine.setValue(
+                group, "loop_move", dir * (
+                    engine.getValue(group, "loop_end_position")
+                        - engine.getValue(group, "loop_start_position"))
+                    / engine.getValue(group, "track_samplerate")
+                    * engine.getValue(group, "file_bpm") / 120);
+        } else {
+            // jump by the default length
+            engine.setValue(group, "beatjump", dir * VCI102.loopLength[ch]);
+        }
+    }
+};
+
+VCI102.move_backward = function(ch, midino, value, status, group) {
+    VCI102.move(ch, group, value / -127);
+};
+
+VCI102.move_forward = function(ch, midino, value, status, group) {
+    VCI102.move(ch, group, value / 127);
 };
 
 VCI102.Deck = ["[Channel1]", "[Channel2]"];
@@ -240,7 +285,7 @@ VCI102.shutdown = function() {
     }
 };
 
-VCI102.init = function() {
+VCI102.init = function(id, debug) {
     var i, j, k, activate, enabled, led;
     var LED = [
         [0x2C, 0x25, 0x27, 0x28],
@@ -288,9 +333,10 @@ VCI102.init = function() {
         };
     }
 
-    VCI102.shutdown();
     for (i = 0; i < 4; i++) {
         engine.connectControl(VCI102.deck[i], "loop_enabled", VCI102.slip);
+        engine.connectControl(VCI102.deck[i], "reverse", VCI102.slip);
+        engine.connectControl(VCI102.deck[i], "play", VCI102.slip);
         engine.connectControl(VCI102.deck[i], "pfl", headMix);
         enabled = "group_" + VCI102.deck[i] + "_enable";
         for (j = 0; j < 2; j++) {
@@ -302,10 +348,11 @@ VCI102.init = function() {
         }
         engine.softTakeover(VCI102.deck[i], "rate", true);
         engine.softTakeover(VCI102.deck[i], "pitch", true);
+        engine.softTakeover(VCI102.fx[i], "super1", true);
+        engine.softTakeover(VCI102.fx[i], "mix", true);
     }
     for (i = 1; i <= 4; i++) {
-        activate = "hotcue_" + i + "_activate";
-        makeButton(activate);
+        makeButton(activate = "hotcue_" + i + "_activate");
         makeButton("hotcue_" + i + "_clear");
         enabled = "hotcue_" + i + "_enabled";
         for (j = 0; j < 2; j++) {

@@ -47,9 +47,9 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
-     <widget class="QWidget" name="tab_1">
+     <widget class="QWidget" name="tabSummary">
       <attribute name="title">
        <string>Summary</string>
       </attribute>
@@ -418,16 +418,7 @@
             <property name="sizeConstraint">
              <enum>QLayout::SetMinimumSize</enum>
             </property>
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
+            <property name="margin">
              <number>0</number>
             </property>
             <item>
@@ -690,7 +681,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_4">
+     <widget class="QWidget" name="tabComments">
       <attribute name="title">
        <string>Comments</string>
       </attribute>
@@ -700,7 +691,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tabBPM">
       <attribute name="title">
        <string>BPM</string>
       </attribute>
@@ -709,6 +700,68 @@
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="1">
+            <widget class="QDoubleSpinBox" name="spinBpm">
+             <property name="toolTip">
+              <string>Displays the BPM of the selected track.</string>
+             </property>
+             <property name="decimals">
+              <number>8</number>
+             </property>
+             <property name="maximum">
+              <double>500.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="labelBpm">
+             <property name="text">
+              <string>Track BPM: </string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QCheckBox" name="bpmConst">
+             <property name="text">
+              <string>Assume constant tempo</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="bpmTwoThirds">
+             <property name="minimumSize">
+              <size>
+               <width>125</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Sets the BPM to 66% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>2/3 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="bpmDouble">
+             <property name="minimumSize">
+              <size>
+               <width>125</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Sets the BPM to 200% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>Double BPM</string>
+             </property>
+            </widget>
+           </item>
            <item row="2" column="1">
             <widget class="QPushButton" name="bpmThreeFourth">
              <property name="minimumSize">
@@ -741,58 +794,10 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QDoubleSpinBox" name="spinBpm">
-             <property name="toolTip">
-              <string>Displays the BPM of the selected track.</string>
-             </property>
-             <property name="decimals">
-              <number>8</number>
-             </property>
-             <property name="maximum">
-              <double>500.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="bpmDouble">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Sets the BPM to 200% of the current value.</string>
-             </property>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="bpmClear">
              <property name="text">
-              <string>Double BPM</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="labelBpm">
-             <property name="text">
-              <string>Track BPM: </string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="bpmTwoThirds">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Sets the BPM to 66% of the current value.</string>
-             </property>
-             <property name="text">
-              <string>2/3 BPM</string>
+              <string>Clear Bpm and Beatgrid</string>
              </property>
             </widget>
            </item>
@@ -864,7 +869,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="tabCuepoints">
       <attribute name="title">
        <string>Cuepoints</string>
       </attribute>

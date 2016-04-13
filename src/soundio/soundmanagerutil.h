@@ -102,8 +102,8 @@ protected:
  */
 class AudioOutput : public AudioPath {
   public:
-    AudioOutput(AudioPathType type = INVALID, unsigned char channelBase = 0,
-                unsigned char channels = 0,
+    AudioOutput(AudioPathType type, unsigned char channelBase,
+                unsigned char channels,
                 unsigned char index = 0);
     virtual ~AudioOutput();
     QDomElement toXML(QDomElement *element) const;

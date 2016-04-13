@@ -163,6 +163,9 @@ QVariant BaseSqlTableModel::headerData(int section, Qt::Orientation orientation,
         return widthValue;
     } else if (role == TrackModel::kHeaderNameRole && orientation == Qt::Horizontal) {
         return m_headerInfo.value(section).value(role);
+    } else if (role == Qt::ToolTipRole && orientation == Qt::Horizontal) {
+        QVariant tooltip = m_headerInfo.value(section).value(role);
+        if (tooltip.isValid()) return tooltip;
     }
     return QAbstractTableModel::headerData(section, orientation, role);
 }

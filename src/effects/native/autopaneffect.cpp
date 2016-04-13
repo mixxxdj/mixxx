@@ -42,7 +42,7 @@ EffectManifest AutoPanEffect::getManifest() {
     EffectManifestParameter* periodUnit = manifest.addParameter();
     periodUnit->setId("periodUnit");
     periodUnit->setName(QObject::tr("Sync"));
-    periodUnit->setDescription("Synchronizes the period with the BPM if it can be retrieved");
+    periodUnit->setDescription(QObject::tr("Synchronizes the period with the BPM if it can be retrieved"));
     periodUnit->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
     periodUnit->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     periodUnit->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -56,8 +56,8 @@ EffectManifest AutoPanEffect::getManifest() {
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
-    period->setDescription("How fast the sound goes from a side to another,"
-            " following a logarithmic scale");
+    period->setDescription(QObject::tr("How fast the sound goes from a side to another,"
+            " following a logarithmic scale"));
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
