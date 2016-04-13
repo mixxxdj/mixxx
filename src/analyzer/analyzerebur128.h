@@ -1,22 +1,15 @@
-/*
- * analyzergain.h
- *
- *  Created on: 13/ott/2010
- *      Author: Vittorio Colao
- *       */
+#ifndef ANALYZER_ANALYZEREBUR128_H_
+#define ANALYZER_ANALYZEREBUR128_H_
 
-#ifndef ANALYZER_ANALYZERGAIN_H
-#define ANALYZER_ANALYZERGAIN_H
+#include <ebur128.h>
 
 #include "analyzer/analyzer.h"
 #include "preferences/replaygainsettings.h"
 
-class ReplayGain;
-
-class AnalyzerGain : public Analyzer {
+class AnalyzerEbur128 : public Analyzer {
   public:
-    AnalyzerGain(UserSettingsPointer pConfig);
-    virtual ~AnalyzerGain();
+    AnalyzerEbur128(UserSettingsPointer pConfig);
+    virtual ~AnalyzerEbur128();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
@@ -25,12 +18,11 @@ class AnalyzerGain : public Analyzer {
     void finalize(TrackPointer tio) override;
 
   private:
-    bool m_initalized;
     ReplayGainSettings m_rgSettings;
-    CSAMPLE* m_pLeftTempBuffer;
-    CSAMPLE* m_pRightTempBuffer;
-    ReplayGain* m_pReplayGain;
+    bool m_initalized;
+    CSAMPLE* m_pTempBuffer[2];
     int m_iBufferSize;
+    ebur128_state* m_pState;
 };
 
-#endif /* ANALYZER_ANALYZERGAIN_H */
+#endif /* ANALYZER_ANALYZEREBUR128_H_ */
