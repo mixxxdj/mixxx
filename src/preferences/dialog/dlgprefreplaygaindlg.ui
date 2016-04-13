@@ -229,7 +229,7 @@
       <item>
        <widget class="QRadioButton" name="radioButtonRG2">
         <property name="text">
-         <string>ReplayGain 2.0 (EBU R 128)</string>
+         <string>ReplayGain 2.0 (ITU-R BS.1770)</string>
         </property>
        </widget>
       </item>
