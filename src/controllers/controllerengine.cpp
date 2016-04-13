@@ -118,21 +118,15 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
     if (i != m_scriptWrappedFunctionCache.end()) {
         wrappedFunction = i.value();
     } else {
-        QScriptValue function = m_pEngine->evaluate(codeSnippet);
-        if (!syntaxIsValid(codeSnippet)) {
-            wrappedFunction = m_scriptEvaluationException;
-        } else if (checkException()) {
-            wrappedFunction = m_scriptEvaluationException;
-        } else {
-            QStringList wrapperArgList;
-            for (int i = 1; i <= numberOfArgs; i++) {
-                wrapperArgList << QString("arg%1").arg(i);
-            }
-            QString wrapperArgs = wrapperArgList.join(",");
-            QString wrappedCode = "(function (" + wrapperArgs + ") { (" +
-                                codeSnippet + ")(" + wrapperArgs + "); })";
-            wrappedFunction = m_pEngine->evaluate(wrappedCode);
+        QStringList wrapperArgList;
+        for (int i = 1; i <= numberOfArgs; i++) {
+            wrapperArgList << QString("arg%1").arg(i);
         }
+        QString wrapperArgs = wrapperArgList.join(",");
+        QString wrappedCode = "(function (" + wrapperArgs + ") { (" +
+                                codeSnippet + ")(" + wrapperArgs + "); })";
+        wrappedFunction = m_pEngine->evaluate(wrappedCode);
+        checkException();
         m_scriptWrappedFunctionCache[codeSnippet] = wrappedFunction;
     }
     return wrappedFunction;
@@ -336,15 +330,6 @@ bool ControllerEngine::syntaxIsValid(const QString& scriptCode) {
                      scriptCode);
 
         scriptErrorDialog(error);
-
-        if (m_pEngine->hasUncaughtException()) {
-            // The error message in the Error object is a generic
-            // "Parse error", so replace it with the more helpful
-            // error constructed here.
-            m_scriptEvaluationException = m_pEngine->uncaughtException();
-            m_scriptEvaluationException.setProperty("message", error);
-            m_pEngine->clearExceptions();
-        }
         return false;
     }
     return true;
@@ -482,7 +467,6 @@ bool ControllerEngine::checkException() {
                 QString("%1\nBacktrace:\n%2")
                 .arg(errorText, backtrace.join("\n")) : errorText);
 
-        m_scriptEvaluationException = exception;
         m_pEngine->clearExceptions();
         return true;
     }
