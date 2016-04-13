@@ -30,7 +30,7 @@ class ControllerEngineTest : public MixxxTest {
     }
 
     bool execute(const QString& functionName) {
-        QScriptValue function = cEngine->resolveFunction(functionName);
+        QScriptValue function = cEngine->wrapFunctionCode(functionName, 0);
         return cEngine->internalExecute(QScriptValue(), function,
                                         QScriptValueList());
     }
