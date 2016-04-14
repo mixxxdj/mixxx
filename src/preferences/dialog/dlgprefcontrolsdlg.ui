@@ -203,7 +203,7 @@
         <item row="2" column="0">
          <widget class="QLabel" name="labelKeylockMode">
           <property name="text">
-           <string>Key lock mode</string>
+           <string>Keylock mode</string>
           </property>
           <property name="buddy">
            <cstring>radioButtonOriginalKey</cstring>
