@@ -147,6 +147,7 @@
 
 #ClockWidget {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  margin-bottom: 2px;
 }
 
 #LatencyMeter {
