@@ -58,7 +58,7 @@ bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSam
     }
 
     // If we don't need to calculate the waveform/wavesummary, skip.
-    if (loadStored(tio)) {
+    if (isDisabledOrLoadStoredSuccess(tio)) {
         m_skipProcessing = true;
     } else {
         // Now actually initialize the AnalyzerWaveform:
@@ -103,7 +103,7 @@ bool AnalyzerWaveform::initialize(TrackPointer tio, int sampleRate, int totalSam
     return !m_skipProcessing;
 }
 
-bool AnalyzerWaveform::loadStored(TrackPointer tio) const {
+bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     ConstWaveformPointer pTrackWaveform = tio->getWaveform();
     ConstWaveformPointer pTrackWaveformSummary = tio->getWaveformSummary();
     ConstWaveformPointer pLoadedTrackWaveform;

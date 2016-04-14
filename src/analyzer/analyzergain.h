@@ -9,24 +9,24 @@
 #define ANALYZER_ANALYZERGAIN_H
 
 #include "analyzer/analyzer.h"
-#include "preferences/usersettings.h"
+#include "preferences/replaygainsettings.h"
 
 class ReplayGain;
 
 class AnalyzerGain : public Analyzer {
   public:
-    AnalyzerGain(UserSettingsPointer _config);
+    AnalyzerGain(UserSettingsPointer pConfig);
     virtual ~AnalyzerGain();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool loadStored(TrackPointer tio) const override;
+    bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
     void process(const CSAMPLE* pIn, const int iLen) override;
     void cleanup(TrackPointer tio) override;
     void finalize(TrackPointer tio) override;
 
   private:
-    bool m_bStepControl;
-    UserSettingsPointer m_pConfigReplayGain;
+    bool m_initalized;
+    ReplayGainSettings m_rgSettings;
     CSAMPLE* m_pLeftTempBuffer;
     CSAMPLE* m_pRightTempBuffer;
     ReplayGain* m_pReplayGain;
