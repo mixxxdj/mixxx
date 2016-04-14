@@ -1,4 +1,5 @@
-#include <analyzer/analyzerebur128.h>
+#include "analyzer/analyzerebur128.h"
+
 #include <QtDebug>
 
 #include "trackinfoobject.h"
