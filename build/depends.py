@@ -419,9 +419,25 @@ class ReplayGain(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
 
+class Ebur128Mit(Dependence):
+    INTERNAL_PATH = '#lib/libebur128-1.1.0'
+    INTERNAL_LINK = False
+
+    def sources(self, build):
+        if self.INTERNAL_LINK:
+            return ['%s/ebur128/ebur128.c' % self.INTERNAL_PATH]
+
+    def configure(self, build, conf, env=None):
+        if env is None:
+            env = build.env
+        if not conf.CheckLib(['ebur128', 'libebur128']):
+            self.INTERNAL_LINK = True;
+            env.Append(CPPPATH=['%s/ebur128' % self.INTERNAL_PATH])
+            #env.Append(CPPDEFINES='USE_SPEEX_RESAMPLER') # Required for unused EBUR128_MODE_TRUE_PEAK
+
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-1.8.0'
+    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-1.9.2'
     INTERNAL_LINK = True
 
     def sources(self, build):
@@ -455,7 +471,7 @@ class SoundTouch(Dependence):
         if build.platform_is_linux:
             # Try using system lib
             if conf.CheckForPKG('soundtouch', '1.8.0'):
-                # No System Lib found
+                # System Lib found
                 build.env.ParseConfig('pkg-config soundtouch --silence-errors \
                                       --cflags --libs')
                 self.INTERNAL_LINK = False
@@ -606,8 +622,10 @@ class MixxxCore(Feature):
                    "preferences/dialog/dlgprefsounditem.cpp",
                    "preferences/dialog/dlgprefwaveform.cpp",
                    "preferences/settingsmanager.cpp",
+                   "preferences/replaygainsettings.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
+                    
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -698,6 +716,7 @@ class MixxxCore(Feature):
                    "analyzer/analyzerqueue.cpp",
                    "analyzer/analyzerwaveform.cpp",
                    "analyzer/analyzergain.cpp",
+                   "analyzer/analyzerebur128.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -1082,7 +1101,6 @@ class MixxxCore(Feature):
         map(Qt.uic(build), ui_files)
 
         if build.platform_is_windows:
-            sources.append("util/battery/batterywindows.cpp")
             # Add Windows resource file with icons and such
             # force manifest file creation, apparently not necessary for all
             # people but necessary for this committers handicapped windows
@@ -1093,9 +1111,6 @@ class MixxxCore(Feature):
             # Need extra room for code signing (App Store)
             build.env.Append(LINKFLAGS="-Wl,-headerpad,ffff")
             build.env.Append(LINKFLAGS="-Wl,-headerpad_max_install_names")
-            sources.append("util/battery/batterymac.cpp")
-        elif build.platform_is_linux:
-            sources.append("util/battery/batterylinux.cpp")
 
         return sources
 
@@ -1295,10 +1310,10 @@ class MixxxCore(Feature):
                 CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
-        return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
+        return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
-                QtScriptByteArray, Reverb, FpClassify, IOKit, UPower]
+                QtScriptByteArray, Reverb, FpClassify]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

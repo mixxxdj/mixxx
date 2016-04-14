@@ -17,7 +17,7 @@
 
 #include <vamp-sdk/Plugin.h>
 
-#include "../dsp/GetKeyMode.h"
+#include <dsp/keydetection/GetKeyMode.h>
 
 class KeyDetector : public Vamp::Plugin
 {

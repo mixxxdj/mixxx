@@ -4,7 +4,7 @@
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefreplaygaindlg.h"
-#include "preferences/usersettings.h"
+#include "preferences/replaygainsettings.h"
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
@@ -20,7 +20,8 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     void slotUpdateReplayGainBoost();
     void slotUpdateDefaultBoost();
     void slotSetRGEnabled();
-    void slotSetRGAnalyzerEnabled();
+    void slotSetRGAnalyzerChanged();
+    void slotSetReanalyze();
 
     void slotApply();
     void slotUpdate();
@@ -33,13 +34,15 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     // Determines whether or not to gray out the preferences
     void loadSettings();
     void setLabelCurrentReplayGainBoost(int value);
+    bool isReplayGainAnalyzerEnabled() const;
+    int getReplayGainVersion() const;
 
-    // Pointer to config object
-    UserSettingsPointer config;
-
+    ReplayGainSettings m_rgSettings;
     ControlObjectSlave m_replayGainBoost;
     ControlObjectSlave m_defaultBoost;
     ControlObjectSlave m_enabled;
+
+    QButtonGroup m_analysisButtonGroup;
 };
 
 #endif /* DLGPREFREPLAYGAIN_H */

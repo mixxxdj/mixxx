@@ -29,7 +29,7 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
-EngineMaster::EngineMaster(UserSettingsPointer _config,
+EngineMaster::EngineMaster(UserSettingsPointer pConfig,
                            const char* group,
                            EffectsManager* pEffectsManager,
                            bool bEnableSidechain,
@@ -74,10 +74,10 @@ EngineMaster::EngineMaster(UserSettingsPointer _config,
     m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"));
 
     // Master sync controller
-    m_pMasterSync = new EngineSync(_config);
+    m_pMasterSync = new EngineSync(pConfig);
 
     // The last-used bpm value is saved in the destructor of EngineSync.
-    double default_bpm = _config->getValueString(ConfigKey("[InternalClock]", "bpm"),
+    double default_bpm = pConfig->getValueString(ConfigKey("[InternalClock]", "bpm"),
                                                  "124.0").toDouble();
     ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
 
@@ -128,7 +128,7 @@ EngineMaster::EngineMaster(UserSettingsPointer _config,
     m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pHeadSplitEnabled->set(0.0);
 
-    m_pTalkoverDucking = new EngineTalkoverDucking(_config, group);
+    m_pTalkoverDucking = new EngineTalkoverDucking(pConfig, group);
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -145,7 +145,7 @@ EngineMaster::EngineMaster(UserSettingsPointer _config,
     }
 
     // Starts a thread for recording and shoutcast
-    m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
+    m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(pConfig) : NULL;
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPushButton(
@@ -172,7 +172,7 @@ EngineMaster::EngineMaster(UserSettingsPointer _config,
 
     m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"),
                                          true, false, true);
-    m_pKeylockEngine->set(_config->getValueString(
+    m_pKeylockEngine->set(pConfig->getValueString(
             ConfigKey(group, "keylock_engine")).toDouble());
 
     m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),
