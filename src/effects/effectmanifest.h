@@ -25,7 +25,6 @@ class EffectManifest {
         : m_isMixingEQ(false),
           m_isMasterEQ(false),
           m_isForFilterKnob(false),
-          m_dSuperKnobScaleStart(0.0),
           m_effectRampsFromDry(false) {
     }
     virtual ~EffectManifest() {

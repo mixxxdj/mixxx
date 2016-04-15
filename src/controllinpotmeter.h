@@ -8,7 +8,7 @@ class ControlLinPotmeter : public ControlPotmeter {
   public:
     // dStep = 0 and dSmallStep = 0 defaults to 10 and 100 steps
     ControlLinPotmeter(ConfigKey key,
-			LinPotmeterParameters parameters = LinPotmeterParameters());
+            LinPotmeterParameters parameters = LinPotmeterParameters());
 };
 
 #endif // CONTROLLINPOTMETER_H

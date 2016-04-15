@@ -26,6 +26,6 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, LogPotmeterParameters para
     if (m_pControl) {
         m_pControl->setBehavior(
                 new ControlLogPotmeterBehavior(0, parameters.maxValue(),
-					parameters.scaleStartParameter(), parameters.minDB()));
+                        parameters.scaleStartParameter(), parameters.minDB()));
     }
 }
