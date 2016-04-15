@@ -705,15 +705,6 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
-                <key>P32.browse</key>
-                <status>0xB0</status>
-                <midino>0x02</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel1]</group>
                 <key>P32.rightDeck.pfl.input</key>
                 <status>0x92</status>
