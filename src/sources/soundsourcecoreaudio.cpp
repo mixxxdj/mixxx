@@ -36,7 +36,7 @@ SoundSourceCoreAudio::~SoundSourceCoreAudio() {
 }
 
 // soundsource overrides
-Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     const QString fileName(getLocalFileName());
 
     //Open the audio file.
@@ -62,7 +62,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
 
     if (err != noErr) {
         qDebug() << "SSCA: Error opening file " << fileName;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     // get the input file format
@@ -72,7 +72,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
             &m_inputFormat);
     if (err != noErr) {
         qDebug() << "SSCA: Error getting file format (" << fileName << ")";
-        return ERR;
+        return OpenResult::FAILED;
     }
     m_bFileIsMp3 = m_inputFormat.mFormatID == kAudioFormatMPEGLayer3;
 
@@ -88,7 +88,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
             &m_outputFormat);
     if (err != noErr) {
         qDebug() << "SSCA: Error setting file property";
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     //get the total length in frames of the audio file - copypasta: http://discussions.apple.com/thread.jspa?threadID=2364583&tstart=47
@@ -99,7 +99,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
             &totalFrameCount);
     if (err != noErr) {
         qDebug() << "SSCA: Error getting number of frames";
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     //
@@ -137,7 +137,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     //get the number of samples it expects (ie. no header frames).
     seekSampleFrame(0);
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceCoreAudio::close() {

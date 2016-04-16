@@ -85,7 +85,7 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
     return pModFile ? OK : ERR;
 }
 
-Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     ScopedTimer t("SoundSourceModPlug::open()");
 
     // read module file to byte array
@@ -103,7 +103,7 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         // an error occurred
         t.cancel();
         qDebug() << "[ModPlug] Could not load module file: " << fileName;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     DEBUG_ASSERT(0 == (kChunkSizeInBytes % sizeof(m_sampleBuf[0])));
@@ -155,7 +155,7 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     setFrameCount(samples2frames(m_sampleBuf.size()));
     m_seekPos = 0;
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceModPlug::close() {

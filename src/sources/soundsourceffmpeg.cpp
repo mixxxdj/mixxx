@@ -82,7 +82,7 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
     close();
 }
 
-Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
@@ -94,7 +94,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     if (m_pFormatCtx == NULL) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: Can't allocate memory";
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     // TODO() why is this required, should't it be a runtime check
@@ -119,7 +119,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), NULL,
                             &l_iFormatOpts) != 0) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     // TODO() why is this required, should't it be a runtime check
@@ -130,7 +130,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     // Retrieve stream information
     if (avformat_find_stream_info(m_pFormatCtx, NULL) < 0) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     //debug only (Enable if needed)
@@ -149,7 +149,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         qDebug() <<
                  "SoundSourceFFmpeg::tryOpen: cannot find an audio stream: cannot open"
                  << localFileName;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     // Get a pointer to the codec context for the audio stream
@@ -159,12 +159,12 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (!(m_pCodec = avcodec_find_decoder(m_pCodecCtx->codec_id))) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find a decoder for" <<
                 localFileName;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL)<0) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << localFileName;
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     m_pResample = new EncoderFfmpegResample(m_pCodecCtx);
@@ -180,10 +180,10 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
              getChannelCount() << "\n";
     if (getChannelCount() > 2) {
         qDebug() << "ffmpeg: No support for more than 2 channels!";
-        return ERR;
+        return OpenResult::FAILED;
     }
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceFFmpeg::close() {

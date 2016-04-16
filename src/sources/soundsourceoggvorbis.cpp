@@ -35,27 +35,27 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
     close();
 }
 
-Result SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
+SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     m_pFile = new QFile(getLocalFileName());
     if(!m_pFile->open(QFile::ReadOnly)) {
         qWarning() << "Failed to open OggVorbis file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
     if (ov_open_callbacks(m_pFile, &m_vf, NULL, 0, s_callbacks) < 0) {
         qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     if (!ov_seekable(&m_vf)) {
         qWarning() << "OggVorbis file is not seekable:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
     // lookup the ogg's channels and sample rate
     const vorbis_info* vi = ov_info(&m_vf, kCurrentBitstreamLink);
     if (!vi) {
         qWarning() << "Failed to read OggVorbis file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
     setChannelCount(vi->channels);
     setSamplingRate(vi->rate);
@@ -72,10 +72,10 @@ Result SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         setFrameCount(pcmTotal);
     } else {
         qWarning() << "Failed to read total length of OggVorbis file:" << getUrlString();
-        return ERR;
+        return OpenResult::FAILED;
     }
 
-    return OK;
+    return OpenResult::SUCCEEDED;
 }
 
 void SoundSourceOggVorbis::close() {
