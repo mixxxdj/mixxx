@@ -193,3 +193,12 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
 
     return caps;
 }
+
+void CrateTableModel::setSort(int column, Qt::SortOrder order) {
+    BaseSqlTableModel::setSort(column, order);
+
+    // Random sort easter egg, only in library view
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+        m_tableOrderBy = "ORDER BY RANDOM()";
+    }
+}

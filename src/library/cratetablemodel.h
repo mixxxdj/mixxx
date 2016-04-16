@@ -25,6 +25,7 @@ class CrateTableModel : public BaseSqlTableModel {
     // Returns the number of unsuccessful track additions
     int addTracks(const QModelIndex& index, const QList<QString>& locations);
     TrackModel::CapabilitiesFlags getCapabilities() const;
+    void setSort(int column, Qt::SortOrder order) override;
 
   private:
     int m_iCrateId;

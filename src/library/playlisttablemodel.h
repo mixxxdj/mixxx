@@ -30,6 +30,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     bool isLocked();
     void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
     TrackModel::CapabilitiesFlags getCapabilities() const;
+    void setSort(int column, Qt::SortOrder order) override;
 
   private slots:
     void playlistChanged(int playlistId);
