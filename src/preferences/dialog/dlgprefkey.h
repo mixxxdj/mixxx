@@ -7,6 +7,7 @@
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/dialog/ui_dlgprefkeydlg.h"
+#include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
 #include "track/keyutils.h"
 #include "preferences/dlgpreferencepage.h"
@@ -38,7 +39,7 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
   private:
     void loadSettings();
 
-    UserSettingsPointer m_pConfig;
+    KeyDetectionSettings m_keySettings;
     QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
     QList<AnalyzerPluginInfo> m_availablePlugins;
     QString m_selectedAnalyzerId;

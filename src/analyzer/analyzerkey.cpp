@@ -5,7 +5,6 @@
 
 #include "analyzer/plugins/analyzerqueenmarykey.h"
 #include "proto/keys.pb.h"
-#include "track/key_preferences.h"
 #include "track/keyfactory.h"
 
 // static
@@ -16,7 +15,7 @@ QList<AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
 }
 
 AnalyzerKey::AnalyzerKey(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
+        : m_keySettings(pConfig),
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_bPreferencesKeyDetectionEnabled(true),
@@ -32,27 +31,14 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
         return false;
     }
 
-    m_bPreferencesKeyDetectionEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
+    m_bPreferencesKeyDetectionEnabled = m_keySettings.getKeyDetectionEnabled();
     if (!m_bPreferencesKeyDetectionEnabled) {
         qDebug() << "Key detection is deactivated";
         return false;
     }
 
-    m_bPreferencesFastAnalysisEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
-    QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY),
-        // TODO(rryan) this default really doesn't belong here.
-        "libmixxxminimal");
-    QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID),
-        // TODO(rryan) this default really doesn't belong here.
-        VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID);
-
-    m_pluginId = pluginID;
+    m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
+    m_pluginId = m_keySettings.getKeyPluginId();
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
 
@@ -60,7 +46,7 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
-        if (pluginID == "qm-keydetector") {
+        if (m_pluginId == "qm-keydetector") {
             m_pPlugin.reset(new AnalyzerQueenMaryKey());
         } else {
             // Default to our built-in key detector.
@@ -80,22 +66,8 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
 }
 
 bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    bool bPreferencesFastAnalysisEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
-
-    QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY));
-    QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
-
-    // TODO(rryan): This belongs elsewhere.
-    if (library.isEmpty() || library.isNull())
-        library = "libmixxxminimal";
-
-    // TODO(rryan): This belongs elsewhere.
-    if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID = VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID;
+    bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
+    QString pluginID = m_keySettings.getKeyPluginId();
 
     const Keys keys(tio->getKeys());
     if (keys.isValid()) {

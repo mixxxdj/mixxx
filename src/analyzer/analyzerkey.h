@@ -8,6 +8,7 @@
 
 #include "analyzer/analyzer.h"
 #include "analyzer/plugins/analyzerplugin.h"
+#include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
 #include "trackinfoobject.h"
 
@@ -28,7 +29,7 @@ class AnalyzerKey : public Analyzer {
     static QHash<QString, QString> getExtraVersionInfo(
         QString pluginId, bool bPreferencesFastAnalysis);
 
-    UserSettingsPointer m_pConfig;
+    KeyDetectionSettings m_keySettings;
     QScopedPointer<AnalyzerKeyPlugin> m_pPlugin;
     QString m_pluginId;
     int m_iSampleRate;
