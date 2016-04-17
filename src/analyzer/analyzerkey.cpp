@@ -46,7 +46,7 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
-        if (m_pluginId == AnalyzerQueenMaryKey::info().id) {
+        if (m_pluginId == AnalyzerQueenMaryKey::pluginInfo().id) {
             m_pPlugin.reset(new AnalyzerQueenMaryKey());
         } else {
             // Default to our built-in key detector.

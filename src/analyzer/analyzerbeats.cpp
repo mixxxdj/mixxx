@@ -79,9 +79,9 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
-        if (m_pluginId == AnalyzerSoundTouchBeats::info().id) {
+        if (m_pluginId == AnalyzerSoundTouchBeats::pluginInfo().id) {
             m_pPlugin.reset(new AnalyzerSoundTouchBeats());
-        } else if (m_pluginId == AnalyzerQueenMaryBeats::info().id) {
+        } else if (m_pluginId == AnalyzerQueenMaryBeats::pluginInfo().id) {
             m_pPlugin.reset(new AnalyzerQueenMaryBeats());
         } else {
             m_pPlugin.reset(new AnalyzerQueenMaryBeats());
