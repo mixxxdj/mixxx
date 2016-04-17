@@ -176,7 +176,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     m_trackId = findFirstAudioTrackId(m_hFile, getLocalFileName());
     if (MP4_INVALID_TRACK_ID == m_trackId) {
         qWarning() << "No AAC track found:" << getUrlString();
-        return OpenResult::FAILED;
+        return OpenResult::UNSUPPORTED_FORMAT;
     }
 
     // Read fixed sample duration.  If the sample duration is not
@@ -186,7 +186,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSr
     m_framesPerSampleBlock = MP4GetTrackFixedSampleDuration(m_hFile, m_trackId);
     if (MP4_INVALID_DURATION == m_framesPerSampleBlock) {
       qWarning() << "Unable to decode tracks with non-fixed sample durations: " << getUrlString();
-      return OpenResult::FAILED;
+      return OpenResult::UNSUPPORTED_FORMAT;
     }
 
     const MP4SampleId numberOfSamples =

@@ -159,7 +159,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*au
     if (!(m_pCodec = avcodec_find_decoder(m_pCodecCtx->codec_id))) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find a decoder for" <<
                 localFileName;
-        return OpenResult::FAILED;
+        return OpenResult::UNSUPPORTED_FORMAT;
     }
 
     if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL)<0) {

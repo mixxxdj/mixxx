@@ -72,7 +72,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
             &m_inputFormat);
     if (err != noErr) {
         qDebug() << "SSCA: Error getting file format (" << fileName << ")";
-        return OpenResult::FAILED;
+        return OpenResult::UNSUPPORTED_FORMAT;
     }
     m_bFileIsMp3 = m_inputFormat.mFormatID == kAudioFormatMPEGLayer3;
 

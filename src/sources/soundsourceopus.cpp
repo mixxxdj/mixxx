@@ -156,8 +156,11 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audi
     }
 
     if (!op_seekable(m_pOggOpusFile)) {
-        qWarning() << "OggOpus file is not seekable:" << getUrlString();
-        return OpenResult::FAILED;
+        qWarning() << "SoundSourceOpus:"
+                << "Stream in"
+                << getUrlString()
+                << "is not seekable";
+        return OpenResult::UNSUPPORTED_FORMAT;
     }
 
     const int channelCount = op_channel_count(m_pOggOpusFile, kCurrentStreamLink);

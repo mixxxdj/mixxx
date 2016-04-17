@@ -2,6 +2,7 @@
 #define MIXXX_SOUNDSOURCEOGGVORBIS_H
 
 #include "sources/soundsourceprovider.h"
+#include "util/memory.h"
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
@@ -38,10 +39,11 @@ private:
     static long TellCallback(void *datasource);
     static ov_callbacks s_callbacks;
 
+    std::unique_ptr<QFile> m_pFile;
+
     OggVorbis_File m_vf;
 
     SINT m_curFrameIndex;
-    QFile* m_pFile;
 };
 
 class SoundSourceProviderOggVorbis: public SoundSourceProvider {
