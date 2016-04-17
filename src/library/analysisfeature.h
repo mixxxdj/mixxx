@@ -13,6 +13,7 @@
 #include <QList>
 
 #include "library/libraryfeature.h"
+#include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
 #include "treeitemmodel.h"
 #include "library/dlganalysis.h"
@@ -63,10 +64,11 @@ class AnalysisFeature : public LibraryFeature {
     void setTitleProgress(int trackNum, int totalNum);
 
     UserSettingsPointer m_pConfig;
+    BeatDetectionSettings m_bpmSettings;
     TrackCollection* m_pTrackCollection;
     AnalyzerQueue* m_pAnalyzerQueue;
     // Used to temporarily enable BPM detection in the prefs before we analyse
-    int m_iOldBpmEnabled;
+    bool m_bOldBpmEnabled;
     // The title returned by title()
     QVariant m_Title;
     TreeItemModel m_childModel;

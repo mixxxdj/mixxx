@@ -13,7 +13,6 @@
 
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
-#include "track/beat_preferences.h"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
 #include "track/beatutils.h"
@@ -28,7 +27,7 @@ QList<AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
 }
 
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
+        : m_bpmSettings(pConfig),
           m_bPreferencesReanalyzeOldBpm(false),
           m_bPreferencesFixedTempo(true),
           m_bPreferencesOffsetCorrection(false),
@@ -47,9 +46,8 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    bool bPreferencesBeatDetectionEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED)).toInt());
+    bool bPreferencesBeatDetectionEnabled =
+            m_bpmSettings.getBpmDetectionEnabled();
     if (!bPreferencesBeatDetectionEnabled) {
         qDebug() << "Beat calculation is deactivated";
         return false;
@@ -61,35 +59,19 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    bool allow_above = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED)).toInt());
-    if (allow_above) {
+    if (m_bpmSettings.getAllowBpmAboveRange()) {
         m_iMinBpm = 0;
         m_iMaxBpm = 9999;
     } else {
-        m_iMinBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
-        m_iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
+        m_iMinBpm = m_bpmSettings.getBpmRangeStart();
+        m_iMaxBpm = m_bpmSettings.getBpmRangeEnd();
     }
 
-    m_bPreferencesFixedTempo = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION)).toInt());
-    m_bPreferencesOffsetCorrection = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION)).toInt());
-    m_bPreferencesReanalyzeOldBpm = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
-    m_bPreferencesFastAnalysis = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
-
-    QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_LIBRARY));
-    QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
-
-    m_pluginId = pluginID;
+    m_bPreferencesFixedTempo = m_bpmSettings.getFixedTempoAssumption();
+    m_bPreferencesOffsetCorrection = m_bpmSettings.getFixedTempoOffsetCorrection();
+    m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
+    m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
+    m_pluginId = m_bpmSettings.getBeatPluginId();
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
 
@@ -97,9 +79,9 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
-        if (pluginID == "mixxxbpmdetection") {
+        if (m_pluginId == "mixxxbpmdetection") {
             m_pPlugin.reset(new AnalyzerSoundTouchBeats());
-        } else if (pluginID == "qm-tempotracker") {
+        } else if (m_pluginId == "qm-tempotracker") {
             m_pPlugin.reset(new AnalyzerQueenMaryBeats());
         } else {
             m_pPlugin.reset(new AnalyzerQueenMaryBeats());
@@ -108,7 +90,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     }
 
     if (bShouldAnalyze) {
-        qDebug() << "Beat calculation started with plugin" << pluginID;
+        qDebug() << "Beat calculation started with plugin" << m_pluginId;
     } else {
         qDebug() << "Beat calculation will not start";
         m_pPlugin.reset();
@@ -120,15 +102,12 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
 bool AnalyzerBeats::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     int iMinBpm;
     int iMaxBpm;
-
-    bool allow_above = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED)).toInt());
-    if (allow_above) {
+    if (m_bpmSettings.getAllowBpmAboveRange()) {
         iMinBpm = 0;
         iMaxBpm = 9999;
     } else {
-        iMinBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
-        iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
+        iMinBpm = m_bpmSettings.getBpmRangeStart();
+        iMaxBpm = m_bpmSettings.getBpmRangeEnd();
     }
 
     bool bpmLock = tio->isBpmLocked();
@@ -137,17 +116,7 @@ bool AnalyzerBeats::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
         return true;
     }
 
-    QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_LIBRARY));
-    QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
-
-    // At first start config for QM and Vamp does not exist --> set default
-    // TODO(XXX): This is no longer present in initialize. Remove?
-    if (library.isEmpty() || library.isNull())
-        library = "libmixxxminimal";
-    if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID = "qm-tempotracker:0";
+    QString pluginID = m_bpmSettings.getBeatPluginId();
 
     // If the track already has a Beats object then we need to decide whether to
     // analyze this track or not.

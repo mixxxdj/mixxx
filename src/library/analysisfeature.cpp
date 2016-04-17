@@ -18,13 +18,14 @@
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
 AnalysisFeature::AnalysisFeature(QObject* parent,
-                               UserSettingsPointer pConfig,
-                               TrackCollection* pTrackCollection) :
+                                 UserSettingsPointer pConfig,
+                                 TrackCollection* pTrackCollection) :
         LibraryFeature(parent),
         m_pConfig(pConfig),
+        m_bpmSettings(pConfig),
         m_pTrackCollection(pTrackCollection),
         m_pAnalyzerQueue(NULL),
-        m_iOldBpmEnabled(0),
+        m_bOldBpmEnabled(false),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(NULL) {
     setTitleDefault();
@@ -111,9 +112,9 @@ void AnalysisFeature::activate() {
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (m_pAnalyzerQueue == NULL) {
         // Save the old BPM detection prefs setting (on or off)
-        m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
+        m_bOldBpmEnabled = m_bpmSettings.getBpmDetectionEnabled();
         // Force BPM detection to be on.
-        m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
+        m_bpmSettings.setBpmDetectionEnabled(true);
         // Note: this sucks... we should refactor the prefs/analyzer to fix this hacky bit ^^^^.
 
         m_pAnalyzerQueue = AnalyzerQueue::createAnalysisFeatureAnalyzerQueue(m_pConfig, m_pTrackCollection);
@@ -166,7 +167,7 @@ void AnalysisFeature::cleanupAnalyzer() {
         m_pAnalyzerQueue->deleteLater();
         m_pAnalyzerQueue = NULL;
         // Restore old BPM detection setting for preferences...
-        m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
+        m_bpmSettings.setBpmDetectionEnabled(m_bOldBpmEnabled);
     }
 }
 

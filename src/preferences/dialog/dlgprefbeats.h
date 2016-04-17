@@ -10,6 +10,7 @@
 #include <QList>
 
 #include "analyzer/plugins/analyzerplugin.h"
+#include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbeatsdlg.h"
@@ -39,8 +40,7 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
   private:
     void loadSettings();
 
-    // Pointer to config object
-    UserSettingsPointer m_pconfig;
+    BeatDetectionSettings m_bpmSettings;
     QList<AnalyzerPluginInfo> m_availablePlugins;
     QString m_selectedAnalyzerId;
     int m_minBpm;

@@ -14,6 +14,7 @@
 
 #include "analyzer/analyzer.h"
 #include "analyzer/plugins/analyzerplugin.h"
+#include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
 
 class AnalyzerBeats: public Analyzer {
@@ -33,7 +34,7 @@ class AnalyzerBeats: public Analyzer {
     static QHash<QString, QString> getExtraVersionInfo(
         QString pluginId, bool bPreferencesFastAnalysis);
 
-    UserSettingsPointer m_pConfig;
+    BeatDetectionSettings m_bpmSettings;
     QScopedPointer<AnalyzerBeatsPlugin> m_pPlugin;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;

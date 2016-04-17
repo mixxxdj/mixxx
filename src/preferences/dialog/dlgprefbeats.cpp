@@ -2,11 +2,10 @@
 
 #include "analyzer/analyzerbeats.h"
 #include "controlobject.h"
-#include "track/beat_preferences.h"
 
-DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer _config)
+DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_pconfig(_config),
+          m_bpmSettings(pConfig),
           m_minBpm(0),
           m_maxBpm(0),
           m_banalyzerEnabled(false),
@@ -49,47 +48,31 @@ DlgPrefBeats::~DlgPrefBeats() {
 }
 
 void DlgPrefBeats::loadSettings() {
-    QString beatPluginId = m_pconfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID));
-    if (beatPluginId.isEmpty()) {
-        slotResetToDefaults();
-        slotApply();    // Write to config file so AnalyzerBeats can get the data
-        return;
-    }
-
+    QString beatPluginId = m_bpmSettings.getBeatPluginId();
     m_selectedAnalyzerId = beatPluginId;
+    m_banalyzerEnabled = m_bpmSettings.getBpmDetectionEnabled();
+    m_bfixedtempoEnabled = m_bpmSettings.getFixedTempoAssumption();
+    m_boffsetEnabled = m_bpmSettings.getFixedTempoOffsetCorrection();
+    m_bReanalyze =  m_bpmSettings.getReanalyzeWhenSettingsChange();
+    m_FastAnalysisEnabled = m_bpmSettings.getFastAnalysis();
 
-    m_banalyzerEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED)).toInt());
-
-    m_bfixedtempoEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION)).toInt());
-
-    m_boffsetEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION)).toInt());
-
-    m_bReanalyze =  static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
-
-    m_FastAnalysisEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
-
-    m_minBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
-    m_maxBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
+    // TODO(rryan): Above range enabled is not exposed?
+    m_minBpm = m_bpmSettings.getBpmRangeStart();
+    m_maxBpm = m_bpmSettings.getBpmRangeEnd();
 
     slotUpdate();
 }
 
 void DlgPrefBeats::slotResetToDefaults() {
-    // TODO(rryan): Select QM Beat Tracker here.
-    m_selectedAnalyzerId = "qm-tempotracker";
-    m_banalyzerEnabled = true;
-    m_bfixedtempoEnabled = true;
-    m_boffsetEnabled = true;
-    m_FastAnalysisEnabled = false;
-    m_bReanalyze = false;
-    m_minBpm = 70;
-    m_maxBpm = 140;
+    m_selectedAnalyzerId = m_bpmSettings.getBeatPluginIdDefault();
+    m_banalyzerEnabled = m_bpmSettings.getBpmDetectionEnabledDefault();
+    m_bfixedtempoEnabled = m_bpmSettings.getFixedTempoAssumptionDefault();
+    m_boffsetEnabled = m_bpmSettings.getFixedTempoOffsetCorrectionDefault();
+    m_FastAnalysisEnabled = m_bpmSettings.getFastAnalysisDefault();
+    m_bReanalyze = m_bpmSettings.getReanalyzeWhenSettingsChangeDefault();
+    // TODO(rryan): Above range enabled is not exposed?
+    m_minBpm = m_bpmSettings.getBpmRangeStartDefault();
+    m_maxBpm = m_bpmSettings.getBpmRangeEndDefault();
     slotUpdate();
 }
 
@@ -140,8 +123,7 @@ void DlgPrefBeats::slotUpdate() {
         return;
     }
 
-    // TODO(rryan)
-    if (m_selectedAnalyzerId != "qm-tempotracker") {
+    if (m_bpmSettings.isFixedTempoSupportedByPlugin(m_selectedAnalyzerId)) {
         bfixedtempo->setEnabled(false);
         boffset->setEnabled(false);
     }
@@ -174,22 +156,12 @@ void DlgPrefBeats::fastAnalysisEnabled(int i) {
 }
 
 void DlgPrefBeats::slotApply() {
-    // TODO(rryan)
-    // m_pconfig->set(ConfigKey(
-    //     VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_LIBRARY), ConfigValue(m_listLibrary[selected]));
-    m_pconfig->set(ConfigKey(
-        VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID), ConfigValue(m_selectedAnalyzerId));
-    m_pconfig->set(ConfigKey(
-        BPM_CONFIG_KEY, BPM_DETECTION_ENABLED), ConfigValue(m_banalyzerEnabled ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION), ConfigValue(m_bfixedtempoEnabled ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION), ConfigValue(m_boffsetEnabled ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE), ConfigValue(m_bReanalyze ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED), ConfigValue(m_FastAnalysisEnabled ? 1 : 0));
-
-    m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START), ConfigValue(m_minBpm));
-    m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END), ConfigValue(m_maxBpm));
+    m_bpmSettings.setBeatPluginId(m_selectedAnalyzerId);
+    m_bpmSettings.setBpmDetectionEnabled(m_banalyzerEnabled);
+    m_bpmSettings.setFixedTempoAssumption(m_bfixedtempoEnabled);
+    m_bpmSettings.setFixedTempoOffsetCorrection(m_boffsetEnabled);
+    m_bpmSettings.setReanalyzeWhenSettingsChange(m_bReanalyze);
+    m_bpmSettings.setFastAnalysis(m_FastAnalysisEnabled);
+    m_bpmSettings.setBpmRangeStart(m_minBpm);
+    m_bpmSettings.setBpmRangeEnd(m_maxBpm);
 }
