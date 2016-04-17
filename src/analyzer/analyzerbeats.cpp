@@ -79,9 +79,9 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
-        if (m_pluginId == "mixxxbpmdetection") {
+        if (m_pluginId == AnalyzerSoundTouchBeats::info().id) {
             m_pPlugin.reset(new AnalyzerSoundTouchBeats());
-        } else if (m_pluginId == "qm-tempotracker") {
+        } else if (m_pluginId == AnalyzerQueenMaryBeats::info().id) {
             m_pPlugin.reset(new AnalyzerQueenMaryBeats());
         } else {
             m_pPlugin.reset(new AnalyzerQueenMaryBeats());
