@@ -26,7 +26,7 @@ class LoopingControl : public EngineControl {
   public:
     static QList<double> getBeatSizes();
 
-    LoopingControl(QString group, UserSettingsPointer _config);
+    LoopingControl(QString group, UserSettingsPointer pConfig);
     virtual ~LoopingControl();
 
     // process() updates the internal state of the LoopingControl to reflect the
@@ -64,8 +64,7 @@ class LoopingControl : public EngineControl {
     void slotReloopExit(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
+    virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
     void slotUpdatedTrackBeats();
 
     // Generate a loop of 'beats' length. It can also do fractions for a

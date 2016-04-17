@@ -8,9 +8,9 @@
 #include "mixer/playermanager.h"
 
 EngineControl::EngineControl(QString group,
-                             UserSettingsPointer _config)
+                             UserSettingsPointer pConfig)
         : m_group(group),
-          m_pConfig(_config),
+          m_pConfig(pConfig),
           m_pEngineMaster(NULL),
           m_pEngineBuffer(NULL) {
     setCurrentSample(0.0, 0.0);
@@ -40,10 +40,9 @@ double EngineControl::getTrigger(const double,
     return kNoTrigger;
 }
 
-void EngineControl::trackLoaded(TrackPointer) {
-}
-
-void EngineControl::trackUnloaded(TrackPointer) {
+void EngineControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
 }
 
 void EngineControl::hintReader(HintVector*) {

@@ -38,8 +38,8 @@ QList<double> LoopingControl::getBeatSizes() {
 }
 
 LoopingControl::LoopingControl(QString group,
-                               UserSettingsPointer _config)
-        : EngineControl(group, _config) {
+                               UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig) {
     m_bLoopingEnabled = false;
     m_bLoopRollActive = false;
     m_iLoopStartSample = kNoTrigger;
@@ -607,30 +607,24 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
     }
 }
 
-void LoopingControl::trackLoaded(TrackPointer pTrack) {
-    if (m_pTrack) {
-        trackUnloaded(m_pTrack);
-    }
-
-    clearActiveBeatLoop();
-
-    if (pTrack) {
-        m_pTrack = pTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
-                this, SLOT(slotUpdatedTrackBeats()));
-    }
-}
-
-void LoopingControl::trackUnloaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
+void LoopingControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
     if (m_pTrack) {
         disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));
     }
-    m_pTrack.clear();
-    m_pBeats.clear();
+
     clearActiveBeatLoop();
+
+    if (pNewTrack) {
+        m_pTrack = pNewTrack;
+        m_pBeats = m_pTrack->getBeats();
+        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                this, SLOT(slotUpdatedTrackBeats()));
+    } else {
+        m_pTrack.clear();
+        m_pBeats.clear();
+    }
 }
 
 void LoopingControl::slotUpdatedTrackBeats()

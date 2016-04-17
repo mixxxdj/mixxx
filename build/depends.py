@@ -90,6 +90,22 @@ class CoreServices(Dependence):
         build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework CoreServices')
 
+class IOKit(Dependence):
+    """IOKit is used to get battery measurements on OS X and iOS."""
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(
+            CPPPATH='/Library/Frameworks/IOKit.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework IOKit')
+
+class UPower(Dependence):
+    """UPower is used to get battery measurements on Linux."""
+    def configure(self, build, conf):
+        if not build.platform_is_linux:
+            return
+        build.env.ParseConfig(
+                'pkg-config upower-glib --silence-errors --cflags --libs')
 
 class OggVorbis(Dependence):
 
@@ -403,45 +419,74 @@ class ReplayGain(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
 
-
-class SoundTouch(Dependence):
-    SOUNDTOUCH_PATH = 'soundtouch-1.8.0'
+class Ebur128Mit(Dependence):
+    INTERNAL_PATH = '#lib/libebur128-1.1.0'
+    INTERNAL_LINK = False
 
     def sources(self, build):
-        return ['engine/enginebufferscalest.cpp',
-                '#lib/%s/AAFilter.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/InterpolateCubic.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/InterpolateLinear.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/InterpolateShannon.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/RateTransposer.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/SoundTouch.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/TDStretch.cpp' % self.SOUNDTOUCH_PATH,
-                # SoundTouch CPU optimizations are only for x86
-                # architectures. SoundTouch automatically ignores these files
-                # when it is not being built for an architecture that supports
-                # them.
-                '#lib/%s/cpu_detect_x86.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH]
+        if self.INTERNAL_LINK:
+            return ['%s/ebur128/ebur128.c' % self.INTERNAL_PATH]
 
     def configure(self, build, conf, env=None):
         if env is None:
             env = build.env
-        env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
+        if not conf.CheckLib(['ebur128', 'libebur128']):
+            self.INTERNAL_LINK = True;
+            env.Append(CPPPATH=['%s/ebur128' % self.INTERNAL_PATH])
+            #env.Append(CPPDEFINES='USE_SPEEX_RESAMPLER') # Required for unused EBUR128_MODE_TRUE_PEAK
 
-        # Prevents circular import.
-        from features import Optimize
 
-        # If we do not want optimizations then disable them.
-        optimize = (build.flags['optimize'] if 'optimize' in build.flags
-                    else Optimize.get_optimization_level(build))
-        if optimize == Optimize.LEVEL_OFF:
-            env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
+class SoundTouch(Dependence):
+    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-1.9.2'
+    INTERNAL_LINK = True
 
+    def sources(self, build):
+        if self.INTERNAL_LINK:
+            return ['engine/enginebufferscalest.cpp',
+                    '%s/AAFilter.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/BPMDetect.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/FIRFilter.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/InterpolateCubic.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/InterpolateLinear.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/InterpolateShannon.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/PeakFinder.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/RateTransposer.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/SoundTouch.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/TDStretch.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    # SoundTouch CPU optimizations are only for x86
+                    # architectures. SoundTouch automatically ignores these files
+                    # when it is not being built for an architecture that supports
+                    # them.
+                    '%s/cpu_detect_x86.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/mmx_optimized.cpp' % self.SOUNDTOUCH_INTERNAL_PATH,
+                    '%s/sse_optimized.cpp' % self.SOUNDTOUCH_INTERNAL_PATH]
+        else:
+            return ['engine/enginebufferscalest.cpp']
+
+    def configure(self, build, conf, env=None):
+        if env is None:
+            env = build.env
+
+        if build.platform_is_linux:
+            # Try using system lib
+            if conf.CheckForPKG('soundtouch', '1.8.0'):
+                # System Lib found
+                build.env.ParseConfig('pkg-config soundtouch --silence-errors \
+                                      --cflags --libs')
+                self.INTERNAL_LINK = False
+
+        if self.INTERNAL_LINK:
+            env.Append(CPPPATH=[self.SOUNDTOUCH_INTERNAL_PATH])
+
+            # Prevents circular import.
+            from features import Optimize
+
+            # If we do not want optimizations then disable them.
+            optimize = (build.flags['optimize'] if 'optimize' in build.flags
+                        else Optimize.get_optimization_level(build))
+            if optimize == Optimize.LEVEL_OFF:
+                env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
 
 class RubberBand(Dependence):
     def sources(self, build):
@@ -458,32 +503,54 @@ class RubberBand(Dependence):
 
 class QueenMaryDsp(Dependence):
     def sources(self, build):
-        return ["#lib/qm-dsp/ChangeDetectionFunction.cpp",
-	        "#lib/qm-dsp/DownBeat.cpp",
-	        "#lib/qm-dsp/PeakPicking.cpp",
-	        "#lib/qm-dsp/Chromagram.cpp",
-	        "#lib/qm-dsp/FFT.cpp",
-	        "#lib/qm-dsp/PhaseVocoder.cpp",
-	        "#lib/qm-dsp/ConstantQ.cpp",
-	        "#lib/qm-dsp/Filter.cpp",
-	        "#lib/qm-dsp/Pitch.cpp",
-	        "#lib/qm-dsp/Correlation.cpp",
-	        "#lib/qm-dsp/FiltFilt.cpp",
-	        "#lib/qm-dsp/TCSgram.cpp",
-	        "#lib/qm-dsp/CQprecalc.cpp",
-	        "#lib/qm-dsp/Framer.cpp",
-	        "#lib/qm-dsp/TempoTrack.cpp",
-	        "#lib/qm-dsp/Decimator.cpp",
-	        "#lib/qm-dsp/GetKeyMode.cpp",
-	        "#lib/qm-dsp/TempoTrackV2.cpp",
-	        "#lib/qm-dsp/DetectionFunction.cpp",
-	        "#lib/qm-dsp/KLDivergence.cpp",
-	        "#lib/qm-dsp/TonalEstimator.cpp",
-	        "#lib/qm-dsp/DFProcess.cpp",
-	        "#lib/qm-dsp/MathUtilities.cpp"]
+        return ["#lib/qm-dsp/base/KaiserWindow.cpp",
+                "#lib/qm-dsp/base/Pitch.cpp",
+                "#lib/qm-dsp/base/SincWindow.cpp",
+                "#lib/qm-dsp/dsp/chromagram/CQprecalc.cpp",
+                "#lib/qm-dsp/dsp/chromagram/Chromagram.cpp",
+                "#lib/qm-dsp/dsp/chromagram/ConstantQ.cpp",
+                "#lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp",
+                "#lib/qm-dsp/dsp/mfcc/MFCC.cpp",
+                "#lib/qm-dsp/dsp/onsets/DetectionFunction.cpp",
+                "#lib/qm-dsp/dsp/onsets/PeakPicking.cpp",
+                "#lib/qm-dsp/dsp/phasevocoder/PhaseVocoder.cpp",
+                "#lib/qm-dsp/dsp/rateconversion/Decimator.cpp",
+                "#lib/qm-dsp/dsp/rateconversion/DecimatorB.cpp",
+                "#lib/qm-dsp/dsp/rateconversion/Resampler.cpp",
+                "#lib/qm-dsp/dsp/rhythm/BeatSpectrum.cpp",
+                #"#lib/qm-dsp/dsp/segmentation/ClusterMeltSegmenter.cpp",
+                #"#lib/qm-dsp/dsp/segmentation/Segmenter.cpp",
+                #"#lib/qm-dsp/dsp/segmentation/cluster_melt.c",
+                #"#lib/qm-dsp/dsp/segmentation/cluster_segmenter.c",
+                "#lib/qm-dsp/dsp/signalconditioning/DFProcess.cpp",
+                "#lib/qm-dsp/dsp/signalconditioning/FiltFilt.cpp",
+                "#lib/qm-dsp/dsp/signalconditioning/Filter.cpp",
+                "#lib/qm-dsp/dsp/signalconditioning/Framer.cpp",
+                "#lib/qm-dsp/dsp/tempotracking/DownBeat.cpp",
+                "#lib/qm-dsp/dsp/tempotracking/TempoTrack.cpp",
+                "#lib/qm-dsp/dsp/tempotracking/TempoTrackV2.cpp",
+                "#lib/qm-dsp/dsp/tonal/ChangeDetectionFunction.cpp",
+                "#lib/qm-dsp/dsp/tonal/TCSgram.cpp",
+                "#lib/qm-dsp/dsp/tonal/TonalEstimator.cpp",
+                "#lib/qm-dsp/dsp/transforms/FFT.cpp",
+                "#lib/qm-dsp/dsp/wavelet/Wavelet.cpp",
+                "#lib/qm-dsp/ext/kissfft/kiss_fft.c",
+                "#lib/qm-dsp/ext/kissfft/kiss_fftr.c",
+                #"#lib/qm-dsp/hmm/hmm.c",
+                "#lib/qm-dsp/maths/Correlation.cpp",
+                "#lib/qm-dsp/maths/CosineDistance.cpp",
+                "#lib/qm-dsp/maths/KLDivergence.cpp",
+                "#lib/qm-dsp/maths/MathUtilities.cpp",
+                "#lib/qm-dsp/maths/pca/pca.c",
+                "#lib/qm-dsp/thread/Thread.cpp"
+        ]
 
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/qm-dsp")
+        build.env.Append(CPPPATH="#lib/qm-dsp/include")
+        build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
+        if not build.platform_is_windows:
+            build.env.Append(CPPDEFINES='USE_PTHREADS')
 
 
 class TagLib(Dependence):
@@ -608,8 +675,10 @@ class MixxxCore(Feature):
                    'preferences/dialog/dlgprefbeats.cpp',
                    'preferences/dialog/dlgprefkey.cpp',
                    "preferences/settingsmanager.cpp",
+                   "preferences/replaygainsettings.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
+
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -675,6 +744,7 @@ class MixxxCore(Feature):
                    "engine/enginevumeter.cpp",
                    "engine/enginesidechaincompressor.cpp",
                    "engine/sidechain/enginesidechain.cpp",
+                   "engine/sidechain/networkstreamworker.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
@@ -701,6 +771,7 @@ class MixxxCore(Feature):
                    "analyzer/analyzergain.cpp",
                    'analyzer/analyzerbeats.cpp',
                    'analyzer/analyzerkey.cpp',
+                   "analyzer/analyzerebur128.cpp",
                    "analyzer/plugins/analyzerplugin.cpp",
                    "analyzer/plugins/analyzersoundtouchbeats.cpp",
                    "analyzer/plugins/analyzerqueenmarybeats.cpp",
@@ -782,12 +853,14 @@ class MixxxCore(Feature):
                    "widget/weffectparameterbase.cpp",
                    "widget/wtime.cpp",
                    "widget/wkey.cpp",
+                   "widget/wbattery.cpp",
                    "widget/wcombobox.cpp",
                    "widget/wsplitter.cpp",
                    "widget/wcoverart.cpp",
                    "widget/wcoverartlabel.cpp",
                    "widget/wcoverartmenu.cpp",
                    "widget/wsingletoncontainer.cpp",
+                   "widget/wmainmenubar.cpp",
 
                    "musicbrainz/network.cpp",
                    "musicbrainz/tagfetcher.cpp",
@@ -1015,6 +1088,7 @@ class MixxxCore(Feature):
                    "util/threadcputimer.cpp",
                    "util/version.cpp",
                    "util/rlimit.cpp",
+                   "util/battery/battery.cpp",
                    "util/valuetransformer.cpp",
                    "util/sandbox.cpp",
                    "util/file.cpp",
@@ -1295,7 +1369,7 @@ class MixxxCore(Feature):
                 CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
-        return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
+        return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
                 QtScriptByteArray, Reverb, FpClassify, QueenMaryDsp]

@@ -59,10 +59,10 @@ class VinylControl : public QObject {
     // Is pitch changing very quickly?
     ControlObjectSlave* scratching;
     // The ControlObject used to the get the pitch range from the prefs.
-    ControlObjectSlave* rateRange;
+    ControlObjectSlave* m_pRateRange;
     ControlObjectSlave* vinylStatus;
     // direction of rate
-    ControlObjectSlave* rateDir;
+    ControlObjectSlave* m_pRateDir;
     // looping enabled?
     ControlObjectSlave* loopEnabled;
     // show the signal in the skin?

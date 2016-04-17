@@ -56,7 +56,7 @@ class EngineShoutcast :
         STATUSCO_FAILURE = 3 // Happens when disconnected by an error
     };
 
-    EngineShoutcast(UserSettingsPointer _config);
+    EngineShoutcast(UserSettingsPointer pConfig);
     virtual ~EngineShoutcast();
 
     // This is called by the Engine implementation for each sample. Encode and
@@ -151,6 +151,7 @@ class EngineShoutcast :
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;
+    QString m_lastErrorStr;
 };
 
 #endif

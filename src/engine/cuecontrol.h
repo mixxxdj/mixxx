@@ -84,7 +84,7 @@ class CueControl : public EngineControl {
     Q_OBJECT
   public:
     CueControl(QString group,
-               UserSettingsPointer _config);
+               UserSettingsPointer pConfig);
     virtual ~CueControl();
 
     virtual void hintReader(HintVector* pHintList);
@@ -94,8 +94,7 @@ class CueControl : public EngineControl {
     bool getPlayFlashingAtPause();
 
   public slots:
-    void trackLoaded(TrackPointer pTrack);
-    void trackUnloaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
     void cueUpdated();

@@ -163,13 +163,15 @@ void WWaveformViewer::dropEvent(QDropEvent* event) {
     event->ignore();
 }
 
-void WWaveformViewer::onTrackLoaded(TrackPointer track) {
+void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
     }
 }
 
-void WWaveformViewer::onTrackUnloaded(TrackPointer /*track*/) {
+void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(TrackPointer());
     }

@@ -71,6 +71,36 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
             setOrientation(Qt::Horizontal);
         }
     }
+
+    // Which children can be collapsed?
+    if (context.hasNode(node, "Collapsible")) {
+        QString collapsibleJoined = context.selectString(node, "Collapsible");
+        QStringList collapsibleSplit = collapsibleJoined.split(",");
+        QList<bool> collapsibleList;
+        ok = false;
+        foreach (const QString& collapsibleStr, collapsibleSplit) {
+            collapsibleList.push_back(collapsibleStr.toInt(&ok)>0);
+            if (!ok) {
+                break;
+            }
+        }
+        if (collapsibleList.length() != this->count()) {
+            msg = "<Collapsible> for <Splitter> ("
+                            + collapsibleJoined
+                            + ") does not match the number of children nodes:"
+                            + QString::number(this->count());
+            SKIN_WARNING(node, context) << msg;
+            ok = false;
+        }
+        if (ok) {
+            QListIterator<bool> it(collapsibleList);
+            int i = 0;
+            while (it.hasNext()) {
+                this->setCollapsible(i, it.next());
+                ++i;
+            }
+        }
+    }
 }
 
 void WSplitter::slotSplitterMoved() {

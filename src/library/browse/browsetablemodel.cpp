@@ -39,7 +39,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     header_data.insert(COLUMN_KEY, tr("Key"));
     header_data.insert(COLUMN_TYPE, tr("Type"));
     header_data.insert(COLUMN_BITRATE, tr("Bitrate"));
-    header_data.insert(COLUMN_REPLAYGAIN, tr("Replay Gain"));
+    header_data.insert(COLUMN_REPLAYGAIN, tr("ReplayGain"));
     header_data.insert(COLUMN_LOCATION, tr("Location"));
     header_data.insert(COLUMN_ALBUMARTIST, tr("Album Artist"));
     header_data.insert(COLUMN_GROUPING, tr("Grouping"));

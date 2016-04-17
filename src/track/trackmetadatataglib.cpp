@@ -945,7 +945,7 @@ void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
                 &trackNumber,
                 &trackTotal);
         if (!readXiphCommentField(tag, "TRACKTOTAL", &trackTotal)) { // recommended field
-            readXiphCommentField(tag, "TOTALTRACKS", &trackTotal); // alternative field
+            (void)readXiphCommentField(tag, "TOTALTRACKS", &trackTotal); // alternative field
         }
         pTrackMetadata->setTrackNumber(trackNumber);
         pTrackMetadata->setTrackTotal(trackTotal);

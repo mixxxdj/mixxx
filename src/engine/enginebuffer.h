@@ -116,7 +116,7 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(QString _group, UserSettingsPointer _config,
+    EngineBuffer(QString _group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
@@ -173,6 +173,11 @@ class EngineBuffer : public EngineObject {
         }
     }
 
+    // Request that the EngineBuffer load a track. Since the process is
+    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
+    // has completed.
+    void loadTrack(TrackPointer pTrack, bool play);
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -186,17 +191,11 @@ class EngineBuffer : public EngineObject {
     void slotControlSlip(double);
     void slotKeylockEngineChanged(double);
 
-    // Request that the EngineBuffer load a track. Since the process is
-    // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
-    // has completed.
-    void slotLoadTrack(TrackPointer pTrack, bool play = false);
-
     void slotEjectTrack(double);
 
   signals:
-    void trackLoaded(TrackPointer pTrack);
+    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
-    void trackUnloaded(TrackPointer pTrack);
 
   private slots:
     void slotTrackLoading();

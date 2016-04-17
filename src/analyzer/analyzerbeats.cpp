@@ -94,7 +94,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     m_iTotalSamples = totalSamples;
 
     // if we can load a stored track don't reanalyze it
-    bool bShouldAnalyze = !loadStored(tio);
+    bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
         if (pluginID == "mixxxbpmdetection") {
@@ -117,7 +117,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     return bShouldAnalyze;
 }
 
-bool AnalyzerBeats::loadStored(TrackPointer tio) const {
+bool AnalyzerBeats::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     int iMinBpm;
     int iMaxBpm;
 
@@ -246,7 +246,7 @@ void AnalyzerBeats::finalize(TrackPointer tio) {
     // If the track received the beat lock while we were analyzing it then we
     // abort setting it.
     if (tio->isBpmLocked()) {
-        qDebug() << "Track was BPM-locked as we were analysing it. Aborting analysis.";
+        qDebug() << "Track was BPM-locked as we were analyzing it. Aborting analysis.";
         return;
     }
 

@@ -43,8 +43,7 @@ static const int kConnectRetries = 10;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
-
-EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
+EngineShoutcast::EngineShoutcast(UserSettingsPointer pConfig)
         : m_pTextCodec(NULL),
           m_pMetaData(),
           m_pShout(NULL),
@@ -52,7 +51,7 @@ EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
           m_iShoutFailures(0),
-          m_pConfig(_config),
+          m_pConfig(pConfig),
           m_encoder(NULL),
           m_pMasterSamplerate(new ControlObjectSlave("[Master]", "samplerate")),
           m_custom_metadata(false),
@@ -90,6 +89,7 @@ EngineShoutcast::EngineShoutcast(UserSettingsPointer _config)
         errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_metadata_t"));
     }
 
+    setFunctionCode(14);
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
     }
@@ -140,8 +140,11 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
+    NetworkStreamWorker::debugState();
 
-    if(getState() == NETWORKSTREAMWORKER_STATE_CONNECTED) {
+    double dStatus = m_pStatusCO->get();
+    if (dStatus == STATUSCO_CONNECTED ||
+            dStatus == STATUSCO_CONNECTING) {
         qDebug() << "EngineShoutcast::updateFromPreferences: Can't edit preferences when playing";
         return;
     }
@@ -375,8 +378,14 @@ bool EngineShoutcast::serverConnect() {
 }
 
 bool EngineShoutcast::processConnect() {
+    // Make sure that we call updateFromPreferences always
+    if (m_encoder == NULL) {
+        updateFromPreferences();
+    }
+
     m_pStatusCO->setAndConfirm(STATUSCO_CONNECTING);
     m_iShoutFailures = 0;
+    m_lastErrorStr.clear();
     // set to a high number to automatically update the metadata
     // on the first change
     m_iMetaDataLife = 31337;
@@ -387,11 +396,6 @@ bool EngineShoutcast::processConnect() {
     }
     //If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
-
-    // Make sure that we call updateFromPreferences always
-    if (m_encoder == NULL) {
-        updateFromPreferences();
-    }
 
     while (m_iShoutFailures < kMaxShoutFailures) {
         shout_close(m_pShout);
@@ -416,12 +420,17 @@ bool EngineShoutcast::processConnect() {
             m_iShoutStatus == SHOUTERR_UNSUPPORTED ||
             m_iShoutStatus == SHOUTERR_NOLOGIN ||
             m_iShoutStatus == SHOUTERR_MALLOC) {
-            qDebug() << "Streaming server made fatal error. Can't continue connecting:" << shout_get_error(m_pShout);
+            m_lastErrorStr = shout_get_error(m_pShout);
+            qDebug() << "Streaming server made fatal error. Can't continue connecting:"
+                     << m_lastErrorStr;
             break;
         }
 
         m_iShoutFailures++;
-        qDebug() << m_iShoutFailures << "/" << kMaxShoutFailures << "Streaming server failed connect. Failures:" << shout_get_error(m_pShout);
+        m_lastErrorStr = shout_get_error(m_pShout);
+        qDebug() << m_iShoutFailures << "/" << kMaxShoutFailures
+                 << "Streaming server failed connect. Failures:"
+                 << m_lastErrorStr;
     }
 
     // If we don't have any fatal errors let's try to connect
@@ -436,17 +445,17 @@ bool EngineShoutcast::processConnect() {
                 m_pShoutcastEnabled->toBool()) {
             setState(NETWORKSTREAMWORKER_STATE_WAITING);
             qDebug() << "Connection pending. Waiting...";
+            NetworkStreamWorker::debugState();
             m_iShoutStatus = shout_get_connected(m_pShout);
 
             if (m_iShoutStatus != SHOUTERR_BUSY &&
-                m_iShoutStatus != SHOUTERR_SUCCESS &&
-                m_iShoutStatus != SHOUTERR_CONNECTED) {
-                qDebug() << "Streaming server made error:" << shout_get_error(m_pShout);
+                    m_iShoutStatus != SHOUTERR_SUCCESS &&
+                    m_iShoutStatus != SHOUTERR_CONNECTED) {
+                qDebug() << "Streaming server made error:" << m_iShoutStatus;
             }
 
             // If socket is busy then we wait half second
-            if(m_iShoutStatus == SHOUTERR_BUSY)
-            {
+            if (m_iShoutStatus == SHOUTERR_BUSY) {
                QThread::msleep(500);
             }
 
@@ -467,11 +476,13 @@ bool EngineShoutcast::processConnect() {
             emit(shoutcastConnected());
             return true;
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
+            m_lastErrorStr = "Socket error";
             qDebug() << "EngineShoutcast::processConnect() socket error."
                      << "Is socket already in use?";
         } else if (m_pShoutcastEnabled->toBool()) {
+            m_lastErrorStr = shout_get_error(m_pShout);
             qDebug() << "EngineShoutcast::processConnect() error:"
-                     << m_iShoutStatus << shout_get_error(m_pShout);
+                     << m_iShoutStatus << m_lastErrorStr;
         }
     } else {
         // no connection
@@ -512,6 +523,7 @@ void EngineShoutcast::processDisconnect() {
 
 void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
+    setFunctionCode(7);
     if (!m_pShout) {
         return;
     }
@@ -531,12 +543,14 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         ssize_t queuelen = shout_queuelen(m_pShout);
         if (queuelen > 0) {
             qDebug() << "shout_queuelen" << queuelen;
+            NetworkStreamWorker::debugState();
             if (queuelen > kMaxNetworkCache) {
                 m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
                 processDisconnect();
                 if (!processConnect()) {
-                    errorDialog(tr("Lost connection to streaming server"),
-                                tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                    errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
+                                m_lastErrorStr + "\n" +
+                                tr("Please check your connection to the Internet"));
                 }
             }
         }
@@ -545,17 +559,20 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 
 bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
     // We are already synced by EngineNetworkstream
+    setFunctionCode(8);
     int ret = shout_send_raw(m_pShout, data, len);
     if (ret < SHOUTERR_SUCCESS && ret != SHOUTERR_BUSY) {
         // in case of bussy, frames are queued and queue is checked below
         qDebug() << "EngineShoutcast::write() header error:"
                  << ret << shout_get_error(m_pShout);
+        NetworkStreamWorker::debugState();
         if (m_iShoutFailures > kMaxShoutFailures) {
             m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
             processDisconnect();
             if (!processConnect()) {
-                errorDialog(tr("Lost connection to streaming server"),
-                            tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                errorDialog(tr("Lost connection to streaming server and the attempt to reconnect failed"),
+                            m_lastErrorStr + "\n" +
+                            tr("Please check your connection to the Internet"));
             }
         } else{
             m_iShoutFailures++;
@@ -568,6 +585,7 @@ bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
 }
 
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
+    setFunctionCode(4);
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
     // If we are here then the user wants to be connected (shoutcast is enabled
@@ -579,6 +597,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
     // If we are connected, encode the samples.
     if (iBufferSize > 0 && m_encoder) {
+        setFunctionCode(6);
         m_encoder->encodeBuffer(pBuffer, iBufferSize);
         // the encoded frames are received by the write() callback.
     }
@@ -621,6 +640,7 @@ bool EngineShoutcast::metaDataHasChanged() {
 }
 
 void EngineShoutcast::updateMetaData() {
+    setFunctionCode(5);
     if (!m_pShout || !m_pShoutMetaData)
         return;
 
@@ -657,6 +677,7 @@ void EngineShoutcast::updateMetaData() {
             // Also I do not know about icecast1. To be safe, i stick to the
             // old way for those use cases.
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+                setFunctionCode(9);
                 shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
                 shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
             } else {
@@ -689,8 +710,10 @@ void EngineShoutcast::updateMetaData() {
                 } while (replaceIndex != -1);
 
                 QByteArray baSong = encodeString(metadataFinal);
+                setFunctionCode(10);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             }
+            setFunctionCode(11);
             shout_set_metadata(m_pShout, m_pShoutMetaData);
 
         }
@@ -701,6 +724,7 @@ void EngineShoutcast::updateMetaData() {
 
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+                setFunctionCode(12);
                 shout_metadata_add(
                         m_pShoutMetaData,"artist",encodeString(m_customArtist).constData());
 
@@ -711,6 +735,7 @@ void EngineShoutcast::updateMetaData() {
                 shout_metadata_add(m_pShoutMetaData, "song", baCustomSong.constData());
             }
 
+            setFunctionCode(13);
             shout_set_metadata(m_pShout, m_pShoutMetaData);
             m_firstCall = true;
         }
@@ -719,6 +744,7 @@ void EngineShoutcast::updateMetaData() {
 
 void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     qWarning() << "Streaming error: " << detailedError;
+    NetworkStreamWorker::debugState();
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Live broadcasting"));
@@ -741,6 +767,7 @@ void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
+    NetworkStreamWorker::debugState();
 }
 
 // Is called from the Mixxx engine thread
@@ -757,7 +784,7 @@ void EngineShoutcast::run() {
     unsigned static id = 0;
     QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
     qDebug() << "EngineShoutcast::run: starting thread";
-
+    NetworkStreamWorker::debugState();
 #ifndef __WINDOWS__
     ignoreSigpipe();
 #endif
@@ -770,11 +797,14 @@ void EngineShoutcast::run() {
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
     if (!processConnect()) {
         errorDialog(tr("Can't connect to streaming server"),
+                    m_lastErrorStr + "\n" +
                     tr("Please check your connection to the Internet and verify that your username and password are correct."));
         return;
     }
 
     while(true) {
+        setFunctionCode(1);
+        incRunCount();
         m_readSema.acquire();
         // Check to see if Shoutcast is enabled, and pass the samples off to be
         // broadcast if necessary.
@@ -782,10 +812,12 @@ void EngineShoutcast::run() {
             m_threadWaiting = false;
             m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
             processDisconnect();
+            setFunctionCode(2);
             return;
         }
         int readAvailable = m_pOutputFifo->readAvailable();
         if (readAvailable) {
+            setFunctionCode(3);
             CSAMPLE* dataPtr1;
             ring_buffer_size_t size1;
             CSAMPLE* dataPtr2;

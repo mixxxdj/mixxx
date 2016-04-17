@@ -1,5 +1,5 @@
-#include <DetectionFunction.h>
-#include <TempoTrackV2.h>
+#include <dsp/onsets/DetectionFunction.h>
+#include <dsp/tempotracking/TempoTrackV2.h>
 
 // Class header comes after library includes here since our preprocessor
 // definitions interfere with qm-dsp's headers.
@@ -35,7 +35,8 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     m_helper.initialize(
         blockSize, m_stepSize, [this](double* pBlock, size_t) {
             // TODO(rryan) reserve?
-            m_detectionResults.push_back(m_pDetectionFunction->process(pBlock));
+            m_detectionResults.push_back(
+                m_pDetectionFunction->processTimeDomain(pBlock));
             return true;
         });
     return true;

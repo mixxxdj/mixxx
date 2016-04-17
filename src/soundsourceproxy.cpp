@@ -273,8 +273,8 @@ SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
     SoundSourceProxy proxy(pTrack);
     if (!proxy.m_pSoundSource.isNull()) {
         Mixxx::TrackMetadata trackMetadata;
-        bool parsedFromFile = pTrack->getHeaderParsed();
-        pTrack->getMetadata(&trackMetadata);
+        bool parsedFromFile = false;
+        pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile);
         if (parsedFromFile || evenIfNeverParsedFromFileBefore) {
             switch (proxy.m_pSoundSource->writeTrackMetadata(trackMetadata)) {
             case OK:
@@ -400,11 +400,11 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
         bool reloadFromFile) const {
     DEBUG_ASSERT(!m_pTrack.isNull());
 
-    bool parsedFromFile = m_pTrack->getHeaderParsed();
-    if (parsedFromFile && !reloadFromFile) {
-        qDebug() << "Skip parsing of track metadata from file"
+    if (m_pSoundSource.isNull()) {
+        // Silently ignore requests for unsupported files
+        qDebug() << "Unable to parse file tags without a SoundSource"
                 << getUrl();
-        return; // do not reload from file
+        return;
     }
 
     // Use the existing trackMetadata as default values. Otherwise
@@ -412,20 +412,39 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     // empty values if the corresponding file tags are missing.
     // Depending on the file type some kind of tags might even
     // not be supported at all and those would get lost!
+    bool parsedFromFile = false;
     Mixxx::TrackMetadata trackMetadata;
-    m_pTrack->getMetadata(&trackMetadata);
-    CoverArt coverArt(m_pTrack->getCoverArt());
+    m_pTrack->getTrackMetadata(&trackMetadata, &parsedFromFile);
+    if (parsedFromFile && !reloadFromFile) {
+        qDebug() << "Skip parsing of track metadata from file"
+                << getUrl();
+        return; // do not reload from file
+    }
 
     // If parsing of the cover art image should be omitted the
     // 2nd output parameter must be set to nullptr. Cover art
     // is not reloaded from file once the metadata has been parsed!
-    QImage* pCoverImg = (withCoverArt && !parsedFromFile) ? &coverArt.image : nullptr;
+    CoverArt coverArt;
+    QImage coverImg;
+    DEBUG_ASSERT(coverImg.isNull());
+    QImage* pCoverImg = (withCoverArt && !parsedFromFile) ? &coverImg : nullptr;
+    bool parsedCoverArt = false;
 
     // Parse the tags stored in the audio file.
-    if (m_pSoundSource->parseTrackMetadataAndCoverArt(&trackMetadata, pCoverImg) == OK) {
+    if (!m_pSoundSource.isNull() &&
+            (m_pSoundSource->parseTrackMetadataAndCoverArt(&trackMetadata, pCoverImg) == OK)) {
         parsedFromFile = true;
+        if (!coverImg.isNull()) {
+            // Cover image has been parsed from the file
+            coverArt.image = coverImg;
+            coverArt.info.hash = CoverArtUtils::calculateHash(coverArt.image);
+            coverArt.info.coverLocation = QString();
+            coverArt.info.type = CoverInfo::METADATA;
+            coverArt.info.source = CoverInfo::GUESSED;
+            parsedCoverArt = true;
+        }
     } else {
-        qWarning() << "Failed to parse metadata from file"
+        qWarning() << "Failed to parse track metadata from file"
                  << getUrl();
         if (parsedFromFile) {
             // Don't overwrite any existing metadata that once has
@@ -442,16 +461,8 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
     }
 
     // Dump the trackMetadata extracted from the file back into the track.
-    m_pTrack->setMetadata(trackMetadata);
-    m_pTrack->setHeaderParsed(parsedFromFile);
-    if (parsedFromFile && (nullptr != pCoverImg) && !pCoverImg->isNull()) {
-        CoverArt coverArt;
-        coverArt.image = *pCoverImg;
-        coverArt.info.hash = CoverArtUtils::calculateHash(
-                coverArt.image);
-        coverArt.info.coverLocation = QString();
-        coverArt.info.type = CoverInfo::METADATA;
-        coverArt.info.source = CoverInfo::GUESSED;
+    m_pTrack->setTrackMetadata(trackMetadata, parsedFromFile);
+    if (parsedCoverArt) {
         m_pTrack->setCoverArt(coverArt);
     }
 }

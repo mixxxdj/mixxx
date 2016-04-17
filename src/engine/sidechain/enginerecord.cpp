@@ -37,8 +37,8 @@
 
 const int kMetaDataLifeTimeout = 16;
 
-EngineRecord::EngineRecord(UserSettingsPointer _config)
-        : m_pConfig(_config),
+EngineRecord::EngineRecord(UserSettingsPointer pConfig)
+        : m_pConfig(pConfig),
           m_pEncoder(NULL),
           m_pSndfile(NULL),
           m_frames(0),

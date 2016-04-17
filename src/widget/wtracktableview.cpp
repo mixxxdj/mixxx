@@ -392,10 +392,10 @@ void WTrackTableView::createActions() {
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
             this, SLOT(slotOpenInFileBrowser()));
 
-    m_pAutoDJAct = new QAction(tr("Add to Auto-DJ Queue (bottom)"), this);
+    m_pAutoDJAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
 
-    m_pAutoDJTopAct = new QAction(tr("Add to Auto-DJ Queue (top)"), this);
+    m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJTop()));
 
@@ -431,10 +431,10 @@ void WTrackTableView::createActions() {
     m_pBpmTwoThirdsAction = new QAction(tr("2/3 BPM"), this);
     m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), this);
 
-    m_BpmMapper.setMapping(m_pBpmDoubleAction, DOUBLE);
-    m_BpmMapper.setMapping(m_pBpmHalveAction, HALVE);
-    m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, TWOTHIRDS);
-    m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, THREEFOURTHS);
+    m_BpmMapper.setMapping(m_pBpmDoubleAction, Beats::DOUBLE);
+    m_BpmMapper.setMapping(m_pBpmHalveAction, Beats::HALVE);
+    m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, Beats::TWOTHIRDS);
+    m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, Beats::THREEFOURTHS);
 
     connect(m_pBpmDoubleAction, SIGNAL(triggered()),
             &m_BpmMapper, SLOT(map()));
@@ -449,7 +449,7 @@ void WTrackTableView::createActions() {
     connect(m_pClearBeatsAction, SIGNAL(triggered()),
             this, SLOT(slotClearBeats()));
 
-    m_pReplayGainResetAction = new QAction(tr("Reset Replay Gain"), this);
+    m_pReplayGainResetAction = new QAction(tr("Reset ReplayGain"), this);
     connect(m_pReplayGainResetAction, SIGNAL(triggered()),
             this, SLOT(slotReplayGainReset()));
 }
@@ -1167,7 +1167,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         QList<QString> fileLocationList;
         foreach (const QFileInfo& fileInfo, fileList) {
-            fileLocationList.append(fileInfo.canonicalFilePath());
+            // TODO(uklotzde): Replace with TrackRef::location()
+            fileLocationList.append(fileInfo.absoluteFilePath());
         }
 
         // Drag-and-drop from an external application
@@ -1538,24 +1539,14 @@ void WTrackTableView::slotScaleBpm(int scale) {
         return;
     }
 
-    double scalingFactor=1;
-    if (scale == DOUBLE)
-        scalingFactor = 2;
-    else if (scale == HALVE)
-        scalingFactor = 0.5;
-    else if (scale == TWOTHIRDS)
-        scalingFactor = 2./3.;
-    else if (scale == THREEFOURTHS)
-        scalingFactor = 3./4.;
-
     QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        if (!track->isBpmLocked()) { //bpm is not locked
+        if (!track->isBpmLocked()) { // bpm is not locked
             BeatsPointer beats = track->getBeats();
             if (beats != NULL) {
-                beats->scale(scalingFactor);
+                beats->scale((Beats::BPMScale)scale);
             } else {
                 continue;
             }

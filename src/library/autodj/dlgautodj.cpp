@@ -142,16 +142,16 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
     switch (error) {
         case AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING:
             QMessageBox::warning(
-                    NULL, tr("Auto-DJ"),
-                    tr("One deck must be stopped to enable Auto-DJ mode."),
+                    NULL, tr("Auto DJ"),
+                    tr("One deck must be stopped to enable Auto DJ mode."),
                     QMessageBox::Ok);
             // Make sure the button becomes unpushed.
             pushButtonAutoDJ->setChecked(false);
             break;
         case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
             QMessageBox::warning(
-                    NULL, tr("Auto-DJ"),
-                    tr("Decks 3 and 4 must be stopped to enable Auto-DJ mode."),
+                    NULL, tr("Auto DJ"),
+                    tr("Decks 3 and 4 must be stopped to enable Auto DJ mode."),
                     QMessageBox::Ok);
             pushButtonAutoDJ->setChecked(false);
             break;
@@ -221,7 +221,10 @@ void DlgAutoDJ::updateSelectionInfo() {
     if (!indices.isEmpty()) {
         label.append(Time::formatSeconds(duration));
         label.append(QString(" (%1)").arg(indices.size()));
+        labelSelectionInfo->setText(label);
+        labelSelectionInfo->setEnabled(true);
+    } else {
+        labelSelectionInfo->setText("");
+        labelSelectionInfo->setEnabled(false);
     }
-
-    labelSelectionInfo->setText(label);
 }
