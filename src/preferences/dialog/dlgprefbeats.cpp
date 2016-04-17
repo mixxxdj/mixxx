@@ -6,13 +6,13 @@
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_bpmSettings(pConfig),
-          m_minBpm(0),
-          m_maxBpm(0),
-          m_banalyzerEnabled(false),
-          m_bfixedtempoEnabled(false),
-          m_boffsetEnabled(false),
-          m_FastAnalysisEnabled(false),
-          m_bReanalyze(false) {
+          m_minBpm(m_bpmSettings.getBpmRangeStartDefault()),
+          m_maxBpm(m_bpmSettings.getBpmRangeEndDefault()),
+          m_banalyzerEnabled(m_bpmSettings.getBpmDetectionEnabledDefault()),
+          m_bfixedtempoEnabled(m_bpmSettings.getFixedTempoAssumptionDefault()),
+          m_boffsetEnabled(m_bpmSettings.getFixedTempoOffsetCorrectionDefault()),
+          m_FastAnalysisEnabled(m_bpmSettings.getFastAnalysisDefault()),
+          m_bReanalyze(m_bpmSettings.getReanalyzeWhenSettingsChangeDefault()) {
     setupUi(this);
 
     m_availablePlugins = AnalyzerBeats::availablePlugins();
@@ -64,6 +64,8 @@ void DlgPrefBeats::loadSettings() {
 }
 
 void DlgPrefBeats::slotResetToDefaults() {
+    // WARNING(rryan): Do not hard-code defaults here! Put them in
+    // KeyDetectionSettings.
     m_selectedAnalyzerId = m_bpmSettings.getBeatPluginIdDefault();
     m_banalyzerEnabled = m_bpmSettings.getBpmDetectionEnabledDefault();
     m_bfixedtempoEnabled = m_bpmSettings.getFixedTempoAssumptionDefault();
