@@ -35,12 +35,10 @@ addons:
       - libtag1-dev
       - libupower-glib-dev
       - libusb-1.0-0-dev
-      - libvamp-hostsdk3
       - libwavpack-dev
       - portaudio19-dev
       - protobuf-compiler
       - scons
-      - vamp-plugin-sdk
 before_install:
   # Virtual X, needed for analyzer waveform tests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi
