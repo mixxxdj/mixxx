@@ -261,15 +261,6 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     return caps;
 }
 
-void PlaylistTableModel::setSort(int column, Qt::SortOrder order) {
-    BaseSqlTableModel::setSort(column, order);
-
-    // Random sort easter egg, only in library view
-    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
-        m_tableOrderBy = "ORDER BY RANDOM()";
-    }
-}
-
 void PlaylistTableModel::playlistChanged(int playlistId) {
     if (playlistId == m_iPlaylistId) {
         select(); // Repopulate the data model.

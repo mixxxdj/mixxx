@@ -441,8 +441,13 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     #ifdef __SQLITE3__
         m_tableOrderBy.append(" COLLATE localeAwareCompare");
     #endif
-        m_tableOrderBy.append((order == Qt::AscendingOrder) ?
-                " ASC" : " DESC");
+        m_tableOrderBy.append((order == Qt::AscendingOrder) ? " ASC" : " DESC");
+        
+        // Random sort easter egg
+        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+            m_tableOrderBy = "ORDER BY RANDOM()";
+        }
+        
         m_sortColumns.clear();
     } else if (m_trackSource) {
         for (int i = 0; i < m_sortColumns.size(); ++i) {
