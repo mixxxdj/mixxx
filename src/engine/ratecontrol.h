@@ -31,7 +31,7 @@ class PositionScratchController;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(QString group, UserSettingsPointer _config);
+    RateControl(QString group, UserSettingsPointer pConfig);
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
