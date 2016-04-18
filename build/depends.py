@@ -90,6 +90,22 @@ class CoreServices(Dependence):
         build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework CoreServices')
 
+class IOKit(Dependence):
+    """IOKit is used to get battery measurements on OS X and iOS."""
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(
+            CPPPATH='/Library/Frameworks/IOKit.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework IOKit')
+
+class UPower(Dependence):
+    """UPower is used to get battery measurements on Linux."""
+    def configure(self, build, conf):
+        if not build.platform_is_linux:
+            return
+        build.env.ParseConfig(
+                'pkg-config upower-glib --silence-errors --cflags --libs')
 
 class OggVorbis(Dependence):
 
@@ -403,9 +419,25 @@ class ReplayGain(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
 
+class Ebur128Mit(Dependence):
+    INTERNAL_PATH = '#lib/libebur128-1.1.0'
+    INTERNAL_LINK = False
+
+    def sources(self, build):
+        if self.INTERNAL_LINK:
+            return ['%s/ebur128/ebur128.c' % self.INTERNAL_PATH]
+
+    def configure(self, build, conf, env=None):
+        if env is None:
+            env = build.env
+        if not conf.CheckLib(['ebur128', 'libebur128']):
+            self.INTERNAL_LINK = True;
+            env.Append(CPPPATH=['%s/ebur128' % self.INTERNAL_PATH])
+            #env.Append(CPPDEFINES='USE_SPEEX_RESAMPLER') # Required for unused EBUR128_MODE_TRUE_PEAK
+
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-1.8.0'
+    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-1.9.2'
     INTERNAL_LINK = True
 
     def sources(self, build):
@@ -439,7 +471,7 @@ class SoundTouch(Dependence):
         if build.platform_is_linux:
             # Try using system lib
             if conf.CheckForPKG('soundtouch', '1.8.0'):
-                # No System Lib found
+                # System Lib found
                 build.env.ParseConfig('pkg-config soundtouch --silence-errors \
                                       --cflags --libs')
                 self.INTERNAL_LINK = False
@@ -589,8 +621,10 @@ class MixxxCore(Feature):
                    "preferences/dialog/dlgprefsounditem.cpp",
                    "preferences/dialog/dlgprefwaveform.cpp",
                    "preferences/settingsmanager.cpp",
+                   "preferences/replaygainsettings.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
+                    
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -681,6 +715,7 @@ class MixxxCore(Feature):
                    "analyzer/analyzerqueue.cpp",
                    "analyzer/analyzerwaveform.cpp",
                    "analyzer/analyzergain.cpp",
+                   "analyzer/analyzerebur128.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -758,6 +793,7 @@ class MixxxCore(Feature):
                    "widget/weffectparameterbase.cpp",
                    "widget/wtime.cpp",
                    "widget/wkey.cpp",
+                   "widget/wbattery.cpp",
                    "widget/wcombobox.cpp",
                    "widget/wsplitter.cpp",
                    "widget/wcoverart.cpp",
@@ -992,6 +1028,7 @@ class MixxxCore(Feature):
                    "util/threadcputimer.cpp",
                    "util/version.cpp",
                    "util/rlimit.cpp",
+                   "util/battery/battery.cpp",
                    "util/valuetransformer.cpp",
                    "util/sandbox.cpp",
                    "util/file.cpp",
@@ -1272,7 +1309,7 @@ class MixxxCore(Feature):
                 CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
-        return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
+        return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
                 QtScriptByteArray, Reverb, FpClassify]

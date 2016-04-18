@@ -87,12 +87,15 @@ inline uint qHash(const QKeySequence& key) {
 class ConfigValue {
   public:
     ConfigValue();
+    // Only allow non-explicit QString -> ConfigValue conversion for
+    // convenience. All other types must be explicit.
     ConfigValue(const QString& value);
-    ConfigValue(int value);
-    inline ConfigValue(const QDomNode& /* node */) {
+    explicit ConfigValue(int value);
+    explicit ConfigValue(const QDomNode& /* node */) {
         reportFatalErrorAndQuit("ConfigValue from QDomNode not implemented here");
     }
     void valCopy(const ConfigValue& value);
+    bool isNull() const { return value.isNull(); }
 
     QString value;
     friend bool operator==(const ConfigValue& s1, const ConfigValue& s2);
@@ -105,9 +108,9 @@ inline uint qHash(const ConfigValue& key) {
 class ConfigValueKbd : public ConfigValue {
   public:
     ConfigValueKbd();
-    ConfigValueKbd(const QString& _value);
-    ConfigValueKbd(const QKeySequence& key);
-    inline ConfigValueKbd(const QDomNode& /* node */) {
+    explicit ConfigValueKbd(const QString& _value);
+    explicit ConfigValueKbd(const QKeySequence& key);
+    explicit ConfigValueKbd(const QDomNode& /* node */) {
         reportFatalErrorAndQuit("ConfigValueKbd from QDomNode not implemented here");
     }
     void valCopy(const ConfigValueKbd& v);
@@ -127,6 +130,18 @@ template <class ValueType> class ConfigObject {
     bool exists(const ConfigKey& key) const;
     QString getValueString(const ConfigKey& k) const;
     QString getValueString(const ConfigKey& k, const QString& default_string) const;
+
+    template <class ResultType>
+    void setValue(const ConfigKey& key, const ResultType& value);
+
+    template <class ResultType>
+    ResultType getValue(const ConfigKey& key) const {
+        return getValue<ResultType>(key, ResultType());
+    }
+
+    template <class ResultType>
+    ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
+
     QMultiHash<ValueType, ConfigKey> transpose() const;
 
     void reopen(const QString& file);

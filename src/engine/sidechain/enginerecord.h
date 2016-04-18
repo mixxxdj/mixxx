@@ -40,7 +40,7 @@ class Encoder;
 class EngineRecord : public QObject, public EncoderCallback, public SideChainWorker {
     Q_OBJECT
   public:
-    EngineRecord(UserSettingsPointer _config);
+    EngineRecord(UserSettingsPointer pConfig);
     virtual ~EngineRecord();
 
     void process(const CSAMPLE* pBuffer, const int iBufferSize);

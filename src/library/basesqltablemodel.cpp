@@ -106,7 +106,7 @@ void BaseSqlTableModel::initHeaderData() {
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_COVERART,
                         tr("Cover Art"), 90);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
-                        tr("Replay Gain"), 50);
+                        tr("ReplayGain"), 50);
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {

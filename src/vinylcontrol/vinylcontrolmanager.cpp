@@ -43,7 +43,7 @@ VinylControlManager::~VinylControlManager() {
     // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_pConfig->set(ConfigKey(group, "vinylcontrol_enabled"), false);
+        m_pConfig->setValue(ConfigKey(group, "vinylcontrol_enabled"), false);
         m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
             ConfigValue(static_cast<int>(ControlObject::get(
                 ConfigKey(group, "vinylcontrol_cueing")))));

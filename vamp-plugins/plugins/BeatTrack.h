@@ -55,6 +55,13 @@ protected:
     BeatTrackerData *m_d;
     int m_method;
     int m_dfType;
+
+    // MEPD new protected parameters to allow the user to control these advanced parameters of the beat tracker
+    double m_alpha;
+    double m_tightness;
+    double m_inputtempo;
+    bool m_constraintempo;
+
     bool m_whiten;
     static float m_stepSecs;
     FeatureSet beatTrackOld();
