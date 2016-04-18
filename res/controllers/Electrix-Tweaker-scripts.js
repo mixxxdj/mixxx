@@ -767,11 +767,11 @@ ElectrixTweaker.lowEncoder = function (channel, control, value, status, group) {
                 if ((value == 127) && (ElectrixTweaker.loopSize[group] >= Math.pow(2, -5))) {
                     ElectrixTweaker.loopSize[group] = ElectrixTweaker.loopSize[group] / 2
                     engine.setValue(group, 'loop_halve', 1)
-                    engine.beginTimer(400, 'engine.setValue("'+group+'", "loop_halve", 0)', true)
+                    engine.setValue(group, 'loop_halve', 0)
                 } else if ((value == 1) && (ElectrixTweaker.loopSize[group] <= Math.pow(2, 5))) {
                     ElectrixTweaker.loopSize[group] = ElectrixTweaker.loopSize[group] * 2
                     engine.setValue(group, 'loop_double', 1)
-                    engine.beginTimer(400, 'engine.setValue("'+group+'", "loop_double", 0)', true)
+                    engine.setValue(group, 'loop_double', 0)
                 }
                 midi.sendShortMsg(
                     0xB0,
