@@ -39,6 +39,7 @@ Battery* Battery::getBattery(QObject* parent) {
     return new BatteryMac(parent);
 #endif
 #else
+    Q_UNUSED(parent);
     return nullptr;
 #endif
 }
