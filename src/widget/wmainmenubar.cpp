@@ -300,6 +300,22 @@ void WMainMenuBar::initialize() {
             pViewFullScreen, SLOT(setChecked(bool)));
     pViewMenu->addAction(pViewFullScreen);
 
+    QString toggleMenuBarTitle = tr("&Hide menu bar");
+    QString toggleMenuBarText = tr("Hide menu bar");
+    QAction* pToggleMenuBar = new QAction(toggleMenuBarTitle, this);
+    pToggleMenuBar->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ToggleMenuBar"),
+                                                  "F12")));
+    pToggleMenuBar->setShortcutContext(Qt::ApplicationShortcut);
+    pToggleMenuBar->setCheckable(true);
+    pToggleMenuBar->setChecked(false);
+    pToggleMenuBar->setStatusTip(toggleMenuBarText);
+    pToggleMenuBar->setWhatsThis(buildWhatsThis(toggleMenuBarTitle, toggleMenuBarText));
+    connect(pToggleMenuBar, SIGNAL(triggered(bool)),
+            this, SLOT(slotToggleMenuBar(bool)));
+    pViewMenu->addAction(pToggleMenuBar);
+
     addMenu(pViewMenu);
 
     // OPTIONS MENU
@@ -603,6 +619,14 @@ void WMainMenuBar::initialize() {
 
     pHelpMenu->addAction(pHelpAboutApp);
     addMenu(pHelpMenu);
+
+    //Add all menu actions with keyboard shortcuts to Main Window.
+    //Otherwise they are not working when menu is hidden
+    foreach (QAction* pAction, findChildren<QAction*>()) {
+        if (pAction->shortcut()) {
+            parentWidget()->addAction(pAction);
+        }
+    }
 }
 
 void WMainMenuBar::onLibraryScanStarted() {
@@ -647,6 +671,14 @@ void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) 
         return;
     }
     m_vinylControlEnabledActions.at(deck)->setChecked(enabled);
+}
+
+void WMainMenuBar::slotToggleMenuBar(bool enable) {
+    if (enable) {
+        hide();
+    } else {
+        show();
+    }
 }
 
 void WMainMenuBar::slotDeveloperStatsBase(bool enable) {
