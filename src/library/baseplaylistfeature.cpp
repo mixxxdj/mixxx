@@ -73,6 +73,9 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
     connect(m_pAnalyzePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotAnalyzePlaylist()));
+    m_pCreateImportPlaylistAction = new QAction(tr("Import Playlist"), this);
+    connect(m_pCreateImportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotCreateImportPlaylist()));
 
     connect(&m_playlistDao, SIGNAL(added(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
@@ -330,11 +333,10 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 }
 
 
-void BasePlaylistFeature::slotImportPlaylist() {
-    //qDebug() << "slotImportPlaylist() row:" << m_lastRightClickedIndex.data();
+bool BasePlaylistFeature::slotImportPlaylist() {
 
     if (!m_pPlaylistTableModel) {
-        return;
+        return false;
     }
 
     QString lastPlaylistDirectory = m_pConfig->getValueString(
@@ -348,7 +350,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
             tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     // Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty()) {
-        return;
+        return false;
     }
 
     // Update the import/export playlist directory
@@ -371,7 +373,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
     } else if (playlist_file.endsWith(".csv", Qt::CaseInsensitive)) {
         playlist_parser = new ParserCsv();
     } else {
-        return;
+        return false;
     }
 
     if (playlist_parser) {
@@ -384,6 +386,15 @@ void BasePlaylistFeature::slotImportPlaylist() {
       // delete the parser object
       delete playlist_parser;
     }
+    return true;
+}
+
+void BasePlaylistFeature::slotCreateImportPlaylist()
+{
+    slotCreatePlaylist();
+    
+    // If the user cancels the import delte the already created playlist
+    if (! slotImportPlaylist()) slotDeletePlaylist();
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {

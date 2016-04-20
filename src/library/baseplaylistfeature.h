@@ -58,7 +58,8 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotAddToAutoDJTop();
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
-    void slotImportPlaylist();
+    bool slotImportPlaylist();
+    void slotCreateImportPlaylist();
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.
     void slotExportTrackFiles();
@@ -89,6 +90,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pRenamePlaylistAction;
     QAction *m_pLockPlaylistAction;
     QAction *m_pImportPlaylistAction;
+    QAction *m_pCreateImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
     QAction *m_pExportTrackFilesAction;
     QAction *m_pDuplicatePlaylistAction;
