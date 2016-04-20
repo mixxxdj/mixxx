@@ -75,6 +75,7 @@ class WMainMenuBar : public QMenuBar {
     void internalOnNewSkinAboutToLoad();
 
   private slots:
+    void slotToggleMenuBar(bool enable);
     void slotDeveloperStatsExperiment(bool enable);
     void slotDeveloperStatsBase(bool enable);
     void slotDeveloperDebugger(bool toggle);
