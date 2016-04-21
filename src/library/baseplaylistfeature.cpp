@@ -104,6 +104,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pCreatePlaylistAction;
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
+    delete m_pCreateImportPlaylistAction;
     delete m_pExportPlaylistAction;
     delete m_pExportTrackFilesAction;
     delete m_pDuplicatePlaylistAction;
@@ -343,15 +344,17 @@ bool BasePlaylistFeature::slotImportPlaylist() {
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
-    QString playlist_file = QFileDialog::getOpenFileName(
-            NULL,
-            tr("Import Playlist"),
-            lastPlaylistDirectory,
-            tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
-    // Exit method if user cancelled the open dialog.
-    if (playlist_file.isNull() || playlist_file.isEmpty()) {
-        return false;
-    }
+    QFileDialog diag(NULL, 
+                     tr("Import Playlist"),
+                     lastPlaylistDirectory,
+                     tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+    diag.setAcceptMode(QFileDialog::AcceptOpen);
+    diag.setFileMode(QFileDialog::ExistingFile);
+    diag.setModal(true);
+    
+    // If the user refuses return
+    if (! diag.exec()) return false;
+    QString playlist_file = diag.selectedFiles().first();
 
     // Update the import/export playlist directory
     QFileInfo fileName(playlist_file);
@@ -389,8 +392,7 @@ bool BasePlaylistFeature::slotImportPlaylist() {
     return true;
 }
 
-void BasePlaylistFeature::slotCreateImportPlaylist()
-{
+void BasePlaylistFeature::slotCreateImportPlaylist() {
     slotCreatePlaylist();
     
     // If the user cancels the import delte the already created playlist
