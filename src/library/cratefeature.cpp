@@ -51,6 +51,10 @@ CrateFeature::CrateFeature(Library* pLibrary,
     m_pImportPlaylistAction = new QAction(tr("Import Crate"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+    
+    m_pCreateImportPlaylistAction = new QAction(tr("Import Crate"), this);
+    connect(m_pCreateImportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotCreateImportPlaylist()));
 
     m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
@@ -230,6 +234,7 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(NULL);
     menu.addAction(m_pCreateCrateAction);
+    menu.addAction(m_pCreateImportPlaylistAction);
     menu.exec(globalPos);
 }
 
@@ -575,20 +580,24 @@ void CrateFeature::clearChildModel() {
     m_crateList.clear();
 }
 
-void CrateFeature::slotImportPlaylist() {
-    qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
+bool CrateFeature::slotImportPlaylist() {
+    //qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
     QString lastCrateDirectory = m_pConfig->getValueString(
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
-    QString playlist_file = QFileDialog::getOpenFileName(
-        NULL,
-        tr("Import Playlist"),
-        lastCrateDirectory,
-        tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
-    // Exit method if user cancelled the open dialog.
-    if (playlist_file.isNull() || playlist_file.isEmpty()) return;
+    QFileDialog diag(NULL, 
+                     tr("Import Playlist"),
+                     lastCrateDirectory,
+                     tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+    diag.setAcceptMode(QFileDialog::AcceptOpen);
+    diag.setFileMode(QFileDialog::ExistingFile);
+    diag.setModal(true);
+       
+    // If the user refuses return
+    if (! diag.exec()) return false;
+    QString playlist_file = diag.selectedFiles().first();
 
     // Update the import/export crate directory
     QFileInfo fileName(playlist_file);
@@ -611,7 +620,7 @@ void CrateFeature::slotImportPlaylist() {
     } else if (playlist_file.endsWith(".csv", Qt::CaseInsensitive)) {
         playlist_parser = new ParserCsv();
     } else {
-        return;
+        return false;
     }
 
     if (playlist_parser) {
@@ -625,6 +634,13 @@ void CrateFeature::slotImportPlaylist() {
       //delete the parser object
       delete playlist_parser;
     }
+    return true;
+}
+
+void CrateFeature::slotCreateImportPlaylist() {
+    slotCreateCrate();
+    
+    if (! slotImportPlaylist()) slotDeleteCrate();
 }
 
 void CrateFeature::slotAnalyzeCrate() {
