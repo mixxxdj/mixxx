@@ -61,6 +61,10 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+    
+    m_pCreateImportPlaylistAction = new QAction(tr("Import Playlist"), this);
+    connect(m_pCreateImportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotCreateImportPlaylist()));
 
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
@@ -101,6 +105,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pCreatePlaylistAction;
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
+    delete m_pCreateImportPlaylistAction;
     delete m_pExportPlaylistAction;
     delete m_pExportTrackFilesAction;
     delete m_pDuplicatePlaylistAction;
@@ -330,26 +335,28 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 }
 
 
-void BasePlaylistFeature::slotImportPlaylist() {
+bool BasePlaylistFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" << m_lastRightClickedIndex.data();
 
     if (!m_pPlaylistTableModel) {
-        return;
+        return false;
     }
 
     QString lastPlaylistDirectory = m_pConfig->getValueString(
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-
-    QString playlist_file = QFileDialog::getOpenFileName(
-            NULL,
-            tr("Import Playlist"),
-            lastPlaylistDirectory,
-            tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
-    // Exit method if user cancelled the open dialog.
-    if (playlist_file.isNull() || playlist_file.isEmpty()) {
-        return;
-    }
+    
+    QFileDialog diag(NULL, 
+                     tr("Import Playlist"),
+                     lastPlaylistDirectory,
+                     tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+    diag.setAcceptMode(QFileDialog::AcceptOpen);
+    diag.setFileMode(QFileDialog::ExistingFile);
+    diag.setModal(true);
+       
+    // If the user refuses return
+    if (! diag.exec()) return false;
+    QString playlist_file = diag.selectedFiles().first();
 
     // Update the import/export playlist directory
     QFileInfo fileName(playlist_file);
@@ -371,7 +378,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
     } else if (playlist_file.endsWith(".csv", Qt::CaseInsensitive)) {
         playlist_parser = new ParserCsv();
     } else {
-        return;
+        return false;
     }
 
     if (playlist_parser) {
@@ -384,6 +391,12 @@ void BasePlaylistFeature::slotImportPlaylist() {
       // delete the parser object
       delete playlist_parser;
     }
+    return true;
+}
+
+void BasePlaylistFeature::slotCreateImportPlaylist() {
+    slotCreatePlaylist();
+    if (! slotImportPlaylist()) slotDeletePlaylist();
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {
