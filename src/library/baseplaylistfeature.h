@@ -58,7 +58,8 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotAddToAutoDJTop();
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
-    bool slotImportPlaylist();
+    void slotImportPlaylist();
+    void slotImportPlaylistFile(QString &playlist_file);
     void slotCreateImportPlaylist();
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.
@@ -106,6 +107,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
   private:
     virtual QString getRootViewHtml() const = 0;
+    QString getPlaylistFile();
 
     QSet<int> m_playlistsSelectedTrackIsIn;
     QString m_rootViewName;

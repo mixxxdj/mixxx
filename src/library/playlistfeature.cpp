@@ -49,6 +49,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     //Create the right-click menu
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
+    menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
     menu.exec(globalPos);
 }
