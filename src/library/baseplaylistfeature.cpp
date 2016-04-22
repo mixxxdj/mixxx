@@ -381,7 +381,6 @@ void BasePlaylistFeature::slotImportPlaylistFile(QString &playlist_file) {
       // delete the parser object
       delete playlist_parser;
     }
-    return;
 }
 
 void BasePlaylistFeature::slotCreateImportPlaylist() {

@@ -57,7 +57,8 @@ class CrateFeature : public LibraryFeature {
     void slotDuplicateCrate();
     void slotAutoDjTrackSourceChanged();
     void slotToggleCrateLock();
-    bool slotImportPlaylist();
+    void slotImportPlaylist();
+    void slotImportPlaylistFile(QString &playlist_file);
     void slotCreateImportPlaylist();
     void slotExportPlaylist();
     // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
@@ -74,6 +75,7 @@ class CrateFeature : public LibraryFeature {
 
   private:
     QString getRootViewHtml() const;
+    QString getPlaylistFile();
     QModelIndex constructChildModel(int selected_id);
     void updateChildModel(int selected_id);
     void clearChildModel();

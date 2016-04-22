@@ -234,6 +234,7 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(NULL);
     menu.addAction(m_pCreateCrateAction);
+    menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
     menu.exec(globalPos);
 }
@@ -580,30 +581,21 @@ void CrateFeature::clearChildModel() {
     m_crateList.clear();
 }
 
-bool CrateFeature::slotImportPlaylist() {
+void CrateFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
-    QString lastCrateDirectory = m_pConfig->getValueString(
-            ConfigKey("[Library]", "LastImportExportCrateDirectory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-
-    QFileDialog diag(NULL, 
-                     tr("Import Playlist"),
-                     lastCrateDirectory,
-                     tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
-    diag.setAcceptMode(QFileDialog::AcceptOpen);
-    diag.setFileMode(QFileDialog::ExistingFile);
-    diag.setModal(true);
-       
-    // If the user refuses return
-    if (! diag.exec()) return false;
-    QString playlist_file = diag.selectedFiles().first();
+    QString playlist_file = getPlaylistFile();
+    if (playlist_file.isEmpty()) return;
 
     // Update the import/export crate directory
     QFileInfo fileName(playlist_file);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
                    ConfigValue(fileName.dir().absolutePath()));
 
+    slotImportPlaylistFile(playlist_file);
+}
+
+void CrateFeature::slotImportPlaylistFile(QString &playlist_file) {
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
@@ -620,7 +612,7 @@ bool CrateFeature::slotImportPlaylist() {
     } else if (playlist_file.endsWith(".csv", Qt::CaseInsensitive)) {
         playlist_parser = new ParserCsv();
     } else {
-        return false;
+        return;
     }
 
     if (playlist_parser) {
@@ -634,13 +626,46 @@ bool CrateFeature::slotImportPlaylist() {
       //delete the parser object
       delete playlist_parser;
     }
-    return true;
 }
 
 void CrateFeature::slotCreateImportPlaylist() {
-    slotCreateCrate();
     
-    if (! slotImportPlaylist()) slotDeleteCrate();
+    // Get file to read
+    QString playlist_file = getPlaylistFile();
+    if (playlist_file.isEmpty()) return;
+    
+    QFileInfo fileName(playlist_file);
+    m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
+                   ConfigValue(fileName.dir().absolutePath()));
+    
+    // Get a valid name
+    QString baseName = fileName.baseName();
+    QString name;
+    bool validNameGiven = false;
+    int i = 0;
+    while (!validNameGiven) {
+        name = baseName;
+        if (i != 0) name += QString::number(i);
+        
+        // Check name
+        int existingId = m_crateDao.getCrateIdByName(name);
+        
+        validNameGiven = (existingId == -1);
+        ++i;
+    }
+    
+    int playlistId = m_crateDao.createCrate(name);
+    
+    if (playlistId != -1) activateCrate(playlistId);
+    else {
+            QMessageBox::warning(NULL,
+                                 tr("Playlist Creation Failed"),
+                                 tr("An unknown error occurred while creating playlist: ")
+                                  + name);
+            return;
+    }
+    
+    slotImportPlaylistFile(playlist_file);
 }
 
 void CrateFeature::slotAnalyzeCrate() {
@@ -785,6 +810,24 @@ QString CrateFeature::getRootViewHtml() const {
                 .arg(createCrateLink));
     html.append("</td></tr></table>");
     return html;
+}
+
+QString CrateFeature::getPlaylistFile() {
+    QString lastPlaylistDirectory = m_pConfig->getValueString(
+            ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    
+    QFileDialog diag(NULL, 
+                     tr("Import Playlist"),
+                     lastPlaylistDirectory,
+                     tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+    diag.setAcceptMode(QFileDialog::AcceptOpen);
+    diag.setFileMode(QFileDialog::ExistingFile);
+    diag.setModal(true);
+       
+    // If the user refuses return
+    if (! diag.exec()) return QString();
+    return diag.selectedFiles().first();
 }
 
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
