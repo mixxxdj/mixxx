@@ -18,8 +18,12 @@ class AnalyzerEbur128 : public Analyzer {
     void finalize(TrackPointer tio) override;
 
   private:
+    void cleanup();
+    bool isInitialized() const {
+        return m_pState != nullptr;
+    }
+
     ReplayGainSettings m_rgSettings;
-    bool m_initalized;
     ebur128_state* m_pState;
 };
 

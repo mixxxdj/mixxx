@@ -13,11 +13,11 @@ const double kReplayGain2ReferenceLUFS = -18;
 
 AnalyzerEbur128::AnalyzerEbur128(UserSettingsPointer pConfig)
         : m_rgSettings(pConfig),
-          m_initalized(false),
           m_pState(nullptr) {
 }
 
 AnalyzerEbur128::~AnalyzerEbur128() {
+    cleanup(); // ...to prevent memory leaks
 }
 
 bool AnalyzerEbur128::initialize(TrackPointer tio,
@@ -25,27 +25,32 @@ bool AnalyzerEbur128::initialize(TrackPointer tio,
     if (isDisabledOrLoadStoredSuccess(tio) || totalSamples == 0) {
         return false;
     }
-
-    m_pState = ebur128_init(2u,
-            static_cast<unsigned long>(sampleRate),
-            EBUR128_MODE_I);
-
-    m_initalized = nullptr != m_pState;
-    return m_initalized;
+    if (!isInitialized()) {
+        m_pState = ebur128_init(2u,
+                static_cast<unsigned long>(sampleRate),
+                EBUR128_MODE_I);
+    }
+    return isInitialized();
 }
 
 bool AnalyzerEbur128::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     return m_rgSettings.isAnalyzerDisabled(2, tio);
 }
 
+void AnalyzerEbur128::cleanup() {
+    if (isInitialized()) {
+        ebur128_destroy(&m_pState);
+    }
+    DEBUG_ASSERT(!isInitialized());
+}
+
 void AnalyzerEbur128::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
-    ebur128_destroy(&m_pState);
-    m_initalized = false;
+    cleanup();
 }
 
 void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
-    if (!m_initalized) {
+    DEBUG_ASSERT_AND_HANDLE(isInitialized()) {
         return;
     }
     ScopedTimer t("AnalyserEbur128::process()");
@@ -55,7 +60,7 @@ void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
 }
 
 void AnalyzerEbur128::finalize(TrackPointer tio) {
-    if (!m_initalized) {
+    DEBUG_ASSERT_AND_HANDLE(isInitialized()) {
         return;
     }
     double averageLufs;
