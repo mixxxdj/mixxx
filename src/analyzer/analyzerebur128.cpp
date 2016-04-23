@@ -51,16 +51,21 @@ void AnalyzerEbur128::cleanup(TrackPointer tio) {
 
 void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
     DEBUG_ASSERT_AND_HANDLE(isInitialized()) {
+        qWarning() << "AnalyzerEbur128::process(): Not initialized!";
         return;
     }
     ScopedTimer t("AnalyserEbur128::process()");
     size_t frames = iLen / 2;
     int e = ebur128_add_frames_float(m_pState, pIn, frames);
-    DEBUG_ASSERT(e == EBUR128_SUCCESS);
+    DEBUG_ASSERT_AND_HANDLE(e == EBUR128_SUCCESS) {
+        qWarning() << "AnalyzerEbur128::process() failed with" << e;
+        return;
+    }
 }
 
 void AnalyzerEbur128::finalize(TrackPointer tio) {
     DEBUG_ASSERT_AND_HANDLE(isInitialized()) {
+        qWarning() << "AnalyzerEbur128::finalize(): Not initialized!";
         return;
     }
     double averageLufs;
