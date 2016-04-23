@@ -17,6 +17,8 @@
 
 #define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
 
+class SvgParser;
+
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
 // evaluate skin XML nodes while loading the skin.
@@ -68,6 +70,7 @@ class SkinContext {
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
     PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
+    PixmapSource getPixmapSource(const QString& filename) const;
     Paintable::DrawMode selectScaleMode(const QDomElement& element,
                                         Paintable::DrawMode defaultDrawMode) const;
 
@@ -89,6 +92,9 @@ class SkinContext {
     }
 
   private:
+    PixmapSource getPixmapSourceInner(const QString& filename,
+                                      const SvgParser& svgParser) const;
+
     // If our parent global isValid() then we were constructed with a
     // parent. Otherwise we are a root SkinContext.
     bool isRoot() const { return !m_parentGlobal.isValid(); }
