@@ -3,36 +3,37 @@
 #include "util/math.h"
 #include "effects/effectmanifestparameter.h"
 
-ControlEffectKnob::ControlEffectKnob(ConfigKey key, double dMinValue, double dMaxValue)
-        : ControlPotmeter(key, dMinValue, dMaxValue) {
+ControlEffectKnob::ControlEffectKnob(ConfigKey key, EffectKnobParameters parameters)
+        : ControlPotmeter(key, parameters) {
 }
 
-void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
-                                     double dMinValue, double dMaxValue) {
+void ControlEffectKnob::setBehavior(EffectManifestParameter::ControlHint type,
+                                     double dMinValue, double dMaxValue,
+                                     double dScaleStartParameter) {
     if (m_pControl == NULL) {
         return;
     }
 
     if (type == EffectManifestParameter::CONTROL_KNOB_LINEAR) {
             m_pControl->setBehavior(new ControlLinPotmeterBehavior(
-                    dMinValue, dMaxValue, false));
+                    dMinValue, dMaxValue, dScaleStartParameter, false));
     } else if (type == EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC) {
         if (dMinValue == 0) {
             if (dMaxValue == 1.0) {
                 // Volume like control
                 m_pControl->setBehavior(
-                        new ControlAudioTaperPotBehavior(-20, 0, 1));
+                        new ControlAudioTaperPotBehavior(-20, 0, 1, dScaleStartParameter));
             } else if (dMaxValue > 1.0) {
                 // Gain like control
                 m_pControl->setBehavior(
-                        new ControlAudioTaperPotBehavior(-12, ratio2db(dMaxValue), 0.5));
+                        new ControlAudioTaperPotBehavior(-12, ratio2db(dMaxValue), 0.5, dScaleStartParameter));
             } else {
                 m_pControl->setBehavior(
-                        new ControlLogPotmeterBehavior(dMinValue, dMaxValue, -40));
+                        new ControlLogPotmeterBehavior(dMinValue, dMaxValue, dScaleStartParameter, -40));
             }
         } else {
             m_pControl->setBehavior(
-                    new ControlLogPotmeterBehavior(dMinValue, dMaxValue, -40));
+                    new ControlLogPotmeterBehavior(dMinValue, dMaxValue, dScaleStartParameter, -40));
         }
     }
 }

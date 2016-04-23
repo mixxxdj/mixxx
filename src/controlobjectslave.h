@@ -66,6 +66,11 @@ class ControlObjectSlave : public QObject {
     inline double getDefault() const {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
+    
+    inline double scaleStartParameter() const {
+        return m_pControl ? m_pControl->scaleStartParameter() : 0.0;
+    }
+
 
   public slots:
     // Set the control to a new value. Non-blocking.

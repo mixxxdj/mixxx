@@ -21,8 +21,14 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
     // and bpm_down controls.
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
+    LinPotmeterParameters bpmParameters;
+    bpmParameters.setMinValue(1.);
+    bpmParameters.setMaxValue(200.);
+    bpmParameters.setStep(1.);
+    bpmParameters.setSmallStep(0.1);
+    bpmParameters.setAllowOutOfBounds(true);
     m_pClockBpm.reset(new ControlLinPotmeter(ConfigKey(m_group, "bpm"),
-                                          1, 200, 1, 0.1, true));
+                                          bpmParameters));
     connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBpmChanged(double)),
             Qt::DirectConnection);

@@ -20,6 +20,7 @@
 
 #include "preferences/usersettings.h"
 #include "controlobject.h"
+#include "potmeterparameters.h"
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -73,11 +74,7 @@ class PotmeterControls : public QObject {
 class ControlPotmeter : public ControlObject {
     Q_OBJECT
   public:
-    ControlPotmeter(ConfigKey key, double dMinValue = 0.0, double dMaxValue = 1.0,
-                    bool allowOutOfBounds = false,
-                    bool bIgnoreNops = true,
-                    bool bTrack = false,
-                    bool bPersist = false);
+    ControlPotmeter(ConfigKey key, PotmeterParameters parameters = PotmeterParameters());
     virtual ~ControlPotmeter();
 
     // Sets the step count of the associated PushButtons.
@@ -88,7 +85,7 @@ class ControlPotmeter : public ControlObject {
 
     // Sets the minimum and maximum allowed value. The control value is reset
     // when calling this method
-    void setRange(double dMinValue, double dMaxValue, bool allowOutOfBounds);
+    void setRange(double dMinValue, double dMaxValue, double dScaleStartParameter, bool allowOutOfBounds);
 
   protected:
     bool m_bAllowOutOfBounds;

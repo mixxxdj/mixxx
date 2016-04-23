@@ -37,6 +37,7 @@ class EffectSlot : public QObject {
     EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
 
     void onChainSuperParameterChanged(double parameter, bool force=false);
+    double superParameterScaleStart();
 
     // ensures that Softtakover is bypassed for the following
     // ChainParameterChange. Uses for testing only

@@ -11,8 +11,13 @@ class ControlAudioTaperPot : public ControlPotmeter {
     // The AudioTaperPot has a log scale, starting at -Infinity
     // minDB is the Start value of the pure db scale it cranked to -Infinity by the linear part of the AudioTaperPot
     // maxDB is the Upper gain Value
-    // neutralParameter is a knob position between 0 and 1 where the gain is 1 (0dB)
-    ControlAudioTaperPot(ConfigKey key, double minDB, double maxDB, double neutralParameter);
+    // zeroDbParameter is a knob position between 0 and 1 where the gain is 1 (0dB)
+    // scaleStartParameter is used by the skin to draw the knob ring
+    // if it is not specified it defaults to zeroDbParameter
+    ControlAudioTaperPot(ConfigKey key, double minDB, double maxDB,
+                         double zeroDbParameter);
+    ControlAudioTaperPot(ConfigKey key, double minDB, double maxDB,
+                         double zeroDbParameter, double scaleStartParameter);
 };
 
 #endif // CONTROLAUDIOTAPERPOT_H

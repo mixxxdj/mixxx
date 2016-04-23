@@ -67,8 +67,11 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"), true, true);
     m_pMasterAudioBufferSize = new ControlObject(ConfigKey(group, "audio_buffer_size"));
     m_pAudioLatencyOverloadCount = new ControlObject(ConfigKey(group, "audio_latency_overload_count"), true, true);
-    m_pAudioLatencyUsage = new ControlPotmeter(ConfigKey(group, "audio_latency_usage"), 0.0, 0.25);
-    m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"), 0.0, 1.0);
+
+    PotmeterParameters audio_latency_usageParameters;
+    audio_latency_usageParameters.setMaxValue(0.25);
+    m_pAudioLatencyUsage = new ControlPotmeter(ConfigKey(group, "audio_latency_usage"), audio_latency_usageParameters);
+    m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"));
 
     // Master sync controller
     m_pMasterSync = new EngineSync(pConfig);
@@ -79,10 +82,16 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
 
     // Crossfader
-    m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), -1., 1.);
+    PotmeterParameters crossfaderParameters;
+    crossfaderParameters.setMinValue(-1.);
+    crossfaderParameters.setScaleStartParameter(0.5);
+    m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), crossfaderParameters);
 
     // Balance
-    m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
+    PotmeterParameters balanceParameters;
+    balanceParameters.setMinValue(-1.);
+    balanceParameters.setScaleStartParameter(0.5);
+    m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), balanceParameters);
 
     // Master gain
     m_pMasterGain = new ControlAudioTaperPot(ConfigKey(group, "gain"), -14, 14, 0.5);
@@ -107,7 +116,10 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
                                       ConfigKey(group, "headGain"));
 
     // Headphone mix (left/right)
-    m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
+    PotmeterParameters headMixParameters;
+    headMixParameters.setMinValue(-1.);
+    headMixParameters.setScaleStartParameter(0.5);
+    m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"), headMixParameters);
     m_pHeadMix->setDefaultValue(-1.);
     m_pHeadMix->set(-1.);
 
@@ -140,12 +152,20 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"));
     m_pXFaderMode->setButtonMode(ControlPushButton::TOGGLE);
 
+    PotmeterParameters xFaderCurveParameters;
+    xFaderCurveParameters.setMinValue(EngineXfader::kTransformMin);
+    xFaderCurveParameters.setMaxValue(EngineXfader::kTransformMax);
     m_pXFaderCurve = new ControlPotmeter(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
-            EngineXfader::kTransformMin, EngineXfader::kTransformMax);
+            xFaderCurveParameters);
+
+    PotmeterParameters xFaderCalibrationParameters;
+    xFaderCalibrationParameters.setMinValue(0.3);
+    xFaderCalibrationParameters.setMinValue(1.);
+    xFaderCalibrationParameters.setScaleStartParameter(0.3);
     m_pXFaderCalibration = new ControlPotmeter(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCalibration"),
-            0.3, 1., true);
+           xFaderCalibrationParameters);
     m_pXFaderReverse = new ControlPushButton(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"));
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);

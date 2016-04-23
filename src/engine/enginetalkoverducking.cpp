@@ -12,7 +12,7 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     m_pMasterSampleRate->connectValueChanged(SLOT(slotSampleRateChanged(double)),
                                              Qt::DirectConnection);
 
-    m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
+    m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"));
     m_pDuckStrength->set(
             m_pConfig->getValueString(ConfigKey(m_group, "duckStrength"), "90").toDouble() / 100);
     connect(m_pDuckStrength, SIGNAL(valueChanged(double)),

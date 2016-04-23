@@ -3,14 +3,21 @@
 #include <QTransform>
 
 #include "widget/wknobcomposed.h"
+#include "widget/controlwidgetconnection.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
-          m_dCurrentAngle(140.0),
-          m_dMinAngle(-230.0),
-          m_dMaxAngle(50.0),
+          m_dScaleStartParameter(0.0),
+          m_dMinAngle(-135),
+          m_dMaxAngle(135),
           m_dKnobCenterXOffset(0),
-          m_dKnobCenterYOffset(0) {
+          m_dKnobCenterYOffset(0),
+          m_dMaskXOffset(0.0),
+          m_dMaskYOffset(0.0),
+          m_dRingMinSpan(0.0),
+          m_dRingSpanOffset(0.0),
+          m_bMaskBackground(false) {
+    m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * 0.5;
 }
 
 WKnobComposed::~WKnobComposed() {
@@ -33,12 +40,32 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
                       context.selectScaleMode(knobNode, Paintable::STRETCH));
     }
 
+    // Set ring pixmap if available
+    if (context.hasNode(node, "Ring")) {
+        QDomElement ringNode = context.selectElement(node, "Ring");
+        setPixmapRing(context.getPixmapSource(ringNode),
+                      context.selectScaleMode(ringNode, Paintable::STRETCH));
+    }
+
+    if (context.hasNode(node, "RingCenterXOffset")) {
+        m_dMaskXOffset = context.selectDouble(node, "MaskXOffset");
+    }
+
+    if (context.hasNode(node, "RingCenterYOffset")) {
+        m_dMaskYOffset = context.selectDouble(node, "MaskYOffset");
+    }
+
     if (context.hasNode(node, "MinAngle")) {
-        m_dMinAngle = context.selectDouble(node, "MinAngle");
+        m_dMinAngle = math_clamp(context.selectDouble(node, "MinAngle"), -180.0, 180.0);
     }
 
     if (context.hasNode(node, "MaxAngle")) {
-        m_dMaxAngle = context.selectDouble(node, "MaxAngle");
+        m_dMaxAngle = math_clamp(context.selectDouble(node, "MaxAngle"), -180.0, 180.0);
+    }
+    if (m_dMinAngle > m_dMaxAngle) {
+        double temp = m_dMinAngle;
+        m_dMinAngle = m_dMaxAngle;
+        m_dMaxAngle = temp;
     }
 
     if (context.hasNode(node, "KnobCenterXOffset")) {
@@ -47,6 +74,24 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
 
     if (context.hasNode(node, "KnobCenterYOffset")) {
         m_dKnobCenterYOffset = context.selectDouble(node, "KnobCenterYOffset");
+    }
+
+    if (context.hasNode(node, "RingMinSpan")) {
+        m_dRingMinSpan = context.selectDouble(node, "RingMinSpan");
+    }
+    if (m_dRingMinSpan < 0) {
+        m_dRingMinSpan = 0;
+    }
+
+    if (context.hasNode(node, "RingSpanOffset")) {
+        m_dRingSpanOffset = context.selectDouble(node, "RingSpanOffset");
+    }
+    if (m_dRingSpanOffset < 0) {
+        m_dRingSpanOffset = 0;
+    }
+
+    if (context.hasNode(node, "MaskBackground")) {
+        m_bMaskBackground = true;
     }
 }
 
@@ -73,6 +118,19 @@ void WKnobComposed::setPixmapKnob(PixmapSource source,
     }
 }
 
+void WKnobComposed::setPixmapRing(PixmapSource source,
+                                  Paintable::DrawMode mode) {
+    m_pRing = WPixmapStore::getPaintable(source, mode);
+    if (m_pRing.isNull() || m_pRing->isNull()) {
+        qDebug() << metaObject()->className()
+                 << "Error loading ring pixmap:" << source.getPath();
+    }
+}
+
+void WKnobComposed::addConnection(ControlParameterWidgetConnection* pConnection) {
+    WBaseWidget::addConnection(pConnection);
+}
+
 void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dValue);
     // dParameter is in the range [0, 1].
@@ -95,7 +153,61 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     p.setRenderHint(QPainter::SmoothPixmapTransform);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
-    if (m_pPixmapBack) {
+    ControlParameterWidgetConnection* defaultConnection;
+    if (!m_connections.isEmpty()){
+        defaultConnection = m_connections.at(0);
+        if (defaultConnection) {
+            m_dScaleStartParameter = defaultConnection->scaleStartParameter();
+        }
+    }
+
+    // We update m_dCurrentAngle since onConnectedControlChanged uses it for
+    // no-op detection.
+    m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
+
+    // Qt measures angles in degrees from 3 o'clock counterclockwise.
+    // In Mixxx we measure angles also in degrees but from 12 o'clock clockwise.
+    // So: QtAngle = 90 - MixxxAngle
+    if (m_pRing) {
+        QPainterPath ringMaskPath;
+        int w = width();
+        int h = height();
+        ringMaskPath.moveTo(w/2.0 + m_dMaskXOffset, h/2.0 + m_dMaskYOffset);
+        double d = sqrt(pow(w+abs(m_dMaskXOffset),2) + pow(h+abs(m_dMaskYOffset),2));
+        QRectF rectangle = QRectF((w-d)/2.0,(h-d)/2.0,d,d);
+        // We do all calculations with Mixxx angles
+        double dScaleStartAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * m_dScaleStartParameter;
+        double dInitialAngle;
+        double dSpan;
+
+        if (m_dCurrentAngle < dScaleStartAngle) {
+            dInitialAngle = math_max(dScaleStartAngle + m_dRingSpanOffset, dScaleStartAngle + m_dRingMinSpan);
+            dSpan = math_min(m_dCurrentAngle - dInitialAngle - m_dRingSpanOffset, -2*m_dRingMinSpan);
+        } else {
+            dInitialAngle = math_min(dScaleStartAngle - m_dRingSpanOffset, dScaleStartAngle - m_dRingMinSpan);
+            dSpan = math_max(m_dCurrentAngle - dInitialAngle + m_dRingSpanOffset, 2*m_dRingMinSpan);
+        }
+        // Here we convert to Qt angles
+        ringMaskPath.arcTo(rectangle, 90 - dInitialAngle, -dSpan);
+        ringMaskPath.closeSubpath();
+
+        p.save();
+        if (m_bMaskBackground) {
+            // Do not paint the background pixmap where the ring will be painted.
+            // It greatly improves the render quality if the ring and the background
+            // have the same shape and position (for example in Shade).
+            QPainterPath canvasPath;
+            canvasPath.addRect(0,0,w,h);
+            // The fill area of backMaskPath is the complementary of canvasPath.
+            QPainterPath backMaskPath = canvasPath.subtracted(ringMaskPath);
+            p.setClipPath(backMaskPath);
+        }
+        if(m_pPixmapBack) m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
+
+        p.setClipPath(ringMaskPath);
+        m_pRing->draw(rect(), &p, m_pRing->rect());
+        p.restore();
+    } else if (m_pPixmapBack) {
         m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
     }
 
@@ -106,9 +218,6 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         transform.translate(-tx, -ty);
         p.translate(tx, ty);
 
-        // We update m_dCurrentAngle since onConnectedControlChanged uses it for
-        // no-op detection.
-        m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
         p.rotate(m_dCurrentAngle);
 
         // Need to convert from QRect to a QRectF to avoid losing precison.

@@ -24,8 +24,9 @@ const QString kTrackLocationTest(QDir::currentPath() %
 class FakeMaster {
   public:
     FakeMaster()
-            : crossfader(ConfigKey("[Master]", "crossfader"), -1.0, 1.0),
+            : crossfader(ConfigKey("[Master]", "crossfader")),
               crossfaderReverse(ConfigKey("[Mixer Profile]", "xFaderReverse")) {
+        crossfader.setRange(-1.0, 1.0, 0.0, false);
         crossfaderReverse.setButtonMode(ControlPushButton::TOGGLE);
     }
 
@@ -37,9 +38,10 @@ class FakeDeck : public BaseTrackPlayer {
   public:
     FakeDeck(const QString& group)
             : BaseTrackPlayer(NULL, group),
-              playposition(ConfigKey(group, "playposition"), 0.0, 1.0, true),
+              playposition(ConfigKey(group, "playposition")),
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")) {
+        playposition.setRange(0, 1.0, 0.0, true);
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
     }

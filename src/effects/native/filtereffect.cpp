@@ -21,6 +21,7 @@ EffectManifest FilterEffect::getManifest() {
                                         "frequencies to pass through."));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsForFilterKnob(true);
+    manifest.setSuperKnobScaleStart(0.5);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");

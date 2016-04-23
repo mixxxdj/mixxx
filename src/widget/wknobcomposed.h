@@ -20,6 +20,8 @@ class WKnobComposed : public WWidget {
 
     void setup(QDomNode node, const SkinContext& context);
 
+    void addConnection(ControlParameterWidgetConnection* pConnection);
+
     void onConnectedControlChanged(double dParameter, double dValue);
 
   protected:
@@ -33,15 +35,25 @@ class WKnobComposed : public WWidget {
     void clear();
     void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
     void setPixmapKnob(PixmapSource source, Paintable::DrawMode mode);
+    void setPixmapRing(PixmapSource source, Paintable::DrawMode mode);
 
-    double m_dCurrentAngle;
     PaintablePointer m_pKnob;
     PaintablePointer m_pPixmapBack;
-    KnobEventHandler<WKnobComposed> m_handler;
+    PaintablePointer m_pRing;
+
+    double m_dCurrentAngle;
+    double m_dScaleStartParameter;
     double m_dMinAngle;
     double m_dMaxAngle;
     double m_dKnobCenterXOffset;
     double m_dKnobCenterYOffset;
+    double m_dMaskXOffset;
+    double m_dMaskYOffset;
+    double m_dRingMinSpan;
+    double m_dRingSpanOffset;
+    bool m_bMaskBackground;
+
+    KnobEventHandler<WKnobComposed> m_handler;
     friend class KnobEventHandler<WKnobComposed>;
 };
 

@@ -36,12 +36,14 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
     connect(m_pControlChainEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainEnabled(double)));
 
-    m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0);
+    PotmeterParameters potmeterParameters;
+    potmeterParameters.setScaleStartParameter(0.5);
+    m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), potmeterParameters);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainMix(double)));
     m_pControlChainMix->set(1.0);
 
-    m_pControlChainSuperParameter = new ControlPotmeter(ConfigKey(m_group, "super1"), 0.0, 1.0);
+    m_pControlChainSuperParameter = new ControlPotmeter(ConfigKey(m_group, "super1"), potmeterParameters);
     connect(m_pControlChainSuperParameter, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainSuperParameter(double)));
     m_pControlChainSuperParameter->set(0.0);
@@ -111,6 +113,14 @@ void EffectChainSlot::setSuperParameter(double value) {
 
 void EffectChainSlot::setSuperParameterDefaultValue(double value) {
     m_pControlChainSuperParameter->setDefaultValue(value);
+}
+
+double EffectChainSlot::superParameterScaleStart() const {
+    return m_pControlChainSuperParameter->scaleStartParameter();
+}
+
+void EffectChainSlot::setSuperParameterScaleStart(double value) {
+    m_pControlChainSuperParameter->setScaleStartParameter(value);
 }
 
 void EffectChainSlot::slotChainNameChanged(const QString&) {

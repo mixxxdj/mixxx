@@ -3,7 +3,14 @@
 
 ControlAudioTaperPot::ControlAudioTaperPot(ConfigKey key,
                                            double minDB, double maxDB,
-                                           double neutralParameter)
+										   double zeroDbParameter)
+        : ControlAudioTaperPot(key, minDB, maxDB, zeroDbParameter, zeroDbParameter) {
+}
+
+ControlAudioTaperPot::ControlAudioTaperPot(ConfigKey key,
+                                           double minDB, double maxDB,
+										   double zeroDbParameter,
+                                           double scaleStartParameter)
         : ControlPotmeter(key) {
 
     // Override ControlPotmeters default value of 0.5
@@ -13,6 +20,6 @@ ControlAudioTaperPot::ControlAudioTaperPot(ConfigKey key,
     if (m_pControl) {
         m_pControl->setBehavior(
                 new ControlAudioTaperPotBehavior(minDB, maxDB,
-                        neutralParameter));
+                        zeroDbParameter, scaleStartParameter));
     }
 }
