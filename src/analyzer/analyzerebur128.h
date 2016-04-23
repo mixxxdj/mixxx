@@ -20,7 +20,6 @@ class AnalyzerEbur128 : public Analyzer {
   private:
     ReplayGainSettings m_rgSettings;
     bool m_initalized;
-    int m_iBufferSize;
     ebur128_state* m_pState;
 };
 

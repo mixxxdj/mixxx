@@ -14,7 +14,6 @@ const double kReplayGain2ReferenceLUFS = -18;
 AnalyzerEbur128::AnalyzerEbur128(UserSettingsPointer pConfig)
         : m_rgSettings(pConfig),
           m_initalized(false),
-          m_iBufferSize(0),
           m_pState(nullptr) {
 }
 
