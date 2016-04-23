@@ -59,7 +59,7 @@ EngineSideChain::~EngineSideChain() {
     // Wait until the thread has finished.
     wait();
 
-    QMutexLocker locker(&m_workerLock);
+    MMutexLocker locker(&m_workerLock);
     while (!m_workers.empty()) {
         SideChainWorker* pWorker = m_workers.takeLast();
         pWorker->shutdown();
@@ -71,7 +71,7 @@ EngineSideChain::~EngineSideChain() {
 }
 
 void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
-    QMutexLocker locker(&m_workerLock);
+    MMutexLocker locker(&m_workerLock);
     m_workers.append(pWorker);
 }
 
@@ -110,7 +110,7 @@ void EngineSideChain::run() {
         while ((samples_read = m_sampleFifo.read(m_pWorkBuffer,
                                                  SIDECHAIN_BUFFER_SIZE))) {
             Trace process("EngineSideChain::process");
-            QMutexLocker locker(&m_workerLock);
+            MMutexLocker locker(&m_workerLock);
             foreach (SideChainWorker* pWorker, m_workers) {
                 pWorker->process(m_pWorkBuffer, samples_read);
             }
