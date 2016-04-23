@@ -13,7 +13,7 @@ typedef qint32 int32_t;
 // registers as tested with gcc 4.6 and the -ftree-vectorizer-verbose=2 flag on
 // an Intel i5 CPU. When changing, be careful to not disturb the vectorization.
 // https://gcc.gnu.org/projects/tree-ssa/vectorization.html
-// This also utilizes AVX registers wehn compiled for a recent 64 bit CPU
+// This also utilizes AVX registers when compiled for a recent 64-bit CPU
 // using scons optimize=native.
 
 // TODO() Check if uintptr_t is available on all our build targets and use that
@@ -458,4 +458,3 @@ void SampleUtil::copyReverse(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT 
         pDest[j * 2 + 1] = pSrc[endpos];
     }
 }
-

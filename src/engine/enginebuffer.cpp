@@ -2,7 +2,7 @@
 
 #include <QtDebug>
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "preferences/usersettings.h"
 #include "controlindicator.h"
 #include "controllinpotmeter.h"
@@ -1310,7 +1310,7 @@ void EngineBuffer::hintReader(const double dRate) {
 // WARNING: This method runs in the GUI thread
 void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
     if (pTrack.isNull()) {
-        // Loading a null track means "eject" 
+        // Loading a null track means "eject"
         ejectTrack();
     } else {
         // Signal to the reader to load the track. The reader will respond with

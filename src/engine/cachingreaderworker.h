@@ -1,5 +1,5 @@
-#ifndef CACHINGREADERWORKER_H
-#define CACHINGREADERWORKER_H
+#ifndef ENGINE_CACHINGREADERWORKER_H
+#define ENGINE_CACHINGREADERWORKER_H
 
 #include <QtDebug>
 #include <QMutex>
@@ -7,7 +7,7 @@
 #include <QThread>
 #include <QString>
 
-#include "cachingreaderchunk.h"
+#include "engine/cachingreaderchunk.h"
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
@@ -110,4 +110,4 @@ class CachingReaderWorker : public EngineWorker {
 };
 
 
-#endif /* CACHINGREADERWORKER_H */
+#endif /* ENGINE_CACHINGREADERWORKER_H */

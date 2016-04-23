@@ -624,7 +624,7 @@ class MixxxCore(Feature):
                    "preferences/replaygainsettings.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
-                    
+
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -708,9 +708,9 @@ class MixxxCore(Feature):
                    "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "engine/enginetalkoverducking.cpp",
-                   "cachingreader.cpp",
-                   "cachingreaderchunk.cpp",
-                   "cachingreaderworker.cpp",
+                   "engine/cachingreader.cpp",
+                   "engine/cachingreaderchunk.cpp",
+                   "engine/cachingreaderworker.cpp",
 
                    "analyzer/analyzerqueue.cpp",
                    "analyzer/analyzerwaveform.cpp",

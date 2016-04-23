@@ -1,5 +1,5 @@
-#ifndef CACHINGREADERCHUNK_H
-#define CACHINGREADERCHUNK_H
+#ifndef ENGINE_CACHINGREADERCHUNK_H
+#define ENGINE_CACHINGREADERCHUNK_H
 
 #include "sources/audiosource.h"
 
@@ -155,4 +155,4 @@ private:
 };
 
 
-#endif // CACHINGREADERCHUNK_H
+#endif // ENGINE_CACHINGREADERCHUNK_H
