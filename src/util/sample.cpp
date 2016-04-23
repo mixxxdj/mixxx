@@ -334,7 +334,7 @@ SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* p
 }
 
 // static
-void SampleUtil::copyClampBuffer(CSAMPLE* M_RESTRICT pDest, const M_RESTRICT CSAMPLE* pSrc,
+void SampleUtil::copyClampBuffer(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
         int iNumSamples) {
     // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
