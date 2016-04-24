@@ -16,8 +16,6 @@ class LibraryTableModel : public BaseSqlTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations);
     TrackModel::CapabilitiesFlags getCapabilities() const;
     static const QString DEFAULT_LIBRARYFILTER;
-
-    void setSort(int column, Qt::SortOrder order) override;
 };
 
 #endif
