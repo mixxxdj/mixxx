@@ -75,7 +75,6 @@ class CrateFeature : public LibraryFeature {
 
   private:
     QString getRootViewHtml() const;
-    QString getPlaylistFile();
     QModelIndex constructChildModel(int selected_id);
     void updateChildModel(int selected_id);
     void clearChildModel();
@@ -104,7 +103,6 @@ class CrateFeature : public LibraryFeature {
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
-    UserSettingsPointer m_pConfig;
     TrackPointer m_pSelectedTrack;
     QSet<int> m_cratesSelectedTrackIsIn;
 };

@@ -79,7 +79,6 @@ class BasePlaylistFeature : public LibraryFeature {
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
 
-    UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
@@ -107,7 +106,6 @@ class BasePlaylistFeature : public LibraryFeature {
 
   private:
     virtual QString getRootViewHtml() const = 0;
-    QString getPlaylistFile();
 
     QSet<int> m_playlistsSelectedTrackIsIn;
     QString m_rootViewName;

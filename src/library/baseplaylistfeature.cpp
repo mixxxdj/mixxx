@@ -23,8 +23,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
                                          UserSettingsPointer pConfig,
                                          TrackCollection* pTrackCollection,
                                          QString rootViewName)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
+        : LibraryFeature(pConfig, parent),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
@@ -387,7 +386,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     if (!m_pPlaylistTableModel) return;
     
     // Get file to read
-    QString playlist_file = getPlaylistFile();
+    QString playlist_file = LibraryFeature::getPlaylistFile();
     if (playlist_file.isEmpty()) return;
     
     QFileInfo fileName(playlist_file);
@@ -411,8 +410,9 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     }
     
     int playlistId = m_playlistDao.createPlaylist(name);
-    
-    if (playlistId != -1) activatePlaylist(playlistId);
+    if (playlistId != -1) {
+        activatePlaylist(playlistId);
+    }
     else {
             QMessageBox::warning(NULL,
                                  tr("Playlist Creation Failed"),
@@ -712,22 +712,4 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
 
 void BasePlaylistFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackPointer());
-}
-
-QString BasePlaylistFeature::getPlaylistFile() {
-    QString lastPlaylistDirectory = m_pConfig->getValueString(
-            ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-    
-    QFileDialog diag(NULL, 
-                     tr("Import Playlist"),
-                     lastPlaylistDirectory,
-                     tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
-    diag.setAcceptMode(QFileDialog::AcceptOpen);
-    diag.setFileMode(QFileDialog::ExistingFile);
-    diag.setModal(true);
-       
-    // If the user refuses return
-    if (! diag.exec()) return QString();
-    return diag.selectedFiles().first();
 }

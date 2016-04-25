@@ -28,10 +28,11 @@
 CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
                            UserSettingsPointer pConfig)
-        : m_pTrackCollection(pTrackCollection),
+        : LibraryFeature(pConfig),
+          m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
-          m_crateTableModel(this, pTrackCollection),
-          m_pConfig(pConfig) {
+          m_crateTableModel(this, pTrackCollection) {
+    
     m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
@@ -810,24 +811,6 @@ QString CrateFeature::getRootViewHtml() const {
                 .arg(createCrateLink));
     html.append("</td></tr></table>");
     return html;
-}
-
-QString CrateFeature::getPlaylistFile() {
-    QString lastPlaylistDirectory = m_pConfig->getValueString(
-            ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-    
-    QFileDialog diag(NULL, 
-                     tr("Import Playlist"),
-                     lastPlaylistDirectory,
-                     tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
-    diag.setAcceptMode(QFileDialog::AcceptOpen);
-    diag.setFileMode(QFileDialog::ExistingFile);
-    diag.setModal(true);
-       
-    // If the user refuses return
-    if (! diag.exec()) return QString();
-    return diag.selectedFiles().first();
 }
 
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
