@@ -22,7 +22,7 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "preferences/usersettings.h"
 #include "control/controlvalue.h"
 #include "engine/engineobject.h"
@@ -55,7 +55,6 @@ class ControlIndicator;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
-class CachingReader;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;

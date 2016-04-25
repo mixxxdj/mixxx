@@ -58,7 +58,7 @@ void WBattery::setup(QDomNode node, const SkinContext& context) {
                         context.selectElement(node, "PixmapsCharging"),
                         "scalemode", "TILE"));
         for (int i = 0; i < m_chargingPixmaps.size(); ++i) {
-            PixmapSource source(chargingPath.arg(i));
+            PixmapSource source = context.getPixmapSource(chargingPath.arg(i));
             setPixmap(&m_chargingPixmaps[i], source, mode);
         }
     }
@@ -71,7 +71,7 @@ void WBattery::setup(QDomNode node, const SkinContext& context) {
                         context.selectElement(node, "PixmapsDischarging"),
                         "scalemode", "TILE"));
         for (int i = 0; i < m_dischargingPixmaps.size(); ++i) {
-            PixmapSource source(dischargingPath.arg(i));
+            PixmapSource source = context.getPixmapSource(dischargingPath.arg(i));
             setPixmap(&m_dischargingPixmaps[i], source, mode);
         }
     }

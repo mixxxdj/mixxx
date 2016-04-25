@@ -25,6 +25,7 @@
 #include "preferences/usersettings.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "util/fifo.h"
+#include "util/mutex.h"
 #include "util/types.h"
 
 class EngineSideChain : public QThread {
@@ -57,8 +58,8 @@ class EngineSideChain : public QThread {
     QWaitCondition m_waitForSamples;
 
     // Sidechain workers registered with EngineSideChain.
-    QMutex m_workerLock;
-    QList<SideChainWorker*> m_workers;
+    MMutex m_workerLock;
+    QList<SideChainWorker*> m_workers GUARDED_BY(m_workerLock);
 };
 
 #endif

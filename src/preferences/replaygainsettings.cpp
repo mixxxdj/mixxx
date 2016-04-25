@@ -5,7 +5,7 @@
  *      Author: daniel
  */
 
-#include "replaygainsettings.h"
+#include "preferences/replaygainsettings.h"
 
 namespace {
 const char* kConfigKey = "[ReplayGain]";
@@ -105,6 +105,3 @@ bool ReplayGainSettings::isAnalyzerDisabled(int version, TrackPointer tio) const
     // not enabled, pretend we have already a stored value.
     return true;
 }
-
-
-

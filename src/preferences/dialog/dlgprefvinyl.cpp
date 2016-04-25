@@ -276,8 +276,8 @@ void DlgPrefVinyl::verifyAndSaveLeadInTime(QLineEdit* widget, QString group, QSt
     if (isInteger) {
         config->set(ConfigKey(group, "vinylcontrol_lead_in_time"), strLeadIn);
     } else {
-        config->set(ConfigKey(group, "vinylcontrol_lead_in_time"),
-                    getDefaultLeadIn(vinyl_type));
+        config->setValue(ConfigKey(group, "vinylcontrol_lead_in_time"),
+                         getDefaultLeadIn(vinyl_type));
     }
 }
 

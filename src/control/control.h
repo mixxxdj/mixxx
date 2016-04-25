@@ -2,7 +2,6 @@
 #define CONTROL_H
 
 #include <QHash>
-#include <QMutex>
 #include <QString>
 #include <QObject>
 #include <QAtomicPointer>
@@ -10,6 +9,7 @@
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
 #include "preferences/usersettings.h"
+#include "util/mutex.h"
 
 class ControlObject;
 
@@ -177,7 +177,7 @@ class ControlDoublePrivate : public QObject {
     static QHash<ConfigKey, ConfigKey> s_qCOAliasHash;
 
     // Mutex guarding access to s_qCOHash and s_qCOAliasHash.
-    static QMutex s_qCOHashMutex;
+    static MMutex s_qCOHashMutex;
 };
 
 

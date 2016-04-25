@@ -3,7 +3,7 @@
 
 #include "engine/readaheadmanager.h"
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "engine/loopingcontrol.h"
 #include "engine/ratecontrol.h"
 #include "util/defs.h"
