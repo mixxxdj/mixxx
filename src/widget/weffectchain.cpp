@@ -10,8 +10,7 @@ WEffectChain::WEffectChain(QWidget* pParent, EffectsManager* pEffectsManager)
     chainUpdated();
 }
 
-WEffectChain::~WEffectChain() {
-}
+WEffectChain::~WEffectChain() = default;
 
 void WEffectChain::setup(QDomNode node, const SkinContext& context) {
     WLabel::setup(node, context);

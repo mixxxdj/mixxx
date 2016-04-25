@@ -29,8 +29,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 }
 
-WLibrarySidebar::~WLibrarySidebar() {
-}
+WLibrarySidebar::~WLibrarySidebar() = default;
 
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
@@ -196,7 +195,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
-    QItemSelectionModel* pModel = new QItemSelectionModel(model());
+    auto  pModel = new QItemSelectionModel(model());
     pModel->select(index, QItemSelectionModel::Select);
     setSelectionModel(pModel);
 

@@ -14,8 +14,7 @@ WBattery::WBattery(QWidget* parent)
     }
 }
 
-WBattery::~WBattery() {
-}
+WBattery::~WBattery() = default;
 
 void WBattery::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
@@ -157,7 +156,7 @@ void WBattery::setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
     }
 }
 
-void WBattery::paintEvent(QPaintEvent*) {
+void WBattery::paintEvent(QPaintEvent* /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);

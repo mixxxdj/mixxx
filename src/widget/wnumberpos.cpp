@@ -48,8 +48,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     slotSetValue(m_pVisualPlaypos->get());
 }
 
-WNumberPos::~WNumberPos() {
-}
+WNumberPos::~WNumberPos() = default;
 
 void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
     bool leftClick = pEvent->buttons() & Qt::LeftButton;
@@ -85,8 +84,9 @@ void WNumberPos::slotSetValue(double dValue) {
         double dDuration = m_dTrackSamples / m_dTrackSampleRate / 2.0;
         valueMillis = dValue * 500.0 * m_dTrackSamples / m_dTrackSampleRate;
         double durationMillis = dDuration * Time::kMillisPerSecond;
-        if (m_bRemain)
+        if (m_bRemain) {
             valueMillis = math_max(durationMillis - valueMillis, 0.0);
+        }
     }
 
     QString valueString;

@@ -62,8 +62,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
                   arg(m_clearButton->sizeHint().width() + frameWidth + 1));
 }
 
-WSearchLineEdit::~WSearchLineEdit() {
-}
+WSearchLineEdit::~WSearchLineEdit() = default;
 
 void WSearchLineEdit::setup(QDomNode node, const SkinContext& context) {
     // Background color

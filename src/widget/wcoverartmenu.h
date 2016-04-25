@@ -17,8 +17,8 @@
 class WCoverArtMenu : public QMenu {
     Q_OBJECT
   public:
-    WCoverArtMenu(QWidget *parent = 0);
-    virtual ~WCoverArtMenu();
+    explicit WCoverArtMenu(QWidget *parent = nullptr);
+    ~WCoverArtMenu() override;
 
     void setCoverArt(const QString& trackLocation, const CoverInfo& coverInfo);
 

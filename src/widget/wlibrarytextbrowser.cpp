@@ -7,5 +7,4 @@ WLibraryTextBrowser::WLibraryTextBrowser(QWidget* parent)
         : QTextBrowser(parent) {
 }
 
-WLibraryTextBrowser::~WLibraryTextBrowser() {
-}
+WLibraryTextBrowser::~WLibraryTextBrowser() = default;

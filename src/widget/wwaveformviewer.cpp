@@ -23,7 +23,7 @@ WWaveformViewer::WWaveformViewer(const char *group, UserSettingsPointer pConfig,
           m_zoomZoneWidth(20),
           m_bScratching(false),
           m_bBending(false),
-          m_waveformWidget(NULL) {
+          m_waveformWidget(nullptr) {
     setAcceptDrops(true);
 
     m_pZoom = new ControlObjectSlave(group, "waveform_zoom", this);

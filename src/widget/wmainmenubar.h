@@ -17,7 +17,7 @@ class VisibilityControlConnection : public QObject {
   public:
     VisibilityControlConnection(QObject* pParent, QAction* pAction,
                                 const ConfigKey& key);
-    virtual ~VisibilityControlConnection();
+    ~VisibilityControlConnection() override;
 
   private slots:
     void slotClearControl();
@@ -34,9 +34,9 @@ class VisibilityControlConnection : public QObject {
 class WMainMenuBar : public QMenuBar {
     Q_OBJECT
   public:
-    WMainMenuBar(QWidget* pParent, UserSettingsPointer pSettings,
+    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
                  ConfigObject<ConfigValueKbd>* pKbdConfig);
-    virtual ~WMainMenuBar();
+    ~WMainMenuBar() override;
 
   public slots:
     void onLibraryScanStarted();
@@ -79,7 +79,7 @@ class WMainMenuBar : public QMenuBar {
   private slots:
     void slotDeveloperStatsExperiment(bool enable);
     void slotDeveloperStatsBase(bool enable);
-    void slotDeveloperDebugger(bool enable);
+    void slotDeveloperDebugger(bool toggle);
     void slotVisitUrl(const QString& url);
 
   private:

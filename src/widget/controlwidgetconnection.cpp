@@ -15,11 +15,10 @@ ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
     m_pControl->connectValueChanged(SLOT(slotControlValueChanged(double)));
 }
 
-ControlWidgetConnection::~ControlWidgetConnection() {
-}
+ControlWidgetConnection::~ControlWidgetConnection() = default;
 
 void ControlWidgetConnection::setControlParameter(double parameter) {
-    if (m_pValueTransformer != NULL) {
+    if (m_pValueTransformer != nullptr) {
         parameter = m_pValueTransformer->transformInverse(parameter);
     }
     m_pControl->setParameter(parameter);
@@ -27,7 +26,7 @@ void ControlWidgetConnection::setControlParameter(double parameter) {
 
 double ControlWidgetConnection::getControlParameter() const {
     double parameter = m_pControl->getParameter();
-    if (m_pValueTransformer != NULL) {
+    if (m_pValueTransformer != nullptr) {
         parameter = m_pValueTransformer->transform(parameter);
     }
     return parameter;
@@ -35,7 +34,7 @@ double ControlWidgetConnection::getControlParameter() const {
 
 double ControlWidgetConnection::getControlParameterForValue(double value) const {
     double parameter = m_pControl->getParameterForValue(value);
-    if (m_pValueTransformer != NULL) {
+    if (m_pValueTransformer != nullptr) {
         parameter = m_pValueTransformer->transform(parameter);
     }
     return parameter;
@@ -51,8 +50,7 @@ ControlParameterWidgetConnection::ControlParameterWidgetConnection(WBaseWidget* 
           m_emitOption(emitOption) {
 }
 
-ControlParameterWidgetConnection::~ControlParameterWidgetConnection() {
-}
+ControlParameterWidgetConnection::~ControlParameterWidgetConnection() = default;
 
 void ControlParameterWidgetConnection::Init() {
     slotControlValueChanged(m_pControl->get());
@@ -107,8 +105,7 @@ ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(WBaseWidget* pB
     slotControlValueChanged(m_pControl->get());
 }
 
-ControlWidgetPropertyConnection::~ControlWidgetPropertyConnection() {
-}
+ControlWidgetPropertyConnection::~ControlWidgetPropertyConnection() = default;
 
 QString ControlWidgetPropertyConnection::toDebugString() const {
     const ConfigKey& key = getKey();

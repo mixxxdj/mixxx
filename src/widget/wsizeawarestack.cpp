@@ -7,7 +7,7 @@
 class SizeAwareLayout : public QStackedLayout
 {
   public:
-    QSize minimumSize() const
+    QSize minimumSize() const override
     {
         QSize s(0, 0) ;
         QWidget *w = widget(0);
@@ -77,8 +77,7 @@ WSizeAwareStack::WSizeAwareStack(QWidget* parent)
     setLayout(m_layout);
 }
 
-WSizeAwareStack::~WSizeAwareStack() {
-}
+WSizeAwareStack::~WSizeAwareStack() = default;
 
 int WSizeAwareStack::addWidget(QWidget *widget) {
     // smallest widgets should be added first

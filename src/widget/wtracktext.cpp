@@ -13,8 +13,7 @@ WTrackText::WTrackText(const char *group, UserSettingsPointer pConfig, QWidget* 
     setAcceptDrops(true);
 }
 
-WTrackText::~WTrackText() {
-}
+WTrackText::~WTrackText() = default;
 
 void WTrackText::slotTrackLoaded(TrackPointer track) {
     if (track) {
@@ -29,13 +28,13 @@ void WTrackText::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack
     Q_UNUSED(pNewTrack);
     Q_UNUSED(pOldTrack);
     if (m_pCurrentTrack) {
-        disconnect(m_pCurrentTrack.data(), 0, this, 0);
+        disconnect(m_pCurrentTrack.data(), nullptr, this, nullptr);
     }
     m_pCurrentTrack.clear();
     setText("");
 }
 
-void WTrackText::updateLabel(TrackInfoObject*) {
+void WTrackText::updateLabel(TrackInfoObject* /*unused*/) {
     if (m_pCurrentTrack) {
         setText(m_pCurrentTrack->getInfo());
     }

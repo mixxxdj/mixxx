@@ -15,10 +15,10 @@ class WStarRating : public WWidget {
     Q_OBJECT
   public:
     WStarRating(QString group, QWidget* pParent);
-    virtual ~WStarRating();
+    ~WStarRating() override;
 
     virtual void setup(QDomNode node, const SkinContext& context);
-    QSize sizeHint() const;
+    QSize sizeHint() const override;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -31,7 +31,7 @@ class WStarRating : public WWidget {
     void paintEvent(QPaintEvent* e) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void leaveEvent(QEvent *) override;
+    void leaveEvent(QEvent * /*unused*/) override;
     void fillDebugTooltip(QStringList* debug) override;
 
     StarRating m_starRating;

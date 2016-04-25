@@ -49,7 +49,7 @@ bool WWidget::event(QEvent* e) {
         case QEvent::TouchUpdate:
         case QEvent::TouchEnd:
         {
-            QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
+            QTouchEvent* touchEvent = dynamic_cast<QTouchEvent*>(e);
             if (touchEvent->deviceType() !=  QTouchEvent::TouchScreen) {
                 break;
             }

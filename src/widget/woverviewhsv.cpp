@@ -58,7 +58,7 @@ bool WOverviewHSV::drawNextPixmapPart() {
 
 
     QPainter painter(m_pWaveformSourceImage);
-    painter.translate(0.0,(double)m_pWaveformSourceImage->height()/2.0);
+    painter.translate(0.0,static_cast<double>(m_pWaveformSourceImage->height())/2.0);
 
     // Get HSV of low color. NOTE(rryan): On ARM, qreal is float so it's
     // important we use qreal here and not double or float or else we will get

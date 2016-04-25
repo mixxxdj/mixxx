@@ -13,12 +13,12 @@ class WSplitter : public QSplitter, public WBaseWidget {
     Q_OBJECT
   public:
     WSplitter(QWidget* pParent, UserSettingsPointer pConfig);
-    virtual ~WSplitter();
+    ~WSplitter() override;
 
     void setup(QDomNode node, const SkinContext& context);
 
   protected:
-    bool event(QEvent* pEvent);
+    bool event(QEvent* pEvent) override;
 
   private slots:
     void slotSplitterMoved();

@@ -14,9 +14,9 @@ class WTrackProperty : public WLabel {
     Q_OBJECT
   public:
     WTrackProperty(const char* group, UserSettingsPointer pConfig, QWidget* pParent);
-    virtual ~WTrackProperty();
+    ~WTrackProperty() override;
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(QDomNode node, const SkinContext& context) override;
 
   signals:
     void trackDropped(QString filename, QString group);
@@ -29,9 +29,9 @@ class WTrackProperty : public WLabel {
     void updateLabel(TrackInfoObject*);
 
   private:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
     const char* m_pGroup;
     UserSettingsPointer m_pConfig;

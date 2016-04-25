@@ -7,12 +7,12 @@
 #include "util/debug.h"
 
 WBaseWidget::WBaseWidget(QWidget* pWidget)
-        : m_pDisplayConnection(NULL),
+        : m_pDisplayConnection(nullptr),
           m_pWidget(pWidget) {
 }
 
 WBaseWidget::~WBaseWidget() {
-    m_pDisplayConnection = NULL;
+    m_pDisplayConnection = nullptr;
     while (!m_leftConnections.isEmpty()) {
         delete m_leftConnections.takeLast();
     }
@@ -79,7 +79,7 @@ double WBaseWidget::getControlParameterRight() const {
 }
 
 double WBaseWidget::getControlParameterDisplay() const {
-    if (m_pDisplayConnection != NULL) {
+    if (m_pDisplayConnection != nullptr) {
         return m_pDisplayConnection->getControlParameter();
     }
     return 0.0;

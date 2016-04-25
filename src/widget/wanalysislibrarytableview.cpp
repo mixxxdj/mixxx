@@ -9,8 +9,7 @@ WAnalysisLibraryTableView::WAnalysisLibraryTableView(QWidget* parent,
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
 }
 
-WAnalysisLibraryTableView::~WAnalysisLibraryTableView() {
-}
+WAnalysisLibraryTableView::~WAnalysisLibraryTableView() = default;
 
 void WAnalysisLibraryTableView::onSearchStarting() {
 }

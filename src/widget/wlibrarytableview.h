@@ -21,8 +21,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     WLibraryTableView(QWidget* parent,
                       UserSettingsPointer pConfig,
                       ConfigKey vScrollBarPosKey);
-    virtual ~WLibraryTableView();
-    virtual void moveSelection(int delta);
+    ~WLibraryTableView() override;
+    void moveSelection(int delta) override;
 
   signals:
     void loadTrack(TrackPointer pTrack);

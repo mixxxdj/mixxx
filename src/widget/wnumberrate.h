@@ -19,11 +19,11 @@ class ControlObjectSlave;
 class WNumberRate : public WNumber {
     Q_OBJECT
   public:
-    WNumberRate(const char *group, QWidget *parent=0);
-    virtual ~WNumberRate();
+    explicit WNumberRate(const char *group, QWidget *parent=nullptr);
+    ~WNumberRate() override;
 
   private slots:
-    void setValue(double dValue);
+    void setValue(double dValue) override;
 
   private:
     // Pointer to control objects for rate.

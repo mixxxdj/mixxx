@@ -30,8 +30,7 @@ WStatusLight::WStatusLight(QWidget * parent)
     setNoPos(0);
 }
 
-WStatusLight::~WStatusLight() {
-}
+WStatusLight::~WStatusLight() = default;
 
 void WStatusLight::setNoPos(int iNoPos) {
     // If pixmap array is already allocated, delete it.
@@ -114,7 +113,7 @@ void WStatusLight::onConnectedControlChanged(double dParameter, double dValue) {
     }
 }
 
-void WStatusLight::paintEvent(QPaintEvent *) {
+void WStatusLight::paintEvent(QPaintEvent * /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);

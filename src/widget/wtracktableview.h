@@ -28,13 +28,13 @@ class WTrackTableView : public WLibraryTableView {
   public:
     WTrackTableView(QWidget* parent, UserSettingsPointer pConfig,
                     TrackCollection* pTrackCollection, bool sorting = true);
-    virtual ~WTrackTableView();
-    void contextMenuEvent(QContextMenuEvent * event);
-    void onSearch(const QString& text);
-    void onShow();
-    virtual void keyPressEvent(QKeyEvent* event);
-    virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group, bool play);
+    ~WTrackTableView() override;
+    void contextMenuEvent(QContextMenuEvent * event) override;
+    void onSearch(const QString& text) override;
+    void onShow() override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void loadSelectedTrack() override;
+    void loadSelectedTrackToGroup(QString group, bool play) override;
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
@@ -43,8 +43,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotPurge();
     void onSearchStarting();
     void onSearchCleared();
-    void slotSendToAutoDJ();
-    void slotSendToAutoDJTop();
+    void slotSendToAutoDJ() override;
+    void slotSendToAutoDJTop() override;
 
   private slots:
     void slotRemove();
@@ -78,22 +78,22 @@ class WTrackTableView : public WLibraryTableView {
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
     void createActions();
-    void dragMoveEvent(QDragMoveEvent * event);
-    void dragEnterEvent(QDragEnterEvent * event);
-    void dropEvent(QDropEvent * event);
+    void dragMoveEvent(QDragMoveEvent * event) override;
+    void dragEnterEvent(QDragEnterEvent * event) override;
+    void dropEvent(QDropEvent * event) override;
     void lockBpm(bool lock);
 
     void enableCachedOnly();
     void selectionChanged(const QItemSelection &selected,
-                          const QItemSelection &deselected);
+                          const QItemSelection &deselected) override;
 
     // Mouse move event, implemented to hide the text and show an icon instead
     // when dragging.
-    void mouseMoveEvent(QMouseEvent *pEvent);
+    void mouseMoveEvent(QMouseEvent *pEvent) override;
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel();
-    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capability);
+    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities);
 
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;

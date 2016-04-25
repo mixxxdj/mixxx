@@ -10,11 +10,11 @@
 class WNumberDb : public WNumber {
     Q_OBJECT
   public:
-    WNumberDb(QWidget* pParent = NULL);
-    virtual ~WNumberDb();
+    explicit WNumberDb(QWidget* pParent = nullptr);
+    ~WNumberDb() override;
 
   public slots:
-    virtual void setValue(double dValue);
+    void setValue(double dValue) override;
 };
 
 #endif // WNUMBERDB_H

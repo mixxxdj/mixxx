@@ -12,8 +12,7 @@ WKey::WKey(const char* group, QWidget* pParent)
     m_engineKeyDistance.connectValueChanged(SLOT(setCents()));
 }
 
-WKey::~WKey() {
-}
+WKey::~WKey() = default;
 
 void WKey::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dParameter);

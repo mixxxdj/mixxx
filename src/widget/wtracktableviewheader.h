@@ -30,7 +30,7 @@ public:
             : m_view_state(pb) { }
 
     // Populate the object with the serialized protobuf data provided.
-    HeaderViewState(const QString& serialized);
+    explicit HeaderViewState(const QString& base64serialized);
 
     // Returns a serialized protobuf of the current state.
     QString saveState() const;
@@ -59,11 +59,11 @@ private:
 class WTrackTableViewHeader : public QHeaderView {
     Q_OBJECT
   public:
-    WTrackTableViewHeader(Qt::Orientation orientation, QWidget* parent = 0);
-    virtual ~WTrackTableViewHeader();
+    explicit WTrackTableViewHeader(Qt::Orientation orientation, QWidget* parent = nullptr);
+    ~WTrackTableViewHeader() override;
 
-    void contextMenuEvent(QContextMenuEvent* event);
-    virtual void setModel(QAbstractItemModel* model);
+    void contextMenuEvent(QContextMenuEvent* event) override;
+    void setModel(QAbstractItemModel* model) override;
 
     void saveHeaderState();
     void restoreHeaderState();

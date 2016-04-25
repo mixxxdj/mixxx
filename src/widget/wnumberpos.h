@@ -12,19 +12,19 @@ class ControlObjectSlave;
 class WNumberPos : public WNumber {
     Q_OBJECT
   public:
-    WNumberPos(const char *group, QWidget *parent=0);
-    virtual ~WNumberPos();
+    explicit WNumberPos(const char *group, QWidget *parent=nullptr);
+    ~WNumberPos() override;
 
     // Set if the display shows remaining time (true) or position (false)
     void setRemain(bool bRemain);
 
   protected:
-    void mousePressEvent(QMouseEvent* pEvent);
+    void mousePressEvent(QMouseEvent* pEvent) override;
 
   private slots:
-    void setValue(double dValue);
+    void setValue(double dValue) override;
     void slotSetValue(double);
-    void slotSetRemain(double dRemain);
+    void slotSetRemain(double remain);
     void slotSetTrackSampleRate(double dSampleRate);
     void slotSetTrackSamples(double dSamples);
 

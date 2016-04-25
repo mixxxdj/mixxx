@@ -29,8 +29,7 @@ WLabel::WLabel(QWidget* pParent)
           m_elideMode(Qt::ElideNone) {
 }
 
-WLabel::~WLabel() {
-}
+WLabel::~WLabel() = default;
 
 void WLabel::setup(QDomNode node, const SkinContext& context) {
     // Colors

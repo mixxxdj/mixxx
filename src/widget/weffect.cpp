@@ -11,8 +11,7 @@ WEffect::WEffect(QWidget* pParent, EffectsManager* pEffectsManager)
     effectUpdated();
 }
 
-WEffect::~WEffect() {
-}
+WEffect::~WEffect() = default;
 
 void WEffect::setup(QDomNode node, const SkinContext& context) {
     WLabel::setup(node, context);

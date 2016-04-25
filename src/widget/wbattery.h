@@ -16,8 +16,8 @@ class Battery;
 class WBattery : public WWidget {
     Q_OBJECT
   public:
-    WBattery(QWidget* parent=NULL);
-    virtual ~WBattery();
+    explicit WBattery(QWidget* parent=nullptr);
+    ~WBattery() override;
 
     void setup(QDomNode node, const SkinContext& context);
 
@@ -26,7 +26,7 @@ class WBattery : public WWidget {
     void update();
 
   protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent * /*unused*/) override;
 
   private:
     void setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,

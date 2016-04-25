@@ -8,7 +8,7 @@ class WOverviewRGB : public WOverview {
     WOverviewRGB(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent);
 
   private:
-    virtual bool drawNextPixmapPart();
+    bool drawNextPixmapPart() override;
 };
 
 #endif // WOVERVIEWRGB_H

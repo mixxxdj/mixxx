@@ -18,7 +18,7 @@ class ControlWidgetConnection : public QObject {
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
                             const ConfigKey& key,
                             ValueTransformer* pTransformer);
-    virtual ~ControlWidgetConnection();
+    ~ControlWidgetConnection() override;
 
     double getControlParameter() const;
     double getControlParameterForValue(double value) const;
@@ -33,7 +33,7 @@ class ControlWidgetConnection : public QObject {
     virtual void slotControlValueChanged(double v) = 0;
 
   protected:
-    void setControlParameter(double v);
+    void setControlParameter(double parameter);
 
     WBaseWidget* m_pWidget;
 
@@ -100,11 +100,11 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
                                      ValueTransformer* pTransformer,
                                      DirectionOption directionOption,
                                      EmitOption emitOption);
-    virtual ~ControlParameterWidgetConnection();
+    ~ControlParameterWidgetConnection() override;
 
     void Init();
 
-    QString toDebugString() const;
+    QString toDebugString() const override;
 
     int getDirectionOption() const { return m_directionOption; };
     int getEmitOption() const { return m_emitOption; };
@@ -118,7 +118,7 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     void setControlParameterUp(double v);
 
   private slots:
-    virtual void slotControlValueChanged(double v);
+    void slotControlValueChanged(double value) override;
 
   private:
     DirectionOption m_directionOption;
@@ -131,13 +131,13 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
     ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
                                     const ConfigKey& key,
                                     ValueTransformer* pTransformer,
-                                    const QString& property);
-    virtual ~ControlWidgetPropertyConnection();
+                                    const QString& propertyName);
+    ~ControlWidgetPropertyConnection() override;
 
-    QString toDebugString() const;
+    QString toDebugString() const override;
 
   private slots:
-    virtual void slotControlValueChanged(double v);
+    void slotControlValueChanged(double v) override;
 
   private:
     QByteArray m_propertyName;

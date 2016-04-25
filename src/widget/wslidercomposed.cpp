@@ -21,8 +21,8 @@
 #include <QStylePainter>
 #include <QStyleOption>
 
-#include "widget/wpixmapstore.h"
 #include "widget/controlwidgetconnection.h"
+#include "widget/wpixmapstore.h"
 #include "util/debug.h"
 #include "util/math.h"
 
@@ -32,8 +32,8 @@ WSliderComposed::WSliderComposed(QWidget * parent)
       m_dHandleLength(0.0),
       m_dSliderLength(0.0),
       m_bHorizontal(false),
-      m_pSlider(NULL),
-      m_pHandle(NULL) {
+      m_pSlider(nullptr),
+      m_pHandle(nullptr) {
 }
 
 WSliderComposed::~WSliderComposed() {
@@ -130,7 +130,7 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e) {
     m_handler.mousePressEvent(this, e);
 }
 
-void WSliderComposed::paintEvent(QPaintEvent *) {
+void WSliderComposed::paintEvent(QPaintEvent * /*unused*/) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);
@@ -168,7 +168,7 @@ void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
     onConnectedControlChanged(getControlParameter(), 0);
 }
 
-void WSliderComposed::onConnectedControlChanged(double dParameter, double) {
+void WSliderComposed::onConnectedControlChanged(double dParameter, double /*dValue*/) {
     m_handler.onConnectedControlChanged(this, dParameter);
 }
 

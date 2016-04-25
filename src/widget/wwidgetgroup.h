@@ -18,8 +18,8 @@ class SkinContext;
 class WWidgetGroup : public QFrame, public WBaseWidget {
     Q_OBJECT
   public:
-    WWidgetGroup(QWidget* pParent=NULL);
-    virtual ~WWidgetGroup();
+    explicit WWidgetGroup(QWidget* pParent=nullptr);
+    ~WWidgetGroup() override;
 
     // QLayouts are not stylable using Qt style sheets. These properties let us
     // style the layout properties using the QProperty support in Qt style
@@ -39,7 +39,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     int layoutSpacing() const;
     void setLayoutSpacing(int spacing);
     QRect layoutContentsMargins() const;
-    void setLayoutContentsMargins(QRect margins);
+    void setLayoutContentsMargins(QRect rectMargins);
     Qt::Alignment layoutAlignment() const;
     void setLayoutAlignment(int alignment);
 
@@ -48,10 +48,10 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     void addWidget(QWidget* pChild);
 
   protected:
-    virtual void paintEvent(QPaintEvent* pe);
-    virtual void resizeEvent(QResizeEvent* re);
-    bool event(QEvent* pEvent);
-    void fillDebugTooltip(QStringList* debug);
+    void paintEvent(QPaintEvent* pe) override;
+    void resizeEvent(QResizeEvent* re) override;
+    bool event(QEvent* pEvent) override;
+    void fillDebugTooltip(QStringList* debug) override;
 
   private:
     // Associated background pixmap
