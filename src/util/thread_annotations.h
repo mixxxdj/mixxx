@@ -12,8 +12,6 @@
 #define THREAD_ANNOTATION_ATTRIBUTE__(x)   // no-op
 #endif
 
-#define THREAD_ANNOTATION_ATTRIBUTE__(x)   __attribute__((x))
-
 #define CAPABILITY(x) \
   THREAD_ANNOTATION_ATTRIBUTE__(capability(x))
 
