@@ -355,7 +355,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.playShift.input</key>
+                <key>P32.leftDeck.goToStart.input</key>
                 <status>0x94</status>
                 <midino>0x0A</midino>
                 <options>
@@ -616,7 +616,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.playShift.input</key>
+                <key>P32.rightDeck.goToStart.input</key>
                 <status>0x95</status>
                 <midino>0x0A</midino>
                 <options>
