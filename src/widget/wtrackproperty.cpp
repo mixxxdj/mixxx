@@ -15,9 +15,6 @@ WTrackProperty::WTrackProperty(const char* group,
     setAcceptDrops(true);
 }
 
-WTrackProperty::~WTrackProperty() {
-}
-
 void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
     WLabel::setup(node, context);
 
@@ -37,13 +34,13 @@ void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
     Q_UNUSED(pNewTrack);
     Q_UNUSED(pOldTrack);
     if (m_pCurrentTrack) {
-        disconnect(m_pCurrentTrack.data(), 0, this, 0);
+        disconnect(m_pCurrentTrack.data(), nullptr, this, nullptr);
     }
     m_pCurrentTrack.clear();
     setText("");
 }
 
-void WTrackProperty::updateLabel(TrackInfoObject*) {
+void WTrackProperty::updateLabel(TrackInfoObject* /*unused*/) {
     if (m_pCurrentTrack) {
         QVariant property = m_pCurrentTrack->property(m_property.toAscii().constData());
         if (property.isValid() && qVariantCanConvert<QString>(property)) {

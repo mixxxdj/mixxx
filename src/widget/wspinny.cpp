@@ -7,8 +7,8 @@
 #include "controlobject.h"
 #include "controlobjectslave.h"
 #include "library/coverartcache.h"
-#include "waveform/sharedglcontext.h"
 #include "util/dnd.h"
+#include "waveform/sharedglcontext.h"
 #include "util/math.h"
 #include "waveform/visualplayposition.h"
 #include "vinylcontrol/vinylcontrol.h"
@@ -24,21 +24,21 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
-          m_pBgImage(NULL),
-          m_pMaskImage(NULL),
-          m_pFgImage(NULL),
-          m_pGhostImage(NULL),
-          m_pPlay(NULL),
-          m_pPlayPos(NULL),
-          m_pVisualPlayPos(NULL),
-          m_pTrackSamples(NULL),
-          m_pTrackSampleRate(NULL),
-          m_pScratchToggle(NULL),
-          m_pScratchPos(NULL),
-          m_pVinylControlSpeedType(NULL),
-          m_pVinylControlEnabled(NULL),
-          m_pSignalEnabled(NULL),
-          m_pSlipEnabled(NULL),
+          m_pBgImage(nullptr),
+          m_pMaskImage(nullptr),
+          m_pFgImage(nullptr),
+          m_pGhostImage(nullptr),
+          m_pPlay(nullptr),
+          m_pPlayPos(nullptr),
+          m_pVisualPlayPos(nullptr),
+          m_pTrackSamples(nullptr),
+          m_pTrackSampleRate(nullptr),
+          m_pScratchToggle(nullptr),
+          m_pScratchPos(nullptr),
+          m_pVinylControlSpeedType(nullptr),
+          m_pVinylControlEnabled(nullptr),
+          m_pSignalEnabled(nullptr),
+          m_pSlipEnabled(nullptr),
           m_bShowCover(true),
           m_dInitialPos(0.),
           m_iVinylInput(-1),
@@ -70,7 +70,7 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
              << "Sharing:" << context()->isSharing();
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
+    if (pCache != nullptr) {
         connect(pCache, SIGNAL(coverFound(const QObject*, const int,
                                           const CoverInfo&, QPixmap, bool)),
                 this, SLOT(slotCoverFound(const QObject*, const int,
@@ -106,17 +106,17 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
     // hsv:  s=1, v=1
     // h is the only variable.
     // h=0 is red, h=120 is green
-    qual_color.setHsv((int)(120.0 * signalQuality), 255, 255);
+    qual_color.setHsv(static_cast<int>(120.0 * signalQuality), 255, 255);
     qual_color.getRgb(&r, &g, &b);
 
     for (int y = 0; y < m_iVinylScopeSize; ++y) {
-        QRgb *line = (QRgb *)m_qImage.scanLine(y);
+        QRgb *line = reinterpret_cast<QRgb *>(m_qImage.scanLine(y));
         for (int x = 0; x < m_iVinylScopeSize; ++x) {
             // use xwax's bitmap to set alpha data only
             // adjust alpha by 3/4 so it's not quite so distracting
             // setpixel is slow, use scanlines instead
             //m_qImage.setPixel(x, y, qRgba(r,g,b,(int)buf[x+m_iVinylScopeSize*y] * .75));
-            *line = qRgba(r,g,b,(int)(report.scope[x+m_iVinylScopeSize*y] * .75));
+            *line = qRgba(r,g,b,static_cast<int>(report.scope[x+m_iVinylScopeSize*y] * .75));
             line++;
         }
     }
@@ -259,7 +259,7 @@ void WSpinny::slotTrackCoverArtUpdated() {
         m_lastRequestedCover = m_loadedTrack->getCoverInfo();
         m_lastRequestedCover.trackLocation = m_loadedTrack->getLocation();
         CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache != NULL) {
+        if (pCache != nullptr) {
             // TODO(rryan): Don't use track id.
             pCache->requestCover(m_lastRequestedCover, this, m_loadedTrack->getId().toInt());
         }
@@ -366,7 +366,7 @@ QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
-void WSpinny::resizeEvent(QResizeEvent*) {
+void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     if (m_pFgImage && !m_pFgImage->isNull()) {
         m_fgImageScaled = m_pFgImage->scaled(
@@ -431,8 +431,9 @@ double WSpinny::calculateAngle(double playpos) {
     that it would take to wind the vinyl to that position. */
 int WSpinny::calculateFullRotations(double playpos)
 {
-    if (isnan(playpos))
+    if (isnan(playpos)) {
         return 0;
+    }
     //Convert playpos to seconds.
     double t = playpos * (m_pTrackSamples->get() / 2 /  // Stereo audio!
                           m_pTrackSampleRate->get());
@@ -441,7 +442,7 @@ int WSpinny::calculateFullRotations(double playpos)
     //qDebug() << t;
     double angle = 360 * m_dRotationsPerSecond * t;
 
-    return (((int)angle + 180) / 360);
+    return ((static_cast<int>(angle) + 180) / 360);
 }
 
 //Inverse of calculateAngle()
@@ -475,7 +476,7 @@ void WSpinny::updateVinylControlSpeed(double rpm) {
 
 void WSpinny::updateVinylControlSignalEnabled(double enabled) {
 #ifdef __VINYLCONTROL__
-    if (m_pVCManager == NULL) {
+    if (m_pVCManager == nullptr) {
         return;
     }
     m_bSignalActive = enabled;
@@ -554,8 +555,9 @@ void WSpinny::mousePressEvent(QMouseEvent * e)
     m_iStartMouseY = y;
 
     //don't do anything if vinyl control is active
-    if (m_bVinylActive)
+    if (m_bVinylActive) {
         return;
+    }
 
     if (e->button() == Qt::LeftButton || e->button() == Qt::RightButton) {
         QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));

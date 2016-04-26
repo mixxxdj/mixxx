@@ -12,8 +12,7 @@
 class WTrackText : public WLabel {
     Q_OBJECT
   public:
-    WTrackText(const char* group, UserSettingsPointer pConfig, QWidget *parent);
-    virtual ~WTrackText();
+    WTrackText(const char* group, UserSettingsPointer pConfig, QWidget *pParent);
 
   signals:
     void trackDropped(QString fileName, QString group);
@@ -26,9 +25,9 @@ class WTrackText : public WLabel {
     void updateLabel(TrackInfoObject*);
 
   private:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
     const char* m_pGroup;
     UserSettingsPointer m_pConfig;

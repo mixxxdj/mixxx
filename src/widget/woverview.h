@@ -33,13 +33,13 @@ class Waveform;
 class WOverview : public WWidget {
     Q_OBJECT
   public:
-    WOverview(const char* pGroup, UserSettingsPointer pConfig, QWidget* parent=NULL);
-    virtual ~WOverview();
+    WOverview(const char* pGroup, UserSettingsPointer pConfig, QWidget* parent=nullptr);
+    ~WOverview() override;
 
     void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void onConnectedControlChanged(double dParameter, double dValue);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
@@ -47,13 +47,13 @@ class WOverview : public WWidget {
     void trackDropped(QString filename, QString group);
 
   protected:
-    void mouseMoveEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void paintEvent(QPaintEvent *);
-    void resizeEvent(QResizeEvent *);
-    virtual void dragEnterEvent(QDragEnterEvent* event);
-    virtual void dropEvent(QDropEvent* event);
+    void mouseMoveEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
+    void paintEvent(QPaintEvent * /*unused*/) override;
+    void resizeEvent(QResizeEvent * /*unused*/) override;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
 
     ConstWaveformPointer getWaveform() const {
         return m_pWaveform;

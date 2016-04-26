@@ -8,7 +8,7 @@
 
 
 WSingletonContainer::WSingletonContainer(QWidget* pParent)
-        : WWidgetGroup(pParent), m_pWidget(NULL), m_pLayout(NULL) { }
+        : WWidgetGroup(pParent), m_pWidget(nullptr), m_pLayout(nullptr) { }
 
 void WSingletonContainer::setup(QDomNode node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
@@ -30,7 +30,7 @@ void WSingletonContainer::setup(QDomNode node, const SkinContext& context) {
         return;
     }
     m_pWidget = context.getSingletonWidget(objectName);
-    if (m_pWidget == NULL) {
+    if (m_pWidget == nullptr) {
         SKIN_WARNING(node, context)
                 << "Asked for an unknown singleton widget:" << objectName;
     }
@@ -68,5 +68,5 @@ void SingletonMap::insertSingleton(QString objectName, QWidget* widget) {
 }
 
 QWidget* SingletonMap::getSingletonWidget(QString objectName) const {
-    return m_singletons.value(objectName, NULL);
+    return m_singletons.value(objectName, nullptr);
 }

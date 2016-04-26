@@ -7,17 +7,14 @@
 
 #include "skin/skincontext.h"
 #include "widget/wwidget.h"
-#include "widget/wpixmapstore.h"
 #include "util/debug.h"
+#include "widget/wpixmapstore.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),
           WBaseWidget(this),
-          m_pPixmapBack(NULL) {
+          m_pPixmapBack(nullptr) {
     setObjectName("WidgetGroup");
-}
-
-WWidgetGroup::~WWidgetGroup() {
 }
 
 int WWidgetGroup::layoutSpacing() const {
@@ -89,7 +86,7 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
                             context.selectScaleMode(backPathNode, Paintable::TILE));
     }
 
-    QLayout* pLayout = NULL;
+    QLayout* pLayout = nullptr;
     if (context.hasNode(node, "Layout")) {
         QString layout = context.selectString(node, "Layout");
         if (layout == "vertical") {
@@ -97,13 +94,13 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
         } else if (layout == "horizontal") {
             pLayout = new QHBoxLayout();
         } else if (layout == "stacked") {
-            QStackedLayout* pStackedLayout = new QStackedLayout();
+            auto pStackedLayout = new QStackedLayout();
             pStackedLayout->setStackingMode(QStackedLayout::StackAll);
             pLayout = pStackedLayout;
         }
 
         // Set common layout parameters.
-        if (pLayout != NULL) {
+        if (pLayout != nullptr) {
             pLayout->setSpacing(0);
             pLayout->setContentsMargins(0, 0, 0, 0);
             pLayout->setAlignment(Qt::AlignCenter);

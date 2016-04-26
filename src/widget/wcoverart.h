@@ -20,7 +20,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
   public:
     WCoverArt(QWidget* parent, UserSettingsPointer pConfig,
               const QString& group);
-    virtual ~WCoverArt();
+    ~WCoverArt() override;
 
     void setup(QDomNode node, const SkinContext& context);
 
@@ -41,14 +41,14 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void slotTrackCoverArtUpdated();
 
   protected:
-    void paintEvent(QPaintEvent*);
-    void resizeEvent(QResizeEvent*);
-    void mousePressEvent(QMouseEvent*);
-    void leaveEvent(QEvent*);
+    void paintEvent(QPaintEvent* /*unused*/) override;
+    void resizeEvent(QResizeEvent* /*unused*/) override;
+    void mousePressEvent(QMouseEvent* /*unused*/) override;
+    void leaveEvent(QEvent* /*unused*/) override;
 
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
   private:
     QPixmap scaledCoverArt(const QPixmap& normal);

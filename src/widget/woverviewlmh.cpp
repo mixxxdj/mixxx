@@ -60,7 +60,7 @@ bool WOverviewLMH::drawNextPixmapPart() {
 
 
     QPainter painter(m_pWaveformSourceImage);
-    painter.translate(0.0,(double)m_pWaveformSourceImage->height()/2.0);
+    painter.translate(0.0,static_cast<double>(m_pWaveformSourceImage->height())/2.0);
 
     QColor lowColor = m_signalColors.getLowColor();
     QPen lowColorPen(QBrush(lowColor), 1);

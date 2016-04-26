@@ -9,11 +9,10 @@
 class WKey : public WLabel  {
     Q_OBJECT
   public:
-    WKey(const char* group, QWidget* pParent=NULL);
-    virtual ~WKey();
+    explicit WKey(const char* group, QWidget* pParent=nullptr);
 
-    virtual void onConnectedControlChanged(double dParameter, double dValue);
-    void setup(QDomNode node, const SkinContext& context);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
+    void setup(QDomNode node, const SkinContext& context) override;
 
   private slots:
     void setValue(double dValue);
