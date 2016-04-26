@@ -79,7 +79,7 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent* e) {
     // The release handler may have set the left value. Check the corresponding
     // QAction.
     double leftValue = getControlParameterLeft();
-    for (const auto& action : m_pButtonMenu->actions()) {
+    for (QAction* action : m_pButtonMenu->actions()) {
         if (action->data().toDouble() == leftValue) {
             action->setChecked(true);
             break;
