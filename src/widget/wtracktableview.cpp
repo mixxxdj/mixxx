@@ -12,7 +12,7 @@
 #include "library/librarytablemodel.h"
 #include "controlobject.h"
 #include "library/trackcollection.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "controlobjectslave.h"
 #include "widget/wtracktableview.h"
 #include "library/dlgtrackinfo.h"

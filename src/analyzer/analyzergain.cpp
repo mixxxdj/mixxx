@@ -2,7 +2,7 @@
 #include <replaygain.h>
 
 #include "analyzer/analyzergain.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"

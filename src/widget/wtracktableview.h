@@ -10,7 +10,7 @@
 #include "library/dlgtagfetcher.h"
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/duration.h"
 #include "widget/wlibrarytableview.h"
 

@@ -8,7 +8,7 @@
 #include <QList>
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "control/controlvalue.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/cachingreader.h"

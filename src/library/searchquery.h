@@ -10,7 +10,7 @@
 #include <QString>
 #include <QStringList>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "proto/keys.pb.h"
 #include "util/assert.h"
 #include "util/memory.h"

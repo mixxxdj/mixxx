@@ -9,7 +9,7 @@
 #include "engine/enginechannel.h"
 #include "engine/enginedeck.h"
 #include "mixer/baseplayer.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class EngineMaster;
 class ControlObject;
@@ -69,7 +69,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) override;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
+    void slotLoadFailed(TrackPointer pTrack, QString reason);
     void slotSetReplayGain(Mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 

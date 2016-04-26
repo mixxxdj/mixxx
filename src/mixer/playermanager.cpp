@@ -19,7 +19,7 @@
 #include "mixer/sampler.h"
 #include "mixer/samplerbank.h"
 #include "soundio/soundmanager.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/stat.h"
 #include "util/sleepableqthread.h"

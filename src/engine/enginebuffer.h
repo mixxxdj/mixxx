@@ -27,7 +27,7 @@
 #include "control/controlvalue.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/rotary.h"
 #include "util/types.h"
 

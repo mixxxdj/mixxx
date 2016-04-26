@@ -25,7 +25,7 @@
 #include "woverview.h"
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"

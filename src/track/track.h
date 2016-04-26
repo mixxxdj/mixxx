@@ -1,5 +1,5 @@
-#ifndef TRACKINFOOBJECT_H
-#define TRACKINFOOBJECT_H
+#ifndef TRACK_TRACK_H
+#define TRACK_TRACK_H
 
 #include <QAtomicInt>
 #include <QFileInfo>
@@ -19,15 +19,15 @@
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
-class TrackInfoObject;
-typedef QSharedPointer<TrackInfoObject> TrackPointer;
-typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
+class Track;
+typedef QSharedPointer<Track> TrackPointer;
+typedef QWeakPointer<Track> TrackWeakPointer;
 
-class TrackInfoObject : public QObject {
+class Track : public QObject {
     Q_OBJECT
 
   public:
-    TrackInfoObject(const TrackInfoObject&) = delete;
+    Track(const Track&) = delete;
 
     // Creates a new empty temporary instance for fake tracks or for
     // testing purposes. The resulting track will neither be stored
@@ -277,7 +277,7 @@ class TrackInfoObject : public QObject {
 
     // Called when the shared pointer reference count for a library TrackPointer
     // drops to zero.
-    static void onTrackReferenceExpired(TrackInfoObject* pTrack);
+    static void onTrackReferenceExpired(Track* pTrack);
 
     // Set whether the track should delete itself when its reference count drops
     // to zero. This happens during shutdown when TrackDAO has already been
@@ -298,19 +298,18 @@ class TrackInfoObject : public QObject {
     void keysUpdated();
     void ReplayGainUpdated(Mixxx::ReplayGain replayGain);
     void cuesUpdated();
-    void changed(TrackInfoObject* pTrack);
-    void dirty(TrackInfoObject* pTrack);
-    void clean(TrackInfoObject* pTrack);
-    void referenceExpired(TrackInfoObject* pTrack);
+    void changed(Track* pTrack);
+    void dirty(Track* pTrack);
+    void clean(Track* pTrack);
+    void referenceExpired(Track* pTrack);
 
   private slots:
     void slotBeatsUpdated();
 
   private:
-    TrackInfoObject(
-            const QFileInfo& fileInfo,
-            const SecurityTokenPointer& pSecurityToken,
-            TrackId trackId);
+    Track(const QFileInfo& fileInfo,
+          const SecurityTokenPointer& pSecurityToken,
+          TrackId trackId);
 
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
@@ -389,4 +388,4 @@ class TrackInfoObject : public QObject {
     friend class TrackDAO;
 };
 
-#endif // TRACKINFOOBJECT_H
+#endif // TRACK_TRACK_H

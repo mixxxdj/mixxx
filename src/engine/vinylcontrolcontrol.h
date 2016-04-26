@@ -2,7 +2,7 @@
 #define VINYLCONTROLCONTROL_H
 
 #include "engine/enginecontrol.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "preferences/usersettings.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"

@@ -35,7 +35,7 @@ class BeatGridIterator : public BeatIterator {
     double m_dEndSample;
 };
 
-BeatGrid::BeatGrid(TrackInfoObject* pTrack, int iSampleRate,
+BeatGrid::BeatGrid(Track* pTrack, int iSampleRate,
                    const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),

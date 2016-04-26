@@ -5,7 +5,7 @@
 
 #include "controlobject.h"
 #include "controlpotmeter.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "soundsourceproxy.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedeck.h"
@@ -207,7 +207,7 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer track, QString reason) {
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                                           TrackPointer pOldTrack) {
     qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded";
-    if (pNewTrack.isNull() && 
+    if (pNewTrack.isNull() &&
             !pOldTrack.isNull() &&
             pOldTrack == m_pLoadedTrack) {
         // eject Track

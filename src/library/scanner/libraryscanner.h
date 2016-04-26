@@ -42,7 +42,7 @@
 #include "library/scanner/scannerglobal.h"
 #include "library/scanner/scannertask.h"
 #include "util/sandbox.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include <gtest/gtest.h>
 
 class LibraryScannerDlg;

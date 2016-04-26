@@ -7,7 +7,7 @@
 #include "engine/enginefilterbessel4.h"
 #include "library/trackcollection.h"
 #include "library/dao/analysisdao.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "waveform/waveformfactory.h"
 
 AnalyzerWaveform::AnalyzerWaveform(UserSettingsPointer pConfig) :

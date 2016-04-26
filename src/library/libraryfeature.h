@@ -15,7 +15,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "treeitemmodel.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
@@ -30,8 +30,8 @@ class LibraryFeature : public QObject {
   Q_OBJECT
   public:
     LibraryFeature(QObject* parent = NULL);
-    
-    LibraryFeature(UserSettingsPointer pConfig, 
+
+    LibraryFeature(UserSettingsPointer pConfig,
                    QObject* parent = NULL);
     virtual ~LibraryFeature();
 
@@ -64,7 +64,7 @@ class LibraryFeature : public QObject {
     virtual void bindWidget(WLibrary* /* libraryWidget */,
                             MixxxKeyboard* /* keyboard */) {}
     virtual TreeItemModel* getChildModel() = 0;
-    
+
 protected:
     QString getPlaylistFile();
     UserSettingsPointer m_pConfig;
@@ -106,8 +106,8 @@ protected:
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
-    
-    
+
+
 };
 
 #endif /* LIBRARYFEATURE_H */
