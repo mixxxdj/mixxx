@@ -42,7 +42,7 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
 }
 
 void WEffectPushButton::onConnectedControlChanged(double dParameter, double dValue) {
-    foreach (QAction* action, m_pButtonMenu->actions()) {
+    for (const auto& action : m_pButtonMenu->actions()) {
         if (action->data().toDouble() == dValue) {
             action->setChecked(true);
             break;
@@ -64,7 +64,7 @@ void WEffectPushButton::mousePressEvent(QMouseEvent* e) {
     // The push handler may have set the left value. Check the corresponding
     // QAction.
     double leftValue = getControlParameterLeft();
-    foreach (QAction* action, m_pButtonMenu->actions()) {
+    for (const auto& action : m_pButtonMenu->actions()) {
         if (action->data().toDouble() == leftValue) {
             action->setChecked(true);
             break;
@@ -79,7 +79,7 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent* e) {
     // The release handler may have set the left value. Check the corresponding
     // QAction.
     double leftValue = getControlParameterLeft();
-    foreach (QAction* action, m_pButtonMenu->actions()) {
+    for (const auto& action : m_pButtonMenu->actions()) {
         if (action->data().toDouble() == leftValue) {
             action->setChecked(true);
             break;
@@ -99,11 +99,11 @@ void WEffectPushButton::parameterUpdated() {
     }
     double value = getControlParameterLeft();
 
-    auto  actionGroup = new QActionGroup(m_pButtonMenu);
+    auto actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);
-    for (const auto & option : options) {
+    for (const auto& option : options) {
         // action is added automatically to actionGroup
-        auto  action = new QAction(actionGroup);
+        auto action = new QAction(actionGroup);
         // qDebug() << options[i].first;
         action->setText(option.first);
         action->setData(option.second);

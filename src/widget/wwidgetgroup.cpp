@@ -96,7 +96,7 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
         } else if (layout == "horizontal") {
             pLayout = new QHBoxLayout();
         } else if (layout == "stacked") {
-            auto  pStackedLayout = new QStackedLayout();
+            auto pStackedLayout = new QStackedLayout();
             pStackedLayout->setStackingMode(QStackedLayout::StackAll);
             pLayout = pStackedLayout;
         }

@@ -151,8 +151,7 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
                                         int on_hide_select) {
     int index = addWidget(pWidget);
     if (pControl) {
-        auto  pListener = new WidgetStackControlListener(
-            this, pControl, index);
+        auto pListener = new WidgetStackControlListener(this, pControl, index);
         m_showMapper.setMapping(pListener, index);
         m_hideMapper.setMapping(pListener, index);
         m_listeners[index] = pListener;

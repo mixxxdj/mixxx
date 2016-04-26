@@ -346,7 +346,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             const float gain = static_cast<float>(width()-2) / trackSamples;
 
             // Draw range (loop)
-            for (auto & currentMarkRange : m_markRanges) {
+            for (auto&& currentMarkRange : m_markRanges) {
                 // If the mark range is not active we should not draw it.
                 if (!currentMarkRange.active()) {
                     continue;

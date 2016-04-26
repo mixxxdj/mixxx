@@ -84,7 +84,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             bool accepted = true;
             if (sidebarModel) {
                 accepted = false;
-                foreach (QUrl url, urls) {
+                for (const QUrl& url : urls) {
                     QModelIndex destIndex = this->indexAt(event->pos());
                     if (sidebarModel->dragMoveAccept(destIndex, url)) {
                         // We only need one URL to be valid for us
@@ -195,7 +195,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
-    auto  pModel = new QItemSelectionModel(model());
+    auto pModel = new QItemSelectionModel(model());
     pModel->select(index, QItemSelectionModel::Select);
     setSelectionModel(pModel);
 

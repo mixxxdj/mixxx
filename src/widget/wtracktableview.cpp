@@ -253,7 +253,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // header. Also, for some reason the WTrackTableView has to be hidden or
     // else problems occur. Since we parent the WtrackTableViewHeader's to the
     // WTrackTableView, they are automatically deleted.
-    auto  header = new WTrackTableViewHeader(Qt::Horizontal, this);
+    auto header = new WTrackTableViewHeader(Qt::Horizontal, this);
 
     // WTF(rryan) The following saves on unnecessary work on the part of
     // WTrackTableHeaderView. setHorizontalHeader() calls setModel() on the
@@ -263,7 +263,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // WTrackTableViewHeader, so this is wasteful. Setting a temporary
     // QHeaderView here saves on setModel() calls. Since we parent the
     // QHeaderView to the WTrackTableView, it is automatically deleted.
-    auto  tempHeader = new QHeaderView(Qt::Horizontal, this);
+    auto tempHeader = new QHeaderView(Qt::Horizontal, this);
     /* Tobias Rafreider: DO NOT SET SORTING TO TRUE during header replacement
      * Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
      * For some reason this will cause 4 select statements in series
@@ -533,7 +533,7 @@ void WTrackTableView::slotOpenInFileBrowser() {
     QModelIndexList indices = selectionModel()->selectedRows();
 
     QSet<QString> sDirs;
-    foreach (QModelIndex index, indices) {
+    for (const QModelIndex& index : indices) {
         if (!index.isValid()) {
             continue;
         }
@@ -749,7 +749,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             if (!playlistDao.isHidden(it.value())) {
                 // No leak because making the menu the parent means they will be
                 // auto-deleted
-                auto  pAction = new QAction(it.key(), m_pPlaylistMenu);
+                auto pAction = new QAction(it.key(), m_pPlaylistMenu);
                 bool locked = playlistDao.isPlaylistLocked(it.value());
                 pAction->setEnabled(!locked);
                 m_pPlaylistMenu->addAction(pAction);
@@ -780,7 +780,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             it.next();
             // No leak because making the menu the parent means they will be
             // auto-deleted
-            auto  pAction = new QAction(it.key(), m_pCrateMenu);
+            auto pAction = new QAction(it.key(), m_pCrateMenu);
             bool locked = crateDao.isCrateLocked(it.value());
             pAction->setEnabled(!locked);
             m_pCrateMenu->addAction(pAction);
@@ -976,7 +976,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     QList<QString> locations;
     QModelIndexList indices = selectionModel()->selectedRows();
 
-    foreach (QModelIndex index, indices) {
+    for (const QModelIndex& index : indices) {
         if (!index.isValid()) {
             continue;
         }
@@ -1076,8 +1076,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         QModelIndexList indices = selectionModel()->selectedRows();
 
         QList<int> selectedRows;
-        QModelIndex idx;
-        foreach (idx, indices) {
+        for (const QModelIndex& idx : indices) {
             selectedRows.append(idx.row());
         }
 
@@ -1168,7 +1167,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
             event->mimeData()->urls(), false, true);
 
         QList<QString> fileLocationList;
-        foreach (const QFileInfo& fileInfo, fileList) {
+        for (const QFileInfo& fileInfo : fileList) {
             // TODO(uklotzde): Replace with TrackRef::location()
             fileLocationList.append(fileInfo.absoluteFilePath());
         }
@@ -1278,7 +1277,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
         return;
     }
 
-    foreach (QModelIndex index, indices) {
+    for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             TrackId trackId(pTrack->getId());
@@ -1315,7 +1314,7 @@ void WTrackTableView::slotReloadTrackMetadata() {
         return;
     }
 
-    foreach (QModelIndex index, indices) {
+    for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             SoundSourceProxy(pTrack).loadTrackMetadata(true);
@@ -1332,7 +1331,7 @@ void WTrackTableView::slotResetPlayed() {
         return;
     }
 
-    foreach (QModelIndex index, indices) {
+    for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             pTrack->resetPlayCounter();
@@ -1350,7 +1349,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
 
     QModelIndexList indices = selectionModel()->selectedRows();
     QList<TrackId> trackIds;
-    foreach (QModelIndex index, indices) {
+    for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (!pTrack) {
             continue;
@@ -1413,7 +1412,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
 
     QModelIndexList indices = selectionModel()->selectedRows();
     QList<TrackId> trackIds;
-    foreach (QModelIndex index, indices) {
+    for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (!pTrack) {
             continue;
@@ -1495,7 +1494,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     currentSelection->reset(); // remove current selection
 
     QMap<int,int> selectedRows;
-    for (auto  const& trackId: trackIds) {
+    for (const auto& trackId : trackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
         // code is broken for playlists because it assumes each trackid is in
@@ -1506,7 +1505,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         // table index as the unique id instead of this code stupidly using
         // trackid.
         QLinkedList<int> rows = trackModel->getTrackRows(trackId);
-        foreach (int row, rows) {
+        for (int row : rows) {
             // Restore sort order by rows, so the following commands will act as expected
             selectedRows.insert(row,0);
         }
@@ -1545,7 +1544,7 @@ void WTrackTableView::slotScaleBpm(int scale) {
     }
 
     QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
-    for (auto index : selectedTrackIndices) {
+    for (const auto& index : selectedTrackIndices) {
         TrackPointer track = trackModel->getTrack(index);
         if (!track->isBpmLocked()) { // bpm is not locked
             BeatsPointer beats = track->getBeats();
@@ -1566,7 +1565,7 @@ void WTrackTableView::lockBpm(bool lock) {
 
     QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     // TODO: This should be done in a thread for large selections
-    for (auto index : selectedTrackIndices) {
+    for (const auto& index : selectedTrackIndices) {
         TrackPointer track = trackModel->getTrack(index);
         track->setBpmLocked(lock);
     }
@@ -1580,7 +1579,7 @@ void WTrackTableView::slotClearBeats() {
 
     QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     // TODO: This should be done in a thread for large selections
-    for (auto index : selectedTrackIndices) {
+    for (const auto& index : selectedTrackIndices) {
         TrackPointer track = trackModel->getTrack(index);
         if (!track->isBpmLocked()) {
             track->setBeats(BeatsPointer());
@@ -1596,7 +1595,7 @@ void WTrackTableView::slotReplayGainReset() {
         return;
     }
 
-    foreach (QModelIndex index, indices) {
+    for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             pTrack->setReplayGain(Mixxx::ReplayGain());
@@ -1610,7 +1609,7 @@ void WTrackTableView::slotCoverArtSelected(const CoverArt& art) {
         return;
     }
     QModelIndexList selection = selectionModel()->selectedRows();
-    foreach (QModelIndex index, selection) {
+    for (const QModelIndex& index : selection) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             pTrack->setCoverArt(art);
@@ -1625,7 +1624,7 @@ void WTrackTableView::slotReloadCoverArt() {
     }
     QList<TrackPointer> selectedTracks;
     QModelIndexList selection = selectionModel()->selectedRows();
-    foreach (QModelIndex index, selection) {
+    for (const QModelIndex& index : selection) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             selectedTracks.append(pTrack);

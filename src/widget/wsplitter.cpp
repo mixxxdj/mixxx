@@ -46,7 +46,7 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
         QStringList sizesSplit = sizesJoined.split(",");
         QList<int> sizesList;
         ok = false;
-        foreach (const QString& sizeStr, sizesSplit) {
+        for (const QString& sizeStr : sizesSplit) {
             sizesList.push_back(sizeStr.toInt(&ok));
             if (!ok) {
                 break;
@@ -77,7 +77,7 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
         QStringList collapsibleSplit = collapsibleJoined.split(",");
         QList<bool> collapsibleList;
         ok = false;
-        foreach (const QString& collapsibleStr, collapsibleSplit) {
+        for (const QString& collapsibleStr : collapsibleSplit) {
             collapsibleList.push_back(collapsibleStr.toInt(&ok)>0);
             if (!ok) {
                 break;
@@ -105,7 +105,7 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
 void WSplitter::slotSplitterMoved() {
     if (!m_configKey.group.isEmpty() && !m_configKey.item.isEmpty()) {
         QStringList sizeStrList;
-        foreach (const int& sizeInt, sizes()) {
+        for (const int& sizeInt : sizes()) {
             sizeStrList.push_back(QString::number(sizeInt));
         }
         QString sizesStr = sizeStrList.join(",");
