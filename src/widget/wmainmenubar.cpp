@@ -176,49 +176,41 @@ void WMainMenuBar::initialize() {
     QMenu* pViewMenu = new QMenu(tr("&View"));
 
     QString mayNotBeSupported = tr("May not be supported on all skins.");
-    QString showSamplersTitle = tr("Show Samplers");
-    QString showSamplersText = tr("Show the sample deck section of the Mixxx interface.") +
+
+    QString maximizeLibraryTitle = tr("Maximize Library");
+    QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
             " " + mayNotBeSupported;
-    QAction* pViewShowSamplers = new QAction(showSamplersTitle, this);
-    pViewShowSamplers->setCheckable(true);
-    pViewShowSamplers->setShortcut(
+    QAction* pViewMaximizeLibrary = new QAction(maximizeLibraryTitle, this);
+    pViewMaximizeLibrary->setCheckable(true);
+    pViewMaximizeLibrary->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "ViewMenu_ShowSamplers"),
-                                                  tr("Ctrl+1", "Menubar|View|Show Samplers"))));
-    pViewShowSamplers->setStatusTip(showSamplersText);
-    pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
-    createVisibilityControl(pViewShowSamplers, ConfigKey("[Samplers]", "show_samplers"));
-    pViewMenu->addAction(pViewShowSamplers);
+                                                  "ViewMenu_MaximizeLibrary"),
+                                                  tr("Space", "Menubar|View|Maximize Library"))));
+    pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
+    pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
+    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
+    pViewMenu->addAction(pViewMaximizeLibrary);
 
-    QString showMicrophoneTitle = tr("Show Microphone Section");
-    QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
-            " " + mayNotBeSupported;
-    QAction* pViewShowMicrophone = new QAction(showMicrophoneTitle, this);
-    pViewShowMicrophone->setCheckable(true);
-    pViewShowMicrophone->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(
-            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowMicrophone"),
-            tr("Ctrl+2", "Menubar|View|Show Microphone Section"))));
-    pViewShowMicrophone->setStatusTip(showMicrophoneText);
-    pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
-    createVisibilityControl(pViewShowMicrophone, ConfigKey("[Microphone]", "show_microphone"));
-    pViewMenu->addAction(pViewShowMicrophone);
 
-#ifdef __VINYLCONTROL__
-    QString showVinylControlTitle = tr("Show Vinyl Control Section");
-    QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
+    pViewMenu->addSeparator();
+
+
+    QString show4DecksTitle = tr("Show 4 Decks");
+    QString show4DecksText = tr("Show 4 Decks on the Mixxx interface.") +
             " " + mayNotBeSupported;
-    QAction* pViewVinylControl = new QAction(showVinylControlTitle, this);
-    pViewVinylControl->setCheckable(true);
-    pViewVinylControl->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(
-            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowVinylControl"),
-            tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"))));
-    pViewVinylControl->setStatusTip(showVinylControlText);
-    pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
-    createVisibilityControl(pViewVinylControl, ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
-    pViewMenu->addAction(pViewVinylControl);
-#endif
+    QAction* pViewShow4Decks = new QAction(show4DecksTitle, this);
+    pViewShow4Decks->setCheckable(true);
+    pViewShow4Decks->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_Show4Decks"),
+                                                  tr("Ctrl+1", "Menubar|View|Show 4 Decks"))));
+    pViewShow4Decks->setStatusTip(show4DecksText);
+    pViewShow4Decks->setWhatsThis(buildWhatsThis(show4DecksTitle, show4DecksText));
+    connect(pViewShow4Decks, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShow4Decks(bool)));
+    createVisibilityControl(pViewShow4Decks, ConfigKey("[Master]", "show_4decks"));
+    pViewMenu->addAction(pViewShow4Decks);
+
 
     QString showPreviewDeckTitle = tr("Show Preview Deck");
     QString showPreviewDeckText = tr("Show the preview deck in the Mixxx interface.") +
@@ -228,11 +220,45 @@ void WMainMenuBar::initialize() {
     pViewShowPreviewDeck->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowPreviewDeck"),
-                                                  tr("Ctrl+4", "Menubar|View|Show Preview Deck"))));
+                                                  tr("Ctrl+2", "Menubar|View|Show Preview Deck"))));
     pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
     pViewMenu->addAction(pViewShowPreviewDeck);
+
+
+    pViewMenu->addSeparator();
+
+
+    QString showLibraryTitle = tr("Show Library");
+    QString showLibraryText = tr("Show the library of the Mixxx interfce.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShowLibrary = new QAction(showLibraryTitle, this);
+    pViewShowLibrary->setCheckable(true);
+    pViewShowLibrary->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowLibrary"),
+                                                  tr("Ctrl+3", "Menubar|View|Show Library"))));
+    pViewShowLibrary->setStatusTip(showLibraryText);
+    pViewShowLibrary->setWhatsThis(buildWhatsThis(showLibraryTitle, showLibraryText));
+    createVisibilityControl(pViewShowLibrary, ConfigKey("[Library]", "show_library"));
+    pViewMenu->addAction(pViewShowLibrary);
+
+
+    QString showMicrophoneTitle = tr("Show Microphone Section");
+    QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShowMicrophone = new QAction(showMicrophoneTitle, this);
+    pViewShowMicrophone->setCheckable(true);
+    pViewShowMicrophone->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowMicrophone"),
+            tr("Ctrl+4", "Menubar|View|Show Microphone Section"))));
+    pViewShowMicrophone->setStatusTip(showMicrophoneText);
+    pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
+    createVisibilityControl(pViewShowMicrophone, ConfigKey("[Microphone]", "show_microphone"));
+    pViewMenu->addAction(pViewShowMicrophone);
+
 
     QString showEffectsTitle = tr("Show Effect Rack");
     QString showEffectsText = tr("Show the effect rack in the Mixxx interface.") +
@@ -249,6 +275,102 @@ void WMainMenuBar::initialize() {
     pViewMenu->addAction(pViewShowEffects);
 
 
+    QString showSamplersTitle = tr("Show Samplers");
+    QString showSamplersText = tr("Show the sample deck section of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShowSamplers = new QAction(showSamplersTitle, this);
+    pViewShowSamplers->setCheckable(true);
+    pViewShowSamplers->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowSamplers"),
+                                                  tr("Ctrl+6", "Menubar|View|Show Samplers"))));
+    pViewShowSamplers->setStatusTip(showSamplersText);
+    pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
+    createVisibilityControl(pViewShowSamplers, ConfigKey("[Samplers]", "show_samplers"));
+    pViewMenu->addAction(pViewShowSamplers);
+
+
+    pViewMenu->addSeparator();
+
+
+#ifdef __VINYLCONTROL__
+    QString showVinylControlTitle = tr("Show Vinyl Control Section");
+    QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    QAction* pViewVinylControl = new QAction(showVinylControlTitle, this);
+    pViewVinylControl->setCheckable(true);
+    pViewVinylControl->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowVinylControl"),
+            tr("Ctrl+7", "Menubar|View|Show Vinyl Control Section"))));
+    pViewVinylControl->setStatusTip(showVinylControlText);
+    pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
+    createVisibilityControl(pViewVinylControl, ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
+    pViewMenu->addAction(pViewVinylControl);
+#endif
+
+
+    QString showSpinniesTitle = tr("Show Spinning Vinyl");
+    QString showSpinniesText = tr("Show the spinnining vinyl widget on the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    QAction* m_pViewShowSpinnies = new QAction(showSpinniesTitle, this);
+    m_pViewShowSpinnies->setCheckable(true);
+    m_pViewShowSpinnies->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowSpinnies"),
+                                                  tr("Ctrl+8", "Menubar|View|Show Spinning Vinyl"))));
+    m_pViewShowSpinnies->setStatusTip(showSpinniesText);
+    m_pViewShowSpinnies->setWhatsThis(buildWhatsThis(showSpinniesTitle, showSpinniesText));
+    createVisibilityControl(m_pViewShowSpinnies, ConfigKey("[Spinny]", "show_spinnies"));
+    pViewMenu->addAction(m_pViewShowSpinnies);
+
+
+
+    QString showMixerTitle = tr("Show Mixer");
+    QString showMixerText = tr("Show the mixer section.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShowMixer = new QAction(showMixerTitle, this);
+    pViewShowMixer->setCheckable(true);
+    pViewShowMixer->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowMixer"),
+                                                  tr("Ctrl+9", "Menubar|View|Show Mixer"))));
+    pViewShowMixer->setStatusTip(showMixerText);
+    pViewShowMixer->setWhatsThis(buildWhatsThis(showMixerTitle, showMixerText));
+    createVisibilityControl(pViewShowMixer, ConfigKey("[Master]", "show_mixer"));
+    pViewMenu->addAction(pViewShowMixer);
+
+
+    QString showEqsTitle = tr("Show Eqs");
+    QString showEqsText = tr("Show the equalizers on the mixer section.") +
+            " " + mayNotBeSupported;
+    QAction* pViewShowEqs = new QAction(showEqsTitle, this);
+    pViewShowEqs->setCheckable(true);
+    pViewShowEqs->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowEqs"),
+                                                  tr("Ctrl+0", "Menubar|View|Show Eqs"))));
+    pViewShowEqs->setStatusTip(showEqsText);
+    pViewShowEqs->setWhatsThis(buildWhatsThis(showEqsTitle, showEqsText));
+    createVisibilityControl(pViewShowEqs, ConfigKey("[Master]", "show_eqs"));
+    pViewMenu->addAction(pViewShowEqs);
+
+
+    QString showXFaderTitle = tr("Show Crossfader");
+    QString showXFaderText = tr("Show the crossfader on the mixer section.") +
+            " " + mayNotBeSupported;
+    QAction* m_pViewShowXFader = new QAction(showXFaderTitle, this);
+    m_pViewShowXFader->setCheckable(true);
+    m_pViewShowXFader->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowXFader"),
+                                                  tr("Ctrl+'", "Menubar|View|Show Crossfader"))));
+    m_pViewShowXFader->setStatusTip(showXFaderText);
+    m_pViewShowXFader->setWhatsThis(buildWhatsThis(showXFaderTitle, showXFaderText));
+    createVisibilityControl(m_pViewShowXFader, ConfigKey("[Master]", "show_xfader"));
+    pViewMenu->addAction(m_pViewShowXFader);
+
+
     QString showCoverArtTitle = tr("Show Cover Art");
     QString showCoverArtText = tr("Show cover art in the Mixxx interface.") +
             " " + mayNotBeSupported;
@@ -257,26 +379,11 @@ void WMainMenuBar::initialize() {
     pViewShowCoverArt->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowCoverArt"),
-                                                  tr("Ctrl+6", "Menubar|View|Show Cover Art"))));
+                                                  tr("Ctrl+¡", "Menubar|View|Show Cover Art"))));
     pViewShowCoverArt->setStatusTip(showCoverArtText);
     pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
     createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
     pViewMenu->addAction(pViewShowCoverArt);
-
-
-    QString maximizeLibraryTitle = tr("Maximize Library");
-    QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
-            " " + mayNotBeSupported;
-    QAction* pViewMaximizeLibrary = new QAction(maximizeLibraryTitle, this);
-    pViewMaximizeLibrary->setCheckable(true);
-    pViewMaximizeLibrary->setShortcut(
-        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
-                                                  "ViewMenu_MaximizeLibrary"),
-                                                  tr("Space", "Menubar|View|Maximize Library"))));
-    pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
-    pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
-    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
-    pViewMenu->addAction(pViewMaximizeLibrary);
 
 
     pViewMenu->addSeparator();
@@ -301,6 +408,7 @@ void WMainMenuBar::initialize() {
     pViewMenu->addAction(pViewFullScreen);
 
     addMenu(pViewMenu);
+
 
     // OPTIONS MENU
     QMenu* pOptionsMenu = new QMenu(tr("&Options"));

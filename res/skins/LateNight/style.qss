@@ -50,7 +50,7 @@
 }
 
 #LibrarySingleton {
-  padding-top: 5px;
+  padding-top: 3px;
   padding-bottom: 2px;
 }
 
@@ -151,10 +151,16 @@
 
 #LatencyMeter {
   margin: 1px;
+  padding-right: 4px;
+  padding-left: 4px;
+}
+
+#LatencyLabel {
+  padding-bottom: 2px;
 }
 
 #PrimaryMixer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 0px;
   margin: 0px;
   border: 1px solid #585858;
@@ -800,9 +806,8 @@
 #ToolbarTop {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #585858;
-  border-top: 0px;
   padding: 0px;
-  background-color: #1e1e1e;
+  background-color: #0f0f0f;
 }
 
 #WaveformMixerContainer {
@@ -1267,14 +1272,18 @@ QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
 WSearchLineEdit { padding: 2px; border: 1px solid #656565; background: #181818; color: #cfb32c; }
 WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; background: #0f0f0f; color: #eece33;}
 
+#SidebarContainer{
+    margin-top: -5px;
+}
+
 /* cover art */
 WCoverArt { background: transparent; color: #ACACAC; }
 
 /* splitter between treeview and library */
 #LibrarySplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background-color: #1e1e1e; }
 #LibrarySplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background-color: #1e1e1e; }
-#LibrarySplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
-#LibrarySplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
+#LibrarySplitter::handle:horizontal { width: 5px; background-color: #0e0e0e;}
+#LibrarySplitter::handle:vertical { height: 5px; background-color: #0e0e0e;}
 
 /* splitter between treeview and coverart */
 #CoverArtSplitter::handle { image: url(skin:/style/style_handle_horizontal_unchecked.png); background-color: #1e1e1e; }

@@ -1,0 +1,292 @@
+<Template>
+    <WidgetGroup>
+        <ObjectName>UIButtons</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>e,min</SizePolicy>
+        <Children>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>80f,20f</Size>
+                        <TooltipId>maximize_library</TooltipId>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>BIG LIBRARY</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>BIG LIBRARY</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Master],maximize_library</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Master],maximize_library</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Spacer -->
+                  <Layout>horizontal</Layout>
+                  <Size>5f,min</Size>
+                  <Children/>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Divider -->
+                  <Layout>vertical</Layout>
+                  <Size>min,min</Size>
+                  <Children>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Style>
+                              QGroupBox {background: #585858;}
+                          </Style>
+                          <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Style>
+                              QGroupBox {background: #585858;}
+                          </Style>
+                          <Children/>
+                      </WidgetGroup>
+                  </Children>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Spacer -->
+                  <Layout>horizontal</Layout>
+                  <Size>5f,min</Size>
+                  <Children/>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>50f,20f</Size>
+                        <TooltipId>toggle_4decks</TooltipId>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>4 DECKS</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>4 DECKS</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Master],show_4decks</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Master],show_4decks</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>55f,20f</Size>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>PREVIEW</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>PREVIEW</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Spacer -->
+                  <Layout>horizontal</Layout>
+                  <Size>5f,min</Size>
+                  <Children/>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Divider -->
+                  <Layout>vertical</Layout>
+                  <Size>min,min</Size>
+                  <Children>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Style>
+                              QGroupBox {background: #585858;}
+                          </Style>
+                          <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Children/>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                          <Layout>Vertical</Layout>
+                          <Size>3f,3f</Size>
+                          <Style>
+                              QGroupBox {background: #585858;}
+                          </Style>
+                          <Children/>
+                      </WidgetGroup>
+                  </Children>
+            </WidgetGroup>
+            <WidgetGroup> <!-- Spacer -->
+                  <Layout>horizontal</Layout>
+                  <Size>5f,min</Size>
+                  <Children/>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>55f,20f</Size>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>MIC/AUX</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>MIC/AUX</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <visible>false</visible>
+                <Children>
+                    <PushButton>
+                        <Size>55f,20f</Size>
+                        <TooltipId>show_effects</TooltipId>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>EFFECTS</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>EFFECTS</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>62f,20f</Size>
+                        <TooltipId>show_samplers</TooltipId>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>SAMPLERS</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>SAMPLERS</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+              <ObjectName>ClockWidget</ObjectName>
+              <Layout>horizontal</Layout>
+              <SizePolicy>me,min</SizePolicy>
+              <Children>
+                <Time>
+                  <TooltipId>time</TooltipId>
+                  <Style>QLabel { font: bold 13px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+                            background-color: transparent; color: #EECE33;}
+                  </Style>
+                  <ShowSeconds>false</ShowSeconds>
+                </Time>
+              </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+              <Layout>horizontal</Layout>
+              <SizePolicy>min,min</SizePolicy>
+              <Children>
+                <WidgetGroup> <!-- Spacer -->
+                  <Layout>horizontal</Layout>
+                  <Size>282f,min</Size>
+                  <Children/>
+                </WidgetGroup>
+                <WidgetGroup>
+                    <ObjectName>LatencyLabel</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                        <Label>
+                          <Style>QLabel { font: bold 10px/10px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+                                    background-color: transparent; color: #EECE33;}
+                          </Style>
+                          <Text>CPU</Text>
+                        </Label>
+                    </Children>
+                </WidgetGroup>
+                <Template src="skin:vumeter_latency.xml">
+                  <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
+                  <SetVariable name="group">[Master]</SetVariable>
+                  <SetVariable name="control">audio_latency_usage</SetVariable>
+                </Template>
+              </Children>
+            </WidgetGroup>
+        </Children>
+    </WidgetGroup>
+</Template>
