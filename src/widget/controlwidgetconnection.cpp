@@ -15,8 +15,6 @@ ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
     m_pControl->connectValueChanged(SLOT(slotControlValueChanged(double)));
 }
 
-ControlWidgetConnection::~ControlWidgetConnection() = default;
-
 void ControlWidgetConnection::setControlParameter(double parameter) {
     if (m_pValueTransformer != nullptr) {
         parameter = m_pValueTransformer->transformInverse(parameter);
@@ -49,8 +47,6 @@ ControlParameterWidgetConnection::ControlParameterWidgetConnection(WBaseWidget* 
           m_directionOption(directionOption),
           m_emitOption(emitOption) {
 }
-
-ControlParameterWidgetConnection::~ControlParameterWidgetConnection() = default;
 
 void ControlParameterWidgetConnection::Init() {
     slotControlValueChanged(m_pControl->get());
@@ -104,8 +100,6 @@ ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(WBaseWidget* pB
           m_propertyName(propertyName.toAscii()) {
     slotControlValueChanged(m_pControl->get());
 }
-
-ControlWidgetPropertyConnection::~ControlWidgetPropertyConnection() = default;
 
 QString ControlWidgetPropertyConnection::toDebugString() const {
     const ConfigKey& key = getKey();

@@ -15,7 +15,6 @@ class WStarRating : public WWidget {
     Q_OBJECT
   public:
     WStarRating(QString group, QWidget* pParent);
-    ~WStarRating() override;
 
     virtual void setup(QDomNode node, const SkinContext& context);
     QSize sizeHint() const override;

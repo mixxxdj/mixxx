@@ -16,7 +16,6 @@ class WKnobComposed : public WWidget {
     Q_OBJECT
   public:
     explicit WKnobComposed(QWidget* pParent=nullptr);
-    ~WKnobComposed() override;
 
     void setup(QDomNode node, const SkinContext& context);
 

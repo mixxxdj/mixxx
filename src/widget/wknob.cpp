@@ -25,8 +25,6 @@ WKnob::WKnob(QWidget* pParent)
         : WDisplay(pParent) {
 }
 
-WKnob::~WKnob() = default;
-
 void WKnob::mouseMoveEvent(QMouseEvent* e) {
     m_handler.mouseMoveEvent(this, e);
 }

@@ -14,8 +14,6 @@ WBattery::WBattery(QWidget* parent)
     }
 }
 
-WBattery::~WBattery() = default;
-
 void WBattery::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(

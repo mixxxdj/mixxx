@@ -116,7 +116,7 @@ class EffectWidgetUtils {
     }
 
   private:
-    EffectWidgetUtils() = default;;
+    EffectWidgetUtils() = default;
 };
 
 #endif /* EFFECTWIDGETUTILS_H */

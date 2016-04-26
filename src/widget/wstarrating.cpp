@@ -12,8 +12,6 @@ WStarRating::WStarRating(QString group, QWidget* pParent)
           m_focused(false) {
 }
 
-WStarRating::~WStarRating() = default;
-
 void WStarRating::setup(QDomNode node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);

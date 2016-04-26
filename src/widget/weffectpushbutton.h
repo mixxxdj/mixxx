@@ -15,7 +15,6 @@ class WEffectPushButton : public WPushButton {
     Q_OBJECT
   public:
     WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager);
-    ~WEffectPushButton() override;
 
     void setup(QDomNode node, const SkinContext& context) override;
 

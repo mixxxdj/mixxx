@@ -20,7 +20,6 @@ class WNumberRate : public WNumber {
     Q_OBJECT
   public:
     explicit WNumberRate(const char *group, QWidget *parent=nullptr);
-    ~WNumberRate() override;
 
   private slots:
     void setValue(double dValue) override;

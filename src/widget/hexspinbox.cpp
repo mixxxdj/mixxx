@@ -5,8 +5,6 @@ HexSpinBox::HexSpinBox(QWidget* pParent)
     setRange(0, 255);
 }
 
-HexSpinBox::~HexSpinBox() = default;
-
 QString HexSpinBox::textFromValue(int value) const {
     // Construct a hex string formatted like 0xFF.
     return QString("0x") + QString("%1")

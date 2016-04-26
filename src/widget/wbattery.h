@@ -10,14 +10,12 @@
 #include "widget/wlabel.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
-
-class Battery;
+#include "util/battery/battery.h"
 
 class WBattery : public WWidget {
     Q_OBJECT
   public:
     explicit WBattery(QWidget* parent=nullptr);
-    ~WBattery() override;
 
     void setup(QDomNode node, const SkinContext& context);
 

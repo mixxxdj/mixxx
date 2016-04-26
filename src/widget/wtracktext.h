@@ -13,7 +13,6 @@ class WTrackText : public WLabel {
     Q_OBJECT
   public:
     WTrackText(const char* group, UserSettingsPointer pConfig, QWidget *pParent);
-    ~WTrackText() override;
 
   signals:
     void trackDropped(QString fileName, QString group);

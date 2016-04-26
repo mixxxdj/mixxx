@@ -48,8 +48,6 @@ WVuMeter::WVuMeter(QWidget* parent)
     m_timer.start();
 }
 
-WVuMeter::~WVuMeter() = default;
-
 void WVuMeter::setup(QDomNode node, const SkinContext& context) {
     // Set pixmaps
     bool bHorizontal = context.hasNode(node, "Horizontal") &&

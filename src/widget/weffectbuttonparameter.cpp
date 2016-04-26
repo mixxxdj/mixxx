@@ -8,8 +8,6 @@ WEffectButtonParameter::WEffectButtonParameter(QWidget* pParent, EffectsManager*
         : WEffectParameterBase(pParent, pEffectsManager) {
 }
 
-WEffectButtonParameter::~WEffectButtonParameter() = default;
-
 void WEffectButtonParameter::setup(QDomNode node, const SkinContext& context) {
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(

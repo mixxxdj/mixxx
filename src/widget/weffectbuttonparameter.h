@@ -13,7 +13,6 @@ class WEffectButtonParameter : public WEffectParameterBase {
     Q_OBJECT
   public:
     WEffectButtonParameter(QWidget* pParent, EffectsManager* pEffectsManager);
-    ~WEffectButtonParameter() override;
 
     void setup(QDomNode node, const SkinContext& context) override;
 };

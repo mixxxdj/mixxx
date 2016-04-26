@@ -16,7 +16,7 @@ class WidgetStackControlListener : public QObject {
   public:
     WidgetStackControlListener(QObject* pParent, ControlObject* pControl,
                                int index);
-    ~WidgetStackControlListener() override;
+
     void setControl(double val) {
         m_control.set(val);
     }
@@ -43,7 +43,6 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
                  ControlObject* pNextControl,
                  ControlObject* pPrevControl,
                  ControlObject* pCurrentPageControl);
-    ~WWidgetStack() override;
 
     // We don't want to change pages until all the pages have been added,
     // so we override Init and hook up the connection there.

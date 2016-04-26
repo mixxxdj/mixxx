@@ -27,7 +27,6 @@ class WNumber : public WLabel  {
     Q_OBJECT
   public:
     explicit WNumber(QWidget* pParent = nullptr);
-    ~WNumber() override;
 
     void setup(QDomNode node, const SkinContext& context) override;
 

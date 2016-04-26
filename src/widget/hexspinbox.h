@@ -7,7 +7,6 @@
 class HexSpinBox : public QSpinBox {
   public:
     explicit HexSpinBox(QWidget *pParent);
-    ~HexSpinBox() override;
 
   protected:
     QString textFromValue(int value) const override;

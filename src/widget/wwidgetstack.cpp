@@ -11,8 +11,6 @@ WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
     m_control.connectValueChanged(SLOT(slotValueChanged(double)));
 }
 
-WidgetStackControlListener::~WidgetStackControlListener() = default;
-
 void WidgetStackControlListener::slotValueChanged(double v) {
     if (v > 0.0) {
         emit(switchToWidget());
@@ -60,8 +58,6 @@ void WWidgetStack::Init() {
     connect(this, SIGNAL(currentChanged(int)),
             this, SLOT(onCurrentPageChanged(int)));
 }
-
-WWidgetStack::~WWidgetStack() = default;
 
 QSize WWidgetStack::sizeHint() const {
     QWidget* pWidget = currentWidget();

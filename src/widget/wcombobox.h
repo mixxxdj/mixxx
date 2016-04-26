@@ -12,7 +12,6 @@ class WComboBox : public QComboBox, public WBaseWidget {
     Q_OBJECT
   public:
     explicit WComboBox(QWidget* pParent);
-    ~WComboBox() override;
 
     void setup(QDomNode node, const SkinContext& context);
 

@@ -41,7 +41,6 @@ class WPushButton : public WWidget {
     // Used by WPushButtonTest.
     WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
                 ControlPushButton::ButtonMode rightButtonMode);
-    ~WPushButton() override;
 
     Q_PROPERTY(bool pressed READ isPressed);
 

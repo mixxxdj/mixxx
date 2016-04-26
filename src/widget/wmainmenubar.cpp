@@ -72,8 +72,6 @@ WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
             this, SIGNAL(toggleVinylControl(int)));
 }
 
-WMainMenuBar::~WMainMenuBar() = default;
-
 void WMainMenuBar::initialize() {
     // FILE MENU
     QMenu* pFileMenu = new QMenu(tr("&File"));
@@ -702,8 +700,6 @@ VisibilityControlConnection::VisibilityControlConnection(
     connect(m_pAction, SIGNAL(triggered(bool)),
             this, SLOT(slotActionToggled(bool)));
 }
-
-VisibilityControlConnection::~VisibilityControlConnection() = default;
 
 void VisibilityControlConnection::slotClearControl() {
     m_pControl.reset();

@@ -13,7 +13,6 @@ class WSplitter : public QSplitter, public WBaseWidget {
     Q_OBJECT
   public:
     WSplitter(QWidget* pParent, UserSettingsPointer pConfig);
-    ~WSplitter() override;
 
     void setup(QDomNode node, const SkinContext& context);
 

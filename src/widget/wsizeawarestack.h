@@ -12,7 +12,6 @@ class WSizeAwareStack : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
     explicit WSizeAwareStack(QWidget* parent = nullptr);
-    ~WSizeAwareStack() override;
 
     int addWidget(QWidget* widget);
 

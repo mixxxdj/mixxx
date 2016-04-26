@@ -11,8 +11,6 @@ WEffect::WEffect(QWidget* pParent, EffectsManager* pEffectsManager)
     effectUpdated();
 }
 
-WEffect::~WEffect() = default;
-
 void WEffect::setup(QDomNode node, const SkinContext& context) {
     WLabel::setup(node, context);
     // EffectWidgetUtils propagates NULLs so this is all safe.

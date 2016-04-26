@@ -48,8 +48,6 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     slotSetValue(m_pVisualPlaypos->get());
 }
 
-WNumberPos::~WNumberPos() = default;
-
 void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
     bool leftClick = pEvent->buttons() & Qt::LeftButton;
 

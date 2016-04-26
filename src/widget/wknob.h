@@ -31,7 +31,6 @@ class WKnob : public WDisplay {
    Q_OBJECT
   public:
     explicit WKnob(QWidget* pParent=nullptr);
-    ~WKnob() override;
 
   protected:
     void wheelEvent(QWheelEvent *e) override;

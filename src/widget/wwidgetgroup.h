@@ -19,7 +19,6 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     Q_OBJECT
   public:
     explicit WWidgetGroup(QWidget* pParent=nullptr);
-    ~WWidgetGroup() override;
 
     // QLayouts are not stylable using Qt style sheets. These properties let us
     // style the layout properties using the QProperty support in Qt style

@@ -13,7 +13,6 @@ class WEffectParameterBase : public WLabel {
     Q_OBJECT
   public:
     WEffectParameterBase(QWidget* pParent, EffectsManager* pEffectsManager);
-    ~WEffectParameterBase() override;
 
     void setup(QDomNode node, const SkinContext& context) override = 0;
 

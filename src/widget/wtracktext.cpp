@@ -13,8 +13,6 @@ WTrackText::WTrackText(const char *group, UserSettingsPointer pConfig, QWidget* 
     setAcceptDrops(true);
 }
 
-WTrackText::~WTrackText() = default;
-
 void WTrackText::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;

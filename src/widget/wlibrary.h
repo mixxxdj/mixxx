@@ -19,7 +19,6 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
     explicit WLibrary(QWidget* parent);
-    ~WLibrary() override;
 
     // registerView is used to add a view to the LibraryWidget which the widget
     // can disply on request via showView(). To switch to a given view, call

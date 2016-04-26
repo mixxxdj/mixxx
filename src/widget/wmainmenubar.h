@@ -17,7 +17,6 @@ class VisibilityControlConnection : public QObject {
   public:
     VisibilityControlConnection(QObject* pParent, QAction* pAction,
                                 const ConfigKey& key);
-    ~VisibilityControlConnection() override;
 
   private slots:
     void slotClearControl();
@@ -36,7 +35,6 @@ class WMainMenuBar : public QMenuBar {
   public:
     WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
                  ConfigObject<ConfigValueKbd>* pKbdConfig);
-    ~WMainMenuBar() override;
 
   public slots:
     void onLibraryScanStarted();

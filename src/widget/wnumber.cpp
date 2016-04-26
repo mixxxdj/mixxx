@@ -22,8 +22,6 @@ WNumber::WNumber(QWidget* pParent)
           m_iNoDigits(2) {
 }
 
-WNumber::~WNumber() = default;
-
 void WNumber::setup(QDomNode node, const SkinContext& context) {
     WLabel::setup(node, context);
 

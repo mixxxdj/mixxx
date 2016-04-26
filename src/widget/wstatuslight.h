@@ -35,7 +35,6 @@ class WStatusLight : public WWidget  {
    Q_OBJECT
   public:
     explicit WStatusLight(QWidget *parent=nullptr);
-    ~WStatusLight() override;
 
     void setup(QDomNode node, const SkinContext& context);
 

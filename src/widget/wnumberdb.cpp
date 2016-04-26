@@ -10,9 +10,6 @@ WNumberDb::WNumberDb(QWidget* pParent)
         : WNumber(pParent) {
 }
 
-WNumberDb::~WNumberDb() = default;
-
-
 void WNumberDb::setValue(double dValue) {
     QString strDb;
     if (dValue != 0.0) {

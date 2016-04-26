@@ -7,6 +7,7 @@
 #include <QByteArray>
 
 #include "controlobjectslave.h"
+#include "util/valuetransformer.h"
 
 class WBaseWidget;
 class ValueTransformer;
@@ -18,7 +19,6 @@ class ControlWidgetConnection : public QObject {
     ControlWidgetConnection(WBaseWidget* pBaseWidget,
                             const ConfigKey& key,
                             ValueTransformer* pTransformer);
-    ~ControlWidgetConnection() override;
 
     double getControlParameter() const;
     double getControlParameterForValue(double value) const;
@@ -100,7 +100,6 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
                                      ValueTransformer* pTransformer,
                                      DirectionOption directionOption,
                                      EmitOption emitOption);
-    ~ControlParameterWidgetConnection() override;
 
     void Init();
 
@@ -132,7 +131,6 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
                                     const ConfigKey& key,
                                     ValueTransformer* pTransformer,
                                     const QString& propertyName);
-    ~ControlWidgetPropertyConnection() override;
 
     QString toDebugString() const override;
 

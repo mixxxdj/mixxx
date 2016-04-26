@@ -30,8 +30,6 @@ WStatusLight::WStatusLight(QWidget * parent)
     setNoPos(0);
 }
 
-WStatusLight::~WStatusLight() = default;
-
 void WStatusLight::setNoPos(int iNoPos) {
     // If pixmap array is already allocated, delete it.
     if (!m_pixmaps.empty()) {

@@ -9,8 +9,6 @@ WEffectParameterBase::WEffectParameterBase(QWidget* pParent, EffectsManager* pEf
     parameterUpdated();
 }
 
-WEffectParameterBase::~WEffectParameterBase() = default;
-
 void WEffectParameterBase::setEffectParameterSlot(
         EffectParameterSlotBasePointer pEffectParameterSlot) {
     m_pEffectParameterSlot = pEffectParameterSlot;

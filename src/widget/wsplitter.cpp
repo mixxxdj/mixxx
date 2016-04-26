@@ -10,8 +10,6 @@ WSplitter::WSplitter(QWidget* pParent, UserSettingsPointer pConfig)
             this, SLOT(slotSplitterMoved()));
 }
 
-WSplitter::~WSplitter() = default;
-
 void WSplitter::setup(QDomNode node, const SkinContext& context) {
     // Load split sizes
     QString sizesJoined;

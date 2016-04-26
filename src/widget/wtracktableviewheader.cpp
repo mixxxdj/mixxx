@@ -103,8 +103,6 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
             this, SLOT(showOrHideColumn(int)));
 }
 
-WTrackTableViewHeader::~WTrackTableViewHeader() = default;
-
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
     m_menu.popup(event->globalPos());
 }

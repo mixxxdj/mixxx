@@ -13,7 +13,6 @@ class WEffect : public WLabel {
     Q_OBJECT
   public:
     WEffect(QWidget* pParent, EffectsManager* pEffectsManager);
-    ~WEffect() override;
 
     void setup(QDomNode node, const SkinContext& context) override;
 

@@ -13,8 +13,6 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dKnobCenterYOffset(0) {
 }
 
-WKnobComposed::~WKnobComposed() = default;
-
 void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     clear();
 

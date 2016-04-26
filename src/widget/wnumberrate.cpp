@@ -28,8 +28,6 @@ WNumberRate::WNumberRate(const char * group, QWidget * parent)
     setValue(0);
 }
 
-WNumberRate::~WNumberRate() = default;
-
 void WNumberRate::setValue(double /*dValue*/) {
     double vsign = m_pRateControl->get() *
             m_pRateRangeControl->get() *

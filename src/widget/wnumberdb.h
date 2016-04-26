@@ -11,7 +11,6 @@ class WNumberDb : public WNumber {
     Q_OBJECT
   public:
     explicit WNumberDb(QWidget* pParent = nullptr);
-    ~WNumberDb() override;
 
   public slots:
     void setValue(double dValue) override;

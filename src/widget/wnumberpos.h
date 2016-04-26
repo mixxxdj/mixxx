@@ -13,7 +13,6 @@ class WNumberPos : public WNumber {
     Q_OBJECT
   public:
     explicit WNumberPos(const char *group, QWidget *parent=nullptr);
-    ~WNumberPos() override;
 
     // Set if the display shows remaining time (true) or position (false)
     void setRemain(bool bRemain);
