@@ -61,6 +61,7 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationText STORED false)
+    Q_PROPERTY(int rating READ getRating WRITE setRating)
 
     TrackId getId() const;
 
