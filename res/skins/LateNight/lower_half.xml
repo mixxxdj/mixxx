@@ -9,66 +9,38 @@
                 <MaximumSize>1920,249</MaximumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_small.xml"/>
-                    <Template src="skin:toolbar_small.xml"/>
+                    <WidgetGroup> <!-- Vertical spacer-->
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children/>
+                    </WidgetGroup>
+                    <Template src="skin:toolbar.xml"/>
                 </Children>
             </WidgetGroup>
             <WidgetGroup>
                 <ObjectName>UILowerHalf</ObjectName>
                 <Layout>vertical</Layout>
-                <SizePolicy>min,i</SizePolicy>
+                <SizePolicy>min,me</SizePolicy>
                 <MinimumSize>0,250</MinimumSize>
                 <MaximumSize>1920,419</MaximumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_med.xml"/>
                     <SingletonContainer>
                         <ObjectName>LibrarySingleton</ObjectName>
-                        <Connection>
-                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                        </Connection>
                     </SingletonContainer>
-                    <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children/>
-                        <Connection>
-                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                            <Transform>
-                              <Not/>
-                            </Transform>
-                        </Connection>
-                    </WidgetGroup>
-                    <Template src="skin:toolbar_med.xml"/>
+                    <Template src="skin:toolbar_no_library_button.xml"/>
                 </Children>
             </WidgetGroup>
             <WidgetGroup>
                 <ObjectName>UILowerHalf</ObjectName>
                 <Layout>vertical</Layout>
-                <SizePolicy>min,i</SizePolicy>
+                <SizePolicy>min,me</SizePolicy>
                 <MinimumSize>0,420</MinimumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_full.xml"/>
                     <SingletonContainer>
                         <ObjectName>LibrarySingleton</ObjectName>
-                        <Connection>
-                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                        </Connection>
                     </SingletonContainer>
-                    <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children/>
-                        <Connection>
-                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
-                            <BindProperty>visible</BindProperty>
-                            <Transform>
-                              <Not/>
-                            </Transform>
-                        </Connection>
-                    </WidgetGroup>
-                    <Template src="skin:toolbar_full.xml"/>
+                    <Template src="skin:toolbar_no_library_button.xml"/>
                 </Children>
             </WidgetGroup>
         </Children>
