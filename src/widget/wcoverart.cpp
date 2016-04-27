@@ -6,7 +6,7 @@
 #include <QStylePainter>
 #include <QStyleOption>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "widget/wcoverart.h"
 #include "widget/wskincolor.h"
 #include "library/coverartcache.h"

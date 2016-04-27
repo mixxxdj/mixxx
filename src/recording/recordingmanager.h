@@ -6,7 +6,7 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "recording/defs_recording.h"
 
 //

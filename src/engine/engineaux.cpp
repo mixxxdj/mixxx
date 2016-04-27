@@ -8,7 +8,7 @@
 
 #include "control/control.h"
 #include "preferences/usersettings.h"
-#include "controlaudiotaperpot.h"
+#include "control/controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "util/sample.h"

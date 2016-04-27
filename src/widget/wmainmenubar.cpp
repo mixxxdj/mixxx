@@ -3,7 +3,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
 #include "util/cmdlineargs.h"

@@ -1,4 +1,4 @@
-#include "controleffectknob.h"
+#include "control/controleffectknob.h"
 
 #include "util/math.h"
 #include "effects/effectmanifestparameter.h"

@@ -4,8 +4,8 @@
 
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlobjectslave.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 

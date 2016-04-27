@@ -8,8 +8,8 @@
 #include "recording/defs_recording.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sidechain/enginerecord.h"
-#include "controlpushbutton.h"
-#include "controlobjectslave.h"
+#include "control/controlpushbutton.h"
+#include "control/controlobjectslave.h"
 #include "engine/enginemaster.h"
 
 RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)

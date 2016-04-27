@@ -24,7 +24,7 @@
 #include "soundio/sounddevice.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the

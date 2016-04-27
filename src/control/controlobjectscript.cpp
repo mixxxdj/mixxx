@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QtDebug>
 
-#include "controlobjectscript.h"
+#include "control/controlobjectscript.h"
 
 ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
         : ControlObjectSlave(key, pParent) {

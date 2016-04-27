@@ -15,9 +15,9 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
-#include "controlobjectslave.h"
+#include "control/controlpushbutton.h"
+#include "control/controlpotmeter.h"
+#include "control/controlobjectslave.h"
 
 ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
                                  bool allowOutOfBounds,

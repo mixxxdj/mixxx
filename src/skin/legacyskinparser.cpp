@@ -13,8 +13,8 @@
 #include <QtDebug>
 #include <QtGlobal>
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlobjectslave.h"
 
 #include "mixxxkeyboard.h"
 #include "mixer/playermanager.h"

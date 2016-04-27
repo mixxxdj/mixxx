@@ -27,8 +27,8 @@
 #include <QSemaphore>
 
 #include "preferences/usersettings.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlobjectslave.h"
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"

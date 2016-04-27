@@ -5,10 +5,10 @@
 #include <QPair>
 
 #include "preferences/usersettings.h"
-#include "controlaudiotaperpot.h"
-#include "controlaudiotaperpot.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlaudiotaperpot.h"
+#include "control/controlaudiotaperpot.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/channelmixer.h"
 #include "engine/effects/engineeffectsmanager.h"

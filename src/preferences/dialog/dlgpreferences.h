@@ -25,7 +25,7 @@
 
 #include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/usersettings.h"
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "preferences/dlgpreferencepage.h"
 
 class MixxxMainWindow;

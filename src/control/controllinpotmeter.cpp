@@ -1,4 +1,4 @@
-#include "controllinpotmeter.h"
+#include "control/controllinpotmeter.h"
 
 ControlLinPotmeter::ControlLinPotmeter(ConfigKey key,
                                        double dMinValue, double dMaxValue,
@@ -16,6 +16,3 @@ ControlLinPotmeter::ControlLinPotmeter(ConfigKey key,
         setSmallStepCount((dMaxValue - dMinValue) / dSmallStep);
     }
 }
-
-
-

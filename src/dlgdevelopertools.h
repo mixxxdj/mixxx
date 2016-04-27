@@ -7,7 +7,7 @@
 
 #include "ui_dlgdevelopertoolsdlg.h"
 #include "preferences/usersettings.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "control/controlmodel.h"
 #include "util/statmodel.h"
 

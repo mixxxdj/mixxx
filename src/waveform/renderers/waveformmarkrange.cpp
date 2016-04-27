@@ -4,8 +4,8 @@
 #include "waveformmarkrange.h"
 
 #include "waveformsignalcolors.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlobjectslave.h"
 #include "widget/wskincolor.h"
 
 WaveformMarkRange::WaveformMarkRange()

@@ -3,8 +3,8 @@
 #include <QStringBuilder>
 
 #include "widget/wnumberpos.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlobjectslave.h"
 #include "util/math.h"
 #include "util/time.h"
 

@@ -2,8 +2,8 @@
 #include <QtDebug>
 #include <QScopedPointer>
 
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "preferences/usersettings.h"
 #include "controllers/softtakeover.h"
 #include "test/mixxxtest.h"

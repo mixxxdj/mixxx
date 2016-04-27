@@ -21,7 +21,7 @@
 #include <QEvent>
 
 #include "mixxxkeyboard.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "util/cmdlineargs.h"
 
 

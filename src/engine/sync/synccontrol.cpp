@@ -1,8 +1,8 @@
 #include "engine/sync/synccontrol.h"
 
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlobjectslave.h"
 #include "engine/bpmcontrol.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"

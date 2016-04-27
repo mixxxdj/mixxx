@@ -1,11 +1,11 @@
 // ratecontrol.cpp
 // Created 7/4/2009 by RJ Ryan (rryan@mit.edu)
 
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
-#include "controlttrotary.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlpotmeter.h"
+#include "control/controlttrotary.h"
+#include "control/controlobjectslave.h"
 #include "util/rotary.h"
 #include "util/math.h"
 #include "vinylcontrol/defs_vinylcontrol.h"

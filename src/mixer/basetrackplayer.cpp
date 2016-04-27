@@ -3,8 +3,8 @@
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
 
-#include "controlobject.h"
-#include "controlpotmeter.h"
+#include "control/controlobject.h"
+#include "control/controlpotmeter.h"
 #include "track/track.h"
 #include "sources/soundsourceproxy.h"
 #include "engine/enginebuffer.h"

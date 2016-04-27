@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QScopedPointer>
 
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "util/stat.h"
 #include "util/performancetimer.h"
 #include "util/cmdlineargs.h"

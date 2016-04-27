@@ -3,7 +3,7 @@
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "track/track.h"
 #include "util/math.h"
 

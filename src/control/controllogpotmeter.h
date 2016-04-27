@@ -1,6 +1,7 @@
 /***************************************************************************
-                          controlttrotary.h  -  description
+                          controlpotmeter.h  -  description
                              -------------------
+    begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
  ***************************************************************************/
@@ -14,16 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONTROLTTROTARY_H
-#define CONTROLTTROTARY_H
+#ifndef CONTROLLOGPOTMETER_H
+#define CONTROLLOGPOTMETER_H
 
+#include "control/controlpotmeter.h"
 #include "preferences/usersettings.h"
-#include "controlobject.h"
 
-class ControlTTRotary : public ControlObject {
+/**
+ *@author Tue and Ken Haste Andersen
+ */
+
+class ControlLogpotmeter : public ControlPotmeter {
     Q_OBJECT
   public:
-    ControlTTRotary(ConfigKey key);
+    ControlLogpotmeter(ConfigKey key, double dMaxValue, double minDB);
 };
 
 #endif

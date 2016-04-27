@@ -1,8 +1,8 @@
 #include "library/autodj/autodjprocessor.h"
 
 #include "library/trackcollection.h"
-#include "controlpushbutton.h"
-#include "controlobjectslave.h"
+#include "control/controlpushbutton.h"
+#include "control/controlobjectslave.h"
 #include "util/math.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
@@ -799,7 +799,7 @@ void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
         qDebug() << this << "playerEmpty()" << pDeck->group;
     }
 
-    // The Deck has ejected a track and no new one is loaded 
+    // The Deck has ejected a track and no new one is loaded
     // This happens if loading fails or the user manually ejected the track
     // and would normally stopp the AutoDJ flow, which is not desired.
     // It should be safe to load a load a new track from the queue. The only case where

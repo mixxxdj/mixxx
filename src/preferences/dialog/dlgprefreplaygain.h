@@ -5,7 +5,7 @@
 
 #include "preferences/dialog/ui_dlgprefreplaygaindlg.h"
 #include "preferences/replaygainsettings.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
 class DlgPrefReplayGain: public DlgPreferencePage,

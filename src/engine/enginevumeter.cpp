@@ -16,8 +16,8 @@
 
 #include "engine/enginevumeter.h"
 
-#include "controlobjectslave.h"
-#include "controlpotmeter.h"
+#include "control/controlobjectslave.h"
+#include "control/controlpotmeter.h"
 #include "util/math.h"
 #include "util/sample.h"
 

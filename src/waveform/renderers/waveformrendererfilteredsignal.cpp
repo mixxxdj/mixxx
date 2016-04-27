@@ -3,7 +3,7 @@
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "widget/wskincolor.h"
 #include "track/track.h"
 #include "widget/wwidget.h"

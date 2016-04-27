@@ -1,8 +1,8 @@
 #include "effects/effectchainslot.h"
 
 #include "effects/effectrack.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "util/math.h"
 
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,

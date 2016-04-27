@@ -19,7 +19,7 @@
 #include <QTouchEvent>
 
 #include "widget/wwidget.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "util/assert.h"
 
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)

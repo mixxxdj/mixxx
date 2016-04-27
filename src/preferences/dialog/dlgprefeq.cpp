@@ -21,8 +21,8 @@
 
 #include "preferences/dialog/dlgprefeq.h"
 #include "engine/enginefilterbessel4.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlobjectslave.h"
 #include "util/math.h"
 #include "mixer/playermanager.h"
 #include "effects/effectrack.h"

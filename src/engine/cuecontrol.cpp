@@ -5,9 +5,9 @@
 
 #include "engine/cuecontrol.h"
 
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controlindicator.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controlindicator.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 // TODO: Convert these doubles to a standard enum

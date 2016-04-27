@@ -4,7 +4,7 @@
 #include <QTouchEvent>
 
 #include "mixxxapplication.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "mixxx.h"
 
 extern void qt_translateRawTouchEvent(QWidget *window,

@@ -18,7 +18,7 @@
 #ifndef CONTROLPUSHBUTTON_H
 #define CONTROLPUSHBUTTON_H
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "controllers/midi/midimessage.h"
 
 /**

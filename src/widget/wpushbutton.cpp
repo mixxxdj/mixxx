@@ -27,8 +27,8 @@
 #include <QApplication>
 
 #include "control/controlbehavior.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "util/debug.h"
 #include "util/math.h"
 #include "widget/wpixmapstore.h"

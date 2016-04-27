@@ -9,7 +9,7 @@
 #include <QSignalMapper>
 
 #include "configobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "preferences/usersettings.h"
 
 class VisibilityControlConnection : public QObject {

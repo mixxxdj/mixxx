@@ -6,7 +6,7 @@
 #include <QModelIndexList>
 
 #include "preferences/usersettings.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "engine/enginechannel.h"
 #include "library/playlisttablemodel.h"
 #include "track/track.h"

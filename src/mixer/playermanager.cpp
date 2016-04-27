@@ -5,8 +5,8 @@
 #include <QMutexLocker>
 
 #include "analyzer/analyzerqueue.h"
-#include "controlobject.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
+#include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"

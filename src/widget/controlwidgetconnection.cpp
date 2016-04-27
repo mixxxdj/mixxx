@@ -1,7 +1,7 @@
 #include "widget/controlwidgetconnection.h"
 
 #include "widget/wbasewidget.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "util/debug.h"
 #include "util/valuetransformer.h"
 #include "util/assert.h"

@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QUrl>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "widget/wtracktext.h"
 #include "util/dnd.h"
 

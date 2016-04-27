@@ -4,9 +4,9 @@
 #include "engine/enginecontrol.h"
 #include "track/track.h"
 #include "preferences/usersettings.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
-#include "controlpushbutton.h"
+#include "control/controlobject.h"
+#include "control/controlobjectslave.h"
+#include "control/controlpushbutton.h"
 
 class VinylControlControl : public EngineControl {
     Q_OBJECT

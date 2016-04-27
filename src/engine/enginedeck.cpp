@@ -17,7 +17,7 @@
 
 #include "engine/enginedeck.h"
 
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"

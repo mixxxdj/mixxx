@@ -18,8 +18,8 @@
 #include "engine/sidechain/enginerecord.h"
 
 #include "preferences/usersettings.h"
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlobjectslave.h"
 #include "encoder/encoder.h"
 
 #ifdef __FFMPEGFILE__

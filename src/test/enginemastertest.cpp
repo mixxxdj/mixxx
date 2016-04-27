@@ -3,7 +3,7 @@
 
 #include <QtDebug>
 
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "test/mixxxtest.h"

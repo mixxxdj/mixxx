@@ -1,6 +1,6 @@
 #include "engine/enginesidechaincompressor.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
+#include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 
 class ConfigValue;
 class ControlObjectSlave;

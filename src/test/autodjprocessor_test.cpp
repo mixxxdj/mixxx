@@ -6,9 +6,9 @@
 
 #include "test/librarytest.h"
 #include "library/autodj/autodjprocessor.h"
-#include "controlpushbutton.h"
-#include "controlpotmeter.h"
-#include "controllinpotmeter.h"
+#include "control/controlpushbutton.h"
+#include "control/controlpotmeter.h"
+#include "control/controllinpotmeter.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
 #include "track/track.h"

@@ -1,6 +1,6 @@
 #include <QDesktopServices>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "library/recording/dlgrecording.h"
 #include "library/trackcollection.h"
 #include "widget/wwidget.h"

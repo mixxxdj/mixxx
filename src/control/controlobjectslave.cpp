@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QtDebug>
 
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "control/control.h"
 
 ControlObjectSlave::ControlObjectSlave(QObject* pParent)

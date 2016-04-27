@@ -1,4 +1,4 @@
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "engine/enginetalkoverducking.h"
 
 #define DUCK_THRESHOLD 0.1

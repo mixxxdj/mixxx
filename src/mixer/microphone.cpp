@@ -1,6 +1,6 @@
 #include "mixer/microphone.h"
 
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
 #include "soundio/soundmanager.h"

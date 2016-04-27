@@ -6,7 +6,7 @@
 #include <vamp-hostsdk/vamp-hostsdk.h>
 
 #include "analyzer/vamp/vampanalyzer.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "preferences/dialog/dlgprefbeats.h"
 #include "track/beat_preferences.h"
 

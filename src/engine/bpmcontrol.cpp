@@ -1,15 +1,15 @@
 #include <QStringList>
 
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "controllinpotmeter.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "control/controllinpotmeter.h"
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
 #include "waveform/visualplayposition.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "util/assert.h"
 #include "util/math.h"
 #include "util/duration.h"

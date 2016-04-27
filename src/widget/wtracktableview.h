@@ -5,7 +5,7 @@
 #include <QSortFilterProxyModel>
 
 #include "preferences/usersettings.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "library/coverart.h"
 #include "library/dlgtagfetcher.h"
 #include "library/libraryview.h"

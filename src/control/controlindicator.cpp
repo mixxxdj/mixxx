@@ -1,5 +1,5 @@
-#include "controlindicator.h"
-#include "controlobjectslave.h"
+#include "control/controlindicator.h"
+#include "control/controlobjectslave.h"
 #include "util/math.h"
 
 ControlIndicator::ControlIndicator(ConfigKey key)

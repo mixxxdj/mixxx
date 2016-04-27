@@ -2,7 +2,7 @@
 #ifndef CONTROLAUDIOTAPERPOT_H
 #define CONTROLAUDIOTAPERPOT_H
 
-#include "controlpotmeter.h"
+#include "control/controlpotmeter.h"
 #include "preferences/usersettings.h"
 
 class ControlAudioTaperPot : public ControlPotmeter {

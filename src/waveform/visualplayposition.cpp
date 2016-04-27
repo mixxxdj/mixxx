@@ -2,8 +2,8 @@
 
 #include <QtDebug>
 
-#include "controlobjectslave.h"
-#include "controlobject.h"
+#include "control/controlobjectslave.h"
+#include "control/controlobject.h"
 #include "util/math.h"
 #include "waveform/vsyncthread.h"
 
@@ -108,4 +108,3 @@ void VisualPlayPosition::setCallbackEntryToDacSecs(double secs, const Performanc
     m_timeInfoTime = time;
     m_dCallbackEntryToDacSecs = secs;
 }
-

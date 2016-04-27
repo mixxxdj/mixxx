@@ -1,6 +1,6 @@
 #include "vinylcontrol/vinylcontrol.h"
-#include "controlobjectslave.h"
-#include "controlobject.h"
+#include "control/controlobjectslave.h"
+#include "control/controlobject.h"
 
 VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
         : m_pConfig(pConfig),

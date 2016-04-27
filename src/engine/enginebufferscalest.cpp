@@ -22,7 +22,7 @@
 #undef FALSE
 #include <SoundTouch.h>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/readaheadmanager.h"
 #include "track/keyutils.h"

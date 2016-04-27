@@ -21,8 +21,8 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
-#include "controlobjectslave.h"
-#include "controlpushbutton.h"
+#include "control/controlobjectslave.h"
+#include "control/controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "util/circularbuffer.h"

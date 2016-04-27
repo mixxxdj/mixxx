@@ -37,7 +37,7 @@
 #include "shoutcast/defs_shoutcast.h"
 #include "track/track.h"
 #include "util/sleep.h"
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 
 static const int kConnectRetries = 10;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s

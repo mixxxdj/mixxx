@@ -20,9 +20,9 @@
 
 #include "preferences/dialog/dlgprefrecord.h"
 #include "recording/defs_recording.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "encoder/encoder.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "util/sandbox.h"
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)

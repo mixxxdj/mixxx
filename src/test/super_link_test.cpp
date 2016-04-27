@@ -9,7 +9,7 @@
 #include "mixxxtest.h"
 #include "test/baseeffecttest.h"
 #include "util/time.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 
 class SuperLinkTest : public BaseEffectTest {
   protected:

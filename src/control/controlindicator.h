@@ -1,7 +1,7 @@
 #ifndef CONTROLINDICATOR_H
 #define CONTROLINDICATOR_H
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 
 class ControlObjectSlave;
 

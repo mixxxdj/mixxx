@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 
 class ControlObject;
 class ControlPushButton;

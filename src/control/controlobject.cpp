@@ -20,7 +20,7 @@
 #include <QSet>
 #include <QMutexLocker>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "control/control.h"
 #include "util/stat.h"
 #include "util/timer.h"

@@ -22,7 +22,7 @@
 #include "defs_urls.h"
 #include "preferences/dialog/dlgprefshoutcast.h"
 #include "shoutcast/defs_shoutcast.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 
 const char* kDefaultMetadataFormat = "$artist - $title";
 

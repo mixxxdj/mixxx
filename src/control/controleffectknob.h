@@ -1,7 +1,7 @@
 #ifndef CONTROLEFFECTKNOB_H
 #define CONTROLEFFECTKNOB_H
 
-#include "controlpotmeter.h"
+#include "control/controlpotmeter.h"
 #include "effects/effectmanifestparameter.h"
 
 class ControlEffectKnob : public ControlPotmeter {

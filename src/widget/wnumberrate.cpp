@@ -12,8 +12,8 @@
 
 #include "widget/wnumberrate.h"
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlobjectslave.h"
 #include "util/math.h"
 
 WNumberRate::WNumberRate(const char * group, QWidget * parent)

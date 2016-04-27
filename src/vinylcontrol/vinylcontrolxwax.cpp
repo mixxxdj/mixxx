@@ -24,8 +24,8 @@
 
 #include "vinylcontrol/vinylcontrolxwax.h"
 #include "util/timer.h"
-#include "controlobjectslave.h"
-#include "controlobject.h"
+#include "control/controlobjectslave.h"
+#include "control/controlobject.h"
 #include "util/math.h"
 #include "util/defs.h"
 
@@ -846,4 +846,3 @@ double VinylControlXwax::calcRateRatio() const {
             m_pRateSlider->get();
     return rateRatio;
 }
-

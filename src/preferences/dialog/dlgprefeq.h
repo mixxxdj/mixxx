@@ -23,7 +23,7 @@
 
 #include "preferences/dialog/ui_dlgprefeqdlg.h"
 #include "preferences/usersettings.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectrack.h"

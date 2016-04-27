@@ -11,7 +11,7 @@
 #ifndef MIDIOUTPUTHANDLER_H
 #define MIDIOUTPUTHANDLER_H
 
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "controllers/midi/midimessage.h"
 
 class MidiController;

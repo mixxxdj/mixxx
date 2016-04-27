@@ -4,7 +4,7 @@
 #include <QLabel>
 
 #include "widget/wlabel.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 
 class WKey : public WLabel  {
     Q_OBJECT

@@ -2,7 +2,7 @@
 #include <QFileInfo>
 
 #include "engine/cachingreader.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/counter.h"

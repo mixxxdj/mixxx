@@ -3,7 +3,7 @@
 
 #include <gtest/gtest_prod.h>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
 #include "util/tapfilter.h"

@@ -22,7 +22,7 @@
 
 #include "analyzer/vamp/vampanalyzer.h"
 #include "analyzer/vamp/vamppluginloader.h"
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "track/key_preferences.h"
 #include "util/xml.h"
 

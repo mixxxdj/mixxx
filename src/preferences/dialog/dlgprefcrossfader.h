@@ -5,7 +5,7 @@
 
 #include "preferences/dialog/ui_dlgprefcrossfaderdlg.h"
 #include "preferences/usersettings.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
 

@@ -1,9 +1,9 @@
 #include "engine/clockcontrol.h"
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 
 ClockControl::ClockControl(QString group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {

@@ -3,7 +3,7 @@
 
 #include "controllers/controllerengine.h"
 
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 
 // this is used for communicate with controller scripts
 class ControlObjectScript : public ControlObjectSlave {

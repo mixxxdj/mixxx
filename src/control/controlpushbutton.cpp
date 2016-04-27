@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new simulated latching push-button.

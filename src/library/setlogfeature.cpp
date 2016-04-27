@@ -4,7 +4,7 @@
 
 #include "library/setlogfeature.h"
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"

@@ -1,6 +1,7 @@
 /***************************************************************************
-                          controlttrotary.cpp  -  description
+                          controlpotmeter.cpp  -  description
                              -------------------
+    begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
 ***************************************************************************/
@@ -14,18 +15,16 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "controlttrotary.h"
+#include "control/controllogpotmeter.h"
 
-/* -------- ------------------------------------------------------
-   Purpose: Creates a new rotary encoder
-   Input:   key
-   -------- ------------------------------------------------------ */
-ControlTTRotary::ControlTTRotary(ConfigKey key) : ControlObject(key) {
+ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue, double minDB)
+    : ControlPotmeter(key, 0, dMaxValue) {
+    // Override ControlPotmeters default value of 0.5
+    setDefaultValue(1.0);
+    set(1.0);
+
     if (m_pControl) {
         m_pControl->setBehavior(
-                new ControlTTRotaryBehavior());
+                new ControlLogPotmeterBehavior(0, dMaxValue, minDB));
     }
 }
-
-
-

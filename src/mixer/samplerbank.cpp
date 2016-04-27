@@ -3,7 +3,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include "controlpushbutton.h"
+#include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
 #include "mixer/sampler.h"
 #include "track/track.h"

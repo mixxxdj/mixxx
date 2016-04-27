@@ -2,7 +2,7 @@
 #include <QFileInfo>
 #include <QMutexLocker>
 
-#include "controlobject.h"
+#include "control/controlobject.h"
 
 #include "engine/cachingreaderworker.h"
 #include "sources/soundsourceproxy.h"

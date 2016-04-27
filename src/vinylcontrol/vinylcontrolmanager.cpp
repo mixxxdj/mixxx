@@ -4,8 +4,8 @@
  * @date April 15, 2011
  */
 
-#include "controlobject.h"
-#include "controlobjectslave.h"
+#include "control/controlobject.h"
+#include "control/controlobjectslave.h"
 #include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
 #include "util/timer.h"

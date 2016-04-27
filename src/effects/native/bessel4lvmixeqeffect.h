@@ -3,7 +3,7 @@
 
 #include <QMap>
 
-#include "controlobjectslave.h"
+#include "control/controlobjectslave.h"
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "effects/native/lvmixeqbase.h"
