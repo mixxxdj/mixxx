@@ -6,7 +6,7 @@
 
 #include "widget/wlibrary.h"
 #include "library/libraryview.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),

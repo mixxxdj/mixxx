@@ -16,7 +16,7 @@
 #include "control/controlobject.h"
 #include "control/controlobjectslave.h"
 
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
 #include "library/library.h"
@@ -146,7 +146,7 @@ LegacySkinParser::LegacySkinParser()
 }
 
 LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
-                                   MixxxKeyboard* pKeyboard,
+                                   KeyboardEventFilter* pKeyboard,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,

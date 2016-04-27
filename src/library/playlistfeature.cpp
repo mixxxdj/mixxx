@@ -13,7 +13,7 @@
 #include "library/treeitem.h"
 #include "library/queryutil.h"
 #include "library/parser.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/time.h"

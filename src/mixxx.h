@@ -37,7 +37,7 @@ class EngineMaster;
 class GuiTick;
 class LaunchImage;
 class Library;
-class MixxxKeyboard;
+class KeyboardEventFilter;
 class PlayerManager;
 class RecordingManager;
 class SettingsManager;
@@ -154,7 +154,7 @@ class MixxxMainWindow : public QMainWindow {
 
     VinylControlManager* m_pVCManager;
 
-    MixxxKeyboard* m_pKeyboard;
+    KeyboardEventFilter* m_pKeyboard;
     // The library management object
     Library* m_pLibrary;
 

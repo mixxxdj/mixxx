@@ -583,9 +583,8 @@ class MixxxCore(Feature):
         return True
 
     def sources(self, build):
-        sources = ["mixxxkeyboard.cpp",
+        sources = ["configobject.cpp",
 
-                   "configobject.cpp",
                    "control/control.cpp",
                    "control/controlaudiotaperpot.cpp",
                    "control/controlbehavior.cpp",
@@ -742,6 +741,7 @@ class MixxxCore(Feature):
                    "controllers/midi/midienumerator.cpp",
                    "controllers/midi/midioutputhandler.cpp",
                    "controllers/softtakeover.cpp",
+                   "controllers/keyboard/keyboardeventfilter.cpp",
 
                    "main.cpp",
                    "mixxx.cpp",

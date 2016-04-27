@@ -1,42 +1,24 @@
-/***************************************************************************
-                          mixxxkeyboard.cpp  -  description
-                             -------------------
-    begin                : Wed Dec 2 2003
-    copyright            : (C) 2003 by Tue Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #include <QList>
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QEvent>
 
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "control/controlobject.h"
 #include "util/cmdlineargs.h"
 
-
-MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
-                             QObject* parent, const char* name)
+KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
+                                         QObject* parent, const char* name)
         : QObject(parent),
           m_pKbdConfigObject(NULL) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
 }
 
-MixxxKeyboard::~MixxxKeyboard() {
+KeyboardEventFilter::~KeyboardEventFilter() {
 }
 
-bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
+bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     if (e->type() == QEvent::FocusOut) {
         // If we lose focus, we need to clear out the active key list
         // because we might not get Key Release events.
@@ -142,7 +124,7 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
     return false;
 }
 
-QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent* e) {
+QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     QString modseq;
     QKeySequence k;
 
@@ -175,7 +157,7 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent* e) {
     return k;
 }
 
-void MixxxKeyboard::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
+void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
     // Keyboard configs are a surjection from ConfigKey to key sequence. We
     // invert the mapping to create an injection from key sequence to
     // ConfigKey. This allows a key sequence to trigger multiple controls in
@@ -184,6 +166,6 @@ void MixxxKeyboard::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigOb
     m_pKbdConfigObject = pKbdConfigObject;
 }
 
-ConfigObject<ConfigValueKbd>* MixxxKeyboard::getKeyboardConfig() {
+ConfigObject<ConfigValueKbd>* KeyboardEventFilter::getKeyboardConfig() {
     return m_pKbdConfigObject;
 }

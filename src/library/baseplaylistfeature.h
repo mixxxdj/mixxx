@@ -17,7 +17,7 @@
 #include "track/track.h"
 
 class WLibrary;
-class MixxxKeyboard;
+class KeyboardEventFilter;
 class PlaylistTableModel;
 class TrackCollection;
 class TreeItem;
@@ -34,7 +34,7 @@ class BasePlaylistFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
 
     void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+                    KeyboardEventFilter* keyboard);
 
   signals:
     void showPage(const QUrl& page);

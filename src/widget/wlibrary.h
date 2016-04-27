@@ -13,7 +13,7 @@
 #include "library/libraryview.h"
 #include "widget/wbasewidget.h"
 
-class MixxxKeyboard;
+class KeyboardEventFilter;
 
 class WLibrary : public QStackedWidget, public WBaseWidget {
     Q_OBJECT

@@ -14,7 +14,7 @@
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
-#include "mixxxkeyboard.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "util/assert.h"
@@ -60,7 +60,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
-    
+
     m_pCreateImportPlaylistAction = new QAction(tr("Import Playlist"), this);
     connect(m_pCreateImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreateImportPlaylist()));
@@ -339,9 +339,9 @@ void BasePlaylistFeature::slotImportPlaylist() {
     if (!m_pPlaylistTableModel) {
         return;
     }
-    
+
     QString playlist_file = getPlaylistFile();
-    if (playlist_file.isEmpty()) return;    
+    if (playlist_file.isEmpty()) return;
 
     // Update the import/export playlist directory
     QFileInfo fileName(playlist_file);
@@ -384,15 +384,15 @@ void BasePlaylistFeature::slotImportPlaylistFile(QString &playlist_file) {
 
 void BasePlaylistFeature::slotCreateImportPlaylist() {
     if (!m_pPlaylistTableModel) return;
-    
+
     // Get file to read
     QString playlist_file = LibraryFeature::getPlaylistFile();
     if (playlist_file.isEmpty()) return;
-    
+
     QFileInfo fileName(playlist_file);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
-    
+
     // Get a valid name
     QString baseName = fileName.baseName();
     QString name;
@@ -401,14 +401,14 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
     while (!validNameGiven) {
         name = baseName;
         if (i != 0) name += QString::number(i);
-        
+
         // Check name
         int existingId = m_playlistDao.getPlaylistIdFromName(name);
-        
+
         validNameGiven = (existingId == -1);
         ++i;
     }
-    
+
     int playlistId = m_playlistDao.createPlaylist(name);
     if (playlistId != -1) {
         activatePlaylist(playlistId);
@@ -420,7 +420,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
                                   + name);
             return;
     }
-    
+
     slotImportPlaylistFile(playlist_file);
 }
 
@@ -579,7 +579,7 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
 }
 
 void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
-                                     MixxxKeyboard* keyboard) {
+                                     KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
