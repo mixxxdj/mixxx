@@ -171,14 +171,18 @@ VCI102.pitch = function(ch, midino, value, status, group) {
     };
 });
 
+VCI102.superKnobKey = ["super1", "super1", "super1", "super1"];
+VCI102.superKnobValue = [0, 0, 0, 0];
+
 VCI102.super1 = function(ch, midino, value, status, group) {
-    if (VCI102.shift[ch % 2]) {
-        engine.setValue(group, "mix", value / 127);
-        engine.softTakeoverIgnoreNextValue(group, "super1");
-    } else {
-        engine.setValue(group, "super1", value / 127);
-        engine.softTakeoverIgnoreNextValue(group, "mix");
+    var key = VCI102.shift[ch % 2] ? "mix" : "super1";
+    if (VCI102.superKnobKey[ch] != key) {
+        engine.softTakeoverIgnoreNextValue(group, key);
+        // set previous value again on key change to avoid slip
+        engine.setValue(group, key, VCI102.superKnobValue[ch]);
+        VCI102.superKnobKey[ch] = key;
     }
+    engine.setValue(group, key, VCI102.superKnobValue[ch] = value / 127);
 };
 
 VCI102.loopLength = [4, 4, 4, 4];
