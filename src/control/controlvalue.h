@@ -9,7 +9,7 @@
 #include "util/compatibility.h"
 #include "util/assert.h"
 
-// for look free access, this value has to be >= the number of value using threads
+// for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
 const int cRingSize = 8;
 // there are basicly unlimited readers allowed at each ring element
