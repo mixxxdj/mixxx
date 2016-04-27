@@ -6,7 +6,7 @@
 #include "controlpushbutton.h"
 #include "mixer/playermanager.h"
 #include "mixer/sampler.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/assert.h"
 
 SamplerBank::SamplerBank(PlayerManager* pPlayerManager)

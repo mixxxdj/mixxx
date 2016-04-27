@@ -190,7 +190,7 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
 void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v > 0 && m_pTrack && m_pBeats &&
             (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
-        // TODO(rryan): TrackInfoObject::getSampleRate is possibly inaccurate!
+        // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const int translate_dist = m_pTrack->getSampleRate() * -.01;
         m_pBeats->translate(translate_dist);
     }
@@ -199,7 +199,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
 void BpmControl::slotTranslateBeatsLater(double v) {
     if (v > 0 && m_pTrack && m_pBeats &&
             (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
-        // TODO(rryan): TrackInfoObject::getSampleRate is possibly inaccurate!
+        // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const int translate_dist = m_pTrack->getSampleRate() * .01;
         m_pBeats->translate(translate_dist);
     }

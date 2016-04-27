@@ -18,7 +18,7 @@
 #include <QColor>
 #include <QList>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "widget/wwidget.h"
 
 #include "waveform/renderers/waveformsignalcolors.h"

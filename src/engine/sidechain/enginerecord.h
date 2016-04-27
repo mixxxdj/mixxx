@@ -31,7 +31,7 @@
 #include "preferences/usersettings.h"
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/sidechainworker.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class ConfigKey;
 class ControlObjectSlave;

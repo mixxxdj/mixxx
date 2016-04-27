@@ -14,7 +14,7 @@
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class WLibrary;
 class MixxxKeyboard;

@@ -7,7 +7,7 @@
 #include <QThread>
 #include <future>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 // A QThread class for copying a list of files to a single destination directory.
 // Currently does not preserve subdirectory relationships.  This class performs

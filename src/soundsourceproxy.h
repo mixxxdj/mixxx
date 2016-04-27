@@ -1,7 +1,7 @@
 #ifndef SOUNDSOURCEPROXY_H
 #define SOUNDSOURCEPROXY_H
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 #include "sources/soundsourceproviderregistry.h"
 
@@ -66,7 +66,7 @@ public:
         SKIPPED
     };
     static SaveTrackMetadataResult saveTrackMetadata(
-            const TrackInfoObject* pTrack,
+            const Track* pTrack,
             bool evenIfNeverParsedFromFileBefore = false);
 
     // Opening the audio data through the proxy will
@@ -85,7 +85,7 @@ private:
     // Special case: Construction from a plain TIO pointer is needed
     // for writing metadata immediately before the TIO is destroyed.
     explicit SoundSourceProxy(
-            const TrackInfoObject* pTrack);
+            const Track* pTrack);
 
     const TrackPointer m_pTrack;
 

@@ -6,7 +6,7 @@
 #include <QWidget>
 #include <QPixmap>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/coverart.h"
 
 // This class implements a context-menu with all CoverArt user actions. Callers

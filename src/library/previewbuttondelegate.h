@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QTableView>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class ControlObjectSlave;
 

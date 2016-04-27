@@ -23,7 +23,7 @@
 #include <QTimerEvent>
 
 #include "controlobjectslave.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class PlayerInfo : public QObject {
     Q_OBJECT

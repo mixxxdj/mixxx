@@ -2,7 +2,7 @@
 #define PREFERENCES_REPLAYGAINSETTINGS_H
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class ReplayGainSettings {
   public:

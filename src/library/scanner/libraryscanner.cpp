@@ -66,7 +66,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection,
     connect(this, SIGNAL(startScan()),
             this, SLOT(slotStartScan()));
 
-    // Force the GUI thread's TrackInfoObject cache to be cleared when a library
+    // Force the GUI thread's Track cache to be cleared when a library
     // scan is finished, because we might have modified the database directly
     // when we detected moved files, and the TIOs corresponding to the moved
     // files would then have the wrong track location.

@@ -8,7 +8,7 @@
 #include <QString>
 
 #include "engine/cachingreaderchunk.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
 #include "util/fifo.h"

@@ -7,7 +7,7 @@
 #include <QWidget>
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/coverartcache.h"
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"

@@ -17,7 +17,7 @@
 
 #include "treeitemmodel.h"
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class TrackCollection;
 

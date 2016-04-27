@@ -7,7 +7,7 @@
 #include "analyzer/analyzer.h"
 #include "analyzer/vamp/vampanalyzer.h"
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class AnalyzerKey : public Analyzer {
   public:

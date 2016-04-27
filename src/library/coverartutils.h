@@ -8,7 +8,7 @@
 #include <QFileInfo>
 #include <QLinkedList>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/sandbox.h"
 
 class CoverArtUtils {
@@ -52,7 +52,7 @@ class CoverArtUtils {
 
     // Selects an appropriate cover file from provided list of image files.
     static CoverArt selectCoverArtForTrack(
-            TrackInfoObject* pTrack,
+            Track* pTrack,
             const QLinkedList<QFileInfo>& covers);
 
     // Selects an appropriate cover file from provided list of image

@@ -6,7 +6,7 @@
 #include <QStylePainter>
 
 #include "skin/skincontext.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 #include "library/starrating.h"
 #include "widget/wwidget.h"
@@ -24,7 +24,7 @@ class WStarRating : public WWidget {
     void slotTrackUnloaded(TrackPointer track);
 
   private slots:
-    void updateRating(TrackInfoObject*);
+    void updateRating(Track*);
 
   protected:
     void paintEvent(QPaintEvent* e) override;

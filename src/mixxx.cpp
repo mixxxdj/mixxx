@@ -44,7 +44,7 @@
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
 #include "soundsourceproxy.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/sharedglcontext.h"
 #include "util/debug.h"

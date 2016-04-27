@@ -5,7 +5,7 @@
 #include "library/trackmodel.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "controlobjectslave.h"
 
 PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)

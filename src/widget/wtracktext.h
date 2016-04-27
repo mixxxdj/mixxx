@@ -6,7 +6,7 @@
 #include <QMouseEvent>
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "widget/wlabel.h"
 
 class WTrackText : public WLabel {
@@ -22,7 +22,7 @@ class WTrackText : public WLabel {
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private slots:
-    void updateLabel(TrackInfoObject*);
+    void updateLabel(Track*);
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;

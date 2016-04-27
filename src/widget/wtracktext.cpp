@@ -16,8 +16,8 @@ WTrackText::WTrackText(const char *group, UserSettingsPointer pConfig, QWidget* 
 void WTrackText::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
-        connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-                this, SLOT(updateLabel(TrackInfoObject*)));
+        connect(track.data(), SIGNAL(changed(Track*)),
+                this, SLOT(updateLabel(Track*)));
         updateLabel(track.data());
     }
 }
@@ -32,7 +32,7 @@ void WTrackText::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack
     setText("");
 }
 
-void WTrackText::updateLabel(TrackInfoObject* /*unused*/) {
+void WTrackText::updateLabel(Track* /*unused*/) {
     if (m_pCurrentTrack) {
         setText(m_pCurrentTrack->getInfo());
     }
