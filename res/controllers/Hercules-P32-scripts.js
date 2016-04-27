@@ -1,3 +1,7 @@
+// USER CONFIGURABLE OPTIONS
+var defaultLoopSize = 8; // loop size (in beats) when Mixxx starts
+var defaultBeatJumpSize = 4; // beat jump size when Mixxx starts
+
 /**
  * Hercules P32 DJ controller script for Mixxx 2.0
  * Thanks to Hercules by supporting the development of this mapping by providing a controller
@@ -145,8 +149,8 @@ P32.init = function () {
     P32.leftDeck = new P32.Deck([1,3], 1);
     P32.rightDeck = new P32.Deck([2,4], 2);
     // set loop sizes to 4
-    midi.sendShortMsg(0xB1, 0x1B, 7);
-    midi.sendShortMsg(0xB2, 0x1B, 7);
+    midi.sendShortMsg(0xB1, 0x1B, 5 + Math.log(defaultLoopSize) / Math.log(2));
+    midi.sendShortMsg(0xB2, 0x1B, 5 + Math.log(defaultLoopSize) / Math.log(2));
     
     for (var i = 1; i <= 4; i++) {
         engine.softTakeover('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter1', true);
@@ -252,8 +256,8 @@ P32.EffectUnit = function (unitNumber) {
 P32.Deck = function (deckNumbers, channel) {
     var that = this;
     var t = this;
-    var loopSize = 4;
-    var beatJumpSize = 1;
+    var loopSize = defaultLoopSize;
+    var beatJumpSize = defaultBeatJumpSize;
     this.shift = false;
     this.currentDeck = "[Channel" + deckNumbers[0] + "]";
     this.effectUnit = new P32.EffectUnit(deckNumbers[0]);
