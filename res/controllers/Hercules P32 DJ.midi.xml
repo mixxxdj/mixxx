@@ -545,7 +545,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.filter</key>
+                <key>P32.leftDeck.beatJump</key>
                 <status>0xB1</status>
                 <midino>0x05</midino>
                 <options>
@@ -671,7 +671,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.filterPress</key>
+                <key>P32.leftDeck.beatJumpPress</key>
                 <status>0x91</status>
                 <midino>0x02</midino>
                 <options>
@@ -806,7 +806,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.filter</key>
+                <key>P32.rightDeck.beatJump</key>
                 <status>0xB2</status>
                 <midino>0x05</midino>
                 <options>
@@ -914,7 +914,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.filterPress</key>
+                <key>P32.rightDeck.beatJumpPress</key>
                 <status>0x92</status>
                 <midino>0x02</midino>
                 <options>

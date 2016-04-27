@@ -253,6 +253,7 @@ P32.Deck = function (deckNumbers, channel) {
     var that = this;
     var t = this;
     var loopSize = 4;
+    var beatJumpSize = 1;
     this.shift = false;
     this.currentDeck = "[Channel" + deckNumbers[0] + "]";
     this.effectUnit = new P32.EffectUnit(deckNumbers[0]);
@@ -407,18 +408,27 @@ P32.Deck = function (deckNumbers, channel) {
         }
     }
     
-    this.filter = function (channel, control, value, status, group) {
-        // TODO: Make this smoother?
+    this.beatJump = function (channel, control, value, status, group) {
         var direction = (value === 127) ? -1 : 1;
-//         if (that.filterEncoderPressed) {
-//             engine.setValue(that.currentDeck, 'beatjump', direction);
-//         } else {
-            engine.setValue('[QuickEffectRack1_'+ that.currentDeck +']', 'super1',
-                            engine.getValue('[QuickEffectRack1_'+ that.currentDeck +']', 'super1') + (.05 * direction));
+        if (that.beatJumpEncoderPressed) {
+            if (value === 127 && beatJumpSize > 1/32) { // turn left
+                beatJumpSize /= 2;
+            } else if (value === 1 && beatJumpSize < 64) { // turn right
+                beatJumpSize *= 2;
+            }
+            midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
+        } else {
+            engine.setValue(that.currentDeck, 'beatjump', direction * beatJumpSize);
+        }
     }
     
-    this.filterPress = function (channel, control, value, status, group) {
-//         that.filterEncoderPressed = (value === 127) ? true : false;
-        return;
+    this.beatJumpPress = function (channel, control, value, status, group) {
+        if (value === 127) {
+            that.beatJumpEncoderPressed = true;
+            midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(beatJumpSize) / Math.log(2));
+        } else {
+            that.beatJumpEncoderPressed = false;
+            midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(loopSize) / Math.log(2));
+        }
     }
 }
