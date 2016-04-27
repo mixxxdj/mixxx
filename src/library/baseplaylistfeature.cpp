@@ -23,8 +23,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
                                          UserSettingsPointer pConfig,
                                          TrackCollection* pTrackCollection,
                                          QString rootViewName)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
+        : LibraryFeature(pConfig, parent),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
@@ -61,6 +60,10 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+    
+    m_pCreateImportPlaylistAction = new QAction(tr("Import Playlist"), this);
+    connect(m_pCreateImportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotCreateImportPlaylist()));
 
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
@@ -101,6 +104,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pCreatePlaylistAction;
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
+    delete m_pCreateImportPlaylistAction;
     delete m_pExportPlaylistAction;
     delete m_pExportTrackFilesAction;
     delete m_pDuplicatePlaylistAction;
@@ -329,33 +333,25 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 }
 
-
 void BasePlaylistFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" << m_lastRightClickedIndex.data();
 
     if (!m_pPlaylistTableModel) {
         return;
     }
-
-    QString lastPlaylistDirectory = m_pConfig->getValueString(
-            ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-
-    QString playlist_file = QFileDialog::getOpenFileName(
-            NULL,
-            tr("Import Playlist"),
-            lastPlaylistDirectory,
-            tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
-    // Exit method if user cancelled the open dialog.
-    if (playlist_file.isNull() || playlist_file.isEmpty()) {
-        return;
-    }
+    
+    QString playlist_file = getPlaylistFile();
+    if (playlist_file.isEmpty()) return;    
 
     // Update the import/export playlist directory
     QFileInfo fileName(playlist_file);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
 
+    slotImportPlaylistFile(playlist_file);
+}
+
+void BasePlaylistFeature::slotImportPlaylistFile(QString &playlist_file) {
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
@@ -384,6 +380,48 @@ void BasePlaylistFeature::slotImportPlaylist() {
       // delete the parser object
       delete playlist_parser;
     }
+}
+
+void BasePlaylistFeature::slotCreateImportPlaylist() {
+    if (!m_pPlaylistTableModel) return;
+    
+    // Get file to read
+    QString playlist_file = LibraryFeature::getPlaylistFile();
+    if (playlist_file.isEmpty()) return;
+    
+    QFileInfo fileName(playlist_file);
+    m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
+                ConfigValue(fileName.dir().absolutePath()));
+    
+    // Get a valid name
+    QString baseName = fileName.baseName();
+    QString name;
+    bool validNameGiven = false;
+    int i = 0;
+    while (!validNameGiven) {
+        name = baseName;
+        if (i != 0) name += QString::number(i);
+        
+        // Check name
+        int existingId = m_playlistDao.getPlaylistIdFromName(name);
+        
+        validNameGiven = (existingId == -1);
+        ++i;
+    }
+    
+    int playlistId = m_playlistDao.createPlaylist(name);
+    if (playlistId != -1) {
+        activatePlaylist(playlistId);
+    }
+    else {
+            QMessageBox::warning(NULL,
+                                 tr("Playlist Creation Failed"),
+                                 tr("An unknown error occurred while creating playlist: ")
+                                  + name);
+            return;
+    }
+    
+    slotImportPlaylistFile(playlist_file);
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {

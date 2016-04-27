@@ -10,7 +10,7 @@
 #include "engine/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "controlobjectslave.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 #define NUM_HOT_CUES 37
 

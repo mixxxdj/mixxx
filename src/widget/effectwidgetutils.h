@@ -12,7 +12,7 @@ class EffectWidgetUtils {
             const QDomNode& node,
             const SkinContext& context,
             EffectsManager* pEffectsManager) {
-        if (pEffectsManager == NULL) {
+        if (pEffectsManager == nullptr) {
             return EffectRackPointer();
         }
 
@@ -116,7 +116,7 @@ class EffectWidgetUtils {
     }
 
   private:
-    EffectWidgetUtils() {};
+    EffectWidgetUtils() = default;
 };
 
 #endif /* EFFECTWIDGETUTILS_H */

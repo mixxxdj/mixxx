@@ -1,14 +1,14 @@
-#ifndef SOUNDSOURCEPROXY_H
-#define SOUNDSOURCEPROXY_H
+#ifndef MIXXX_SOURCES_SOUNDSOURCEPROXY_H
+#define MIXXX_SOURCES_SOUNDSOURCEPROXY_H
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 #include "sources/soundsourceproviderregistry.h"
 
 // Creates sound sources for tracks. Only intended to be used
 // in a narrow scope and not sharable between multiple threads!
 class SoundSourceProxy {
-public:
+  public:
     // Initially registers all built-in SoundSource providers and
     // loads all SoundSource plugins with additional providers. This
     // function is not thread-safe and must be called only once
@@ -66,7 +66,7 @@ public:
         SKIPPED
     };
     static SaveTrackMetadataResult saveTrackMetadata(
-            const TrackInfoObject* pTrack,
+            const Track* pTrack,
             bool evenIfNeverParsedFromFileBefore = false);
 
     // Opening the audio data through the proxy will
@@ -77,7 +77,7 @@ public:
 
     void closeAudioSource();
 
-private:
+  private:
     static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
@@ -85,7 +85,7 @@ private:
     // Special case: Construction from a plain TIO pointer is needed
     // for writing metadata immediately before the TIO is destroyed.
     explicit SoundSourceProxy(
-            const TrackInfoObject* pTrack);
+            const Track* pTrack);
 
     const TrackPointer m_pTrack;
 
@@ -114,4 +114,4 @@ private:
     Mixxx::AudioSourcePointer m_pAudioSource;
 };
 
-#endif // SOUNDSOURCEPROXY_H
+#endif // MIXXX_SOURCES_SOUNDSOURCEPROXY_H

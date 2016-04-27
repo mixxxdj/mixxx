@@ -3,7 +3,7 @@
 #include <QtDebug>
 
 #include "track/trackmetadata.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "util/samplebuffer.h"
 
@@ -52,7 +52,7 @@ class SoundSourceProxyTest: public MixxxTest {
     }
 
     static Mixxx::AudioSourcePointer openAudioSource(const QString& filePath) {
-        TrackPointer pTrack(TrackInfoObject::newTemporary(filePath));
+        TrackPointer pTrack(Track::newTemporary(filePath));
         return SoundSourceProxy(pTrack).openAudioSource();
     }
 };
@@ -77,7 +77,7 @@ TEST_F(SoundSourceProxyTest, open) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    TrackPointer pTrack(TrackInfoObject::newTemporary(
+    TrackPointer pTrack(Track::newTemporary(
             QDir::currentPath().append("/src/test/id3-test-data/artist.mp3")));
     SoundSourceProxy proxy(pTrack);
     Mixxx::TrackMetadata trackMetadata;
@@ -86,7 +86,7 @@ TEST_F(SoundSourceProxyTest, readArtist) {
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    TrackPointer pTrack(TrackInfoObject::newTemporary(
+    TrackPointer pTrack(Track::newTemporary(
             QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3")));
     SoundSourceProxy proxy(pTrack);
     Mixxx::TrackMetadata trackMetadata;

@@ -9,7 +9,7 @@
 
 #include "controlobject.h"
 #include "controlobjectslave.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -23,7 +23,7 @@ WWaveformViewer::WWaveformViewer(const char *group, UserSettingsPointer pConfig,
           m_zoomZoneWidth(20),
           m_bScratching(false),
           m_bBending(false),
-          m_waveformWidget(NULL) {
+          m_waveformWidget(nullptr) {
     setAcceptDrops(true);
 
     m_pZoom = new ControlObjectSlave(group, "waveform_zoom", this);

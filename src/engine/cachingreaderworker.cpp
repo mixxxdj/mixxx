@@ -4,8 +4,8 @@
 
 #include "controlobject.h"
 
-#include "cachingreaderworker.h"
-#include "soundsourceproxy.h"
+#include "engine/cachingreaderworker.h"
+#include "sources/soundsourceproxy.h"
 #include "util/compatibility.h"
 #include "util/event.h"
 

@@ -315,7 +315,7 @@ bool AnalysisDao::saveDataToFile(const QString& fileName, const QByteArray& data
     return true;
 }
 
-void AnalysisDao::saveTrackAnalyses(TrackInfoObject* pTrack) {
+void AnalysisDao::saveTrackAnalyses(Track* pTrack) {
     if (!pTrack) {
         return;
     }

@@ -6,7 +6,7 @@
 
 #include "library/autodj/ui_dlgautodj.h"
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/libraryview.h"
 #include "library/library.h"
 #include "library/trackcollection.h"

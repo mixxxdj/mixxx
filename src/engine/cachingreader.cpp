@@ -1,9 +1,9 @@
 #include <QtDebug>
 #include <QFileInfo>
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "controlobject.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/counter.h"
 #include "util/math.h"
@@ -334,7 +334,7 @@ int CachingReader::read(int sample, bool reverse, int numSamples, CSAMPLE* buffe
                 DEBUG_ASSERT(framesToCopy >= 0);
                 const SINT chunkSampleOffset = CachingReaderChunk::frames2samples(chunkFrameOffset);
                 const SINT samplesToCopy = CachingReaderChunk::frames2samples(framesToCopy);
-                
+
                 if (reverse) {
                     pChunk->copySamplesReverse(&buffer[numSamples - samplesRead - samplesToCopy], chunkSampleOffset, samplesToCopy);
                 } else {

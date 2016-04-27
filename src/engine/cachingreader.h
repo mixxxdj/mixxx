@@ -1,8 +1,8 @@
 // cachingreader.h
 // Created 7/9/2009 by RJ Ryan (rryan@mit.edu)
 
-#ifndef CACHINGREADER_H
-#define CACHINGREADER_H
+#ifndef ENGINE_CACHINGREADER_H
+#define ENGINE_CACHINGREADER_H
 
 #include <QtDebug>
 #include <QList>
@@ -13,10 +13,10 @@
 
 #include "util/types.h"
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "engine/engineworker.h"
 #include "util/fifo.h"
-#include "cachingreaderworker.h"
+#include "engine/cachingreaderworker.h"
 
 // A Hint is an indication to the CachingReader that a certain section of a
 // SoundSource will be used 'soon' and so it should be brought into memory by
@@ -166,4 +166,4 @@ class CachingReader : public QObject {
 };
 
 
-#endif /* CACHINGREADER_H */
+#endif /* ENGINE_CACHINGREADER_H */

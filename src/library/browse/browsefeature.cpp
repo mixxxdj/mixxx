@@ -11,7 +11,7 @@
 #include <QMenu>
 #include <QPushButton>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/treeitem.h"
 #include "library/browse/browsefeature.h"
 #include "library/trackcollection.h"

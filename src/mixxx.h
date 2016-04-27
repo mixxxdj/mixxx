@@ -24,7 +24,7 @@
 #include "configobject.h"
 #include "preferences/usersettings.h"
 #include "preferences/constants.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 

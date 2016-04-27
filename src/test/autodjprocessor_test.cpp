@@ -11,8 +11,8 @@
 #include "controllinpotmeter.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
-#include "trackinfoobject.h"
-#include "soundsourceproxy.h"
+#include "track/track.h"
+#include "sources/soundsourceproxy.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -142,7 +142,7 @@ class AutoDJProcessorTest : public LibraryTest {
     }
     static TrackPointer newTestTrack(TrackId trackId) {
         TrackPointer pTrack(
-                TrackInfoObject::newDummy(kTrackLocationTest, trackId));
+                Track::newDummy(kTrackLocationTest, trackId));
         SoundSourceProxy(pTrack).loadTrackMetadata();
         return pTrack;
     }

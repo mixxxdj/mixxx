@@ -2,7 +2,7 @@
 
 #include <QtDebug>
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "preferences/usersettings.h"
 #include "controlindicator.h"
 #include "controllinpotmeter.h"
@@ -28,7 +28,7 @@
 #include "engine/sync/synccontrol.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/defs.h"
@@ -499,7 +499,7 @@ void EngineBuffer::slotTrackLoading() {
 }
 
 TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
-    TrackPointer pTrack(TrackInfoObject::newTemporary());
+    TrackPointer pTrack(Track::newTemporary());
     pTrack->setSampleRate(44100);
     // 10 seconds
     pTrack->setDuration(10);
@@ -1310,7 +1310,7 @@ void EngineBuffer::hintReader(const double dRate) {
 // WARNING: This method runs in the GUI thread
 void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
     if (pTrack.isNull()) {
-        // Loading a null track means "eject" 
+        // Loading a null track means "eject"
         ejectTrack();
     } else {
         // Signal to the reader to load the track. The reader will respond with

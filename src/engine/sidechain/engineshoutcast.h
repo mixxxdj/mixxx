@@ -32,7 +32,7 @@
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/fifo.h"
 
 class Encoder;

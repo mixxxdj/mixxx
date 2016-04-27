@@ -23,7 +23,7 @@
 
 #include "util/types.h"
 #include "encoder/encoder.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 class EncoderCallback;
 

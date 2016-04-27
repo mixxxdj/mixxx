@@ -13,7 +13,7 @@
 #include <QFont>
 
 #include "preferences/usersettings.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"

@@ -7,7 +7,7 @@
 
 #include "library/dao/cuedao.h"
 #include "library/dao/cue.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "library/queryutil.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
@@ -209,7 +209,7 @@ bool CueDAO::deleteCue(Cue* cue) {
     return false;
 }
 
-void CueDAO::saveTrackCues(TrackId trackId, TrackInfoObject* pTrack) {
+void CueDAO::saveTrackCues(TrackId trackId, Track* pTrack) {
     //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call
     // this.

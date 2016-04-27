@@ -37,11 +37,10 @@
 class WPushButton : public WWidget {
     Q_OBJECT
   public:
-    WPushButton(QWidget* pParent = NULL);
+    explicit WPushButton(QWidget* pParent = nullptr);
     // Used by WPushButtonTest.
     WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
                 ControlPushButton::ButtonMode rightButtonMode);
-    virtual ~WPushButton();
 
     Q_PROPERTY(bool pressed READ isPressed);
 
@@ -67,20 +66,20 @@ class WPushButton : public WWidget {
 
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.
-    void setStates(int iStatesW);
+    void setStates(int iStates);
 
   signals:
     void displayValueChanged(int value);
 
   public slots:
-    virtual void onConnectedControlChanged(double dParameter, double dValue);
+    void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected:
-    virtual void paintEvent(QPaintEvent*);
-    virtual void mousePressEvent(QMouseEvent* e);
-    virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual void focusOutEvent(QFocusEvent* e);
-    void fillDebugTooltip(QStringList* debug);
+    void paintEvent(QPaintEvent* /*unused*/) override;
+    void mousePressEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+    void focusOutEvent(QFocusEvent* e) override;
+    void fillDebugTooltip(QStringList* debug) override;
 
   protected:
     void restyleAndRepaint();

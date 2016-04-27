@@ -14,7 +14,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "treeitem.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "widget/wlibrary.h"
 #include "util/dnd.h"
 #include "library/dlghidden.h"

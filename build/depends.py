@@ -624,7 +624,7 @@ class MixxxCore(Feature):
                    "preferences/replaygainsettings.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
-                    
+
 
                    "effects/effectmanifest.cpp",
                    "effects/effectmanifestparameter.cpp",
@@ -708,9 +708,9 @@ class MixxxCore(Feature):
                    "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "engine/enginetalkoverducking.cpp",
-                   "cachingreader.cpp",
-                   "cachingreaderchunk.cpp",
-                   "cachingreaderworker.cpp",
+                   "engine/cachingreader.cpp",
+                   "engine/cachingreaderchunk.cpp",
+                   "engine/cachingreaderworker.cpp",
 
                    "analyzer/analyzerqueue.cpp",
                    "analyzer/analyzerwaveform.cpp",
@@ -748,11 +748,12 @@ class MixxxCore(Feature):
                    "mixxxapplication.cpp",
                    "errordialoghandler.cpp",
 
-                   "sources/soundsourceproviderregistry.cpp",
+                   "sources/audiosource.cpp",
+                   "sources/soundsource.cpp",
                    "sources/soundsourceplugin.cpp",
                    "sources/soundsourcepluginlibrary.cpp",
-                   "sources/soundsource.cpp",
-                   "sources/audiosource.cpp",
+                   "sources/soundsourceproviderregistry.cpp",
+                   "sources/soundsourceproxy.cpp",
 
                    "widget/controlwidgetconnection.cpp",
                    "widget/wbasewidget.cpp",
@@ -915,8 +916,6 @@ class MixxxCore(Feature):
                    "library/parserm3u.cpp",
                    "library/parsercsv.cpp",
 
-                   "soundsourceproxy.cpp",
-
                    "widget/wwaveformviewer.cpp",
 
                    "waveform/sharedglcontext.cpp",
@@ -980,20 +979,20 @@ class MixxxCore(Feature):
                    "skin/pixmapsource.cpp",
                    "skin/launchimage.cpp",
 
-                   "trackinfoobject.cpp",
+                   "track/beatfactory.cpp",
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
-                   "track/beatfactory.cpp",
                    "track/beatutils.cpp",
-                   "track/keys.cpp",
+                   "track/bpm.cpp",
                    "track/keyfactory.cpp",
+                   "track/keys.cpp",
                    "track/keyutils.cpp",
                    "track/playcounter.cpp",
                    "track/replaygain.cpp",
-                   "track/bpm.cpp",
-                   "track/tracknumbers.cpp",
+                   "track/track.cpp",
                    "track/trackmetadata.cpp",
                    "track/trackmetadatataglib.cpp",
+                   "track/tracknumbers.cpp",
 
                    "mixer/auxiliary.cpp",
                    "mixer/baseplayer.cpp",
@@ -1143,10 +1142,14 @@ class MixxxCore(Feature):
             # Default GNU Options
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
-            # Quiet down Clang warnings about inconsistent use of override
-            # keyword until Qt fixes qt_metacall.
             if build.compiler_is_clang:
+                # Quiet down Clang warnings about inconsistent use of override
+                # keyword until Qt fixes qt_metacall.
                 build.env.Append(CCFLAGS='-Wno-inconsistent-missing-override')
+
+                # Enable thread-safety analysis.
+                # http://clang.llvm.org/docs/ThreadSafetyAnalysis.html
+                build.env.Append(CCFLAGS='-Wthread-safety')
             build.env.Append(CCFLAGS='-Wextra')
 
             # Always generate debugging info.

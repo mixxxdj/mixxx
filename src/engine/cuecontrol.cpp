@@ -8,7 +8,6 @@
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "controlindicator.h"
-#include "cachingreader.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 // TODO: Convert these doubles to a standard enum

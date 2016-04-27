@@ -2,7 +2,6 @@
 
 #include "controlobject.h"
 #include "preferences/usersettings.h"
-#include "cachingreader.h"
 #include "engine/enginecontrol.h"
 #include "controlobjectslave.h"
 

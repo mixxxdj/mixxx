@@ -44,25 +44,25 @@
 <context>
     <name>BansheeFeature</name>
     <message>
-        <location filename="../../src/library/banshee/bansheefeature.cpp" line="23"/>
-        <location filename="../../src/library/banshee/bansheefeature.cpp" line="113"/>
+        <location filename="../../src/library/banshee/bansheefeature.cpp" line="25"/>
+        <location filename="../../src/library/banshee/bansheefeature.cpp" line="115"/>
         <source>Banshee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/banshee/bansheefeature.cpp" line="73"/>
-        <location filename="../../src/library/banshee/bansheefeature.cpp" line="82"/>
+        <location filename="../../src/library/banshee/bansheefeature.cpp" line="75"/>
+        <location filename="../../src/library/banshee/bansheefeature.cpp" line="84"/>
         <source>Error loading Banshee database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/banshee/bansheefeature.cpp" line="74"/>
+        <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <source>Banshee database file not found at
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/banshee/bansheefeature.cpp" line="83"/>
+        <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
         <source>There was an error loading your Banshee database at
 </source>
         <translation type="unfinished"></translation>
@@ -363,7 +363,7 @@
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="109"/>
-        <source>Replay Gain</source>
+        <source>ReplayGain</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -514,7 +514,7 @@
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
-        <source>Replay Gain</source>
+        <source>ReplayGain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2417,37 +2417,37 @@
 <context>
     <name>ControllerEngine</name>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="434"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="459"/>
         <source>Uncaught exception at line %1 in file %2: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="438"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="463"/>
         <source>Uncaught exception at line %1 in passed code: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="459"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="486"/>
         <source>Controller script error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="460"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="487"/>
         <source>A control you just used is not working properly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="461"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="488"/>
         <source>The script code needs to be fixed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="462"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="489"/>
         <source>For now, you can: Ignore this error for this session but you may experience erratic behavior.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="463"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="490"/>
         <source>Try to recover by resetting your controller.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2776,19 +2776,13 @@
 <context>
     <name>DlgAutoDJ</name>
     <message>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="145"/>
-        <location filename="../../src/library/autodj/dlgautodj.cpp" line="153"/>
-        <source>Auto-DJ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="146"/>
-        <source>One deck must be stopped to enable Auto-DJ mode.</source>
+        <source>One deck must be stopped to enable Auto DJ mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="154"/>
-        <source>Decks 3 and 4 must be stopped to enable Auto-DJ mode.</source>
+        <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2799,6 +2793,8 @@
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="145"/>
+        <location filename="../../src/library/autodj/dlgautodj.cpp" line="153"/>
         <source>Auto DJ</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3254,11 +3250,6 @@ You tried to learn: %1,%2</source>
 <context>
     <name>DlgPrefAutoDJDlg</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="14"/>
-        <source>AutoDJ Preferences</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="22"/>
         <source>Re-queue tracks after playback</source>
         <translation type="unfinished"></translation>
@@ -3281,6 +3272,11 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="39"/>
         <source>Minimum available tracks in Track Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="14"/>
+        <source>Auto DJ Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3711,6 +3707,11 @@ Apply settings and continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/preferences/dialog/dlgprefcontrolsdlg.ui" line="206"/>
+        <source>Keylock mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/preferences/dialog/dlgprefcontrolsdlg.ui" line="455"/>
         <source>Color scheme</source>
         <translation type="unfinished"></translation>
@@ -3815,11 +3816,6 @@ Numark mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcontrolsdlg.ui" line="196"/>
         <source>Temporary</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefcontrolsdlg.ui" line="206"/>
-        <source>Key lock mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4516,6 +4512,16 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="261"/>
+        <source>Add track to Auto DJ Queue (top)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="278"/>
+        <source>Add track to Auto DJ Queue (bottom)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="202"/>
         <source>Use relative paths for playlist export if possible</source>
         <translation type="unfinished"></translation>
@@ -4537,18 +4543,8 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="261"/>
-        <source>Add track to Auto-DJ Queue (top)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="268"/>
         <source>Load track to next available deck</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="278"/>
-        <source>Add track to Auto-DJ Queue (bottom)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4883,7 +4879,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
 <context>
     <name>DlgPrefReplayGain</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygain.cpp" line="117"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygain.cpp" line="137"/>
         <source>%1 LUFS (adjust by %2 dB)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4901,11 +4897,6 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="36"/>
-        <source>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="26"/>
         <source>Apply loudness normalization to loaded tracks.</source>
         <translation type="unfinished"></translation>
@@ -4916,64 +4907,84 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="39"/>
-        <source>Enable ReplayGain 1.0 Analysis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="72"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="91"/>
         <source>-30 LUFS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="112"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="131"/>
         <source>-6 LUFS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="152"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="140"/>
         <source>When ReplayGain is enabled, adjust tracks lacking ReplayGain information by this amount.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="155"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="143"/>
         <source>Initial boost without ReplayGain data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="162"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="36"/>
         <source>For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="165"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="39"/>
         <source>Target loudness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="199"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="174"/>
         <source>-12 dB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="257"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="226"/>
+        <source>Analysis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="232"/>
+        <source>ReplayGain 2.0 (ITU-R BS.1770)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="239"/>
+        <source>ReplayGain 1.0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="246"/>
+        <source>Disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="253"/>
+        <source>Re-analyze and override an existing value </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="269"/>
         <source>ReplayGain targets a reference loudness of -18 LUFS (Loudness Units relative to Full Scale). You may increase it if you find Mixxx is too quiet or reduce it if you find that your tracks are clipping. You may also want to decrease the volume of unanalyzed tracks if you find they are often louder than ReplayGained tracks. For podcasting a loudness of -16 LUFS is recommended.
 
 The loudness target is approximate and assumes track pregain and master output level are unchanged.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="272"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="284"/>
         <source>When an unanalyzed track is playing, Mixxx will avoid an abrupt volume change by not applying a newly calculated ReplayGain value.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="239"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="214"/>
         <source>+12 dB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="251"/>
+        <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="263"/>
         <source>Hints</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6085,6 +6096,11 @@ milliseconds</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="529"/>
+        <source>ReplayGain:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="758"/>
         <source>Sets the BPM to 200% of the current value.</source>
         <translation type="unfinished"></translation>
@@ -6129,11 +6145,6 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="477"/>
         <source>Duration:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="529"/>
-        <source>Replay Gain:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7556,9 +7567,19 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="45"/>
+        <source>Synchronizes the period with the BPM if it can be retrieved</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="58"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="51"/>
         <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/autopaneffect.cpp" line="59"/>
+        <source>How fast the sound goes from a side to another, following a logarithmic scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -7812,13 +7833,33 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="39"/>
+        <source>Sets number of stages.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/effects/native/phasereffect.cpp" line="49"/>
         <source>Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="50"/>
+        <source>Controls the speed of the low frequency oscilator.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="72"/>
+        <source>Controls how much of the output signal is looped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/effects/native/phasereffect.cpp" line="82"/>
         <source>Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/native/phasereffect.cpp" line="83"/>
+        <source>Controls the frequency range across which the notches sweep.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -8690,6 +8731,21 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/skin/tooltips.cpp" line="367"/>
+        <source>Keylock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="369"/>
+        <source>Toggling keylock during playback may result in a momentary audio glitch.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="460"/>
+        <source>Changes the track playback speed (affects both the tempo and the pitch). If keylock is enabled, only the tempo is affected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/skin/tooltips.cpp" line="659"/>
         <source>Clear Unit</source>
         <translation type="unfinished"></translation>
@@ -8904,16 +8960,6 @@ To abort this action, press Cancel on the file dialog.</source>
         <location filename="../../src/skin/tooltips.cpp" line="350"/>
         <location filename="../../src/skin/tooltips.cpp" line="354"/>
         <source>Adjust beatgrid to match another playing deck.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="367"/>
-        <source>Key-Lock</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="369"/>
-        <source>Toggling key-lock during playback may result in a momentary audio glitch.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -9300,11 +9346,6 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="459"/>
         <source>Speed Control</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="460"/>
-        <source>Changes the track playback speed (affects both the tempo and the pitch). If key-lock is enabled, only the tempo is affected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -10733,16 +10774,6 @@ Click OK to exit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="395"/>
-        <source>Add to Auto-DJ Queue (bottom)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="398"/>
-        <source>Add to Auto-DJ Queue (top)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="402"/>
         <source>Reload Metadata from File</source>
         <translation type="unfinished"></translation>
@@ -10750,11 +10781,6 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="406"/>
         <source>Get Metadata from MusicBrainz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="452"/>
-        <source>Reset Replay Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -10839,6 +10865,16 @@ Click OK to exit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="395"/>
+        <source>Add to Auto DJ Queue (bottom)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="398"/>
+        <source>Add to Auto DJ Queue (top)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="417"/>
         <source>Reset Play Count</source>
         <translation type="unfinished"></translation>
@@ -10876,6 +10912,11 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="448"/>
         <source>Clear BPM and Beatgrid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="452"/>
+        <source>Reset ReplayGain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

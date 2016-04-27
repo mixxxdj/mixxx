@@ -15,7 +15,7 @@
 
 #include "musicbrainz/musicbrainzclient.h"
 #include "musicbrainz/acoustidclient.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 
 
 class TagFetcher : public QObject {

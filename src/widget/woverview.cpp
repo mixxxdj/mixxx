@@ -25,7 +25,7 @@
 #include "woverview.h"
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"
@@ -35,7 +35,7 @@
 
 WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* parent) :
         WWidget(parent),
-        m_pWaveformSourceImage(NULL),
+        m_pWaveformSourceImage(nullptr),
         m_actualCompletion(0),
         m_pixmapDone(false),
         m_waveformPeak(-1.0),
@@ -196,7 +196,7 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
 
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     qDebug() << "WOverview::slotLoadingTrack" << pNewTrack << pOldTrack;
-    if (m_pCurrentTrack != NULL && pOldTrack == m_pCurrentTrack) {
+    if (m_pCurrentTrack != nullptr && pOldTrack == m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
         disconnect(m_pCurrentTrack.data(), SIGNAL(analyzerProgress(int)),
@@ -205,7 +205,7 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
     if (m_pWaveformSourceImage) {
         delete m_pWaveformSourceImage;
-        m_pWaveformSourceImage = NULL;
+        m_pWaveformSourceImage = nullptr;
     }
 
     m_dAnalyzerProgress = 1.0;
@@ -269,7 +269,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     m_bDrag = true;
 }
 
-void WOverview::paintEvent(QPaintEvent *) {
+void WOverview::paintEvent(QPaintEvent * /*unused*/) {
     //qDebug() << "WOverview::paintEvent";
     ScopedTimer t("WOverview::paintEvent");
 
@@ -343,12 +343,10 @@ void WOverview::paintEvent(QPaintEvent *) {
         if (m_trackLoaded && trackSamples > 0) {
             //qDebug() << "WOverview::paintEvent trackSamples > 0";
             const float offset = 1.0f;
-            const float gain = (float)(width()-2) / trackSamples;
+            const float gain = static_cast<float>(width()-2) / trackSamples;
 
             // Draw range (loop)
-            for (unsigned int i = 0; i < m_markRanges.size(); ++i) {
-                WaveformMarkRange& currentMarkRange = m_markRanges[i];
-
+            for (auto&& currentMarkRange : m_markRanges) {
                 // If the mark range is not active we should not draw it.
                 if (!currentMarkRange.active()) {
                     continue;
@@ -400,7 +398,7 @@ void WOverview::paintEvent(QPaintEvent *) {
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                     const float markPosition = offset + currentMark.m_pPointCos->get() * gain;
 
-                    const QLineF line(markPosition, 0.0, markPosition, (float)height());
+                    const QLineF line(markPosition, 0.0, markPosition, static_cast<float>(height()));
                     painter.setPen(shadowPen);
                     painter.drawLine(line);
 
@@ -471,7 +469,7 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
     painter->drawText(10, 12, text);
 }
 
-void WOverview::resizeEvent(QResizeEvent *) {
+void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
     // Play-position potmeters range from 0 to 1 but they allow out-of-range
     // sets. This is to give VC access to the pre-roll area.
     const double kMaxPlayposRange = 1.0;

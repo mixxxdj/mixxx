@@ -10,14 +10,12 @@
 #include "widget/wlabel.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
-
-class Battery;
+#include "util/battery/battery.h"
 
 class WBattery : public WWidget {
     Q_OBJECT
   public:
-    WBattery(QWidget* parent=NULL);
-    virtual ~WBattery();
+    explicit WBattery(QWidget* parent=nullptr);
 
     void setup(QDomNode node, const SkinContext& context);
 
@@ -26,7 +24,7 @@ class WBattery : public WWidget {
     void update();
 
   protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent * /*unused*/) override;
 
   private:
     void setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,

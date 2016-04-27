@@ -309,3 +309,48 @@ QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() const {
 
 template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueKbd>;
+
+template <> template <>
+void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const QString& value) {
+    set(key, ConfigValue(value));
+}
+
+template <> template <>
+void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const bool& value) {
+    set(key, value ? ConfigValue("1") : ConfigValue("0"));
+}
+
+template <> template <>
+void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const int& value) {
+    set(key, ConfigValue(QString::number(value)));
+}
+
+template <> template <>
+bool ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
+                                         const bool& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    return static_cast<bool>(value.value.toInt());
+}
+
+template <> template <>
+int ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
+                                        const int& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    return value.value.toInt();
+}
+
+template <> template <>
+QString ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
+                                            const QString& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    return value.value;
+}

@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QDesktopServices>
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 
 #ifdef __MAD__
 #include "sources/soundsourcemp3.h"
@@ -267,7 +267,7 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
 
 //static
 SoundSourceProxy::SaveTrackMetadataResult SoundSourceProxy::saveTrackMetadata(
-        const TrackInfoObject* pTrack,
+        const Track* pTrack,
         bool evenIfNeverParsedFromFileBefore) {
     DEBUG_ASSERT(nullptr != pTrack);
     SoundSourceProxy proxy(pTrack);
@@ -305,7 +305,7 @@ SoundSourceProxy::SoundSourceProxy(const TrackPointer& pTrack)
     initSoundSource();
 }
 
-SoundSourceProxy::SoundSourceProxy(const TrackInfoObject* pTrack)
+SoundSourceProxy::SoundSourceProxy(const Track* pTrack)
     : m_url(QUrl::fromLocalFile(pTrack->getCanonicalLocation())),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
@@ -445,7 +445,7 @@ void SoundSourceProxy::loadTrackMetadataAndCoverArt(
         }
     } else {
         qWarning() << "Failed to parse track metadata from file"
-                 << getUrl();
+                   << getUrl();
         if (parsedFromFile) {
             // Don't overwrite any existing metadata that once has
             // been parsed successfully from file.

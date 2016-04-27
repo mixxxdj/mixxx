@@ -8,7 +8,7 @@
 #include <QList>
 #include <QMutex>
 
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "widget/wwidget.h"
 #include "skin/skincontext.h"
 
@@ -19,18 +19,18 @@ class ControlPotmeter;
 class WWaveformViewer : public WWidget {
     Q_OBJECT
   public:
-    WWaveformViewer(const char *group, UserSettingsPointer pConfig, QWidget *parent=0);
-    virtual ~WWaveformViewer();
+    WWaveformViewer(const char *group, UserSettingsPointer pConfig, QWidget *parent=nullptr);
+    ~WWaveformViewer() override;
 
     const char* getGroup() const { return m_pGroup;}
     void setup(QDomNode node, const SkinContext& context);
 
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
 
-    void mousePressEvent(QMouseEvent *);
-    void mouseMoveEvent(QMouseEvent *);
-    void mouseReleaseEvent(QMouseEvent *);
+    void mousePressEvent(QMouseEvent * /*unused*/) override;
+    void mouseMoveEvent(QMouseEvent * /*unused*/) override;
+    void mouseReleaseEvent(QMouseEvent * /*unused*/) override;
 
 signals:
     void trackDropped(QString filename, QString group);
@@ -40,13 +40,13 @@ public slots:
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
 protected:
-    virtual void resizeEvent(QResizeEvent *event);
-    virtual void wheelEvent(QWheelEvent *event);
+    void resizeEvent(QResizeEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
 private slots:
     void onZoomChange(double zoom);
     void slotWidgetDead() {
-        m_waveformWidget = NULL;
+        m_waveformWidget = nullptr;
     }
 
 private:

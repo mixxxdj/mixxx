@@ -5,9 +5,6 @@ HexSpinBox::HexSpinBox(QWidget* pParent)
     setRange(0, 255);
 }
 
-HexSpinBox::~HexSpinBox() {
-}
-
 QString HexSpinBox::textFromValue(int value) const {
     // Construct a hex string formatted like 0xFF.
     return QString("0x") + QString("%1")
@@ -21,6 +18,6 @@ int HexSpinBox::valueFromText(const QString& text) const {
 
 QValidator::State HexSpinBox::validate(QString& input, int& pos) const {
     const QRegExp regExp("^0(x|X)[0-9A-Fa-f]+");
-    QRegExpValidator validator(regExp, NULL);
+    QRegExpValidator validator(regExp, nullptr);
     return validator.validate(input, pos);
 }

@@ -22,12 +22,12 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "cachingreader.h"
+#include "engine/cachingreader.h"
 #include "preferences/usersettings.h"
 #include "control/controlvalue.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/rotary.h"
 #include "util/types.h"
 
@@ -55,7 +55,6 @@ class ControlIndicator;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
-class CachingReader;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;

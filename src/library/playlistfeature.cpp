@@ -14,7 +14,7 @@
 #include "library/queryutil.h"
 #include "library/parser.h"
 #include "mixxxkeyboard.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/time.h"
 
@@ -49,6 +49,8 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     //Create the right-click menu
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
+    menu.addSeparator();
+    menu.addAction(m_pCreateImportPlaylistAction);
     menu.exec(globalPos);
 }
 

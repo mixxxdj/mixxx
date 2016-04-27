@@ -9,7 +9,7 @@
 #include "controlobjectslave.h"
 #include "engine/enginechannel.h"
 #include "library/playlisttablemodel.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "util/class.h"
 
 class ControlPushButton;

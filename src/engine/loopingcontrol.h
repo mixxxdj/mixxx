@@ -9,7 +9,7 @@
 
 #include "preferences/usersettings.h"
 #include "engine/enginecontrol.h"
-#include "trackinfoobject.h"
+#include "track/track.h"
 #include "track/beats.h"
 
 #define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples

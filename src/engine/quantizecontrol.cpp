@@ -7,7 +7,6 @@
 #include "controlobject.h"
 #include "preferences/usersettings.h"
 #include "controlpushbutton.h"
-#include "cachingreader.h"
 #include "engine/quantizecontrol.h"
 #include "engine/enginecontrol.h"
 #include "util/assert.h"
