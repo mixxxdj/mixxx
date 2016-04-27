@@ -1,11 +1,10 @@
-#include <QDateTime>
+#include "dialog/dlgdevelopertools.h"
 
-#include "dlgdevelopertools.h"
+#include <QDateTime>
 
 #include "control/control.h"
 #include "util/cmdlineargs.h"
 #include "util/statsmanager.h"
-
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      UserSettingsPointer pConfig)
@@ -78,9 +77,6 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
 
     // Delete this dialog when its closed. We don't want any persistence.
     setAttribute(Qt::WA_DeleteOnClose);
-}
-
-DlgDeveloperTools::~DlgDeveloperTools() {
 }
 
 void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {

@@ -25,10 +25,10 @@
 #include <QtDebug>
 
 #include "analyzer/analyzerqueue.h"
-#include "dlgabout.h"
+#include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"
-#include "dlgdevelopertools.h"
+#include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"

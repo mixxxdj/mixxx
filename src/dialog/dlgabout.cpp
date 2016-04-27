@@ -1,24 +1,7 @@
-/***************************************************************************
-                          dlgabout.cpp  -  description
-                             -------------------
-    begin                : Mon Nov 19 2007
-    copyright            : (C) 2007 by Albert Santoni
-    email                : gamegod at users.sf.net
- ***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include "dlgabout.h"
+#include "dialog/dlgabout.h"
 #include "util/version.h"
 
-DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
+DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
 
     QString mixxxVersion = Version::version();
@@ -273,13 +256,4 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
              << sectionTemplate.arg(s_specialThanks,
                                     specialThanks.join("<br>"));
     textBrowser->setHtml(sections.join(""));
-}
-
-DlgAbout::~DlgAbout() {
-}
-
-void DlgAbout::slotApply() {
-}
-
-void DlgAbout::slotUpdate() {
 }

@@ -47,7 +47,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../res/mixxx.qrc">:/images/mixxx-icon.png</pixmap>
+        <pixmap resource="../../res/mixxx.qrc">:/images/mixxx-icon.png</pixmap>
        </property>
       </widget>
      </item>
@@ -66,7 +66,7 @@
         </size>
        </property>
        <property name="pixmap">
-        <pixmap resource="../res/mixxx.qrc">:/images/templates/logo_mixxx.png</pixmap>
+        <pixmap resource="../../res/mixxx.qrc">:/images/templates/logo_mixxx.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -142,8 +142,8 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <resources>
-  <include location="../res/mixxx.qrc"/>
-  <include location="../res/mixxx.qrc"/>
+  <include location="../../res/mixxx.qrc"/>
+  <include location="../../res/mixxx.qrc"/>
  </resources>
  <connections>
   <connection>
