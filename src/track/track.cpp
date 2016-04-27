@@ -6,7 +6,7 @@
 #include "track/track.h"
 
 #include "library/coverartutils.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"

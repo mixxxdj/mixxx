@@ -5,7 +5,7 @@
 
 #include <QtDebug>
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "util/sample.h"
 #include "util/samplebuffer.h"
 #include "util/performancetimer.h"

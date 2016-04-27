@@ -3,7 +3,7 @@
 #include <QtDebug>
 
 #include "track/trackmetadata.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "util/samplebuffer.h"
 

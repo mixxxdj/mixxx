@@ -2,7 +2,7 @@
 #include <QStringBuilder>
 #include <QFileInfo>
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/trackcollection.h"

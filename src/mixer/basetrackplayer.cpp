@@ -6,7 +6,7 @@
 #include "controlobject.h"
 #include "controlpotmeter.h"
 #include "track/track.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"

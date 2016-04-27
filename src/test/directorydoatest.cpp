@@ -9,7 +9,7 @@
 #include <QFileInfo>
 #include <QtAlgorithms>
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "preferences/usersettings.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"

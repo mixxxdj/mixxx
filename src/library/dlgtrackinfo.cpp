@@ -2,8 +2,8 @@
 #include <QtDebug>
 
 #include "library/dlgtrackinfo.h"
+#include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "soundsourceproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dao/cue.h"

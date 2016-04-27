@@ -19,7 +19,7 @@
 
 #include "library/scanner/libraryscanner.h"
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "library/scanner/recursivescandirectorytask.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/queryutil.h"

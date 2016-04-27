@@ -21,7 +21,7 @@
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/time.h"
 
@@ -32,7 +32,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection) {
-    
+
     m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
@@ -52,7 +52,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
     m_pImportPlaylistAction = new QAction(tr("Import Crate"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
-    
+
     m_pCreateImportPlaylistAction = new QAction(tr("Import Crate"), this);
     connect(m_pCreateImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreateImportPlaylist()));
@@ -630,15 +630,15 @@ void CrateFeature::slotImportPlaylistFile(QString &playlist_file) {
 }
 
 void CrateFeature::slotCreateImportPlaylist() {
-    
+
     // Get file to read
     QString playlist_file = getPlaylistFile();
     if (playlist_file.isEmpty()) return;
-    
+
     QFileInfo fileName(playlist_file);
     m_pConfig->set(ConfigKey("[Library]","LastImportExportCrateDirectory"),
                    ConfigValue(fileName.dir().absolutePath()));
-    
+
     // Get a valid name
     QString baseName = fileName.baseName();
     QString name;
@@ -647,16 +647,16 @@ void CrateFeature::slotCreateImportPlaylist() {
     while (!validNameGiven) {
         name = baseName;
         if (i != 0) name += QString::number(i);
-        
+
         // Check name
         int existingId = m_crateDao.getCrateIdByName(name);
-        
+
         validNameGiven = (existingId == -1);
         ++i;
     }
-    
+
     int playlistId = m_crateDao.createCrate(name);
-    
+
     if (playlistId != -1) activateCrate(playlistId);
     else {
             QMessageBox::warning(NULL,
@@ -665,7 +665,7 @@ void CrateFeature::slotCreateImportPlaylist() {
                                   + name);
             return;
     }
-    
+
     slotImportPlaylistFile(playlist_file);
 }
 

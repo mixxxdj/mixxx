@@ -15,7 +15,7 @@
 #include "analyzer/analyzerwaveform.h"
 #include "library/trackcollection.h"
 #include "mixer/playerinfo.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "util/event.h"

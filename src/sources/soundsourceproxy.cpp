@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QDesktopServices>
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 
 #ifdef __MAD__
 #include "sources/soundsourcemp3.h"

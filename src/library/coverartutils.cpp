@@ -3,7 +3,7 @@
 
 #include "library/coverartutils.h"
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "util/regex.h"
 
 

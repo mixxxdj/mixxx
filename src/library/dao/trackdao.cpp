@@ -10,7 +10,7 @@
 
 #include "library/dao/trackdao.h"
 
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "library/queryutil.h"
 #include "library/coverart.h"

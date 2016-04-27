@@ -12,7 +12,7 @@
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
 #include "track/track.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 
 using ::testing::_;
 using ::testing::Return;

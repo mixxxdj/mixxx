@@ -11,7 +11,7 @@
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
 #include "analyzer/analyzerqueue.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "util/debug.h"
 

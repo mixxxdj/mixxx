@@ -8,7 +8,7 @@
 #include <QDirIterator>
 
 #include "library/browse/browsetablemodel.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "track/trackmetadata.h"
 #include "util/time.h"
 #include "util/trace.h"

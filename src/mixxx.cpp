@@ -43,7 +43,7 @@
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/sharedglcontext.h"

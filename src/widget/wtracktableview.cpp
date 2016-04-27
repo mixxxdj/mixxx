@@ -16,7 +16,7 @@
 #include "controlobjectslave.h"
 #include "widget/wtracktableview.h"
 #include "library/dlgtrackinfo.h"
-#include "soundsourceproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "mixer/playermanager.h"
 #include "util/dnd.h"
 #include "util/time.h"

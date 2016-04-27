@@ -748,11 +748,12 @@ class MixxxCore(Feature):
                    "mixxxapplication.cpp",
                    "errordialoghandler.cpp",
 
-                   "sources/soundsourceproviderregistry.cpp",
+                   "sources/audiosource.cpp",
+                   "sources/soundsource.cpp",
                    "sources/soundsourceplugin.cpp",
                    "sources/soundsourcepluginlibrary.cpp",
-                   "sources/soundsource.cpp",
-                   "sources/audiosource.cpp",
+                   "sources/soundsourceproviderregistry.cpp",
+                   "sources/soundsourceproxy.cpp",
 
                    "widget/controlwidgetconnection.cpp",
                    "widget/wbasewidget.cpp",
@@ -914,8 +915,6 @@ class MixxxCore(Feature):
                    "library/parserpls.cpp",
                    "library/parserm3u.cpp",
                    "library/parsercsv.cpp",
-
-                   "soundsourceproxy.cpp",
 
                    "widget/wwaveformviewer.cpp",
 

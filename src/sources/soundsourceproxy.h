@@ -1,5 +1,5 @@
-#ifndef SOUNDSOURCEPROXY_H
-#define SOUNDSOURCEPROXY_H
+#ifndef MIXXX_SOURCES_SOUNDSOURCEPROXY_H
+#define MIXXX_SOURCES_SOUNDSOURCEPROXY_H
 
 #include "track/track.h"
 
@@ -8,7 +8,7 @@
 // Creates sound sources for tracks. Only intended to be used
 // in a narrow scope and not sharable between multiple threads!
 class SoundSourceProxy {
-public:
+  public:
     // Initially registers all built-in SoundSource providers and
     // loads all SoundSource plugins with additional providers. This
     // function is not thread-safe and must be called only once
@@ -77,7 +77,7 @@ public:
 
     void closeAudioSource();
 
-private:
+  private:
     static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
@@ -114,4 +114,4 @@ private:
     Mixxx::AudioSourcePointer m_pAudioSource;
 };
 
-#endif // SOUNDSOURCEPROXY_H
+#endif // MIXXX_SOURCES_SOUNDSOURCEPROXY_H
