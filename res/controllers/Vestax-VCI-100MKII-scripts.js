@@ -1,6 +1,6 @@
 // name: Vestax VCI-100MKII
 // author: Takeshi Soejima
-// description: 2016-4-1
+// description: 2016-5-1
 // wiki: <http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii>
 
 // JSHint Configuration
@@ -71,31 +71,32 @@ VCI102.scratchTimer = [0, 0, 0, 0];
 
 VCI102.scratchEnable = function(ch, midino, value, status, group) {
     var deck = ch + 1;
-    if (VCI102.shift[ch % 2]) {
-        engine.brake(deck, value > 0);
-        VCI102.slip(value, group);
-    } else {
-        if (value) {
-            if (VCI102.scratchTimer[ch]) {
-                engine.stopTimer(VCI102.scratchTimer[ch]);
-                VCI102.scratchTimer[ch] = 0;
-            } else {
-                engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
-            }
+    if (value) {
+        if (VCI102.scratchTimer[ch]) {
+            engine.stopTimer(VCI102.scratchTimer[ch]);
+            VCI102.scratchTimer[ch] = 0;
+        } else if (VCI102.shift[ch % 2]) {
+            engine.brake(deck, true);
         } else {
-            VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
-                var vel = Math.abs(engine.getValue(group, "scratch2"));
-                if (vel < 1 && (vel < 1e-9 || engine.getValue(group, "play"))) {
-                    if (VCI102.scratchTimer[ch]) {
-                        engine.stopTimer(VCI102.scratchTimer[ch]);
-                        VCI102.scratchTimer[ch] = 0;
-                        engine.scratchDisable(
-                            deck, !engine.getValue(group, "slip_enabled"));
-                        VCI102.slip(value, group);
-                    }
-                }
-            });
+            engine.scratchEnable(deck, 2400, 100 / 3, 1 / 8, 1 / 256);
         }
+    } else if (engine.isScratching(deck)) {
+        VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
+            var vel = Math.abs(engine.getValue(group, "scratch2"));
+            if (vel < 1 && (vel < 1e-9 || engine.getValue(group, "play"))) {
+                if (VCI102.scratchTimer[ch]) {
+                    engine.stopTimer(VCI102.scratchTimer[ch]);
+                    VCI102.scratchTimer[ch] = 0;
+                    engine.scratchDisable(
+                        deck, !engine.getValue(group, "slip_enabled"));
+                    VCI102.slip(value, group);
+                }
+            }
+        });
+    } else {
+        // terminate brake even without shift if not scratching
+        engine.brake(deck, false);
+        VCI102.slip(value, group);
     }
 };
 
@@ -110,7 +111,6 @@ VCI102.jog = function(ch, midino, value, status, group) {
 };
 
 VCI102.rateEnable = [true, true, true, true];
-
 VCI102.rateValueMSB = [64, 64, 64, 64];  // defaults are at center
 
 VCI102.rateMSB = function(ch, midino, value, status, group) {
@@ -153,7 +153,7 @@ VCI102.rateQuantizedLSB = function(ch, midino, value, status, group) {
 };
 
 VCI102.pitch = function(ch, midino, value, status, group) {
-    engine.setValue(group, "pitch", Math.round((value - 64) * 3 / 32));
+    engine.setValue(group, "pitch", Math.round(value * 3 / 32) - 6);
 };
 
 ["parameter1", "parameter2", "parameter3"].forEach(function(key) {
