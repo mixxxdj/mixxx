@@ -550,37 +550,41 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSo
                     << getUrl();
             return m_pAudioSource; // failure -> exit loop
         }
-        if (OK == m_pSoundSource->open(audioSrcCfg)) {
+        const Mixxx::SoundSource::OpenResult openResult = m_pSoundSource->open(audioSrcCfg);
+        if (Mixxx::SoundSource::OpenResult::UNSUPPORTED_FORMAT != openResult) {
             qDebug() << "Opened AudioSource for file"
                     << getUrl()
                     << "with provider"
                     << getSoundSourceProvider()->getName();
-            if (m_pSoundSource->isValid()) {
-                m_pAudioSource =
-                        AudioSourceProxy::create(m_pTrack, m_pSoundSource);
-                if (m_pAudioSource->isEmpty()) {
-                    qWarning() << "Empty audio data in file"
-                            << getUrl();
-                }
-                // Overwrite metadata with actual audio properties
-                if (!m_pTrack.isNull()) {
-                    m_pTrack->setChannels(m_pAudioSource->getChannelCount());
-                    m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
-                    if (m_pAudioSource->hasDuration()) {
-                        m_pTrack->setDuration(m_pAudioSource->getDuration());
-                    }
-                    if (m_pAudioSource->hasBitrate()) {
-                        m_pTrack->setBitrate(m_pAudioSource->getBitrate());
-                    }
-                }
-                return m_pAudioSource; // success -> exit loop
-            } else {
+            if (Mixxx::SoundSource::OpenResult::FAILED == openResult) {
                 qWarning() << "Invalid audio data in file"
                         << getUrl();
                 // Do NOT retry with the next SoundSource provider if
-                // only the file itself is malformed!
+                // the file itself is malformed!
                 m_pSoundSource->close();
                 break; // exit loop
+            } else {
+                DEBUG_ASSERT(Mixxx::SoundSource::OpenResult::SUCCEEDED == openResult);
+                if (m_pSoundSource->isValid()) {
+                    m_pAudioSource =
+                            AudioSourceProxy::create(m_pTrack, m_pSoundSource);
+                    if (m_pAudioSource->isEmpty()) {
+                        qWarning() << "Empty audio data in file"
+                                << getUrl();
+                    }
+                    // Overwrite metadata with actual audio properties
+                    if (!m_pTrack.isNull()) {
+                        m_pTrack->setChannels(m_pAudioSource->getChannelCount());
+                        m_pTrack->setSampleRate(m_pAudioSource->getSamplingRate());
+                        if (m_pAudioSource->hasDuration()) {
+                            m_pTrack->setDuration(m_pAudioSource->getDuration());
+                        }
+                        if (m_pAudioSource->hasBitrate()) {
+                            m_pTrack->setBitrate(m_pAudioSource->getBitrate());
+                        }
+                    }
+                    return m_pAudioSource; // success -> exit loop
+                }
             }
         }
         qWarning() << "Failed to open AudioSource for file"
