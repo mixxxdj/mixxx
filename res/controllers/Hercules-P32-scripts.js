@@ -203,12 +203,59 @@ P32.record = new Control([0x90, 0x02], {currentDeck: '[Recording]'},
                          }],
                          ['status', function (val) {return val * 127}]);
 
+P32.EffectUnit = function (unitNumber) {
+    var effectUnit = '[EffectRack1_EffectUnit' + unitNumber + ']';
+    var activeEffectNumber = 1;
+    var activeEffect = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + activeEffectNumber + ']';
+
+    // knobs
+    this.parameterKnob1 = function (channel, control, value, status, group) {
+        engine.setParameter(activeEffect, 'parameter1', value/127);
+    }
+    this.parameterKnob2 = function (channel, control, value, status, group) {
+        engine.setParameter(activeEffect, 'parameter2', value/127);
+    }
+    this.parameterKnob3 = function (channel, control, value, status, group) {
+        engine.setParameter(activeEffect, 'parameter3', value/127);
+    }
+    this.dryWet = function (channel, control, value, status, group) {
+        engine.setParameter(effectUnit, 'mix', value/127);
+    }
+    this.superKnob = function (channel, control, value, status, group) {
+        engine.setParameter(effectUnit, 'super1', value/127);
+    }
+
+    // deck enable buttons
+    for (var d = 1; d <= 4; d++) {
+        this['deckButton' + d] = new ToggleButton([0x90 + unitNumber, 0x02 + d], effectUnit, 'group_[Channel' + d + ']_enable');
+    }
+    this.pflToggle = function () {
+        script.toggleControl(effectUnit, 'group_[Headphone]_enable');
+    }
+
+    // buttons to select the effect that the knobs control
+    var switchEffect = function (effectNumber) {
+        activeEffectNumber = effectNumber;
+        activeEffect = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + activeEffectNumber + ']';
+        for (var e = 1; e < 4; e ++) {
+            midi.sendShortMsg(0x90 + unitNumber + P32.shiftOffset,
+                              0x02 + e,
+                              (e === activeEffectNumber) ? 127 : 0);
+        }
+    }
+    this.switchEffect1 = function (channel, control, value, status, group) { switchEffect(1); };
+    this.switchEffect2 = function (channel, control, value, status, group) { switchEffect(2); };
+    this.switchEffect3 = function (channel, control, value, status, group) { switchEffect(3); };
+    this.switchEffect4 = function (channel, control, value, status, group) { switchEffect(4); };
+};
+
 P32.Deck = function (deckNumbers, channel) {
     var that = this;
     var t = this;
     var loopSize = 4;
     this.shift = false;
     this.currentDeck = "[Channel" + deckNumbers[0] + "]";
+    this.effectUnit = new P32.EffectUnit(deckNumbers[0]);
     this.deckToggle = function () {
         engine.softTakeoverIgnoreNextValue('[EqualizerRack1_' + this.currentDeck + '_Effect1]', 'parameter1', true);
         engine.softTakeoverIgnoreNextValue('[EqualizerRack1_' + this.currentDeck + '_Effect1]', 'parameter2', true);
@@ -270,6 +317,15 @@ P32.Deck = function (deckNumbers, channel) {
     }
     
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
+    this.pfl.input = function (channel, control, value, status, group) {
+        if (value === 127) {
+            if (that.shift) {
+                that.effectUnit.pflToggle();
+            } else {
+                script.toggleControl(that.currentDeck, 'pfl');
+            }
+        }
+    }
     
     this.eqKnob = function (channel, control, value, status, group) {
         engine.setValue('[EqualizerRack1_' + that.currentDeck + '_Effect1]',
