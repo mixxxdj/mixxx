@@ -20,10 +20,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **/
 
-var Control = function (signals, deck, inOptions, outOptions) {
+var Control = function (signals, group, inOptions, outOptions) {
     var that = this;
     this.midi = {status: signals[0], note: signals[1]};
-    this.deck = deck;
+    this.group = group;
     
     this.setup = function (inOptions, outOptions) { that.inSetup(inOptions); that.outSetup(outOptions) };
     
@@ -43,12 +43,12 @@ var Control = function (signals, deck, inOptions, outOptions) {
             if (onlyOnPress) {
                 this.input = function (channel, control, value, status, group) {
                     if (value) {
-                        engine.setValue(that.deck.currentDeck, that.inCo, inFunc.call(that, value));
+                        engine.setValue(that.group, that.inCo, inFunc.call(that, value));
                     }
                 }
             } else {
                 this.input = function (channel, control, value, status, group) {
-                    engine.setValue(that.deck.currentDeck, that.inCo, inFunc.call(that, value));
+                    engine.setValue(that.group, that.inCo, inFunc.call(that, value));
                 }
             }
         }
@@ -58,15 +58,15 @@ var Control = function (signals, deck, inOptions, outOptions) {
     
    var outConnection;
    this.outConnect = function () {
-      outConnection = engine.connectControl(that.deck.currentDeck, that.outCo, that.output);
+      outConnection = engine.connectControl(that.group, that.outCo, that.output);
    };
    this.outDisconnect = function () { outConnection.disconnect(); };
 //  this.outTrigger = function() { outConnection.trigger(); };
-//     this.outConnect = function () { engine.connectControl(that.deck.currentDeck, that.outCo, that.output); };
+//     this.outConnect = function () { engine.connectControl(that.group, that.outCo, that.output); };
 //     this.outDisconnect = function () {
-//         print('disconnecting: ' + that.deck.currentDeck + ' , ' + that.outCo + ' , ' + that.output);
-//         engine.connectControl(that.deck.currentDeck, that.outCo, that.output, true);};
-    this.outTrigger = function() { engine.trigger(that.deck.currentDeck, that.outCo); };
+//         print('disconnecting: ' + that.group + ' , ' + that.outCo + ' , ' + that.output);
+//         engine.connectControl(that.group, that.outCo, that.output, true);};
+    this.outTrigger = function() { engine.trigger(that.group, that.outCo); };
     this.send = function (value) { midi.sendShortMsg(that.midi.status, that.midi.note, value) };
     
     this.outSetup = function (outOptions) {
@@ -101,8 +101,8 @@ ToggleButton = function (signals, deck, co, on, off, onlyOnPress) {
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
     Control.call(this, signals, deck,
-                [co, function () { return ! engine.getValue(this.deck.currentDeck, this.inCo) }, onlyOnPress],
-                [co, function () { return (engine.getValue(this.deck.currentDeck, this.outCo)) ? on : off }]);
+                [co, function () { return ! engine.getValue(this.group, this.inCo) }, onlyOnPress],
+                [co, function () { return (engine.getValue(this.group, this.outCo)) ? on : off }]);
 }
 ToggleButton.prototype = Object.create(Control.prototype);
 ToggleButton.prototype.constructor = ToggleButton;
@@ -233,6 +233,7 @@ P32.Deck = function (deckNumbers, channel) {
         for (c in this) {
             if (this.hasOwnProperty(c)) {
                 if (this[c] instanceof Control) {
+                    this[c].group = this.currentDeck;
                     this[c].outConnect();
                     this[c].outTrigger();
                 }
@@ -245,30 +246,30 @@ P32.Deck = function (deckNumbers, channel) {
         that.shift = (value === 127) ? true : false;
     }
     
-    this.sync = new ToggleButton([0x90 + channel, 0x08], this, 'sync_enabled');
-    this.cue = new Control([0x90 + channel, 0x09], this,
+    this.sync = new ToggleButton([0x90 + channel, 0x08], this.currentDeck, 'sync_enabled');
+    this.cue = new Control([0x90 + channel, 0x09], this.currentDeck,
                            ['cue_default', function (val) { return val / 127 }, false],
                            ['cue_indicator', function (val) { return val * 127 }]);
-    this.play = new Control([0x90 + channel, 0x0A], this,
-                            ['play', function () { return ! engine.getValue(this.deck.currentDeck, this.inCo) }],
+    this.play = new Control([0x90 + channel, 0x0A], this.currentDeck,
+                            ['play', function () { return ! engine.getValue(this.group, this.inCo) }],
                             ['play_indicator', function (val) { return val * 127 }]);
     
-    this.quantize = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x08], this, 'quantize'); // sync shifted
-    this.keylock = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x09], this, 'keylock'); // cue shifted
-    this.goToStart = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this,
+    this.quantize = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'quantize'); // sync shifted
+    this.keylock = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'keylock'); // cue shifted
+    this.goToStart = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck,
                             ['start_stop', function () { return 1; }],
                             ['play_indicator', function (val) { return val * 127 }]);
     
     for (var i = 1; i <= 16; i++) {
-        this['hotcueButton' + i] = new Control([0x90 + channel, P32.PadNumToMIDIControl(i)], this,
+        this['hotcueButton' + i] = new Control([0x90 + channel, P32.PadNumToMIDIControl(i)], this.currentDeck,
                                             ['hotcue_'+i+'_activate', function (value) {return value/127}, false],
                                             ['hotcue_'+i+'_enabled', function (val) { return val * P32.padColors.red }]);
-        this['hotcueButtonShift' + i] = new Control([0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i)], this,
+        this['hotcueButtonShift' + i] = new Control([0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i)], this.currentDeck,
                                             ['hotcue_'+i+'_clear', function (value) {return 1}],
                                             ['hotcue_'+i+'_enabled', function (val) { return val * P32.padColors.red }]);
     }
     
-    this.pfl = new ToggleButton([0x90 + channel, 0x10], this, 'pfl');
+    this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
     
     this.eqKnob = function (channel, control, value, status, group) {
         engine.setValue('[EqualizerRack1_' + that.currentDeck + '_Effect1]',
