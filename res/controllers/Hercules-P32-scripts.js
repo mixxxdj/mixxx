@@ -193,17 +193,15 @@ script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/
 function P32 () {};
 
 P32.init = function () {
-    P32.shiftOffset = 3;
     P32.leftDeck = new P32.Deck([1,3], 1);
     P32.rightDeck = new P32.Deck([2,4], 2);
-    // set loop sizes to 4
-    midi.sendShortMsg(0xB1, 0x1B, 5 + Math.log(defaultLoopSize) / Math.log(2));
-    midi.sendShortMsg(0xB2, 0x1B, 5 + Math.log(defaultLoopSize) / Math.log(2));
     // tell controller to send MIDI messages with positions of faders and knobs
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
 }
 
 P32.shutdown = function () {};
+
+P32.shiftOffset = 3;
 
 P32.padColors = {
     red: 125,
@@ -249,23 +247,6 @@ P32.EffectUnit = function (unitNumber) {
     var activeEffectNumber = 1;
     var activeEffect = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + activeEffectNumber + ']';
 
-    // knobs
-    this.parameterKnob1 = function (channel, control, value, status, group) {
-        engine.setParameter(activeEffect, 'parameter1', value/127);
-    }
-    this.parameterKnob2 = function (channel, control, value, status, group) {
-        engine.setParameter(activeEffect, 'parameter2', value/127);
-    }
-    this.parameterKnob3 = function (channel, control, value, status, group) {
-        engine.setParameter(activeEffect, 'parameter3', value/127);
-    }
-    this.dryWet = function (channel, control, value, status, group) {
-        engine.setParameter(effectUnit, 'mix', value/127);
-    }
-    this.superKnob = function (channel, control, value, status, group) {
-        engine.setParameter(effectUnit, 'super1', value/127);
-    }
-
     // deck enable buttons
     for (var d = 1; d <= 4; d++) {
         this['deckButton' + d] = new ToggleButton([0x90 + unitNumber, 0x02 + d], effectUnit, 'group_[Channel' + d + ']_enable');
@@ -274,14 +255,34 @@ P32.EffectUnit = function (unitNumber) {
         script.toggleControl(effectUnit, 'group_[Headphone]_enable');
     }
 
+    this.dryWet = new CCLin([0xB0 + unitNumber, 0x09],
+                         effectUnit, 'mix', false, 0, 1);
+    this.superKnob = new CCLin([0xB0 + unitNumber, 0x09],
+                         effectUnit, 'super1', true, 0, 1);
+
+    for (var p = 1; p <= 3; p++) {
+        this['parameterKnob' + p] = new CC([0xB0 + unitNumber, 0x06],
+                                           activeEffect, 'parameter' + p, false);
+    }
+
     // buttons to select the effect that the knobs control
     var switchEffect = function (effectNumber) {
+        for (var p = 1; p <= 3; p++) {
+            this['parameterKnob' + p].disconnect();
+        }
+
         activeEffectNumber = effectNumber;
         activeEffect = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + activeEffectNumber + ']';
+
         for (var e = 1; e < 4; e ++) {
             midi.sendShortMsg(0x90 + unitNumber + P32.shiftOffset,
                               0x02 + e,
                               (e === activeEffectNumber) ? 127 : 0);
+        }
+
+        for (var p = 1; p <= 3; p++) {
+            this['parameterKnob' + p].inCo = activeEffect;
+            this['parameterKnob' + p].connect();
         }
     }
     this.switchEffect1 = function (channel, control, value, status, group) { switchEffect(1); };
@@ -332,7 +333,14 @@ P32.Deck = function (deckNumbers, channel) {
     }
     
     this.shiftButton = function (channel, control, value, status, group) {
-        that.shift = (value === 127) ? true : false;
+        if (value === 127) {
+            that.shift = true;
+            that.effectUnit.dryWet.connect();
+            that.effectUnit.dryWet.disconnect();
+        } else {
+            that.shift = false;
+            that.effectUnit.superKnob.disconnect();
+        }
     }
     
     this.sync = new ToggleButton([0x90 + channel, 0x08], this.currentDeck, 'sync_enabled');
