@@ -182,7 +182,8 @@ VCI102.super1 = function(ch, midino, value, status, group) {
         engine.setValue(group, key, VCI102.superKnobValue[ch]);
         VCI102.superKnobKey[ch] = key;
     }
-    engine.setValue(group, key, VCI102.superKnobValue[ch] = value / 127);
+    VCI102.superKnobValue[ch] = value / 127;
+    engine.setValue(group, key, VCI102.superKnobValue[ch]);
 };
 
 VCI102.loopLength = [4, 4, 4, 4];
