@@ -554,7 +554,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.eqKnob</key>
+                <key>P32.leftDeck.eqKnob3.input</key>
                 <status>0xB1</status>
                 <midino>0x04</midino>
                 <options>
@@ -563,16 +563,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.tempoEncoder</key>
-                <status>0xB4</status>
-                <midino>0x05</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>P32.leftDeck.eqKnob</key>
+                <key>P32.leftDeck.eqKnob2.input</key>
                 <status>0xB1</status>
                 <midino>0x03</midino>
                 <options>
@@ -581,9 +572,16 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.eqKnob</key>
+                <key>P32.leftDeck.eqKnob3.input</key>
                 <status>0xB4</status>
                 <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+                <key>P32.leftDeck.tempoEncoder</key>
+                <status>0xB4</status>
+                <midino>0x05</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -608,7 +606,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.eqKnob</key>
+                <key>P32.leftDeck.eqKnob1.input</key>
                 <status>0xB1</status>
                 <midino>0x02</midino>
                 <options>
@@ -617,7 +615,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.eqKnob</key>
+                <key>P32.leftDeck.eqKnob2.input</key>
                 <status>0xB4</status>
                 <midino>0x03</midino>
                 <options>
@@ -644,7 +642,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.volume</key>
+                <key>P32.leftDeck.volume.input</key>
                 <status>0xB1</status>
                 <midino>0x01</midino>
                 <options>
@@ -653,7 +651,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.eqKnob</key>
+                <key>P32.leftDeck.eqKnob1.input</key>
                 <status>0xB4</status>
                 <midino>0x02</midino>
                 <options>
@@ -689,7 +687,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.volume</key>
+                <key>P32.leftDeck.volume.input</key>
                 <status>0xB4</status>
                 <midino>0x01</midino>
                 <options>
@@ -815,7 +813,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.eqKnob</key>
+                <key>P32.rightDeck.eqKnob3.input</key>
                 <status>0xB2</status>
                 <midino>0x04</midino>
                 <options>
@@ -833,7 +831,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.eqKnob</key>
+                <key>P32.rightDeck.eqKnob2.input</key>
                 <status>0xB2</status>
                 <midino>0x03</midino>
                 <options>
@@ -842,7 +840,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.eqKnob</key>
+                <key>P32.rightDeck.eqKnob3.input</key>
                 <status>0xB5</status>
                 <midino>0x04</midino>
                 <options>
@@ -860,7 +858,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.eqKnob</key>
+                <key>P32.rightDeck.eqKnob1.input</key>
                 <status>0xB2</status>
                 <midino>0x02</midino>
                 <options>
@@ -869,7 +867,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.eqKnob</key>
+                <key>P32.rightDeck.eqKnob2.input</key>
                 <status>0xB5</status>
                 <midino>0x03</midino>
                 <options>
@@ -896,7 +894,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.volume</key>
+                <key>P32.rightDeck.volume.input</key>
                 <status>0xB2</status>
                 <midino>0x01</midino>
                 <options>
@@ -905,7 +903,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.eqKnob</key>
+                <key>P32.rightDeck.eqKnob1.input</key>
                 <status>0xB5</status>
                 <midino>0x02</midino>
                 <options>
@@ -932,7 +930,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.volume</key>
+                <key>P32.rightDeck.volume.input</key>
                 <status>0xB5</status>
                 <midino>0x01</midino>
                 <options>

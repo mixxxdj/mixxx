@@ -188,6 +188,7 @@ CCNonLin.prototype.constructor = CCNonLin;
 
 script.samplerRegEx = /\[Sampler(\d+)\]/
 script.channelRegEx = /\[Channel(\d+)\]/
+script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/
 
 function P32 () {};
 
@@ -198,19 +199,8 @@ P32.init = function () {
     // set loop sizes to 4
     midi.sendShortMsg(0xB1, 0x1B, 5 + Math.log(defaultLoopSize) / Math.log(2));
     midi.sendShortMsg(0xB2, 0x1B, 5 + Math.log(defaultLoopSize) / Math.log(2));
-    
-    for (var i = 1; i <= 4; i++) {
-        engine.softTakeover('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter1', true);
-        engine.softTakeover('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter2', true);
-        engine.softTakeover('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter3', true);
-        engine.softTakeover('[Channel'+i+']', 'volume', true);
-        if (i > 2) {
-            engine.softTakeoverIgnoreNextValue('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter1', true);
-            engine.softTakeoverIgnoreNextValue('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter2', true);
-            engine.softTakeoverIgnoreNextValue('[EqualizerRack1_[Channel'+i+']_Effect1]', 'parameter3', true);
-            engine.softTakeoverIgnoreNextValue('[Channel'+i+']', 'volume', true);
-        }
-    }
+    // tell controller to send MIDI messages with positions of faders and knobs
+    midi.sendShortMsg(0xB0, 0x7F, 0x7F);
 }
 
 P32.shutdown = function () {};
@@ -309,10 +299,6 @@ P32.Deck = function (deckNumbers, channel) {
     this.currentDeck = "[Channel" + deckNumbers[0] + "]";
     this.effectUnit = new P32.EffectUnit(deckNumbers[0]);
     this.deckToggle = function () {
-        engine.softTakeoverIgnoreNextValue('[EqualizerRack1_' + this.currentDeck + '_Effect1]', 'parameter1', true);
-        engine.softTakeoverIgnoreNextValue('[EqualizerRack1_' + this.currentDeck + '_Effect1]', 'parameter2', true);
-        engine.softTakeoverIgnoreNextValue('[EqualizerRack1_' + this.currentDeck + '_Effect1]', 'parameter3', true);
-        engine.softTakeoverIgnoreNextValue(this.currentDeck, 'volume');
         for (var c in this) {
             if (this.hasOwnProperty(c)) {
                 if (this[c] instanceof Control) {
@@ -332,7 +318,11 @@ P32.Deck = function (deckNumbers, channel) {
         for (c in this) {
             if (this.hasOwnProperty(c)) {
                 if (this[c] instanceof Control) {
-                    this[c].group = this.currentDeck;
+                    if (this[c].group.search(script.eqKnobRegEx) !== -1) {
+                        this[c].group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
+                    } else {
+                        this[c].group = this.currentDeck;
+                    }
                     this[c].connect();
                     this[c].trigger();
                 }
@@ -379,15 +369,15 @@ P32.Deck = function (deckNumbers, channel) {
         }
     }
     
-    this.eqKnob = function (channel, control, value, status, group) {
-        engine.setValue('[EqualizerRack1_' + that.currentDeck + '_Effect1]',
-                        'parameter' + (control - 1),
-                        script.absoluteNonLin(value, 0, 1, 4));
+    for (var k = 1; k <= 3; k++) {
+        this['eqKnob' + k] = new CCNonLin([0xB0 + channel, 0x02 + k],
+                                    '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
+                                    'parameter' + k,
+                                    false,
+                                    0, 1, 4);
     }
-    
-    this.volume = function (channel, control, value, status, group) {
-        engine.setValue(that.currentDeck, 'volume', script.absoluteNonLin(value, 0, .25, 1));
-    }
+
+    this.volume = new CCNonLin([0xB0 + channel, 0x01], this.currentDeck, 'volume', false, 0, .25, 1);
 
     this.loadTrack = function (channel, control, value, status, group) {
         if (value) {
