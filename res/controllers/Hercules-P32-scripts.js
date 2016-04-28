@@ -67,17 +67,17 @@ var Control = function (signals, group, inOptions, outOptions) {
     this.inSetup(inOptions);
     this.previousInput = null;
     
-   var outConnection;
-   this.outConnect = function () {
-      outConnection = engine.connectControl(that.group, that.outCo, that.output);
+   var connection;
+   this.connect = function () {
+      connection = engine.connectControl(that.group, that.outCo, that.output);
    };
-   this.outDisconnect = function () { outConnection.disconnect(); };
-//  this.outTrigger = function() { outConnection.trigger(); };
+   this.disconnect = function () { connection.disconnect(); };
+//  this.trigger = function() { outConnection.trigger(); };
 //     this.outConnect = function () { engine.connectControl(that.group, that.outCo, that.output); };
-//     this.outDisconnect = function () {
+//     this.disconnect = function () {
 //         print('disconnecting: ' + that.group + ' , ' + that.outCo + ' , ' + that.output);
 //         engine.connectControl(that.group, that.outCo, that.output, true);};
-    this.outTrigger = function() { engine.trigger(that.group, that.outCo); };
+    this.trigger = function() { engine.trigger(that.group, that.outCo); };
     this.send = function (value) { midi.sendShortMsg(that.midi.status, that.midi.note, value) };
     
     this.outSetup = function (outOptions) {
@@ -99,8 +99,8 @@ var Control = function (signals, group, inOptions, outOptions) {
                 that.send(outFunc.call(that, value));
             }
         }
-        if (connect) { this.outConnect() };
-        if (trigger) { this.outTrigger() };
+        if (connect) { this.connect() };
+        if (trigger) { this.trigger() };
     }
     this.outSetup(outOptions);
     this.previousOutput = null;
@@ -276,7 +276,7 @@ P32.Deck = function (deckNumbers, channel) {
         for (var c in this) {
             if (this.hasOwnProperty(c)) {
                 if (this[c] instanceof Control) {
-                    this[c].outDisconnect();
+                    this[c].disconnect();
                 }
             }
         }
@@ -293,8 +293,8 @@ P32.Deck = function (deckNumbers, channel) {
             if (this.hasOwnProperty(c)) {
                 if (this[c] instanceof Control) {
                     this[c].group = this.currentDeck;
-                    this[c].outConnect();
-                    this[c].outTrigger();
+                    this[c].connect();
+                    this[c].trigger();
                 }
             }
         }
@@ -412,7 +412,7 @@ P32.Deck = function (deckNumbers, channel) {
                 engine.setValue(that.currentDeck, 'loop_double', 0);
             }
         }
-        that.loopSize.outTrigger(); // FIXME: ugly hack around https://bugs.launchpad.net/mixxx/+bug/1567203
+        that.loopSize.trigger(); // FIXME: ugly hack around https://bugs.launchpad.net/mixxx/+bug/1567203
     }
     this.loopSize.output = function (value, group, control) {
         if (loopEnabledDot && value) {
@@ -421,7 +421,8 @@ P32.Deck = function (deckNumbers, channel) {
             this.send(5 + Math.log(loopSize) / Math.log(2));
         }
     }
-    this.loopSize.outConnect();
+    this.loopSize.connect();
+    this.loopSize.trigger();
     
     this.loopMoveEncoder = function (channel, control, value, status, group) {
         var direction = (value === 127) ? -1 : 1;
