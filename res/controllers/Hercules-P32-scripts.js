@@ -150,7 +150,6 @@ CC = function (signals, deck, co, softTakeoverInit, max) {
     // connect a callback function to send MIDI messages when the control changes.
     // However, when switching layers, take care of soft takeover functionality.
     this.connect = function () {
-        print(deck);
         engine.softTakeover(that.group, that.inCo, true);
     }
     if (softTakeoverInit) {
@@ -243,6 +242,7 @@ P32.record = new Control([0x90, 0x02], {currentDeck: '[Recording]'},
                          ['status', function (val) {return val * 127}]);
 
 P32.EffectUnit = function (unitNumber) {
+    var that = this;
     var effectUnit = '[EffectRack1_EffectUnit' + unitNumber + ']';
     var activeEffectNumber = 1;
     var activeEffect = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + activeEffectNumber + ']';
@@ -266,7 +266,7 @@ P32.EffectUnit = function (unitNumber) {
     }
 
     // buttons to select the effect that the knobs control
-    var switchEffect = function (effectNumber) {
+    this.switchEffect = function (effectNumber) {
         for (var p = 1; p <= 3; p++) {
             this['parameterKnob' + p].disconnect();
         }
@@ -281,14 +281,14 @@ P32.EffectUnit = function (unitNumber) {
         }
 
         for (var p = 1; p <= 3; p++) {
-            this['parameterKnob' + p].inCo = activeEffect;
+            this['parameterKnob' + p].group = activeEffect;
             this['parameterKnob' + p].connect();
         }
     }
-    this.switchEffect1 = function (channel, control, value, status, group) { switchEffect(1); };
-    this.switchEffect2 = function (channel, control, value, status, group) { switchEffect(2); };
-    this.switchEffect3 = function (channel, control, value, status, group) { switchEffect(3); };
-    this.switchEffect4 = function (channel, control, value, status, group) { switchEffect(4); };
+    this.switchEffect1 = function (channel, control, value, status, group) { that.switchEffect(1); };
+    this.switchEffect2 = function (channel, control, value, status, group) { that.switchEffect(2); };
+    this.switchEffect3 = function (channel, control, value, status, group) { that.switchEffect(3); };
+    this.switchEffect4 = function (channel, control, value, status, group) { that.switchEffect(4); };
 };
 
 P32.Deck = function (deckNumbers, channel) {
