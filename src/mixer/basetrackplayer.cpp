@@ -306,7 +306,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         qDebug() << "stray BaseTrackPlayerImpl::slotTrackLoaded()";
     }
 
-    // Update the PlayerInfo class that is used in EngineShoutcast to replace
+    // Update the PlayerInfo class that is used in EngineBroadcast to replace
     // the metadata of a stream
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 }

@@ -15,7 +15,7 @@
 #ifdef WIN64
 #define WIN32
 #endif
-#ifdef __SHOUTCAST__
+#ifdef __BROADCAST__
 #include <shout/shout.h>
 #endif
 #ifdef WIN64
@@ -101,7 +101,7 @@ QStringList Version::dependencyVersions() {
     result
             // Should be accurate.
             << QString("Qt: %1").arg(qVersion())
-#ifdef __SHOUTCAST__
+#ifdef __BROADCAST__
             // Should be accurate.
             << QString("libshout: %1").arg(shout_version(NULL, NULL, NULL))
 #endif

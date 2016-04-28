@@ -1,20 +1,3 @@
-/***************************************************************************
-                  engineshoutcast.cpp  -  class to live stream the mix
-                             -------------------
-    copyright            : (C) 2007 by Wesley Stessens
-                           (C) 2007 by Albert Santoni
-                         : (C) 2010 by Tobias Rafreider
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #include <QtDebug>
 
 #include <signal.h>
@@ -28,22 +11,23 @@
 #undef WIN32
 #endif
 
-#include "engine/sidechain/engineshoutcast.h"
-#include "preferences/usersettings.h"
-#include "mixer/playerinfo.h"
+#include "engine/sidechain/enginebroadcast.h"
+
+#include "broadcast/defs_broadcast.h"
+#include "control/controlpushbutton.h"
 #include "encoder/encoder.h"
 #include "encoder/encodermp3.h"
 #include "encoder/encodervorbis.h"
-#include "shoutcast/defs_shoutcast.h"
+#include "mixer/playerinfo.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/sleep.h"
-#include "control/controlpushbutton.h"
 
 static const int kConnectRetries = 10;
 static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 static const int kMaxShoutFailures = 3;
 
-EngineShoutcast::EngineShoutcast(UserSettingsPointer pConfig)
+EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
         : m_pTextCodec(NULL),
           m_pMetaData(),
           m_pShout(NULL),
@@ -65,13 +49,13 @@ EngineShoutcast::EngineShoutcast(UserSettingsPointer pConfig)
           m_threadWaiting(false),
           m_pOutputFifo(NULL) {
     const bool persist = true;
-    m_pShoutcastEnabled = new ControlPushButton(
-            ConfigKey(SHOUTCAST_PREF_KEY,"enabled"), persist);
-    m_pShoutcastEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pShoutcastEnabled, SIGNAL(valueChanged(double)),
+    m_pBroadcastEnabled = new ControlPushButton(
+            ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
+    m_pBroadcastEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pBroadcastEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotEnableCO(double)));
 
-    m_pStatusCO = new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status"));
+    m_pStatusCO = new ControlObject(ConfigKey(BROADCAST_PREF_KEY, "status"));
     m_pStatusCO->connectValueChangeRequest(
             this, SLOT(slotStatusCO(double)));
     m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
@@ -95,8 +79,8 @@ EngineShoutcast::EngineShoutcast(UserSettingsPointer pConfig)
     }
 }
 
-EngineShoutcast::~EngineShoutcast() {
-    m_pShoutcastEnabled->set(0);
+EngineBroadcast::~EngineBroadcast() {
+    m_pBroadcastEnabled->set(0);
     m_readSema.release();
 
     // Wait maximum ~4 seconds. User will get annoyed but
@@ -105,7 +89,7 @@ EngineShoutcast::~EngineShoutcast() {
 
     // Signal user if thread doesn't die
     DEBUG_ASSERT_AND_HANDLE(!isRunning()) {
-       qWarning() << "EngineShoutcast:~EngineShoutcast(): Thread didn't die.\
+       qWarning() << "EngineBroadcast:~EngineBroadcast(): Thread didn't die.\
        Ignored but file a bug report if problems rise!";
     }
 
@@ -122,7 +106,7 @@ EngineShoutcast::~EngineShoutcast() {
     shout_shutdown();
 }
 
-bool EngineShoutcast::isConnected() {
+bool EngineBroadcast::isConnected() {
     if (m_pShout) {
         m_iShoutStatus = shout_get_connected(m_pShout);
         if (m_iShoutStatus == SHOUTERR_CONNECTED)
@@ -131,21 +115,21 @@ bool EngineShoutcast::isConnected() {
     return false;
 }
 
-QByteArray EngineShoutcast::encodeString(const QString& string) {
+QByteArray EngineBroadcast::encodeString(const QString& string) {
     if (m_pTextCodec) {
         return m_pTextCodec->fromUnicode(string);
     }
     return string.toLatin1();
 }
 
-void EngineShoutcast::updateFromPreferences() {
-    qDebug() << "EngineShoutcast: updating from preferences";
+void EngineBroadcast::updateFromPreferences() {
+    qDebug() << "EngineBroadcast: updating from preferences";
     NetworkStreamWorker::debugState();
 
     double dStatus = m_pStatusCO->get();
     if (dStatus == STATUSCO_CONNECTED ||
             dStatus == STATUSCO_CONNECTING) {
-        qDebug() << "EngineShoutcast::updateFromPreferences: Can't edit preferences when playing";
+        qDebug() << "EngineBroadcast::updateFromPreferences: Can't edit preferences when playing";
         return;
     }
 
@@ -162,11 +146,11 @@ void EngineShoutcast::updateFromPreferences() {
     // strings to pass to libshout.
 
     QString codec = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"));
+            ConfigKey(BROADCAST_PREF_KEY, "metadata_charset"));
     QByteArray baCodec = codec.toLatin1();
     m_pTextCodec = QTextCodec::codecForName(baCodec);
     if (!m_pTextCodec) {
-        qDebug() << "Couldn't find shoutcast metadata codec for codec:" << codec
+        qDebug() << "Couldn't find broadcast metadata codec for codec:" << codec
                  << " defaulting to ISO-8859-1.";
     }
 
@@ -175,50 +159,50 @@ void EngineShoutcast::updateFromPreferences() {
 
     // Host, server type, port, mountpoint, login, password should be latin1.
     QByteArray baHost = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "host")).toLatin1();
+            ConfigKey(BROADCAST_PREF_KEY, "host")).toLatin1();
     QByteArray baServerType = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "servertype")).toLatin1();
+            ConfigKey(BROADCAST_PREF_KEY, "servertype")).toLatin1();
     QByteArray baPort = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "port")).toLatin1();
+            ConfigKey(BROADCAST_PREF_KEY, "port")).toLatin1();
     QByteArray baMountPoint = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint")).toLatin1();
+            ConfigKey(BROADCAST_PREF_KEY, "mountpoint")).toLatin1();
     QByteArray baLogin = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "login")).toLatin1();
+            ConfigKey(BROADCAST_PREF_KEY, "login")).toLatin1();
     QByteArray baPassword = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "password")).toLatin1();
+            ConfigKey(BROADCAST_PREF_KEY, "password")).toLatin1();
     QByteArray baFormat = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "format")).toLatin1();
+            ConfigKey(BROADCAST_PREF_KEY, "format")).toLatin1();
     QByteArray baBitrate = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "bitrate")).toLatin1();
+            ConfigKey(BROADCAST_PREF_KEY, "bitrate")).toLatin1();
 
     // Encode metadata like stream name, website, desc, genre, title/author with
     // the chosen TextCodec.
     QByteArray baStreamName = encodeString(m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "stream_name")));
+            ConfigKey(BROADCAST_PREF_KEY, "stream_name")));
     QByteArray baStreamWebsite = encodeString(m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "stream_website")));
+            ConfigKey(BROADCAST_PREF_KEY, "stream_website")));
     QByteArray baStreamDesc = encodeString(m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "stream_desc")));
+            ConfigKey(BROADCAST_PREF_KEY, "stream_desc")));
     QByteArray baStreamGenre = encodeString(m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre")));
+            ConfigKey(BROADCAST_PREF_KEY, "stream_genre")));
 
     // Whether the stream is public.
     bool streamPublic = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")).toInt() > 0;
+            ConfigKey(BROADCAST_PREF_KEY, "stream_public")).toInt() > 0;
 
     // Dynamic Ogg metadata update
     m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
+            ConfigKey(BROADCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
 
     m_custom_metadata = (bool)m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
+            ConfigKey(BROADCAST_PREF_KEY, "enable_metadata")).toInt();
     m_customTitle = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"));
+            ConfigKey(BROADCAST_PREF_KEY, "custom_title"));
     m_customArtist = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"));
+            ConfigKey(BROADCAST_PREF_KEY, "custom_artist"));
 
     m_metadataFormat = m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "metadata_format"));
+            ConfigKey(BROADCAST_PREF_KEY, "metadata_format"));
 
     int format;
     int protocol;
@@ -280,8 +264,8 @@ void EngineShoutcast::updateFromPreferences() {
         return;
     }
 
-    m_format_is_mp3 = !qstrcmp(baFormat.constData(), SHOUTCAST_FORMAT_MP3);
-    m_format_is_ov = !qstrcmp(baFormat.constData(), SHOUTCAST_FORMAT_OV);
+    m_format_is_mp3 = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_MP3);
+    m_format_is_ov = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_OV);
     if (m_format_is_mp3) {
         format = SHOUT_FORMAT_MP3;
     } else if (m_format_is_ov) {
@@ -318,9 +302,9 @@ void EngineShoutcast::updateFromPreferences() {
         return;
     }
 
-    m_protocol_is_icecast2 = !qstricmp(baServerType.constData(), SHOUTCAST_SERVER_ICECAST2);
-    m_protocol_is_shoutcast = !qstricmp(baServerType.constData(), SHOUTCAST_SERVER_SHOUTCAST);
-    m_protocol_is_icecast1 = !qstricmp(baServerType.constData(), SHOUTCAST_SERVER_ICECAST1);
+    m_protocol_is_icecast2 = !qstricmp(baServerType.constData(), BROADCAST_SERVER_ICECAST2);
+    m_protocol_is_shoutcast = !qstricmp(baServerType.constData(), BROADCAST_SERVER_SHOUTCAST);
+    m_protocol_is_icecast1 = !qstricmp(baServerType.constData(), BROADCAST_SERVER_ICECAST1);
 
 
     if (m_protocol_is_icecast2) {
@@ -371,13 +355,13 @@ void EngineShoutcast::updateFromPreferences() {
     setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
-bool EngineShoutcast::serverConnect() {
+bool EngineBroadcast::serverConnect() {
     start(QThread::HighPriority);
     setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
     return true;
 }
 
-bool EngineShoutcast::processConnect() {
+bool EngineBroadcast::processConnect() {
     // Make sure that we call updateFromPreferences always
     if (m_encoder == NULL) {
         updateFromPreferences();
@@ -442,7 +426,7 @@ bool EngineShoutcast::processConnect() {
         int timeout = 0;
         while (m_iShoutStatus == SHOUTERR_BUSY &&
                 timeout < kConnectRetries &&
-                m_pShoutcastEnabled->toBool()) {
+                m_pBroadcastEnabled->toBool()) {
             setState(NETWORKSTREAMWORKER_STATE_WAITING);
             qDebug() << "Connection pending. Waiting...";
             NetworkStreamWorker::debugState();
@@ -473,15 +457,15 @@ bool EngineShoutcast::processConnect() {
             }
             m_threadWaiting = true;
             m_pStatusCO->setAndConfirm(STATUSCO_CONNECTED);
-            emit(shoutcastConnected());
+            emit(broadcastConnected());
             return true;
         } else if (m_iShoutStatus == SHOUTERR_SOCKET) {
             m_lastErrorStr = "Socket error";
-            qDebug() << "EngineShoutcast::processConnect() socket error."
+            qDebug() << "EngineBroadcast::processConnect() socket error."
                      << "Is socket already in use?";
-        } else if (m_pShoutcastEnabled->toBool()) {
+        } else if (m_pBroadcastEnabled->toBool()) {
             m_lastErrorStr = shout_get_error(m_pShout);
-            qDebug() << "EngineShoutcast::processConnect() error:"
+            qDebug() << "EngineBroadcast::processConnect() error:"
                      << m_iShoutStatus << m_lastErrorStr;
         }
     } else {
@@ -494,24 +478,24 @@ bool EngineShoutcast::processConnect() {
         delete m_encoder;
         m_encoder = NULL;
     }
-    if (m_pShoutcastEnabled->toBool()) {
+    if (m_pBroadcastEnabled->toBool()) {
         m_pStatusCO->setAndConfirm(STATUSCO_FAILURE);
-        m_pShoutcastEnabled->set(0);
+        m_pBroadcastEnabled->set(0);
     } else {
         m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
     }
     return false;
 }
 
-void EngineShoutcast::processDisconnect() {
-    qDebug() << "EngineShoutcast::processDisconnect()";
+void EngineBroadcast::processDisconnect() {
+    qDebug() << "EngineBroadcast::processDisconnect()";
     if (isConnected()) {
         m_threadWaiting = false;
-        // We are conneced but shoutcast is disabled. Disconnect.
+        // We are conneced but broadcast is disabled. Disconnect.
         shout_close(m_pShout);
         infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
         m_iShoutStatus = SHOUTERR_UNCONNECTED;
-        emit(shoutcastDisconnected());
+        emit(broadcastDisconnected());
     }
 
     if (m_encoder) {
@@ -521,7 +505,7 @@ void EngineShoutcast::processDisconnect() {
     }
 }
 
-void EngineShoutcast::write(unsigned char *header, unsigned char *body,
+void EngineBroadcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
     setFunctionCode(7);
     if (!m_pShout) {
@@ -557,13 +541,13 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
     }
 }
 
-bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
+bool EngineBroadcast::writeSingle(const unsigned char* data, size_t len) {
     // We are already synced by EngineNetworkstream
     setFunctionCode(8);
     int ret = shout_send_raw(m_pShout, data, len);
     if (ret < SHOUTERR_SUCCESS && ret != SHOUTERR_BUSY) {
         // in case of bussy, frames are queued and queue is checked below
-        qDebug() << "EngineShoutcast::write() header error:"
+        qDebug() << "EngineBroadcast::write() header error:"
                  << ret << shout_get_error(m_pShout);
         NetworkStreamWorker::debugState();
         if (m_iShoutFailures > kMaxShoutFailures) {
@@ -584,11 +568,11 @@ bool EngineShoutcast::writeSingle(const unsigned char* data, size_t len) {
     return true;
 }
 
-void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
+void EngineBroadcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setFunctionCode(4);
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
-    // If we are here then the user wants to be connected (shoutcast is enabled
+    // If we are here then the user wants to be connected (broadcast is enabled
     // in the preferences).
 
     // If we aren't connected, bail.
@@ -609,7 +593,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
-bool EngineShoutcast::metaDataHasChanged() {
+bool EngineBroadcast::metaDataHasChanged() {
     TrackPointer pTrack;
 
     // TODO(rryan): This is latency and buffer size dependent. Should be based
@@ -639,14 +623,14 @@ bool EngineShoutcast::metaDataHasChanged() {
     return true;
 }
 
-void EngineShoutcast::updateMetaData() {
+void EngineBroadcast::updateMetaData() {
     setFunctionCode(5);
     if (!m_pShout || !m_pShoutMetaData)
         return;
 
     /**
      * If track has changed and static metadata is disabled
-     * Send new metadata to shoutcast!
+     * Send new metadata to broadcast!
      * This works only for MP3 streams properly as stated in comments, see shout.h
      * WARNING: Changing OGG metadata dynamically by using shout_set_metadata
      * will cause stream interruptions to listeners
@@ -742,7 +726,7 @@ void EngineShoutcast::updateMetaData() {
     }
 }
 
-void EngineShoutcast::errorDialog(QString text, QString detailedError) {
+void EngineBroadcast::errorDialog(QString text, QString detailedError) {
     qWarning() << "Streaming error: " << detailedError;
     NetworkStreamWorker::debugState();
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
@@ -757,7 +741,7 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     setState(NETWORKSTREAMWORKER_STATE_ERROR);
 }
 
-void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
+void EngineBroadcast::infoDialog(QString text, QString detailedInfo) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_INFO);
     props->setTitle(tr("Live broadcasting"));
@@ -771,26 +755,26 @@ void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
 }
 
 // Is called from the Mixxx engine thread
-void EngineShoutcast::outputAvailable() {
+void EngineBroadcast::outputAvailable() {
     m_readSema.release();
 }
 
 // Is called from the Mixxx engine thread
-void EngineShoutcast::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
+void EngineBroadcast::setOutputFifo(FIFO<CSAMPLE>* pOutputFifo) {
     m_pOutputFifo = pOutputFifo;
 }
 
-void EngineShoutcast::run() {
+void EngineBroadcast::run() {
     unsigned static id = 0;
-    QThread::currentThread()->setObjectName(QString("EngineShoutcast %1").arg(++id));
-    qDebug() << "EngineShoutcast::run: starting thread";
+    QThread::currentThread()->setObjectName(QString("EngineBroadcast %1").arg(++id));
+    qDebug() << "EngineBroadcast::run: starting thread";
     NetworkStreamWorker::debugState();
 #ifndef __WINDOWS__
     ignoreSigpipe();
 #endif
 
     DEBUG_ASSERT_AND_HANDLE(m_pOutputFifo) {
-        qDebug() << "EngineShoutcast::run: Shoutcast FIFO handle is not available. Aborting";
+        qDebug() << "EngineBroadcast::run: Broadcast FIFO handle is not available. Aborting";
         return;
     }
 
@@ -806,9 +790,9 @@ void EngineShoutcast::run() {
         setFunctionCode(1);
         incRunCount();
         m_readSema.acquire();
-        // Check to see if Shoutcast is enabled, and pass the samples off to be
+        // Check to see if Broadcast is enabled, and pass the samples off to be
         // broadcast if necessary.
-        if (!m_pShoutcastEnabled->toBool()) {
+        if (!m_pBroadcastEnabled->toBool()) {
             m_threadWaiting = false;
             m_pStatusCO->setAndConfirm(STATUSCO_UNCONNECTED);
             processDisconnect();
@@ -834,41 +818,41 @@ void EngineShoutcast::run() {
     }
 }
 
-bool EngineShoutcast::threadWaiting() {
+bool EngineBroadcast::threadWaiting() {
     return m_threadWaiting;
 }
 
 #ifndef __WINDOWS__
-void EngineShoutcast::ignoreSigpipe()
+void EngineBroadcast::ignoreSigpipe()
 {
     // shout_send_raw() can cause SIGPIPE, which is passed to this theread
     // and which will finally crash Mixxx if it remains unhandled.
     // Each thread has its own signal mask, so it is safe to do this for the
-    // shoutcast thread only
+    // broadcast thread only
     // http://www.microhowto.info/howto/ignore_sigpipe_without_affecting_other_threads_in_a_process.html
     sigset_t sigpipe_mask;
     sigemptyset(&sigpipe_mask);
     sigaddset(&sigpipe_mask, SIGPIPE);
     sigset_t saved_mask;
     if (pthread_sigmask(SIG_BLOCK, &sigpipe_mask, &saved_mask) == -1) {
-        qDebug() << "EngineShoutcast::ignoreSigpipe() failed";
+        qDebug() << "EngineBroadcast::ignoreSigpipe() failed";
     }
 }
 #endif
 
-void EngineShoutcast::slotStatusCO(double v) {
+void EngineBroadcast::slotStatusCO(double v) {
     // Ignore external sets "status"
     Q_UNUSED(v);
     qWarning() << "WARNING:"
-            << SHOUTCAST_PREF_KEY << "\"status\" is a read-only control, ignoring";
+            << BROADCAST_PREF_KEY << "\"status\" is a read-only control, ignoring";
 }
 
-void EngineShoutcast::slotEnableCO(double v) {
+void EngineBroadcast::slotEnableCO(double v) {
     if (v > 1.0) {
         // Wrap around manually .
         // Wrapping around in WPushbutton does not work
         // since the status button has 4 states, but this CO is bool
-        m_pShoutcastEnabled->set(0.0);
+        m_pBroadcastEnabled->set(0.0);
     }
     if (v > 0.0) {
         serverConnect();

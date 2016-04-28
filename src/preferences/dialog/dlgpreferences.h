@@ -45,7 +45,7 @@ class DlgPrefKey;
 class DlgPrefBeats;
 class DlgPrefVinyl;
 class DlgPrefNoVinyl;
-class DlgPrefShoutcast;
+class DlgPrefBroadcast;
 class DlgPrefReplayGain;
 class ControllerManager;
 class EffectsManager;
@@ -114,7 +114,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;
     DlgPrefNoVinyl* m_wnovinylcontrol;
-    DlgPrefShoutcast* m_wshoutcast;
+    DlgPrefBroadcast* m_wbroadcast;
     DlgPrefReplayGain* m_wreplaygain;
 #ifdef __MODPLUG__
     DlgPrefModplug* m_wmodplug;
@@ -132,7 +132,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pBeatDetectionButton;
     QTreeWidgetItem* m_pKeyDetectionButton;
     QTreeWidgetItem* m_pVinylControlButton;
-    QTreeWidgetItem* m_pShoutcastButton;
+    QTreeWidgetItem* m_pBroadcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
 #ifdef __MODPLUG__
     QTreeWidgetItem* m_pModplugButton;

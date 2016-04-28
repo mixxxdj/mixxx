@@ -358,7 +358,7 @@ void WMainMenuBar::initialize() {
             pOptionsRecord, SLOT(setChecked(bool)));
     pOptionsMenu->addAction(pOptionsRecord);
 
-#ifdef __SHOUTCAST__
+#ifdef __BROADCAST__
     QString broadcastingTitle = tr("Enable Live &Broadcasting");
     QString broadcastingText = tr("Stream your mixes to a shoutcast or icecast server");
     auto pOptionsBroadcasting = new QAction(broadcastingTitle, this);

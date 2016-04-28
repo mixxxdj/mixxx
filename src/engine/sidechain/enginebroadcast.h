@@ -1,37 +1,20 @@
-/***************************************************************************
-                          engineshoutcast.h  -  description
-                             -------------------
-    copyright            : (C) 2007 by John Sully
-                           (C) 2007 by Albert Santoni
-                           (C) 2007 by Wesley Stessens
- ***************************************************************************/
+#ifndef ENGINE_SIDECHAIN_ENGINEBROADCAST_H
+#define ENGINE_SIDECHAIN_ENGINEBROADCAST_H
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINESHOUTCAST_H
-#define ENGINESHOUTCAST_H
-
-#include <QObject>
 #include <QMessageBox>
-#include <QTextCodec>
-#include <QVector>
-#include <QThread>
 #include <QMutex>
+#include <QObject>
 #include <QSemaphore>
+#include <QTextCodec>
+#include <QThread>
+#include <QVector>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlobjectslave.h"
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/fifo.h"
 
@@ -45,8 +28,8 @@ typedef struct shout shout_t;
 struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
-class EngineShoutcast :
-        public QThread, public EncoderCallback, public NetworkStreamWorker {
+class EngineBroadcast
+        : public QThread, public EncoderCallback, public NetworkStreamWorker {
     Q_OBJECT
   public:
     enum StatusCOStates {
@@ -56,8 +39,8 @@ class EngineShoutcast :
         STATUSCO_FAILURE = 3 // Happens when disconnected by an error
     };
 
-    EngineShoutcast(UserSettingsPointer pConfig);
-    virtual ~EngineShoutcast();
+    EngineBroadcast(UserSettingsPointer pConfig);
+    virtual ~EngineBroadcast();
 
     // This is called by the Engine implementation for each sample. Encode and
     // send the stream, as well as check for metadata changes.
@@ -87,21 +70,21 @@ class EngineShoutcast :
     void slotEnableCO(double v);
 
   signals:
-    void shoutcastDisconnected();
-    void shoutcastConnected();
+    void broadcastDisconnected();
+    void broadcastConnected();
 
   private:
     bool processConnect();
     void processDisconnect();
 
-    // Update the libshout struct with info from Mixxx's shoutcast preferences.
+    // Update the libshout struct with info from Mixxx's broadcast preferences.
     void updateFromPreferences();
     int getActiveTracks();
     // Check if the metadata has changed since the previous check.  We also
     // check when was the last check performed to avoid using too much CPU and
     // as well to avoid changing the metadata during scratches.
     bool metaDataHasChanged();
-    // Update shoutcast metadata. This does not work for OGG/Vorbis and Icecast,
+    // Update broadcast metadata. This does not work for OGG/Vorbis and Icecast,
     // since the actual OGG/Vorbis stream contains the metadata.
     void updateMetaData();
     // Common error dialog creation code for run-time exceptions. Notify user
@@ -128,7 +111,7 @@ class EngineShoutcast :
     long m_iShoutFailures;
     UserSettingsPointer m_pConfig;
     Encoder* m_encoder;
-    ControlPushButton* m_pShoutcastEnabled;
+    ControlPushButton* m_pBroadcastEnabled;
     ControlObjectSlave* m_pMasterSamplerate;
     ControlObject* m_pStatusCO;
     // static metadata according to prefereneces
@@ -147,11 +130,10 @@ class EngineShoutcast :
     bool m_protocol_is_icecast2;
     bool m_protocol_is_shoutcast;
     bool m_ogg_dynamic_update;
-    QVector<struct shoutcastCacheObject  *> m_pShoutcastCache;
     QAtomicInt m_threadWaiting;
     QSemaphore m_readSema;
     FIFO<CSAMPLE>* m_pOutputFifo;
     QString m_lastErrorStr;
 };
 
-#endif
+#endif // ENGINE_SIDECHAIN_ENGINEBROADCAST_H

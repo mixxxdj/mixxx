@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgPrefShoutcastDlg</class>
- <widget class="QWidget" name="DlgPrefShoutcastDlg">
+ <class>DlgPrefBroadcastDlg</class>
+ <widget class="QWidget" name="DlgPrefBroadcastDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,7 +17,7 @@
    <item row="3" column="1">
     <widget class="QGroupBox" name="verticalGroupBox">
      <property name="title">
-      <string>Shoutcast metadata format</string>
+      <string>Metadata format</string>
      </property>
      <property name="flat">
       <bool>false</bool>

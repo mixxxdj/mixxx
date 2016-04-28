@@ -132,7 +132,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
         SampleUtil::clear(m_pOutputBusBuffers[o], MAX_BUFFER_LEN);
     }
 
-    // Starts a thread for recording and shoutcast
+    // Starts a thread for recording and broadcast
     m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(pConfig) : NULL;
 
     // X-Fader Setup
@@ -497,7 +497,7 @@ void EngineMaster::process(const int iBufferSize) {
         // Perform balancing on main out
         SampleUtil::applyAlternatingGain(m_pMaster, balleft, balright, iBufferSize);
 
-        // Submit master samples to the side chain to do shoutcasting, recording,
+        // Submit master samples to the side chain to do broadcasting, recording,
         // etc. (cpu intensive non-realtime tasks)
         if (m_pEngineSideChain != NULL) {
             if (m_pMasterTalkoverMix->toBool()) {

@@ -809,9 +809,9 @@ class TestSuite(Feature):
         return []
 
 
-class Shoutcast(Feature):
+class LiveBroadcasting(Feature):
     def description(self):
-        return "Shoutcast Broadcasting (OGG/MP3)"
+        return "Live Broadcasting Support"
 
     def enabled(self, build):
         build.flags['shoutcast'] = util.get_flags(build.env, 'shoutcast', 1)
@@ -820,14 +820,14 @@ class Shoutcast(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 1)
+        vars.Add('shoutcast', 'Set to 1 to enable live broadcasting support', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
         libshout_found = conf.CheckLib(['libshout', 'shout'])
-        build.env.Append(CPPDEFINES='__SHOUTCAST__')
+        build.env.Append(CPPDEFINES='__BROADCAST__')
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
@@ -837,10 +837,10 @@ class Shoutcast(Feature):
             conf.CheckLib('ws2_32')
 
     def sources(self, build):
-        depends.Qt.uic(build)('preferences/dialog/dlgprefshoutcastdlg.ui')
-        return ['preferences/dialog/dlgprefshoutcast.cpp',
-                'shoutcast/shoutcastmanager.cpp',
-                'engine/sidechain/engineshoutcast.cpp']
+        depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')
+        return ['preferences/dialog/dlgprefbroadcast.cpp',
+                'broadcast/broadcastmanager.cpp',
+                'engine/sidechain/enginebroadcast.cpp']
 
 
 class Opus(Feature):

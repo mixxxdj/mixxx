@@ -39,7 +39,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
-#include "shoutcast/shoutcastmanager.h"
+#include "broadcast/broadcastmanager.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
@@ -88,8 +88,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pSoundManager(nullptr),
           m_pPlayerManager(nullptr),
           m_pRecordingManager(nullptr),
-#ifdef __SHOUTCAST__
-          m_pShoutcastManager(nullptr),
+#ifdef __BROADCAST__
+          m_pBroadcastManager(nullptr),
 #endif
           m_pControllerManager(nullptr),
           m_pGuiTick(nullptr),
@@ -208,8 +208,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
 
-#ifdef __SHOUTCAST__
-    m_pShoutcastManager = new ShoutcastManager(pConfig, m_pSoundManager);
+#ifdef __BROADCAST__
+    m_pBroadcastManager = new BroadcastManager(pConfig, m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -503,10 +503,10 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
 
-#ifdef __SHOUTCAST__
-    // ShoutcastManager depends on config, engine
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ShoutcastManager";
-    delete m_pShoutcastManager;
+#ifdef __BROADCAST__
+    // BroadcastManager depends on config, engine
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting BroadcastManager";
+    delete m_pBroadcastManager;
 #endif
 
     // EngineMaster depends on Config and m_pEffectsManager.
@@ -827,13 +827,13 @@ void MixxxMainWindow::connectMenuBar() {
         m_pMenuBar->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
     }
 
-#ifdef __SHOUTCAST__
-    if (m_pShoutcastManager) {
-        connect(m_pShoutcastManager, SIGNAL(shoutcastEnabled(bool)),
+#ifdef __BROADCAST__
+    if (m_pBroadcastManager) {
+        connect(m_pBroadcastManager, SIGNAL(broadcastEnabled(bool)),
                 m_pMenuBar, SLOT(onBroadcastingStateChange(bool)));
         connect(m_pMenuBar, SIGNAL(toggleBroadcasting(bool)),
-                m_pShoutcastManager, SLOT(setEnabled(bool)));
-        m_pMenuBar->onBroadcastingStateChange(m_pShoutcastManager->isEnabled());
+                m_pBroadcastManager, SLOT(setEnabled(bool)));
+        m_pMenuBar->onBroadcastingStateChange(m_pBroadcastManager->isEnabled());
     }
 #endif
 

@@ -41,7 +41,7 @@ class KeyboardEventFilter;
 class PlayerManager;
 class RecordingManager;
 class SettingsManager;
-class ShoutcastManager;
+class BroadcastManager;
 class SkinLoader;
 class SoundManager;
 class VinylControlManager;
@@ -145,8 +145,8 @@ class MixxxMainWindow : public QMainWindow {
     PlayerManager* m_pPlayerManager;
     // RecordingManager
     RecordingManager* m_pRecordingManager;
-#ifdef __SHOUTCAST__
-    ShoutcastManager* m_pShoutcastManager;
+#ifdef __BROADCAST__
+    BroadcastManager* m_pBroadcastManager;
 #endif
     ControllerManager* m_pControllerManager;
 
