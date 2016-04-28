@@ -725,7 +725,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopSizeEncoder</key>
+                <key>P32.leftDeck.loopSize.input</key>
                 <status>0xB1</status>
                 <midino>0x0A</midino>
                 <options>
@@ -968,7 +968,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopSizeEncoder</key>
+                <key>P32.rightDeck.loopSize.input</key>
                 <status>0xB2</status>
                 <midino>0x0A</midino>
                 <options>

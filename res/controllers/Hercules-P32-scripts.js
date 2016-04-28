@@ -1,6 +1,13 @@
 // USER CONFIGURABLE OPTIONS
-var defaultLoopSize = 8; // loop size (in beats) when Mixxx starts
-var defaultBeatJumpSize = 4; // beat jump size when Mixxx starts
+// loop size (in beats) when Mixxx starts
+var defaultLoopSize = 8;
+// beat jump size when Mixxx starts
+var defaultBeatJumpSize = 4;
+// Set to "true" to use the dot on the loop size LED display to indicate
+// that a loop is active. This restricts loop sizes to 2-32 beats and
+// may be helpful if you never use loops less than 2 beats long.
+// Otherwise the dot indicates a loop size equal to 1/(# on the LED display).
+var loopEnabledDot = false;
 
 /**
  * Hercules P32 DJ controller script for Mixxx 2.0
@@ -308,7 +315,7 @@ P32.Deck = function (deckNumbers, channel) {
     
     this.quantize = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'quantize'); // sync shifted
     this.keylock = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'keylock'); // cue shifted
-    this.goToStart = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck,
+    this.goToStart = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck, // play shifted
                             ['start_stop', function () { return 1; }],
                             ['play_indicator', function (val) { return val * 127 }]);
     
@@ -355,28 +362,66 @@ P32.Deck = function (deckNumbers, channel) {
             engine.beginTimer(250, 'engine.setValue("'+that.currentDeck+'", "eject", 0)', true);
         }
     }
-    
-    this.loopSizeEncoder = function (channel, control, value, status, group) {
-        if (value === 127 && loopSize > 1/32) { // turn left
-            /**
-                Mixxx supports loops shorter than 1/32 beats, but there is no
-                way to set the loop size LED less than 1/32 (even though it
-                should be able to show 1/64)
-            **/
-            loopSize /= 2;
-            engine.setValue(that.currentDeck, 'loop_halve', 1);
-            engine.setValue(that.currentDeck, 'loop_halve', 0);
-        } else if (value === 1 && loopSize < 64) { // turn right
-            /**
-                Mixxx supports loops longer than 64 beats, but the loop size LED
-                only has 2 digits, so it couldn't show 128
-            **/
-            loopSize *= 2;
-            engine.setValue(that.currentDeck, 'loop_double', 1);
-            engine.setValue(that.currentDeck, 'loop_double', 0);
+
+    this.loopSize = new Control([0xB0 + channel, 0x1B], this.currentDeck,
+                                null,
+                                ['loop_enabled', null]);
+    this.loopSize.input = function (channel, control, value, status, group) {
+        if (loopEnabledDot) {
+            if (value === 127 && loopSize > 2) { // turn left
+                /**
+                    Unfortunately, there is no way to show 1 with a dot on the
+                    loop size LED.
+                **/
+                loopSize /= 2;
+                engine.setValue(that.currentDeck, 'loop_halve', 1);
+                engine.setValue(that.currentDeck, 'loop_halve', 0);
+            } else if (value === 1 && loopSize < 32) { // turn right
+                /**
+                    Mixxx supports loops longer than 32 beats, but there is no way
+                    to show 64 with a dot on the loop size LED.
+                **/
+                loopSize *= 2;
+                engine.setValue(that.currentDeck, 'loop_double', 1);
+                engine.setValue(that.currentDeck, 'loop_double', 0);
+            }
+        } else {
+            if (value === 127 && loopSize > 1/32) { // turn left
+                /**
+                    Mixxx supports loops shorter than 1/32 beats, but there is no
+                    way to set the loop size LED less than 1/32 (even though it
+                    should be able to show 1/64)
+                **/
+                if (loopEnabledDot && loopSize <= 1) {
+                    return;
+                }
+                loopSize /= 2;
+                engine.setValue(that.currentDeck, 'loop_halve', 1);
+                engine.setValue(that.currentDeck, 'loop_halve', 0);
+            } else if (value === 1 && loopSize < 64) { // turn right
+                /**
+                    Mixxx supports loops longer than 64 beats, but the loop size LED
+                    only has 2 digits, so it couldn't show 128
+                **/
+                if (loopEnabledDot && loopSize >= 32) {
+                    // Unfortunately the LED display doesn't have a way to show 64 with a dot.
+                    return;
+                }
+                loopSize *= 2;
+                engine.setValue(that.currentDeck, 'loop_double', 1);
+                engine.setValue(that.currentDeck, 'loop_double', 0);
+            }
         }
-        midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(loopSize) / Math.log(2));
+        that.loopSize.outTrigger(); // FIXME: ugly hack around https://bugs.launchpad.net/mixxx/+bug/1567203
     }
+    this.loopSize.output = function (value, group, control) {
+        if (loopEnabledDot && value) {
+            this.send(5 - Math.log(loopSize) / Math.log(2));
+        } else {
+            this.send(5 + Math.log(loopSize) / Math.log(2));
+        }
+    }
+    this.loopSize.outConnect();
     
     this.loopMoveEncoder = function (channel, control, value, status, group) {
         var direction = (value === 127) ? -1 : 1;
