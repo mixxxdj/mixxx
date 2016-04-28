@@ -595,8 +595,8 @@ class MixxxCore(Feature):
                    "control/controlmodel.cpp",
                    "control/controlobject.cpp",
                    "control/controlobjectscript.cpp",
-                   "control/controlobjectslave.cpp",
                    "control/controlpotmeter.cpp",
+                   "control/controlproxy.cpp",
                    "control/controlpushbutton.cpp",
                    "control/controlttrotary.cpp",
 

@@ -3,10 +3,10 @@
 
 #include "controllers/controllerengine.h"
 
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 
 // this is used for communicate with controller scripts
-class ControlObjectScript : public ControlObjectSlave {
+class ControlObjectScript : public ControlProxy {
     Q_OBJECT
   public:
     explicit ControlObjectScript(const ConfigKey& key, QObject* pParent = nullptr);
@@ -34,4 +34,4 @@ class ControlObjectScript : public ControlObjectSlave {
     QList<ControllerEngineConnection> m_connectedScriptFunctions;
 };
 
-#endif // CONTROLOBJECTSLAVE_H
+#endif // CONTROLOBJECTSCRIPT_H

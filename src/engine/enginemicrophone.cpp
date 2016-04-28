@@ -34,7 +34,7 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
 
     setMaster(false); // Use "talkover" button to enable microphones
 
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate");
 }
 
 EngineMicrophone::~EngineMicrophone() {

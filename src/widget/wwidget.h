@@ -25,7 +25,7 @@
 #include "preferences/usersettings.h"
 #include "widget/wbasewidget.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
@@ -52,7 +52,7 @@ class WWidget : public QWidget, public WBaseWidget {
     enum Qt::MouseButton m_activeTouchButton;
 
   private:
-    ControlObjectSlave* m_pTouchShift;
+    ControlProxy* m_pTouchShift;
 };
 
 #endif

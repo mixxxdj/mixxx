@@ -16,7 +16,7 @@ BroadcastManager::BroadcastManager(UserSettingsPointer pConfig,
                 new EngineBroadcast(pConfig));
         pNetworkStream->addWorker(m_pBroadcast);
     }
-    m_pBroadcastEnabled = new ControlObjectSlave(
+    m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
     m_pBroadcastEnabled->connectValueChanged(SLOT(slotControlEnabled(double)));
 }

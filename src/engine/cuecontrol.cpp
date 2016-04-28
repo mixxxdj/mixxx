@@ -91,8 +91,8 @@ CueControl::CueControl(QString group,
     m_pCueIndicator = new ControlIndicator(ConfigKey(group, "cue_indicator"));
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
 
-    m_pVinylControlEnabled = new ControlObjectSlave(group, "vinylcontrol_enabled");
-    m_pVinylControlMode = new ControlObjectSlave(group, "vinylcontrol_mode");
+    m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
+    m_pVinylControlMode = new ControlProxy(group, "vinylcontrol_mode");
 }
 
 CueControl::~CueControl() {

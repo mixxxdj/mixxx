@@ -14,7 +14,7 @@
 #include <QtGlobal>
 
 #include "control/controlobject.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"

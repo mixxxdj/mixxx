@@ -4,7 +4,7 @@
 
 #include "widget/wnumberpos.h"
 #include "control/controlobject.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "util/math.h"
 #include "util/time.h"
 
@@ -14,7 +14,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
           m_dTrackSamples(0.0),
           m_dTrackSampleRate(0.0),
           m_bRemain(false) {
-    m_pShowTrackTimeRemaining = new ControlObjectSlave(
+    m_pShowTrackTimeRemaining = new ControlProxy(
             "[Controls]", "ShowDurationRemaining", this);
     m_pShowTrackTimeRemaining->connectValueChanged(
             SLOT(slotSetRemain(double)));
@@ -25,10 +25,10 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     // because the range of playposition was -0.14 to 1.14 in 1.11.x. As a
     // result, the <Connection> parameter is no longer necessary in skin
     // definitions, but leaving it in is harmless.
-    m_pVisualPlaypos = new ControlObjectSlave(group, "playposition", this);
+    m_pVisualPlaypos = new ControlProxy(group, "playposition", this);
     m_pVisualPlaypos->connectValueChanged(SLOT(slotSetValue(double)));
 
-    m_pTrackSamples = new ControlObjectSlave(
+    m_pTrackSamples = new ControlProxy(
             group, "track_samples", this);
     m_pTrackSamples->connectValueChanged(SLOT(slotSetTrackSamples(double)));
 
@@ -36,7 +36,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     // set to a valid value.
     m_pTrackSamples->emitValueChanged();
 
-    m_pTrackSampleRate = new ControlObjectSlave(
+    m_pTrackSampleRate = new ControlProxy(
             group, "track_samplerate", this);
     m_pTrackSampleRate->connectValueChanged(
             SLOT(slotSetTrackSampleRate(double)));

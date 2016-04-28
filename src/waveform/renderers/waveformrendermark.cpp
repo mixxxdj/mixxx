@@ -4,7 +4,7 @@
 
 #include "waveform/renderers/waveformrendermark.h"
 
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"

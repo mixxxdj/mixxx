@@ -7,7 +7,7 @@
 
 #include <QScopedPointer>
 
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/enginevumeter.h"
@@ -57,7 +57,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
     EngineVuMeter m_vuMeter;
     QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
-    ControlObjectSlave* m_pSampleRate;
+    ControlProxy* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
     bool m_wasActive;
 };

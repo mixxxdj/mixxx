@@ -21,7 +21,7 @@
 #include <QMimeData>
 
 #include "control/controlobject.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
@@ -50,13 +50,13 @@ WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* p
         m_dAnalyzerProgress(1.0),
         m_bAnalyzerFinalizing(false),
         m_trackLoaded(false) {
-    m_endOfTrackControl = new ControlObjectSlave(
+    m_endOfTrackControl = new ControlProxy(
             m_group, "end_of_track", this);
     m_endOfTrackControl->connectValueChanged(
              SLOT(onEndOfTrackChange(double)));
     m_trackSamplesControl =
-            new ControlObjectSlave(m_group, "track_samples", this);
-    m_playControl = new ControlObjectSlave(m_group, "play", this);
+            new ControlProxy(m_group, "track_samples", this);
+    m_playControl = new ControlProxy(m_group, "play", this);
     setAcceptDrops(true);
 }
 

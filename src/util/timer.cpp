@@ -80,7 +80,7 @@ mixxx::Duration SuspendableTimer::elapsed(bool report) {
 
 GuiTickTimer::GuiTickTimer(QObject* pParent)
         : QObject(pParent),
-          m_pGuiTick50ms(new ControlObjectSlave(
+          m_pGuiTick50ms(new ControlProxy(
               "[Master]", "guiTick50ms", this)),
           m_bActive(false) {
     m_pGuiTick50ms->connectValueChanged(SLOT(slotGuiTick50ms(double)));

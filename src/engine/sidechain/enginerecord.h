@@ -34,7 +34,7 @@
 #include "track/track.h"
 
 class ConfigKey;
-class ControlObjectSlave;
+class ControlProxy;
 class Encoder;
 
 class EngineRecord : public QObject, public EncoderCallback, public SideChainWorker {
@@ -89,8 +89,8 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     SNDFILE* m_pSndfile;
     SF_INFO m_sfInfo;
 
-    ControlObjectSlave* m_pRecReady;
-    ControlObjectSlave* m_pSamplerate;
+    ControlProxy* m_pRecReady;
+    ControlProxy* m_pSamplerate;
     quint64 m_frames;
     quint64 m_sampleRate;
     quint64 m_recordedDuration;

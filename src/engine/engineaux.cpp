@@ -36,7 +36,7 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* 
     // can over-ride by setting the "pfl" or "master" controls.
     setMaster(true);
 
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate");
 }
 
 EngineAux::~EngineAux() {

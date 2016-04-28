@@ -37,7 +37,7 @@ EngineBroadcast::EngineBroadcast(UserSettingsPointer pConfig)
           m_iShoutFailures(0),
           m_pConfig(pConfig),
           m_encoder(NULL),
-          m_pMasterSamplerate(new ControlObjectSlave("[Master]", "samplerate")),
+          m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
           m_custom_metadata(false),
           m_firstCall(false),
           m_format_is_mp3(false),

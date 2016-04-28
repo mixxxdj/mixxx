@@ -8,7 +8,7 @@
 #include "mixxxtest.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 
 class WWidgetStackTest : public MixxxTest {
   public:

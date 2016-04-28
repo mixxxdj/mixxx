@@ -9,7 +9,7 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sidechain/enginerecord.h"
 #include "control/controlpushbutton.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "engine/enginemaster.h"
 
 RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
@@ -27,7 +27,7 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
     connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleRecording(double)));
     m_recReadyCO = new ControlObject(ConfigKey(RECORDING_PREF_KEY, "status"));
-    m_recReady = new ControlObjectSlave(m_recReadyCO->getKey(), this);
+    m_recReady = new ControlProxy(m_recReadyCO->getKey(), this);
 
     m_split_size = getFileSplitSize();
 

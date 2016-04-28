@@ -4,7 +4,7 @@
 #include <QLabel>
 
 #include "widget/wlabel.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 
 class WKey : public WLabel  {
     Q_OBJECT
@@ -22,8 +22,8 @@ class WKey : public WLabel  {
   private:
     double m_dOldValue;
     bool m_displayCents;
-    ControlObjectSlave m_preferencesUpdated;
-    ControlObjectSlave m_engineKeyDistance;
+    ControlProxy m_preferencesUpdated;
+    ControlProxy m_engineKeyDistance;
 };
 
 #endif /* WKEY_H */

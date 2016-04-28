@@ -9,7 +9,7 @@
 #include <QSignalMapper>
 
 #include "configobject.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "preferences/usersettings.h"
 
 class VisibilityControlConnection : public QObject {
@@ -26,7 +26,7 @@ class VisibilityControlConnection : public QObject {
 
   private:
     ConfigKey m_key;
-    QScopedPointer<ControlObjectSlave> m_pControl;
+    QScopedPointer<ControlProxy> m_pControl;
     QAction* m_pAction;
 };
 

@@ -3,7 +3,7 @@
 
 #include "control/controlobject.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 
 class ControlIndicator : public ControlObject {
     Q_OBJECT
@@ -36,8 +36,8 @@ class ControlIndicator : public ControlObject {
 
     enum BlinkValue m_blinkValue;
     double m_nextSwitchTime;
-    ControlObjectSlave* m_pCOTGuiTickTime;
-    ControlObjectSlave* m_pCOTGuiTick50ms;
+    ControlProxy* m_pCOTGuiTickTime;
+    ControlProxy* m_pCOTGuiTick50ms;
 };
 
 #endif // CONTROLINDICATOR_H

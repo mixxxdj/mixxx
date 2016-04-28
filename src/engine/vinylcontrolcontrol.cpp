@@ -46,7 +46,7 @@ VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pCon
     m_pControlVinylSignalEnabled->set(1);
     m_pControlVinylSignalEnabled->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pPlayEnabled = new ControlObjectSlave(group, "play", this);
+    m_pPlayEnabled = new ControlProxy(group, "play", this);
 }
 
 VinylControlControl::~VinylControlControl() {

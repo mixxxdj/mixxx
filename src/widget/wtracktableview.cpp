@@ -13,7 +13,7 @@
 #include "control/controlobject.h"
 #include "library/trackcollection.h"
 #include "track/track.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "widget/wtracktableview.h"
 #include "library/dlgtrackinfo.h"
 #include "sources/soundsourceproxy.h"
@@ -64,11 +64,11 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_BpmMapper, SIGNAL(mapped(int)),
             this, SLOT(slotScaleBpm(int)));
 
-    m_pNumSamplers = new ControlObjectSlave(
+    m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
-    m_pNumDecks = new ControlObjectSlave(
+    m_pNumDecks = new ControlProxy(
             "[Master]", "num_decks", this);
-    m_pNumPreviewDecks = new ControlObjectSlave(
+    m_pNumPreviewDecks = new ControlProxy(
             "[Master]", "num_preview_decks", this);
 
     m_pMenu = new QMenu(this);
@@ -105,7 +105,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
 
-    m_pCOTGuiTick = new ControlObjectSlave("[Master]", "guiTick50ms", this);
+    m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick->connectValueChanged(SLOT(slotGuiTick50ms(double)));
 
     connect(this, SIGNAL(scrollValueChanged(int)),

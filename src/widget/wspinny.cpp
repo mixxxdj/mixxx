@@ -5,7 +5,7 @@
 #include <QStylePainter>
 
 #include "control/controlobject.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "util/dnd.h"
 #include "waveform/sharedglcontext.h"
@@ -163,38 +163,38 @@ void WSpinny::setup(QDomNode node, const SkinContext& context) {
     m_qImage.fill(qRgba(0,0,0,0));
 #endif
 
-    m_pPlay = new ControlObjectSlave(
+    m_pPlay = new ControlProxy(
             m_group, "play", this);
-    m_pPlayPos = new ControlObjectSlave(
+    m_pPlayPos = new ControlProxy(
             m_group, "playposition", this);
     m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
-    m_pTrackSamples = new ControlObjectSlave(
+    m_pTrackSamples = new ControlProxy(
             m_group, "track_samples", this);
-    m_pTrackSampleRate = new ControlObjectSlave(
+    m_pTrackSampleRate = new ControlProxy(
             m_group, "track_samplerate", this);
 
-    m_pScratchToggle = new ControlObjectSlave(
+    m_pScratchToggle = new ControlProxy(
             m_group, "scratch_position_enable", this);
-    m_pScratchPos = new ControlObjectSlave(
+    m_pScratchPos = new ControlProxy(
             m_group, "scratch_position", this);
 
-    m_pSlipEnabled = new ControlObjectSlave(
+    m_pSlipEnabled = new ControlProxy(
             m_group, "slip_enabled", this);
     m_pSlipEnabled->connectValueChanged(
             SLOT(updateSlipEnabled(double)));
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlSpeedType = new ControlObjectSlave(
+    m_pVinylControlSpeedType = new ControlProxy(
             m_group, "vinylcontrol_speed_type", this);
     // Initialize the rotational speed.
     updateVinylControlSpeed(m_pVinylControlSpeedType->get());
 
-    m_pVinylControlEnabled = new ControlObjectSlave(
+    m_pVinylControlEnabled = new ControlProxy(
             m_group, "vinylcontrol_enabled", this);
     m_pVinylControlEnabled->connectValueChanged(
             SLOT(updateVinylControlEnabled(double)));
 
-    m_pSignalEnabled = new ControlObjectSlave(
+    m_pSignalEnabled = new ControlProxy(
             m_group, "vinylcontrol_signal_enabled", this);
     m_pSignalEnabled->connectValueChanged(
             SLOT(updateVinylControlSignalEnabled(double)));

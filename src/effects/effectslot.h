@@ -13,7 +13,7 @@
 #include "util/class.h"
 
 class EffectSlot;
-class ControlObjectSlave;
+class ControlProxy;
 typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 
 class EffectSlot : public QObject {

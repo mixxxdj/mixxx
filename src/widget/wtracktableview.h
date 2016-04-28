@@ -5,7 +5,7 @@
 #include <QSortFilterProxyModel>
 
 #include "preferences/usersettings.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "library/coverart.h"
 #include "library/dlgtagfetcher.h"
 #include "library/libraryview.h"
@@ -14,7 +14,7 @@
 #include "util/duration.h"
 #include "widget/wlibrarytableview.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 class DlgTrackInfo;
 class TrackCollection;
 class WCoverArtMenu;
@@ -105,9 +105,9 @@ class WTrackTableView : public WLibraryTableView {
     QModelIndex currentTrackInfoIndex;
 
 
-    ControlObjectSlave* m_pNumSamplers;
-    ControlObjectSlave* m_pNumDecks;
-    ControlObjectSlave* m_pNumPreviewDecks;
+    ControlProxy* m_pNumSamplers;
+    ControlProxy* m_pNumDecks;
+    ControlProxy* m_pNumPreviewDecks;
 
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
@@ -167,7 +167,7 @@ class WTrackTableView : public WLibraryTableView {
     mixxx::Duration m_lastUserAction;
     bool m_selectionChangedSinceLastGuiTick;
     bool m_loadCachedOnly;
-    ControlObjectSlave* m_pCOTGuiTick;
+    ControlProxy* m_pCOTGuiTick;
 };
 
 #endif

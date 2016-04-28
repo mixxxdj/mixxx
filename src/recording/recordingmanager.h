@@ -22,7 +22,7 @@
 
 class EngineMaster;
 class ControlPushButton;
-class ControlObjectSlave;
+class ControlProxy;
 
 class RecordingManager : public QObject
 {
@@ -65,7 +65,7 @@ class RecordingManager : public QObject
 
   private:
     QString formatDateTimeForFilename(QDateTime dateTime) const;
-    ControlObjectSlave* m_recReady;
+    ControlProxy* m_recReady;
     ControlObject* m_recReadyCO;
     ControlPushButton* m_pToggleRecording;
 

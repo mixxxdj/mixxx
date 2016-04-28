@@ -1,5 +1,5 @@
 #include "control/controlindicator.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "util/math.h"
 
 ControlIndicator::ControlIndicator(ConfigKey key)
@@ -7,8 +7,8 @@ ControlIndicator::ControlIndicator(ConfigKey key)
           m_blinkValue(OFF),
           m_nextSwitchTime(0.0) {
     // Tick time in audio buffer resolution
-    m_pCOTGuiTickTime = new ControlObjectSlave("[Master]", "guiTickTime", this);
-    m_pCOTGuiTick50ms = new ControlObjectSlave("[Master]", "guiTick50ms", this);
+    m_pCOTGuiTickTime = new ControlProxy("[Master]", "guiTickTime", this);
+    m_pCOTGuiTick50ms = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick50ms->connectValueChanged(SLOT(slotGuiTick50ms(double)));
     connect(this, SIGNAL(blinkValueChanged()),
             this, SLOT(slotBlinkValueChanged()));

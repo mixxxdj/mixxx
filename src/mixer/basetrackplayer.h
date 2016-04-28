@@ -14,7 +14,7 @@
 class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
-class ControlObjectSlave;
+class ControlProxy;
 class EffectsManager;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
@@ -87,30 +87,30 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     ControlPotmeter* m_pWaveformZoom;
     ControlObject* m_pEndOfTrack;
 
-    ControlObjectSlave* m_pLoopInPoint;
-    ControlObjectSlave* m_pLoopOutPoint;
+    ControlProxy* m_pLoopInPoint;
+    ControlProxy* m_pLoopOutPoint;
     ControlObject* m_pDuration;
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    ControlObjectSlave* m_pBPM;
-    ControlObjectSlave* m_pKey;
+    ControlProxy* m_pBPM;
+    ControlProxy* m_pKey;
 
-    ControlObjectSlave* m_pReplayGain;
-    ControlObjectSlave* m_pPlay;
-    ControlObjectSlave* m_pLowFilter;
-    ControlObjectSlave* m_pMidFilter;
-    ControlObjectSlave* m_pHighFilter;
-    ControlObjectSlave* m_pLowFilterKill;
-    ControlObjectSlave* m_pMidFilterKill;
-    ControlObjectSlave* m_pHighFilterKill;
-    ControlObjectSlave* m_pPreGain;
-    ControlObjectSlave* m_pRateSlider;
-    ControlObjectSlave* m_pPitchAdjust;
-    QScopedPointer<ControlObjectSlave> m_pInputConfigured;
-    QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
-    QScopedPointer<ControlObjectSlave> m_pVinylControlEnabled;
-    QScopedPointer<ControlObjectSlave> m_pVinylControlStatus;
+    ControlProxy* m_pReplayGain;
+    ControlProxy* m_pPlay;
+    ControlProxy* m_pLowFilter;
+    ControlProxy* m_pMidFilter;
+    ControlProxy* m_pHighFilter;
+    ControlProxy* m_pLowFilterKill;
+    ControlProxy* m_pMidFilterKill;
+    ControlProxy* m_pHighFilterKill;
+    ControlProxy* m_pPreGain;
+    ControlProxy* m_pRateSlider;
+    ControlProxy* m_pPitchAdjust;
+    QScopedPointer<ControlProxy> m_pInputConfigured;
+    QScopedPointer<ControlProxy> m_pPassthroughEnabled;
+    QScopedPointer<ControlProxy> m_pVinylControlEnabled;
+    QScopedPointer<ControlProxy> m_pVinylControlStatus;
     EngineDeck* m_pChannel;
 
     bool m_replaygainPending;

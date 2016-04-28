@@ -2,7 +2,7 @@
 
 #include "library/trackcollection.h"
 #include "control/controlpushbutton.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "util/math.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
@@ -117,8 +117,8 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
     // Auto-DJ needs at least two decks
     DEBUG_ASSERT(m_decks.length() > 1);
 
-    m_pCOCrossfader = new ControlObjectSlave("[Master]", "crossfader");
-    m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
+    m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
+    m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
             ConfigKey(kConfigKey, kTransitionPreferenceName));

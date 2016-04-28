@@ -19,7 +19,7 @@
 
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "encoder/encoder.h"
 
 #ifdef __FFMPEGFILE__
@@ -53,8 +53,8 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
     m_sfInfo.sections = 0;
     m_sfInfo.seekable = 0;
 
-    m_pRecReady = new ControlObjectSlave(RECORDING_PREF_KEY, "status", this);
-    m_pSamplerate = new ControlObjectSlave("[Master]", "samplerate", this);
+    m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
+    m_pSamplerate = new ControlProxy("[Master]", "samplerate", this);
     m_sampleRate = m_pSamplerate->get();
 }
 

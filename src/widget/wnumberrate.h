@@ -14,7 +14,7 @@
 
 #include "widget/wnumber.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 
 class WNumberRate : public WNumber {
     Q_OBJECT
@@ -26,9 +26,9 @@ class WNumberRate : public WNumber {
 
   private:
     // Pointer to control objects for rate.
-    ControlObjectSlave* m_pRateControl;
-    ControlObjectSlave* m_pRateRangeControl;
-    ControlObjectSlave* m_pRateDirControl;
+    ControlProxy* m_pRateControl;
+    ControlProxy* m_pRateRangeControl;
+    ControlProxy* m_pRateDirControl;
 };
 
 #endif

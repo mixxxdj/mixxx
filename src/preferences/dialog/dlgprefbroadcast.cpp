@@ -1,7 +1,7 @@
 #include <QtDebug>
 
 #include "broadcast/defs_broadcast.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "preferences/dialog/dlgprefbroadcast.h"
 
@@ -12,7 +12,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent, UserSettingsPointer _config)
           m_pConfig(_config) {
     setupUi(this);
 
-    m_pBroadcastEnabled = new ControlObjectSlave(
+    m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
     m_pBroadcastEnabled->connectValueChanged(
             SLOT(broadcastEnabledChanged(double)));

@@ -26,7 +26,7 @@
   */
 
 class ControlPushButton;
-class ControlObjectSlave;
+class ControlProxy;
 
 class PotmeterControls : public QObject {
     Q_OBJECT
@@ -65,7 +65,7 @@ class PotmeterControls : public QObject {
     void toggleMinusValue(double);
 
   private:
-    ControlObjectSlave* m_pControl;
+    ControlProxy* m_pControl;
     int m_stepCount;
     double m_smallStepCount;
 };

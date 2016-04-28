@@ -11,7 +11,7 @@ class EngineChannel;
 class BpmControl;
 class RateControl;
 class ControlObject;
-class ControlObjectSlave;
+class ControlProxy;
 class ControlPushButton;
 
 class SyncControl : public EngineControl, public Syncable {
@@ -122,20 +122,20 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
     QScopedPointer<ControlObject> m_pSyncBeatDistance;
 
-    // These ControlObjectSlaves are created as parent to this and deleted by
+    // These ControlProxys are created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
     // thread, which is required to avoid segfaults.
-    ControlObjectSlave* m_pPlayButton;
-    ControlObjectSlave* m_pBpm;
-    ControlObjectSlave* m_pLocalBpm;
-    ControlObjectSlave* m_pFileBpm;
-    ControlObjectSlave* m_pRateSlider;
-    ControlObjectSlave* m_pRateDirection;
-    ControlObjectSlave* m_pRateRange;
-    ControlObjectSlave* m_pVCEnabled;
-    ControlObjectSlave* m_pPassthroughEnabled;
-    ControlObjectSlave* m_pEjectButton;
-    ControlObjectSlave* m_pSyncPhaseButton;
+    ControlProxy* m_pPlayButton;
+    ControlProxy* m_pBpm;
+    ControlProxy* m_pLocalBpm;
+    ControlProxy* m_pFileBpm;
+    ControlProxy* m_pRateSlider;
+    ControlProxy* m_pRateDirection;
+    ControlProxy* m_pRateRange;
+    ControlProxy* m_pVCEnabled;
+    ControlProxy* m_pPassthroughEnabled;
+    ControlProxy* m_pEjectButton;
+    ControlProxy* m_pSyncPhaseButton;
 };
 
 

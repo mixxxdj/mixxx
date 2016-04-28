@@ -5,7 +5,7 @@
 
 #include "mixxxtest.h"
 #include "control/controlobject.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "widget/wpushbutton.h"
 #include "widget/controlwidgetconnection.h"

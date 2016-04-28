@@ -448,7 +448,7 @@ void MixxxMainWindow::finalize() {
 
     setCentralWidget(NULL);
 
-    // TODO(rryan): WMainMenuBar holds references to COs so we need to delete it
+    // TODO(rryan): WMainMenuBar holds references to controls so we need to delete it
     // before MixxxMainWindow is destroyed. QMainWindow calls deleteLater() in
     // setMenuBar() but we need to delete it now so we can ask for
     // DeferredDelete events to be processed for it. Once Mixxx shutdown lives

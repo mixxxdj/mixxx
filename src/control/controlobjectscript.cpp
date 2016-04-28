@@ -4,7 +4,7 @@
 #include "control/controlobjectscript.h"
 
 ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
-        : ControlObjectSlave(key, pParent) {
+        : ControlProxy(key, pParent) {
 }
 
 void ControlObjectScript::connectScriptFunction(

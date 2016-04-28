@@ -3,7 +3,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
 #include "util/cmdlineargs.h"
@@ -707,7 +707,7 @@ void VisibilityControlConnection::slotClearControl() {
 }
 
 void VisibilityControlConnection::slotReconnectControl() {
-    m_pControl.reset(new ControlObjectSlave(m_key, this));
+    m_pControl.reset(new ControlProxy(m_key, this));
     m_pControl->connectValueChanged(SLOT(slotControlChanged()));
     m_pAction->setEnabled(m_pControl->valid());
     slotControlChanged();

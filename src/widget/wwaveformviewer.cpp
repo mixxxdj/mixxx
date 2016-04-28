@@ -8,7 +8,7 @@
 #include <QMimeData>
 
 #include "control/controlobject.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "track/track.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
@@ -26,14 +26,14 @@ WWaveformViewer::WWaveformViewer(const char *group, UserSettingsPointer pConfig,
           m_waveformWidget(nullptr) {
     setAcceptDrops(true);
 
-    m_pZoom = new ControlObjectSlave(group, "waveform_zoom", this);
+    m_pZoom = new ControlProxy(group, "waveform_zoom", this);
     m_pZoom->connectValueChanged(SLOT(onZoomChange(double)));
 
-    m_pScratchPositionEnable = new ControlObjectSlave(
+    m_pScratchPositionEnable = new ControlProxy(
             group, "scratch_position_enable", this);
-    m_pScratchPosition = new ControlObjectSlave(
+    m_pScratchPosition = new ControlProxy(
             group, "scratch_position", this);
-    m_pWheel = new ControlObjectSlave(
+    m_pWheel = new ControlProxy(
             group, "wheel", this);
 
     setAttribute(Qt::WA_OpaquePaintEvent);

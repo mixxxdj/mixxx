@@ -1,5 +1,5 @@
-#ifndef CONTROLOBJECTSLAVE_H
-#define CONTROLOBJECTSLAVE_H
+#ifndef CONTROLPROXY_H
+#define CONTROLPROXY_H
 
 #include <QObject>
 #include <QSharedPointer>
@@ -12,17 +12,17 @@
 // new code to avoid unnecessary locking during send if no slot is connected.
 // Do not (re-)connect slots during runtime, since this locks the mutex in
 // QMetaObject::activate().
-// Be sure that the ControlObjectSlave is created and deleted from the same
+// Be sure that the ControlProxy is created and deleted from the same
 // thread, otherwise a pending signal may lead to a segfault (Bug #1406124).
 // Parent it to the the creating object to achieve this.
-class ControlObjectSlave : public QObject {
+class ControlProxy : public QObject {
     Q_OBJECT
   public:
-    ControlObjectSlave(QObject* pParent = NULL);
-    ControlObjectSlave(const QString& g, const QString& i, QObject* pParent = NULL);
-    ControlObjectSlave(const char* g, const char* i, QObject* pParent = NULL);
-    ControlObjectSlave(const ConfigKey& key, QObject* pParent = NULL);
-    virtual ~ControlObjectSlave();
+    ControlProxy(QObject* pParent = NULL);
+    ControlProxy(const QString& g, const QString& i, QObject* pParent = NULL);
+    ControlProxy(const char* g, const char* i, QObject* pParent = NULL);
+    ControlProxy(const ConfigKey& key, QObject* pParent = NULL);
+    virtual ~ControlProxy();
 
     void initialize(const ConfigKey& key);
 
@@ -132,4 +132,4 @@ class ControlObjectSlave : public QObject {
     QSharedPointer<ControlDoublePrivate> m_pControl;
 };
 
-#endif // CONTROLOBJECTSLAVE_H
+#endif // CONTROLPROXY_H

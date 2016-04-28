@@ -6,7 +6,7 @@
 #include <QScopedPointer>
 #include <QByteArray>
 
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "util/valuetransformer.h"
 
 class WBaseWidget;
@@ -37,10 +37,10 @@ class ControlWidgetConnection : public QObject {
 
     WBaseWidget* m_pWidget;
 
-    // This ControlObjectSlaves is created as parent to this and deleted by
+    // This ControlProxys is created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
     // thread, which is required to avoid segfaults.
-    ControlObjectSlave* m_pControl;
+    ControlProxy* m_pControl;
 
   private:
     QScopedPointer<ValueTransformer> m_pValueTransformer;

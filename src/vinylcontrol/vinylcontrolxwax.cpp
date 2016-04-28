@@ -24,7 +24,7 @@
 
 #include "vinylcontrol/vinylcontrolxwax.h"
 #include "util/timer.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "control/controlobject.h"
 #include "util/math.h"
 #include "util/defs.h"
@@ -426,7 +426,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             } else if (m_bTrackSelectMode) {
                 //qDebug() << "discontinuing select mode, selecting track";
                 if (m_pControlTrackLoader == NULL) {
-                    m_pControlTrackLoader = new ControlObjectSlave(
+                    m_pControlTrackLoader = new ControlProxy(
                             m_group, "LoadSelectedTrack", this);
                 }
 
@@ -711,7 +711,7 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
     if (m_pControlTrackSelector == NULL) {
         // this isn't done in the constructor because this object
         // doesn't seem to be created yet
-        m_pControlTrackSelector = new ControlObjectSlave(
+        m_pControlTrackSelector = new ControlProxy(
                 "[Playlist]","SelectTrackKnob", this);
     }
 

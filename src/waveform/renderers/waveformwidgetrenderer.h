@@ -15,7 +15,7 @@
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
 class Track;
-class ControlObjectSlave;
+class ControlProxy;
 class VisualPlayPosition;
 class VSyncThread;
 
@@ -106,15 +106,15 @@ class WaveformWidgetRenderer {
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     double m_playPos;
     int m_playPosVSample;
-    ControlObjectSlave* m_pRateControlObject;
+    ControlProxy* m_pRateControlObject;
     double m_rate;
-    ControlObjectSlave* m_pRateRangeControlObject;
+    ControlProxy* m_pRateRangeControlObject;
     double m_rateRange;
-    ControlObjectSlave* m_pRateDirControlObject;
+    ControlProxy* m_pRateDirControlObject;
     double m_rateDir;
-    ControlObjectSlave* m_pGainControlObject;
+    ControlProxy* m_pGainControlObject;
     double m_gain;
-    ControlObjectSlave* m_pTrackSamplesControlObject;
+    ControlProxy* m_pTrackSamplesControlObject;
     int m_trackSamples;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG

@@ -1,30 +1,30 @@
 #include <QApplication>
 #include <QtDebug>
 
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "control/control.h"
 
-ControlObjectSlave::ControlObjectSlave(QObject* pParent)
+ControlProxy::ControlProxy(QObject* pParent)
         : QObject(pParent),
           m_pControl(NULL) {
 }
 
-ControlObjectSlave::ControlObjectSlave(const QString& g, const QString& i, QObject* pParent)
+ControlProxy::ControlProxy(const QString& g, const QString& i, QObject* pParent)
         : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
 
-ControlObjectSlave::ControlObjectSlave(const char* g, const char* i, QObject* pParent)
+ControlProxy::ControlProxy(const char* g, const char* i, QObject* pParent)
         : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
 
-ControlObjectSlave::ControlObjectSlave(const ConfigKey& key, QObject* pParent)
+ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent)
         : QObject(pParent) {
     initialize(key);
 }
 
-void ControlObjectSlave::initialize(const ConfigKey& key) {
+void ControlProxy::initialize(const ConfigKey& key) {
     m_key = key;
     // Don't bother looking up the control if key is NULL. Prevents log spew.
     if (!key.isNull()) {
@@ -32,11 +32,11 @@ void ControlObjectSlave::initialize(const ConfigKey& key) {
     }
 }
 
-ControlObjectSlave::~ControlObjectSlave() {
-    //qDebug() << "ControlObjectSlave::~ControlObjectSlave()";
+ControlProxy::~ControlProxy() {
+    //qDebug() << "ControlProxy::~ControlProxy()";
 }
 
-bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
+bool ControlProxy::connectValueChanged(const QObject* receiver,
         const char* method, Qt::ConnectionType requestedConnectionType) {
 
     if (!m_pControl) {
@@ -100,7 +100,7 @@ bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
 }
 
 // connect to parent object
-bool ControlObjectSlave::connectValueChanged(
+bool ControlProxy::connectValueChanged(
         const char* method, Qt::ConnectionType type) {
     DEBUG_ASSERT(parent() != NULL);
     return connectValueChanged(parent(), method, type);

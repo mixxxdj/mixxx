@@ -28,7 +28,7 @@
 #endif
 
 #include "control/controlobject.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -109,11 +109,11 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 
-    m_pMasterAudioLatencyOverloadCount = new ControlObjectSlave("[Master]",
+    m_pMasterAudioLatencyOverloadCount = new ControlProxy("[Master]",
             "audio_latency_overload_count");
-    m_pMasterAudioLatencyUsage = new ControlObjectSlave("[Master]",
+    m_pMasterAudioLatencyUsage = new ControlProxy("[Master]",
             "audio_latency_usage");
-    m_pMasterAudioLatencyOverload = new ControlObjectSlave("[Master]",
+    m_pMasterAudioLatencyOverload = new ControlProxy("[Master]",
             "audio_latency_overload");
 
     m_inputParams.device = 0;

@@ -1,7 +1,7 @@
 #include "widget/controlwidgetconnection.h"
 
 #include "widget/wbasewidget.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "util/debug.h"
 #include "util/valuetransformer.h"
 #include "util/assert.h"
@@ -11,7 +11,7 @@ ControlWidgetConnection::ControlWidgetConnection(WBaseWidget* pBaseWidget,
                                                  ValueTransformer* pTransformer)
         : m_pWidget(pBaseWidget),
           m_pValueTransformer(pTransformer) {
-    m_pControl = new ControlObjectSlave(key, this);
+    m_pControl = new ControlProxy(key, this);
     m_pControl->connectValueChanged(SLOT(slotControlValueChanged(double)));
 }
 

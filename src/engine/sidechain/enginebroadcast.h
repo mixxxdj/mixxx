@@ -10,7 +10,7 @@
 #include <QVector>
 
 #include "control/controlobject.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/networkstreamworker.h"
 #include "errordialoghandler.h"
@@ -112,7 +112,7 @@ class EngineBroadcast
     UserSettingsPointer m_pConfig;
     Encoder* m_encoder;
     ControlPushButton* m_pBroadcastEnabled;
-    ControlObjectSlave* m_pMasterSamplerate;
+    ControlProxy* m_pMasterSamplerate;
     ControlObject* m_pStatusCO;
     // static metadata according to prefereneces
     bool m_custom_metadata;

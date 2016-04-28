@@ -6,7 +6,7 @@
 #include <QModelIndexList>
 
 #include "preferences/usersettings.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "engine/enginechannel.h"
 #include "library/playlisttablemodel.h"
 #include "track/track.h"
@@ -85,9 +85,9 @@ class DeckAttributes : public QObject {
 
   private:
     EngineChannel::ChannelOrientation m_orientation;
-    ControlObjectSlave m_playPos;
-    ControlObjectSlave m_play;
-    ControlObjectSlave m_repeat;
+    ControlProxy m_playPos;
+    ControlProxy m_play;
+    ControlProxy m_repeat;
     BaseTrackPlayer* m_pPlayer;
 };
 
@@ -200,8 +200,8 @@ class AutoDJProcessor : public QObject {
 
     QList<DeckAttributes*> m_decks;
 
-    ControlObjectSlave* m_pCOCrossfader;
-    ControlObjectSlave* m_pCOCrossfaderReverse;
+    ControlProxy* m_pCOCrossfader;
+    ControlProxy* m_pCOCrossfaderReverse;
 
     ControlPushButton* m_pSkipNext;
     ControlPushButton* m_pFadeNow;

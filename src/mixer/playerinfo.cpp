@@ -27,7 +27,7 @@ static const int kPlayingDeckUpdateIntervalMillis = 2000;
 static PlayerInfo* m_pPlayerInfo = NULL;
 
 PlayerInfo::PlayerInfo()
-        : m_pCOxfader(new ControlObjectSlave("[Master]","crossfader", this)),
+        : m_pCOxfader(new ControlProxy("[Master]","crossfader", this)),
           m_currentlyPlayingDeck(-1) {
     startTimer(kPlayingDeckUpdateIntervalMillis);
 }

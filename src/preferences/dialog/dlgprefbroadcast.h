@@ -9,7 +9,7 @@
 #include "broadcast/defs_broadcast.h"
 #include "preferences/dlgpreferencepage.h"
 
-class ControlObjectSlave;
+class ControlProxy;
 
 class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDlg  {
     Q_OBJECT
@@ -29,7 +29,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
 
   private:
     UserSettingsPointer m_pConfig;
-    ControlObjectSlave* m_pBroadcastEnabled;
+    ControlProxy* m_pBroadcastEnabled;
 };
 
 #endif

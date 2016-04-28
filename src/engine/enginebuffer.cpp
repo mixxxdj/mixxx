@@ -6,7 +6,7 @@
 #include "preferences/usersettings.h"
 #include "control/controlindicator.h"
 #include "control/controllinpotmeter.h"
-#include "control/controlobjectslave.h"
+#include "control/controlproxy.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "engine/bpmcontrol.h"
@@ -180,9 +180,9 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
 
     // Sample rate
-    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
+    m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
 
-    m_pKeylockEngine = new ControlObjectSlave("[Master]", "keylock_engine", this);
+    m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
     m_pKeylockEngine->connectValueChanged(SLOT(slotKeylockEngineChanged(double)),
                                           Qt::DirectConnection);
 
@@ -264,7 +264,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
     m_pScale->clear();
     m_bScalerChanged = true;
 
-    m_pPassthroughEnabled = new ControlObjectSlave(group, "passthrough", this);
+    m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughChanged(double)),
                                                Qt::DirectConnection);
 
