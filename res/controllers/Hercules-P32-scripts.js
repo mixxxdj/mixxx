@@ -128,23 +128,63 @@ ActionButton = function (signals, deck, inCo, onlyOnPress) {
 ActionButton.prototype = Object.create(Control.prototype);
 ActionButton.prototype.constructor = ActionButton;
 
-KnobLin = function (signals, deck, co, low, high, min, max) {
+// Continuous Control, for faders and knobs with finite ranges
+CC = function (signals, deck, co, softTakeoverInit, max) {
+    // Some controllers (like the P32) can be sent a message to tell it to send
+    // signals back with the positions of all the controls. It is helpful to
+    // send the message in the script's init function, but it requires that
+    // soft takeover isn't enabled to work. So, for these controllers, call
+    // this constructor function with softTakeoverInit as false.
     var that = this;
-    Controll.call(this, signals, deck,
-                [co, function (value) { script.absoluteLin(value, low, high, min, max) }, false],
-                null);
-}
-KnobLin.prototype = Object.create(Control.prototype);
-KnobLin.prototype.constructor = KnobLin;
+    if (softTakeoverInit === undefined) { softTakeoverInit = true; }
+    if (max === undefined) { max = 127; };
+    Control.call(this, signals, deck,
+                 [co, null],
+                 null);
 
-KnobNonLin = function (signals, deck, co, low, mid, high, min, max) {
-    var that = this;
-    Controll.call(this, signals, deck,
-                [co, function (value) { script.absoluteNonLin(value, low, mid, high, min, max) }, false],
-                null);
+    this.input = function (channel, control, value, status, group) {
+        engine.setParameter(that.group, co, value / max);
+    }
+
+    // Faders and knobs don't have any LED feedback, so there is no need to
+    // connect a callback function to send MIDI messages when the control changes.
+    // However, when switching layers, take care of soft takeover functionality.
+    this.connect = function () {
+        print(deck);
+        engine.softTakeover(that.group, that.inCo, true);
+    }
+    if (softTakeoverInit) {
+        this.connect();
+    }
+    this.disconnect = function () {
+        engine.softTakeoverIgnoreNextValue(that.group, that.inCo);
+    }
+    this.trigger = function () {};
 }
-KnobNonLin.prototype = Object.create(Control.prototype);
-KnobNonLin.prototype.constructor = KnobNonLin;
+CC.prototype = Object.create(Control.prototype);
+CC.prototype.constructor = CC;
+
+// FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
+CCLin = function (signals, deck, co, softTakeoverInit, low, high, min, max) {
+    var that = this;
+    CC.call(this, signals, deck, co, softTakeoverInit);
+    this.input = function (channel, control, value, status, group) {
+        engine.setValue(that.group, that.inCo, script.absoluteLin(value, low, high, min, max));
+    }
+}
+CCLin.prototype = Object.create(CC.prototype);
+CCLin.prototype.constructor = CCLin;
+
+// FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
+CCNonLin = function (signals, deck, co, softTakeoverInit, low, mid, high, min, max) {
+    var that = this;
+    CC.call(this, signals, deck, co, softTakeoverInit);
+    this.input = function (channel, control, value, status, group) {
+        engine.setValue(that.group, that.inCo, script.absoluteNonLin(value, low, mid, high, min, max));
+    }
+}
+CCNonLin.prototype = Object.create(CC.prototype);
+CCNonLin.prototype.constructor = CCNonLin;
 
 script.samplerRegEx = /\[Sampler(\d+)\]/
 script.channelRegEx = /\[Channel(\d+)\]/
