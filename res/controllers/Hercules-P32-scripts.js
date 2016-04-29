@@ -107,8 +107,7 @@ var Control = function (signals, group, inOptions, outOptions) {
 }
 
 // for buttons that toggle a binary CO
-ToggleButton = function (signals, deck, co, on, off, onlyOnPress) {
-    var that = this;
+ToggleButton = function (signals, deck, co, onlyOnPress, on, off) {
     if (on === undefined) {on = 127};
     if (off === undefined) {off = 0};
     Control.call(this, signals, deck,
@@ -117,6 +116,53 @@ ToggleButton = function (signals, deck, co, on, off, onlyOnPress) {
 }
 ToggleButton.prototype = Object.create(Control.prototype);
 ToggleButton.prototype.constructor = ToggleButton;
+
+// for buttons that toggle a binary CO but their LEDs respond to a different CO, that is,
+ToggleButtonAsymmetic = function (signals, deck, inCo, outCo, onlyOnPress, on, off) {
+    if (on === undefined) {on = 127};
+    if (off === undefined) {off = 0};
+    Control.call(this, signals, deck,
+                [inCo, function () { return ! engine.getValue(this.group, this.inCo) }, onlyOnPress],
+                [outCo, function (value) { return (value) ? on : off }]);
+}
+ToggleButtonAsymmetic.prototype = Object.create(Control.prototype);
+ToggleButtonAsymmetic.prototype.constructor = ToggleButtonAsymmetic;
+
+CueButton = function (signals, deck, on, off) {
+    if (on === undefined) {on = 127};
+    if (off === undefined) {off = 0};
+    ToggleButtonAsymmetic.call(this, signals, deck, 'cue_default', 'cue_indicator', false, on, off);
+}
+CueButton.prototype = Object.create(ToggleButtonAsymmetic.prototype);
+CueButton.prototype.constructor = CueButton;
+
+PlayButton = function (signals, deck, on, off) {
+    if (on === undefined) {on = 127};
+    if (off === undefined) {off = 0};
+    ToggleButtonAsymmetic.call(this, signals, deck,
+                               'play', 'play_indicator', true, on, off);
+}
+PlayButton.prototype = Object.create(ToggleButtonAsymmetic.prototype);
+PlayButton.prototype.constructor = PlayButton;
+
+HotcueButton = function (signals, deck, hotcueNumber, on, off) {
+    if (on === undefined) {on = 127};
+    if (off === undefined) {off = 0};
+    ToggleButtonAsymmetic.call(this, signals, deck,
+                               'hotcue_'+hotcueNumber+'_activate', 'hotcue_'+hotcueNumber+'_enabled', false, on, off);
+}
+HotcueButton.prototype = Object.create(ToggleButtonAsymmetic.prototype);
+HotcueButton.prototype.constructor = HotcueButton;
+
+HotcueClearButton = function (signals, deck, hotcueNumber, on, off) {
+    if (on === undefined) {on = 127};
+    if (off === undefined) {off = 0};
+    Control.call(this, signals, deck,
+                 ['hotcue_'+hotcueNumber+'_clear', function () {return 1;}],
+                 ['hotcue_'+hotcueNumber+'_enabled', function (value) { return (value) ? on : off; }]);
+}
+HotcueClearButton.prototype = Object.create(Control.prototype);
+HotcueClearButton.prototype.constructor = HotcueClearButton;
 
 // for COs that only get set to 1
 ActionButton = function (signals, deck, inCo, onlyOnPress) {
@@ -343,12 +389,8 @@ P32.Deck = function (deckNumbers, channel) {
     }
     
     this.sync = new ToggleButton([0x90 + channel, 0x08], this.currentDeck, 'sync_enabled');
-    this.cue = new Control([0x90 + channel, 0x09], this.currentDeck,
-                           ['cue_default', function (val) { return val / 127 }, false],
-                           ['cue_indicator', function (val) { return val * 127 }]);
-    this.play = new Control([0x90 + channel, 0x0A], this.currentDeck,
-                            ['play', function () { return ! engine.getValue(this.group, this.inCo) }],
-                            ['play_indicator', function (val) { return val * 127 }]);
+    this.cue = new CueButton([0x90 + channel, 0x09], this.currentDeck);
+    this.play = new PlayButton([0x90 + channel, 0x0A], this.currentDeck);
     
     this.quantize = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x08], this.currentDeck, 'quantize'); // sync shifted
     this.keylock = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'keylock'); // cue shifted
@@ -357,12 +399,10 @@ P32.Deck = function (deckNumbers, channel) {
                             ['play_indicator', function (val) { return val * 127 }]);
     
     for (var i = 1; i <= 16; i++) {
-        this['hotcueButton' + i] = new Control([0x90 + channel, P32.PadNumToMIDIControl(i)], this.currentDeck,
-                                            ['hotcue_'+i+'_activate', function (value) {return value/127}, false],
-                                            ['hotcue_'+i+'_enabled', function (val) { return val * P32.padColors.red }]);
-        this['hotcueButtonShift' + i] = new Control([0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i)], this.currentDeck,
-                                            ['hotcue_'+i+'_clear', function (value) {return 1}],
-                                            ['hotcue_'+i+'_enabled', function (val) { return val * P32.padColors.red }]);
+        this['hotcueButton' + i] = new HotcueButton([0x90 + channel, P32.PadNumToMIDIControl(i)], this.currentDeck,
+                                                    i, P32.padColors.red, P32.padColors.off);
+        this['hotcueButtonShift' + i] = new HotcueClearButton([0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i)], this.currentDeck,
+                                                              i, P32.padColors.red, P32.padColors.off);
     }
     
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
