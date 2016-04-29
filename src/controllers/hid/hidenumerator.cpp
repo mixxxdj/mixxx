@@ -43,7 +43,7 @@ bool isDeviceBlacklisted(struct hid_device_info* cur_dev) {
             if (cur_dev->interface_number != blacklisted.interface_number) {
                 continue;
             }
-        } 
+        }
         // Blacklist entry based on usage_page and usage (both required)
         if (blacklisted.usage_page != 0 && blacklisted.usage != 0) {
             // Skip matching for devices with no usage_page/usage info.
@@ -105,3 +105,4 @@ QList<Controller*> HidEnumerator::queryDevices() {
 
     return m_devices;
 }
+p

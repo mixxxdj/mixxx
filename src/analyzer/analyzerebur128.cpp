@@ -54,7 +54,7 @@ void AnalyzerEbur128::process(const CSAMPLE *pIn, const int iLen) {
         qWarning() << "AnalyzerEbur128::process(): Not initialized!";
         return;
     }
-    ScopedTimer t("AnalyserEbur128::process()");
+    ScopedTimer t("AnalyzerEbur128::process()");
     size_t frames = iLen / 2;
     int e = ebur128_add_frames_float(m_pState, pIn, frames);
     DEBUG_ASSERT_AND_HANDLE(e == EBUR128_SUCCESS) {
