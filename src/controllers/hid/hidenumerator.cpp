@@ -105,4 +105,3 @@ QList<Controller*> HidEnumerator::queryDevices() {
 
     return m_devices;
 }
-p
