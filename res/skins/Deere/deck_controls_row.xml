@@ -15,6 +15,7 @@
       <Template src="skin:beatloop.xml"/>
       <Template src="skin:loop.xml"/>
       <Template src="skin:hotcue.xml"/>
+      <Template src="skin:vinylcontrol.xml"/>
     </Children>
   </WidgetGroup>
 </Template>

@@ -1,0 +1,38 @@
+<!DOCTYPE template>
+<Template>
+	<WidgetGroup>
+		<ObjectName>VinylControls</ObjectName>
+		<Layout>vertical</Layout>
+    <SizePolicy>max,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>max,max</SizePolicy>
+        <Children>
+          <Text>Prova</Text>
+          <PushButton>
+            <TooltipId>vinylcontrol_enabled</TooltipId>
+            <ObjectName>VinylControlToggle</ObjectName>
+            <MinimumSize><Variable name="SquareButtonMinimumSize"/></MinimumSize>
+            <MaximumSize><Variable name="SquareButtonMaximumSize"/></MaximumSize>
+            <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>Vinyl OFF</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>Vinyl ON</Text>
+            </State>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+		</Children>
+    <!-- <Connection>
+      <ConfigKey persist="true">[Vinylcontrol],show_vinylcontrol</ConfigKey>
+      <BindProperty>Visible</BindProperty>
+    </Connection> -->
+	</WidgetGroup>
+
+</Template>

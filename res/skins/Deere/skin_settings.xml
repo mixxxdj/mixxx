@@ -76,6 +76,24 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
+              <Text>&#9744; Show Vinyl</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9745; Show Vinyl</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Vinylcontrol],show_vinylcontrol</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
               <Text>&#9744; Show Crossfader</Text>
               <Alignment>left</Alignment>
             </State>
