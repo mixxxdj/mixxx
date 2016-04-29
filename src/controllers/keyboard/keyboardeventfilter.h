@@ -6,7 +6,7 @@
 #include <QKeyEvent>
 #include <QMultiHash>
 
-#include "configobject.h"
+#include "preferences/configobject.h"
 
 class ControlObject;
 

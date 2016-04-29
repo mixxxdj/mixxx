@@ -1,25 +1,7 @@
-/***************************************************************************
-                          configobject.h  -  description
-                             -------------------
-    begin                : Thu Jun 6 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef CONFIGOBJECT_H
-#define CONFIGOBJECT_H
+#ifndef PREFERENCES_CONFIGOBJECT_H
+#define PREFERENCES_CONFIGOBJECT_H
 
 #include <QString>
-#include <QFile>
 #include <QKeySequence>
 #include <QDomNode>
 #include <QMap>
@@ -29,10 +11,8 @@
 
 #include "util/debug.h"
 
-
 // Class for the key for a specific configuration element. A key consists of a
 // group and an item.
-
 class ConfigKey {
   public:
     ConfigKey(); // is required for qMetaTypeConstructHelper()
@@ -172,4 +152,4 @@ template <class ValueType> class ConfigObject {
     bool parse();
 };
 
-#endif
+#endif // PREFERENCES_CONFIGOBJECT_H

@@ -21,7 +21,7 @@
 #include <QMainWindow>
 #include <QString>
 
-#include "configobject.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 #include "preferences/constants.h"
 #include "track/track.h"

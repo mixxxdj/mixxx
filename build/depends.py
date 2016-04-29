@@ -583,9 +583,7 @@ class MixxxCore(Feature):
         return True
 
     def sources(self, build):
-        sources = ["configobject.cpp",
-
-                   "control/control.cpp",
+        sources = ["control/control.cpp",
                    "control/controlaudiotaperpot.cpp",
                    "control/controlbehavior.cpp",
                    "control/controleffectknob.cpp",
@@ -606,6 +604,7 @@ class MixxxCore(Feature):
                    "dialog/dlgabout.cpp",
                    "dialog/dlgdevelopertools.cpp",
 
+                   "preferences/configobject.cpp",
                    "preferences/dialog/dlgprefautodj.cpp",
                    "preferences/dialog/dlgprefcontrols.cpp",
                    "preferences/dialog/dlgprefcrossfader.cpp",

@@ -8,8 +8,8 @@
 #include <QScopedPointer>
 #include <QSignalMapper>
 
-#include "configobject.h"
 #include "control/controlproxy.h"
+#include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 
 class VisibilityControlConnection : public QObject {
