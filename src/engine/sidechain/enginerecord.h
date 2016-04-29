@@ -59,9 +59,14 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
 
   signals:
     // emitted to notify RecordingManager
-    void bytesRecorded(int);
-    void isRecording(bool);
-    void durationRecorded(QString);
+    void bytesRecorded(int bytes);
+
+    // Emitted when recording state changes. 'recording' represents whether
+    // recording is active and 'error' is true if an error occurred. Currently
+    // only one error can occur: the specified file was unable to be opened for
+    // writing.
+    void isRecording(bool recording, bool error);
+    void durationRecorded(QString duration);
 
   private:
     int getActiveTracks();
