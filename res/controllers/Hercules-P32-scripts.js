@@ -69,7 +69,7 @@ var Control = function (signals, group, inOptions, outOptions) {
     
    var connection;
    this.connect = function () {
-      connection = engine.connectControl(that.group, that.outCo, that.output);
+      connection = engine.connectControl(this.group, this.outCo, this.output);
    };
    this.disconnect = function () { connection.disconnect(); };
 //  this.trigger = function() { outConnection.trigger(); };
@@ -77,8 +77,8 @@ var Control = function (signals, group, inOptions, outOptions) {
 //     this.disconnect = function () {
 //         print('disconnecting: ' + that.group + ' , ' + that.outCo + ' , ' + that.output);
 //         engine.connectControl(that.group, that.outCo, that.output, true);};
-    this.trigger = function() { engine.trigger(that.group, that.outCo); };
-    this.send = function (value) { midi.sendShortMsg(that.midi.status, that.midi.note, value) };
+    this.trigger = function() { engine.trigger(this.group, this.outCo); };
+    this.send = function (value) { midi.sendShortMsg(this.midi.status, this.midi.note, value) };
     
     this.outSetup = function (outOptions) {
         if (outOptions === null) {
@@ -96,7 +96,7 @@ var Control = function (signals, group, inOptions, outOptions) {
             this.output = null;
         } else {
             this.output = function (value, group, control) {
-                that.send(outFunc.call(that, value));
+                this.send(outFunc.call(this, value));
             }
         }
         if (connect) { this.connect() };
@@ -120,7 +120,6 @@ ToggleButton.prototype.constructor = ToggleButton;
 
 // for COs that only get set to 1
 ActionButton = function (signals, deck, inCo, onlyOnPress) {
-    var that = this;
     Control.call(this, signals, deck,
                 [inCo, function () { return 1; }, onlyOnPress],
                 null);
