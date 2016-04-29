@@ -189,7 +189,7 @@ script.samplerRegEx = /\[Sampler(\d+)\]/
 script.channelRegEx = /\[Channel(\d+)\]/
 script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/
 
-function P32 () {};
+var P32 = {};
 
 P32.init = function () {
     P32.leftDeck = new P32.Deck([1,3], 1);
@@ -430,9 +430,6 @@ P32.Deck = function (deckNumbers, channel) {
                     way to set the loop size LED less than 1/32 (even though it
                     should be able to show 1/64)
                 **/
-                if (loopEnabledDot && loopSize <= 1) {
-                    return;
-                }
                 loopSize /= 2;
                 engine.setValue(that.currentDeck, 'loop_halve', 1);
                 engine.setValue(that.currentDeck, 'loop_halve', 0);
@@ -441,10 +438,6 @@ P32.Deck = function (deckNumbers, channel) {
                     Mixxx supports loops longer than 64 beats, but the loop size LED
                     only has 2 digits, so it couldn't show 128
                 **/
-                if (loopEnabledDot && loopSize >= 32) {
-                    // Unfortunately the LED display doesn't have a way to show 64 with a dot.
-                    return;
-                }
                 loopSize *= 2;
                 engine.setValue(that.currentDeck, 'loop_double', 1);
                 engine.setValue(that.currentDeck, 'loop_double', 0);
