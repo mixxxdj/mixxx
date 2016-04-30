@@ -351,17 +351,22 @@ P32.headMix = function (channel, control, value, status, group) {
     engine.setValue('[Master]', 'headMix', engine.getValue('[Master]', 'headMix') + (.25 * direction));
 }
 
-P32.record = new Control([0x90, 0x02], {currentDeck: '[Recording]'},
-                         ['toggle_recording', function (val) {
-                             if (P32.leftDeck.shift) {
-                                 P32.leftDeck.deckToggle();
-                             } else if (P32.rightDeck.shift) {
-                                 P32.rightDeck.deckToggle();
-                             } else {
-                                return val / 127;
-                            }
-                         }],
+P32.record = new Control([0x90, 0x02], '[Recording]',
+                         ['toggle_recording', null],
                          ['status', function (val) {return val * 127}]);
+P32.record.input = function (channel, control, value, status, group) {
+    if (value === 127) {
+        if (P32.leftDeck.shift) {
+            P32.leftDeck.toggle();
+        } else if (P32.rightDeck.shift) {
+            P32.rightDeck.toggle();
+        } else {
+            // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
+            // change to this.setValue(1)
+            engine.setValue('[Recording]', 'toggle_recording', 1);
+        }
+    }
+}
 
 P32.EffectUnit = function (unitNumber) {
     var that = this;
@@ -437,6 +442,7 @@ P32.Deck = function (deckNumbers, channel) {
                             ['play_indicator', function (val) { return val * 127 }]);
     
     for (var i = 1; i <= 16; i++) {
+        // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
         this['hotcueButton' + i] = new HotcueButton([0x90 + channel, P32.PadNumToMIDIControl(i)], this.currentDeck,
                                                     i, P32.padColors.red, P32.padColors.off);
         this['hotcueButtonShift' + i] = new HotcueClearButton([0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i)], this.currentDeck,
@@ -463,20 +469,6 @@ P32.Deck = function (deckNumbers, channel) {
     }
 
     this.volume = new CCNonLin([0xB0 + channel, 0x01], this.currentDeck, 'volume', false, 0, .25, 1);
-
-    this.loadTrack = function (channel, control, value, status, group) {
-        if (value) {
-            engine.setValue(that.currentDeck, 'LoadSelectedTrack', 1);
-        }
-    }
-//     this.loadTrack = new ActionButton([0x90 + channel, 0x0F], this, 'LoadSelectedTrack');
-    
-    this.ejectTrack = function (channel, control, value, status, group) {
-        if (value) {
-            engine.setValue(that.currentDeck, 'eject', 1);
-            engine.beginTimer(250, 'engine.setValue("'+that.currentDeck+'", "eject", 0)', true);
-        }
-    }
 
     this.loopSize = new Control([0xB0 + channel, 0x1B], this.currentDeck,
                                 null,
@@ -541,7 +533,7 @@ P32.Deck = function (deckNumbers, channel) {
         }
     }
     
-    this.loopActive = function (channel, control, value, status, group) {
+    this.loopToggle = function (channel, control, value, status, group) {
         if (value) {
             if (engine.getValue(that.currentDeck, 'loop_enabled')) {
                 engine.setValue(that.currentDeck, 'reloop_exit', 1);
@@ -566,7 +558,7 @@ P32.Deck = function (deckNumbers, channel) {
         }
     }
     
-    this.beatJump = function (channel, control, value, status, group) {
+    this.beatJumpEncoder = function (channel, control, value, status, group) {
         var direction = (value === 127) ? -1 : 1;
         if (that.beatJumpEncoderPressed) {
             if (value === 127 && beatJumpSize > 1/32) { // turn left
@@ -587,6 +579,19 @@ P32.Deck = function (deckNumbers, channel) {
         } else {
             that.beatJumpEncoderPressed = false;
             midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(loopSize) / Math.log(2));
+        }
+    }
+
+    this.loadTrack = function (channel, control, value, status, group) {
+        if (value === 127) {
+            engine.setValue(that.currentDeck, 'LoadSelectedTrack', 1);
+        }
+    }
+
+    this.ejectTrack = function (channel, control, value, status, group) {
+        if (value === 127) {
+            engine.setValue(that.currentDeck, 'eject', 1);
+            engine.beginTimer(250, 'engine.setValue("'+that.currentDeck+'", "eject", 0)', true);
         }
     }
 }
