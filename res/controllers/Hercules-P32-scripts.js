@@ -243,9 +243,73 @@ var CCNonLin = function (signals, group, co, softTakeoverInit, low, mid, high, m
 CCNonLin.prototype = Object.create(CC.prototype);
 CCNonLin.prototype.constructor = CCNonLin;
 
+var LayerContainer = function (initialLayer) {
+    this.forEachControl = function (operation, recursive) {
+        if (typeof operation !== 'function') {
+            print('ERROR: LayerContainer.forEachContainer requires a function argument');
+            return;
+        }
+        if (recursive === undefined) { recursive = true; };
+        for (var memberName in this) {
+            if (this.hasOwnProperty(memberName)) {
+                if (this[memberName] instanceof Control) {
+                    operation.call(this, this[memberName]);
+                } else if (recursive && this[memberName] instanceof LayerContainer) {
+                    this[memberName].forEachControl(iterative);
+                }
+            }
+        }
+    }
+    
+    this.reconnectControls = function (operation) {
+        this.forEachControl(function (control) {
+            control.disconnect();
+            if (typeof operation === 'function') {
+                operation.call(this, control);
+            }
+            control.connect();
+            control.trigger();
+        });
+    }
+    
+    this.applyLayer = function (newLayer, operation) {
+        //FIXME: What is the best way to implement script.extend?
+        script.extend(true, this, newLayer);
+        this.reconnectControls(operation);
+    };
+}
+
 script.samplerRegEx = /\[Sampler(\d+)\]/
 script.channelRegEx = /\[Channel(\d+)\]/
 script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/
+script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/
+
+var Deck = function (deckNumbers) {
+    LayerContainer.call(this);
+    this.currentDeck = '[Channel' + deckNumbers[0] + ']';
+    
+    this.toggle = function () {
+        var index = deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
+        if (index === (deckNumbers.length - 1)) {
+            index = 0;
+        } else {
+            index += 1;
+        }
+        this.currentDeck = "[Channel" + deckNumbers[index] + "]";
+
+        this.reconnectControls(function (control) {
+            if (control.group.search(script.eqKnobRegEx) !== -1) {
+                control.group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
+            } else if (control.group.search(script.quickEffectRegEx) !== -1) {
+                control.group = '[QuickEffectRack1_' + this.currentDeck + ']';
+            } else {
+                control.group = this.currentDeck;
+            }
+        });
+    }
+}
+Deck.prototype = Object.create(LayerContainer.prototype);
+Deck.prototype.constructor = Deck;
 
 var P32 = {};
 
@@ -301,46 +365,39 @@ P32.record = new Control([0x90, 0x02], {currentDeck: '[Recording]'},
 
 P32.EffectUnit = function (unitNumber) {
     var that = this;
-    var effectUnit = '[EffectRack1_EffectUnit' + unitNumber + ']';
-    var activeEffectNumber = 1;
-    var activeEffect = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + activeEffectNumber + ']';
+    this.group = '[EffectRack1_EffectUnit' + unitNumber + ']';
 
     // deck enable buttons
     for (var d = 1; d <= 4; d++) {
-        this['deckButton' + d] = new ToggleButton([0x90 + unitNumber, 0x02 + d], effectUnit, 'group_[Channel' + d + ']_enable');
+        // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
+        this['deckButton' + d] = new ToggleButton([0x90 + unitNumber, 0x02 + d], this.group, 'group_[Channel' + d + ']_enable');
     }
     this.pflToggle = function () {
-        script.toggleControl(effectUnit, 'group_[Headphone]_enable');
+        script.toggleControl(this.group, 'group_[Headphone]_enable');
     }
 
     this.dryWet = new CCLin([0xB0 + unitNumber, 0x09],
-                         effectUnit, 'mix', false, 0, 1);
+                         this.group, 'mix', false, 0, 1);
     this.superKnob = new CCLin([0xB0 + unitNumber, 0x09],
-                         effectUnit, 'super1', true, 0, 1);
+                         this.group, 'super1', true, 0, 1);
 
+    this.activeEffect = new LayerContainer();
     for (var p = 1; p <= 3; p++) {
-        this['parameterKnob' + p] = new CC([0xB0 + unitNumber, 0x06],
-                                           activeEffect, 'parameter' + p, false);
+        // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
+        this.activeEffect['parameterKnob' + p] = new CC([0xB0 + unitNumber, 0x06],
+                                           '[EffectRack1_EffectUnit' + unitNumber + '_Effect1]', 'parameter' + p, false);
     }
 
     // buttons to select the effect that the knobs control
     this.switchEffect = function (effectNumber) {
-        for (var p = 1; p <= 3; p++) {
-            this['parameterKnob' + p].disconnect();
-        }
-
-        activeEffectNumber = effectNumber;
-        activeEffect = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + activeEffectNumber + ']';
+        this.activeEffect.reconnectControls(function (control) {
+            control.group = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + effectNumber + ']';
+        });
 
         for (var e = 1; e < 4; e ++) {
             midi.sendShortMsg(0x90 + unitNumber + P32.shiftOffset,
                               0x02 + e,
-                              (e === activeEffectNumber) ? 127 : 0);
-        }
-
-        for (var p = 1; p <= 3; p++) {
-            this['parameterKnob' + p].group = activeEffect;
-            this['parameterKnob' + p].connect();
+                              (e === effectNumber) ? 127 : 0);
         }
     }
     this.switchEffect1 = function (channel, control, value, status, group) { that.switchEffect(1); };
@@ -350,45 +407,13 @@ P32.EffectUnit = function (unitNumber) {
 };
 
 P32.Deck = function (deckNumbers, channel) {
+    Deck.call(this, deckNumbers);
     var that = this;
-    var t = this;
     var loopSize = defaultLoopSize;
     var beatJumpSize = defaultBeatJumpSize;
     this.shift = false;
-    this.currentDeck = "[Channel" + deckNumbers[0] + "]";
+    
     this.effectUnit = new P32.EffectUnit(deckNumbers[0]);
-    this.deckToggle = function () {
-        for (var c in this) {
-            if (this.hasOwnProperty(c)) {
-                if (this[c] instanceof Control) {
-                    this[c].disconnect();
-                }
-            }
-        }
-        
-        var index = deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
-        if (index === (deckNumbers.length - 1)) {
-            index = 0;
-        } else {
-            index += 1;
-        }
-        this.currentDeck = "[Channel" + deckNumbers[index] + "]";
-        
-        for (c in this) {
-            if (this.hasOwnProperty(c)) {
-                if (this[c] instanceof Control) {
-                    if (this[c].group.search(script.eqKnobRegEx) !== -1) {
-                        this[c].group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
-                    } else {
-                        this[c].group = this.currentDeck;
-                    }
-                    this[c].connect();
-                    this[c].trigger();
-                }
-            }
-        }
-        print("Switched to deck: " + this.currentDeck);
-    }
     
     this.shiftButton = function (channel, control, value, status, group) {
         if (value === 127) {
@@ -565,3 +590,5 @@ P32.Deck = function (deckNumbers, channel) {
         }
     }
 }
+P32.Deck.prototype = Object.create(Deck.prototype);
+P32.Deck.prototype.constructor = P32.Deck;

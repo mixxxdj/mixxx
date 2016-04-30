@@ -328,7 +328,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.parameterKnob1.input</key>
+                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob1.input</key>
                 <status>0xB1</status>
                 <midino>0x06</midino>
                 <options>
@@ -337,7 +337,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.parameterKnob2.input</key>
+                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob2.input</key>
                 <status>0xB1</status>
                 <midino>0x07</midino>
                 <options>
@@ -346,7 +346,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.parameterKnob3.input</key>
+                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob3.input</key>
                 <status>0xB1</status>
                 <midino>0x08</midino>
                 <options>
@@ -356,7 +356,7 @@
             <!-- shifted parameter knobs -->
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.parameterKnob1.input</key>
+                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob1.input</key>
                 <status>0xB4</status>
                 <midino>0x06</midino>
                 <options>
@@ -365,7 +365,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.parameterKnob2.input</key>
+                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob2.input</key>
                 <status>0xB4</status>
                 <midino>0x07</midino>
                 <options>
@@ -374,7 +374,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.parameterKnob3.input</key>
+                <key>P32.leftDeck.effectUnit.activeEffect.parameterKnob3.input</key>
                 <status>0xB4</status>
                 <midino>0x08</midino>
                 <options>
@@ -545,7 +545,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.beatJump</key>
+                <key>P32.leftDeck.beatJumpEncoder</key>
                 <status>0xB1</status>
                 <midino>0x05</midino>
                 <options>
@@ -698,7 +698,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopActive</key>
+                <key>P32.leftDeck.loopToggle</key>
                 <status>0x91</status>
                 <midino>0x01</midino>
                 <options>
@@ -716,7 +716,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.loopActive</key>
+                <key>P32.leftDeck.loopToggle</key>
                 <status>0x94</status>
                 <midino>0x01</midino>
                 <options>
@@ -806,7 +806,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.beatJump</key>
+                <key>P32.rightDeck.beatJumpEncoder</key>
                 <status>0xB2</status>
                 <midino>0x05</midino>
                 <options>
@@ -941,7 +941,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopActive</key>
+                <key>P32.rightDeck.loopToggle</key>
                 <status>0x92</status>
                 <midino>0x01</midino>
                 <options>
@@ -959,7 +959,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.loopActive</key>
+                <key>P32.rightDeck.loopToggle</key>
                 <status>0x95</status>
                 <midino>0x01</midino>
                 <options>
@@ -1265,7 +1265,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.parameterKnob1.input</key>
+                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob1.input</key>
                 <status>0xB2</status>
                 <midino>0x06</midino>
                 <options>
@@ -1274,7 +1274,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.parameterKnob2.input</key>
+                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob2.input</key>
                 <status>0xB2</status>
                 <midino>0x07</midino>
                 <options>
@@ -1283,7 +1283,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.parameterKnob3.input</key>
+                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob3.input</key>
                 <status>0xB2</status>
                 <midino>0x08</midino>
                 <options>
@@ -1293,7 +1293,7 @@
             <!-- shifted parameter knobs -->
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.parameterKnob1.input</key>
+                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob1.input</key>
                 <status>0xB5</status>
                 <midino>0x06</midino>
                 <options>
@@ -1302,7 +1302,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.parameterKnob2.input</key>
+                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob2.input</key>
                 <status>0xB5</status>
                 <midino>0x07</midino>
                 <options>
@@ -1311,7 +1311,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.parameterKnob3.input</key>
+                <key>P32.rightDeck.effectUnit.activeEffect.parameterKnob3.input</key>
                 <status>0xB5</status>
                 <midino>0x08</midino>
                 <options>
