@@ -77,9 +77,9 @@ var Control = function (signals, group, inOptions, outOptions) {
         }
         this.inCo = inOptions[0];
         this.inFunc = inOptions[1];
-        if (this.inFunc === undefined) {this.inFunc = function (value) {return value;}};
+        if (this.inFunc === undefined) {this.inFunc = function (value) {return value;};}
         this.onlyOnPress = inOptions[2];
-        if (this.onlyOnPress === undefined) {this.onlyOnPress = true};
+        if (this.onlyOnPress === undefined) {this.onlyOnPress = true;}
         this.input = function (channel, control, value, status, group) {
             // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
             if (that.onlyOnPress) {
@@ -89,8 +89,8 @@ var Control = function (signals, group, inOptions, outOptions) {
             } else {
                 that.setValue(that.inFunc.call(that, value));
             }
-        }
-    }
+        };
+    };
     this.inSetup(inOptions);
     this.previousInput = null;
 
@@ -105,7 +105,7 @@ var Control = function (signals, group, inOptions, outOptions) {
     //         print('disconnecting: ' + that.group + ' , ' + that.outCo + ' , ' + that.output);
     //         engine.connectControl(that.group, that.outCo, that.output, true);};
     this.trigger = function() { engine.trigger(this.group, this.outCo); };
-    this.send = function (value) { midi.sendShortMsg(this.midi.status, this.midi.note, value) };
+    this.send = function (value) { midi.sendShortMsg(this.midi.status, this.midi.note, value); };
 
     this.outSetup = function (outOptions) {
         if (outOptions === null || outOptions === undefined) {
@@ -115,22 +115,22 @@ var Control = function (signals, group, inOptions, outOptions) {
         this.outFunc = outOptions[1];
         var connect = outOptions[2];
         var trigger = outOptions[3];
-        if (this.outFunc === undefined) {this.outFunc = function (value) {return value;}};
-        if (connect === undefined) {connect = true};
-        if (trigger === undefined) {trigger = true};
+        if (this.outFunc === undefined) {this.outFunc = function (value) {return value;};}
+        if (connect === undefined) {connect = true;}
+        if (trigger === undefined) {trigger = true;}
         if (this.outFunc === null) {
             this.output = null;
         } else {
             this.output = function (value, group, control) {
                 this.send(this.outFunc.call(this, value));
-            }
+            };
         }
-        if (connect) { this.connect() };
-        if (trigger) { this.trigger() };
-    }
+        if (connect) { this.connect(); }
+        if (trigger) { this.trigger(); }
+    };
     this.outSetup(outOptions);
     this.previousOutput = null;
-}
+};
 
 // for buttons that toggle a binary CO
 var ToggleButton = function (signals, group, co, onlyOnPress, on, off) {
@@ -145,12 +145,12 @@ var ToggleButton = function (signals, group, co, onlyOnPress, on, off) {
     off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when the Mixxx CO is off
                            Defaults to 0 if ommitted.
     **/
-    if (on === undefined) {on = 127};
-    if (off === undefined) {off = 0};
+    if (on === undefined) {on = 127;}
+    if (off === undefined) {off = 0;}
     Control.call(this, signals, group,
                 [co, function () { return ! this.getValue(); }, onlyOnPress],
-                [co, function () { return (this.getValue()) ? on : off } ]);
-}
+                [co, function () { return (this.getValue()) ? on : off; } ]);
+};
 ToggleButton.prototype = Object.create(Control.prototype);
 ToggleButton.prototype.constructor = ToggleButton;
 
@@ -168,12 +168,12 @@ var ToggleButtonAsymmetric = function (signals, group, inCo, outCo, onlyOnPress,
     off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when outCo is off
                            Defaults to 0 if ommitted.
     **/
-    if (on === undefined) {on = 127};
-    if (off === undefined) {off = 0};
+    if (on === undefined) {on = 127;}
+    if (off === undefined) {off = 0;}
     Control.call(this, signals, group,
                 [inCo, function () { return ! this.getValue(); }, onlyOnPress],
-                [outCo, function (value) { return (value) ? on : off } ]);
-}
+                [outCo, function (value) { return (value) ? on : off; } ]);
+};
 ToggleButtonAsymmetric.prototype = Object.create(Control.prototype);
 ToggleButtonAsymmetric.prototype.constructor = ToggleButtonAsymmetric;
 
@@ -186,10 +186,10 @@ var CueButton = function (signals, group, on, off) {
     off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when cue_indicator is 0
                            Defaults to 0 if ommitted.
     **/
-    if (on === undefined) {on = 127};
-    if (off === undefined) {off = 0};
+    if (on === undefined) {on = 127;}
+    if (off === undefined) {off = 0;}
     ToggleButtonAsymmetric.call(this, signals, group, 'cue_default', 'cue_indicator', false, on, off);
-}
+};
 CueButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
 CueButton.prototype.constructor = CueButton;
 
@@ -202,11 +202,11 @@ var PlayButton = function (signals, group, on, off) {
     off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when play_indicator is 0
                            Defaults to 0 if ommitted.
     **/
-    if (on === undefined) {on = 127};
-    if (off === undefined) {off = 0};
+    if (on === undefined) {on = 127;}
+    if (off === undefined) {off = 0;}
     ToggleButtonAsymmetric.call(this, signals, group,
                                'play', 'play_indicator', true, on, off);
-}
+};
 PlayButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
 PlayButton.prototype.constructor = PlayButton;
 
@@ -220,11 +220,11 @@ var HotcueButton = function (signals, group, hotcueNumber, on, off) {
     off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when cue_indicator is 0
                            Defaults to 0 if ommitted.
     **/
-    if (on === undefined) {on = 127};
-    if (off === undefined) {off = 0};
+    if (on === undefined) {on = 127;}
+    if (off === undefined) {off = 0;}
     ToggleButtonAsymmetric.call(this, signals, group,
                                'hotcue_'+hotcueNumber+'_activate', 'hotcue_'+hotcueNumber+'_enabled', false, on, off);
-}
+};
 HotcueButton.prototype = Object.create(ToggleButtonAsymmetric.prototype);
 HotcueButton.prototype.constructor = HotcueButton;
 
@@ -238,11 +238,11 @@ var HotcueClearButton = function (signals, group, hotcueNumber, on, off) {
     off, number, optional: value for the 3rd byte of the MIDI message to send back to turn off the LED when cue_indicator is 0
                            Defaults to 0 if ommitted.
     **/
-    if (on === undefined) {on = 127};
-    if (off === undefined) {off = 0};
+    if (on === undefined) {on = 127;}
+    if (off === undefined) {off = 0;}
     HotcueButton.call(this, signals, group, hotcueNumber, on, off);
     this.inSetup(['hotcue_'+hotcueNumber+'_clear', function () {return 1;} ]);
-}
+};
 HotcueClearButton.prototype = Object.create(HotcueButton.prototype);
 HotcueClearButton.prototype.constructor = HotcueClearButton;
 
@@ -258,7 +258,7 @@ var ActionButton = function (signals, group, inCo, onlyOnPress) {
     Control.call(this, signals, group,
                 [inCo, function () { return 1; }, onlyOnPress],
                 null);
-}
+};
 ActionButton.prototype = Object.create(Control.prototype);
 ActionButton.prototype.constructor = ActionButton;
 
@@ -277,29 +277,29 @@ var CC = function (signals, group, co, softTakeoverInit, max) {
     **/
     var that = this;
     if (softTakeoverInit === undefined) { softTakeoverInit = true; }
-    if (max === undefined) { max = 127; };
+    if (max === undefined) { max = 127; }
     Control.call(this, signals, group,
                  [co, null],
                  null);
 
     this.input = function (channel, control, value, status, group) {
         engine.setParameter(that.group, co, value / max);
-    }
+    };
 
     // Faders and knobs don't have any LED feedback, so there is no need to
     // connect a callback function to send MIDI messages when the control changes.
     // However, when switching layers, take care of soft takeover functionality.
     this.connect = function () {
         engine.softTakeover(that.group, that.inCo, true);
-    }
+    };
     if (softTakeoverInit) {
         this.connect();
     }
     this.disconnect = function () {
         engine.softTakeoverIgnoreNextValue(that.group, that.inCo);
-    }
+    };
     this.trigger = function () {};
-}
+};
 CC.prototype = Object.create(Control.prototype);
 CC.prototype.constructor = CC;
 
@@ -320,8 +320,8 @@ var CCLin = function (signals, group, co, softTakeoverInit, low, high, min, max)
     CC.call(this, signals, group, co, softTakeoverInit);
     this.input = function (channel, control, value, status, group) {
         engine.setValue(that.group, that.inCo, script.absoluteLin(value, low, high, min, max));
-    }
-}
+    };
+};
 CCLin.prototype = Object.create(CC.prototype);
 CCLin.prototype.constructor = CCLin;
 
@@ -342,8 +342,8 @@ var CCNonLin = function (signals, group, co, softTakeoverInit, low, mid, high, m
     CC.call(this, signals, group, co, softTakeoverInit);
     this.input = function (channel, control, value, status, group) {
         engine.setValue(that.group, that.inCo, script.absoluteNonLin(value, low, mid, high, min, max));
-    }
-}
+    };
+};
 CCNonLin.prototype = Object.create(CC.prototype);
 CCNonLin.prototype.constructor = CCNonLin;
 
@@ -365,7 +365,7 @@ var LayerContainer = function (initialLayer) {
             print('ERROR: LayerContainer.forEachContainer requires a function argument');
             return;
         }
-        if (recursive === undefined) { recursive = true; };
+        if (recursive === undefined) { recursive = true; }
         for (var memberName in this) {
             if (this.hasOwnProperty(memberName)) {
                 if (this[memberName] instanceof Control) {
@@ -375,7 +375,7 @@ var LayerContainer = function (initialLayer) {
                 }
             }
         }
-    }
+    };
     
     this.reconnectControls = function (operation) {
         /**
@@ -391,7 +391,7 @@ var LayerContainer = function (initialLayer) {
             control.connect();
             control.trigger();
         });
-    }
+    };
     
     this.applyLayer = function (newLayer, operation) {
         //FIXME: What is the best way to implement script.extend?
@@ -404,12 +404,12 @@ var LayerContainer = function (initialLayer) {
     if (typeof initialLayer === 'object') {
         this.applyLayer(initialLayer);
     }
-}
+};
 
-script.samplerRegEx = /\[Sampler(\d+)\]/
-script.channelRegEx = /\[Channel(\d+)\]/
-script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/
-script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/
+script.samplerRegEx = /\[Sampler(\d+)\]/ ;
+script.channelRegEx = /\[Channel(\d+)\]/ ;
+script.eqKnobRegEx = /\[EqualizerRack1_\[(.*)\]_Effect1\]/ ;
+script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/ ;
 
 var Deck = function (deckNumbers) {
     /**
@@ -437,8 +437,8 @@ var Deck = function (deckNumbers) {
                 control.group = this.currentDeck;
             }
         });
-    }
-}
+    };
+};
 Deck.prototype = Object.create(LayerContainer.prototype);
 Deck.prototype.constructor = Deck;
 
@@ -449,7 +449,7 @@ P32.init = function () {
     P32.rightDeck = new P32.Deck([2,4], 2);
     // tell controller to send MIDI messages with positions of faders and knobs
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
-}
+};
 
 P32.shutdown = function () {};
 
@@ -459,7 +459,7 @@ P32.padColors = {
     red: 125,
     blue: 126,
     purple: 127
-}
+};
 
 P32.PadNumToMIDIControl = function (PadNum) {
     // The MIDI control numbers for the pad grid are numbered bottom to top, so
@@ -467,7 +467,7 @@ P32.PadNumToMIDIControl = function (PadNum) {
     PadNum -= 1;
     var midiRow = 3 - Math.floor(PadNum/4);
     return 0x54 + midiRow*4 + PadNum%4;
-}
+};
 
 P32.browse = function (channel, control, value, status, group) {
     if (value === 127) {
@@ -475,16 +475,16 @@ P32.browse = function (channel, control, value, status, group) {
     } else {
         engine.setValue('[Playlist]', 'SelectNextTrack', 1);
     }
-}
+};
 
 P32.headMix = function (channel, control, value, status, group) {
     var direction = (value === 127) ? -1 : 1;
-    engine.setValue('[Master]', 'headMix', engine.getValue('[Master]', 'headMix') + (.25 * direction));
-}
+    engine.setValue('[Master]', 'headMix', engine.getValue('[Master]', 'headMix') + (0.25 * direction));
+};
 
 P32.record = new Control([0x90, 0x02], '[Recording]',
                          ['toggle_recording', null],
-                         ['status', function (val) {return val * 127}]);
+                         ['status', function (val) {return val * 127;} ]);
 P32.record.inFunc = function (channel, control, value, status, group) {
     if (P32.leftDeck.shift) {
         P32.leftDeck.toggle();
@@ -493,7 +493,7 @@ P32.record.inFunc = function (channel, control, value, status, group) {
     } else {
         return 1;
     }
-}
+};
 
 P32.EffectUnit = function (unitNumber) {
     var that = this;
@@ -506,7 +506,7 @@ P32.EffectUnit = function (unitNumber) {
     }
     this.pflToggle = function () {
         script.toggleControl(this.group, 'group_[Headphone]_enable');
-    }
+    };
 
     this.dryWet = new CCLin([0xB0 + unitNumber, 0x09],
                          this.group, 'mix', false, 0, 1);
@@ -531,7 +531,7 @@ P32.EffectUnit = function (unitNumber) {
                               0x02 + e,
                               (e === effectNumber) ? 127 : 0);
         }
-    }
+    };
     this.switchEffect1 = function (channel, control, value, status, group) { that.switchEffect(1); };
     this.switchEffect2 = function (channel, control, value, status, group) { that.switchEffect(2); };
     this.switchEffect3 = function (channel, control, value, status, group) { that.switchEffect(3); };
@@ -556,7 +556,7 @@ P32.Deck = function (deckNumbers, channel) {
             that.shift = false;
             that.effectUnit.superKnob.disconnect();
         }
-    }
+    };
     
     this.sync = new ToggleButton([0x90 + channel, 0x08], this.currentDeck, 'sync_enabled');
     this.cue = new CueButton([0x90 + channel, 0x09], this.currentDeck);
@@ -566,7 +566,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.keylock = new ToggleButton([0x90 + channel + P32.shiftOffset, 0x09], this.currentDeck, 'keylock'); // cue shifted
     this.goToStart = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck, // play shifted
                             ['start_stop', function () { return 1; }],
-                            ['play_indicator', function (val) { return val * 127 }]);
+                            ['play_indicator', function (val) { return val * 127; } ]);
     
     for (var i = 1; i <= 16; i++) {
         // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
@@ -574,7 +574,7 @@ P32.Deck = function (deckNumbers, channel) {
                                                     i, P32.padColors.red, P32.padColors.off);
         this['hotcueButtonShift' + i] = new HotcueClearButton([0x90 + channel + P32.shiftOffset, P32.PadNumToMIDIControl(i)], this.currentDeck,
                                                               i, P32.padColors.red, P32.padColors.off);
-        this['samplerButton' + i] = new ToggleButtonAsymmetric([0x90
+//         this['samplerButton' + i] = new ToggleButtonAsymmetric([0x90
     }
     
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
@@ -586,7 +586,7 @@ P32.Deck = function (deckNumbers, channel) {
                 script.toggleControl(that.currentDeck, 'pfl');
             }
         }
-    }
+    };
     
     for (var k = 1; k <= 3; k++) {
         this['eqKnob' + k] = new CCNonLin([0xB0 + channel, 0x02 + k],
@@ -596,7 +596,7 @@ P32.Deck = function (deckNumbers, channel) {
                                     0, 1, 4);
     }
 
-    this.volume = new CCNonLin([0xB0 + channel, 0x01], this.currentDeck, 'volume', false, 0, .25, 1);
+    this.volume = new CCNonLin([0xB0 + channel, 0x01], this.currentDeck, 'volume', false, 0, 0.25, 1);
 
     this.loopSize = new Control([0xB0 + channel, 0x1B], this.currentDeck,
                                 null,
@@ -641,14 +641,14 @@ P32.Deck = function (deckNumbers, channel) {
             }
         }
         that.loopSize.trigger(); // FIXME: ugly hack around https://bugs.launchpad.net/mixxx/+bug/1567203
-    }
+    };
     this.loopSize.output = function (value, group, control) {
         if (loopEnabledDot && value) {
             this.send(5 - Math.log(loopSize) / Math.log(2));
         } else {
             this.send(5 + Math.log(loopSize) / Math.log(2));
         }
-    }
+    };
     this.loopSize.connect();
     this.loopSize.trigger();
     
@@ -659,7 +659,7 @@ P32.Deck = function (deckNumbers, channel) {
         } else {
             engine.setValue(that.currentDeck, 'loop_move', 1 * direction);
         }
-    }
+    };
     
     this.loopToggle = function (channel, control, value, status, group) {
         if (value) {
@@ -673,18 +673,18 @@ P32.Deck = function (deckNumbers, channel) {
                 engine.setValue(that.currentDeck, 'reloop_exit', 1);
             }
         }
-    }
+    };
     
     this.tempoEncoder = function (channel, control, value, status, group) {
         var direction = (value === 127) ? -1 : 1;
-        engine.setValue(that.currentDeck, 'rate', engine.getValue(that.currentDeck, 'rate') + (.01 * direction));
-    }
+        engine.setValue(that.currentDeck, 'rate', engine.getValue(that.currentDeck, 'rate') + (0.01 * direction));
+    };
     
     this.tempoReset = function (channel, control, value, status, group) {
         if (value) {
             engine.setValue(that.currentDeck, 'rate', 0);
         }
-    }
+    };
     
     this.beatJumpEncoder = function (channel, control, value, status, group) {
         var direction = (value === 127) ? -1 : 1;
@@ -698,7 +698,7 @@ P32.Deck = function (deckNumbers, channel) {
         } else {
             engine.setValue(that.currentDeck, 'beatjump', direction * beatJumpSize);
         }
-    }
+    };
     
     this.beatJumpPress = function (channel, control, value, status, group) {
         if (value === 127) {
@@ -708,20 +708,20 @@ P32.Deck = function (deckNumbers, channel) {
             that.beatJumpEncoderPressed = false;
             midi.sendShortMsg(0xB0 + channel, 0x1B, 5 + Math.log(loopSize) / Math.log(2));
         }
-    }
+    };
 
     this.loadTrack = function (channel, control, value, status, group) {
         if (value === 127) {
             engine.setValue(that.currentDeck, 'LoadSelectedTrack', 1);
         }
-    }
+    };
 
     this.ejectTrack = function (channel, control, value, status, group) {
         if (value === 127) {
             engine.setValue(that.currentDeck, 'eject', 1);
             engine.beginTimer(250, 'engine.setValue("'+that.currentDeck+'", "eject", 0)', true);
         }
-    }
-}
+    };
+};
 P32.Deck.prototype = Object.create(Deck.prototype);
 P32.Deck.prototype.constructor = P32.Deck;
