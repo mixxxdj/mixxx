@@ -33,44 +33,60 @@ var loopEnabledDot = false;
 
 var Control = function (signals, group, inOptions, outOptions) {
     /**
-    signals, two member array: first two bytes of the MIDI message (status and note numbers)
+    A Control represents a physical component on a controller, such as a button, knob, encoder, or fader.
+    This constructor function can help set up both the input and output handling functions easily.
+    Derivative objects are provided below with even more convenient constructor functions for common use cases.
+
+    Any of these parameters can be null or ommitted, which can be helpful when setting this Control's properties after initialization.
+    It is also helpful to intentionally avoid overwriting certain properties of Controls using LayerContainer.applyLayer().
+
+    signals, array with 2 members: first two bytes of the MIDI message (status and note numbers)
     group, string: the group this belongs to, for example '[Channel1]'
-    inOptions, array with up to 3 members, optional: If null or ommitted, you need to set the input property yourself (as well as inCo if you want to use that),
-                                                     which is helpful if you want to define a long, custom input function.
+    inOptions, array with up to 3 members:
         1st member of array, string: Mixxx CO that this affects when receiving MIDI input, for example, 'play'
-        2nd member of array, function or null: function to execute upon receiving MIDI input. The function should return
-                                                the value to set the 1st member of the array to. The function's 'this' object
-                                                is set to the Control. If null, you need to set the input property yourself,
-                                                which is helpful if you want to define a long, custom input function.
+        2nd member of array, function: function to execute upon receiving MIDI input. The function should return
+                                       the value to set the 1st member of the array to. The function's 'this' object
+                                       is set to the Control. If null, you need to set the inFunc or input property yourself,
+                                       which is helpful if you want to define a long, custom input function.
         3rd member of array, boolean, optional: whether to react only when a button is pressed, or on both press & release.
                                                 Default to true if ommitted.
-    outOptions, null or array with up to 4 members, optional: If null or ommitted, you need to set up the output yourself.
+    outOptions, array with up to 4 members, optional: If null or ommitted, you need to set up the output yourself.
         1st member of array, string: send signals back to the controller when this Mixxx CO changes, for example, 'play_indicator'
         2nd member of array, function: function to execute when Mixxx CO specified by 1st member of array changes.
                                        The function should return a value to send back as the 3rd byte of a MIDI message
                                        (with the first 2 bytes of the MIDI message being those specified in the first argument).
                                        The function's 'this' object is set to the Control. If null, you need to set the input property yourself,
-                                       which is helpful if you want to define a long, custom input function.
+                                       which is helpful if you want to define a long, custom output function.
         3rd member of array, boolean, optional: whether to connect the Mixxx CO (1st member) to the function (2nd member) immediately.
                                                 Default to true if ommitted.
         4th member of array, boolean, optional: whether to execute the function (2nd member) immediately. Default to true if ommitted.
     **/
+    if (arguments.length === 1 && arguments[0] === null) {
+        this = null;
+        return;
+    }
+
     var that = this;
-    this.midi = {status: signals[0], note: signals[1]};
-    this.group = group;
+
+    if (typeof signals === 'array') {
+        this.midi = {status: signals[0], note: signals[1]};
+    }
+    if (typeof group === 'string') {
+        this.group = group;
+    }
 
     this.setValue = function (value) {
         engine.setValue(this.group, this.inCo, value);
     };
-    
+
     this.getValue = function () {
         return engine.getValue(this.group, this.inCo);
     };
-    
+
     this.toggle = function () {
         this.setValue( ! this.getValue());
     };
-    
+
     this.inSetup = function (inOptions) {
         if (inOptions === null || inOptions === undefined) {
             return;
@@ -132,9 +148,10 @@ var Control = function (signals, group, inOptions, outOptions) {
     this.previousOutput = null;
 };
 
-// for buttons that toggle a binary CO
 var ToggleButton = function (signals, group, co, onlyOnPress, on, off) {
     /**
+    A Control that toggles a binary Mixxx CO
+
     signals: two member array, first two bytes of the MIDI message (status and note numbers)
     group: string, the group this belongs to, for example '[Channel1]'
     co, string: the Mixxx CO to toggle
@@ -154,9 +171,10 @@ var ToggleButton = function (signals, group, co, onlyOnPress, on, off) {
 ToggleButton.prototype = Object.create(Control.prototype);
 ToggleButton.prototype.constructor = ToggleButton;
 
-// for buttons that toggle a binary CO but their LEDs respond to a different CO
 var ToggleButtonAsymmetric = function (signals, group, inCo, outCo, onlyOnPress, on, off) {
     /**
+    A Control that toggles a binary Mixxx CO, but its LEDs respond to a different CO
+
     signals: two member array, first two bytes of the MIDI message (status and note numbers)
     group: string, the group this belongs to, for example '[Channel1]'
     inCo, string: the Mixxx CO to toggle when receiving MIDI input
@@ -179,6 +197,8 @@ ToggleButtonAsymmetric.prototype.constructor = ToggleButtonAsymmetric;
 
 var CueButton = function (signals, group, on, off) {
     /**
+    A Control for cue buttons
+
     signals: two member array, first two bytes of the MIDI message (status and note numbers)
     group: string, the group this belongs to, for example '[Channel1]'
     on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when cue_indicator is 1
@@ -195,6 +215,8 @@ CueButton.prototype.constructor = CueButton;
 
 var PlayButton = function (signals, group, on, off) {
     /**
+    A Control for play buttons
+
     signals: two member array, first two bytes of the MIDI message (status and note numbers)
     group: string, the group this belongs to, for example '[Channel1]'
     on, number, optional: value for the 3rd byte of the MIDI message to send back to light the LED when play_indicator is 1
@@ -212,6 +234,8 @@ PlayButton.prototype.constructor = PlayButton;
 
 var HotcueButton = function (signals, group, hotcueNumber, on, off) {
     /**
+    A Control for hotcue buttons
+
     signals: two member array, first two bytes of the MIDI message (status and note numbers)
     group: string, the group this belongs to, for example '[Channel1]'
     hotcueNumber, number: the number of the hotcue
@@ -230,6 +254,9 @@ HotcueButton.prototype.constructor = HotcueButton;
 
 var HotcueClearButton = function (signals, group, hotcueNumber, on, off) {
     /**
+    A Control for buttons to clear a hotcue. Typically, these are the same buttons as HotcueButtons,
+    but active with a shift button held.
+
     signals: two member array, first two bytes of the MIDI message (status and note numbers)
     group: string, the group this belongs to, for example '[Channel1]'
     hotcueNumber, number: the number of the hotcue
@@ -246,9 +273,10 @@ var HotcueClearButton = function (signals, group, hotcueNumber, on, off) {
 HotcueClearButton.prototype = Object.create(HotcueButton.prototype);
 HotcueClearButton.prototype.constructor = HotcueClearButton;
 
-// for COs that only get set to 1
 var ActionButton = function (signals, group, inCo, onlyOnPress) {
     /**
+    A Control for Mixxx COs that only get set to 1
+
     signals: two member array, first two bytes of the MIDI message (status and note numbers)
     group: string, the group this belongs to, for example '[Channel1]'
     co, string: the Mixxx CO to activate
@@ -262,9 +290,13 @@ var ActionButton = function (signals, group, inCo, onlyOnPress) {
 ActionButton.prototype = Object.create(Control.prototype);
 ActionButton.prototype.constructor = ActionButton;
 
-// Continuous Control, for faders and knobs with finite ranges
 var CC = function (signals, group, co, softTakeoverInit, max) {
     /**
+    A Control for faders and knobs with finite ranges. Although these do not
+    respond to a change in a Mixxx CO to send MIDI signals back to the controller,
+    using a CC is helpful because Control.connect and Control.disconnect are
+    overwritten to take care of soft takeover when switching layers with LayerContainer.applyLayer().
+
     signals: two member array, first two bytes of the MIDI message (status and note numbers)
     group: string, the group this belongs to, for example '[Channel1]'
     co, string: the Mixxx CO to change
@@ -286,9 +318,6 @@ var CC = function (signals, group, co, softTakeoverInit, max) {
         engine.setParameter(that.group, co, value / max);
     };
 
-    // Faders and knobs don't have any LED feedback, so there is no need to
-    // connect a callback function to send MIDI messages when the control changes.
-    // However, when switching layers, take care of soft takeover functionality.
     this.connect = function () {
         engine.softTakeover(that.group, that.inCo, true);
     };
@@ -306,6 +335,9 @@ CC.prototype.constructor = CC;
 // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
 var CCLin = function (signals, group, co, softTakeoverInit, low, high, min, max) {
     /**
+    A CC for Mixxx COs with linear responses, because engine.softTakeover()
+    doesn't work with soft takeover yet.
+
     signals: two member array, first two bytes of the MIDI message (status and note numbers)
     group: string, the group this belongs to, for example '[Channel1]'
     co, string: the Mixxx CO to change
@@ -328,6 +360,9 @@ CCLin.prototype.constructor = CCLin;
 // FIXME: temporary hack around https://bugs.launchpad.net/mixxx/+bug/1479008
 var CCNonLin = function (signals, group, co, softTakeoverInit, low, mid, high, min, max) {
     /**
+    A CC for Mixxx COs with nonlinear responses, because engine.softTakeover()
+    doesn't work with soft takeover yet.
+
     signals: two member array, first two bytes of the MIDI message (status and note numbers)
     group: string, the group this belongs to, for example '[Channel1]'
     co, string: the Mixxx CO to change
@@ -349,14 +384,20 @@ CCNonLin.prototype.constructor = CCNonLin;
 
 var LayerContainer = function (initialLayer) {
     /**
+    A LayerContainer is an object that contains Controls as properties, with
+    methods to help manipulate the Controls. Layers are merely objects that
+    contain Controls to overwrite the active Controls of a LayerContainer. Layers
+    are deeply merged with the applyLayer() method, so if a new layer does not
+    define a property for a Control, the Control's old property will be retained.
+    To avoid defining properties of Controls, pass null as an argument to the
+    Control constructor function.
+
     initialLayer, object, optional: the layer to activate upon initialization
     **/
     this.forEachControl = function (operation, recursive) {
         /**
-        Iterate over each Control in this LayerContainer and execute a function.
-        The function is passed each Control as its first argument.
-
-        operation, function that takes 0-1 arguments: the function to call for each Control
+        operation, function that takes 1 argument: the function to call for each Control.
+                                                   Takes each Control as its first argument.
         recursive, boolean, optional: whether to call forEachControl recursively
                                       for each LayerContainer within this LayerContainer.
                                       Defaults to true if ommitted.
@@ -376,7 +417,7 @@ var LayerContainer = function (initialLayer) {
             }
         }
     };
-    
+
     this.reconnectControls = function (operation) {
         /**
         operation, function that takes one argument, optional: a function to call for each Control in this LayerContainer
@@ -392,7 +433,7 @@ var LayerContainer = function (initialLayer) {
             control.trigger();
         });
     };
-    
+
     this.applyLayer = function (newLayer, operation) {
         //FIXME: What is the best way to implement script.extend?
         //There is a pure JS port of jQuery's extend method at https://github.com/justmoon/node-extend under the MIT License
@@ -413,12 +454,17 @@ script.quickEffectRegEx = /\[QuickEffectRack1_\[(.*)\]\]/ ;
 
 var Deck = function (deckNumbers) {
     /**
+    A LayerContainer with a toggle() method for conveniently changing the group
+    attributes of contained Controls to switch the deck that a set of Controls
+    is manipulating. The toggle() method can be used instead of defining a layer
+    for each deck and using LayerContainer.applyLayer().
+
     deckNumbers, array of numbers, size arbitrary: which deck numbers this can cycle through with the toggle() method
                                                    Typically [1, 3] or [2, 4]
     **/
     LayerContainer.call(this);
     this.currentDeck = '[Channel' + deckNumbers[0] + ']';
-    
+
     this.toggle = function () {
         var index = deckNumbers.indexOf(parseInt(script.channelRegEx.exec(this.currentDeck)[1]));
         if (index === (deckNumbers.length - 1)) {
@@ -544,9 +590,9 @@ P32.Deck = function (deckNumbers, channel) {
     var loopSize = defaultLoopSize;
     var beatJumpSize = defaultBeatJumpSize;
     this.shift = false;
-    
+
     this.effectUnit = new P32.EffectUnit(deckNumbers[0]);
-    
+
     this.shiftButton = function (channel, control, value, status, group) {
         if (value === 127) {
             that.shift = true;
@@ -557,7 +603,7 @@ P32.Deck = function (deckNumbers, channel) {
             that.effectUnit.superKnob.disconnect();
         }
     };
-    
+
     this.sync = new ToggleButton([0x90 + channel, 0x08], this.currentDeck, 'sync_enabled');
     this.cue = new CueButton([0x90 + channel, 0x09], this.currentDeck);
     this.play = new PlayButton([0x90 + channel, 0x0A], this.currentDeck);
@@ -567,7 +613,7 @@ P32.Deck = function (deckNumbers, channel) {
     this.goToStart = new Control([0x90 + channel + P32.shiftOffset, 0x0A], this.currentDeck, // play shifted
                             ['start_stop', function () { return 1; }],
                             ['play_indicator', function (val) { return val * 127; } ]);
-    
+
     for (var i = 1; i <= 16; i++) {
         // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1565377
         this['hotcueButton' + i] = new HotcueButton([0x90 + channel, P32.PadNumToMIDIControl(i)], this.currentDeck,
@@ -576,7 +622,7 @@ P32.Deck = function (deckNumbers, channel) {
                                                               i, P32.padColors.red, P32.padColors.off);
 //         this['samplerButton' + i] = new ToggleButtonAsymmetric([0x90
     }
-    
+
     this.pfl = new ToggleButton([0x90 + channel, 0x10], this.currentDeck, 'pfl');
     this.pfl.input = function (channel, control, value, status, group) {
         if (value === 127) {
@@ -587,7 +633,7 @@ P32.Deck = function (deckNumbers, channel) {
             }
         }
     };
-    
+
     for (var k = 1; k <= 3; k++) {
         this['eqKnob' + k] = new CCNonLin([0xB0 + channel, 0x02 + k],
                                     '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
@@ -651,7 +697,7 @@ P32.Deck = function (deckNumbers, channel) {
     };
     this.loopSize.connect();
     this.loopSize.trigger();
-    
+
     this.loopMoveEncoder = function (channel, control, value, status, group) {
         var direction = (value === 127) ? -1 : 1;
         if (loopSize < 1) {
@@ -660,7 +706,7 @@ P32.Deck = function (deckNumbers, channel) {
             engine.setValue(that.currentDeck, 'loop_move', 1 * direction);
         }
     };
-    
+
     this.loopToggle = function (channel, control, value, status, group) {
         if (value) {
             if (engine.getValue(that.currentDeck, 'loop_enabled')) {
@@ -674,18 +720,18 @@ P32.Deck = function (deckNumbers, channel) {
             }
         }
     };
-    
+
     this.tempoEncoder = function (channel, control, value, status, group) {
         var direction = (value === 127) ? -1 : 1;
         engine.setValue(that.currentDeck, 'rate', engine.getValue(that.currentDeck, 'rate') + (0.01 * direction));
     };
-    
+
     this.tempoReset = function (channel, control, value, status, group) {
         if (value) {
             engine.setValue(that.currentDeck, 'rate', 0);
         }
     };
-    
+
     this.beatJumpEncoder = function (channel, control, value, status, group) {
         var direction = (value === 127) ? -1 : 1;
         if (that.beatJumpEncoderPressed) {
@@ -699,7 +745,7 @@ P32.Deck = function (deckNumbers, channel) {
             engine.setValue(that.currentDeck, 'beatjump', direction * beatJumpSize);
         }
     };
-    
+
     this.beatJumpPress = function (channel, control, value, status, group) {
         if (value === 127) {
             that.beatJumpEncoderPressed = true;
