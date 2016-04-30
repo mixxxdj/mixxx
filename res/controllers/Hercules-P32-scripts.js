@@ -56,21 +56,18 @@ var Control = function (signals, group, inOptions, outOptions) {
         this.inCo = inOptions[0];
         this.inFunc = inOptions[1];
         if (this.inFunc === undefined) {this.inFunc = function (value) {return value;}};
-        var onlyOnPress = inOptions[2];
+        this.onlyOnPress = inOptions[2];
         if (this.inFunc === null) {
             this.input = null;
         } else {
-            if (onlyOnPress === undefined) {onlyOnPress = true};
-            if (onlyOnPress) {
-                this.input = function (channel, control, value, status, group) {
+            if (this.onlyOnPress === undefined) {this.onlyOnPress = true};
+            this.input = function (channel, control, value, status, group) {
+                // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
+                if (that.onlyOnPress) {
                     if (value > 0) {
-                        // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
                         that.setValue(that.inFunc.call(that, value));
                     }
-                }
-            } else {
-                this.input = function (channel, control, value, status, group) {
-                    // FIXME for 2.1: hacks around https://bugs.launchpad.net/mixxx/+bug/1567203
+                } else {
                     that.setValue(that.inFunc.call(that, value));
                 }
             }
